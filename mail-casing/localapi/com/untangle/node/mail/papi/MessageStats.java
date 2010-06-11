@@ -54,6 +54,7 @@ import javax.persistence.Table;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_mail_message_stats", schema="events")
+@SuppressWarnings("serial")
     public class MessageStats implements Serializable
     {
         /* constants */

@@ -51,6 +51,7 @@ import com.untangle.uvm.node.Rule;
  */
 @Entity
 @Table(name="u_dns_static_host_rule", schema="settings")
+@SuppressWarnings("serial")
 public class DnsStaticHostRule extends Rule
 {
 

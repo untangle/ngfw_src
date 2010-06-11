@@ -51,6 +51,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name="u_user", schema="settings")
+@SuppressWarnings("serial")
 public class User implements Serializable
 {
 

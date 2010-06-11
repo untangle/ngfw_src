@@ -34,6 +34,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="n_webfilter_template", schema="settings")
+@SuppressWarnings("serial")
 public class BlockTemplate implements Serializable
 {
 

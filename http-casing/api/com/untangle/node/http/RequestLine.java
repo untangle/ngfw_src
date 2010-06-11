@@ -71,6 +71,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="n_http_req_line", schema="events")
+@SuppressWarnings("serial")
 public class RequestLine implements Serializable
 {
 

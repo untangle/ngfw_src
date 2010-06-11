@@ -43,6 +43,7 @@ import java.util.HashMap;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class IntfEnum implements Serializable
 {
 

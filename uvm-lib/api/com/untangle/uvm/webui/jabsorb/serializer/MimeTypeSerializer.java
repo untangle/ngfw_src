@@ -8,6 +8,7 @@ import org.jabsorb.serializer.UnmarshallException;
 
 import com.untangle.uvm.node.MimeType;
 
+@SuppressWarnings("serial")
 public class MimeTypeSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialise.

@@ -24,6 +24,7 @@ import com.untangle.node.mail.papi.quarantine.InboxRecordCursor;
  * unknown if there is no current index
  *
  */
+@SuppressWarnings("serial")
 public final class InboxNumRecordsTag extends SingleValueTag {
     @Override
     protected String getValue() {

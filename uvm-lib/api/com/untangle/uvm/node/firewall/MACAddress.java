@@ -44,6 +44,7 @@ import com.untangle.uvm.node.ParseException;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public final class MACAddress implements Serializable, Comparable
 {
     /* Number of hex digits in a MAC address */

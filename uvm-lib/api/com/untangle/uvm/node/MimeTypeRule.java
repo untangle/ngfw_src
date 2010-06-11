@@ -47,6 +47,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @Table(name="u_mimetype_rule", schema="settings")
+@SuppressWarnings("serial")
 public class MimeTypeRule extends Rule
 {
     private MimeType mimeType;

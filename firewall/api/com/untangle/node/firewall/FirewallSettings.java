@@ -47,6 +47,7 @@ import com.untangle.uvm.security.Tid;
  */
 @Entity
 @Table(name="n_firewall_settings", schema="settings")
+@SuppressWarnings("serial")
 public class FirewallSettings implements Serializable
 {
     /* XXX Must be updated */

@@ -55,6 +55,7 @@ import com.untangle.uvm.Period;
  */
 @Entity
 @Table(name="u_upgrade_settings", schema="settings")
+@SuppressWarnings("serial")
 public class UpgradeSettings implements Serializable
 {
 

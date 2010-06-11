@@ -148,6 +148,7 @@ public interface LocalJStoreManager
     public <T> T save(Class<T> clz, String packageName,
             Map<String, String> criteria, T value) throws TransactionException; 
 
+@SuppressWarnings("serial")
     public static class TransactionException extends Exception {
 
         public TransactionException(String message) {

@@ -14,6 +14,7 @@ import com.untangle.uvm.node.firewall.user.UserSetMatcher;
 import com.untangle.uvm.node.firewall.user.UserSimpleMatcher;
 import com.untangle.uvm.node.firewall.user.UserSingleMatcher;
 
+@SuppressWarnings("serial")
 public class UserMatcherSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialize to.

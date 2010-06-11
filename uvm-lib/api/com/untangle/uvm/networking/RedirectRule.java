@@ -59,6 +59,7 @@ import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
  */
 @Entity
 @Table(name="u_redirect_rule", schema="settings")
+@SuppressWarnings("serial")
 public class RedirectRule extends TrafficIntfRule
 {
 

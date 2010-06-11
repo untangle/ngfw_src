@@ -60,6 +60,7 @@ import com.untangle.uvm.Period;
  */
 @Entity
 @Table(name="u_admin_settings", schema="settings")
+@SuppressWarnings("serial")
 public class AdminSettings implements Serializable
 {
 

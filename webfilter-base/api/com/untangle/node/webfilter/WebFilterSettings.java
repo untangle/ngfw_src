@@ -50,6 +50,7 @@ import com.untangle.uvm.security.Tid;
  */
 @Entity
 @Table(name="n_webfilter_settings", schema="settings")
+@SuppressWarnings("serial")
 public class WebFilterSettings implements Serializable
 {
 

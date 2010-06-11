@@ -55,6 +55,7 @@ import org.hibernate.annotations.Type;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_mail_message_info_addr", schema="events")
+@SuppressWarnings("serial")
     public class MessageInfoAddr implements Serializable
     {
         /* constants */

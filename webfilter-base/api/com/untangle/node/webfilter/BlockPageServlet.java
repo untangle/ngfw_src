@@ -36,6 +36,7 @@ import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.security.Tid;
 import com.untangle.uvm.util.I18nUtil;
 
+@SuppressWarnings("serial")
 public class BlockPageServlet extends HttpServlet
 {
     // HttpServlet methods ----------------------------------------------------

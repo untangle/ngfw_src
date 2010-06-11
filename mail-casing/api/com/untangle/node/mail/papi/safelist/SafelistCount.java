@@ -2,6 +2,7 @@ package com.untangle.node.mail.papi.safelist;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class SafelistCount implements Serializable {
 
     String emailAddress;

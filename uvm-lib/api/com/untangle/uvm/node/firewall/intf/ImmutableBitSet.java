@@ -42,6 +42,7 @@ import java.util.BitSet;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 final class ImmutableBitSet implements Serializable
 {
     private final BitSet bitSet;

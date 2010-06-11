@@ -40,6 +40,7 @@ import java.net.UnknownHostException;
 /** Class to represent the address of a host, this can either be a
  * hostname, an ip or a hostname and an ip.  Rarely should both be
  * set, but in some cases this can be useful. */
+@SuppressWarnings("serial")
 public class HostAddress implements Serializable
 {
     /* either the hostname or the ip must be null */

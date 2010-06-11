@@ -45,6 +45,7 @@ import com.untangle.uvm.vnet.UDPSessionDesc;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class UDPSessionDescImpl
     extends IPSessionDescImpl
     implements UDPSessionDesc

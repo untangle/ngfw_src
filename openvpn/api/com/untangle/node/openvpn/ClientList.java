@@ -26,6 +26,7 @@ import java.util.Set;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
 
+@SuppressWarnings("serial")
 public class ClientList implements Serializable, Validatable
 { 
 

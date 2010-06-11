@@ -16,6 +16,7 @@ import org.json.JSONObject;
  * Serialises persistent lists
  * 
  */
+@SuppressWarnings("serial")
 public class ExtendedSetSerializer extends SetSerializer
 {
   /**

@@ -42,6 +42,7 @@ import com.untangle.uvm.node.InterfaceComparator;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class DefaultPolicyRule extends PolicyRule
 {
     // constructors -----------------------------------------------------------

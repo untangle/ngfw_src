@@ -54,6 +54,7 @@ import com.untangle.uvm.node.Rule;
  */
 @Entity
 @Table(name="u_network_route", schema="settings")
+@SuppressWarnings("serial")
 public class Route extends Rule
 {
     /**

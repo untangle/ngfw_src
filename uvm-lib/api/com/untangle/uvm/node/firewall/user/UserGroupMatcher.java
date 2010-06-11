@@ -7,6 +7,7 @@ import com.untangle.uvm.client.RemoteUvmContextFactory;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 
+@SuppressWarnings("serial")
 public class UserGroupMatcher extends UserDBMatcher {
     private final String group;
 

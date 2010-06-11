@@ -49,6 +49,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="n_virus_config", schema="settings")
+@SuppressWarnings("serial")
 public class VirusConfig implements Serializable
 {
 

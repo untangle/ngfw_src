@@ -53,6 +53,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="n_mail_safels_settings", schema="settings")
+@SuppressWarnings("serial")
 public class SafelistSettings implements Serializable
 {
 

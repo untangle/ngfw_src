@@ -43,6 +43,7 @@ import java.util.Map;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class AddressKind implements Serializable
 {
     

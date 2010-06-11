@@ -20,6 +20,7 @@ package com.untangle.uvm.networking;
 
 import com.untangle.uvm.type.IntBasedUserType;
 
+@SuppressWarnings("serial")
 public class EthernetMediaUserType extends IntBasedUserType
 {
     public Class returnedClass()

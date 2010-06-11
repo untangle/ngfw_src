@@ -53,6 +53,7 @@ import com.untangle.node.mail.papi.smtp.SmtpNotifyMessageGenerator;
  */
 @Entity
 @Table(name="n_virus_smtp_config", schema="settings")
+@SuppressWarnings("serial")
 public class VirusSMTPConfig extends VirusMailConfig implements Serializable
 {
 

@@ -24,8 +24,8 @@ import javax.servlet.ServletRequest;
  * Includes/excludes body chunks if the
  * current inbox has been remapped to another
  */
-public final class IsRemappedTag
-    extends IfElseTag {
+@SuppressWarnings("serial")
+public final class IsRemappedTag extends IfElseTag {
 
     private static final String IS_REMAPPED_KEY = "untangle.remapping.isRemapped";
 

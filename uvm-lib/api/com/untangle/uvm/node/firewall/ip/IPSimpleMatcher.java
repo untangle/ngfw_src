@@ -45,6 +45,7 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public final class IPSimpleMatcher extends IPDBMatcher
 {
 

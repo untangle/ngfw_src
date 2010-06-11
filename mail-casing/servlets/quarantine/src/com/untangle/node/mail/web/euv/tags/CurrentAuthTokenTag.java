@@ -25,8 +25,8 @@ import javax.servlet.ServletRequest;
  * Outputs the current auth token (URL encoded optionaly), or null
  * if there 'aint one
  */
-public final class CurrentAuthTokenTag
-    extends SingleValueTag {
+@SuppressWarnings("serial")
+public final class CurrentAuthTokenTag extends SingleValueTag {
 
     private static final String AUTH_TOKEN_KEY = "untangle.auth_token";
     private static final String EL_AUTH_TOKEN_KEY = "currentAuthToken";

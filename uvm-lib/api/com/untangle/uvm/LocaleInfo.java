@@ -40,6 +40,7 @@ import java.io.Serializable;
  * @author <a href="mailto:cmatei@untangle.com">Catalin Matei</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class LocaleInfo implements Serializable {
     private String languageCode;
     private String languageName;

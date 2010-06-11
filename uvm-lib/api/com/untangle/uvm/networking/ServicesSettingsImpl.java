@@ -63,6 +63,7 @@ import com.untangle.uvm.node.IPaddr;
  */
 @Entity
 @Table(name="u_network_services", schema="settings")
+@SuppressWarnings("serial")
 public class ServicesSettingsImpl implements ServicesSettings, Serializable
 {
 

@@ -65,6 +65,7 @@ import com.untangle.uvm.node.ValidateException;
  */
 @Entity
 @Table(name="u_network_settings", schema="settings")
+@SuppressWarnings("serial")
 public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Serializable, Validatable
 {
     private Long id;

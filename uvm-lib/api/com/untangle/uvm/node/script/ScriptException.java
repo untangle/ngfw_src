@@ -35,6 +35,7 @@ package com.untangle.uvm.node.script;
 
 import com.untangle.uvm.node.NodeException;
 
+@SuppressWarnings("serial")
 public class ScriptException extends NodeException {
     private final int code;
     private final String scriptName;

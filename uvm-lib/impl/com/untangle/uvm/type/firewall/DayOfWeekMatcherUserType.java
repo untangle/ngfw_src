@@ -22,6 +22,7 @@ import com.untangle.uvm.node.firewall.time.DayOfWeekMatcher;
 import com.untangle.uvm.node.firewall.time.DayOfWeekMatcherFactory;
 import com.untangle.uvm.type.StringBasedUserType;
 
+@SuppressWarnings("serial")
 public class DayOfWeekMatcherUserType extends StringBasedUserType
 {
     public Class returnedClass()

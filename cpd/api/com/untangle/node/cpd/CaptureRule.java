@@ -32,6 +32,7 @@ import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
 
 @Entity
 @Table(name="n_cpd_capture_rule", schema="settings")
+@SuppressWarnings("serial")
 public class CaptureRule extends Rule
 {
     

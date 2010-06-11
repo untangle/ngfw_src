@@ -31,6 +31,7 @@ import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.security.Tid;
 
+@SuppressWarnings("serial")
 public class UnblockerServlet extends HttpServlet
 {
     // HttpServlet methods ----------------------------------------------------

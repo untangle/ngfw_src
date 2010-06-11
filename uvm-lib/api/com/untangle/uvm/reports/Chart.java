@@ -42,6 +42,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+@SuppressWarnings("serial")
 public class Chart extends SummaryItem implements Serializable
 {
     private final String plotType;

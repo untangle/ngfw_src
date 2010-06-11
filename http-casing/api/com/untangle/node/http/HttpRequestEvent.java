@@ -55,6 +55,7 @@ import com.untangle.uvm.logging.SyslogPriority;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_http_evt_req", schema="events")
+@SuppressWarnings("serial")
     public class HttpRequestEvent extends LogEvent
     {
 		private RequestLine requestLine;

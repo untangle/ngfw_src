@@ -50,6 +50,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="u_mail_settings", schema="settings")
+@SuppressWarnings("serial")
 public class MailSettings implements Serializable
 {
 

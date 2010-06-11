@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+@SuppressWarnings("serial")
 public class HostName implements Serializable {
     private static final Pattern HOSTLABEL_MATCHER;
     private static final Pattern HOSTLABEL_STRICT_MATCHER;

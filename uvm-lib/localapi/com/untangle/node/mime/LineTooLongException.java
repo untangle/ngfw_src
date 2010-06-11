@@ -38,11 +38,11 @@ package com.untangle.node.mime;
  * <p>
  * XXXXXX bscott a better base class?
  */
-public class LineTooLongException
-    extends Exception {
-
-    public LineTooLongException(int limit) {
+@SuppressWarnings("serial")
+public class LineTooLongException extends Exception
+{
+    public LineTooLongException(int limit)
+    {
         super("Line exceeded " + limit + " byte limit");
     }
-
 }

@@ -39,6 +39,7 @@ package com.untangle.uvm.node;
  *
  * @see Template
  */
+@SuppressWarnings("serial")
 public class MapTemplateValues
     extends java.util.Properties
     implements TemplateValues {

@@ -35,6 +35,7 @@ import com.untangle.uvm.node.Rule;
  */
 @Entity
 @Table(name="n_ips_rule", schema="settings")
+@SuppressWarnings("serial")
 public class IpsRule extends Rule implements Serializable
 {
 

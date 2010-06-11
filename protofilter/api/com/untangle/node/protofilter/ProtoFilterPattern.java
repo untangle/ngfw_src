@@ -38,6 +38,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name="n_protofilter_pattern", schema="settings")
+@SuppressWarnings("serial")
 public class ProtoFilterPattern implements Serializable
 {
     // Converter sets all old patterns to this mid

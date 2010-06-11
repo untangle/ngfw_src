@@ -49,6 +49,7 @@ import org.apache.log4j.Logger;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class RegistrationInfo implements Serializable
 {
 

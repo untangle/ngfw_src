@@ -16,6 +16,7 @@ import com.untangle.uvm.node.firewall.intf.IntfSingleMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfWanMatcher;
 
 
+@SuppressWarnings("serial")
 public class IntfMatcherSerializer extends AbstractSerializer
 {
     /**

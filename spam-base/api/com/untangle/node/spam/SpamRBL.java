@@ -49,7 +49,8 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="n_spam_rbl", schema="settings")
-    public class SpamRBL implements Serializable
+@SuppressWarnings("serial")
+public class SpamRBL implements Serializable
 {
 
     // a spam RBL list with a single NO_RBL hostname will deactivate RBL and

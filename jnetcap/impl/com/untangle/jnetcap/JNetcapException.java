@@ -18,6 +18,7 @@
 
 package com.untangle.jnetcap;
 
+@SuppressWarnings("serial")
 public class JNetcapException extends Exception
 {
     public JNetcapException() 

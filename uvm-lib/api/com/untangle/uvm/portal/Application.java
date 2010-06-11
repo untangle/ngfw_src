@@ -38,6 +38,7 @@ import java.io.Serializable;
 /**
  * Class for portal applications
  */
+@SuppressWarnings("serial")
 public final class Application
     implements Comparable<Application>, Serializable
 {

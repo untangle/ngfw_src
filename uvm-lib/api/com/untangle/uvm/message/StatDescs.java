@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("serial")
 public class StatDescs implements Serializable
 {
     private final List<StatDesc> metricDescs;

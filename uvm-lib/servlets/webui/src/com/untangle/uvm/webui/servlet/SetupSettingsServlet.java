@@ -57,6 +57,7 @@ import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
  *
  * @author Catalin Matei <cmatei@untangle.com>
  */
+@SuppressWarnings("serial")
 public class SetupSettingsServlet extends HttpServlet
 {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

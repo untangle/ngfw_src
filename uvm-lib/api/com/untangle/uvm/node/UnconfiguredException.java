@@ -32,6 +32,7 @@
  */
 package com.untangle.uvm.node;
 
+@SuppressWarnings("serial")
 public class UnconfiguredException extends NodeStartException
 {
     public UnconfiguredException( String message )

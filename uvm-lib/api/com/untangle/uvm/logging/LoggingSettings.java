@@ -51,6 +51,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @Table(name="u_logging_settings", schema="settings")
+@SuppressWarnings("serial")
 public class LoggingSettings implements Serializable
 {
     private Long id;

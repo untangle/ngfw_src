@@ -29,6 +29,7 @@ import javax.persistence.Transient;
  * @version 1.0
  */
 @Embeddable
+@SuppressWarnings("serial")
 public class ShieldBaseSettings implements Serializable {
 	
 	private long shieldNodeRulesLength;

@@ -40,6 +40,7 @@ import com.untangle.uvm.RemoteLanguageManager;
  *
  * @author Catalin Matei <cmatei@untangle.com>
  */
+@SuppressWarnings("serial")
 public class Language extends HttpServlet
 {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

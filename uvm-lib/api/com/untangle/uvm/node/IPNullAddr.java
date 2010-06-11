@@ -41,6 +41,7 @@ import java.net.UnknownHostException;
  * This is different from an IPaddr where an empty string is not parseable.
  * This is not a very elegant class, and should be destroyed. (rbs).
  */
+@SuppressWarnings("serial")
 public class IPNullAddr extends IPaddr implements Comparable
 {
 

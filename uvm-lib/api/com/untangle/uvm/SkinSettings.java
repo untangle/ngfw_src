@@ -49,6 +49,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name="u_skin_settings", schema="settings")
+@SuppressWarnings("serial")
 public class SkinSettings implements Serializable{
     private Long id;
     private String administrationClientSkin = "default";

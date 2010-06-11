@@ -17,6 +17,7 @@ import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSingleMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSubnetMatcher;
 
+@SuppressWarnings("serial")
 public class IPMatcherSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialize to.

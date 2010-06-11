@@ -46,6 +46,7 @@ import com.untangle.uvm.node.firewall.Parser;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public final class IPRangeMatcher extends IPDBMatcher
 {
     private static final String MARKER_RANGE = IPMatcherUtil.MARKER_RANGE;

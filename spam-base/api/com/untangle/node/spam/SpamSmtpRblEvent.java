@@ -58,111 +58,112 @@ import com.untangle.uvm.node.PipelineEndpoints;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="n_spam_smtp_rbl_evt", schema="events")
-    public class SpamSmtpRblEvent extends PipelineEvent
-    {
-        private HostName hostname;
-        private IPaddr ipAddr;
-        private boolean skipped;
+@Table(name="n_spam_smtp_rbl_evt", schema="events")
+@SuppressWarnings("serial")
+public class SpamSmtpRblEvent extends PipelineEvent
+{
+    private HostName hostname;
+    private IPaddr ipAddr;
+    private boolean skipped;
 
-        // constructors -----------------------------------------------------------
+    // constructors -----------------------------------------------------------
 
-        public SpamSmtpRblEvent() {}
+    public SpamSmtpRblEvent() {}
 
-        public SpamSmtpRblEvent(PipelineEndpoints plEndp, HostName hostname, IPaddr ipAddr, boolean skipped) {
-            super(plEndp);
-            this.hostname = hostname;
-            this.ipAddr = ipAddr;
-            this.skipped = skipped;
-        }
-
-        public SpamSmtpRblEvent(PipelineEndpoints plEndp, String hostnameS, InetAddress ipAddrIN, boolean skipped) {
-            super(plEndp);
-            try {
-                this.hostname = HostName.parse(hostnameS);
-            } catch (ParseException e) {
-                this.hostname = HostName.getEmptyHostName();
-            }
-            this.ipAddr = new IPaddr(ipAddrIN);
-            this.skipped = skipped;
-        }
-
-        // accessors --------------------------------------------------------------
-
-        /**
-         * Hostname of RBL service.
-         *
-         * @return hostname of RBL service.
-         */
-        @Column(nullable=false)
-        @Type(type="com.untangle.uvm.type.HostNameUserType")
-        public HostName getHostname() {
-            return hostname;
-        }
-
-        public void setHostname(HostName hostname) {
-            this.hostname = hostname;
-            return;
-        }
-
-        /**
-         * IP address of mail server listed on RBL service.
-         *
-         * @return IP address of mail server listed on RBL service.
-         */
-        @Column(nullable=false)
-        @Type(type="com.untangle.uvm.type.IPaddrUserType")
-        public IPaddr getIPAddr() {
-            return ipAddr;
-        }
-
-        public void setIPAddr(IPaddr ipAddr) {
-            this.ipAddr = ipAddr;
-            return;
-        }
-
-        /**
-         * Confirmed RBL hit but skipping rejection indicator.
-         *
-         * @return confirmed RBL hit but skipping rejection indicator.
-         */
-        @Column(nullable=false)
-        public boolean getSkipped() {
-            return skipped;
-        }
-
-        public void setSkipped(boolean skipped) {
-            this.skipped = skipped;
-            return;
-        }
-
-        // Syslog methods ---------------------------------------------------------
-
-        @Transient
-        public void appendSyslog(SyslogBuilder sb)
-        {
-            // No longer log pipeline endpoints, they are not necessary anyway.
-            // PipelineEndpoints pe = getPipelineEndpoints();
-            /* unable to log this event */
-            // pe.appendSyslog(sb);
-
-            sb.startSection("info");
-            sb.addField("hostname", getHostname().toString());
-            sb.addField("ipaddr", getIPAddr().toString());
-            sb.addField("skipped", getSkipped());
-        }
-
-        @Transient
-        public String getSyslogId()
-        {
-            return "SMTP_RBL";
-        }
-
-        @Transient
-        public SyslogPriority getSyslogPriority()
-        {
-            // INFORMATIONAL = statistics or normal operation
-            // WARNING = traffic altered
-            return false == getSkipped() ? SyslogPriority.INFORMATIONAL : SyslogPriority.WARNING; // traffic altered
-        }
+    public SpamSmtpRblEvent(PipelineEndpoints plEndp, HostName hostname, IPaddr ipAddr, boolean skipped) {
+        super(plEndp);
+        this.hostname = hostname;
+        this.ipAddr = ipAddr;
+        this.skipped = skipped;
     }
+
+    public SpamSmtpRblEvent(PipelineEndpoints plEndp, String hostnameS, InetAddress ipAddrIN, boolean skipped) {
+        super(plEndp);
+        try {
+            this.hostname = HostName.parse(hostnameS);
+        } catch (ParseException e) {
+            this.hostname = HostName.getEmptyHostName();
+        }
+        this.ipAddr = new IPaddr(ipAddrIN);
+        this.skipped = skipped;
+    }
+
+    // accessors --------------------------------------------------------------
+
+    /**
+     * Hostname of RBL service.
+     *
+     * @return hostname of RBL service.
+     */
+    @Column(nullable=false)
+    @Type(type="com.untangle.uvm.type.HostNameUserType")
+    public HostName getHostname() {
+        return hostname;
+    }
+
+    public void setHostname(HostName hostname) {
+        this.hostname = hostname;
+        return;
+    }
+
+    /**
+     * IP address of mail server listed on RBL service.
+     *
+     * @return IP address of mail server listed on RBL service.
+     */
+    @Column(nullable=false)
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
+    public IPaddr getIPAddr() {
+        return ipAddr;
+    }
+
+    public void setIPAddr(IPaddr ipAddr) {
+        this.ipAddr = ipAddr;
+        return;
+    }
+
+    /**
+     * Confirmed RBL hit but skipping rejection indicator.
+     *
+     * @return confirmed RBL hit but skipping rejection indicator.
+     */
+    @Column(nullable=false)
+    public boolean getSkipped() {
+        return skipped;
+    }
+
+    public void setSkipped(boolean skipped) {
+        this.skipped = skipped;
+        return;
+    }
+
+    // Syslog methods ---------------------------------------------------------
+
+    @Transient
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        // No longer log pipeline endpoints, they are not necessary anyway.
+        // PipelineEndpoints pe = getPipelineEndpoints();
+        /* unable to log this event */
+        // pe.appendSyslog(sb);
+
+        sb.startSection("info");
+        sb.addField("hostname", getHostname().toString());
+        sb.addField("ipaddr", getIPAddr().toString());
+        sb.addField("skipped", getSkipped());
+    }
+
+    @Transient
+    public String getSyslogId()
+    {
+        return "SMTP_RBL";
+    }
+
+    @Transient
+    public SyslogPriority getSyslogPriority()
+    {
+        // INFORMATIONAL = statistics or normal operation
+        // WARNING = traffic altered
+        return false == getSkipped() ? SyslogPriority.INFORMATIONAL : SyslogPriority.WARNING; // traffic altered
+    }
+}

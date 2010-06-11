@@ -22,6 +22,7 @@ import java.io.Serializable;
 
 import com.untangle.uvm.RemoteConnectivityTester;
 
+@SuppressWarnings("serial")
 public class ConnectionStatus implements RemoteConnectivityTester.Status, Serializable
 {        
     private final boolean isDnsWorking;

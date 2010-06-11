@@ -36,6 +36,7 @@ import com.untangle.uvm.RemoteBrandingManager;
  *
  * @author Catalin Matei <cmatei@untangle.com>
  */
+@SuppressWarnings("serial")
 public class StartPageServlet extends HttpServlet
 {
     /* ??? Perhaps this should live in a global place. */

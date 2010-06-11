@@ -54,6 +54,7 @@ import com.untangle.uvm.node.Rule;
  */
 @Entity
 @Table(name="u_network_intf", schema="settings")
+@SuppressWarnings("serial")
 public class Interface extends Rule
 {
 

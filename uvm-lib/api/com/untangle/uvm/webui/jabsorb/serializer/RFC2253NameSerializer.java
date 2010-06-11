@@ -8,6 +8,7 @@ import org.jabsorb.serializer.UnmarshallException;
 
 import com.untangle.uvm.security.RFC2253Name;
 
+@SuppressWarnings("serial")
 public class RFC2253NameSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialise.

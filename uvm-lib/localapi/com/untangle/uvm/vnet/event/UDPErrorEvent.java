@@ -47,6 +47,7 @@ import com.untangle.uvm.vnet.UDPSession;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class UDPErrorEvent extends UDPPacketEvent {
     
     private byte icmpType;

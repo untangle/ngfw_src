@@ -41,6 +41,7 @@ import java.io.Serializable;
  * @author <a href="mailto:cdondera@untangle.com">Catalin Dondera</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class SystemInfo implements Serializable
 {
     

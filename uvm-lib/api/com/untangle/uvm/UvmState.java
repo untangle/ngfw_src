@@ -44,6 +44,7 @@ import java.util.Map;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class UvmState implements Serializable
 {
 

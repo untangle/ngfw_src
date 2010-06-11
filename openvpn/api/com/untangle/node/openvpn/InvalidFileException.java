@@ -19,6 +19,7 @@ package com.untangle.node.openvpn;
 
 import com.untangle.uvm.node.NodeException;
 
+@SuppressWarnings("serial")
 public class InvalidFileException extends NodeException
 {
     InvalidFileException( String message )

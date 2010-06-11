@@ -43,6 +43,7 @@ import com.untangle.uvm.node.ValidateException;
  * @version 1.0
  */
 @MappedSuperclass
+@SuppressWarnings("serial")
 public class VpnClientBase extends Rule implements Validatable
 {
 

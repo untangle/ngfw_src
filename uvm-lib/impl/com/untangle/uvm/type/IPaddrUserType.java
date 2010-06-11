@@ -27,6 +27,7 @@ import com.untangle.uvm.node.IPaddr;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class IPaddrUserType extends StringBasedUserType
 {
     private static final IPaddr EMPTY_IPADDR = new IPaddr( null );

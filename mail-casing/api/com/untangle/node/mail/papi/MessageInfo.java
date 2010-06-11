@@ -64,6 +64,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="n_mail_message_info", schema="events")
+@SuppressWarnings("serial")
 public class MessageInfo implements Serializable
 {
 

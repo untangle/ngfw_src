@@ -49,6 +49,7 @@ import org.json.JSONBean;
  * @version 1.0
  */
 @JSONBean.Marker
+@SuppressWarnings("serial")
 public class SessionStats implements Serializable
 {
 

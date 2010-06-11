@@ -62,8 +62,7 @@ import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 
 
-public class VpnNodeImpl extends AbstractNode
-    implements VpnNode
+public class VpnNodeImpl extends AbstractNode implements VpnNode
 {
     private static final String TRAN_NAME    = "openvpn";
     private static final String WEB_APP      = TRAN_NAME;

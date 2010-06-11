@@ -41,6 +41,7 @@ import java.io.Serializable;
  * in the Address Book service.
  *
  */
+@SuppressWarnings("serial")
 public final class UserEntry implements Serializable, Comparable {
 
     public static final String UNCHANGED_PASSWORD = "***UNCHANGED***";

@@ -10,6 +10,7 @@ import org.hibernate.annotations.Type;
 import com.untangle.node.cpd.CPDSettings.AuthenticationType;
 import com.untangle.node.cpd.CPDSettings.PageType;
 
+@SuppressWarnings("serial")
 public class CPDBaseSettings implements Serializable {
     private boolean captureBypassedTraffic = false;
     private AuthenticationType authenticationType = AuthenticationType.NONE;

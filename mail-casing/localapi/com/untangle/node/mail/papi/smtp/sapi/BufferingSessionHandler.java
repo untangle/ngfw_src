@@ -96,6 +96,7 @@ import com.untangle.node.token.Token;
  * in the {@link #blockOrPass blockOrPass()} callback, as it is too
  * late to modify the message.
  */
+@SuppressWarnings("serial")
 public abstract class BufferingSessionHandler
     extends SessionHandler {
 
@@ -122,6 +123,7 @@ public abstract class BufferingSessionHandler
     /**
      * <b>B</b>lock, <b>P</b>ass, or <b>M</b>odify Evaluation result.
      */
+@SuppressWarnings("serial")
     public static final class BPMEvaluationResult {
         private MIMEMessage m_newMsg;
         private final BlockOrPassResult action;

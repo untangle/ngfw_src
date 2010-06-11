@@ -39,6 +39,7 @@ import java.util.Map;
 
 import com.untangle.uvm.node.ParseException;
 
+@SuppressWarnings("serial")
 public final class SetupState implements Serializable
 {
     /* Map from the unique identifier to a setup state */

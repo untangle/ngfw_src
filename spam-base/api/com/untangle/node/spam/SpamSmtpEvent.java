@@ -56,6 +56,7 @@ import com.untangle.node.mail.papi.MessageInfo;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="n_spam_evt_smtp", schema="events")
+@SuppressWarnings("serial")
 public class SpamSmtpEvent extends SpamEvent
 {
     private MessageInfo messageInfo;

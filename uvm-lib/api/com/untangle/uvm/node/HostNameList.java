@@ -40,6 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /** This list prevents duplicates. */
+@SuppressWarnings("serial")
 public class HostNameList implements Serializable
 {
     private final List hostNameList;

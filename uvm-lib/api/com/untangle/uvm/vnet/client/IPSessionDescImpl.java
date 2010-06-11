@@ -47,6 +47,7 @@ import com.untangle.uvm.vnet.SessionStats;
  * @version 1.0
  */
 @JSONBean.Marker
+@SuppressWarnings("serial")
 public class IPSessionDescImpl
     extends SessionDescImpl
     implements IPSessionDesc

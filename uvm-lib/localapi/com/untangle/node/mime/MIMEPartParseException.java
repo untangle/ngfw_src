@@ -37,19 +37,26 @@ package com.untangle.node.mime;
  * Exception thrown when parsing MIMEParts, if they
  * cannot be parsed.
  */
-public class MIMEPartParseException
-    extends Exception {
+@SuppressWarnings("serial")
+public class MIMEPartParseException extends Exception {
 
-    public MIMEPartParseException() {
+    public MIMEPartParseException()
+    {
         super();
     }
-    public MIMEPartParseException(Exception ex) {
+
+    public MIMEPartParseException(Exception ex)
+    {
         super(ex);
     }
-    public MIMEPartParseException(String msg) {
+
+    public MIMEPartParseException(String msg)
+    {
         super(msg);
     }
-    public MIMEPartParseException(String msg, Exception ex) {
+
+    public MIMEPartParseException(String msg, Exception ex)
+    {
         super(msg, ex);
     }
 

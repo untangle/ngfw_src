@@ -50,6 +50,7 @@ import com.untangle.node.mail.papi.MessageInfo;
  */
 @Entity
 @Table(name="n_mail_safels_sender", schema="settings")
+@SuppressWarnings("serial")
 public class SafelistSender implements Serializable
 {
     /* constants */

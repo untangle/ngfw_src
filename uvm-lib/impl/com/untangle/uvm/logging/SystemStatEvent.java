@@ -32,6 +32,7 @@ import javax.persistence.Transient;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_server_evt", schema="events")
+@SuppressWarnings("serial")
     public class SystemStatEvent extends LogEvent
     {
     

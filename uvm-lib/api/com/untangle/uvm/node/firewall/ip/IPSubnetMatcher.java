@@ -46,6 +46,7 @@ import com.untangle.uvm.node.firewall.Parser;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public final class IPSubnetMatcher extends IPDBMatcher
 {
     /* The marker that separates the network from the netmask */

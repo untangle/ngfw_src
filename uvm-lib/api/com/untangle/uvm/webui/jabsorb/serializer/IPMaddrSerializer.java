@@ -8,6 +8,7 @@ import org.jabsorb.serializer.UnmarshallException;
 
 import com.untangle.uvm.node.IPMaddr;
 
+@SuppressWarnings("serial")
 public class IPMaddrSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialise.

@@ -26,6 +26,7 @@ import org.jabsorb.callback.CallbackController;
 
 import com.untangle.uvm.toolbox.MackageDesc;
 
+@SuppressWarnings("serial")
 public class UtCallbackController extends CallbackController
 {
     private final JSONRPCBridge bridge;

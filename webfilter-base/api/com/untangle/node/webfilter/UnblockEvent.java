@@ -42,39 +42,40 @@ import com.untangle.uvm.policy.Policy;
  * @version 1.0
  */
 @Entity
-    @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="n_webfilter_evt_unblock", schema="events")
-    public class UnblockEvent extends LogEvent
-    {
-        // action types
-        private String vendorName;
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="n_webfilter_evt_unblock", schema="events")
+@SuppressWarnings("serial")
+public class UnblockEvent extends LogEvent
+{
+    // action types
+    private String vendorName;
 	private InetAddress clientAddress;
 	private boolean isPermanent;
 	private String requestUri;
 	private Policy policy;
 
-        // non-persistent fields -----------------------------------------------
+    // non-persistent fields -----------------------------------------------
 
 
-        // constructors --------------------------------------------------------
+    // constructors --------------------------------------------------------
 
-        public UnblockEvent() { }
+    public UnblockEvent() { }
 
-        public UnblockEvent(InetAddress clientAddress,
-			    boolean isPermanent,
-			    String requestUri,
-			    String vendorName,
-			    Policy policy)
-        {
+    public UnblockEvent(InetAddress clientAddress,
+                        boolean isPermanent,
+                        String requestUri,
+                        String vendorName,
+                        Policy policy)
+    {
 	    this.clientAddress = clientAddress;
 	    this.isPermanent = isPermanent;
 	    this.requestUri = requestUri;
-            this.vendorName = vendorName;
+        this.vendorName = vendorName;
 	    this.policy = policy;
 	    //	    setTimeStamp(null);
-        }
+    }
 
-        // accessors -----------------------------------------------------------
+    // accessors -----------------------------------------------------------
 
 	/**
 	 * Get the <code>Policy</code> value.
@@ -136,10 +137,10 @@ import com.untangle.uvm.policy.Policy;
 
 	/**
 	 * Get the <code>ClientAddress</code> value.
-n	 *
+     n	 *
 	 * @return an <code>InetAddress</code> value
 	 */
-        @Column(name="client_address")
+    @Column(name="client_address")
 	@Type(type="com.untangle.uvm.type.InetAddressUserType")
 	public InetAddress getClientAddress() {
 	    return clientAddress;
@@ -154,50 +155,50 @@ n	 *
 	    this.clientAddress = newClientAddress;
 	}
 
-        /**
-         * Spam scanner vendor.
-         *
-         * @return the vendor
-         */
-        @Column(name="vendor_name")
-        public String getVendorName()
-        {
-            return vendorName;
-        }
-
-        public void setVendorName(String vendorName)
-        {
-            this.vendorName = vendorName;
-        }
-
-        // Syslog methods ------------------------------------------------------
-
-        public void appendSyslog(SyslogBuilder sb)
-        {
-            sb.startSection("info");
-            sb.addField("url", requestUri);
-            sb.addField("client-addr", null == clientAddress ? "none" : clientAddress.toString());
-            sb.addField("create-date", null == getTimeStamp() ? "none" : getTimeStamp().toString());
-        }
-
-        @Transient
-            public String getSyslogId()
-        {
-            return "Unblock";
-        }
-
-        @Transient
-            public SyslogPriority getSyslogPriority()
-        {
-	    return SyslogPriority.INFORMATIONAL;
-        }
-
-        // Object methods ------------------------------------------------------
-
-        public String toString()
-        {
-            return "UnblockEvent id: " + getId() + " RequestUri: "
-                + requestUri + "ClientAddress: " + clientAddress
-		+ "Permanent: " + isPermanent;
-        }
+    /**
+     * Spam scanner vendor.
+     *
+     * @return the vendor
+     */
+    @Column(name="vendor_name")
+    public String getVendorName()
+    {
+        return vendorName;
     }
+
+    public void setVendorName(String vendorName)
+    {
+        this.vendorName = vendorName;
+    }
+
+    // Syslog methods ------------------------------------------------------
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        sb.startSection("info");
+        sb.addField("url", requestUri);
+        sb.addField("client-addr", null == clientAddress ? "none" : clientAddress.toString());
+        sb.addField("create-date", null == getTimeStamp() ? "none" : getTimeStamp().toString());
+    }
+
+    @Transient
+    public String getSyslogId()
+    {
+        return "Unblock";
+    }
+
+    @Transient
+    public SyslogPriority getSyslogPriority()
+    {
+	    return SyslogPriority.INFORMATIONAL;
+    }
+
+    // Object methods ------------------------------------------------------
+
+    public String toString()
+    {
+        return "UnblockEvent id: " + getId() + " RequestUri: "
+            + requestUri + "ClientAddress: " + clientAddress
+            + "Permanent: " + isPermanent;
+    }
+}

@@ -50,6 +50,7 @@ import org.apache.log4j.Logger;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class ProxyServlet extends HttpServlet
 {
     private static final String BASE_URL;

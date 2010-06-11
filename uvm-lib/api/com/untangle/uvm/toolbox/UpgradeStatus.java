@@ -35,6 +35,7 @@ package com.untangle.uvm.toolbox;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class UpgradeStatus implements Serializable
 {
     private final boolean upgradesAvailable;

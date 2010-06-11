@@ -46,6 +46,7 @@ import com.untangle.uvm.node.Rule;
  */
 @Entity
 @Table(name="n_mail_email_addr_rule", schema="settings")
+@SuppressWarnings("serial")
 public class EmailAddressRule extends Rule implements Serializable {
 
 

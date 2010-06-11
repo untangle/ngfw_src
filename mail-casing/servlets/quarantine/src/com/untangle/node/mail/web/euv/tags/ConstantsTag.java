@@ -25,8 +25,8 @@ import com.untangle.node.mail.web.euv.Constants;
  * don't have to (a) hardcode values in the pages or (b) use
  * Java directly to dereference the "Constants" Object
  */
-public final class ConstantsTag
-    extends SingleValueTag {
+@SuppressWarnings("serial")
+public final class ConstantsTag extends SingleValueTag {
 
     private String m_keyName;
     private String m_valueName;

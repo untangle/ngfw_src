@@ -46,6 +46,7 @@ import com.untangle.node.util.UvmUtil;
  */
 @Entity
 @Table(name="n_reporting_sched", schema="settings")
+@SuppressWarnings("serial")
 public class Schedule implements Serializable
 {
 

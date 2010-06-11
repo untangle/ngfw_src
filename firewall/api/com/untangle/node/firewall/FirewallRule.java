@@ -38,6 +38,7 @@ import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
  */
 @Entity
 @Table(name="n_firewall_rule", schema="settings")
+@SuppressWarnings("serial")
 public class FirewallRule extends TrafficIntfRule
 {
     

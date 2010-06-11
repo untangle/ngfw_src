@@ -49,6 +49,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="n_ftp_settings", schema="settings")
+@SuppressWarnings("serial")
 public class FtpSettings implements Serializable
 {
 

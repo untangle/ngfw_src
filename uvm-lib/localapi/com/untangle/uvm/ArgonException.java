@@ -34,6 +34,7 @@
 package com.untangle.uvm;
 
 
+@SuppressWarnings("serial")
 public class ArgonException extends UvmException {
 
     public ArgonException() 

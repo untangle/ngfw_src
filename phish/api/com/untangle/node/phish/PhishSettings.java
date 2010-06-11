@@ -36,6 +36,7 @@ import com.untangle.node.spam.SpamSettings;
 @Entity
 @PrimaryKeyJoinColumn(name="spam_settings_id")
 @Table(name="n_phish_settings", schema="settings")
+@SuppressWarnings("serial")
 public class PhishSettings extends SpamSettings implements Serializable
 {
     // XXX

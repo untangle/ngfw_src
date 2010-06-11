@@ -44,6 +44,7 @@ import com.untangle.uvm.node.ValidateException;
  */
 @Entity
 @Table(name="n_openvpn_site", schema="settings")
+@SuppressWarnings("serial")
 public class VpnSite extends VpnClientBase
 {
     // XXX Fixme

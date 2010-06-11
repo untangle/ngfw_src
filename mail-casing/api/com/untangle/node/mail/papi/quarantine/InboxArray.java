@@ -39,6 +39,7 @@ import java.util.Arrays;
 /**
  * A class for accessing a paginated array of data from the server.
  */
+@SuppressWarnings("serial")
 public final class InboxArray implements Serializable
 {
     private final Inbox[] inboxes;

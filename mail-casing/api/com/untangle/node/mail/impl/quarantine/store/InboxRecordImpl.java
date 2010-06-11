@@ -41,16 +41,14 @@ import com.untangle.node.mail.papi.quarantine.MailSummary;
 /**
  * Private implementation of an Inbox record
  */
-public final class InboxRecordImpl
-    extends InboxRecord
-    implements Serializable {
+@SuppressWarnings("serial")
+public final class InboxRecordImpl extends InboxRecord implements Serializable
+{
+    public InboxRecordImpl()
+    {}
 
-    public InboxRecordImpl() {}
-
-    public InboxRecordImpl(String mailID,
-                           long addedOn,
-                           MailSummary summary,
-                           String[] recipients) {
+    public InboxRecordImpl(String mailID, long addedOn, MailSummary summary, String[] recipients)
+    {
 
         super(mailID, addedOn, summary, recipients);
 

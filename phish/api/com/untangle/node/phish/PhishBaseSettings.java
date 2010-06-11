@@ -28,6 +28,7 @@ import com.untangle.node.spam.SpamBaseSettings;
  * @author <a href="mailto:cmatei@untangle.com">Catalin Matei</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class PhishBaseSettings extends SpamBaseSettings implements Serializable
 {
     private boolean enableGooglePhishList = true;

@@ -34,6 +34,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="n_reporting_wk_sched_rule", schema="settings")
+@SuppressWarnings("serial")
 public class WeeklyScheduleRule implements Serializable
 {
 

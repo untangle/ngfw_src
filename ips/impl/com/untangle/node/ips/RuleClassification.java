@@ -21,6 +21,7 @@ package com.untangle.node.ips;
 import java.io.Serializable;
 
 
+@SuppressWarnings("serial")
 public class RuleClassification implements Serializable {
 
     private String name;

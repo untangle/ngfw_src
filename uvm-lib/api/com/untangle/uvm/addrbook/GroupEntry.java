@@ -42,6 +42,7 @@ import java.util.Collections;
  * in the Address Book service.
  *
  */
+@SuppressWarnings("serial")
 public final class GroupEntry implements Serializable, Comparable {
 
     private String m_cn;

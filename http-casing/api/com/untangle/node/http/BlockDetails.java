@@ -41,6 +41,7 @@ import java.io.Serializable;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class BlockDetails implements Serializable
 {
 	private static final int SUB_LINE_LEN = 80;

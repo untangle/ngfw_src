@@ -20,6 +20,7 @@ package com.untangle.uvm.networking;
 
 import com.untangle.uvm.type.StringBasedUserType;
 
+@SuppressWarnings("serial")
 public class IPNetworkUserType extends StringBasedUserType
 {
     public Class returnedClass()

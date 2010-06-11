@@ -40,6 +40,7 @@ import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 import com.untangle.uvm.node.firewall.ParsingConstants;
 
+@SuppressWarnings("serial")
 public final class UserSimpleMatcher
 {
     private static final UserDBMatcher ALL_MATCHER     = new UserDBMatcher()

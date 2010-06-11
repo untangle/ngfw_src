@@ -39,6 +39,7 @@ package com.untangle.node.token;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class TokenException extends Exception
 {
     public TokenException()

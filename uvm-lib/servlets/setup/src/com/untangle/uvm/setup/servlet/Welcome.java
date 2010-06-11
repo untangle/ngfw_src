@@ -32,6 +32,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
  *
  * @author Catalin Matei <cmatei@untangle.com>
  */
+@SuppressWarnings("serial")
 public class Welcome extends HttpServlet
 {
     private static final String WEBUI_URL = "/webui/startPage.do";

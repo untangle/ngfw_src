@@ -41,6 +41,7 @@ import com.untangle.uvm.message.Message;
  * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class MackageUninstallRequest extends Message
 {
     private final MackageDesc mackageDesc;

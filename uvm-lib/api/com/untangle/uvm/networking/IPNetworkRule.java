@@ -61,6 +61,7 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
  */
 @Entity
 @Table(name="u_ip_network", schema="settings")
+@SuppressWarnings("serial")
 public class IPNetworkRule extends Rule
 {
 

@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.util.ServletStreamer;
 
+@SuppressWarnings("serial")
 public class ImageInstaller extends HttpServlet
 {
     private final Logger logger = Logger.getLogger( this.getClass());

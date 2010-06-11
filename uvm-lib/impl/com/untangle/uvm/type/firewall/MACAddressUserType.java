@@ -21,6 +21,7 @@ package com.untangle.uvm.type.firewall;
 import com.untangle.uvm.node.firewall.MACAddress;
 import com.untangle.uvm.type.StringBasedUserType;
 
+@SuppressWarnings("serial")
 public class MACAddressUserType extends StringBasedUserType
 {
     public Class returnedClass()

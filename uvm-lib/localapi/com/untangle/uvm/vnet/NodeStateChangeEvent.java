@@ -41,6 +41,7 @@ import java.util.List;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeState;
 
+@SuppressWarnings("serial")
 public class NodeStateChangeEvent extends EventObject
 {
     private final NodeState nodeState;

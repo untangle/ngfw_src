@@ -24,6 +24,7 @@ import javax.servlet.jsp.tagext.*;
 /**
  * This is a test tag
  */
+@SuppressWarnings("serial")
 public class HelloTag extends
                           TagSupport {
 

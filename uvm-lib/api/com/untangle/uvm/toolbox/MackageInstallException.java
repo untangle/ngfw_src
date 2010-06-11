@@ -39,6 +39,7 @@ package com.untangle.uvm.toolbox;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class MackageInstallException extends MackageException
 {
     public MackageInstallException()

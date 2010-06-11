@@ -22,6 +22,7 @@ import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.type.StringBasedUserType;
 
+@SuppressWarnings("serial")
 public class IPMatcherUserType extends StringBasedUserType
 {
     public Class returnedClass()

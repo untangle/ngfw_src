@@ -48,6 +48,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="u_policy", schema="settings")
+@SuppressWarnings("serial")
 public class Policy implements Serializable
 {
 

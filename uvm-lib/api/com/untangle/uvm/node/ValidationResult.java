@@ -41,6 +41,7 @@ import java.io.Serializable;
  * @author <a href="mailto:cmatei@untangle.com">Catalin Matei</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class ValidationResult implements Serializable {
     private boolean valid;
     private String errorCode;

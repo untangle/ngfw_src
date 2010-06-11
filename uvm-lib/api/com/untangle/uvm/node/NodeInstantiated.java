@@ -38,6 +38,7 @@ import com.untangle.uvm.message.Message;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.policy.Policy;
 
+@SuppressWarnings("serial")
 public class NodeInstantiated extends Message
 {
     private final NodeDesc nodeDesc;

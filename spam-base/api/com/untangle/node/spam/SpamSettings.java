@@ -66,6 +66,7 @@ import com.untangle.uvm.security.Tid;
 @Entity
 @Table(name="n_spam_settings", schema="settings")
 @Inheritance(strategy=InheritanceType.JOINED)
+@SuppressWarnings("serial")
 public class SpamSettings implements Serializable
 {
 

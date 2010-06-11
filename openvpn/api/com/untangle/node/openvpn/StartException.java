@@ -19,6 +19,7 @@ package com.untangle.node.openvpn;
 
 import com.untangle.uvm.node.NodeException;
 
+@SuppressWarnings("serial")
 public class StartException extends NodeException
 {
     StartException( String message )

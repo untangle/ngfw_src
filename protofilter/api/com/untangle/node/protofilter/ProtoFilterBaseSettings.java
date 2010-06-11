@@ -30,6 +30,7 @@ import javax.persistence.Transient;
  * @version 1.0
  */
 @Embeddable
+@SuppressWarnings("serial")
 public class ProtoFilterBaseSettings implements Serializable {
 	
 	private int patternsLength;

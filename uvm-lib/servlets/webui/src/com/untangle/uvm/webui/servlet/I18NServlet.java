@@ -39,6 +39,7 @@ import com.untangle.uvm.client.RemoteUvmContext;
  *
  * @author Catalin Matei <cmatei@untangle.com>
  */
+@SuppressWarnings("serial")
 public class I18NServlet extends HttpServlet {
 
     /** json content type */

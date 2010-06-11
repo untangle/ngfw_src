@@ -27,8 +27,8 @@ import com.untangle.node.util.JSEscape;
  * Works with InboxIndexTag
  *
  */
-public final class InboxRecordTag
-    extends SingleValueTag {
+@SuppressWarnings("serial")
+public final class InboxRecordTag extends SingleValueTag {
 
     private static final String INBOX_RECORD_PS_KEY = "untangle.inbox_record";
 

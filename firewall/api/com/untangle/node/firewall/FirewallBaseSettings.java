@@ -25,6 +25,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
 @Embeddable
+@SuppressWarnings("serial")
 public class FirewallBaseSettings implements Serializable
 {
     private boolean quickExit = true;

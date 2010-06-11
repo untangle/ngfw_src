@@ -24,8 +24,8 @@ import javax.servlet.ServletRequest;
  * Includes/excludes body chunks if there
  * is (or could be) a Safelist for the current user
  */
-public final class HasSafelistTag
-    extends IfElseTag {
+@SuppressWarnings("serial")
+public final class HasSafelistTag extends IfElseTag {
 
     private static final String HAS_ENTRY_KEY = "untangle.safelist.exists";
 

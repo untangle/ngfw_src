@@ -5,5 +5,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="n_cpd_passed_server", schema="settings")
-public class PassedServer extends PassedAddress {
+@SuppressWarnings("serial")
+public class PassedServer extends PassedAddress
+{
 }

@@ -70,6 +70,7 @@ import com.untangle.uvm.node.firewall.user.UserMatcherFactory;
  */
 @Entity
 @Table(name="u_user_policy_rule", schema="settings")
+@SuppressWarnings("serial")
 public class UserPolicyRule extends PolicyRule
 {
     /* settings */

@@ -50,6 +50,7 @@ import java.util.LinkedList;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class IPMaddr implements Serializable, Comparable
 {
 

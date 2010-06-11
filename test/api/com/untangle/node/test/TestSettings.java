@@ -41,6 +41,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @Table(name="n_test_settings", schema="settings")
+@SuppressWarnings("serial")
 public class TestSettings implements Serializable
 {
 

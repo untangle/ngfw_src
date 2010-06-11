@@ -60,6 +60,7 @@ import com.untangle.node.util.UvmUtil;
  */
 @Entity
 @Table(name="u_ipmaddr_dir", schema="settings")
+@SuppressWarnings("serial")
 public class IPMaddrDirectory implements Serializable
 {
 

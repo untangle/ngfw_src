@@ -34,6 +34,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="n_webfilter_blcat", schema="settings")
+@SuppressWarnings("serial")
 public class BlacklistCategory implements Serializable
 {
     public static final String UNCATEGORIZED = "Uncategorized";

@@ -30,6 +30,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="n_openvpn_c_site_network", schema="settings")
+@SuppressWarnings("serial")
 public class ClientSiteNetwork extends SiteNetwork
 {
 

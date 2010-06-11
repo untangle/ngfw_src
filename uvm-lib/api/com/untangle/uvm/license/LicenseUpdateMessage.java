@@ -44,6 +44,7 @@ import com.untangle.uvm.message.Message;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class LicenseUpdateMessage extends Message
 {
     private final Map<String,LicenseStatus> identifierMap;

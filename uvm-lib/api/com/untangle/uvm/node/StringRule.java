@@ -46,6 +46,7 @@ import org.hibernate.annotations.Index;
  */
 @Entity
 @Table(name="u_string_rule", schema="settings")
+@SuppressWarnings("serial")
 public class StringRule extends Rule
 {
     private String string;

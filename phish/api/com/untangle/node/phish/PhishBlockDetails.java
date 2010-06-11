@@ -22,6 +22,7 @@ import java.net.InetAddress;
 
 import com.untangle.node.http.BlockDetails;
 
+@SuppressWarnings("serial")
 public class PhishBlockDetails extends BlockDetails
 {
     private final InetAddress clientAddr;

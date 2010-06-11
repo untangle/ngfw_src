@@ -22,6 +22,7 @@ import com.untangle.uvm.node.firewall.port.PortMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
 import com.untangle.uvm.type.StringBasedUserType;
 
+@SuppressWarnings("serial")
 public class PortMatcherUserType extends StringBasedUserType
 {
     public Class returnedClass()

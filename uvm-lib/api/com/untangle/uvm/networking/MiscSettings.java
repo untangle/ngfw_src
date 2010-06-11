@@ -53,6 +53,7 @@ import com.untangle.uvm.node.ValidateException;
  */
 @Entity
 @Table(name="u_misc_settings", schema="settings")
+@SuppressWarnings("serial")
 public class MiscSettings implements Serializable, Validatable
 {
     private Long id;

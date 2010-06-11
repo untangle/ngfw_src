@@ -58,6 +58,7 @@ import com.untangle.uvm.security.Tid;
  */
 @Entity
 @Table(name="u_node_preferences")
+@SuppressWarnings("serial")
 public class NodePreferences implements Serializable
 {
 

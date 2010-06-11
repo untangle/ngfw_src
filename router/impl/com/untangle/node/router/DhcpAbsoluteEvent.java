@@ -47,6 +47,7 @@ import org.hibernate.annotations.IndexColumn;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_router_evt_dhcp_abs", schema="events")
+@SuppressWarnings("serial")
     public class DhcpAbsoluteEvent extends LogEvent implements Serializable
     {
         private List<DhcpAbsoluteLease> absoluteLeaseList = null;

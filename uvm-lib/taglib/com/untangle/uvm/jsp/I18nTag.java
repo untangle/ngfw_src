@@ -27,6 +27,7 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+@SuppressWarnings("serial")
 public class I18nTag extends BodyTagSupport
 {
     public String p[] = new String[4];

@@ -26,6 +26,7 @@ import com.untangle.uvm.node.AddressValidator;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
 
+@SuppressWarnings("serial")
 public class ExportList implements Serializable, Validatable
 { 
     

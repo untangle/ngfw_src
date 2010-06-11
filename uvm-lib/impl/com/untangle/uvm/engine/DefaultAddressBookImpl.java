@@ -163,6 +163,7 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     }
 
 
+@SuppressWarnings("serial")
     public static class ABStatus implements RemoteAddressBook.Status, Serializable {
         private final boolean isLocalWorking;
         private final String localDetail;

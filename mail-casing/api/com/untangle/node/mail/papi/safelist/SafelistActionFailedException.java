@@ -39,19 +39,26 @@ import java.io.Serializable;
  * the fault of the user or the data - the back-end
  * is simply hosed.
  */
-public class SafelistActionFailedException
-    extends Exception
-    implements Serializable {
+@SuppressWarnings("serial")
+public class SafelistActionFailedException extends Exception implements Serializable
+{
 
-    public SafelistActionFailedException() {
+    public SafelistActionFailedException()
+    {
     }
-    public SafelistActionFailedException(String msg) {
+
+    public SafelistActionFailedException(String msg)
+    {
         super(msg);
     }
-    public SafelistActionFailedException(Throwable cause) {
+
+    public SafelistActionFailedException(Throwable cause)
+    {
         super(cause);
     }
-    public SafelistActionFailedException(String msg, Throwable cause) {
+
+    public SafelistActionFailedException(String msg, Throwable cause)
+    {
         super(msg, cause);
     }
 

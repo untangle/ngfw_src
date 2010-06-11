@@ -31,9 +31,9 @@ import com.untangle.uvm.vnet.SessionStats;
  * @author <a href="mailto:jdi@untangle.com"></a>
  * @version 1.0
  */
-class RWSessionStats extends SessionStats {
-
-    // Make this a config param. XXX
+@SuppressWarnings("serial")
+public class RWSessionStats extends SessionStats
+{
     public static boolean DoDetailedTimes = false;
 
     public RWSessionStats() {

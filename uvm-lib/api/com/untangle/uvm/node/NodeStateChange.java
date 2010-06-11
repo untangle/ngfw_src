@@ -35,6 +35,7 @@ package com.untangle.uvm.node;
 
 import com.untangle.uvm.message.Message;
 
+@SuppressWarnings("serial")
 public class NodeStateChange extends Message
 {
     private final NodeDesc nodeDesc;

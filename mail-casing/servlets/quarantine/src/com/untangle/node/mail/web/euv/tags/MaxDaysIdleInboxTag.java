@@ -22,6 +22,7 @@ import javax.servlet.ServletRequest;
 /**
  * Outputs the max days an inbox can remain idle or 28 if not set
  */
+@SuppressWarnings("serial")
 public final class MaxDaysIdleInboxTag extends SingleValueTag {
     private static final String DAYS_IDLE_INBOX = "untangle.days.idle_inbox";
 

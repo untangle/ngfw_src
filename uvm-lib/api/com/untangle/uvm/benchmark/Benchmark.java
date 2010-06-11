@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import com.untangle.uvm.security.Tid;
 
+@SuppressWarnings("serial")
 public class Benchmark implements Serializable {
     
     private final Tid tid;

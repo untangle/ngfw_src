@@ -41,6 +41,7 @@ import com.untangle.uvm.UvmException;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class NodeException extends UvmException
 {
     public NodeException()

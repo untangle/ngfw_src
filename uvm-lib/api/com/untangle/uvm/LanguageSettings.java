@@ -48,6 +48,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="u_language_settings", schema="settings")
+@SuppressWarnings("serial")
 public class LanguageSettings implements Serializable{
     private Long id;
     private String language = "en";

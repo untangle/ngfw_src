@@ -49,6 +49,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name="u_ddns_settings", schema="settings")
+@SuppressWarnings("serial")
 public class DynamicDNSSettings implements Serializable
 {
     

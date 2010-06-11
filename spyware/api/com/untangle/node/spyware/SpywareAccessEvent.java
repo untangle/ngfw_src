@@ -40,6 +40,7 @@ import org.hibernate.annotations.Type;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_spyware_evt_access", schema="events")
+@SuppressWarnings("serial")
     public class SpywareAccessEvent extends SpywareEvent
     {
         private PipelineEndpoints pipelineEndpoints;

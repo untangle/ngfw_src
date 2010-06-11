@@ -16,6 +16,7 @@ import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name="n_cpd_host_database_entry", schema="events")
+@SuppressWarnings("serial")
 public class HostDatabaseEntry implements Serializable
 {
 

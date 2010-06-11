@@ -36,6 +36,7 @@ import com.untangle.uvm.logging.SyslogPriority;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="n_firewall_statistic_evt", schema="events")
+@SuppressWarnings("serial")
 public class FirewallStatisticEvent extends StatisticEvent
 {
     /* Number of outbound firewall sessions */

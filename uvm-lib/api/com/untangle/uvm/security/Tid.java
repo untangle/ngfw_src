@@ -55,6 +55,7 @@ import com.untangle.uvm.policy.Policy;
  */
 @Entity
 @Table(name="u_tid", schema="settings")
+@SuppressWarnings("serial")
 public class Tid implements Principal, Serializable, Comparable
 {
 

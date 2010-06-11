@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("serial")
 public class Stats implements Serializable
 {
     private final Map<String, CounterStats> metrics;

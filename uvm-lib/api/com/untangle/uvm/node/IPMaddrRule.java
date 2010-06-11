@@ -46,6 +46,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @Table(name="u_ipmaddr_rule", schema="settings")
+@SuppressWarnings("serial")
 public class IPMaddrRule extends Rule
 {
     private IPMaddr ipMaddr;

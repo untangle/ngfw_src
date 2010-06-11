@@ -37,6 +37,7 @@ import com.untangle.uvm.logging.SyslogPriority;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_ips_statistic_evt", schema="events")
+@SuppressWarnings("serial")
     public class IpsStatisticEvent extends StatisticEvent {
         
     

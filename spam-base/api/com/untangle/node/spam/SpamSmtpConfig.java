@@ -47,6 +47,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @Table(name="n_spam_smtp_config", schema="settings")
+@SuppressWarnings("serial")
 public class SpamSmtpConfig extends SpamProtoConfig
 {
 

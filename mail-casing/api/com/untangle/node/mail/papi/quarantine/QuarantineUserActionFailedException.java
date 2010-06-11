@@ -39,20 +39,25 @@ import java.io.Serializable;
  * the fault of the user or the data - the back-end
  * is simply hosed.
  */
-public class QuarantineUserActionFailedException
-    extends Exception
-    implements Serializable {
-
-    public QuarantineUserActionFailedException() {
+@SuppressWarnings("serial")
+public class QuarantineUserActionFailedException extends Exception implements Serializable
+{
+    public QuarantineUserActionFailedException()
+    {
     }
-    public QuarantineUserActionFailedException(String msg) {
+
+    public QuarantineUserActionFailedException(String msg)
+    {
         super(msg);
     }
-    public QuarantineUserActionFailedException(Throwable cause) {
+
+    public QuarantineUserActionFailedException(Throwable cause)
+    {
         super(cause);
     }
-    public QuarantineUserActionFailedException(String msg, Throwable cause) {
+
+    public QuarantineUserActionFailedException(String msg, Throwable cause)
+    {
         super(msg, cause);
     }
-
 }

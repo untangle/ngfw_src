@@ -22,10 +22,14 @@ package com.untangle.node.mail.impl.quarantine.store;
  * Exception used by {@link com.untangle.node.mail.impl.quarantine.store.AbstractDriver}
  * to convey that something read from a file was in a bad format.
  */
-class BadFileEntry
-    extends Exception {
+@SuppressWarnings("serial")
+class BadFileEntry extends Exception {
 
-    BadFileEntry() {}
-    BadFileEntry(String s) {super(s);}
+    BadFileEntry()
+    {}
 
+    BadFileEntry(String s)
+    {
+        super(s);
+    }
 }

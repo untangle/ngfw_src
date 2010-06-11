@@ -34,6 +34,7 @@ import com.untangle.uvm.node.Validatable;
 @Entity
 @Table(name="n_openvpn_client", schema="settings")
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@SuppressWarnings("serial")
 public class VpnClient extends VpnClientBase implements Validatable
 {
 }

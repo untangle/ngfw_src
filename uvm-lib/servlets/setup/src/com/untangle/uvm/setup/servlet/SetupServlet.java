@@ -42,6 +42,7 @@ import com.untangle.uvm.LocalUvmContext;
  *
  * @author Catalin Matei <cmatei@untangle.com>
  */
+@SuppressWarnings("serial")
 public class SetupServlet extends HttpServlet
 {
     private final Logger logger = Logger.getLogger(getClass());

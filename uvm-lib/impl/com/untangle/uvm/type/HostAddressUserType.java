@@ -21,6 +21,7 @@ package com.untangle.uvm.type;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPaddr;
 
+@SuppressWarnings("serial")
 public class HostAddressUserType extends StringBasedUserType
 {
     private static final HostAddress EMPTY_IPADDR = new HostAddress( new IPaddr( null ));

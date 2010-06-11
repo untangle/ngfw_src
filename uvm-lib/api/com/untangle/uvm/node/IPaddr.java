@@ -41,6 +41,7 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("serial")
 public class IPaddr implements Comparable, Serializable
 {
 

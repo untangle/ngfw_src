@@ -8,6 +8,7 @@ import org.jabsorb.serializer.UnmarshallException;
 
 import com.untangle.uvm.node.HostName;
 
+@SuppressWarnings("serial")
 public class HostNameSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialise.

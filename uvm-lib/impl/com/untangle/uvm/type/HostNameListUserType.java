@@ -20,6 +20,7 @@ package com.untangle.uvm.type;
 
 import com.untangle.uvm.node.HostNameList;
 
+@SuppressWarnings("serial")
 public class HostNameListUserType extends StringBasedUserType
 {
     public Class returnedClass()

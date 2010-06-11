@@ -45,6 +45,7 @@ import com.untangle.uvm.client.RemoteUvmContextFactory;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 
+@SuppressWarnings("serial")
 public final class UserSetMatcher extends UserDBMatcher
 {
 

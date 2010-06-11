@@ -41,6 +41,7 @@ import com.untangle.uvm.client.RemoteUvmContext;
  *
  * @author Catalin Matei <cmatei@untangle.com>
  */
+@SuppressWarnings("serial")
 public class ImageServlet extends HttpServlet
 {
     /** image content type */

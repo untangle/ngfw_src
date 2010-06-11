@@ -24,11 +24,12 @@ import com.untangle.node.mail.papi.quarantine.InboxRecord;
  * Works with InboxIndexTag (i.e. must be within one).
  *
  */
-public final class InboxRecordHasAttachmentTag
-    extends IfElseTag {
+@SuppressWarnings("serial")
+public final class InboxRecordHasAttachmentTag extends IfElseTag {
 
     @Override
-    protected boolean isConditionTrue() {
+    protected boolean isConditionTrue()
+    {
         InboxRecord record = InboxRecordTag.getCurrent(pageContext);
         return record==null?false:record.getMailSummary().getAttachmentCount() > 0;
     }

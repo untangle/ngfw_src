@@ -63,6 +63,7 @@ import com.untangle.uvm.node.Rule;
  */
 @Entity
 @Table(name="u_network_space", schema="settings")
+@SuppressWarnings("serial")
 public class NetworkSpace extends Rule
 {
     /* There should be at least one */

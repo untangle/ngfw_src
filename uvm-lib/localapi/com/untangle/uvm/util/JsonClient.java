@@ -56,6 +56,7 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.NetworkException;
 
+@SuppressWarnings("serial")
 public class JsonClient
 {
     /* Number of concurrent threads running */

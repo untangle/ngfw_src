@@ -60,6 +60,7 @@ import com.untangle.node.util.Pair;
  * <br>
  * Note that instances are not threadsafe.
  */
+@SuppressWarnings("serial")
 public class RFC2253Name implements java.io.Serializable {
 
     private List<Pair<String, String>> m_members;

@@ -22,6 +22,7 @@ import javax.servlet.ServletRequest;
 /**
  * Outputs the max days an inbox record can be interned or 14 if not set
  */
+@SuppressWarnings("serial")
 public final class MaxDaysToInternTag extends SingleValueTag {
     private static final String DAYS_TO_INTERN = "untangle.days.to_intern";
 

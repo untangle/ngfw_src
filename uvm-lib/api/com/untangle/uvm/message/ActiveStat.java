@@ -30,6 +30,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="u_active_stat", schema="settings")
+@SuppressWarnings("serial")
 public class ActiveStat implements Serializable
 {
     

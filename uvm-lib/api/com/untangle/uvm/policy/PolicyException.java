@@ -36,6 +36,7 @@ package com.untangle.uvm.policy;
 import com.untangle.uvm.UvmException;
 
 
+@SuppressWarnings("serial")
 public class PolicyException extends UvmException
 {
     public PolicyException()

@@ -24,6 +24,7 @@ import javax.servlet.jsp.PageContext;
  * Works with ReceivingRemapsListTag
  *
  */
+@SuppressWarnings("serial")
 public final class ReceivingRemapsEntryTag extends SingleValueTag
 {
     private static final String KEY = "untangle.remapping.ReceivingRemapsEntryTag";

@@ -35,6 +35,7 @@ import com.untangle.node.http.UserWhitelistMode;
  * @version 1.0
  */
 @Embeddable
+@SuppressWarnings("serial")
 public class SpywareBaseSettings implements Serializable
 {
     private UserWhitelistMode userWhitelistMode = UserWhitelistMode.USER_ONLY;

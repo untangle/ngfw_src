@@ -41,6 +41,7 @@ import com.untangle.uvm.security.Tid;
  */
 @Entity
 @Table(name="n_reporting_settings", schema="settings")
+@SuppressWarnings("serial")
 public class ReportingSettings implements Serializable
 {
 

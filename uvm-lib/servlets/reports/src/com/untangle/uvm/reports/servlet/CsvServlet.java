@@ -53,6 +53,7 @@ import org.apache.log4j.Logger;
  *
  * @author Aaron Read <amread@untangle.com>
  */
+@SuppressWarnings("serial")
 public class CsvServlet extends HttpServlet
 {
     private static final String DATE_FORMAT = "yyyy-MM-dd";

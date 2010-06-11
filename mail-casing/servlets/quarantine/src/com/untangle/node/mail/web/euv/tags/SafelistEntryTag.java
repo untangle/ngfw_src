@@ -27,6 +27,7 @@ import javax.servlet.jsp.PageContext;
  * Works with SafelistListTag
  *
  */
+@SuppressWarnings("serial")
 public final class SafelistEntryTag extends SingleValueTag
 {
     private static final String ENTRY_KEY = "untangle.safelist.entry";

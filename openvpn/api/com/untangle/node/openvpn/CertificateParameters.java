@@ -23,6 +23,7 @@ import java.io.Serializable;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
 
+@SuppressWarnings("serial")
 public class CertificateParameters implements Serializable, Validatable
 {
     

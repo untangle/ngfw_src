@@ -38,6 +38,7 @@ import com.untangle.uvm.node.ValidateException;
  */
 @Entity
 @Table(name="n_openvpn_group", schema="settings")
+@SuppressWarnings("serial")
 public class VpnGroup extends Rule implements Validatable
 {
 

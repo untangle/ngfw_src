@@ -41,6 +41,7 @@ import org.hibernate.annotations.Type;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_phish_http_evt", schema="events")
+@SuppressWarnings("serial")
     public class PhishHttpEvent extends LogEvent
     {
         // action types

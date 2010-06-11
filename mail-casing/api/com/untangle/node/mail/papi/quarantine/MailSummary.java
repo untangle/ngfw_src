@@ -38,8 +38,9 @@ import java.io.Serializable;
 /**
  * Summary of a mail within the Quarantine.
  */
-public final class MailSummary
-    implements Serializable {
+@SuppressWarnings("serial")
+public final class MailSummary implements Serializable
+{
 
     private static final int SENDER_MAX_LENGTH = 32; // plus ellipse
     private static final int SUBJECT_MAX_LENGTH = 42; // plus ellipse

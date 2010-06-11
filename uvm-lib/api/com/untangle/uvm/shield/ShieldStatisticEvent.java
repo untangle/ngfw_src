@@ -38,6 +38,7 @@ import com.untangle.uvm.logging.SyslogPriority;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_shield_statistic_evt", schema="events")
+@SuppressWarnings("serial")
     public class ShieldStatisticEvent extends LogEvent implements Serializable
     {
         private int accepted;

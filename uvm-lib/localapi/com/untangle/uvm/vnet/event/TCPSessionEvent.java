@@ -42,6 +42,7 @@ import com.untangle.uvm.vnet.TCPSession;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class TCPSessionEvent extends IPSessionEvent {
     
     public TCPSessionEvent(MPipe mPipe, TCPSession session)

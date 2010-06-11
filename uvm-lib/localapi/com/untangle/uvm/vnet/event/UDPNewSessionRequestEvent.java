@@ -42,6 +42,7 @@ import com.untangle.uvm.vnet.UDPNewSessionRequest;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class UDPNewSessionRequestEvent extends MPipeEvent {
     
     public UDPNewSessionRequestEvent(MPipe mPipe, UDPNewSessionRequest sessionRequest)

@@ -24,8 +24,8 @@ import javax.servlet.ServletRequest;
  * If the current address is remapped, this is the address to-which
  * the address is remapped
  */
-public final class RemappedToTag
-    extends SingleValueTag {
+@SuppressWarnings("serial")
+public final class RemappedToTag extends SingleValueTag {
 
     private static final String KEY = "untangle.remapping.RemappedToTag";
 

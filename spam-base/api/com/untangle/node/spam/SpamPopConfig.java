@@ -47,6 +47,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @Table(name="n_spam_pop_config", schema="settings")
+@SuppressWarnings("serial")
 public class SpamPopConfig extends SpamProtoConfig
 {
 

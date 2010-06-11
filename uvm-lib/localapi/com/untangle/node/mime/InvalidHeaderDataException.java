@@ -37,20 +37,26 @@ package com.untangle.node.mime;
  * Exception thrown when parsing headers, if there
  * is invalid data.
  */
-public class InvalidHeaderDataException
-    extends Exception {
+@SuppressWarnings("serial")
+public class InvalidHeaderDataException extends Exception {
 
-    public InvalidHeaderDataException() {
+    public InvalidHeaderDataException()
+    {
         super();
     }
-    public InvalidHeaderDataException(Exception ex) {
+
+    public InvalidHeaderDataException(Exception ex)
+    {
         super(ex);
     }
-    public InvalidHeaderDataException(String msg) {
+
+    public InvalidHeaderDataException(String msg)
+    {
         super(msg);
     }
-    public InvalidHeaderDataException(String msg, Exception ex) {
+
+    public InvalidHeaderDataException(String msg, Exception ex)
+    {
         super(msg, ex);
     }
-
 }

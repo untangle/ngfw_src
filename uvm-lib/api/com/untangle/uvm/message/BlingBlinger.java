@@ -36,6 +36,7 @@ package com.untangle.uvm.message;
 import java.io.Serializable;
 import java.util.Date;
 
+@SuppressWarnings("serial")
 public class BlingBlinger implements CounterStats, Serializable
 {
     private final StatDesc statDesc;

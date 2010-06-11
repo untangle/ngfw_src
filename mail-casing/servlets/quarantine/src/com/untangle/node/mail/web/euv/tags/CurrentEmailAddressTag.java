@@ -24,8 +24,8 @@ import javax.servlet.ServletRequest;
  * Outputs the current email address, or null
  * if there 'aint one
  */
-public final class CurrentEmailAddressTag
-    extends SingleValueTag {
+@SuppressWarnings("serial")
+public final class CurrentEmailAddressTag extends SingleValueTag {
 
     private static final String ADDRESS_KEY = "untangle.email_address";
     private static final String EL_ADDRESS_KEY = "currentAddress";

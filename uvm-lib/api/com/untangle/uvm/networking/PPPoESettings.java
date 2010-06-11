@@ -65,6 +65,7 @@ import com.untangle.uvm.node.ValidateException;
  */
 @Entity
 @Table(name="u_pppoe", schema="settings")
+@SuppressWarnings("serial")
 public class PPPoESettings implements Serializable, Validatable
 {
     private Long id;

@@ -47,6 +47,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="u_ab_repository_settings")
+@SuppressWarnings("serial")
 public class RepositorySettings implements Serializable
 {
 

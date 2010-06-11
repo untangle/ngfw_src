@@ -42,6 +42,7 @@ import com.untangle.uvm.vnet.MPipe;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class IPSessionEvent extends SessionEvent {
 
     public IPSessionEvent(MPipe mPipe, IPSession session)

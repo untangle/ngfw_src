@@ -35,6 +35,7 @@ package com.untangle.uvm.reports;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class KeyStatistic implements Serializable
 {
     private final String label;

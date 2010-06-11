@@ -34,6 +34,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="n_ips_variable", schema="settings")
+@SuppressWarnings("serial")
 public class IpsVariable implements Serializable {
     private Long id;
     private String variable;

@@ -44,178 +44,180 @@ import com.untangle.uvm.node.IPaddr;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="n_openvpn_connect_evt", schema="events")
-    public class ClientConnectEvent extends LogEvent implements Serializable
+@Table(name="n_openvpn_connect_evt", schema="events")
+@SuppressWarnings("serial")
+
+public class ClientConnectEvent extends LogEvent implements Serializable
+{
+
+    private IPaddr address;
+    private int port;
+    private String clientName;
+    private Date start; /* Start of the session */
+    private Date end; /* End of the session */
+    private long bytesRx; /* Total bytes received */
+    private long bytesTx; /* Total bytes transmitted */
+
+    // Constructors
+    public ClientConnectEvent() {}
+
+    public ClientConnectEvent( Date start, IPaddr address, int port, String clientName )
     {
+        this.start      = start;
+        this.address    = address;
+        this.clientName = clientName;
+        this.port       = port;
+    }
 
-        private IPaddr address;
-        private int port;
-        private String clientName;
-        private Date start; /* Start of the session */
-        private Date end; /* End of the session */
-        private long bytesRx; /* Total bytes received */
-        private long bytesTx; /* Total bytes transmitted */
+    /**
+     * Address where the client connected from.
+     *
+     * @return Address of where the client connected from.
+     */
+    @Column(name="remote_address")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
+    public IPaddr getAddress()
+    {
+        return this.address;
+    }
 
-        // Constructors
-        public ClientConnectEvent() {}
+    public void setAddress( IPaddr address )
+    {
+        this.address = address;
+    }
 
-        public ClientConnectEvent( Date start, IPaddr address, int port, String clientName )
-        {
-            this.start      = start;
-            this.address    = address;
-            this.clientName = clientName;
-            this.port       = port;
-        }
+    /**
+     * Port used to connect
+     *
+     * @return Client port
+     */
+    @Column(name="remote_port", nullable=false)
+    public int getPort()
+    {
+        return this.port;
+    }
 
-        /**
-         * Address where the client connected from.
-         *
-         * @return Address of where the client connected from.
-         */
-        @Column(name="remote_address")
-        @Type(type="com.untangle.uvm.type.IPaddrUserType")
-        public IPaddr getAddress()
-        {
-            return this.address;
-        }
+    public void setPort( int port )
+    {
+        this.port = port;
+    }
 
-        public void setAddress( IPaddr address )
-        {
-            this.address = address;
-        }
+    /**
+     * Name of the client that was connected.
+     *
+     * @return Client name
+     */
+    @Column(name="client_name")
+    public String getClientName()
+    {
+        return this.clientName;
+    }
 
-        /**
-         * Port used to connect
-         *
-         * @return Client port
-         */
-        @Column(name="remote_port", nullable=false)
-        public int getPort()
-        {
-            return this.port;
-        }
+    public void setClientName( String clientName )
+    {
+        this.clientName = clientName;
+    }
 
-        public void setPort( int port )
-        {
-            this.port = port;
-        }
+    /**
+     * Time the session started.
+     *
+     * @return time logged.
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="start_time")
+    public Date getStart()
+    {
+        return this.start;
+    }
 
-        /**
-         * Name of the client that was connected.
-         *
-         * @return Client name
-         */
-        @Column(name="client_name")
-        public String getClientName()
-        {
-            return this.clientName;
-        }
+    void setStart( Date start )
+    {
+        if( start instanceof Timestamp )
+            this.start = new Date(start.getTime());
+        else
+            this.start = start;
+    }
 
-        public void setClientName( String clientName )
-        {
-            this.clientName = clientName;
-        }
+    /**
+     * Time the session ended. <b>Note that this
+     * may be null if the session is still open</b>
+     *
+     * @return time logged.
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="end_time")
+    public Date getEnd()
+    {
+        return this.end;
+    }
 
-        /**
-         * Time the session started.
-         *
-         * @return time logged.
-         */
-        @Temporal(TemporalType.TIMESTAMP)
-        @Column(name="start_time")
-        public Date getStart()
-        {
-            return this.start;
-        }
-
-        void setStart( Date start )
-        {
-            if( start instanceof Timestamp )
-                this.start = new Date(start.getTime());
-            else
-                this.start = start;
-        }
-
-        /**
-         * Time the session ended. <b>Note that this
-         * may be null if the session is still open</b>
-         *
-         * @return time logged.
-         */
-        @Temporal(TemporalType.TIMESTAMP)
-        @Column(name="end_time")
-        public Date getEnd()
-        {
-            return this.end;
-        }
-
-        void setEnd( Date end )
-        {
-            if( end instanceof Timestamp ) {
-                this.end = new Date(end.getTime());
-            } else {
-                this.end = end;
-            }
-        }
-
-        /**
-         * Total bytes received during this session.
-         *
-         * @return time logged.
-         */
-        @Column(name="rx_bytes", nullable=false)
-        public long getBytesRx()
-        {
-            return this.bytesRx;
-        }
-
-        void setBytesRx( long bytesRx )
-        {
-            this.bytesRx = bytesRx;
-        }
-
-        /**
-         * Total transmitted received during this session.
-         *
-         * @return time logged.
-         */
-        @Column(name="tx_bytes", nullable=false)
-        public long getBytesTx()
-        {
-            return this.bytesTx;
-        }
-
-        void setBytesTx( long bytesTx )
-        {
-            this.bytesTx = bytesTx;
-        }
-
-        // Syslog methods ---------------------------------------------------------
-
-        // although events are created with only some data (see constructor),
-        // all data will be set when events are actually and finally logged
-        // (gui event log receives snapshot copies of these events without end time)
-        public void appendSyslog(SyslogBuilder sb)
-        {
-            sb.startSection("info");
-            sb.addField("start", getStart());
-            sb.addField("end", getEnd());
-            sb.addField("client-name", getClientName());
-            sb.addField("client-addr", getAddress().getAddr());
-            sb.addField("client-port", getPort());
-            sb.addField("bytes-received", getBytesRx());
-            sb.addField("bytes-transmitted", getBytesTx());
-        }
-
-        @Transient
-        public String getSyslogId()
-        {
-            return "Client_Connect";
-        }
-
-        @Transient
-        public SyslogPriority getSyslogPriority()
-        {
-            return SyslogPriority.INFORMATIONAL; // statistics or normal operation
+    void setEnd( Date end )
+    {
+        if( end instanceof Timestamp ) {
+            this.end = new Date(end.getTime());
+        } else {
+            this.end = end;
         }
     }
+
+    /**
+     * Total bytes received during this session.
+     *
+     * @return time logged.
+     */
+    @Column(name="rx_bytes", nullable=false)
+    public long getBytesRx()
+    {
+        return this.bytesRx;
+    }
+
+    void setBytesRx( long bytesRx )
+    {
+        this.bytesRx = bytesRx;
+    }
+
+    /**
+     * Total transmitted received during this session.
+     *
+     * @return time logged.
+     */
+    @Column(name="tx_bytes", nullable=false)
+    public long getBytesTx()
+    {
+        return this.bytesTx;
+    }
+
+    void setBytesTx( long bytesTx )
+    {
+        this.bytesTx = bytesTx;
+    }
+
+    // Syslog methods ---------------------------------------------------------
+
+    // although events are created with only some data (see constructor),
+    // all data will be set when events are actually and finally logged
+    // (gui event log receives snapshot copies of these events without end time)
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        sb.startSection("info");
+        sb.addField("start", getStart());
+        sb.addField("end", getEnd());
+        sb.addField("client-name", getClientName());
+        sb.addField("client-addr", getAddress().getAddr());
+        sb.addField("client-port", getPort());
+        sb.addField("bytes-received", getBytesRx());
+        sb.addField("bytes-transmitted", getBytesTx());
+    }
+
+    @Transient
+    public String getSyslogId()
+    {
+        return "Client_Connect";
+    }
+
+    @Transient
+    public SyslogPriority getSyslogPriority()
+    {
+        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
+    }
+}

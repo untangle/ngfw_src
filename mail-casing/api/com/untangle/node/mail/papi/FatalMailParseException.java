@@ -40,12 +40,11 @@ import java.io.Serializable;
  * used to have obscured information passed back
  * in a URL) is of a bad format (garbage).
  */
-public class FatalMailParseException
-    extends Exception
-    implements Serializable
+@SuppressWarnings("serial")
+public class FatalMailParseException extends Exception implements Serializable
 {
-
-    public FatalMailParseException(String message, Exception cause) {
+    public FatalMailParseException(String message, Exception cause)
+    {
         super(message, cause);
     }
 }

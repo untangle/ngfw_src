@@ -39,6 +39,7 @@ package com.untangle.uvm.vnet;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class MPipeException extends Exception
 {
     protected transient MPipe myMPipe;

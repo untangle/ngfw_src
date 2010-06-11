@@ -57,6 +57,7 @@ import com.untangle.uvm.node.ValidateException;
  */
 @Entity
 @Table(name="u_access_settings", schema="settings")
+@SuppressWarnings("serial")
 public class AccessSettings implements Serializable, Validatable
 {
 

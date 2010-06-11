@@ -42,6 +42,7 @@ import java.net.InetAddress;
 
 import com.untangle.uvm.node.IPaddr;
 
+@SuppressWarnings("serial")
 public class InterfaceAlias implements Serializable
 {
 

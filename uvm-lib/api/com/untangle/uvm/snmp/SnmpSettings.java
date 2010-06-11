@@ -80,6 +80,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="u_snmp_settings", schema="settings")
+@SuppressWarnings("serial")
 public class SnmpSettings implements Serializable {
 
     /**

@@ -41,6 +41,7 @@ import com.untangle.uvm.message.Message;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class DownloadComplete extends Message
 {
 

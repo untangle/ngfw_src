@@ -6,6 +6,7 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
+@SuppressWarnings("serial")
 public class EnumSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialise to.

@@ -45,9 +45,9 @@ import com.untangle.node.mail.papi.quarantine.InboxRecordComparator;
 /**
  * Private implementation of InboxIndex
  */
-public final class InboxIndexImpl
-    extends HashMap<String, InboxRecord>
-    implements InboxIndex, Serializable {
+@SuppressWarnings("serial")
+public final class InboxIndexImpl extends HashMap<String, InboxRecord> implements InboxIndex, Serializable
+{
 
     private String m_address;
     private long m_timestamp;

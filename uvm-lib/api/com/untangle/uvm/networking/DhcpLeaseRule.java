@@ -55,6 +55,7 @@ import com.untangle.uvm.node.firewall.MACAddress;
  */
 @Entity
 @Table(name="u_dhcp_lease_rule", schema="settings")
+@SuppressWarnings("serial")
 public class DhcpLeaseRule extends Rule
 {
 

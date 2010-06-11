@@ -46,6 +46,7 @@ import com.untangle.uvm.node.ParseException;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class EthernetMedia implements Serializable, Comparable
 {
 

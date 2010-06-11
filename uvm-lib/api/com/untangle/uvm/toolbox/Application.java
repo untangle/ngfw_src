@@ -35,6 +35,7 @@ package com.untangle.uvm.toolbox;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class Application implements Comparable<Application>, Serializable
 {
     private final MackageDesc libItem;

@@ -62,6 +62,7 @@ import com.untangle.uvm.security.Tid;
  */
 @Entity
 @Table(name="n_virus_settings", schema="settings")
+@SuppressWarnings("serial")
 public class VirusSettings implements Serializable
 {
 

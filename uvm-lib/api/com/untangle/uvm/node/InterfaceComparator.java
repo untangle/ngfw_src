@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+@SuppressWarnings("serial")
 public class InterfaceComparator implements Comparator<Byte>, Serializable
 {
     

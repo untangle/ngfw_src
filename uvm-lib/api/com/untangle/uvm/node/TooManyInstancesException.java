@@ -41,6 +41,7 @@ package com.untangle.uvm.node;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class TooManyInstancesException extends DeployException {
     public TooManyInstancesException() { super(); }
 

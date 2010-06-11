@@ -46,6 +46,7 @@ import org.hibernate.annotations.Cascade;
  */
 @Entity
 @Table(name="n_spyware_settings", schema="settings")
+@SuppressWarnings("serial")
 public class SpywareSettings implements Serializable
 {
 

@@ -33,6 +33,7 @@
 
 package com.untangle.uvm.node;
 
+@SuppressWarnings("serial")
 public class ValidateException extends Exception
 {
     public ValidateException()

@@ -44,6 +44,7 @@ import com.untangle.uvm.vnet.Protocol;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public final class ProtocolSimpleMatcher extends ProtocolDBMatcher
 {
     /* A protocol matcher that matches everything */

@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
  *
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  */
+@SuppressWarnings("serial")
 public class GlobalPrincipal implements Principal, Serializable
 {
     

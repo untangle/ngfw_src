@@ -40,6 +40,7 @@ import com.untangle.uvm.logging.SyslogPriority;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="n_login_evt", schema="events")
+@SuppressWarnings("serial")
 public class ADLoginEvent extends LogEvent
 {
 

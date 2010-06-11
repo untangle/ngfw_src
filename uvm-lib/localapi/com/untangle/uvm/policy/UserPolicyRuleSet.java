@@ -60,6 +60,7 @@ import com.untangle.node.util.UvmUtil;
  */
 @Entity
 @Table(name="u_user_policy_rules", schema="settings")
+@SuppressWarnings("serial")
 public class UserPolicyRuleSet implements Serializable
 {
 

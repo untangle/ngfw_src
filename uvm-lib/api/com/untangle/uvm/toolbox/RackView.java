@@ -44,6 +44,7 @@ import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.security.Tid;
 
+@SuppressWarnings("serial")
 public class RackView implements Serializable
 {
     private List<Application> applications;

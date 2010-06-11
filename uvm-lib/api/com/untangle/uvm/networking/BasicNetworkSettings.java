@@ -46,6 +46,7 @@ import com.untangle.uvm.node.IPaddr;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class BasicNetworkSettings implements Serializable
 {
     /* True iff the internet connection is configured using DHCP */

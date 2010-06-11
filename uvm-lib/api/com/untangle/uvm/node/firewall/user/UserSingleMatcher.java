@@ -39,6 +39,7 @@ import java.util.List;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 
+@SuppressWarnings("serial")
 public final class UserSingleMatcher extends UserDBMatcher
 {
 

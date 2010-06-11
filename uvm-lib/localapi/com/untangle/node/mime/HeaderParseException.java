@@ -39,9 +39,9 @@ package com.untangle.node.mime;
  * Exception thrown when parsing headers, if they
  * cannot be parsed.
  */
-public class HeaderParseException
-    extends Exception {
-
+@SuppressWarnings("serial")
+public class HeaderParseException extends Exception
+{
     public HeaderParseException() {
         super();
     }
@@ -54,5 +54,4 @@ public class HeaderParseException
     public HeaderParseException(String msg, Exception ex) {
         super(msg, ex);
     }
-
 }

@@ -39,6 +39,7 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+@SuppressWarnings("serial")
 public class PolicyConfiguration implements Serializable
 {    
 

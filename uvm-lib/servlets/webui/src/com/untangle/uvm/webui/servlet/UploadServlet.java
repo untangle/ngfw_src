@@ -43,6 +43,7 @@ import com.untangle.uvm.servlet.UploadManager;
  *
  * @author Catalin Matei <cmatei@untangle.com>
  */
+@SuppressWarnings("serial")
 public class UploadServlet extends HttpServlet
 {
     private final Logger logger = Logger.getLogger(getClass());

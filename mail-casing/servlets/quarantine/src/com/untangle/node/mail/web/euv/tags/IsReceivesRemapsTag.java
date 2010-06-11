@@ -24,8 +24,8 @@ import javax.servlet.ServletRequest;
  * Includes/excludes body chunks if the
  * current inbox receives remappings from other inboxes
  */
-public final class IsReceivesRemapsTag
-    extends IfElseTag {
+@SuppressWarnings("serial")
+public final class IsReceivesRemapsTag extends IfElseTag {
 
     private static final String RECEIVES_REMAPS_KEY = "untangle.remapping.IsReceivesRemapsTag";
 

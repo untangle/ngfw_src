@@ -44,6 +44,7 @@ import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.virus.VirusBlockDetails;
 import com.untangle.node.virus.VirusNodeImpl;
 
+@SuppressWarnings("serial")
 public class BlockPageServlet extends HttpServlet
 {
     // HttpServlet methods ----------------------------------------------------

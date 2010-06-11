@@ -42,6 +42,7 @@ import java.security.Principal;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public final class UvmPrincipal implements Principal, Serializable
 {
 

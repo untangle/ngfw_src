@@ -39,6 +39,7 @@ import java.util.Map;
 
 import com.untangle.uvm.security.Tid;
 
+@SuppressWarnings("serial")
 public class MessageQueue implements Serializable
 {
     private final List<Message> messages;

@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 
+@SuppressWarnings("serial")
 public class ShieldRejectionLogEntry implements Serializable
 {
     private final Date   createDate;

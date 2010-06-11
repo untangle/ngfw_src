@@ -24,6 +24,7 @@ import com.untangle.uvm.node.SessionEndpoints;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="n_cpd_block_evt", schema="events")
+@SuppressWarnings("serial")
 public class BlockEvent extends LogEvent implements Serializable
 {
 

@@ -50,6 +50,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @Table(name="n_virus_pop_config", schema="settings")
+@SuppressWarnings("serial")
 public class VirusPOPConfig extends VirusMailConfig implements Serializable
 {
 

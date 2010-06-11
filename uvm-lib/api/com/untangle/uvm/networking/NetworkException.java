@@ -41,6 +41,7 @@ import com.untangle.uvm.UvmException;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class NetworkException extends UvmException
 {
     public NetworkException() 

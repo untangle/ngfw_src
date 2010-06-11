@@ -52,6 +52,7 @@ import com.untangle.uvm.logging.SyslogBuilder;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="pl_stats", schema="events")
+@SuppressWarnings("serial")
     public class PipelineStats extends PipelineEvent
     {
 

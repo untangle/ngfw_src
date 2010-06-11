@@ -46,6 +46,7 @@ import com.untangle.uvm.node.IPaddr;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class DhcpStatus implements Serializable
 {
     /* Just used in the case where there is no status */

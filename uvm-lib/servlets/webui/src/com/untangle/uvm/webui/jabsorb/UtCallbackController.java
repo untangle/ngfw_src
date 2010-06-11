@@ -25,6 +25,7 @@ import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.callback.CallbackController;
 
 
+@SuppressWarnings("serial")
 public class UtCallbackController extends CallbackController
 {
     private final JSONRPCBridge bridge;

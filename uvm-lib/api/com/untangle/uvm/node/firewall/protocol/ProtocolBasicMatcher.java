@@ -52,6 +52,7 @@ import com.untangle.uvm.vnet.Protocol;
  * @author <a href="mailto:rbscott@untangle.com">rbscott</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public final class ProtocolBasicMatcher extends ProtocolDBMatcher
 {
 

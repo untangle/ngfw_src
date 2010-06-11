@@ -50,6 +50,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="u_period", schema="settings")
+@SuppressWarnings("serial")
 public class Period implements Serializable
 {
 

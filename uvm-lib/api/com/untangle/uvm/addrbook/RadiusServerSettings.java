@@ -47,6 +47,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name="u_radius_server_settings")
+@SuppressWarnings("serial")
 public class RadiusServerSettings implements Serializable
 {
     public enum AuthenticationMethod { CLEARTEXT, PAP, CHAP, MSCHAPV1, MSCHAPV2};

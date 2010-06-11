@@ -49,6 +49,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="n_http_settings", schema="settings")
+@SuppressWarnings("serial")
 public class HttpSettings implements Serializable
 {
     public static final int MIN_HEADER_LENGTH = 1024;

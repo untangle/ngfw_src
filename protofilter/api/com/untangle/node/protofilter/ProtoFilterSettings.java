@@ -44,6 +44,7 @@ import com.untangle.uvm.security.Tid;
  */
 @Entity
 @Table(name="n_protofilter_settings", schema="settings")
+@SuppressWarnings("serial")
 public class ProtoFilterSettings implements java.io.Serializable
 {
 

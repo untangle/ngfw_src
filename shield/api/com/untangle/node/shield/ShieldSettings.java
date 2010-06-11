@@ -43,6 +43,7 @@ import com.untangle.uvm.security.Tid;
  */
 @Entity
 @Table(name="n_shield_settings", schema="settings")
+@SuppressWarnings("serial")
 public class ShieldSettings implements Serializable
 {
 

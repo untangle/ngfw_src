@@ -35,6 +35,7 @@ package com.untangle.uvm.message;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class StatDesc implements Serializable
 {
     private final String name;

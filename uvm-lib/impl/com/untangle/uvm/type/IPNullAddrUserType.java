@@ -20,6 +20,7 @@ package com.untangle.uvm.type;
 
 import com.untangle.uvm.node.IPNullAddr;
 
+@SuppressWarnings("serial")
 public class IPNullAddrUserType extends StringBasedUserType
 {
 

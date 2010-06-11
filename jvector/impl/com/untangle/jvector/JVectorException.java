@@ -18,6 +18,7 @@
 
 package com.untangle.jvector;
 
+@SuppressWarnings("serial")
 public class JVectorException extends Exception
 {
     public JVectorException() 

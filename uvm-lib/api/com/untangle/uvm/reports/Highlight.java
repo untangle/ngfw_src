@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("serial")
 public class Highlight extends SummaryItem implements Serializable
 {
     private final String stringTemplate;

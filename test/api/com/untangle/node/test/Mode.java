@@ -24,6 +24,7 @@ import java.util.Map;
 
 // XXX convert to enum when we dump XDoclet
 
+@SuppressWarnings("serial")
 public class Mode implements Serializable
 {
 

@@ -42,6 +42,7 @@ import java.net.InetAddress;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class LoginSession implements Serializable
 {
 

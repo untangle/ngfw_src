@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("serial")
 public class DetailSection extends Section implements Serializable
 {
     private final List<ColumnDesc> columns = new ArrayList<ColumnDesc>();

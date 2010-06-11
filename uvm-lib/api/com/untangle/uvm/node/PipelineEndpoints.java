@@ -61,6 +61,7 @@ import com.untangle.uvm.policy.Policy;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="pl_endp", schema="events")
+@SuppressWarnings("serial")
 public class PipelineEndpoints extends LogEvent
 {
 

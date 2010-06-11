@@ -42,6 +42,7 @@ import com.untangle.uvm.node.Rule;
  */
 @Entity
 @Table(name="n_shield_node_rule", schema="settings")
+@SuppressWarnings("serial")
 public class ShieldNodeRule extends Rule 
 {
 

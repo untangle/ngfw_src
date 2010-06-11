@@ -14,6 +14,7 @@ import com.untangle.uvm.node.firewall.port.PortSetMatcher;
 import com.untangle.uvm.node.firewall.port.PortSimpleMatcher;
 import com.untangle.uvm.node.firewall.port.PortSingleMatcher;
 
+@SuppressWarnings("serial")
 public class PortMatcherSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialize to.

@@ -43,6 +43,7 @@ import org.hibernate.annotations.Type;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="n_router_evt_dhcp", schema="events")
+@SuppressWarnings("serial")
     public class DhcpLeaseEvent extends LogEvent
     {
 

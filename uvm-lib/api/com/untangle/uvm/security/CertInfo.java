@@ -41,6 +41,7 @@ import java.util.List;
  * classes you're a champ.  This is much easier.
  *
  */
+@SuppressWarnings("serial")
 public class CertInfo implements java.io.Serializable {
     /**
      * Date when cert becomes valid

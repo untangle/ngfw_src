@@ -39,8 +39,9 @@ import java.io.Serializable;
  * Summary of an Inbox (I had already used "InboxSummary" as a class
  * name somewhere else, and didn't feel like changing it).
  */
-public final class Inbox
-    implements Serializable {
+@SuppressWarnings("serial")
+public final class Inbox implements Serializable
+{
 
     private final String m_address;
     private long m_totalSz;

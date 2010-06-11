@@ -33,16 +33,13 @@
 
 package com.untangle.uvm.addrbook;
 
-/**
- * ...name says it all
- */
-public class NoSuchEmailException
-    extends Exception {
-
-    public NoSuchEmailException(String email) {
+@SuppressWarnings("serial")
+public class NoSuchEmailException extends Exception
+{
+    public NoSuchEmailException(String email)
+    {
         super("No such email address \"" + email + "\"");
     }
-
 }
 
 

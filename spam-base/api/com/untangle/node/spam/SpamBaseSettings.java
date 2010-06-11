@@ -35,6 +35,7 @@ import javax.persistence.Transient;
  * @version 1.0
  */
 @Embeddable
+@SuppressWarnings("serial")
 public class SpamBaseSettings implements Serializable
 {
     private SpamSmtpConfig smtpConfig;

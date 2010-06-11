@@ -62,6 +62,7 @@ import com.untangle.node.util.UvmUtil;
  */
 @Entity
 @Table(name="n_mail_settings", schema="settings")
+@SuppressWarnings("serial")
 public class MailNodeSettings implements Serializable
 {
 

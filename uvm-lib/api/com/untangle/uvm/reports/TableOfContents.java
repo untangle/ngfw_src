@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+@SuppressWarnings("serial")
 public class TableOfContents implements Serializable
 {
     private final Application platform;
