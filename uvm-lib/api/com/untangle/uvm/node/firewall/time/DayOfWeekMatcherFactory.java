@@ -42,6 +42,7 @@ public class DayOfWeekMatcherFactory
 
     private final ParsingFactory<DayOfWeekDBMatcher> parser;
 
+    @SuppressWarnings("unchecked") //varargs
     private DayOfWeekMatcherFactory()
     {
         this.parser = new ParsingFactory<DayOfWeekDBMatcher>( "dayOfWeek matcher" );

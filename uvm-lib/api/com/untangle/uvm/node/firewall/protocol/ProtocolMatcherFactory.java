@@ -58,6 +58,7 @@ public class ProtocolMatcherFactory
         MARKER_TCP_AND_UDP, MARKER_UDP, MARKER_TCP, MARKER_ANY
     };
 
+    @SuppressWarnings("unchecked") //varargs
     private ProtocolMatcherFactory()
     {
         this.factory = new ParsingFactory<ProtocolDBMatcher>( "protocol matcher" );

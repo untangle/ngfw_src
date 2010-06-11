@@ -96,7 +96,7 @@ public class PipelineEndpoints extends LogEvent
         // Begin & end and all in between have the same ID
         sessionId = begin.id();
 
-        protocol = (short)begin.protocol();
+        protocol = begin.protocol();
 
         cClientAddr = begin.clientAddr();
         cClientPort = begin.clientPort();
@@ -119,7 +119,7 @@ public class PipelineEndpoints extends LogEvent
     public PipelineEndpoints(IPSessionDesc begin)
     {
         sessionId = begin.id();
-        protocol = (short)begin.protocol();
+        protocol = begin.protocol();
         clientIntf = begin.clientIntf();
         // Don't fill in anything that can change later.
     }

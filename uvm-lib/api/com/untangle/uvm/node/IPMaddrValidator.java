@@ -19,12 +19,13 @@ package com.untangle.uvm.node;
 
 import java.util.List;
 
-public class IPMaddrValidator implements Validator {
-
+public class IPMaddrValidator implements Validator
+{
     public static final String ERR_CODE_INVALID_IPMADDR = "INVALID_IPMADDR";
 
-    public ValidationResult validate(Object data) {
-        
+    @SuppressWarnings("unchecked") //cast
+    public ValidationResult validate(Object data)
+    {
         try {
             if (data != null) {
                 for (String ipMaddrString : (List<String>) data) {

@@ -92,7 +92,7 @@ public class UvmState implements Serializable
 
     public static UvmState getInstance(String state)
     {
-        return (UvmState)INSTANCES.get(state);
+        return INSTANCES.get(state);
     }
 
     private UvmState(String state) { this.state = state; }

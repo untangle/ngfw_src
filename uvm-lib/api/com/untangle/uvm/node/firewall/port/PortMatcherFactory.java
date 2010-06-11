@@ -47,8 +47,9 @@ public class PortMatcherFactory
     private static final PortMatcherFactory INSTANCE = new PortMatcherFactory();
 
     /** This is the parser used to convert strings to PortDBMatchers */
-   private final ParsingFactory<PortDBMatcher> parser;
+    private final ParsingFactory<PortDBMatcher> parser;
 
+    @SuppressWarnings("unchecked")
     private PortMatcherFactory()
     {
         this.parser = new ParsingFactory<PortDBMatcher>( "port matcher" );

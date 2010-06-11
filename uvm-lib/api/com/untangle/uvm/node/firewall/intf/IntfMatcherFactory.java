@@ -52,6 +52,7 @@ public class IntfMatcherFactory
     /** The parser used to translate strings into IntfDBMatchers. */
     private final ParsingFactory<IntfDBMatcher> parser;
 
+    @SuppressWarnings("unchecked") //varargs
     private IntfMatcherFactory()
     {
         this.parser = new ParsingFactory<IntfDBMatcher>("intf matcher");

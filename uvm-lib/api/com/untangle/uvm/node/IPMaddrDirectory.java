@@ -67,7 +67,7 @@ public class IPMaddrDirectory implements Serializable
     private String notes;
 
     public IPMaddrDirectory() {
-        entries = new ArrayList();
+        entries = new ArrayList<IPMaddrRule>();
     }
 
     /**

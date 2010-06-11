@@ -249,7 +249,7 @@ public class Template {
         }
 
         return new ParsedTemplate(template,
-                                  (Part[]) list.toArray(new Part[list.size()]),
+                                  list.toArray(new Part[list.size()]),
                                   template.length() + (numKeys*20),
                                   printUnassigned);
     }

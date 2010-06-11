@@ -54,6 +54,7 @@ public class IPMatcherFactory
     /** The parser used to translate strings into IntfDBMatchers. */
     private final ParsingFactory<IPDBMatcher> factory;
 
+    @SuppressWarnings("unchecked") //varargs
     private IPMatcherFactory()
     {
         this.factory = new ParsingFactory<IPDBMatcher>( "ip matcher" );

@@ -195,7 +195,7 @@ public class IPMaddr implements Serializable, Comparable
     public LinkedList bitString()
     {
         byte[] addrb = textToNumericFormat(addr);
-        LinkedList result = new LinkedList();
+        LinkedList<Boolean> result = new LinkedList<Boolean>();
         int i,j, numbits;
         int sum;
 

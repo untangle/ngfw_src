@@ -54,6 +54,7 @@ public class RemoteUvmContextFactory
      *
      * @return the <code>UvmContext</code>.
      */
+    @SuppressWarnings("unchecked")
     public static RemoteUvmContext context()
     {
         if (null == UVM_CONTEXT) {

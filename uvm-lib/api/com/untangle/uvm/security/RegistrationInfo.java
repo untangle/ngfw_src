@@ -94,10 +94,10 @@ public class RegistrationInfo implements Serializable
      *
      * @param entries a <code>Hashtable</code> of form data
      */
-    public RegistrationInfo(Hashtable entries)
+    public RegistrationInfo(Hashtable<String,String[]> entries)
     {
         /* This way it can strip out the values that have been used */
-        entries = new Hashtable( entries );
+        entries = new Hashtable<String,String[]>( entries );
         companyName = parseEntry(entries,"companyName",companyName);
         firstName = parseEntry(entries,"firstName",firstName);
         lastName = parseEntry(entries,"lastName",lastName);
@@ -110,7 +110,7 @@ public class RegistrationInfo implements Serializable
         phone = parseEntry(entries,"phone",phone);
 
         numSeats = -1;
-        String[] sa = (String[]) entries.get("numSeats");
+        String[] sa = entries.get("numSeats");
         if (sa != null && sa.length > 0 && sa[0].length() > 0) {
             try {
                 numSeats = Integer.parseInt(sa[0].trim());
@@ -123,7 +123,7 @@ public class RegistrationInfo implements Serializable
         /* Put any remaining values into misc */
         misc = new Hashtable<String,String>( entries.size());
         for(Object key : entries.keySet()) {
-            sa = (String[])entries.get( key );
+            sa = entries.get( key );
             if (sa != null && sa.length > 0 && sa[0].length() > 0) misc.put( (String)key, sa[0].trim());
         }
     }
@@ -359,9 +359,9 @@ public class RegistrationInfo implements Serializable
     }
 
     @Transient
-    private String parseEntry(Hashtable entries,String name,String currentValue)
+    private String parseEntry(Hashtable<String,String[]> entries,String name,String currentValue)
     {
-        String[] sa = (String[]) entries.remove(name);
+        String[] sa = entries.remove(name);
         if ((sa != null) && (sa.length > 0) && (sa[0].trim().length() > 0)) return sa[0].trim();
         return currentValue;
     }

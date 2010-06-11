@@ -55,6 +55,7 @@ public class AddressValidator implements Validator
 
     private static final AddressValidator INSTANCE = new AddressValidator();
 
+    @SuppressWarnings("unchecked") //cast
     public ValidationResult validate(Object data) {
 
         try {

@@ -81,10 +81,8 @@ public class SessionUtil {
         if (descs == null)
             return null;
 
-        Comparator comp = new Comparator() {
-                public int compare(Object o1, Object o2) {
-                    IPSessionDesc s1 = (IPSessionDesc)o1;
-                    IPSessionDesc s2 = (IPSessionDesc)o2;
+        Comparator<IPSessionDesc> comp = new Comparator<IPSessionDesc>() {
+                public int compare(IPSessionDesc s1, IPSessionDesc s2) {
                     int s1id = s1.id();
                     int s2id = s2.id();
                     if (s1id == s2id) {
@@ -100,10 +98,10 @@ public class SessionUtil {
                 }
             };
 
-        SortedSet set = new TreeSet(comp);
+        SortedSet<IPSessionDesc> set = new TreeSet<IPSessionDesc>(comp);
         for (int i = 0; i < descs.length; i++)
             set.add(descs[i]);
 
-        return (IPSessionDesc[]) set.toArray(sdtemp);
+        return set.toArray(sdtemp);
     }
 }

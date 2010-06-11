@@ -65,7 +65,7 @@ public class AdminSettings implements Serializable
 {
 
     private Long id;
-    private Set<User> users = new HashSet();
+    private Set<User> users = new HashSet<User>();
     private Period summaryPeriod;
 
     public AdminSettings() { }

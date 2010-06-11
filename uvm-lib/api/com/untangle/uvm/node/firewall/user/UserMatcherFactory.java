@@ -43,6 +43,7 @@ public class UserMatcherFactory
 
     private final ParsingFactory<UserDBMatcher> parser;
 
+    @SuppressWarnings("unchecked") //varargs
     private UserMatcherFactory()
     {
         this.parser = new ParsingFactory<UserDBMatcher>( "user matcher" );
