@@ -36,7 +36,6 @@ import com.untangle.uvm.node.ValidateException;
 @MappedSuperclass
 public abstract class SiteNetwork extends Rule implements Validatable
 {
-    private static final long serialVersionUID = -2918169040527785684L;
 
     private IPaddr network;
     private IPaddr netmask;

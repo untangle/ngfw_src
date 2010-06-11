@@ -48,7 +48,6 @@ import com.untangle.uvm.security.Tid;
 @Table(name="n_cpd_settings", schema="settings")
 public class CPDSettings implements Serializable
 {
-    private static final long serialVersionUID = 3651891069851356144L;
 
     public static enum AuthenticationType { ACTIVE_DIRECTORY, RADIUS, LOCAL_DIRECTORY, NONE };    
     public static enum PageType { BASIC_LOGIN, BASIC_MESSAGE, CUSTOM };

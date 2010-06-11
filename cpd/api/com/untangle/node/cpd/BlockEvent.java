@@ -26,7 +26,6 @@ import com.untangle.uvm.node.SessionEndpoints;
 @Table(name="n_cpd_block_evt", schema="events")
 public class BlockEvent extends LogEvent implements Serializable
 {
-    private static final long serialVersionUID = 6914813214747268616L;
 
     private short protocol;
 

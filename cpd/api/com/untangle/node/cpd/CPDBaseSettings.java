@@ -11,7 +11,6 @@ import com.untangle.node.cpd.CPDSettings.AuthenticationType;
 import com.untangle.node.cpd.CPDSettings.PageType;
 
 public class CPDBaseSettings implements Serializable {
-    private static final long serialVersionUID = 601889164122486170L;
     private boolean captureBypassedTraffic = false;
     private AuthenticationType authenticationType = AuthenticationType.NONE;
     private int idleTimeout = 0;

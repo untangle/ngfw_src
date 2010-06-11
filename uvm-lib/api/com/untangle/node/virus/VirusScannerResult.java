@@ -49,7 +49,6 @@ import com.untangle.uvm.node.TemplateValues;
 public class VirusScannerResult
     implements Serializable, TemplateValues {
 
-    private static final long serialVersionUID = -9165160954531529727L;
 
     private static final String VIRUS_NAME_KEY = "VirusReport:VIRUS_NAME";
 

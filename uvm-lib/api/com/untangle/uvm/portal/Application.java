@@ -41,7 +41,6 @@ import java.io.Serializable;
 public final class Application
     implements Comparable<Application>, Serializable
 {
-    private static final long serialVersionUID = 3175632248906996934L;
 
     public interface Validator
     {

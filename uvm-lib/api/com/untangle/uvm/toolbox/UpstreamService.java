@@ -42,7 +42,6 @@ package com.untangle.uvm.toolbox;
  */
 public class UpstreamService
 {
-    private static final long serialVersionUID = 3162897595545073397L;
 
     private String name;
     private boolean enabled;

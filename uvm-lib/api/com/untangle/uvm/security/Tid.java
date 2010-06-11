@@ -57,7 +57,6 @@ import com.untangle.uvm.policy.Policy;
 @Table(name="u_tid", schema="settings")
 public class Tid implements Principal, Serializable, Comparable
 {
-    private static final long serialVersionUID = -3752177143597737103L;
 
     private Long id;
     private Policy policy;

@@ -38,7 +38,6 @@ import java.util.List;
 
 public class ApplicationData implements Serializable
 {
-    private static final long serialVersionUID = -6138290397260375465L;
     
     private final String name;
     private final String title;

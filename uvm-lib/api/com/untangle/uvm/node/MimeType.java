@@ -43,7 +43,6 @@ import java.io.Serializable;
  */
 public class MimeType implements Serializable
 {
-    private static final long serialVersionUID = -2196251978340217199L;
 
     private final String mimeType;
 

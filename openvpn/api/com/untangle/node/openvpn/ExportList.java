@@ -28,7 +28,6 @@ import com.untangle.uvm.node.ValidateException;
 
 public class ExportList implements Serializable, Validatable
 { 
-    private static final long serialVersionUID = -6370773131855832786L;
     
     List<ServerSiteNetwork> exportList;
 

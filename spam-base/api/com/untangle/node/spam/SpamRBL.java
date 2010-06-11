@@ -51,7 +51,6 @@ import javax.persistence.Table;
 @Table(name="n_spam_rbl", schema="settings")
     public class SpamRBL implements Serializable
 {
-    private static final long serialVersionUID = -7246008133224041234L;
 
     // a spam RBL list with a single NO_RBL hostname will deactivate RBL and
     // prevent the list from re-initializing with default hostnames

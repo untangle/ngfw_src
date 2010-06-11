@@ -36,7 +36,6 @@ import javax.persistence.Table;
 @Table(name="n_ips_variable", schema="settings")
 public class IpsVariable implements Serializable {
     private Long id;
-    private static final long serialVersionUID = -7777708957041660234L;
     private String variable;
     private String definition;
     private String description;

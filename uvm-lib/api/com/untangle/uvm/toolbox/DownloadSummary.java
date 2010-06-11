@@ -43,7 +43,6 @@ import com.untangle.uvm.message.Message;
  */
 public class DownloadSummary extends Message
 {
-    private static final long serialVersionUID = -6840052462738622245L;
 
     private final int count;
     private final int size;

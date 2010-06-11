@@ -43,7 +43,6 @@ public enum Reason
      */
     DEFAULT('N', "no rule applied");
 
-    private static final long serialVersionUID = -1388743204136725990L;
 
 
     private final char key;

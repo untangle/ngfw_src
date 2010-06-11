@@ -43,7 +43,6 @@ import com.untangle.uvm.message.Message;
  */
 public class InstallComplete extends Message
 {
-    private static final long serialVersionUID = 1562132446777632430L;
 
     private final boolean success;
     private final MackageDesc requestingMackage;

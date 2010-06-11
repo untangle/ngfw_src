@@ -64,7 +64,6 @@ import com.untangle.node.util.UvmUtil;
 @Table(name="n_mail_settings", schema="settings")
 public class MailNodeSettings implements Serializable
 {
-    private static final long serialVersionUID = -6466793822226799781L;
 
     private Long id;
 

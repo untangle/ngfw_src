@@ -32,7 +32,6 @@ import javax.persistence.Table;
 @Table(name="u_active_stat", schema="settings")
 public class ActiveStat implements Serializable
 {
-    private static final long serialVersionUID = 5207078920254495831L;
     
     private Long id;
     private String name;

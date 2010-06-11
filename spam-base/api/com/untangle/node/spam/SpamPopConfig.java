@@ -49,7 +49,6 @@ import org.hibernate.annotations.Type;
 @Table(name="n_spam_pop_config", schema="settings")
 public class SpamPopConfig extends SpamProtoConfig
 {
-    private static final long serialVersionUID = 7520156745253589117L;
 
     /* settings */
 

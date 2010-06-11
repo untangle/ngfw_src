@@ -51,7 +51,6 @@ import org.apache.log4j.Logger;
  */
 public class RegistrationInfo implements Serializable
 {
-    private static final long serialVersionUID = 11251994862821440L;
 
     private final Logger logger = Logger.getLogger(getClass());
 

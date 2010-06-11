@@ -32,7 +32,6 @@ import javax.persistence.Table;
 @Table(name="n_openvpn_c_site_network", schema="settings")
 public class ClientSiteNetwork extends SiteNetwork
 {
-    private static final long serialVersionUID = 4617902554944629290L;
 
     public ClientSiteNetwork() { }
 }

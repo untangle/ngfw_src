@@ -43,7 +43,6 @@ import java.util.Map;
 
 public class IPaddr implements Comparable, Serializable
 {
-    private static final long serialVersionUID = -5766577991152349680L;
 
     static final String CIDR_STRINGS[] = 
     {

@@ -40,7 +40,6 @@ import com.untangle.uvm.node.ValidateException;
 @Table(name="n_openvpn_group", schema="settings")
 public class VpnGroup extends Rule implements Validatable
 {
-    private static final long serialVersionUID = 1979887183265796668L;
 
     /* The interface that clients from the client pool are associated with */
     private byte intf;

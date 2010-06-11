@@ -45,7 +45,6 @@ import org.hibernate.annotations.Type;
     @Table(name="n_router_evt_dhcp", schema="events")
     public class DhcpLeaseEvent extends LogEvent
     {
-        private static final long serialVersionUID = -6582660598334287365L;
 
         static final int REGISTER = 0;
         static final int RENEW    = 1;

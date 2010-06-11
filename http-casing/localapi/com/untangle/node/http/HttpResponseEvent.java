@@ -57,7 +57,6 @@ import com.untangle.uvm.logging.SyslogPriority;
     @Table(name="n_http_evt_resp", schema="events")
     public class HttpResponseEvent extends LogEvent
     {
-		private static final long serialVersionUID = 6230479122438319399L;
 		private RequestLine requestLine;
         private String contentType;
         private int contentLength;

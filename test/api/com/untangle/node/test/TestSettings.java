@@ -43,7 +43,6 @@ import org.hibernate.annotations.Type;
 @Table(name="n_test_settings", schema="settings")
 public class TestSettings implements Serializable
 {
-    private static final long serialVersionUID = 4143567998376955882L;
 
     private Long id;
     private Tid tid;

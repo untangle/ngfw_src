@@ -192,7 +192,6 @@ public class JsonClient
 
     public static class ConnectionException extends Exception
     {
-        private static final long serialVersionUID = -2471504933997931070L;
 
         public ConnectionException( String message, Throwable throwable )
         {

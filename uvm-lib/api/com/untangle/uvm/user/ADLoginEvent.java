@@ -42,7 +42,6 @@ import com.untangle.uvm.logging.SyslogPriority;
 @Table(name="n_login_evt", schema="events")
 public class ADLoginEvent extends LogEvent
 {
-    private static final long serialVersionUID = -1453486832767493983L;
 
     public static String EVENT_LOGIN = "I";
     public static String EVENT_UPDATE = "U";

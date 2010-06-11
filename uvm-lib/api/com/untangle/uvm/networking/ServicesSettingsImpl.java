@@ -65,7 +65,6 @@ import com.untangle.uvm.node.IPaddr;
 @Table(name="u_network_services", schema="settings")
 public class ServicesSettingsImpl implements ServicesSettings, Serializable
 {
-    private static final long serialVersionUID = 7074952180633919139L;
 
     private Long id;
 

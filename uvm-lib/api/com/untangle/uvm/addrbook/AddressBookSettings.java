@@ -53,7 +53,6 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name="u_ab_settings", schema="settings")
 public class AddressBookSettings implements Serializable {
-    private static final long serialVersionUID = 1981170448212868734L;
 
     private Long id;
     private RepositorySettings m_aDSettings;

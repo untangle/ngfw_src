@@ -52,7 +52,6 @@ import com.untangle.uvm.security.Tid;
 @Table(name="n_webfilter_settings", schema="settings")
 public class WebFilterSettings implements Serializable
 {
-    private static final long serialVersionUID = 1806394002255164868L;
 
     private Long id;
     private Tid tid;

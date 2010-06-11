@@ -30,7 +30,6 @@ import com.untangle.uvm.node.ValidateException;
 
 public class SiteList implements Serializable, Validatable
 {
-    private static final long serialVersionUID = -4628267406258118779L;
 
     List<VpnSite> siteList;
 

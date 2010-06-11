@@ -43,7 +43,6 @@ import java.net.UnknownHostException;
  */
 public class IPNullAddr extends IPaddr implements Comparable
 {
-    private static final long serialVersionUID = -741858749430271001L;
 
     private static final IPNullAddr EMPTY_ADDR = new IPNullAddr( null );
     

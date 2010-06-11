@@ -48,7 +48,6 @@ import com.untangle.uvm.node.ParseException;
  */
 public class EthernetMedia implements Serializable, Comparable
 {
-    private static final long serialVersionUID = 8361270376411592639L;
 
     private static final String NAME_AUTO_NEGOTIATE = "Auto-Negotiate";
 

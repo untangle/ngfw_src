@@ -46,7 +46,6 @@ import com.untangle.uvm.node.firewall.Parser;
  */
 public final class PortRangeMatcher extends PortDBMatcher
 {    
-    private static final long serialVersionUID = -5544741394747788626L;
 
     /* Start of the range that should match (inclusive) */
     private final int start;

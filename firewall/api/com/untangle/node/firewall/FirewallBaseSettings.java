@@ -27,7 +27,6 @@ import javax.persistence.Transient;
 @Embeddable
 public class FirewallBaseSettings implements Serializable
 {
-    private static final long serialVersionUID = 8977728688196745416L;
     private boolean quickExit = true;
     private boolean rejectSilently = true;
     private boolean isDefaultAccept = true;

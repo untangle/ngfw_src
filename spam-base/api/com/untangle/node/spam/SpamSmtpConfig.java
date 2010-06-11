@@ -49,7 +49,6 @@ import org.hibernate.annotations.Type;
 @Table(name="n_spam_smtp_config", schema="settings")
 public class SpamSmtpConfig extends SpamProtoConfig
 {
-    private static final long serialVersionUID = 7520156745253589107L;
 
     public static final int DEFAULT_SUPER_STRENGTH = 200;
     public static final boolean DEFAULT_TARPIT = false;

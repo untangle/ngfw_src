@@ -48,7 +48,6 @@ import com.untangle.uvm.node.Rule;
 @Table(name="n_mail_email_addr_rule", schema="settings")
 public class EmailAddressRule extends Rule implements Serializable {
 
-    private static final long serialVersionUID = 7226453350424547957L;
 
     private String m_addr;
 

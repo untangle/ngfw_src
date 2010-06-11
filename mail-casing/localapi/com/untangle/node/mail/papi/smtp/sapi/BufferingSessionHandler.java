@@ -393,7 +393,6 @@ public abstract class BufferingSessionHandler
      * some problem we can send this log to the real log file.
      */
     private class TxLog extends ArrayList<String> {
-        private static final long serialVersionUID = 3663276209386820867L;
 
         void receivedToken(Token token) {
             add("----Received Token " + token + "--------");

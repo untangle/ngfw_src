@@ -51,7 +51,6 @@ import javax.persistence.Transient;
 @Table(name="u_ddns_settings", schema="settings")
 public class DynamicDNSSettings implements Serializable
 {
-    private static final long serialVersionUID = -5336231956279732103L;
     
     private static final String PROVIDER_DYNDNS = "www.dyndns.com";
     private static final String PROVIDER_DYNDNS_OLD = "www.dyndns.org";

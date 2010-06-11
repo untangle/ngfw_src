@@ -46,7 +46,6 @@ import com.untangle.uvm.vnet.Protocol;
  */
 public final class ProtocolSimpleMatcher extends ProtocolDBMatcher
 {
-    // XXX private static final long serialVersionUID = 6026959848409522258L;
     /* A protocol matcher that matches everything */
     private static final ProtocolDBMatcher MATCHER_ALL = new ProtocolSimpleMatcher( true );
 

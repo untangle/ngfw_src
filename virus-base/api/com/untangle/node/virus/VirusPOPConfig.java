@@ -52,7 +52,6 @@ import org.hibernate.annotations.Type;
 @Table(name="n_virus_pop_config", schema="settings")
 public class VirusPOPConfig extends VirusMailConfig implements Serializable
 {
-    private static final long serialVersionUID = 7520156745253589017L;
 
     /* settings */
     private VirusMessageAction zMsgAction = VirusMessageAction.REMOVE;

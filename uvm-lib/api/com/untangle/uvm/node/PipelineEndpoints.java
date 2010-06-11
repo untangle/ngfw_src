@@ -63,7 +63,6 @@ import com.untangle.uvm.policy.Policy;
 @Table(name="pl_endp", schema="events")
 public class PipelineEndpoints extends LogEvent
 {
-    private static final long serialVersionUID = -5787529995276369804L;
 
     private int sessionId;
 

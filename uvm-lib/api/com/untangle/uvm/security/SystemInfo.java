@@ -43,7 +43,6 @@ import java.io.Serializable;
  */
 public class SystemInfo implements Serializable
 {
-    private static final long serialVersionUID = -879700823295949246L;
     
     private String activationKey;
     private String fullVersion;

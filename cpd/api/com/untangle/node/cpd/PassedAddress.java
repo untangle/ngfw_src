@@ -11,7 +11,6 @@ import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
 
 @MappedSuperclass
 public abstract class PassedAddress extends Rule {
-    private static final long serialVersionUID = 3383783136717843470L;
     private IPDBMatcher address = IPSimpleMatcher.getNilMatcher();
     
     @Column(name="address", nullable=false)

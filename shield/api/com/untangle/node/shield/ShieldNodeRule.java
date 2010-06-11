@@ -44,7 +44,6 @@ import com.untangle.uvm.node.Rule;
 @Table(name="n_shield_node_rule", schema="settings")
 public class ShieldNodeRule extends Rule 
 {
-    private static final long serialVersionUID = -6928365798856031269L;
 
     /* ip address this is configuring */
     private IPaddr address;

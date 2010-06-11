@@ -40,7 +40,6 @@ import java.util.List;
 
 public abstract class DayOfWeekDBMatcher implements DayOfWeekMatcher, Serializable
 {
-    private static final long serialVersionUID = -6040354039760824420L;
 
     /** Package protected so that only classes in the package can add to the list
      * of database saveable dayOfWeek matchers */

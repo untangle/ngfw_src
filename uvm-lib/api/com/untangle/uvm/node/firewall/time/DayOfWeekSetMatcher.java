@@ -46,7 +46,6 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
 
 public final class DayOfWeekSetMatcher extends DayOfWeekDBMatcher
 {
-    private static final long serialVersionUID = -5205089936763240676L;
 
     private final Set<String> dayOfWeekSet;
     private final String string;

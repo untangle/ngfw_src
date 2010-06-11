@@ -59,7 +59,6 @@ import com.untangle.uvm.node.ValidateException;
 @Table(name="u_access_settings", schema="settings")
 public class AccessSettings implements Serializable, Validatable
 {
-    private static final long serialVersionUID = -199625455843428399L;
 
     /* boolean which can be used by the untangle to determine if the
      * object returned by a user interface has been modified. */

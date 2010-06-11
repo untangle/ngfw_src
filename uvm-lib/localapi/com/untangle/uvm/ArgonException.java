@@ -35,7 +35,6 @@ package com.untangle.uvm;
 
 
 public class ArgonException extends UvmException {
-   private static final long serialVersionUID = -6651027664540063693L;
 
     public ArgonException() 
     { 

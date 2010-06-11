@@ -47,7 +47,6 @@ import com.untangle.uvm.vnet.SessionStats;
  * @version 1.0
  */
 public abstract class SessionDescImpl implements SessionDesc, Serializable {
-    private static final long serialVersionUID = 2962776047684793850L;
 
     protected int id;
 

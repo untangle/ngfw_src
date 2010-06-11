@@ -36,5 +36,4 @@ import com.untangle.uvm.node.Validatable;
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public class VpnClient extends VpnClientBase implements Validatable
 {
-    // XXX FIXME private static final long serialVersionUID = -403968809913481068L;
 }

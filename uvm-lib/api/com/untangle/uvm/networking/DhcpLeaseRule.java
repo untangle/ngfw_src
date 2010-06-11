@@ -57,7 +57,6 @@ import com.untangle.uvm.node.firewall.MACAddress;
 @Table(name="u_dhcp_lease_rule", schema="settings")
 public class DhcpLeaseRule extends Rule
 {
-    private static final long serialVersionUID = 8445780678617691325L;
 
     /* The MAC address associated with this lease */
     private MACAddress macAddress;

@@ -51,7 +51,6 @@ import javax.persistence.Table;
 @Table(name="n_ftp_settings", schema="settings")
 public class FtpSettings implements Serializable
 {
-    private static final long serialVersionUID = -828243820153242416L;
 
     private Long id;
 

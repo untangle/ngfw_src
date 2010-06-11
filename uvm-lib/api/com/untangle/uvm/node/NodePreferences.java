@@ -60,7 +60,6 @@ import com.untangle.uvm.security.Tid;
 @Table(name="u_node_preferences")
 public class NodePreferences implements Serializable
 {
-    private static final long serialVersionUID = 8220361738391151248L;
 
     private Long id;
     private Tid tid;

@@ -43,7 +43,6 @@ import com.untangle.uvm.logging.SyslogPriority;
 @Table(name="n_cpd_login_evt", schema="events")
 public class CPDLoginEvent extends LogEvent
 {
-    private static final long serialVersionUID = 1716114286650532644L;
 
     public enum EventType { LOGIN, UPDATE, FAILED, LOGOUT };
 

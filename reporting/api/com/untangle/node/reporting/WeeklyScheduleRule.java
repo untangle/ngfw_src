@@ -36,7 +36,6 @@ import javax.persistence.Table;
 @Table(name="n_reporting_wk_sched_rule", schema="settings")
 public class WeeklyScheduleRule implements Serializable
 {
-    private static final long serialVersionUID = 2064742840204258978L;
 
     private Long id;
     private int day; // day of week: SUNDAY, MONDAY, ... SATURDAY

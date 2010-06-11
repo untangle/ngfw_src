@@ -45,7 +45,6 @@ import java.util.Map;
  */
 public class AddressKind implements Serializable
 {
-    private static final long serialVersionUID = 4520610095955193319L;
     
     public static final AddressKind FROM = new AddressKind('F', "FROM");
     public static final AddressKind TO   = new AddressKind('T', "TO");

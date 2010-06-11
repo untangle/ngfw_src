@@ -41,7 +41,6 @@ import java.util.Map;
 
 public class Stats implements Serializable
 {
-    private static final long serialVersionUID = -9100328727379754811L;
     private final Map<String, CounterStats> metrics;
     private final Map<String, CounterStats> activities;
 
@@ -86,7 +85,6 @@ public class Stats implements Serializable
 
     public static class FixedCounts implements CounterStats, Serializable
     {
-        private static final long serialVersionUID = -412713821944826107L;
         private final long count;
         private final long countSinceMidnight;
         private final Date lastActivityDate;

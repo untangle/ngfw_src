@@ -47,7 +47,6 @@ import com.untangle.uvm.node.ValidateException;
 public class VpnSite extends VpnClientBase
 {
     // XXX Fixme
-    // private static final long serialVersionUID = -3950973798403822835L;
 
     /* XXX This should be in one place */
     private static final IPaddr EMPTY_ADDR = new IPaddr( null );

@@ -62,7 +62,6 @@ import com.untangle.node.util.UvmUtil;
 @Table(name="u_ipmaddr_dir", schema="settings")
 public class IPMaddrDirectory implements Serializable
 {
-    private static final long serialVersionUID = -2636950101710654253L;
 
     private Long id;
     private List<IPMaddrRule> entries;

@@ -49,7 +49,6 @@ import com.untangle.uvm.node.IPaddr;
 /** These are the settings for the DNS/DHCP server */
 public class ServicesInternalSettings
 {
-    // !!!!! private static final long serialVersionUID = 4349679825783697834L;
     
     private final boolean isDhcpEnabled;
     private final IPaddr dhcpStartAddress;

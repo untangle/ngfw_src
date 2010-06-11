@@ -22,7 +22,6 @@ import java.io.Serializable;
 
 
 public class RuleClassification implements Serializable {
-    private static final long serialVersionUID = -7009087970546610324L;
 
     private String name;
     private String description;

@@ -47,7 +47,6 @@ import com.untangle.uvm.node.IPaddr;
     @Table(name="n_openvpn_connect_evt", schema="events")
     public class ClientConnectEvent extends LogEvent implements Serializable
     {
-        private static final long serialVersionUID = 5000360330098789417L;
 
         private IPaddr address;
         private int port;

@@ -64,7 +64,6 @@ import com.untangle.uvm.security.Tid;
 @Table(name="n_virus_settings", schema="settings")
 public class VirusSettings implements Serializable
 {
-    private static final long serialVersionUID = -7246008133224046834L;
 
     private Long id;
     private Tid tid;

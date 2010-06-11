@@ -63,7 +63,6 @@ import com.untangle.node.util.UvmUtil;
 @Entity
 @Table(name="n_mail_quarantine_settings", schema="settings")
 public class QuarantineSettings implements Serializable {
-    private static final long serialVersionUID = -4387806670497574999L;
 
     public static final long HOUR = 1000L*60L*60L; // millisecs per hour
     public static final long DAY = HOUR*24L; // millisecs per day

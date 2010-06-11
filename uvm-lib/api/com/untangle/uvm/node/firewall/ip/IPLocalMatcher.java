@@ -47,7 +47,6 @@ import com.untangle.uvm.node.firewall.Parser;
  */
 public final class IPLocalMatcher extends IPDBMatcher
 {
-    private static final long serialVersionUID = -5160105766158472713L;
 
     private static final IPLocalMatcher INSTANCE = new IPLocalMatcher();
 

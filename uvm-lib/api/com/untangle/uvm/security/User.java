@@ -53,7 +53,6 @@ import javax.persistence.Transient;
 @Table(name="u_user", schema="settings")
 public class User implements Serializable
 {
-    private static final long serialVersionUID = 11521040868224140L;
 
     private Long id;
     private String login;

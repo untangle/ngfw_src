@@ -47,7 +47,6 @@ import com.untangle.uvm.node.Rule;
 @Entity
 @Table(name="n_mail_email_addr_pair_rule", schema="settings")
 public class EmailAddressPairRule extends Rule implements Serializable {
-    private static final long serialVersionUID = 4188555156332337464L;
 
     private String m_addr1;
     private String m_addr2;

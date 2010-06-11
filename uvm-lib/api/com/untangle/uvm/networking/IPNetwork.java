@@ -49,7 +49,6 @@ import com.untangle.uvm.node.ParseException;
  */
 public class IPNetwork implements Serializable
 {
-    private static final long serialVersionUID = 6448567182570161455L;
 
     /* The separator between the network and the netmask */
     private static final String MARKER_NETMASK = "/";

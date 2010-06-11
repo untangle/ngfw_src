@@ -41,7 +41,6 @@ public enum SMTPNotifyAction
     BOTH('B', "notify sender and receiver"),
     NEITHER('N', "do not notify");
     
-    private static final long serialVersionUID = -6364692037092527263L;
 
     
     private String name;

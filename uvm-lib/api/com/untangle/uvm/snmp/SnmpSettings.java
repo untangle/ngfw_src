@@ -82,9 +82,6 @@ import javax.persistence.Table;
 @Table(name="u_snmp_settings", schema="settings")
 public class SnmpSettings implements Serializable {
 
-    private static final long serialVersionUID =
-        7597805105233436527L;
-
     /**
      * The standard port for "normal" agent messages, as
      * per RFC 1157 sect 4.  The value is 161

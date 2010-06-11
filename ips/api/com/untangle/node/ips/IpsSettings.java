@@ -49,7 +49,6 @@ import com.untangle.uvm.security.Tid;
 @Table(name="n_ips_settings", schema="settings")
 public class IpsSettings implements Serializable
 {
-    private static final long serialVersionUID = -7056565971726289302L;
 
     private Long id;
     private Tid tid;

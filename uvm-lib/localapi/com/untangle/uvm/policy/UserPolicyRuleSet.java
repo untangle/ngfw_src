@@ -62,7 +62,6 @@ import com.untangle.node.util.UvmUtil;
 @Table(name="u_user_policy_rules", schema="settings")
 public class UserPolicyRuleSet implements Serializable
 {
-    private static final long serialVersionUID = 1806394002255614868L;
 
     private Long id;
 

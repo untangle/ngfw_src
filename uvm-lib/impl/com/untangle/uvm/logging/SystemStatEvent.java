@@ -34,7 +34,6 @@ import javax.persistence.Transient;
     @Table(name="n_server_evt", schema="events")
     public class SystemStatEvent extends LogEvent
     {
-    private static final long serialVersionUID = 5830826385437144410L;
     
     private long memFree;
 	private long memCache;

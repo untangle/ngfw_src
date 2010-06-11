@@ -41,7 +41,6 @@ import javax.persistence.Transient;
 
 public class PolicyConfiguration implements Serializable
 {    
-    private static final long serialVersionUID = -6831866305511842546L;
 
     private List<Policy> policies;
 

@@ -45,7 +45,6 @@ import com.untangle.uvm.security.Tid;
 @Table(name="n_shield_settings", schema="settings")
 public class ShieldSettings implements Serializable
 {
-    private static final long serialVersionUID = -4330737456182204381L;
 
     private Long id;
     private Tid tid;

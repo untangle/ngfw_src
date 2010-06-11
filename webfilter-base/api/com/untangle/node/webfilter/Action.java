@@ -31,7 +31,6 @@ public enum Action
     PASS('P', "pass"),
     BLOCK('B', "block");
     
-    private static final long serialVersionUID = -1388743204136725990L;
 
     public static char PASS_KEY = 'P';
     public static char BLOCK_KEY = 'B';

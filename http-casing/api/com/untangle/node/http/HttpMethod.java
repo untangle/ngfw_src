@@ -45,7 +45,6 @@ import java.util.Map;
  */
 public class HttpMethod implements Serializable
 {
-	private static final long serialVersionUID = -8178244830103574962L;
 	
 	public static final HttpMethod OPTIONS = new HttpMethod('O', "OPTIONS");
     public static final HttpMethod GET = new HttpMethod('G', "GET");

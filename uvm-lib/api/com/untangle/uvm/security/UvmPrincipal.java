@@ -44,7 +44,6 @@ import java.security.Principal;
  */
 public final class UvmPrincipal implements Principal, Serializable
 {
-    private static final long serialVersionUID = -3343175380349082197L;
 
     private final String loginName;
 

@@ -36,7 +36,6 @@ import javax.persistence.Table;
 @Table(name="n_webfilter_template", schema="settings")
 public class BlockTemplate implements Serializable
 {
-    private static final long serialVersionUID = -2176543704833470091L;
 
     private Long id;
     private String header = "Web Filter" ;

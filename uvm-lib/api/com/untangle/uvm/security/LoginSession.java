@@ -44,7 +44,6 @@ import java.net.InetAddress;
  */
 public class LoginSession implements Serializable
 {
-    private static final long serialVersionUID = -585571141103354067L;
 
     public enum LoginType { INTERACTIVE, SYSTEM };
 

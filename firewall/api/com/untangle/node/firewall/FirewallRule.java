@@ -40,7 +40,6 @@ import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
 @Table(name="n_firewall_rule", schema="settings")
 public class FirewallRule extends TrafficIntfRule
 {
-    private static final long serialVersionUID = -2166185568469242347L;
     
     private static final String ACTION_BLOCK     = "Block";
     private static final String ACTION_PASS      = "Pass";

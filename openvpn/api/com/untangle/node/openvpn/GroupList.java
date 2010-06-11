@@ -30,7 +30,6 @@ import com.untangle.uvm.node.ValidateException;
 
 public class GroupList implements Serializable, Validatable
 {
-    private static final long serialVersionUID = 7274774518899345543L;
 
     List<VpnGroup> groupList;
 

@@ -22,7 +22,6 @@ import com.untangle.uvm.node.IPNullAddr;
 
 public class IPNullAddrUserType extends StringBasedUserType
 {
-    private static final long serialVersionUID = -1344468981718594547L;
 
     public Class returnedClass()
     {

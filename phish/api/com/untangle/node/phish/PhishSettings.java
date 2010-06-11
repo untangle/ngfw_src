@@ -39,7 +39,6 @@ import com.untangle.node.spam.SpamSettings;
 public class PhishSettings extends SpamSettings implements Serializable
 {
     // XXX
-    //private static final long serialVersionUID = -7246008133224040004L;
 
     private boolean enableGooglePhishList = true;
 

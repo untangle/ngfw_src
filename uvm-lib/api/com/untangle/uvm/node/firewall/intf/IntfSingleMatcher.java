@@ -50,7 +50,6 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
  */
 public final class IntfSingleMatcher extends IntfDBMatcher
 {
-    private static final long serialVersionUID = -314023986591100152L;
 
     /* Interface matcher for the external interface */
     private static final IntfDBMatcher EXTERNAL_MATCHER;

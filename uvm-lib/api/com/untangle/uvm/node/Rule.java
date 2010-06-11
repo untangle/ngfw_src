@@ -49,7 +49,6 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class Rule implements Serializable
 {
-    private static final long serialVersionUID = -7861114769604834397L;
 
     public static final String EMPTY_NAME        = "[no name]";
     public static final String EMPTY_DESCRIPTION = "[no description]";

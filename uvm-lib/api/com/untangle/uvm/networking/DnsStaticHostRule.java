@@ -53,7 +53,6 @@ import com.untangle.uvm.node.Rule;
 @Table(name="u_dns_static_host_rule", schema="settings")
 public class DnsStaticHostRule extends Rule
 {
-    private static final long serialVersionUID = -9166468521319948021L;
 
     /** The list of hostnames for this rule */
     private HostNameList hostNameList = HostNameList.getEmptyHostNameList();

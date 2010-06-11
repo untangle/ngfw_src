@@ -68,7 +68,6 @@ import com.untangle.uvm.security.Tid;
 @Inheritance(strategy=InheritanceType.JOINED)
 public class SpamSettings implements Serializable
 {
-    private static final long serialVersionUID = -7246008133224040004L;
 
     private Long id;
     private Tid tid;

@@ -47,7 +47,6 @@ import org.apache.log4j.Logger;
  */
 public class MackageDesc implements Serializable
 {
-    private static final long serialVersionUID = 3662589795455307379L;
 
     private static final Logger logger = Logger.getLogger(MackageDesc.class);
 

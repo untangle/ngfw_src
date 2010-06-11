@@ -52,7 +52,6 @@ import java.util.LinkedList;
  */
 public class IPMaddr implements Serializable, Comparable
 {
-    private static final long serialVersionUID = 9135497849829655626L;
 
     // This is the canonical printed representation of the ANY_ADDRESS
     public static final String ANY = "any";

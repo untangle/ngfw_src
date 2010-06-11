@@ -51,7 +51,6 @@ import org.json.JSONBean;
 @JSONBean.Marker
 public class SessionStats implements Serializable
 {
-    private static final long serialVersionUID = -3444793755996016395L;
 
     protected long c2tBytes = 0;
     protected long t2sBytes = 0;

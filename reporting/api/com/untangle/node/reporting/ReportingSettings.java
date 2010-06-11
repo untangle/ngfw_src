@@ -43,7 +43,6 @@ import com.untangle.uvm.security.Tid;
 @Table(name="n_reporting_settings", schema="settings")
 public class ReportingSettings implements Serializable
 {
-    private static final long serialVersionUID = 2064742840204258977L;
 
     private Long id;
     private Tid tid;

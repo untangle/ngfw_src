@@ -73,7 +73,6 @@ import com.untangle.uvm.node.PipelineEndpoints;
 @Table(name="n_http_req_line", schema="events")
 public class RequestLine implements Serializable
 {
-    private static final long serialVersionUID = -2183950932382112727L;
 
     private Long id;
     private HttpMethod method;

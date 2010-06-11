@@ -52,7 +52,6 @@ import javax.persistence.Table;
 @Table(name="u_mail_settings", schema="settings")
 public class MailSettings implements Serializable
 {
-    private static final long serialVersionUID = 6722526215093951941L;
 
     private Long id;
 

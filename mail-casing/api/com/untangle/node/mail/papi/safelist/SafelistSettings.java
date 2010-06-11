@@ -55,7 +55,6 @@ import javax.persistence.Table;
 @Table(name="n_mail_safels_settings", schema="settings")
 public class SafelistSettings implements Serializable
 {
-    private static final long serialVersionUID = -7466793822226799781L;
 
     private Long id;
 

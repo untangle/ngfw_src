@@ -50,7 +50,6 @@ import com.untangle.uvm.security.Tid;
 public class FirewallSettings implements Serializable
 {
     /* XXX Must be updated */
-    private static final long serialVersionUID = 1629094295874759581L;
 
     private Long id;
     private Tid tid;

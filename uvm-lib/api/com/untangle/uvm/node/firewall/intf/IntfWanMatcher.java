@@ -49,7 +49,6 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
  */
 public final class IntfWanMatcher extends IntfDBMatcher
 {
-    private static final long serialVersionUID = 7927692588940660838L;
 
     /* An interface matcher that matches everything */
     private static final IntfDBMatcher WAN_MATCHER = new IntfWanMatcher(true);

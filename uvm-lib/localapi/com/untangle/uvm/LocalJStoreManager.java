@@ -149,7 +149,6 @@ public interface LocalJStoreManager
             Map<String, String> criteria, T value) throws TransactionException; 
 
     public static class TransactionException extends Exception {
-        private static final long serialVersionUID = -4225665019979995814L;
 
         public TransactionException(String message) {
             super(message);

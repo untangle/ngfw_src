@@ -47,7 +47,6 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
  */
 public final class IntfRelativeMatcher extends IntfDBMatcher
 {
-    private static final long serialVersionUID = -2785397340515158166L;
     
     private static final IntfDBMatcher LESS_TRUSTED_MATCHER
         = new IntfRelativeMatcher(false);

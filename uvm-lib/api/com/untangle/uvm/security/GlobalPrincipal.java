@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
  */
 public class GlobalPrincipal implements Principal, Serializable
 {
-    private static final long serialVersionUID = -5067063988261711499L;
     
     /* Global principals are never readonly because they are intended for servlets */
     private final String user;

@@ -43,7 +43,6 @@ public enum SmtpSpamMessageAction
     SAFELIST('S', "safelist message"),
     OVERSIZE('Z', "oversize message");
 
-    private static final long serialVersionUID = -6364692037092527263L;
 
     public static final char PASS_KEY = 'P';
     public static final char MARK_KEY = 'M';

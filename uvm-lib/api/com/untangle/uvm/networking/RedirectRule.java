@@ -61,7 +61,6 @@ import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
 @Table(name="u_redirect_rule", schema="settings")
 public class RedirectRule extends TrafficIntfRule
 {
-    private static final long serialVersionUID = 8272790575650650832L;
 
     /* User string for the the port redirect when doing a ping redirect. */
     private static final String REDIRECT_PORT_PING         = "n/a";

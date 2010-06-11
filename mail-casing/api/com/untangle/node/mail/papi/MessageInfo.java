@@ -66,7 +66,6 @@ import com.untangle.uvm.node.PipelineEndpoints;
 @Table(name="n_mail_message_info", schema="events")
 public class MessageInfo implements Serializable
 {
-    private static final long serialVersionUID = 42L;
 
     /* constants */
     public static final int SMTP_PORT = 25;

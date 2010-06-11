@@ -46,7 +46,6 @@ import java.util.Map;
  */
 public class UvmState implements Serializable
 {
-    private static final long serialVersionUID = -101624240450519097L;
 
     /**
      * Booted, but not initialized. This is a transient state, just

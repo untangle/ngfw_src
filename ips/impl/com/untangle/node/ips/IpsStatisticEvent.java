@@ -39,7 +39,6 @@ import com.untangle.uvm.logging.SyslogPriority;
     @Table(name="n_ips_statistic_evt", schema="events")
     public class IpsStatisticEvent extends StatisticEvent {
         
-    private static final long serialVersionUID = -8523561013265811459L;
     
         private int dnc = 0; // did-not-care
         private int logged = 0; // logged or alerted

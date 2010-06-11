@@ -28,7 +28,6 @@ import com.untangle.uvm.node.ValidateException;
 
 public class ClientList implements Serializable, Validatable
 { 
-    private static final long serialVersionUID = -41783542634060557L;
 
     List<VpnClient> clientList;
 

@@ -37,7 +37,6 @@ import com.untangle.uvm.node.Rule;
 @Table(name="n_ips_rule", schema="settings")
 public class IpsRule extends Rule implements Serializable
 {
-    private static final long serialVersionUID = -7009708957041660234L;
 
     // Actions (indices to ACTIONS)
     public static final int ALERT = 0;

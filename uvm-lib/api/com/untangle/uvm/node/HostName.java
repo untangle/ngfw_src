@@ -49,7 +49,6 @@ public class HostName implements Serializable {
     private static final HostName EMPTY_HOSTNAME = new HostName( "" );
     private static final List RESERVED_HOSTNAME_LIST = new LinkedList();
 
-    private static final long serialVersionUID = -7181314697064348937L;
 
     private final String hostName;
 

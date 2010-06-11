@@ -51,7 +51,6 @@ public class RadiusServerSettings implements Serializable
 {
     public enum AuthenticationMethod { CLEARTEXT, PAP, CHAP, MSCHAPV1, MSCHAPV2};
 
-    private static final long serialVersionUID = -502936040588817385L;
 
     private boolean isEnabled = false;
     private Long id;

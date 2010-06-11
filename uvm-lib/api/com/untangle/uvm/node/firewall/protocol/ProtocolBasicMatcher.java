@@ -54,7 +54,6 @@ import com.untangle.uvm.vnet.Protocol;
  */
 public final class ProtocolBasicMatcher extends ProtocolDBMatcher
 {
-    private static final long serialVersionUID = 2396418065775379605L;
 
     /** Map from a string name to a protocol matcher */
     private static final Map<String,ProtocolBasicMatcher> nameToMatcherMap =

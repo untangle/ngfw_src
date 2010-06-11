@@ -46,7 +46,6 @@ public class ProtoFilterPattern implements Serializable
     // All user owned rules should have this value
     public static final int USER_CREATED_METAVIZE_ID = 0;
 
-    private static final long serialVersionUID = 3997166364141492555L;
 
     private Long id;
     private int mvid = USER_CREATED_METAVIZE_ID;

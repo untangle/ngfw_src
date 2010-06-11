@@ -56,7 +56,6 @@ import com.untangle.node.mail.papi.smtp.SmtpNotifyMessageGenerator;
 public class VirusSMTPConfig extends VirusMailConfig implements Serializable
 {
 
-    private static final long serialVersionUID = 7520156745253589007L;
 
     /* settings */
     private SMTPVirusMessageAction zMsgAction = SMTPVirusMessageAction.REMOVE;

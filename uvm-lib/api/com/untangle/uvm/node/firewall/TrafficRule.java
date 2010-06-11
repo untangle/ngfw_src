@@ -56,7 +56,6 @@ import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
 @MappedSuperclass
 abstract class TrafficRule extends Rule
 {
-    private static final long serialVersionUID = 3300082570569262876L;
 
     private ProtocolDBMatcher protocol;
 

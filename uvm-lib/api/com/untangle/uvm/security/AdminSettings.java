@@ -62,7 +62,6 @@ import com.untangle.uvm.Period;
 @Table(name="u_admin_settings", schema="settings")
 public class AdminSettings implements Serializable
 {
-    private static final long serialVersionUID = -6013161516125662391L;
 
     private Long id;
     private Set<User> users = new HashSet();

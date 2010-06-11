@@ -5,7 +5,6 @@ import java.io.Serializable;
 import com.untangle.uvm.security.Tid;
 
 public class Benchmark implements Serializable {
-    private static final long serialVersionUID = 158927761661194671L;
     
     private final Tid tid;
     private final String nodeName;

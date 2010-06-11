@@ -38,7 +38,6 @@ import com.untangle.uvm.logging.SyslogPriority;
 @Table(name="n_firewall_statistic_evt", schema="events")
 public class FirewallStatisticEvent extends StatisticEvent
 {
-    private static final long serialVersionUID = 6234123740674515347L;
     /* Number of outbound firewall sessions */
     /**
      * Number of TCP Sessions blocked by the default action,

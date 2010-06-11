@@ -53,7 +53,6 @@ import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
 @MappedSuperclass
 public abstract class TrafficIntfRule extends TrafficRule
 {
-    private static final long serialVersionUID = 679729134715419983L;
 
     /* True if this matches source interface */
     private IntfDBMatcher srcIntf = IntfMatcherFactory.getInstance()

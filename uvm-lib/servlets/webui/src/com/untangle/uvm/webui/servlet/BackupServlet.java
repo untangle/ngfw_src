@@ -17,7 +17,6 @@ import com.untangle.uvm.client.RemoteUvmContext;
  * @author Catalin Matei <cmatei@untangle.com>
  */
 public class BackupServlet extends HttpServlet {
-	private static final long serialVersionUID = 0L;
 	
 	private static final String DEFAULT_BACKUP_FILENAME = "ung.backup";
 	private static final String ACTION_REQUEST_BACKUP = "requestBackup";

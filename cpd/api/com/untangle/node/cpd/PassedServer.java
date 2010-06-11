@@ -6,5 +6,4 @@ import javax.persistence.Table;
 @Entity
 @Table(name="n_cpd_passed_server", schema="settings")
 public class PassedServer extends PassedAddress {
-    private static final long serialVersionUID = 4790984262425450988L;
 }

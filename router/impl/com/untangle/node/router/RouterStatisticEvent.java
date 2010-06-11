@@ -38,7 +38,6 @@ import com.untangle.uvm.logging.SyslogPriority;
     @Table(name="n_router_statistic_evt", schema="events")
     public class RouterStatisticEvent extends StatisticEvent
     {
-        private static final long serialVersionUID = 42L;
 
         /* Number of outbound nat sessions */
         private int natSessions           = 0;

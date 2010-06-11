@@ -44,7 +44,6 @@ import com.untangle.uvm.node.IPaddr;
 
 public class InterfaceAlias implements Serializable
 {
-    private static final long serialVersionUID = -2103291468092590446L;
 
     private IPaddr address;
     private IPaddr netmask;

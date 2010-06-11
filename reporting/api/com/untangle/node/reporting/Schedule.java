@@ -48,7 +48,6 @@ import com.untangle.node.util.UvmUtil;
 @Table(name="n_reporting_sched", schema="settings")
 public class Schedule implements Serializable
 {
-    private static final long serialVersionUID = 2064742840204258979L;
 
     // day of week constants
     public static final int NONE = -1; // only used with monthlyNDayOfWk

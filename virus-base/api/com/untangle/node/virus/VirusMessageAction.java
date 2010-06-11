@@ -44,7 +44,6 @@ public enum VirusMessageAction
 {
 	PASS('P', "pass message"), REMOVE('R', "remove infection");
 	
-    private static final long serialVersionUID = -6364692037092527263L;
 
     public static final char PASS_KEY = 'P';
     public static final char REMOVE_KEY = 'R';

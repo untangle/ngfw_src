@@ -52,7 +52,6 @@ import javax.persistence.Table;
 @Table(name="u_period", schema="settings")
 public class Period implements Serializable
 {
-    private static final long serialVersionUID = 2173836337317097459L;
 
     private Long id;
 

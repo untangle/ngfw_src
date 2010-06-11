@@ -37,7 +37,6 @@ import java.io.Serializable;
 
 public class Application implements Comparable<Application>, Serializable
 {
-    private static final long serialVersionUID = -3020081261657541265L;
     private final MackageDesc libItem;
     private final MackageDesc trialLibItem;
     private final MackageDesc node;

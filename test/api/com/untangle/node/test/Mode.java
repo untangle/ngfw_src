@@ -26,7 +26,6 @@ import java.util.Map;
 
 public class Mode implements Serializable
 {
-    private static final long serialVersionUID = 8234167214876633324L;
 
     public static final Mode RELEASE = new Mode("RELEASE");
     public static final Mode NORMAL = new Mode("NORMAL");

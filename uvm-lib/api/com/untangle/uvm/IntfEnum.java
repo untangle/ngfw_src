@@ -45,7 +45,6 @@ import java.util.HashMap;
  */
 public class IntfEnum implements Serializable
 {
-    private static final long serialVersionUID = -2938902418634358424L;
 
     public static final byte INTF_NONE_NUM = -1;
 

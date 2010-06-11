@@ -56,7 +56,6 @@ public class HttpSettings implements Serializable
     public static final int MIN_URI_LENGTH = 1024;
     public static final int MAX_URI_LENGTH = 4096;
 
-    private static final long serialVersionUID = -8901463578794639216L;
 
     private Long id;
 

@@ -57,7 +57,6 @@ import com.untangle.uvm.security.Tid;
 @Table(name="n_openvpn_settings", schema="settings")
 public class VpnSettings implements Serializable, Validatable
 {
-    // private static final long serialVersionUID = 1900466626555001143L;
 
     private static final String INVALID_CHARACTERS_STRING = "[^-a-zA-Z0-9- ]";
     private static final Pattern INVALID_CHARACTERS_PATTERN;

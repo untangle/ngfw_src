@@ -28,7 +28,6 @@ import com.untangle.node.http.BlockDetails;
  */
 public class VirusBlockDetails extends BlockDetails
 {
-    private static final long serialVersionUID = 8742107043087009250L;
     
     private final String reason;
     private final String vendor;

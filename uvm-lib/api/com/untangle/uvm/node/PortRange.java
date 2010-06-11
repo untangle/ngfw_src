@@ -43,7 +43,6 @@ import java.io.Serializable;
  */
 public class PortRange implements Serializable
 {
-    private static final long serialVersionUID = 5558567567094911428L;
 
     public static final PortRange ANY = new PortRange(0, 65535);
 

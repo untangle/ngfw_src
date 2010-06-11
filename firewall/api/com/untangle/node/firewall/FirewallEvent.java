@@ -41,7 +41,6 @@ import com.untangle.uvm.node.PipelineEndpoints;
 @Table(name="n_firewall_evt", schema="events")
 public class FirewallEvent extends PipelineEvent implements Serializable
 {
-    private static final long serialVersionUID = -6784469969222582381L;
     private int     ruleIndex;
     private boolean wasBlocked;
 

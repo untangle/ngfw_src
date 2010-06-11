@@ -54,7 +54,6 @@ import com.untangle.uvm.logging.SyslogBuilder;
     @Table(name="pl_stats", schema="events")
     public class PipelineStats extends PipelineEvent
     {
-        private static final long serialVersionUID = 2479594766473917892L;
 
         private long c2pBytes = 0;
         private long p2sBytes = 0;

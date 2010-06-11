@@ -45,7 +45,6 @@ import com.untangle.uvm.node.ValidateException;
 @MappedSuperclass
 public class VpnClientBase extends Rule implements Validatable
 {
-    private static final long serialVersionUID = -403968809913481068L;
 
     private static final Pattern NAME_PATTERN;
 

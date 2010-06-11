@@ -63,7 +63,6 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
 @Table(name="u_ip_network", schema="settings")
 public class IPNetworkRule extends Rule
 {
-    private static final long serialVersionUID = -7352786448519039201L;
 
     /** The IP Network for this rule */
     private IPNetwork ipNetwork;

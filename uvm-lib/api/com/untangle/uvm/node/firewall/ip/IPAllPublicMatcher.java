@@ -47,7 +47,6 @@ import com.untangle.uvm.node.firewall.Parser;
  */
 public final class IPAllPublicMatcher extends IPDBMatcher
 {
-    private static final long serialVersionUID = -426295830554157791L;
 
     private static final IPAllPublicMatcher INSTANCE = new IPAllPublicMatcher();
 

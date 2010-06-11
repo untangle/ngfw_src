@@ -43,7 +43,6 @@ import com.untangle.uvm.message.Message;
  */
 public class InstallTimeout extends Message
 {
-    private static final long serialVersionUID = -7760003444590856198L;
 
     private final long time;
     private final MackageDesc requestingMackage;

@@ -40,7 +40,6 @@ import java.util.List;
 
 public class InterfaceComparator implements Comparator<Byte>, Serializable
 {
-    private static final long serialVersionUID = -5856238863805528918L;
     
     private final Integer[] positions;
 

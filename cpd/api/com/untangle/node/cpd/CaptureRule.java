@@ -34,7 +34,6 @@ import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
 @Table(name="n_cpd_capture_rule", schema="settings")
 public class CaptureRule extends Rule
 {
-    private static final long serialVersionUID = 4602132207988197210L;
     
     public static final String START_OF_DAY = "00:00";
     public static final String END_OF_DAY = "23:59";

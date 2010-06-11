@@ -38,7 +38,6 @@ public class BlacklistCategory implements Serializable
 {
     public static final String UNCATEGORIZED = "Uncategorized";
 
-    private static final long serialVersionUID = 445403437262316857L;
 
     private Long id;
     private String name;

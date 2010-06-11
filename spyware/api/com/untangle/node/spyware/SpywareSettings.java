@@ -48,7 +48,6 @@ import org.hibernate.annotations.Cascade;
 @Table(name="n_spyware_settings", schema="settings")
 public class SpywareSettings implements Serializable
 {
-    private static final long serialVersionUID = -2701816808325279608L;
 
     private Long id;
     private Tid tid;

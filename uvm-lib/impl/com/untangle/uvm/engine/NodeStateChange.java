@@ -45,7 +45,6 @@ import com.untangle.uvm.security.Tid;
 @Table(name="u_node_state_change", schema="events")
 class NodeStateChange extends LogEvent
 {
-    private static final long serialVersionUID = -7000796578323779009L;
     private Tid tid;
     private NodeState state;
 
