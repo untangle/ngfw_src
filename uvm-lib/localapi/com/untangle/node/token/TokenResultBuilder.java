@@ -136,7 +136,7 @@ public class TokenResultBuilder {
         if(list == null) {
             return null;
         }
-        return (Token[]) list.toArray(new Token[list.size()]);
+        return list.toArray(new Token[list.size()]);
     }
 
     private void addStreamer(TokenStreamer streamer, boolean forClient) {

@@ -109,11 +109,12 @@ public class PartialListUtil
     }
 
     /* danger, but this is how it comes in from the web ui */
-    public void updateCachedItems( Collection items, List[] modifications )
+    public void updateCachedItems( Collection<Rule> items, List[] modifications )
     {
-        updateCachedItems((Collection<Rule>)items, RULE_HANDLER, modifications );
+        updateCachedItems(items, RULE_HANDLER, modifications );
     }
 
+    @SuppressWarnings("unchecked")
     public <T> void updateCachedItems( Collection<T> items, Handler<T> handler, List[] modifications )
     {
         if ( modifications == null ) return;
@@ -127,11 +128,9 @@ public class PartialListUtil
     }
 
     /* not the best type safe solution, but every other case makes it hard to use. */
-    public void updateCachedItems( Collection items, List added, List<Long> deleted, List modified )
-
+    public void updateCachedItems( Collection<Rule> items, List<Rule> added, List<Long> deleted, List<Rule> modified )
     {
-        updateCachedItems((Collection<Rule>)items, RULE_HANDLER,
-                          (List<Rule>)added, deleted, (List<Rule>)modified );
+        updateCachedItems(items, RULE_HANDLER, added, deleted, modified );
     }
 
     public <T> void updateCachedItems( Collection<T> items, Handler<T> handler,

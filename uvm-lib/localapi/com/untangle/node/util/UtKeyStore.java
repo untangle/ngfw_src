@@ -429,12 +429,12 @@ public class UtKeyStore {
         java.util.Enumeration<String> aliases =
             ks.aliases();
 
-        ArrayList ret = new ArrayList();
+        ArrayList<String> ret = new ArrayList<String>();
         while(aliases.hasMoreElements()) {
             ret.add(aliases.nextElement());
         }
 
-        return (String[]) ret.toArray(new String[ret.size()]);
+        return ret.toArray(new String[ret.size()]);
     }
 
     public UtKSEntryType getEntryType(String alias)

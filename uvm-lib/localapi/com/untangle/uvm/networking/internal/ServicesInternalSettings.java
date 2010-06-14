@@ -85,7 +85,7 @@ public class ServicesInternalSettings
         
         /* peripheral settings */
         this.defaultRoute      = defaultRoute;
-        this.dnsServerList     = Collections.unmodifiableList( new LinkedList( dnsServerList ));
+        this.dnsServerList     = Collections.unmodifiableList( new LinkedList<IPaddr>( dnsServerList ));
     }
 
     /** Return whether or not services are enabled */

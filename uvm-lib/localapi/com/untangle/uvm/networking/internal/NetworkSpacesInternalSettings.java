@@ -59,8 +59,8 @@ public class NetworkSpacesInternalSettings
                                           List<NetworkSpaceInternal> networkSpaceList,
                                           IPaddr dns1, IPaddr dns2, IPaddr defaultRoute )
     {
-        this.interfaceList     = Collections.unmodifiableList( new LinkedList( interfaceList ));
-        this.networkSpaceList  = Collections.unmodifiableList( new LinkedList( networkSpaceList ));
+        this.interfaceList     = Collections.unmodifiableList( new LinkedList<InterfaceInternal>( interfaceList ));
+        this.networkSpaceList  = Collections.unmodifiableList( new LinkedList<NetworkSpaceInternal>( networkSpaceList ));
 
         this.dns1          = dns1;
         this.dns2          = dns2;

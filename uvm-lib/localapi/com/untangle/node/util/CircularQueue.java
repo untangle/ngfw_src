@@ -46,9 +46,10 @@ public class CircularQueue<E> {
     private int m_head = 0;
     private int m_tail = 0;
 
+    @SuppressWarnings("unchecked")
     public CircularQueue(int len) {
         m_capacity = len+1;
-        m_list = (E[])new Object[m_capacity];
+        m_list = (E[]) new Object[m_capacity];
     }
 
     public void push(E e) {
@@ -100,6 +101,7 @@ public class CircularQueue<E> {
         return ret;
     }
 
+    @SuppressWarnings("unchecked")
     public E[] peekAll(E[] a) {
         int len = length();
         if(a.length < len) {

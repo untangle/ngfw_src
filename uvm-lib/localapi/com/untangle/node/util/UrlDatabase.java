@@ -136,7 +136,7 @@ public class UrlDatabase<T>
             }
 
             if (ul.contains(proto, host, uri)) {
-                return new UrlDatabaseResult(false, o);
+                return new UrlDatabaseResult<T>(false, o);
             }
         }
 
@@ -147,7 +147,7 @@ public class UrlDatabase<T>
             }
 
             if (ul.contains(proto, host, uri)) {
-                return new UrlDatabaseResult(true, o);
+                return new UrlDatabaseResult<T>(true, o);
             }
         }
 

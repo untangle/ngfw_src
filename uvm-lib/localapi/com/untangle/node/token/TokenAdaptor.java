@@ -75,10 +75,9 @@ public class TokenAdaptor extends AbstractEventHandler
     private static final ByteBuffer[] BYTE_BUFFER_PROTO = new ByteBuffer[0];
 
     private final TokenHandlerFactory handlerFactory;
-    private final Map handlers = new ConcurrentHashMap();
+    private final Map<Session,HandlerDesc> handlers = new ConcurrentHashMap<Session,HandlerDesc>();
 
-    private final PipelineFoundry pipeFoundry = LocalUvmContextFactory.context()
-        .pipelineFoundry();
+    private final PipelineFoundry pipeFoundry = LocalUvmContextFactory.context().pipelineFoundry();
 
     private final BlingBlinger s2nBytes;
     private final BlingBlinger c2nBytes;
@@ -145,7 +144,7 @@ public class TokenAdaptor extends AbstractEventHandler
     public void handleTCPClientFIN(TCPSessionEvent e)
         throws MPipeException
     {
-        TCPSession session = (TCPSession)e.session();
+        TCPSession session = e.session();
         HandlerDesc handlerDesc = getHandlerDesc(session);
 
         try {
@@ -161,7 +160,7 @@ public class TokenAdaptor extends AbstractEventHandler
     public void handleTCPServerFIN(TCPSessionEvent e)
         throws MPipeException
     {
-        TCPSession session = (TCPSession)e.session();
+        TCPSession session = e.session();
         HandlerDesc handlerDesc = getHandlerDesc(session);
 
         try {
@@ -176,7 +175,7 @@ public class TokenAdaptor extends AbstractEventHandler
     @Override
     public void handleTCPFinalized(TCPSessionEvent e) throws MPipeException
     {
-        TCPSession session = (TCPSession)e.session();
+        TCPSession session = e.session();
         HandlerDesc handlerDesc = getHandlerDesc(session);
 
         try {
@@ -263,8 +262,7 @@ public class TokenAdaptor extends AbstractEventHandler
         }
     }
 
-    private void addHandler(Session session, TokenHandler handler,
-                            Pipeline pipeline)
+    private void addHandler(Session session, TokenHandler handler, Pipeline pipeline)
     {
         handlers.put(session, new HandlerDesc(handler, pipeline));
     }

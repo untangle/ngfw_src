@@ -20,7 +20,8 @@ import com.untangle.uvm.servlet.ServletUtils;
  * @author rbscott
  *
  */
-public class CommandLineUtil<T> {
+public class CommandLineUtil<T>
+{
     private final JSONSerializer serializer = new JSONSerializer();
     private final TestInitializer<T> testInitializer;
 
@@ -93,8 +94,8 @@ public class CommandLineUtil<T> {
         }
     }
 
-    public Object runCommand(T base, String methodName, String params)
-    throws Exception {
+    @SuppressWarnings("unchecked")
+    public Object runCommand(T base, String methodName, String params) throws Exception {
         Object[] args = new Object[0];
 
         if (params != null) {

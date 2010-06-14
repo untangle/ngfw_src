@@ -117,7 +117,7 @@ public class Header implements Token
 
     public Iterator<String> keyIterator()
     {
-        return new Iterator()
+        return new Iterator<String>()
             {
                 private Iterator<String> i = header.keySet().iterator();
 

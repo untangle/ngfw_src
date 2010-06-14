@@ -36,6 +36,7 @@ package com.untangle.uvm.vnet;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.untangle.uvm.node.Node;
@@ -47,14 +48,12 @@ public class NodeStateChangeEvent extends EventObject
     private final NodeState nodeState;
     private final List<String> args;
 
-    NodeStateChangeEvent(Node t, NodeState nodeState,
-                              String[] args)
+    public NodeStateChangeEvent(Node t, NodeState nodeState, String[] args)
     {
-        this(t, nodeState, (List<String>)(null == args ? Collections.emptyList() :  Arrays.asList(args)));
+        this(t, nodeState, (null == args ? new LinkedList<String>() :  Arrays.asList(args)));
     }
 
-    NodeStateChangeEvent(Node t, NodeState nodeState,
-                              List<String> args)
+    public NodeStateChangeEvent(Node t, NodeState nodeState, List<String> args)
     {
         super(t);
 

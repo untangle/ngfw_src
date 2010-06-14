@@ -117,6 +117,7 @@ public class FileChunkStreamer implements TokenStreamer
 
     // TokenStreamer methods --------------------------------------------------
 
+    @SuppressWarnings("fallthrough")
     public Token nextToken()
     {
         logger.debug("nextToken()");

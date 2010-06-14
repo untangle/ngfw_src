@@ -72,10 +72,9 @@ public class CasingAdaptor extends AbstractEventHandler
     private final CasingFactory casingFactory;
     private final boolean clientSide;
 
-    private final Map casings = new ConcurrentHashMap();
+    private final Map<Session,CasingDesc> casings = new ConcurrentHashMap<Session,CasingDesc>();
 
-    private final PipelineFoundry pipeFoundry = LocalUvmContextFactory.context()
-        .pipelineFoundry();
+    private final PipelineFoundry pipeFoundry = LocalUvmContextFactory.context().pipelineFoundry();
 
     private final BlingBlinger s2nBytes;
     private final BlingBlinger c2nBytes;
@@ -295,19 +294,19 @@ public class CasingAdaptor extends AbstractEventHandler
 
     private CasingDesc getCasingDesc(Session session)
     {
-        CasingDesc casingDesc = (CasingDesc)casings.get(session);
+        CasingDesc casingDesc = casings.get(session);
         return casingDesc;
     }
 
     private Casing getCasing(Session session)
     {
-        CasingDesc casingDesc = (CasingDesc)casings.get(session);
+        CasingDesc casingDesc = casings.get(session);
         return casingDesc.casing;
     }
 
     private Pipeline getPipeline(Session session)
     {
-        CasingDesc casingDesc = (CasingDesc)casings.get(session);
+        CasingDesc casingDesc = casings.get(session);
         return casingDesc.pipeline;
     }
 

@@ -66,7 +66,7 @@ public class NetworkSpaceInternal
         /* Convert the list to ip network */
         /* This is going to lose the name/description/category info */
         List<IPNetwork> networkList = new LinkedList<IPNetwork>();
-        for ( IPNetworkRule rule : (List<IPNetworkRule>)networkSpace.getNetworkList()) {
+        for ( IPNetworkRule rule : networkSpace.getNetworkList()) {
             networkList.add( rule.getIPNetwork());
         }
         this.networkList = Collections.unmodifiableList( networkList );
