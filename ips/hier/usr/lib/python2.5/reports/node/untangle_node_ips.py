@@ -30,6 +30,7 @@ from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
 from reports import Highlight
+from reports import HOUR_FORMATTER
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -188,7 +189,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
 class TopTenAttacksByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-attacks-by-hits', _('Top Ten Attacks By Hits'))
+        Graph.__init__(self, 'top-attacks-by-hits', _('Top Attacks By Hits'))
 
         self.__vendor_name = vendor_name
 
@@ -241,119 +242,81 @@ AND ips_description != ''"""
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class DailyUsage(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'daily-attacks', _('Daily Attacks'))
+        Graph.__init__(self, 'attacks', _('Attacks'))
 
         self.__vendor_name = vendor_name
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
 
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
-
-        query = """\
-SELECT COALESCE(max(attacks), 0), COALESCE(avg(attacks), 0)
-FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS attacks
-      FROM reports.session_totals
-      WHERE trunc_time >= %s AND trunc_time < %s
-      AND ips_description != ''"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query += "GROUP BY day) AS foo"
-
-        conn = sql_helper.get_connection()
-        try:
-            lks = []
-
-            curs = conn.cursor()
-
-            if host:
-                curs.execute(query, (one_day, ed, host))
-            elif user:
-                curs.execute(query, (one_day, ed, user))
-            else:
-                curs.execute(query, (one_day, ed))
-
-            r = curs.fetchone()
-            ks = KeyStatistic(_('Avg Attacks'), r[1], _('attacks/day'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Attacks'), r[0], _('attacks/day'))
-            lks.append(ks)
-        finally:
-            conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        one_day = DateFromMx(start_date)
 
+        lks = []
         conn = sql_helper.get_connection()
+        curs = conn.cursor()
         try:
-            query = """\
-SELECT date_trunc('day', trunc_time) AS day,
-       count(*) AS attacks
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND ips_description != ''"""
-
-            if host:
-                query += " AND hname = %s"
-            elif user:
-                query += " AND uid = %s"
-
-            query += "GROUP BY day ORDER BY day asc"
-
-            curs = conn.cursor()
-
-            if host:
-                curs.execute(query, (one_day, ed, host))
-            elif user:
-                curs.execute(query, (one_day, ed, user))
+            if report_days == 1:
+                time_interval = 60 * 60
+                unit = "hour"
+                formatter = HOUR_FORMATTER
             else:
-                curs.execute(query, (one_day, ed))
+                time_interval = 24 * 60 * 60
+                unit = "day"
+                formatter = DATE_FORMATTER
+
+            sums = ["COUNT(*)"]
+
+            extra_where = [("ips_description != ''", {})]
+            if host:
+                extra_where.append(("hname = %(host)s", { 'host' : host }))
+            elif user:
+                extra_where.append(("uid = %(user)s" , { 'user' : user }))
+
+            q, h = sql_helper.get_averaged_query(sums, "reports.session_totals",
+                                                 start_date,
+                                                 end_date,
+                                                 extra_where = extra_where,
+                                                 time_interval = time_interval)
+            curs.execute(q, h)
 
             dates = []
             attacks = []
-
-            while 1:
-                r = curs.fetchone()
-                if not r:
-                    break
+            
+            for r in curs.fetchall():
                 dates.append(r[0])
                 attacks.append(r[1])
 
+            if not attacks:
+                attacks = [0,]
+
+            rp = sql_helper.get_required_points(start_date, end_date,
+                                            mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
+
+            ks = KeyStatistic(_('Avg Attacks Blocked'),
+                              sum(attacks) / len(rp),
+                              _('blocks')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Attacks Blocked'), max(attacks),
+                              _('blocks')+'/'+_(unit))
+            lks.append(ks)
+
+            plot = Chart(type=STACKED_BAR_CHART,
+                         title=self.title, xlabel=_('Date'),
+                         ylabel=_('Attacks'),
+                         major_formatter=HOUR_FORMATTER,
+                         required_points=rp)
+
+            plot.add_dataset(dates, attacks, label=_('attacks'))
         finally:
             conn.commit()
 
-        rp = sql_helper.get_required_points(start_date, end_date,
-                                            mx.DateTime.DateTimeDelta(1))
-
-        plot = Chart(type=STACKED_BAR_CHART,
-                     title=self.title, xlabel=_('Date'),
-                     ylabel=_('Attacks per Day'),
-                     major_formatter=DATE_FORMATTER,
-                     required_points=rp)
-
-        plot.add_dataset(dates, attacks, label=_('attacks'))
-
-        return plot
+        return (lks, plot)
 
 class IpsDetail(DetailSection):
     def __init__(self):

@@ -206,7 +206,6 @@ public class TimeSeriesChart extends Plot
             da.setTickUnit(new DateTickUnit(tickUnit, tickFrequency));
     }
 
-
     public void generate(String reportBase, String csvUrl, String imageUrl)
         throws IOException
     {

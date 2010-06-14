@@ -31,6 +31,7 @@ from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
 from reports import Highlight
+from reports import HOUR_FORMATTER
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -179,7 +180,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
 class DailyUsage(Graph):
     def __init__(self):
-        Graph.__init__(self, 'daily-usage', _('Daily Usage'))
+        Graph.__init__(self, 'usage', _('Usage'))
 
     @print_timing
     def get_key_statistics(self, end_date, report_days, host=None, user=None,
@@ -229,70 +230,77 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS detections
         return lks
 
     @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
 
-        ed = DateFromMx(end_date)
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        one_week = DateFromMx(start_date)
 
+        lks = []
         conn = sql_helper.get_connection()
+        curs = conn.cursor()
         try:
-            query = """\
-SELECT date_trunc('day', trunc_time) AS day,
-       count(*) AS detections
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND pf_protocol != ''"""
-
-            if host:
-                query += " AND hname = %s"
-            elif user:
-                query += " AND uid = %s"
-
-            query += "GROUP BY day ORDER BY day asc"
-
-            curs = conn.cursor()
-
-            if host:
-                curs.execute(query, (one_week, ed, host))
-            elif user:
-                curs.execute(query, (one_week, ed, user))
+            if report_days == 1:
+                time_interval = 60 * 60
+                unit = "hour"
+                formatter = HOUR_FORMATTER
             else:
-                curs.execute(query, (one_week, ed))
+                time_interval = 24 * 60 * 60
+                unit = "day"
+                formatter = DATE_FORMATTER
+
+            sums = ["COUNT(*)"]
+
+            extra_where = [("pf_protocol != ''", {})]
+            if host:
+                extra_where.append(("hname = %(host)s", { 'host' : host }))
+            elif user:
+                extra_where.append(("uid = %(user)s" , { 'user' : user }))
+
+            q, h = sql_helper.get_averaged_query(sums, "reports.session_totals",
+                                                 start_date,
+                                                 end_date,
+                                                 extra_where = extra_where,
+                                                 time_interval = time_interval)
+            curs.execute(q, h)
 
             dates = []
             detections = []
-
-            while 1:
-                r = curs.fetchone()
-                if not r:
-                    break
+            
+            for r in curs.fetchall():
                 dates.append(r[0])
                 detections.append(r[1])
+
+            if not detections:
+                detections = [0,]
+
+            rp = sql_helper.get_required_points(start_date, end_date,
+                                            mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
+
+            ks = KeyStatistic(_('Avg Detections'),
+                              sum(detections) / len(rp),
+                              _('blocks')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Detections'), max(detections),
+                              _('blocks')+'/'+_(unit))
+            lks.append(ks)
+
+            plot = Chart(type=STACKED_BAR_CHART,
+                         title=self.title, xlabel=_('Date'),
+                         ylabel=_('Detections'),
+                         major_formatter=HOUR_FORMATTER,
+                         required_points=rp)
+
+            plot.add_dataset(dates, detections, label=_('detections'))
         finally:
             conn.commit()
 
-        rp = sql_helper.get_required_points(start_date, end_date,
-                                            mx.DateTime.DateTimeDelta(1))
-
-        plot = Chart(type=STACKED_BAR_CHART,
-                     title=_('Daily Usage'),
-                     xlabel=_('Date'),
-                     ylabel=_('Detections per Day'),
-                     major_formatter=DATE_FORMATTER,
-                     required_points=rp)
-
-        plot.add_dataset(dates, detections, label=_('detections'),
-                         color=colors.detected)
-
-        return plot
+        return (lks, plot)
 
 class TopTenBlockedProtocolsByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-ten-blocked-protocols-by-hits',
-                       _('Top Ten Blocked Protocols By Hits'))
+        Graph.__init__(self, 'top-blocked-protocols-by-hits',
+                       _('Top Blocked Protocols By Hits'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -344,11 +352,11 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenDetectedProtocolsByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-ten-detected-protocols-by-hits', _('Top Ten Detected Protocols By Hits'))
+        Graph.__init__(self, 'top-detected-protocols-by-hits', _('Top Detected Protocols By Hits'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -403,11 +411,11 @@ WHERE trunc_time >= %s AND trunc_time < %s
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenBlockedHostsByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-ten-blocked-hosts-by-hits', _('Top Ten Blocked Hosts By Hits'))
+        Graph.__init__(self, 'top-blocked-hosts-by-hits', _('Top Blocked Hosts By Hits'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -464,12 +472,12 @@ AND pf_protocol != ''
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenLoggedHostsByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-ten-logged-hosts-by-hits',
-                       _('Top Ten Logged Hosts By Hits'))
+        Graph.__init__(self, 'top-logged-hosts-by-hits',
+                       _('Top Logged Hosts By Hits'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -523,11 +531,11 @@ AND pf_protocol != ''
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenBlockedUsersByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-ten-blocked-users-by-hits', _('Top Ten Blocked Users By Hits'))
+        Graph.__init__(self, 'top-blocked-users-by-hits', _('Top Blocked Users By Hits'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -583,11 +591,11 @@ AND pf_protocol != ''
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenLoggedUsersByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-ten-logged-users-by-hits', _('Top Ten Logged Users By Hits'))
+        Graph.__init__(self, 'top-logged-users-by-hits', _('Top Logged Users By Hits'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -642,7 +650,7 @@ AND pf_protocol != ''
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class ProtofilterDetail(DetailSection):
     def __init__(self):

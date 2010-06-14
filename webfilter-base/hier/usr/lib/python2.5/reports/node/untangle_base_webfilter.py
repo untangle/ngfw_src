@@ -32,6 +32,7 @@ from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
 from reports import Highlight
+from reports import HOUR_FORMATTER
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -89,7 +90,6 @@ class WebFilterBaseNode(Node):
 
         s = SummarySection('summary', _('Summary Report'),
                            [WebHighlight(self.name, self.__vendor_name),
-                            HourlyWebUsage(self.__vendor_name),
                             DailyWebUsage(self.__vendor_name),
                             TotalWebUsage(self.__vendor_name),
                             TopTenWebBrowsingHostsByHits(self.__vendor_name),
@@ -216,143 +216,49 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
 
         return h
 
-class HourlyWebUsage(Graph):
+class DailyWebUsage(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'hourly-usage', _('Hourly Usage'))
+        Graph.__init__(self, 'web-usage', _('Web Usage'))
 
         self.__vendor_name = vendor_name
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
 
-        ed = DateFromMx(end_date)
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+        start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
 
-        hits_query = """\
-SELECT max(hits) AS max_hits,
-       COALESCE(sum(hits), 0)::float / (%s * 24 * 60) AS avg_hits
-FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
-        if host:
-            hits_query += " AND hname = %s"
-        elif user:
-            hits_query += " AND uid = %s"
-
-        blocks_query = """\
-SELECT COALESCE(sum(wf_%s_blocks), 0)::float / %s,
-       max(wf_%s_blocks)
-FROM (SELECT date_trunc('hour', trunc_time) AS hour,
-             sum(wf_%s_blocks)::int AS wf_%s_blocks
-      FROM reports.n_http_totals
-      WHERE trunc_time >= %%s AND trunc_time < %%s
-""" % (self.__vendor_name, report_days, self.__vendor_name, self.__vendor_name,
-       self.__vendor_name)
-
-        if host:
-            blocks_query += " AND hname = %s"
-        elif user:
-            blocks_query += " AND uid = %s"
-
-        blocks_query += " GROUP BY hour) AS foo"
-
-        violations_query = """\
-SELECT COALESCE(sum(wf_%s_violations), 0)::float / %s,
-       max(wf_%s_violations)
-FROM (SELECT date_trunc('hour', trunc_time) AS hour,
-      sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END)::int as wf_%s_violations
-      FROM reports.n_http_totals
-      WHERE trunc_time >= %%s AND trunc_time < %%s
-""" % (self.__vendor_name, report_days,
-       self.__vendor_name,
-       self.__vendor_name, self.__vendor_name,
-       self.__vendor_name)
-
-        if host:
-            violations_query += " AND hname = %s"
-        elif user:
-            violations_query += " AND uid = %s"
-
-        violations_query += " GROUP BY hour) AS foo"
-
-        conn = sql_helper.get_connection()
-        try:
-            lks = []
-
-            curs = conn.cursor()
-            if host:
-                curs.execute(hits_query, (report_days, one_week, ed, host))
-            elif user:
-                curs.execute(hits_query, (report_days, one_week, ed, user))
-            else:
-                curs.execute(hits_query, (report_days, one_week, ed))
-            r = curs.fetchone()
-            ks = KeyStatistic(_('Avg Hits'), r[1], _('hits/minute'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Hits'), r[0], _('hits/minute'))
-            lks.append(ks)
-
-            curs = conn.cursor()
-            if host:
-                curs.execute(violations_query, (one_week, ed, host))
-            elif user:
-                curs.execute(violations_query, (one_week, ed, user))
-            else:
-                curs.execute(violations_query, (one_week, ed))
-            r = curs.fetchone()
-            ks = KeyStatistic(_('Avg Violations'), r[0],
-                              _('violations/hour'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Violations'), r[1],
-                              _('violations/hour'))
-            lks.append(ks)
-
-            curs = conn.cursor()
-            if host:
-                curs.execute(blocks_query, (one_week, ed, host))
-            elif user:
-                curs.execute(blocks_query, (one_week, ed, user))
-            else:
-                curs.execute(blocks_query, (one_week, ed))
-            r = curs.fetchone()
-            ks = KeyStatistic(_('Avg Blocked Violations'), r[0],
-                              _('violations/hour'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Blocked Violations'), r[1],
-                              _('violations/hour'))
-            lks.append(ks)
-        finally:
-            conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
+        lks = []
+        
         conn = sql_helper.get_connection()
         curs = conn.cursor()
+
         try:
-            # per minute
-            sums = ["sum(hits)",
-                    "sum(wf_%s_blocks)" % (self.__vendor_name,),
-                    "sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END)" % (self.__vendor_name, self.__vendor_name)]
+            sums = ["COALESCE(SUM(hits), 0)::float",
+                    "COALESCE(SUM(wf_%s_blocks), 0)::float" % (self.__vendor_name,),
+                    "COALESCE(SUM(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END), 0)::float" % (self.__vendor_name, self.__vendor_name)]
 
+            extra_where = []
             if host:
-                extra_where = [("hname = %(host)s", { 'host' : host }),]
+                extra_where.append(("hname = %(host)s", { 'host' : host }))
             elif user:
-                extra_where = [("uid = %(user)s" , { 'user' : user }),]
+                extra_where.append(("uid = %(user)" , { 'user' : user }))
+
+            if report_days == 1:
+                time_interval = 60 * 60
+                unit = "hour"
+                formatter = HOUR_FORMATTER
             else:
-                extra_where = []
-
+                time_interval = 24 * 60 * 60
+                unit = "day"
+                formatter = DATE_FORMATTER
+                
             q, h = sql_helper.get_averaged_query(sums, "reports.n_http_totals",
-                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 start_date,
                                                  end_date,
-                                                 extra_where = extra_where)
-
+                                                 extra_where = extra_where,
+                                                 time_interval = time_interval)
             curs.execute(q, h)
 
             dates = []
@@ -365,166 +271,41 @@ FROM (SELECT date_trunc('hour', trunc_time) AS hour,
                 if not r:
                     break
                 dates.append(r[0])
-                hits.append(r[1])
+                hits.append(r[1]-r[2])
                 blocks.append(r[2])
-                violations.append(r[3])                
-        finally:
-            conn.commit()
+                violations.append(r[3]-r[2])
 
-        plot = Chart(type=TIME_SERIES_CHART,
-                     title=self.title,
-                     xlabel=_('Time'),
-                     ylabel=_('Hits per minute'),
-                     major_formatter=TIMESTAMP_FORMATTER)
-#                     required_points=sql_helper.REQUIRED_TIME_POINTS)
+            rp = sql_helper.get_required_points(start_date, end_date,
+                                            mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
 
-        plot.add_dataset(dates, hits, label=_('hits'),
-                         color=colors.goodness)
-        plot.add_dataset(dates, violations, label=_('violations'),
-                         color=colors.detected)
-        plot.add_dataset(dates, blocks, label=_('blocked violations'),
-                         color=colors.badness)
+            if not hits:
+                hits = [0,]
+            if not blocks:
+                blocks = [0,]
+            if not violations:
+                violations = [0,]
 
-        return plot
-
-class DailyWebUsage(Graph):
-    def __init__(self, vendor_name):
-        Graph.__init__(self, 'daily-usage', _('Daily Usage'))
-
-        self.__vendor_name = vendor_name
-
-
-    @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
-
-        query = """\
-SELECT max(hits), COALESCE(sum(hits), 0) / %s, max(wf_%s_blocks),
-       COALESCE(sum(wf_%s_blocks), 0) / %s,
-       max(wf_%s_violations-wf_%s_blocks),
-       COALESCE(sum(wf_%s_violations-wf_%s_blocks), 0) / %s
-FROM (SELECT date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
-             sum(wf_%s_blocks)::int as wf_%s_blocks,
-             sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END)::int as wf_%s_violations
-      FROM reports.n_http_totals
-      WHERE trunc_time >= %%s AND trunc_time < %%s
-""" % (report_days, self.__vendor_name,
-       self.__vendor_name, report_days,
-       self.__vendor_name,
-       self.__vendor_name,
-       self.__vendor_name,
-       self.__vendor_name, report_days,
-       self.__vendor_name, self.__vendor_name,
-       self.__vendor_name, self.__vendor_name,
-       self.__vendor_name)
-        if host:
-            query = query + " AND hname = %s"
-        elif user:
-            query = query + " AND uid = %s"
-
-        query = query + " GROUP BY day) AS foo"
-
-        conn = sql_helper.get_connection()
-        try:
-            lks = []
-
-            curs = conn.cursor()
-            if host:
-                curs.execute(query, (one_week, ed, host))
-            elif user:
-                curs.execute(query, (one_week, ed, user))
-            else:
-                curs.execute(query, (one_week, ed))
-            r = curs.fetchone()
-            ks = KeyStatistic(_('Avg Hits'), r[1], _('hits/day'))
+            ks = KeyStatistic(_('Avg Hits'), sum(hits) / len(rp), _('hits')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Hits'), r[0], _('hits/day'))
+            ks = KeyStatistic(_('Max Hits'), max(hits), _('hits')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg Violations'), r[5],
-                              _('violations/day'))
+            ks = KeyStatistic(_('Avg Violations'), sum(violations) / len(rp), _('violations')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Violations'), r[4],
-                              _('violations/day'))
+            ks = KeyStatistic(_('Max Violations'), max(violations), _('violations')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg Blocked Violations'), r[3],
-                              _('blocks/day'))
+            ks = KeyStatistic(_('Avg Blocked Violations'), sum(blocks) / len(rp), _('blocked violations')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Blocked Violations'), r[2],
-                              _('blocks/day'))
+            ks = KeyStatistic(_('Max Blocked Violations'), max(blocks), _('blocked violations')+'/'+_(unit))
             lks.append(ks)
-        finally:
-            conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        one_week = DateFromMx(start_date)
-
-        conn = sql_helper.get_connection()
-        try:
-            q = """\
-SELECT day,
-       coalesce(sum(hits), 0)::int AS hits,
-       coalesce(sum(wf_%s_blocks), 0)::int,
-       coalesce(sum(wf_%s_violations-wf_%s_blocks), 0)::int
-FROM (SELECT date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
-             sum(wf_%s_blocks)::int as wf_%s_blocks,
-             sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END)::int as wf_%s_violations
-      FROM reports.n_http_totals
-      WHERE trunc_time >= %%s AND trunc_time < %%s
-""" % (8*(self.__vendor_name,))
-            if host:
-                q = q + " AND hname = %s"
-            elif user:
-                q = q + " AND uid = %s"
-
-            q += " GROUP BY day) AS foo GROUP BY day"
-            
-            curs = conn.cursor()
-
-            if host:
-                curs.execute(q, (one_week, ed, host))
-            elif user:
-                curs.execute(q, (one_week, ed, user))
-            else:
-                curs.execute(q, (one_week, ed))
-
-            dates = []
-            hits = []
-            blocks = []
-            violations = []
-
-            while 1:
-                r = curs.fetchone()
-                if not r:
-                    break
-                dates.append(r[0])
-                hits.append(r[1]-r[2]-r[3])
-                blocks.append(r[2])
-                violations.append(r[3])
 
         finally:
             conn.commit()
-
-        rp = sql_helper.get_required_points(start_date, end_date,
-                                            mx.DateTime.DateTimeDelta(1))
 
         plot = Chart(type=STACKED_BAR_CHART,
                      title=self.title,
                      xlabel=_('Date'),
-                     ylabel=_('Hits per Day'),
-                     major_formatter=DATE_FORMATTER,
+                     ylabel=_('Hits'),
+                     major_formatter=formatter,
                      required_points=rp)
 
         plot.add_dataset(dates, hits, label=_('clean hits'), color=colors.goodness)
@@ -533,7 +314,7 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, sum(hits)::int AS hits,
         plot.add_dataset(dates, blocks, label=_('blocks'),
                          color=colors.badness)
 
-        return plot
+        return (lks, plot)
 
 class TotalWebUsage(Graph):
     def __init__(self, vendor_name):
@@ -604,8 +385,8 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,
 
 class TopTenWebPolicyViolationsByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-categories-of-violations-by-hits',
-                       _('Top Ten Categories of Violations (by hits)'))
+        Graph.__init__(self, 'top-categories-of-violations-by-hits',
+                       _('Top Categories of Violations (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -664,12 +445,12 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenWebBlockedPolicyViolationsByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-web-categories-of-blocked-violations-by-hits',
-                       _('Top Ten Categories of Blocked Violations (by hits)'))
+        Graph.__init__(self, 'top-web-categories-of-blocked-violations-by-hits',
+                       _('Top Categories of Blocked Violations (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -724,12 +505,12 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC""" \
                      ylabel=_('Blocks per Day'))
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenWebBrowsingHostsByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-web-browsing-hosts-by-hits',
-                       _('Top Ten Web Browsing Hosts (by hits)'))
+        Graph.__init__(self, 'top-web-browsing-hosts-by-hits',
+                       _('Top Web Browsing Hosts (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -772,12 +553,12 @@ GROUP BY hname ORDER BY hits_sum DESC"""
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenWebBrowsingUsersByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-web-browsing-users-by-hits',
-                       _('Top Ten Web Browsing Users (by hits)'))
+        Graph.__init__(self, 'top-web-browsing-users-by-hits',
+                       _('Top Web Browsing Users (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -820,12 +601,12 @@ GROUP BY uid ORDER BY hits_sum DESC"""
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenWebBrowsingUsersBySize(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-web-browsing-users-by-size',
-                       _('Top Ten Web Browsing Users (by size)'))
+        Graph.__init__(self, 'top-web-browsing-users-by-size',
+                       _('Top Web Browsing Users (by size)'))
 
         self.__vendor_name = vendor_name
 
@@ -868,12 +649,12 @@ GROUP BY uid ORDER BY size_sum DESC"""
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenWebPolicyViolatorsByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-host-violators-by-hits',
-                       _('Top Ten Host Violators (by hits)'))
+        Graph.__init__(self, 'top-host-violators-by-hits',
+                       _('Top Host Violators (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -918,12 +699,12 @@ ORDER BY blocks_sum DESC""" % ((self.__vendor_name,)*2)
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenWebPolicyViolatorsADByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-violators-by-hits',
-                       _('Top Ten User Violators (by hits)'))
+        Graph.__init__(self, 'top-violators-by-hits',
+                       _('Top User Violators (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -970,12 +751,12 @@ GROUP BY uid ORDER BY blocks_sum DESC""" \
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenWebBrowsingHostsBySize(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-web-browsing-hosts-by-size',
-                       _('Top Ten Web Browsing Hosts (by size)'))
+        Graph.__init__(self, 'top-web-browsing-hosts-by-size',
+                       _('Top Web Browsing Hosts (by size)'))
 
         self.__vendor_name = vendor_name
 
@@ -1018,12 +799,12 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenWebsitesByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-websites-by-hits',
-                       _('Top Ten Websites (by hits)'))
+        Graph.__init__(self, 'top-websites-by-hits',
+                       _('Top Websites (by hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -1074,12 +855,12 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenWebsitesBySize(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-websites-by-size',
-                       _('Top Ten Websites (by size)'))
+        Graph.__init__(self, 'top-websites-by-size',
+                       _('Top Websites (by size)'))
 
         self.__vendor_name = vendor_name
 
@@ -1132,12 +913,12 @@ GROUP BY host ORDER BY size_sum DESC"""
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenPolicyViolations(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-violations',
-                       _('Top Ten Violations'))
+        Graph.__init__(self, 'top-violations',
+                       _('Top Violations'))
 
         self.__vendor_name = vendor_name
 
@@ -1190,12 +971,12 @@ AND NOT wf_%s_reason = 'I'""" % (self.__vendor_name, self.__vendor_name)
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenBlockerPolicyViolations(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-ten-blocked-violations',
-                       _('Top Ten Blocked Violations'))
+        Graph.__init__(self, 'top-blocked-violations',
+                       _('Top Blocked Violations'))
 
         self.__vendor_name = vendor_name
 
@@ -1250,7 +1031,7 @@ AND wf_%s_blocks > 0""" % (self.__vendor_name, self.__vendor_name,
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class WebFilterDetail(DetailSection):
     def __init__(self, vendor_name):

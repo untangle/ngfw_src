@@ -29,6 +29,7 @@ from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
 from reports import Highlight
+from reports import HOUR_FORMATTER
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -265,129 +266,32 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
 class HourlyRates(Graph):
     def __init__(self):
-        Graph.__init__(self, 'hourly-spyware-events',
-                       _('Hourly Blocked Incidents'))
+        Graph.__init__(self, 'spyware-events',
+                       _('Incidents'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
+
+        start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
 
         lks = []
-
-        ed = DateFromMx(end_date)
-
-        url_query = """\
-SELECT COALESCE(sum(sw_blacklisted), 0) AS sw_total_blacklisted,
-       max(sw_blacklisted)::int AS sw_max_blacklisted,
-       COALESCE(sum(sw_cookies), 0)  AS sw_total_cookies,
-       max(sw_cookies)::int AS sw_max_cookies
-FROM (SELECT date_trunc('hour', trunc_time) AS time,
-      COALESCE(sum(sw_blacklisted), 0) AS sw_blacklisted,
-      COALESCE(sum(sw_cookies), 0) AS sw_cookies
-      FROM reports.n_http_totals
-      WHERE trunc_time >= %%s AND trunc_time < %%s
-      %s
-      GROUP BY time) AS foo"""
-
-        if host:
-            url_query = url_query % ("AND hname = %s",)
-        elif user:
-            url_query = url_query % ("AND uid = %s",)
-        else:
-            url_query = url_query % ("",)
-            
-        conn = sql_helper.get_connection()
-        try:
-            curs = conn.cursor()
-            sd = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
-
-            if host:
-                curs.execute(url_query, (sd, ed, host))
-            elif user:
-                curs.execute(url_query, (sd, ed, user))
-            else:
-                curs.execute(url_query, (sd, ed))
-
-            r = curs.fetchone()
-            total_blacklisted = r[0]
-            max_blacklisted = r[1]
-            total_cookies = r[2]
-            max_cookies = r[3]
-
-            ks = KeyStatistic(_('Avg URLs Blocked'),
-                              total_blacklisted / float(report_days * 24),
-                              _('blocks/hour'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max URLs Blocked'), max_blacklisted,
-                              _('blocks/hour'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Avg Cookies Blocked'),
-                              total_cookies / float(report_days * 24),
-                              _('blocks/hour'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Cookies Blocked'), max_blacklisted,
-                              _('blocks/hour'))
-            lks.append(ks)
-
-            sessions_query = """\
-SELECT COALESCE(sum(sw_accesses), 0) AS total_accesses,
-       max(sw_accesses)::int AS max_accesses
-FROM (SELECT date_trunc('hour', trunc_time) AS time,
-      COALESCE(sum(sw_accesses), 0) AS sw_accesses
-      FROM reports.session_totals
-      WHERE trunc_time >= %%s AND trunc_time < %%s
-      %s
-      GROUP BY time) AS foo"""
-
-            if host:
-                sessions_query = sessions_query % ("AND hname = %s",)
-            elif user:
-                sessions_query = sessions_query % ("AND uid = %s",)
-            else:
-                sessions_query = sessions_query % ("",)
-
-
-            curs = conn.cursor()
-            sd = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
-
-            if host:
-                curs.execute(sessions_query, (sd, ed, host))
-            elif user:
-                curs.execute(sessions_query, (sd, ed, user))
-            else:
-                curs.execute(sessions_query, (sd, ed))
-            r = curs.fetchone()
-            total_accesses = r[0]
-            max_accesses = r[1]
-
-            ks = KeyStatistic(_('Avg Suspicious Traffic'),
-                              total_accesses / float(report_days * 24),
-                              _('detected/hour'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Suspicious Traffic'),
-                              max_accesses, _('detected/hour'))
-            lks.append(ks)
-        finally:
-            conn.commit()
-
-        return lks
-
-    @print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
         try:
-            # per minute
-            sums = ["coalesce(sum(sw_blacklisted), 0) * 60",
-                    "coalesce(sum(sw_cookies), 0) * 60"]
+            if report_days == 1:
+                time_interval = 60 * 60
+                unit = "hour"
+                formatter = HOUR_FORMATTER
+            else:
+                time_interval = 24 * 60 * 60
+                unit = "day"
+                formatter = DATE_FORMATTER
+
+            sums = ["coalesce(sum(sw_blacklisted), 0)",
+                    "coalesce(sum(sw_cookies), 0)"]
 
             extra_where = []
             if host:
@@ -396,28 +300,50 @@ FROM (SELECT date_trunc('hour', trunc_time) AS time,
                 extra_where.append(("uid = %(user)s" , { 'user' : user }))
 
             q, h = sql_helper.get_averaged_query(sums, "reports.n_http_totals",
-                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 start_date,
                                                  end_date,
-                                                 extra_where = extra_where)
+                                                 extra_where = extra_where,
+                                                 time_interval = time_interval)
             curs.execute(q, h)
 
             dates = []
             sw_blacklisted = []
             sw_cookies = []
-
-            while 1:
-                r = curs.fetchone()
-                if not r:
-                    break
+            
+            for r in curs.fetchall():
                 dates.append(r[0])
                 sw_blacklisted.append(r[1])
                 sw_cookies.append(r[2])
 
-            plot = Chart(type=TIME_SERIES_CHART,
+            if not sw_blacklisted:
+                sw_blacklisted = [0,]
+            if not sw_cookies:
+                sw_cookies = [0,]
+
+            rp = sql_helper.get_required_points(start_date, end_date,
+                                            mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
+
+            ks = KeyStatistic(_('Avg URLs Blocked'),
+                              sum(sw_blacklisted) / len(rp),
+                              _('blocks')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max URLs Blocked'), max(sw_blacklisted),
+                              _('blocks')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Avg Cookies Blocked'),
+                              sum(sw_cookies) / len(rp),
+                              _('blocks')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Cookies Blocked'), max(sw_cookies),
+                              _('blocks')+'/'+_(unit))
+            lks.append(ks)
+
+            plot = Chart(type=STACKED_BAR_CHART,
                          title=self.title,
-                         xlabel=_('Time'),
-                         ylabel=_('Hits per Minute'),
-                         major_formatter=TIMESTAMP_FORMATTER)
+                         xlabel=_('Date'),
+                         ylabel=_('Incidents'),
+                         major_formatter=formatter,
+                         required_points=rp)
 
             plot.add_dataset(dates, sw_blacklisted, label=_('URLs'))
             plot.add_dataset(dates, sw_cookies, label=_('cookies'))
@@ -433,29 +359,40 @@ FROM (SELECT date_trunc('hour', trunc_time) AS time,
             q, h = sql_helper.get_averaged_query(sums, "reports.session_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date,
-                                                 extra_where = extra_where)
+                                                 extra_where = extra_where,
+                                                 time_interval = time_interval)
             curs.execute(q, h)
 
-            dates = []
             sw_accesses = []
 
             while 1:
                 r = curs.fetchone()
                 if not r:
                     break
-                dates.append(r[0])
                 sw_accesses.append(r[1])
+
+            if not sw_accesses:
+                sw_accesses = [0,]
+
+            ks = KeyStatistic(_('Avg Suspicious Traffic'),
+                              sum(sw_accesses) / len(rp),
+                              _('detected')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Suspicious Traffic'),
+                              max(sw_accesses),
+                              _('detected')+'/'+_(unit))
+            lks.append(ks)
+
+            plot.add_dataset(dates, sw_accesses, label=_('Detections'))
         finally:
             conn.commit()
 
-        plot.add_dataset(dates, sw_accesses, label=_('Detections'))
-
-        return plot
+        return (lks, plot)
 
 class SpywareUrlsBlocked(Graph):
     def __init__(self):
-        Graph.__init__(self, 'summary-daily-blocked-urls',
-                       _('Daily Blocked URLs'))
+        Graph.__init__(self, 'summary-blocked-urls',
+                       _('Blocked URLs'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -463,97 +400,75 @@ class SpywareUrlsBlocked(Graph):
         if email:
             return None
 
-        ed = DateFromMx(end_date)
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        one_week = DateFromMx(start_date)
 
-        query = """\
-SELECT COALESCE(sum(sw_blacklisted), 0) / %%s AS avg_blocked,
-       max(sw_blacklisted)::int AS max_blocked
-FROM (SELECT date_trunc('day', trunc_time) AS time,
-             COALESCE(sum(sw_blacklisted), 0) AS sw_blacklisted,
-             COALESCE(sum(sw_cookies), 0) AS sw_cookies
-      FROM reports.n_http_totals
-      WHERE trunc_time >= %%s AND trunc_time < %%s
-      %s
-      GROUP BY time) AS foo"""
-
-        if host:
-            query = query % ("AND hname = %s",)
-        elif user:
-            query = query % ("AND uid = %s",)
-        else:
-            query = query % ("",)
+        lks = []
 
         conn = sql_helper.get_connection()
+        curs = conn.cursor()
         try:
-            lks = []
-
-            curs = conn.cursor()
-            if host:
-                curs.execute(query, (report_days, one_week, ed, host))
-            elif user:
-                curs.execute(query, (report_days, one_week, ed, user))
+            if report_days == 1:
+                time_interval = 60 * 60
+                unit = "hour"
+                formatter = HOUR_FORMATTER
             else:
-                curs.execute(query, (report_days, one_week, ed))
+                time_interval = 24 * 60 * 60
+                unit = "day"
+                formatter = DATE_FORMATTER
 
-            r = curs.fetchone()
-            ks = KeyStatistic(_('Avg URLs Blocked'), r[0],
-                              _('hits/day'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max URLs Blocked'), r[1],
-                              _('hits/day'))
-            lks.append(ks)
+            sums = ["coalesce(sum(sw_blacklisted), 0)",]
 
-            q = """\
-SELECT date_trunc('day', trunc_time) AS day,
-       coalesce(sum(sw_blacklisted), 0)
-FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
-
+            extra_where = []
             if host:
-                q += " AND hname = %s"
+                extra_where.append(("hname = %(host)s", { 'host' : host }))
             elif user:
-                q += " AND uid = %s"
-            q = q + """
-GROUP BY day
-ORDER BY day asc"""
+                extra_where.append(("uid = %(user)s" , { 'user' : user }))
 
-            curs = conn.cursor()
-
-            if host:
-                curs.execute(q, (one_week, ed, host))
-            elif user:
-                curs.execute(q, (one_week, ed, user))
-            else:
-                curs.execute(q, (one_week, ed))
+            q, h = sql_helper.get_averaged_query(sums, "reports.n_http_totals",
+                                                 start_date,
+                                                 end_date,
+                                                 extra_where = extra_where,
+                                                 time_interval = time_interval)
+            curs.execute(q, h)
 
             dates = []
-            blocks = []
-
+            sw_blacklisted = []
+            
             for r in curs.fetchall():
                 dates.append(r[0])
-                blocks.append(r[1])
+                sw_blacklisted.append(r[1])
+
+            if not sw_blacklisted:
+                sw_blacklisted = [0,]
+
+            rp = sql_helper.get_required_points(start_date, end_date,
+                                            mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
+
+            ks = KeyStatistic(_('Avg URLs Blocked'),
+                              sum(sw_blacklisted) / len(rp),
+                              _('blocks')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max URLs Blocked'), max(sw_blacklisted),
+                              _('blocks')+'/'+_(unit))
+            lks.append(ks)
+
+            plot = Chart(type=STACKED_BAR_CHART,
+                         title=self.title,
+                         xlabel=_('Date'),
+                         ylabel=_('Blocks'),
+                         major_formatter=DATE_FORMATTER,
+                         required_points=rp)
+
+            plot.add_dataset(dates, sw_blacklisted, label=_('URLs'))
+
         finally:
             conn.commit()
-
-        rp = sql_helper.get_required_points(start_date, end_date,
-                                            mx.DateTime.DateTimeDelta(1))
-
-        plot = Chart(type=STACKED_BAR_CHART,
-                     title=self.title,
-                     xlabel=_('Date'),
-                     ylabel=_('Blocks per Day'),
-                     major_formatter=DATE_FORMATTER,
-                     required_points=rp)
-
-        plot.add_dataset(dates, blocks, label=_('URLs'))
 
         return (lks, plot)
 
 class TopTenBlockedSpywareSitesByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-ten-blocked-spyware-sites-by-hits', _('Top Ten Blocked Spyware Sites By Hits'))
+        Graph.__init__(self, 'top-ten-blocked-blocked-urls-by-hits', _('Top Ten Blocked URLs (by hits)'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -605,11 +520,11 @@ AND (sw_blacklisted + sw_cookies) > 0"""
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenBlockedHostsByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-ten-blocked-hosts-by-hits', _('Top Ten Blocked Hosts By Hits'))
+        Graph.__init__(self, 'top-ten-blocked-hosts-by-hits', _('Top Ten Blocked Hosts (by hits)'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -662,7 +577,7 @@ AND (sw_blacklisted + sw_cookies) > 0"""
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenBlockedCookies(Graph):
     def __init__(self):
@@ -719,7 +634,7 @@ AND sw_cookies > 0"""
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class SpywareCookiesBlocked(Graph):
     def __init__(self):
@@ -731,81 +646,76 @@ class SpywareCookiesBlocked(Graph):
         if email:
             return None
 
-        ed = DateFromMx(end_date)
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        sd = DateFromMx(start_date)
-
-        query = """\
-SELECT date_trunc('day', trunc_time) AS day, sum(sw_cookies)
-FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query += """
-GROUP BY day
-ORDER BY day
-"""
-
-        conn = sql_helper.get_connection()
-        try:
-            curs = conn.cursor()
-
-            if host:
-                curs.execute(query, (sd, ed, host))
-            elif user:
-                curs.execute(query, (sd, ed, user))
-            else:
-                curs.execute(query, (sd, ed))
-
-            dates = []
-            blocks = []
-            blocks = []
-            total = 0
-            max = 0
-
-            for r in curs.fetchall():
-                s = r[1]
-                dates.append(r[0])
-                blocks.append(s)
-                if not s:
-                    s = 0
-                total += s
-                if max < s:
-                    max = s
-        finally:
-            conn.commit()
-
 
         lks = []
 
-        ks = KeyStatistic(_('Avg Cookies Blocked'), total / report_days,
-                          _('blocks/day'))
-        lks.append(ks)
-        ks = KeyStatistic(_('Max Cookies Blocked'), max, _('blocks/day'))
-        lks.append(ks)
+        conn = sql_helper.get_connection()
+        curs = conn.cursor()
+        try:
+            if report_days == 1:
+                time_interval = 60 * 60
+                unit = "hour"
+                formatter = HOUR_FORMATTER
+            else:
+                time_interval = 24 * 60 * 60
+                unit = "day"
+                formatter = DATE_FORMATTER
 
-        rp = sql_helper.get_required_points(start_date, end_date,
-                                            mx.DateTime.DateTimeDelta(1))
+            sums = ["coalesce(sum(sw_cookies), 0)",]
 
-        plot = Chart(type=STACKED_BAR_CHART,
-                     title=self.title,
-                     xlabel=_('Date'),
-                     ylabel=_('Blocks per Day'),
-                     major_formatter=DATE_FORMATTER,
-                     required_points=rp)
+            extra_where = []
+            if host:
+                extra_where.append(("hname = %(host)s", { 'host' : host }))
+            elif user:
+                extra_where.append(("uid = %(user)s" , { 'user' : user }))
 
-        plot.add_dataset(dates, blocks, label=_('cookies'))
+            q, h = sql_helper.get_averaged_query(sums, "reports.n_http_totals",
+                                                 start_date,
+                                                 end_date,
+                                                 extra_where = extra_where,
+                                                 time_interval = time_interval)
+            curs.execute(q, h)
+
+            dates = []
+            sw_cookies = []
+            
+            for r in curs.fetchall():
+                dates.append(r[0])
+                sw_cookies.append(r[1])
+
+            if not sw_cookies:
+                sw_cookies = [0,]
+
+            rp = sql_helper.get_required_points(start_date, end_date,
+                                            mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
+
+            ks = KeyStatistic(_('Avg Cookies Blocked'),
+                              sum(sw_cookies) / len(rp),
+                              _('blocks')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Cookies Blocked'), max(sw_cookies),
+                              _('blocks')+'/'+_(unit))
+            lks.append(ks)
+
+            plot = Chart(type=STACKED_BAR_CHART,
+                         title=self.title,
+                         xlabel=_('Date'),
+                         ylabel=_('Blocks'),
+                         major_formatter=DATE_FORMATTER,
+                         required_points=rp)
+
+            plot.add_dataset(dates, sw_cookies, label=_('Cookies'))
+
+        finally:
+            conn.commit()
 
         return (lks, plot)
 
 class TopTenSuspiciousTrafficSubnetsByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-ten-suspicious-traffic-networks-by-hits',
-                       _('Top Ten Suspicious Traffic Networks'))
+        Graph.__init__(self, 'top-suspicious-traffic-networks-by-hits',
+                       _('Top Suspicious Traffic Networks'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -860,11 +770,11 @@ ORDER BY hits_sum DESC"""
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenSuspiciousTrafficHostsByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-ten-suspicious-traffic-hosts-by-hits', _('Top Ten Suspicious Traffic Hosts By Hits'))
+        Graph.__init__(self, 'top-suspicious-traffic-hosts-by-hits', _('Top Suspicious Traffic Hosts (by hits)'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -922,7 +832,7 @@ AND sw_accesses > 0"""
 
 class SpywareSubnetsDetected(Graph):
     def __init__(self):
-        Graph.__init__(self, 'suspicious-traffic-detected', _('Suspicious Traffic Detected'))
+        Graph.__init__(self, 'suspicious-traffic-detections', _('Suspicious Traffic Detections'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -930,72 +840,72 @@ class SpywareSubnetsDetected(Graph):
         if email:
             return None
 
-        ed = DateFromMx(end_date)
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        sd = DateFromMx(start_date)
-
-        query = """\
-SELECT date_trunc('day', trunc_time) AS day,
-       sum(new_sessions)
-FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-AND NOT sw_accesses IS NULL AND sw_access_ident != ''"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query += """
-GROUP BY day ORDER BY day ASC"""
-
-        conn = sql_helper.get_connection()
-        try:
-            curs = conn.cursor()
-
-            if host:
-                curs.execute(query, (sd, ed, host))
-            elif user:
-                curs.execute(query, (sd, ed, user))
-            else:
-                curs.execute(query, (sd, ed))
-
-            dates = []
-            blocks = []
-            blocks = []
-            total = 0
-            max = 0
-
-            for r in curs.fetchall():
-                s = r[1]
-                dates.append(r[0])
-                blocks.append(s)
-                total += s
-                if max < s:
-                    max = s
-        finally:
-            conn.commit()
 
 
         lks = []
 
-        ks = KeyStatistic(_('Avg Suspicious Detected'), total / report_days,
-                          _('/day'))
-        lks.append(ks)
-        ks = KeyStatistic(_('Max Suspicious Detected'), round(max), _('/day'))
-        lks.append(ks)
+        conn = sql_helper.get_connection()
+        curs = conn.cursor()
+        try:
+            if report_days == 1:
+                time_interval = 60 * 60
+                unit = "hour"
+                formatter = HOUR_FORMATTER
+            else:
+                time_interval = 24 * 60 * 60
+                unit = "day"
+                formatter = DATE_FORMATTER
 
-        rp = sql_helper.get_required_points(start_date, end_date,
-                                            mx.DateTime.DateTimeDelta(1))
 
-        plot = Chart(type=STACKED_BAR_CHART,
-                     title=self.title,
-                     xlabel=_('Date'),
-                     ylabel=_('Detections per Day'),
-                     major_formatter=DATE_FORMATTER,
-                     required_points=rp)
+            sums = ["COALESCE(SUM(new_sessions), 0)",]
 
-        plot.add_dataset(dates, blocks, label=_('detections'))
+            extra_where = [ ("NOT sw_accesses IS NULL",{}),
+                            ("sw_access_ident != ''",{}) ]
+            if host:
+                extra_where.append(("hname = %(host)s", { 'host' : host }))
+            elif user:
+                extra_where.append(("uid = %(user)s" , { 'user' : user }))
+
+            q, h = sql_helper.get_averaged_query(sums, "reports.session_totals",
+                                                 start_date,
+                                                 end_date,
+                                                 extra_where = extra_where,
+                                                 time_interval = time_interval)
+            curs.execute(q, h)
+
+            dates = []
+            sessions = []
+            
+            for r in curs.fetchall():
+                dates.append(r[0])
+                sessions.append(r[1])
+
+            if not sessions:
+                sessions = [0,]
+
+            rp = sql_helper.get_required_points(start_date, end_date,
+                                            mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
+
+            ks = KeyStatistic(_('Avg Suspicious Detections'),
+                              sum(sessions) / len(rp),
+                              _('blocks')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Suspicious Detections'), max(sessions),
+                              _('blocks')+'/'+_(unit))
+            lks.append(ks)
+
+            plot = Chart(type=STACKED_BAR_CHART,
+                         title=self.title,
+                         xlabel=_('Date'),
+                         ylabel=_('Detections'),
+                         major_formatter=DATE_FORMATTER,
+                         required_points=rp)
+
+            plot.add_dataset(dates, sessions, label=_('Detections'))
+
+        finally:
+            conn.commit()
 
         return (lks, plot)
 

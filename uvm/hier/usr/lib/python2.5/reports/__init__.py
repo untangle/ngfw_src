@@ -68,6 +68,9 @@ def __time_of_day_formatter(x, pos):
     t = DateTimeDeltaFromSeconds(x)
     return "%02d:%02d" % (t.hour, t.minute)
 
+def __hour_formatter(x, pos):
+    return x.strftime("%H")
+
 def __date_formatter(x, pos):
     return x.strftime("%b-%d")
 
@@ -152,6 +155,7 @@ class Formatter:
 
 TIME_OF_DAY_FORMATTER = Formatter('time-of-day', __time_of_day_formatter)
 DATE_FORMATTER = Formatter('date', __date_formatter)
+HOUR_FORMATTER = Formatter('hour', __hour_formatter)
 TIMESTAMP_FORMATTER = Formatter('timestamp', __timestamp_formatter)
 IDENTITY_FORMATTER = Formatter('identity', __identity_formatter)
 
@@ -510,8 +514,31 @@ class Graph:
         if not graph_data:
             return None
 
-        self.__key_statistics, self.__plot = graph_data
+        try:
+            self.__key_statistics, self.__plot = graph_data
+        except:
+            self.__key_statistics, self.__plot, max_results = graph_data
 
+            map = {}
+            for ks in self.__key_statistics:
+                map[ks.name] = ks
+
+            items = []
+
+            for k, v in self.__plot.datasets.iteritems():
+                items.append([k, v])
+            items.sort(cmp=lambda a,b: cmp(a[1], b[1]), reverse=True)
+
+            key_statistics_2 = []
+            for name, value in items:
+                if name in map:
+                    key_statistics_2.append(map[name])
+                else:
+                    key_statistics_2.append(KeyStatistic(name, value,
+                                                         self.__key_statistics[0].unit))
+
+            self.__key_statistics = key_statistics_2
+            
         if not self.__plot:
             return None
 
@@ -690,6 +717,10 @@ class Chart:
     def colors(self):
         return self.__colors
 
+    @property
+    def datasets(self):
+        return self.__datasets
+
     def add_dataset(self, xdata, ydata, label=None, color=None, linestyle='-'):
         if self.__type == PIE_CHART:
             raise ValueError('using 2D dataset for pie chart')
@@ -729,16 +760,22 @@ class Chart:
         c = 0
 
         for i in items:
-            k = str(i[0])
-            self.__datasets[k] = i[1]
+            if not display_limit or c < display_limit-1:
+                k = str(i[0])
+                self.__datasets[k] = i[1]
 
-            if ((not display_limit or c < display_limit)
-                and (not self.__colors.has_key(k)
-                     and self.__color_num < len(reports.colors.color_palette))):
-                self.__colors[k] = reports.colors.color_palette[self.__color_num]
-                self.__color_num += 1
-                c += 1
-
+                if (not self.__colors.has_key(k)
+                    and self.__color_num < len(reports.colors.color_palette)):
+                    self.__colors[k] = reports.colors.color_palette[self.__color_num]
+                    self.__color_num += 1
+                    c += 1
+            elif display_limit:
+                logger.error("HAHA")
+                if not "others" in self.__datasets:
+                    self.__datasets["others"] = 0
+                self.__datasets["others"] += i[1]
+                self.__colors["others"] = reports.colors.color_palette[self.__color_num]
+                
     def generate_csv(self, filename, host=None, user=None, email=None):
         if self.__type == PIE_CHART:
             self.__generate_pie_csv(filename, host=host, user=user, email=email)

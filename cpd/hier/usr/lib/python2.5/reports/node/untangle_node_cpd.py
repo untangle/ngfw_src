@@ -16,6 +16,7 @@ from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
 from reports import Highlight
+from reports import HOUR_FORMATTER
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -220,7 +221,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
 class DailyUsage(Graph):
     def __init__(self):
-        Graph.__init__(self, 'daily-usage', _('Daily Usage'))
+        Graph.__init__(self, 'usage', _('Usage'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -228,9 +229,7 @@ class DailyUsage(Graph):
         if email or host or user:
             return None
 
-        ed = DateFromMx(end_date)
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        one_week = DateFromMx(start_date)
 
         # dt = Day Totals.  These are the totals over the entire day.
         # pd = Per Day.  This is the number of a particular event per day.
@@ -252,76 +251,83 @@ SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
        ) AS dt
 """
         conn = sql_helper.get_connection()
+        curs = conn.cursor()
         try:
-            curs = conn.cursor()
-
-            curs.execute(query, (report_days,)*4 + (one_week, ed))
-
-            r = curs.fetchone()
-
-            c = auto_incr()
+            sums = ["COALESCE(SUM(logins), 0)::float",
+                    "COALESCE(SUM(logouts), 0)::float",                    
+                    "COALESCE(SUM(failures), 0)::float"]
             
-            ks = KeyStatistic(_('Average Logins'), r[c()], N_('events'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Logins'), r[c()], N_('events'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Average Logouts'), r[c()], N_('events'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Logouts'), r[c()], N_('events'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Average Failures'), r[c()], N_('events'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Failures'), r[c()], N_('events'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Average Events'), r[c()], N_('events'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Events'), r[c()], N_('events'))
-            lks.append(ks)
-        finally:
-            conn.commit()
+            extra_where = []
 
-        query = """
-SELECT
-    DATE_TRUNC('day', trunc_time) AS day,
-    SUM(logins),
-    SUM(logouts),
-    SUM(failures),
-    SUM(logins+logouts+failures)
-    
-FROM reports.n_cpd_login_totals
-WHERE trunc_time >= %s AND trunc_time < %s
-GROUP BY day
-"""
-        
-        dates = []
-        logins = []
-        logouts = []
-        failures = []
-        events = []
-        try:
-            curs = conn.cursor()
+            if report_days == 1:
+                time_interval = 60 * 60
+                unit = "hour"
+                formatter = HOUR_FORMATTER
+            else:
+                time_interval = 24 * 60 * 60
+                unit = "day"
+                formatter = DATE_FORMATTER
+                
+            q, h = sql_helper.get_averaged_query(sums, "reports.n_cpd_login_totals",
+                                                 start_date,
+                                                 end_date,
+                                                 extra_where = extra_where,
+                                                 time_interval = time_interval)
+            curs.execute(q, h)
 
-            curs.execute(query, (one_week, ed))
+            dates = []
+            logins = []
+            logouts = []
+            failures = []
 
             for r in curs.fetchall():
                 dates.append(r[0])
                 logins.append(r[1])
                 logouts.append(r[2])
                 failures.append(r[3])
-                events.append(r[4])
+
+            if not logins:
+                logins = [0,]
+            if not logouts:
+                logouts = [0,]
+            if not failures:
+                failures = [0,]
+
+            rp = sql_helper.get_required_points(start_date, end_date,
+                                            mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
+
+            ks = KeyStatistic(_('Average Logins'), sum(logins) / len(rp),
+                              N_('events')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Logins'), max(logins),
+                              N_('events')+'/'+_(unit))
+            ks = KeyStatistic(_('Average Logouts'), sum(logouts) / len(rp),
+                              N_('events')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Logouts'), max(logouts),
+                              N_('events')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Average Failures'), sum(failures) / len(rp),
+                              N_('events')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Failures'), max(failures),
+                              N_('events')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Average Events'), sum(logins+logouts+failures) / len(rp),
+                              N_('events')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Events'), max(logouts+logouts+failures),
+                              N_('events')+'/'+_(unit))
+            lks.append(ks)
+
         finally:
             conn.commit()
-
-        print "sd: %s ; ed: %s" % (start_date,end_date )
-
-        rp = sql_helper.get_required_points(start_date, end_date,
-                                            mx.DateTime.DateTimeDelta(1))
         
         plot = Chart(type=STACKED_BAR_CHART,
                      title=self.title,
                      xlabel=_('Date'),
-                     ylabel=_('Login Events'),
-                     major_formatter=DATE_FORMATTER,
+                     ylabel=_('Events'),
+                     major_formatter=HOUR_FORMATTER,
                      required_points=rp)
         plot.add_dataset(dates, logins, label=_('logins'),
                          color=colors.goodness)
@@ -346,12 +352,13 @@ class TopUsers(Graph):
         ed = DateFromMx(end_date)
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
-        query = """\
-SELECT uid, sum(s2c_bytes + c2s_bytes)
-FROM reports.session_totals
-WHERE NOT uid IS NULL AND trunc_time >= %s AND trunc_time < %s
-GROUP BY uid
-LIMIT 10"""
+        query = """
+SELECT login_name,count(*)::int as logins
+FROM reports.n_cpd_login_events
+WHERE NOT login_name IS NULL
+AND event != 'FAILED'
+AND time_stamp >= %s AND time_stamp < %s
+GROUP BY login_name"""
 
         conn = sql_helper.get_connection()
         try:
@@ -364,20 +371,20 @@ LIMIT 10"""
 
             for r in curs.fetchall():
                 uid = r[0]
-                bytes = r[1]
+                logins = r[1]
 
-                ks = KeyStatistic(uid, bytes, N_('bytes'))
+                ks = KeyStatistic(uid, logins, N_('logins'))
                 lks.append(ks)
 
-                pie_data[uid] = bytes
+                pie_data[uid] = logins
         finally:
             conn.commit()
 
         plot = Chart(type=PIE_CHART, title=self.title)
 
-        plot.add_pie_dataset(pie_data)
+        plot.add_pie_dataset(pie_data, display_limit=10)
 
-        return (lks, plot)
+        return (lks, plot, 10)
 
 class TopBlockedClients(Graph):
     def __init__(self):
@@ -392,12 +399,11 @@ class TopBlockedClients(Graph):
         ed = DateFromMx(end_date)
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
-        query = """\
+        query = """
 SELECT client_address,sum(blocks)::int as blocks
 FROM reports.n_cpd_block_totals
 WHERE NOT client_address IS NULL AND trunc_time >= %s AND trunc_time < %s
-GROUP BY client_address
-LIMIT 10"""
+GROUP BY client_address"""
 
         conn = sql_helper.get_connection()
         try:
@@ -421,9 +427,9 @@ LIMIT 10"""
 
         plot = Chart(type=PIE_CHART, title=self.title)
 
-        plot.add_pie_dataset(pie_data)
+        plot.add_pie_dataset(pie_data, display_limit=10)
 
-        return (lks, plot)
+        return (lks, plot, 10)
 
 
 class LoginDetail(DetailSection):

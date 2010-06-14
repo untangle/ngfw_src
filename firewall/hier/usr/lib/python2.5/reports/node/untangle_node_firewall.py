@@ -30,6 +30,7 @@ from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
 from reports import Highlight
+from reports import HOUR_FORMATTER
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -176,7 +177,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
 class DailyRules(reports.Graph):
     def __init__(self):
-        reports.Graph.__init__(self, 'daily-rules', _('Daily Rules'))
+        reports.Graph.__init__(self, 'sessions', _('Sessions'))
 
     @sql_helper.print_timing
     def get_key_statistics(self, end_date, report_days, host=None, user=None,
@@ -215,52 +216,46 @@ FROM (select date_trunc('day', time_stamp) AS day,
             else:
                 curs.execute(avg_max_query, (one_week, ed))
             r = curs.fetchone()
-            ks = reports.KeyStatistic(_('Avg'), r[0], _('logged/day'))
-            lks.append(ks)
-            ks = reports.KeyStatistic(_('Max'), r[1], _('logged/day'))
-            lks.append(ks)
-            ks = reports.KeyStatistic(_('Avg'), r[2], _('blocked/day'))
-            lks.append(ks)
-            ks = reports.KeyStatistic(_('Max'), r[3], _('blocked/day'))
-            lks.append(ks)
         finally:
             conn.commit()
 
         return lks
 
     @sql_helper.print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
+    def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
 
-        ed = DateFromMx(end_date)
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        one_week = DateFromMx(start_date)
+
+        lks = []
 
         conn = sql_helper.get_connection()
+        curs = conn.cursor()
         try:
-            q = """\
-SELECT date_trunc('day', time_stamp) AS time,
-      count(CASE WHEN firewall_rule_index IS NOT NULL AND firewall_was_blocked IS NULL THEN 1 ELSE null END) AS sessions_logged,
-      count(CASE WHEN firewall_was_blocked THEN 1 ELSE null END) AS sessions_blocked
-FROM reports.sessions
-WHERE time_stamp >= %s AND time_stamp < %s"""
-            if host:
-                q = q + " AND hname = %s"
-            elif user:
-                q = q + " AND uid = %s"
-            q = q + """
-GROUP BY time
-ORDER BY time asc"""
-
-            curs = conn.cursor()
-
-            if host:
-                curs.execute(q, (one_week, ed, host))
-            elif user:
-                curs.execute(q, (one_week, ed, user))
+            if report_days == 1:
+                time_interval = 60 * 60
+                unit = "hour"
+                formatter = HOUR_FORMATTER
             else:
-                curs.execute(q, (one_week, ed))
+                time_interval = 24 * 60 * 60
+                unit = "day"
+                formatter = DATE_FORMATTER
+
+            sums = ["COUNT(CASE WHEN firewall_rule_index IS NOT NULL AND firewall_was_blocked IS NULL THEN 1 ELSE null END)",
+                    "COUNT(CASE WHEN firewall_was_blocked THEN 1 ELSE null END)"]
+
+            extra_where = []
+            if host:
+                extra_where.append(("hname = %(host)s", { 'host' : host }))
+            elif user:
+                extra_where.append(("uid = %(user)s" , { 'user' : user }))
+
+            q, h = sql_helper.get_averaged_query(sums, "reports.sessions",
+                                                 start_date,
+                                                 end_date,
+                                                 extra_where = extra_where,
+                                                 time_interval = time_interval)
 
             dates = []
             logs = []
@@ -273,27 +268,46 @@ ORDER BY time asc"""
                 dates.append(r[0])
                 logs.append(r[1])
                 blocks.append(r[2])
+
+            if not logs:
+                logs = [0,]
+            if not blocks:
+                blocks = [0,]
+                
+            rp = sql_helper.get_required_points(start_date, end_date,
+                                                mx.DateTime.DateTimeDelta(1))
+
+            ks = reports.KeyStatistic(_('Avg'), sum(logs)/len(rp),
+                                      _('logged')+'/'+_(unit))
+            lks.append(ks)
+            ks = reports.KeyStatistic(_('Max'), max(logs),
+                                      _('logged')+'/'+_(unit))
+            lks.append(ks)
+            ks = reports.KeyStatistic(_('Avg'), sum(blocks)/len(rp),
+                                      _('blocked')+'/'+_(unit))
+            lks.append(ks)
+            ks = reports.KeyStatistic(_('Max'), max(blocks),
+                                      _('blocked')+'/'+_(unit))
+            lks.append(ks)
+
+            plot = reports.Chart(type=reports.STACKED_BAR_CHART,
+                                 title=_('Sessions'),
+                                 xlabel=_('Date'),
+                                 ylabel=_('sessions'),
+                                 major_formatter=formatter,
+                                 required_points=rp)
+
+            plot.add_dataset(dates, blocks, label=_('blocked'))
+            plot.add_dataset(dates, logs, label=_('logged'))
+
         finally:
             conn.commit()
 
-        rp = sql_helper.get_required_points(start_date, end_date,
-                                            mx.DateTime.DateTimeDelta(1))
-
-        plot = reports.Chart(type=reports.STACKED_BAR_CHART,
-                             title=_('Daily Rules'),
-                             xlabel=_('Day'),
-                             ylabel=_('sessions/day'),
-                             major_formatter=reports.DATE_FORMATTER,
-                             required_points=rp)
-
-        plot.add_dataset(dates, blocks, label=_('blocked'))
-        plot.add_dataset(dates, logs, label=_('logged'))
-
-        return plot
+        return (lks, plot)
 
 class TopTenBlockedHostsByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-ten-firewall-blocked-hosts-by-hits', _('Top Ten Firewall Blocked Hosts By Hits'))
+        Graph.__init__(self, 'top-firewall-blocked-hosts-by-hits', _('Top Firewall Blocked Hosts By Hits'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -345,11 +359,11 @@ AND firewall_rule_index IS NOT NULL"""
                      ylabel=_('Blocks per Day'))
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenBlockingRulesByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-ten-firewall-blocking-rules-by-hits', _('Top Ten Firewall Blocking Rules By Hits'))
+        Graph.__init__(self, 'top-firewall-blocking-rules-by-hits', _('Top Firewall Blocking Rules By Hits'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -402,11 +416,11 @@ AND firewall_rule_index IS NOT NULL"""
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopTenBlockedUsersByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-ten-firewall-blocked-users-by-hits', _('Top Ten Firewall Blocked Users By Hits'))
+        Graph.__init__(self, 'top-firewall-blocked-users-by-hits', _('Top Firewall Blocked Users By Hits'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -460,7 +474,7 @@ AND firewall_rule_index IS NOT NULL"""
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class FirewallDetail(DetailSection):
     def __init__(self):

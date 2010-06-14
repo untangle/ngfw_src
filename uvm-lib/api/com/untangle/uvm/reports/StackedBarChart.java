@@ -39,23 +39,42 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.CategoryLabelPositions;
-import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.axis.DateAxis;
+// import org.jfree.chart.axis.CategoryAxis;
+// import org.jfree.chart.axis.CategoryLabelPositions;
+// import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.StackedBarRenderer;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.xy.XYBarDataset;
 import org.jfree.data.io.CSV;
+import org.jfree.data.time.Minute;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 
 public class StackedBarChart extends Plot
 {
+    private static final DateFormat DF = 
+	new SimpleDateFormat("MMM-dd");
+
+    private static final DateFormat HF = 
+	new SimpleDateFormat("HH");
+
+
     private final String xLabel;
     private final String yLabel;
     private final String majorFormatter;
@@ -70,6 +89,21 @@ public class StackedBarChart extends Plot
         this.xLabel = xLabel;
         this.yLabel = yLabel;
         this.majorFormatter = majorFormatter;
+    }
+
+
+    private Date parseTimeStamp(String timeStr) {
+	Date date = null;
+	try {
+	    date = DF.parse(timeStr);
+	} catch (java.text.ParseException exn) {
+            try{
+                date = HF.parse(timeStr);
+            } catch (java.text.ParseException exn2) {
+                logger.warn("Couldn't parse time for row key: " + timeStr, exn2);
+            }
+	}
+	return date;
     }
 
     public void generate(String reportBase, String csvUrl, String imageUrl)
@@ -87,44 +121,91 @@ public class StackedBarChart extends Plot
 
         CategoryDataset cd = csv.readCategoryDataset(r);
 
-        DefaultCategoryDataset rotated = new DefaultCategoryDataset();
+        //        DefaultCategoryDataset rotated = new DefaultCategoryDataset();
+        TimeSeriesCollection tsc = new TimeSeriesCollection();
 
+        List<Color> seriesColors = new ArrayList<Color>();
         for (int i = 0; i < cd.getColumnCount(); i++) {
             String columnKey = (String)cd.getColumnKey(i);
-
-            for (int j = 0; j < cd.getRowCount(); j++) {
-                Comparable rowKey = cd.getRowKey(j);
-
-                rotated.addValue(cd.getValue(rowKey, columnKey),
-                                 columnKey, rowKey);
-            }
-        }
-
-        String title = getTitle();
-        JFreeChart jfChart =
-            ChartFactory.createStackedBarChart(title, this.xLabel, this.yLabel,
-                                               rotated,
-                                               PlotOrientation.VERTICAL,
-                                               true, false, false);
-        jfChart.setTitle(new TextTitle(title, TITLE_FONT));
-        CategoryPlot p = (CategoryPlot)jfChart.getPlot();
-        StackedBarRenderer renderer = (StackedBarRenderer)p.getRenderer();
-        for (String key : colors.keySet()) {
-            int i = rotated.getRowIndex(key);
-            String colorStr = colors.get(key);
+            String colorStr = colors.get(columnKey);
             if (null != colorStr) {
                 try {
                     Color c = Color.decode("0x" + colorStr);
-                    renderer.setSeriesPaint(i, c);
+                    seriesColors.add(c);
                 } catch (NumberFormatException exn) {
                     logger.warn("could not decode color: " + colorStr, exn);
                 }
             }
+
+            TimeSeries ds = new TimeSeries(columnKey);
+            for (int j = 0; j < cd.getRowCount(); j++) {
+                Comparable rowKey = cd.getRowKey(j);
+                try {
+		    Date d = parseTimeStamp((String)rowKey);
+                    double v = cd.getValue(rowKey, columnKey).doubleValue();
+                    ds.add(new Minute(d), v);
+                } catch (Exception exn) {
+                    logger.warn("Bad row key: " + rowKey, exn);
+                }
+            }
+            tsc.addSeries(ds);
         }
-        CategoryAxis domainAxis = p.getDomainAxis();
-        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.DOWN_45);
+
+//         for (int i = 0; i < cd.getColumnCount(); i++) {
+//             String columnKey = (String)cd.getColumnKey(i);
+
+//             for (int j = 0; j < cd.getRowCount(); j++) {
+//                 Comparable rowKey = cd.getRowKey(j);
+
+//                 rotated.addValue(cd.getValue(rowKey, columnKey),
+//                                  columnKey, rowKey);
+//             }
+//         }
+
+        String title = getTitle();
+        // FIXME: compute bar width properly
+        JFreeChart jfChart =
+            ChartFactory.createXYBarChart(title, this.xLabel, true, this.yLabel,
+                                          new XYBarDataset(tsc, 10000000.0),
+                                          PlotOrientation.VERTICAL,
+                                          true, false, false);
+
+
+        jfChart.setTitle(new TextTitle(title, TITLE_FONT));
+
+//         CategoryPlot p = (CategoryPlot)jfChart.getPlot();
+//         StackedBarRenderer renderer = (StackedBarRenderer)p.getRenderer();
+        XYPlot p = (XYPlot)jfChart.getPlot();
+        XYBarRenderer renderer = (XYBarRenderer)p.getRenderer();
+        renderer.setShadowVisible(false);
+        for (int i = 0; i < seriesColors.size(); i++) {
+            renderer.setSeriesPaint(i, seriesColors.get(i));
+        }
+
+//         for (String key : colors.keySet()) {
+//             int i = rotated.getRowIndex(key);
+//             String colorStr = colors.get(key);
+//             if (null != colorStr) {
+//                 try {
+//                     Color c = Color.decode("0x" + colorStr);
+//                     renderer.setSeriesPaint(i, c);
+//                 } catch (NumberFormatException exn) {
+//                     logger.warn("could not decode color: " + colorStr, exn);
+//                 }
+//             }
+//         }
+
         p.getRangeAxis().setLabelFont(AXIS_FONT);
-        p.getDomainAxis().setLabelFont(AXIS_FONT);
+        DateAxis da = (DateAxis)p.getDomainAxis();
+        da.setLabelFont(AXIS_FONT);
+
+	//formatDateAxis(da, f);
+
+//         CategoryAxis domainAxis = p.getDomainAxis();
+//         domainAxis.setCategoryLabelPositions(CategoryLabelPositions.DOWN_45);
+//         p.getRangeAxis().setLabelFont(AXIS_FONT);
+//         p.getDomainAxis().setLabelFont(AXIS_FONT);
+
         ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl),
                                       jfChart, CHART_WIDTH, CHART_HEIGHT,
                                       null, false, CHART_COMPRESSION_PNG);

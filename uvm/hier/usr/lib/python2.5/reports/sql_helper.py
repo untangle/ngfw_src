@@ -336,12 +336,12 @@ def get_averaged_query(sums, table_name, start_date, end_date,
                        extra_where = [],
                        avgs = [],
                        extra_fields = [],
-                       time_field = DEFAULT_TIME_FIELD, slices = DEFAULT_SLICES):
-    time_interval = time.mktime(end_date.timetuple()) - time.mktime(start_date.timetuple())
-    time_interval = time_interval / slices
+                       time_field = DEFAULT_TIME_FIELD, time_interval = 60):
+#     time_interval = time.mktime(end_date.timetuple()) - time.mktime(start_date.timetuple())
+#     time_interval = time_interval / slices
 
     params_regular = { 'table_name' : table_name,
-                     'time_field' : time_field }
+                       'time_field' : time_field }
     params_to_quote =  { 'start_date' : DateFromMx(start_date),
                          'end_date' : DateFromMx(end_date),
                          'time_interval' : time_interval }
@@ -355,10 +355,10 @@ SELECT date(%%(start_date)s) +
     for e in extra_fields:
         query += ", " + e
     for s in sums:
-        query += ", " + s + " / %%(time_interval)s"
+        query += ", " + s
     for a in avgs:
-        query += ", " + a
-        
+        query += ", " + a + " / %%(time_interval)s"
+
     query += """
 FROM %(table_name)s
 WHERE %(table_name)s.%(time_field)s >= %%(start_date)s AND %(table_name)s.%(time_field)s < %%(end_date)s"""

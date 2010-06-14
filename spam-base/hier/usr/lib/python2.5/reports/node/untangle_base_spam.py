@@ -30,6 +30,7 @@ from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
 from reports import Highlight
+from reports import HOUR_FORMATTER
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -97,11 +98,11 @@ class SpamBaseNode(Node):
                            [SpamHighlight(self.name, self.__short_name, self.__spam_label),
                             TotalEmail(self.__short_name, self.__vendor_name,
                                        self.__spam_label, self.__ham_label),
-                            HourlySpamRate(self.__short_name,
-                                           self.__vendor_name,
-                                           self.__spam_label,
-                                           self.__ham_label,
-                                           self.__hourly_spam_rate_title),
+#                             HourlySpamRate(self.__short_name,
+#                                            self.__vendor_name,
+#                                            self.__spam_label,
+#                                            self.__ham_label,
+#                                            self.__hourly_spam_rate_title),
                             DailySpamRate(self.__short_name,
                                           self.__vendor_name,
                                           self.__spam_label,
@@ -404,108 +405,113 @@ class DailySpamRate(Graph):
         if host or user:
             return None
 
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        one_week = DateFromMx(start_date)
 
         conn = sql_helper.get_connection()
         try:
             lks = []
 
-            ks_query = """
-SELECT COALESCE(sum(msgs), 0)::float / %%s AS email_rate,
-       COALESCE(sum(%s_spam_msgs), 0)::float / %%s AS spam_rate
-FROM reports.n_mail_addr_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s
-AND addr_kind = 'T'""" % (self.__short_name,)
+#             ks_query = """
+# SELECT COALESCE(sum(msgs), 0)::float / %%s AS email_rate,
+#        COALESCE(sum(%s_spam_msgs), 0)::float / %%s AS spam_rate
+# FROM reports.n_mail_addr_totals
+# WHERE trunc_time >= %%s AND trunc_time < %%s
+# AND addr_kind = 'T'""" % (self.__short_name,)
 
+#             if email:
+#                 ks_query += " AND addr = %s"
+#             else:
+#                 ks_query += " AND addr_pos = '1'"
+
+#             curs = conn.cursor()
+#             if email:
+#                 curs.execute(ks_query, (report_days, report_days, email,
+#                                         one_week, ed))
+#             else:
+#                 curs.execute(ks_query, (report_days, report_days, one_week, ed))
+
+
+#             r = curs.fetchone()
+
+
+            sums = ["COALESCE(SUM(msgs), 0)::float",
+                    "COALESCE(SUM(%s_spam_msgs), 0)::float" % (self.__short_name,)]
+            
+            extra_where = [("addr_kind = 'T'", {})]
             if email:
-                ks_query += " AND addr = %s"
+                extra_where.append(("addr = %(email)s", { 'email' : email }))
             else:
-                ks_query += " AND addr_pos = '1'"
+                extra_where.append(("addr_pos = '1'" , {}))
+
+            if report_days == 1:
+                time_interval = 60 * 60
+                unit = "hour"
+                formatter = HOUR_FORMATTER
+            else:
+                time_interval = 24 * 60 * 60
+                unit = "day"
+                formatter = DATE_FORMATTER
+                
+            q, h = sql_helper.get_averaged_query(sums, "reports.n_mail_addr_totals",
+                                                 start_date,
+                                                 end_date,
+                                                 extra_where = extra_where,
+                                                 time_interval = time_interval)
 
             curs = conn.cursor()
-            if email:
-                curs.execute(ks_query, (report_days, report_days, email,
-                                        one_week, ed))
-            else:
-                curs.execute(ks_query, (report_days, report_days, one_week, ed))
-
-            r = curs.fetchone()
-
-            email_rate = r[0]
-            spam_rate = r[1]
-            ham_rate = email_rate - spam_rate
-
-            ks = KeyStatistic(_('Mail Rate'), email_rate, _('messages/day'))
-            lks.append(ks)
-            ks = KeyStatistic(_('%s rate') % self.__spam_label, spam_rate,
-                              _('messages/day'))
-            lks.append(ks)
-            ks = KeyStatistic(_('%s rate') % self.__ham_label, ham_rate,
-                              _('messages/day'))
-            lks.append(ks)
-
-            curs = conn.cursor()
-
-            if email:
-                plot_query = """
-SELECT date_trunc('day', trunc_time) AS day,
-       COALESCE(sum(msgs), 0)::float / %%s AS msgs,
-       COALESCE(sum(%s_spam_msgs), 0)::float / %%s AS %s_spam_msgs
-FROM reports.n_mail_addr_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s
-AND addr_kind = 'T'
-AND addr = %%s
-GROUP BY day
-ORDER BY day asc""" % (2 * (self.__short_name,))
-            else:
-                plot_query = """
-SELECT date_trunc('day', trunc_time) AS day,
-       COALESCE(sum(msgs), 0)::float / %%s AS msgs,
-       COALESCE(sum(%s_spam_msgs), 0)::float / %%s AS %s_spam_msgs
-FROM reports.n_mail_addr_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s
-AND addr_kind = 'T'
-AND addr_pos = '1'
-GROUP BY day
-ORDER BY day asc""" % (2 * (self.__short_name,))
+            curs.execute(q, h)
 
             dates = []
-            ham = []
-            spam = []
+            totals = []
+            spams = []
+            hams = []
+            
+            for r in curs.fetchall():
+                dates.append(r[0])
+                hams.append(float(r[1]))
+                spams.append(float(r[2]))
+                totals.append(float(r[1]+r[2]))                
+
+            rp = sql_helper.get_required_points(start_date, end_date,
+                                            mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
+
+            if not totals:
+                totals = [0,]
+                spams = [0,]
+                hams = [0,]
+
+            ks = KeyStatistic(_('Avg Mail Rate'), sum(totals)/len(rp), _('messages')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Mail Rate'), max(totals), _('messages')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Avg %s rate') % self.__spam_label, sum(spams)/len(rp),
+                              _('messages')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max %s rate') % self.__spam_label, max(spams),
+                              _('messages')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Avg %s rate') % self.__ham_label, sum(hams)/len(rp),
+                              _('messages')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max %s rate') % self.__ham_label, max(hams),
+                              _('messages')+'/'+_(unit))
+            lks.append(ks)
 
             curs = conn.cursor()
 
-            if email:
-                curs.execute(plot_query, (report_days, report_days, email, one_week, ed))
-            else:
-                curs.execute(plot_query, (report_days, report_days, one_week, ed))
-
-            for r in curs.fetchall():
-                dates.append(r[0])
-                m = r[1]
-                s = r[2]
-                h = m - s
-                spam.append(s)
-                ham.append(h)
         finally:
             conn.commit()
-
-        rp = sql_helper.get_required_points(start_date, end_date,
-                                            mx.DateTime.DateTimeDelta(1))
 
         plot = Chart(type=STACKED_BAR_CHART,
                      title=self.title,
                      xlabel=_('Date'),
-                     ylabel=_('Emails per Day'),
-                     major_formatter=DATE_FORMATTER,
+                     ylabel=_('Emails per ' + unit),
+                     major_formatter=formatter,
                      required_points=rp)
 
-        plot.add_dataset(dates, spam, gettext.gettext(self.__spam_label),
+        plot.add_dataset(dates, spams, gettext.gettext(self.__spam_label),
                          color=colors.badness)
-        plot.add_dataset(dates, ham, gettext.gettext(self.__ham_label),
+        plot.add_dataset(dates, hams, gettext.gettext(self.__ham_label),
                          color=colors.goodness)
 
         return (lks, plot)
@@ -564,7 +570,7 @@ ORDER BY spam_msgs desc""" % (self.__short_name,)
 
         plot.add_pie_dataset(pds, display_limit=10)
 
-        return (lks[0:10], plot)
+        return lks, plot, 10
 
 class SpamDetail(DetailSection):
 

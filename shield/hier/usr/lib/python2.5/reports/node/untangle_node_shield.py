@@ -29,6 +29,7 @@ from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
 from reports import Highlight
+from reports import HOUR_FORMATTER
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -135,7 +136,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
 class DailyRequest(Graph):
     def __init__(self):
-        Graph.__init__(self, 'daily-request', _('Daily Requests'))
+        Graph.__init__(self, 'requests', _('Requests'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -143,47 +144,13 @@ class DailyRequest(Graph):
         if host or user or email:
             return None
 
-        ed = DateFromMx(end_date)
-        one_day = DateFromMx(end_date - mx.DateTime.DateTimeDelta(1))
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+        start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
 
+        lks = []
+        
         conn = sql_helper.get_connection()
+        curs = conn.cursor()
         try:
-            curs = conn.cursor()
-
-            query = """\
-SELECT sum(accepted) / (60*24*%s) as avg_accepted, max(accepted) as max_accepted,
-       sum(limited) / (60*24*%s) as avg_limited, max(limited) as max_limited,
-       sum(dropped + rejected) / (60*24*%s) as avg_blocked,
-       max(dropped + rejected) as max_blocked
-FROM reports.n_shield_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
-
-            curs.execute(query, (report_days, report_days, report_days,
-                                 one_week, ed))
-
-            r = curs.fetchone()
-
-            lks = []
-            ks = KeyStatistic(_('Avg Requests'), r[0],
-                              _('sessions/minute'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Requests'), r[1],
-                              _('sessions/minute'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Avg Limited'), r[2],
-                              _('sessions/minute'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Limited'), r[3],
-                              _('sessions/minute'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Avg Blocked'), r[4],
-                              _('sessions/minute'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Blocked'), r[5],
-                              _('sessions/minute'))
-            lks.append(ks)
-
             # per minute
             sums = ["coalesce(sum(accepted), 0) * 60",
                     "coalesce(sum(limited), 0) * 60",
@@ -196,7 +163,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 extra_where.append(("uid = %(user)s" , { 'user' : user }))
 
             q, h = sql_helper.get_averaged_query(sums, "reports.n_shield_totals",
-                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 start_date,
                                                  end_date,
                                                  extra_where = extra_where)
             curs.execute(q, h)
@@ -211,18 +178,45 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 accepted.append(r[1])
                 limited.append(r[2])
                 blocked.append(r[3])
+
+            if not accepted:
+                accepted = [0,]
+            if not limited:
+                limited = [0,]
+            if not blocked:
+                blocked = [0,]
+
+            ks = KeyStatistic(_('Avg Requests'), sum(accepted+limited+blocked)/len(accepted),
+                              _('sessions/minute'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Requests'), sum(accepted+limited+blocked),
+                              _('sessions/minute'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Avg Limited'), sum(limited)/len(accepted),
+                              _('sessions/minute'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Limited'), sum(limited),
+                              _('sessions/minute'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Avg Blocked'), sum(blocked)/len(accepted),
+                              _('sessions/minute'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Blocked'), sum(blocked),
+                              _('sessions/minute'))
+            lks.append(ks)
+
+            plot = Chart(type=TIME_SERIES_CHART,
+                         title=_('Daily Request'),
+                         xlabel=_('Date'),
+                         ylabel=_('Requests per Minute'),
+                         major_formatter=TIMESTAMP_FORMATTER)
+
+            plot.add_dataset(times, accepted, label=_('accepted'))
+            plot.add_dataset(times, limited, label=_('limited'))
+            plot.add_dataset(times, blocked, label=_('blocked'))
+                
         finally:
             conn.commit()
-
-        plot = Chart(type=TIME_SERIES_CHART,
-                     title=_('Daily Request'),
-                     xlabel=_('Hour of Day'),
-                     ylabel=_('Requests per Minute'),
-                     major_formatter=TIMESTAMP_FORMATTER)
-
-        plot.add_dataset(times, accepted, label=_('accepted'))
-        plot.add_dataset(times, limited, label=_('limited'))
-        plot.add_dataset(times, blocked, label=_('blocked'))
 
         return (lks, plot)
 
@@ -243,6 +237,7 @@ class BlockedHosts(Graph):
 SELECT client_addr, sum(dropped + rejected) AS blocked
 FROM reports.n_shield_rejection_totals
 WHERE trunc_time >= %s AND trunc_time < %s
+AND ((dropped > 0) OR (rejected > 0))
 GROUP BY client_addr
 ORDER BY blocked desc"""
 
@@ -271,7 +266,7 @@ ORDER BY blocked desc"""
         plot.add_pie_dataset(pds, display_limit=10)
 
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class LimitedHosts(Graph):
     def __init__(self):
@@ -290,6 +285,7 @@ class LimitedHosts(Graph):
 SELECT client_addr, sum(limited) AS limited
 FROM reports.n_shield_rejection_totals
 WHERE trunc_time >= %s AND trunc_time < %s
+AND limited > 0
 GROUP BY client_addr
 ORDER BY limited desc"""
 
@@ -316,7 +312,7 @@ ORDER BY limited desc"""
 
         plot.add_pie_dataset(pds, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class ShieldDetail(DetailSection):
 

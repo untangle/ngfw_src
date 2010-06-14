@@ -32,6 +32,7 @@ from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
 from reports import Highlight
+from reports import HOUR_FORMATTER
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -121,7 +122,6 @@ count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
         s = SummarySection('summary', _('Summary Report'),
                                    [VirusHighlight(self.name, self.__vendor_name),
                                     DailyVirusesBlocked(self.__vendor_name),
-                                    HourlyVirusesBlocked(self.__vendor_name),
                                     TopVirusesDetected(self.__vendor_name),
                                     TopEmailVirusesDetected(self.__vendor_name),
                                     TopWebVirusesDetected(self.__vendor_name)])
@@ -322,250 +322,32 @@ WHERE trunc_time >= %%s AND trunc_time < %%s
 
 class DailyVirusesBlocked(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'daily-viruses-blocked', _('Daily Viruses Blocked'))
+        Graph.__init__(self, 'viruses-blocked', _('Viruses Blocked'))
         self.__vendor_name = vendor_name
 
     @sql_helper.print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
-        ed = DateFromMx(end_date)
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
-
-        avg_max_query = """\
-SELECT COALESCE(sum(viruses_%s_blocked), 0)::int / %%s,
-       max(viruses_%s_blocked)::int
-FROM ((""" % (2 * (self.__vendor_name,))
-
-        # if you add a reports table you should also update the tuple
-        # in execute below
-        avg_max_query += """\
-SELECT date_trunc('day', trunc_time) AS day,
-       COALESCE(sum(viruses_%s_blocked), 0)::int AS viruses_%s_blocked
-FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
-
-        if host:
-            avg_max_query += " AND hname = %s"
-        elif user:
-            avg_max_query += " AND uid = %s"
-
-        avg_max_query += """
-GROUP BY day)
-
-UNION (
-
-SELECT date_trunc('day', trunc_time) AS day,
-       COALESCE(sum(viruses_%s_blocked), 0)::int AS viruses_%s_blocked
-FROM reports.n_mail_msg_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
-
-        if host:
-            avg_max_query += " AND hname = %s"
-        elif user:
-            avg_max_query += " AND uid = %s"
-
-        avg_max_query += " GROUP BY day)) AS foo"
-
-        conn = sql_helper.get_connection()
-        try:
-            lks = []
-
-            curs = conn.cursor()
-            if host:
-                curs.execute(avg_max_query, (report_days, one_week, ed, host,
-                                             one_week, ed, host))
-            elif user:
-                curs.execute(avg_max_query, (report_days, one_week, ed, user,
-                                             one_week, ed, user))
-            else:
-                curs.execute(avg_max_query, (report_days, one_week, ed,
-                                             one_week, ed))
-            r = curs.fetchone()
-            ks = KeyStatistic(_('Avg'), r[0], _('viruses/day'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max'), r[1], _('viruses/day'))
-            lks.append(ks)
-        finally:
-            conn.commit()
-
-        return lks
-
-    @sql_helper.print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        ed = DateFromMx(end_date)
+    def get_graph(self, end_date, report_days, host=None, user=None, email=None):
+        if email:
+            return None
+        
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        one_week = DateFromMx(start_date)
 
-        conn = sql_helper.get_connection()
-        try:
-            q = """\
-SELECT date_trunc('day', trunc_time) AS time,
-       COALESCE(sum(viruses_%s_blocked), 0)::int as viruses_%s_blocked
-FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
-            if host:
-                q += " AND hname = %s"
-            elif user:
-                q += " AND uid = %s"
-            q += """
-GROUP BY time
-ORDER BY time asc"""
-
-            curs = conn.cursor()
-
-            if host:
-                curs.execute(q, (one_week, ed, host))
-            elif user:
-                curs.execute(q, (one_week, ed, user))
-            else:
-                curs.execute(q, (one_week, ed))
-
-            blocks_by_date = {}
-
-            while 1:
-                r = curs.fetchone()
-                if not r:
-                    break
-
-                blocks_by_date[r[0]] = r[1]
-
-            q = """\
-SELECT date_trunc('day', trunc_time) AS time,
-       COALESCE(sum(viruses_%s_blocked), 0)::int as viruses_%s_blocked
-FROM reports.n_mail_msg_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
-            if host:
-                q += " AND hname = %s"
-            elif user:
-                q += " AND uid = %s"
-            q += """
-GROUP BY time
-ORDER BY time asc"""
-
-            curs = conn.cursor()
-
-            if host:
-                curs.execute(q, (one_week, ed, host))
-            elif user:
-                curs.execute(q, (one_week, ed, user))
-            else:
-                curs.execute(q, (one_week, ed))
-
-            while 1:
-                r = curs.fetchone()
-                if not r:
-                    break
-
-                if blocks_by_date.has_key(r[0]):
-                    blocks_by_date[r[0]] += r[1]
-                else:
-                    blocks_by_date[r[0]] = r[1]
-        finally:
-            conn.commit()
-
-        dates = []
-        blocks = []
-        date_list = blocks_by_date.keys()
-        date_list.sort()
-        for k in date_list:
-            dates.append(k)
-            blocks.append(blocks_by_date[k])
-
-        rp = sql_helper.get_required_points(start_date, end_date,
-                                            mx.DateTime.DateTimeDelta(1))
-
-        plot = Chart(type=STACKED_BAR_CHART,
-                     title=self.title,
-                     xlabel=_('Day'),
-                     ylabel=_('viruses/day'),
-                     major_formatter=DATE_FORMATTER,
-                     required_points=rp)
-
-        plot.add_dataset(dates, blocks, label=_('viruses blocked'),
-                         color=colors.badness)
-
-        return plot
-
-class HourlyVirusesBlocked(Graph):
-    def __init__(self, vendor_name):
-        Graph.__init__(self, 'hourly-viruses-blocked', _('Hourly Viruses Blocked'))
-        self.__vendor_name = vendor_name
-
-    @sql_helper.print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
-        ed = DateFromMx(end_date)
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
-
-        avg_max_query = """
-SELECT COALESCE(sum(viruses_%s_blocked), 0) / %%s,
-       max(viruses_%s_blocked)
-FROM ((""" % (2 * (self.__vendor_name,))
-
-        # if you add a reports table you should also update the tuple
-        # in execute below
-        avg_max_query += """\
-SELECT date_trunc('hour', trunc_time) AS day,
-       COALESCE(sum(viruses_%s_blocked), 0)::int AS viruses_%s_blocked
-FROM reports.n_http_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
-
-        if host:
-            avg_max_query += " AND hname = %s"
-        elif user:
-            avg_max_query += " AND uid = %s"
-
-        avg_max_query += """
-GROUP BY day)
-
-UNION (
-
-SELECT date_trunc('hour', trunc_time) AS day,
-       COALESCE(sum(viruses_%s_blocked), 0)::int AS viruses_%s_blocked
-FROM reports.n_mail_msg_totals
-WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
-
-        if host:
-            avg_max_query += " AND hname = %s"
-        elif user:
-            avg_max_query += " AND uid = %s"
-
-        avg_max_query += " GROUP BY day)) AS foo"
-
-        conn = sql_helper.get_connection()
-        try:
-            lks = []
-
-            curs = conn.cursor()
-            if host:
-                curs.execute(avg_max_query, (report_days, one_week, ed, host,
-                                             one_week, ed, host))
-            elif user:
-                curs.execute(avg_max_query, (report_days, one_week, ed, user,
-                                             one_week, ed, user))
-            else:
-                curs.execute(avg_max_query, (report_days, one_week, ed,
-                                             one_week, ed))
-            r = curs.fetchone()
-            ks = KeyStatistic(_('Avg'), r[0], _('viruses/hour'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max'), r[1], _('viruses/hour'))
-            lks.append(ks)
-        finally:
-            conn.commit()
-
-        return lks
-
-    @sql_helper.print_timing
-    def get_plot(self, end_date, report_days, host=None, user=None, email=None):
-        ed = DateFromMx(end_date)
-        start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        one_week = DateFromMx(start_date)
+        lks = []
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
         try:
-            sums = ["coalesce(sum(viruses_%s_blocked), 0)::float * 60 * 60" % (self.__vendor_name)]
+            if report_days == 1:
+                time_interval = 60 * 60
+                unit = "hour"
+                formatter = HOUR_FORMATTER
+            else:
+                time_interval = 24 * 60 * 60
+                unit = "day"
+                formatter = DATE_FORMATTER
+
+            sums = ["COALESCE(SUM(viruses_%(vendor)s_blocked), 0)::int" %
+                     { "vendor" : self.__vendor_name }]
 
             extra_where = []
             if host:
@@ -574,56 +356,66 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (2 * (self.__vendor_name,))
                 extra_where.append(("uid = %(user)s" , { 'user' : user }))
 
             q, h = sql_helper.get_averaged_query(sums, "reports.n_http_totals",
-                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 start_date,
                                                  end_date,
-                                                 extra_where = extra_where)
+                                                 extra_where = extra_where,
+                                                 time_interval = time_interval)
             curs.execute(q, h)
+
+            viruses = {}
+            
+            for r in curs.fetchall():
+                viruses[r[0]] = r[1]
+
+            q, h = sql_helper.get_averaged_query(sums, "reports.n_mail_msg_totals",
+                                                 start_date,
+                                                 end_date,
+                                                 extra_where = extra_where,
+                                                 time_interval = time_interval)
+            curs.execute(q, h)
+
+            for r in curs.fetchall():
+                if r[0] in viruses:
+                    viruses[r[0]] += r[1]
+                else:
+                    viruses[r[0]] = r[1]
 
             dates = []
             blocks = []
 
-            while 1:
-                r = curs.fetchone()
-                if not r:
-                    break
-                dates.append(r[0])
-                blocks.append(r[1])
+            date_list = viruses.keys()
+            date_list.sort()
+            for k in date_list:
+                dates.append(k)
+                blocks.append(viruses[k])
 
-            sums = ["coalesce(sum(viruses_%s_blocked), 0)::float * 60 * 60" % (self.__vendor_name)]
+            if not blocks:
+                blocks = [0,]
 
-            extra_where = []
-            if host:
-                extra_where.append(("hname = %(host)s", { 'host' : host }))
-            elif user:
-                extra_where.append(("uid = %(user)s" , { 'user' : user }))
+            rp = sql_helper.get_required_points(start_date, end_date,
+                                            mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
 
-            q, h = sql_helper.get_averaged_query(sums, "reports.n_mail_msg_totals",
-                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
-                                                 end_date,
-                                                 extra_where = extra_where)
-            curs.execute(q, h)
+            ks = KeyStatistic(_('Avg Viruses Blocked'),
+                              sum(blocks) / len(rp),
+                              _('blocks')+'/'+_(unit))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Viruses Blocked'), max(blocks),
+                              _('blocks')+'/'+_(unit))
+            lks.append(ks)
 
-            i = 0
-            while 1:
-                r = curs.fetchone()
-                if not r:
-                    break
-                blocks[i] += r[1]
-                i += 1
+            plot = Chart(type=STACKED_BAR_CHART,
+                         title=self.title,
+                         xlabel=_('Date'),
+                         ylabel=_('Blocks'),
+                         major_formatter=formatter,
+                         required_points=rp)
+
+            plot.add_dataset(dates, blocks, label=_('Viruses'))
 
         finally:
             conn.commit()
 
-        plot = Chart(type=TIME_SERIES_CHART,
-                     title=self.title,
-                     xlabel=_('Time'),
-                     ylabel=_('Viruses'),
-                     major_formatter=TIMESTAMP_FORMATTER)
-
-        plot.add_dataset(dates, blocks, label=_('viruses blocked'),
-                         color=colors.badness)
-
-        return plot
+        return (lks, plot)
 
 class TopWebVirusesDetected(Graph):
     def __init__(self, vendor_name):
@@ -686,7 +478,7 @@ ORDER BY virus_%s_detected DESC
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopEmailVirusesDetected(Graph):
     def __init__(self, vendor_name):
@@ -743,7 +535,7 @@ ORDER BY virus_%s_detected DESC
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class TopVirusesDetected(Graph):
     def __init__(self, vendor_name):
@@ -823,7 +615,7 @@ ORDER BY sum DESC""" % self.__vendor_name
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class VirusWebDetail(DetailSection):
     def __init__(self, vendor_name):

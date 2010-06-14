@@ -169,7 +169,7 @@ WHERE time_stamp >= %s AND time_stamp < %s""",
 
 class MemoryUsage(Graph):
     def __init__(self):
-        Graph.__init__(self, 'memory-usage', _('Memory Usage'))
+        Graph.__init__(self, 'free-memory', _('Free Memory'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -185,21 +185,14 @@ class MemoryUsage(Graph):
         try:
             lks = []
 
-            ks_query = """\
-SELECT COALESCE(AVG(mem_free), 0), COALESCE(AVG(mem_cache), 0)
-FROM reports.n_server_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+#             ks_query = """\
+# SELECT COALESCE(AVG(mem_free), 0), COALESCE(AVG(mem_cache), 0)
+# FROM reports.n_server_totals
+# WHERE trunc_time >= %s AND trunc_time < %s"""
 
-            curs = conn.cursor()
-            curs.execute(ks_query, (one_week, ed))
-            r = curs.fetchone()
-
-            ks = KeyStatistic(_('Avg Free Memory'), r[0] / 10**6,
-                              N_('MB'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Avg Cached Memory'), r[1] / 10**6,
-                              N_('MB'))
-            lks.append(ks)
+#             curs = conn.cursor()
+#             curs.execute(ks_query, (one_week, ed))
+#             r = curs.fetchone()
 
             # MB
             sums = ["COALESCE(AVG(mem_free),0) / 1000000",
@@ -209,6 +202,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date,
                                                  avgs=sums)
+            curs = conn.cursor()            
             curs.execute(q, h)
 
             dates = []
@@ -219,11 +213,23 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 dates.append(r[0])
                 free.append(r[1])
                 cached.append(r[2])
+
+            if not free:
+                free = [0,]
+            if not cached:
+                cached = [0,]
+
+            ks = KeyStatistic(_('Avg Free Memory'), sum(free)/len(free),
+                              N_('MB'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Avg Cached Memory'), sum(cached)/len(cached),
+                              N_('MB'))
+            lks.append(ks)
         finally:
             conn.commit()
 
         plot = Chart(type=TIME_SERIES_CHART, title=self.title,
-                     xlabel=_('TIME'), ylabel=_('Memory (MB)'),
+                     xlabel=_('Time'), ylabel=_('Memory (MB)'),
                      major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, free, _('Free memory'))
@@ -249,24 +255,13 @@ class LoadUsage(Graph):
         try:
             lks = []
 
-            ks_query = """\
-SELECT COALESCE(AVG(load_1), 0), COALESCE(AVG(load_5), 0), COALESCE(AVG(load_15), 0)
-FROM reports.n_server_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+#             ks_query = """\
+# SELECT COALESCE(AVG(load_1), 0), COALESCE(AVG(load_5), 0), COALESCE(AVG(load_15), 0)
+# FROM reports.n_server_totals
+# WHERE trunc_time >= %s AND trunc_time < %s"""
 
-            curs = conn.cursor()
-            curs.execute(ks_query, (one_week, ed))
-            r = curs.fetchone()
-
-            ks = KeyStatistic(_('Avg 1-min Load'), r[0],
-                              N_(''))
-            lks.append(ks)
-            ks = KeyStatistic(_('Avg 5-min Load'), r[1],
-                              N_(''))
-            lks.append(ks)
-            ks = KeyStatistic(_('Avg 15-min Load'), r[2],
-                              N_(''))
-            lks.append(ks)
+#             curs.execute(ks_query, (one_week, ed))
+#             r = curs.fetchone()
 
             sums = ["COALESCE(AVG(load_1),0)",
                     "COALESCE(AVG(load_5),0)",
@@ -277,6 +272,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                                                  end_date,
                                                  avgs=sums)
 
+            curs = conn.cursor()
             curs.execute(q, h)
                                                  
             dates = []
@@ -289,6 +285,32 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 load1.append(r[1])
                 load5.append(r[2])
                 load15.append(r[3])
+
+            if not load1:
+                load1 = [0,]
+            if not load5:
+                load5 = [0,]
+            if not load15:
+                load15 = [0,]
+
+            ks = KeyStatistic(_('Avg 1-min Load'), sum(load1)/len(load1),
+                              N_(''))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max 1-min Load'), max(load1),
+                              N_(''))
+            lks.append(ks)
+            ks = KeyStatistic(_('Avg 5-min Load'), sum(load5)/len(load5),
+                              N_(''))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max 5-min Load'), max(load5),
+                              N_(''))
+            lks.append(ks)
+            ks = KeyStatistic(_('Avg 15-min Load'), sum(load15)/len(load15),
+                              N_(''))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max 15-min Load'), max(load15),
+                              N_(''))
+            lks.append(ks)
         finally:
             conn.commit()
 
@@ -320,29 +342,23 @@ class CpuUsage(Graph):
         try:
             lks = []
 
-            ks_query = """\
-SELECT COALESCE(AVG(cpu_user), 0), COALESCE(AVG(cpu_system), 0)
-FROM reports.n_server_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+#             ks_query = """\
+# SELECT COALESCE(AVG(cpu_user), 0), COALESCE(AVG(cpu_system), 0)
+# FROM reports.n_server_totals
+# WHERE trunc_time >= %s AND trunc_time < %s"""
 
-            curs = conn.cursor()
-            curs.execute(ks_query, (one_week, ed))
-            r = curs.fetchone()
+#             curs = conn.cursor()
+#             curs.execute(ks_query, (one_week, ed))
+#             r = curs.fetchone()
 
-            ks = KeyStatistic(_('Avg CPU User'), r[0],
-                              N_('%'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Avg CPU System'), r[1],
-                              N_('%'))
-            lks.append(ks)
-
-            sums = ["COALESCE(AVG(cpu_user),0)",
-                    "COALESCE(AVG(cpu_system),0)"]
+            sums = ["COALESCE(AVG(cpu_user),0)*100",
+                    "COALESCE(AVG(cpu_system),0)*100"]
 
             q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date,
                                                  avgs=sums)
+            curs = conn.cursor()            
             curs.execute(q, h)
 
             dates = []
@@ -353,6 +369,18 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 dates.append(r[0])
                 cpuUser.append(r[1])
                 cpuSystem.append(r[2])
+
+            if not cpuUser:
+                cpuUser = [0,]
+            if not cpuSystem:
+                cpuSystem = [0,]
+
+            ks = KeyStatistic(_('Avg CPU User'), sum(cpuUser)/len(cpuUser),
+                              N_('%'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Avg CPU System'), sum(cpuSystem)/len(cpuSystem),
+                              N_('%'))
+            lks.append(ks)
         finally:
             conn.commit()
 
@@ -383,38 +411,50 @@ class DiskUsage(Graph):
         try:
             lks = []
 
-            ks_query = """\
-SELECT COALESCE(AVG(disk_free), 0), COALESCE(AVG(disk_total), 0)
-FROM reports.n_server_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+#             ks_query = """\
+# SELECT COALESCE(AVG(disk_free), 0), COALESCE(AVG(disk_total), 0)
+# FROM reports.n_server_totals
+# WHERE trunc_time >= %s AND trunc_time < %s"""
 
-            curs = conn.cursor()
-            curs.execute(ks_query, (one_week, ed))
-            r = curs.fetchone()
-
-            ks = KeyStatistic(_('Avg Disk Free'), r[0] / 10**9,
-                              N_('GB'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Avg Disk Free'), r[0] * 100 / r[1],
-                              N_('%'))
-            lks.append(ks)
+#             curs = conn.cursor()
+#             curs.execute(ks_query, (one_week, ed))
+#             r = curs.fetchone()
 
             # GB
-            sums = ["COALESCE(AVG(disk_free),0) / 1000000000"]
-                                                 
+            sums = ["round((COALESCE(AVG(disk_free),0) / 1000000000)::numeric, 2)",
+                    "round((COALESCE(AVG(disk_total),0) / 1000000000)::numeric, 2)"]
+
             q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date,
                                                  avgs=sums)
 
+            curs = conn.cursor()
             curs.execute(q, h)
 
             dates = []
             diskFree = []
+            diskTotal = []
 
             for r in curs.fetchall():
                 dates.append(r[0])
                 diskFree.append(r[1])
+                diskTotal.append(r[2])
+
+            if not diskFree or not diskTotal:
+                avg = avgp = None
+            else:
+                avg = sum(diskFree)/len(diskFree)
+                avgp = 100 * avg / diskTotal[0]
+                
+            ks = KeyStatistic(_('Avg Disk Free'), avg,
+                              N_('GB'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Avg Disk Free'), avgp,
+                              N_('%'))
+            lks.append(ks)
+
+                
         finally:
             conn.commit()
 
@@ -444,38 +484,47 @@ class SwapUsage(Graph):
         try:
             lks = []
 
-            ks_query = """\
-SELECT COALESCE(AVG(swap_total-swap_free), 0), COALESCE(AVG(swap_total), 0)
-FROM reports.n_server_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+#             ks_query = """\
+# SELECT COALESCE(AVG(swap_total-swap_free), 0), COALESCE(AVG(swap_total), 0)
+# FROM reports.n_server_totals
+# WHERE trunc_time >= %s AND trunc_time < %s"""
 
-            curs = conn.cursor()
-            curs.execute(ks_query, (one_week, ed))
-            r = curs.fetchone()
-
-            ks = KeyStatistic(_('Avg Swap Used'), r[0] / 10**6,
-                              N_('MB'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Avg Swap Used'), r[0] * 100 / r[1],
-                              N_('%'))
-            lks.append(ks)
+#             curs = conn.cursor()
+#             curs.execute(ks_query, (one_week, ed))
+#             r = curs.fetchone()
 
             # MB
-            sums = ["COALESCE(AVG(swap_total-swap_free),0) / 1000000"]
+            sums = ["COALESCE(AVG(swap_total-swap_free),0) / 1000000",
+                    "COALESCE(AVG(swap_free),0) / 1000000"]
                                                  
             q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date,
                                                  avgs=sums)
-
+            curs = conn.cursor()
             curs.execute(q, h)
 
             dates = []
+            swapUsed = []
             swapFree = []
 
             for r in curs.fetchall():
                 dates.append(r[0])
-                swapFree.append(r[1])
+                swapUsed.append(r[1])
+                swapFree.append(r[2])
+
+            if not swapUsed:
+                swapUsed = [0,]
+            if not swapFree:
+                swapFree = [0,]
+
+            ks = KeyStatistic(_('Avg Swap Free'), sum(swapFree)/len(swapFree),
+                              N_('MB'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Avg Swap Used'), sum(swapUsed)/len(swapUsed),
+                              N_('%'))
+            lks.append(ks)
+                
         finally:
             conn.commit()
 

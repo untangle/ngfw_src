@@ -29,6 +29,7 @@ from reports import DATE_FORMATTER
 from reports import DetailSection
 from reports import Graph
 from reports import Highlight
+from reports import HOUR_FORMATTER
 from reports import KeyStatistic
 from reports import PIE_CHART
 from reports import Report
@@ -166,35 +167,15 @@ class BandwidthUsage(Graph):
         if host or user or email:
             return None
 
-        ed = DateFromMx(end_date)
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+        start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
+
+        lks = []
 
         conn = sql_helper.get_connection()
+        curs = conn.cursor()
         try:
-            ks_query = """\
-SELECT avg((rx_bytes + tx_bytes) / seconds),
-       max((rx_bytes + tx_bytes) / seconds)
-FROM reports.n_openvpn_stats
-WHERE time_stamp >= %s AND time_stamp < %s"""
-
-            lks = []
-
-            for n in (1, report_days):
-                sd = DateFromMx(end_date - mx.DateTime.DateTimeDelta(n))
-
-                curs = conn.cursor()
-                curs.execute(ks_query, (sd, ed))
-
-                r = curs.fetchone()
-                if r:
-                    ks = KeyStatistic(_('Avg Data Rate'), r[0], N_('bytes/s'))
-                    lks.append(ks)
-                    ks = KeyStatistic(_('Max Data Rate'), r[0], N_('bytes/s'))
-                    lks.append(ks)
-
-
             # kB
-            sums = ["coalesce(sum(rx_bytes + tx_bytes) / 1000, 0)"]
+            sums = ["COALESCE(SUM(rx_bytes + tx_bytes) / 1000, 0)"]
 
             extra_where = []
             if host:
@@ -203,7 +184,7 @@ WHERE time_stamp >= %s AND time_stamp < %s"""
                 extra_where.append(("uid = %(user)s" , { 'user' : user }))
 
             q, h = sql_helper.get_averaged_query(sums, "reports.n_openvpn_stats",
-                                                 end_date - mx.DateTime.DateTimeDelta(report_days),
+                                                 start_date,
                                                  end_date,
                                                  extra_where = extra_where,
                                                  time_field = "time_stamp")
@@ -216,13 +197,21 @@ WHERE time_stamp >= %s AND time_stamp < %s"""
                 dates.append(r[0])
                 throughput.append(r[1])
 
+            if not throughput:
+                throughput = [0,]
+                
+            ks = KeyStatistic(_('Avg Data Rate'), sum(throughput)/len(throughput), N_('kB/s'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Max Data Rate'), max(throughput), N_('kB/s'))
+            lks.append(ks)
+
             plot = Chart(type=TIME_SERIES_CHART,
                          title=_('Bandwidth Usage'),
-                         xlabel=_('Hour of Day'),
-                         ylabel=_('Throughput (Kb/sec)'),
+                         xlabel=_('Date'),
+                         ylabel=_('Throughput (kB/s)'),
                          major_formatter=TIMESTAMP_FORMATTER)
 
-            plot.add_dataset(dates, throughput, _('Usage (KB/sec)'))
+            plot.add_dataset(dates, throughput, _('Usage (kB/sec)'))
         finally:
             conn.commit()
 
@@ -266,7 +255,7 @@ ORDER BY throughput desc"""
         finally:
             conn.commit()
 
-        plot = Chart(type=PIE_CHART, title=_('OpenVPN Top Users'))
+        plot = Chart(type=PIE_CHART, title=_('Top Users'))
 
         plot.add_pie_dataset(pds, display_limit=10)
 
