@@ -627,8 +627,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     public void updateAll(final SpywareBaseSettings baseSettings,
                           final List[] activeXRules, final List[] cookieRules,
-                          final List[] subnetRules, final List[] domainWhitelist) {
-
+                          final List[] subnetRules, final List[] domainWhitelist)
+    {
         TransactionWork tw = new TransactionWork() {
                 public boolean doWork(Session s) {
                     if (baseSettings != null) {

@@ -109,7 +109,7 @@ public class PartialListUtil
     }
 
     /* danger, but this is how it comes in from the web ui */
-    public void updateCachedItems( Collection<Rule> items, List[] modifications )
+    public void updateCachedItems( Collection items, List[] modifications )
     {
         updateCachedItems(items, RULE_HANDLER, modifications );
     }
@@ -128,13 +128,12 @@ public class PartialListUtil
     }
 
     /* not the best type safe solution, but every other case makes it hard to use. */
-    public void updateCachedItems( Collection<Rule> items, List<Rule> added, List<Long> deleted, List<Rule> modified )
+    public void updateCachedItems( Collection items, List added, List<Long> deleted, List modified )
     {
         updateCachedItems(items, RULE_HANDLER, added, deleted, modified );
     }
 
-    public <T> void updateCachedItems( Collection<T> items, Handler<T> handler,
-                                       List<T> added, List<Long> deleted, List<T> modified )
+    public <T> void updateCachedItems( Collection<T> items, Handler<T> handler, List<T> added, List<Long> deleted, List<T> modified )
     {
         for ( Iterator<T> i = items.iterator(); i.hasNext(); ) {
             T item = i.next();
