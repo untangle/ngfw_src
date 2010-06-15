@@ -194,8 +194,13 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
         }
     }
 
-
     public Status getStatusForSettings(AddressBookSettings newSettings) {
+        return this.getStatus();
+    }
+
+    public Status getStatusForSettings(AddressBookSettings newSettings,
+                                       String username,
+                                       String password) {
         return this.getStatus();
     }
 

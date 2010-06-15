@@ -103,6 +103,10 @@ public interface RemoteAddressBook extends LicensedProduct
 
     Status getStatusForSettings(AddressBookSettings newSettings);
 
+    Status getStatusForSettings(AddressBookSettings newSettings,
+                                String username,
+                                String password);
+
     interface Status
     {
         boolean isLocalWorking();
