@@ -156,7 +156,7 @@ Description: The Untangle Email Decoder
 
 Package: untangle-node-shield
 Architecture: all
-Depends: untangle-vm (= ${binary:Version}), untangle-shield, dash
+Depends: untangle-vm, untangle-shield, dash
 XB-Display-Name: Attack Blocker
 XB-Untangle-Pkg-Type: service
 XB-View-Position: 1020
@@ -218,7 +218,7 @@ Description: Attack Blocker
 
 Package: untangle-node-spyware
 Architecture: all
-Depends: untangle-vm (= ${binary:Version}), untangle-casing-http
+Depends: untangle-vm, untangle-casing-http
 XB-Display-Name: Spyware Blocker
 XB-View-Position: 20
 XB-Untangle-Pkg-Type: node
@@ -269,7 +269,7 @@ Description: Spyware Blocker
 
 Package: untangle-node-webfilter
 Architecture: all
-Depends: untangle-vm (= ${binary:Version}), untangle-casing-http, untangle-base-webfilter, untangle-webfilter-init
+Depends: untangle-vm, untangle-casing-http, untangle-base-webfilter, untangle-webfilter-init
 XB-Display-Name: Web Filter
 XB-View-Position: 30
 XB-Untangle-Pkg-Type: node
@@ -333,7 +333,7 @@ Description: Web Filter
 
 Package: untangle-node-clam
 Architecture: all
-Depends: untangle-vm (= ${binary:Version}), untangle-base-virus, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-mail
+Depends: untangle-vm, untangle-base-virus, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-mail
 XB-Display-Name: Virus Blocker
 XB-View-Position: 70
 XB-Untangle-Pkg-Type: node
@@ -367,7 +367,7 @@ Description: Virus Blocker
 
 Package: untangle-node-protofilter
 Architecture: all
-Depends: untangle-vm (= ${binary:Version})
+Depends: untangle-vm
 XB-Display-Name: Protocol Control
 XB-View-Position: 80
 XB-Untangle-Pkg-Type: node
@@ -452,7 +452,7 @@ Description: Protocol Control
 
 Package: untangle-node-router
 Architecture: all
-Depends: untangle-vm (= ${binary:Version}), dnsmasq, untangle-casing-ftp
+Depends: untangle-vm, dnsmasq, untangle-casing-ftp
 XB-Display-Name: Router
 XB-View-Position: 1000
 XB-Auto-Start: true
@@ -512,7 +512,7 @@ Description: Router
 
 Package: untangle-node-firewall
 Architecture: all
-Depends: untangle-vm (= ${binary:Version})
+Depends: untangle-vm
 XB-Display-Name: Firewall
 XB-View-Position: 90
 XB-Untangle-Pkg-Type: node
@@ -563,7 +563,7 @@ Description: Firewall
 
 Package: untangle-node-spamassassin
 Architecture: all
-Depends: untangle-vm (= ${binary:Version}), untangle-base-spam, untangle-casing-mail
+Depends: untangle-vm, untangle-base-spam, untangle-casing-mail
 XB-Display-Name: Spam Blocker
 XB-View-Position: 15
 XB-Untangle-Pkg-Type: node
@@ -642,7 +642,7 @@ Description: Spam Blocker
 
 Package: untangle-node-phish
 Architecture: all
-Depends: untangle-vm (= ${binary:Version}), untangle-base-spam, untangle-clamav-config, untangle-casing-mail, untangle-casing-http
+Depends: untangle-vm, untangle-base-spam, untangle-clamav-config, untangle-casing-mail, untangle-casing-http
 XB-Display-Name: Phish Blocker
 XB-View-Position: 17
 XB-Untangle-Pkg-Type: node
@@ -735,7 +735,7 @@ Description: Phish Blocker
 
 Package: untangle-node-openvpn
 Architecture: all
-Depends: untangle-vm (= ${binary:Version}), untangle-nsis-addons, openssl, openvpn
+Depends: untangle-vm, untangle-nsis-addons, openssl, openvpn
 XB-Display-Name: OpenVPN
 XB-View-Position: 1019
 XB-Untangle-Pkg-Type: service
@@ -803,7 +803,7 @@ Description: OpenVPN
 
 Package: untangle-node-ips
 Architecture: all
-Depends: untangle-vm (= ${binary:Version}), untangle-casing-http, untangle-snort-rules
+Depends: untangle-vm, untangle-casing-http, untangle-snort-rules
 XB-Display-Name: Intrusion Prevention
 XB-View-Position: 75
 XB-Untangle-Pkg-Type: node
@@ -873,7 +873,7 @@ Description: Intrusion Prevention
 
 Package: untangle-node-reporting
 Architecture: all
-Depends: untangle-vm (= ${binary:Version})
+Depends: untangle-vm
 XB-Display-Name: Reports
 XB-View-Position: 1022
 XB-Untangle-Pkg-Type: service
@@ -923,7 +923,7 @@ Description: Reports
 
 Package: untangle-node-adblocker
 Architecture: all
-Depends: untangle-vm (= ${binary:Version}), untangle-casing-http
+Depends: untangle-vm, untangle-casing-http
 XB-Display-Name: Ad Blocker
 XB-View-Position: 120
 XB-Untangle-Pkg-Type: node
@@ -1014,7 +1014,7 @@ Description: Ad Blocker
 
 Package: untangle-node-cpd
 Architecture: all
-Depends: untangle-vm (= ${binary:Version}), untangle-cpd, php5-pgsql, php5-curl
+Depends: untangle-vm, untangle-cpd, php5-pgsql, php5-curl
 XB-Display-Name: Captive Portal
 XB-View-Position: 31
 XB-Untangle-Pkg-Type: service
