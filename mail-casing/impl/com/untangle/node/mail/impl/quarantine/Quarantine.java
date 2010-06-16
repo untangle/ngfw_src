@@ -131,7 +131,7 @@ public class Quarantine
                                                                        new EmailAddressRule[] {new EmailAddressRule("*")}));
         }
         if(settings.getAddressRemaps() == null) {
-            settings.setAddressRemaps(new ArrayList());
+            settings.setAddressRemaps(new ArrayList<EmailAddressPairRule>());
         }
 
         //Update address mapping
@@ -711,7 +711,7 @@ public class Quarantine
     {
         String r = address.toLowerCase();
 
-        Set<String> seen = new HashSet();
+        Set<String> seen = new HashSet<String>();
         seen.add(r);
 
         String s;
@@ -774,8 +774,8 @@ public class Quarantine
         }
     }
 
-    private List toEmailAddressRule(List<String> typedList) {
-        ArrayList ret = new ArrayList();
+    private List<EmailAddressRule> toEmailAddressRule(List<String> typedList) {
+        ArrayList<EmailAddressRule> ret = new ArrayList<EmailAddressRule>();
 
         for(String s : typedList) {
             ret.add(new EmailAddressRule(s));
@@ -795,8 +795,8 @@ public class Quarantine
         return ret;
     }
 
-    private List toEmailAddressPairRuleList(List<Pair<String, String>> typedList) {
-        ArrayList ret = new ArrayList();
+    private List<EmailAddressPairRule> toEmailAddressPairRuleList(List<Pair<String, String>> typedList) {
+        ArrayList<EmailAddressPairRule> ret = new ArrayList<EmailAddressPairRule>();
 
         for(Pair<String, String> pair : typedList) {
             ret.add(new EmailAddressPairRule(pair.a, pair.b));

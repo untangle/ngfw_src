@@ -62,7 +62,7 @@ public class FirewallSettings implements Serializable
     public FirewallSettings(Tid tid)
     {
         this.tid = tid;
-        this.firewallRuleList = new LinkedList();
+        this.firewallRuleList = new LinkedList<FirewallRule>();
     }
 
     @SuppressWarnings("unused")

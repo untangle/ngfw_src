@@ -25,7 +25,7 @@ import com.untangle.uvm.type.StringBasedUserType;
 @SuppressWarnings("serial")
 public class DayOfWeekMatcherUserType extends StringBasedUserType
 {
-    public Class returnedClass()
+    public Class<DayOfWeekMatcher> returnedClass()
     {
         return DayOfWeekMatcher.class;
     }

@@ -53,7 +53,7 @@ public class UriUserType implements UserType
     private static final Charset UTF_8 = Charset.forName("UTF-8");
 
     public int[] sqlTypes() { return SQL_TYPES; }
-    public Class returnedClass() { return URI.class; }
+    public Class<URI> returnedClass() { return URI.class; }
     public boolean equals(Object x, Object y) { return x.equals(y); }
     public Object deepCopy(Object value) { return value; }
     public boolean isMutable() { return false; }

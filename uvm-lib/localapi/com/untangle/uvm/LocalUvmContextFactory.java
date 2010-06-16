@@ -67,7 +67,8 @@ public class LocalUvmContextFactory
      *
      * @return the <code>LocalUvmContext</code>.
      */
-    public static LocalUvmContext context()
+    @SuppressWarnings("unchecked")
+	public static LocalUvmContext context()
     {
         if (null == UVM_CONTEXT) {
             synchronized (LocalUvmContextFactory.class) {

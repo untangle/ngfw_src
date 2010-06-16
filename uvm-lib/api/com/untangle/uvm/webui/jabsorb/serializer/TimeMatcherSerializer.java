@@ -13,7 +13,7 @@ import com.untangle.uvm.node.firewall.time.DayOfWeekSetMatcher;
 import com.untangle.uvm.node.firewall.time.DayOfWeekSimpleMatcher;
 import com.untangle.uvm.node.firewall.time.DayOfWeekSingleMatcher;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial","unchecked"})
 public class TimeMatcherSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialize to.

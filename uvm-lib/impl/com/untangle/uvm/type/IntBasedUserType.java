@@ -33,6 +33,7 @@ public abstract class IntBasedUserType implements UserType, Serializable
     private static final int[] SQL_TYPES = { Types.INTEGER };
 
     // abstract methods -------------------------------------------------------
+    @SuppressWarnings("unchecked")
     public abstract Class returnedClass();
 
     protected abstract int userTypeToInt(Object v);

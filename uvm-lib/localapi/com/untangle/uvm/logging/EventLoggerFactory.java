@@ -46,12 +46,12 @@ import com.untangle.uvm.node.NodeContext;
  */
 public abstract class EventLoggerFactory
 {
-    private static final String LOGGER_CLASS
-        = "com.untangle.uvm.engine.EventLoggerFactoryImpl";
+    private static final String LOGGER_CLASS = "com.untangle.uvm.engine.EventLoggerFactoryImpl";
 
     private static EventLoggerFactory FACTORY;
 
-    public static EventLoggerFactory factory()
+    @SuppressWarnings("unchecked")
+	public static EventLoggerFactory factory()
     {
         if (null == FACTORY) {
             synchronized (EventLoggerFactory.class) {

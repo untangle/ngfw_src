@@ -61,8 +61,8 @@ public class PhishHttpPassedFilter implements ListEventFilter<PhishHttpEvent>
         q.setMaxResults(limit);
 
         int c = 0;
-        for (Iterator i = q.iterate(); i.hasNext() && c < limit; ) {
-            RequestLine rl = (RequestLine)i.next();
+        for (Iterator<RequestLine> i = q.iterate(); i.hasNext() && c < limit; ) {
+            RequestLine rl = i.next();
             Query evtQ = s.createQuery(EVT_QUERY);
             evtQ.setEntity("requestLine", rl);
             PhishHttpEvent evt = (PhishHttpEvent)evtQ.uniqueResult();

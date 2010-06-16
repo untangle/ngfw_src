@@ -197,9 +197,8 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         logger.info("INIT: Importing patterns...");
         TreeMap factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
         // Turn on the Instant Messenger ones so it does something by default:
-        Set pats = new HashSet(factoryPatterns.values());
-        for (Object pat : pats) {
-            ProtoFilterPattern pfp = (ProtoFilterPattern)pat;
+        Set<ProtoFilterPattern> pats = new HashSet<ProtoFilterPattern>(factoryPatterns.values());
+        for (ProtoFilterPattern pfp : pats) {
             if (pfp.getCategory().equalsIgnoreCase("Instant Messenger"))
                 pfp.setLog(true);
         }
@@ -238,7 +237,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
     public void reconfigure() throws NodeException
     {
-        Set enabledPatternsSet = new HashSet();
+        Set<ProtoFilterPattern> enabledPatternsSet = new HashSet<ProtoFilterPattern>();
 
         logger.info("Reconfigure()");
 
@@ -250,8 +249,8 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         if (curPatterns == null)
             logger.error("NULL pattern list. Continuing anyway...");
         else {
-            for (Iterator i=curPatterns.iterator() ; i.hasNext() ; ) {
-                ProtoFilterPattern pat = (ProtoFilterPattern)i.next();
+            for (Iterator<ProtoFilterPattern> i=curPatterns.iterator() ; i.hasNext() ; ) {
+                ProtoFilterPattern pat = i.next();
 
                 if ( pat.getLog() || pat.getAlert() || pat.isBlocked() ) {
                     logger.info("Matching on pattern \"" + pat.getProtocol() + "\"");
@@ -282,8 +281,8 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         /*
          * Look for updates
          */
-        for (Iterator i = curPatterns.iterator() ; i.hasNext() ; ) {
-            ProtoFilterPattern curPat = (ProtoFilterPattern) i.next();
+        for (Iterator<ProtoFilterPattern> i = curPatterns.iterator() ; i.hasNext() ; ) {
+            ProtoFilterPattern curPat = i.next();
             int mvid = curPat.getMetavizeId();
             ProtoFilterPattern newPat = (ProtoFilterPattern) factoryPatterns.get(mvid);
 
@@ -294,8 +293,8 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
                 madeChange = true;
                 String curName = curPat.getProtocol();
                 boolean found = false;
-                for (Iterator j = factoryPatterns.values().iterator() ; j.hasNext() ; ) {
-                    newPat = (ProtoFilterPattern) j.next();
+                for (Iterator<ProtoFilterPattern> j = factoryPatterns.values().iterator() ; j.hasNext() ; ) {
+                    newPat = j.next();
                     if (newPat.getProtocol().equals(curName)) {
                         found = true;
                         break;
@@ -359,14 +358,14 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
          */
         if (factoryPatterns.size() > 0) {
             madeChange = true;
-            LinkedList allPatterns = new LinkedList(curPatterns);
-            for (Iterator i = factoryPatterns.values().iterator() ; i.hasNext() ; ) {
-                ProtoFilterPattern factoryPat = (ProtoFilterPattern) i.next();
+            LinkedList<ProtoFilterPattern> allPatterns = new LinkedList<ProtoFilterPattern>(curPatterns);
+            for (Iterator<ProtoFilterPattern> i = factoryPatterns.values().iterator() ; i.hasNext() ; ) {
+                ProtoFilterPattern factoryPat = i.next();
                 logger.info("UPDATE: Adding New Pattern (" + factoryPat.getProtocol() + ")");
                 boolean added = false;
                 int index = 0;
-                for (Iterator j = allPatterns.iterator() ; j.hasNext() ; index++) {
-                    ProtoFilterPattern curPat = (ProtoFilterPattern) j.next();
+                for (Iterator<ProtoFilterPattern> j = allPatterns.iterator() ; j.hasNext() ; index++) {
+                    ProtoFilterPattern curPat = j.next();
                     if (factoryPat.getMetavizeId() < curPat.getMetavizeId()) {
                         allPatterns.add(index, factoryPat);
                         added = true;
@@ -376,7 +375,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
                 if (!added)
                     allPatterns.add(factoryPat);
             }
-            curPatterns = new HashSet(allPatterns);
+            curPatterns = new HashSet<ProtoFilterPattern>(allPatterns);
         }
 
         if (madeChange) {

@@ -68,12 +68,9 @@ import org.jfree.data.time.TimeSeriesCollection;
 
 public class StackedBarChart extends Plot
 {
-    private static final DateFormat DF = 
-	new SimpleDateFormat("MMM-dd");
+    private static final DateFormat DF = new SimpleDateFormat("MMM-dd");
 
-    private static final DateFormat HF = 
-	new SimpleDateFormat("HH");
-
+    private static final DateFormat HF = new SimpleDateFormat("HH");
 
     private final String xLabel;
     private final String yLabel;
@@ -81,8 +78,7 @@ public class StackedBarChart extends Plot
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public StackedBarChart(String title, String xLabel, String yLabel,
-                           String majorFormatter)
+    public StackedBarChart(String title, String xLabel, String yLabel, String majorFormatter)
     {
         super(title);
 
@@ -92,21 +88,23 @@ public class StackedBarChart extends Plot
     }
 
 
-    private Date parseTimeStamp(String timeStr) {
-	Date date = null;
-	try {
-	    date = DF.parse(timeStr);
-	} catch (java.text.ParseException exn) {
+    private Date parseTimeStamp(String timeStr) 
+    {
+    	Date date = null;
+    	try {
+    		date = DF.parse(timeStr);
+    	} catch (java.text.ParseException exn) {
             try{
                 date = HF.parse(timeStr);
             } catch (java.text.ParseException exn2) {
                 logger.warn("Couldn't parse time for row key: " + timeStr, exn2);
             }
-	}
-	return date;
+    	}
+    	return date;
     }
 
-    public void generate(String reportBase, String csvUrl, String imageUrl)
+    @SuppressWarnings("unchecked")
+	public void generate(String reportBase, String csvUrl, String imageUrl)
         throws IOException
     {
         CSV csv = new CSV();
@@ -141,7 +139,7 @@ public class StackedBarChart extends Plot
             for (int j = 0; j < cd.getRowCount(); j++) {
                 Comparable rowKey = cd.getRowKey(j);
                 try {
-		    Date d = parseTimeStamp((String)rowKey);
+                	Date d = parseTimeStamp((String)rowKey);
                     double v = cd.getValue(rowKey, columnKey).doubleValue();
                     ds.add(new Minute(d), v);
                 } catch (Exception exn) {

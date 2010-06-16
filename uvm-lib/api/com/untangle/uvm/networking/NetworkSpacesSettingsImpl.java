@@ -403,21 +403,21 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         sb.append( " completed-setup: " + getHasCompletedSetup());
 
         sb.append( "\nInterfaces:\n" );
-        for ( Iterator iter = getInterfaceList().iterator() ; iter.hasNext() ; ) {
-            Interface intf = (Interface)iter.next();
+        for ( Iterator<Interface> iter = getInterfaceList().iterator() ; iter.hasNext() ; ) {
+            Interface intf = iter.next();
             sb.append( intf + "\n" );
         }
 
         sb.append( "Network Spaces:\n" );
-        for ( Iterator iter = getNetworkSpaceList().iterator() ; iter.hasNext() ; ) {
-            NetworkSpace space = (NetworkSpace)iter.next();
+        for ( Iterator<NetworkSpace> iter = getNetworkSpaceList().iterator() ; iter.hasNext() ; ) {
+            NetworkSpace space = iter.next();
             sb.append( space + "\n" );
         }
 
         sb.append( "Routing table:\n" );
 
-        for ( Iterator iter = getRoutingTable().iterator() ; iter.hasNext() ; ) {
-            Route route = (Route)iter.next();
+        for ( Iterator<Route> iter = getRoutingTable().iterator() ; iter.hasNext() ; ) {
+            Route route = iter.next();
             sb.append( route + "\n" );
         }
 

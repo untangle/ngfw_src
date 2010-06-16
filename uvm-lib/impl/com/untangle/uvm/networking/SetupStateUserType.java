@@ -23,7 +23,7 @@ import com.untangle.uvm.type.IntBasedUserType;
 @SuppressWarnings("serial")
 public class SetupStateUserType extends IntBasedUserType
 {
-    public Class returnedClass()
+    public Class<SetupState> returnedClass()
     {
         return SetupState.class;
     }

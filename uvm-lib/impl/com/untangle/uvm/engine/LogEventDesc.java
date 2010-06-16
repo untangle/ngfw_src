@@ -28,10 +28,11 @@ import com.untangle.uvm.logging.LogEvent;
  */
 class LogEventDesc
 {
-    private final EventLoggerImpl eventLogger;
+    private final EventLoggerImpl<LogEvent> eventLogger;
     private final LogEvent logEvent;
     private final String tag;
-
+    
+    @SuppressWarnings("unchecked")
     LogEventDesc(EventLoggerImpl eventLogger, LogEvent logEvent, String tag)
     {
         this.eventLogger = eventLogger;
@@ -39,7 +40,7 @@ class LogEventDesc
         this.tag = tag;
     }
 
-    EventLoggerImpl getEventLogger()
+    EventLoggerImpl<LogEvent> getEventLogger()
     {
         return eventLogger;
     }

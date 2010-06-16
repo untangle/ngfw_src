@@ -37,7 +37,7 @@ import org.jabsorb.serializer.UnmarshallException;
 /**
  * Serialises LazyInitializer values
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial","unchecked"})
 public class LazyInitializerSerializer extends AbstractSerializer
 {
   /**

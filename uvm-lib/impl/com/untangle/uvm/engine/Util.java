@@ -87,7 +87,8 @@ class Util
 
     // private methods --------------------------------------------------------
 
-    private static void addAnnotatedClasses(ClassLoader cl,
+    @SuppressWarnings("unchecked")
+	private static void addAnnotatedClasses(ClassLoader cl,
                                             AnnotationConfiguration cfg)
     {
         Enumeration<URL> e = null;

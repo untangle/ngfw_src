@@ -43,12 +43,12 @@ public class IPSetTrieNode {
     
     public IPSetTrieNode () {}
     
-    public IPSetTrieNode (LinkedList bitString, Object result)
+    public IPSetTrieNode (LinkedList<Boolean> bitString, Object result)
     {
         this.add(bitString,result);
     }
 
-    public void add (LinkedList bitString, Object result)
+    public void add (LinkedList<Boolean> bitString, Object result)
     {
         if (bitString.size() == 0) {
             this.result = result;
@@ -72,7 +72,7 @@ public class IPSetTrieNode {
         }
     }
 
-    public Object getLeastSpecific (LinkedList bitString, int index)
+    public Object getLeastSpecific (LinkedList<Boolean> bitString, int index)
     {
         Boolean b;
         try {b = (Boolean)bitString.get(index);}
@@ -95,7 +95,7 @@ public class IPSetTrieNode {
         return null;
     }
 
-    public Object getMostSpecific (LinkedList bitString, int index)
+    public Object getMostSpecific (LinkedList<Boolean> bitString, int index)
     {
         Boolean b;
         try {b = (Boolean)bitString.get(index);}

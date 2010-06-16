@@ -50,8 +50,8 @@ public class HostNameList implements Serializable
         this.hostNameList = new LinkedList<HostName>(hostNameList);
         
         /* Remove any duplicates */
-        for ( Iterator iter = this.hostNameList.iterator() ; iter.hasNext() ; ) {
-            HostName hostName = (HostName)iter.next();
+        for ( Iterator<HostName> iter = this.hostNameList.iterator() ; iter.hasNext() ; ) {
+            HostName hostName = iter.next();
             if ( this.hostNameList.indexOf( hostName ) != this.hostNameList.lastIndexOf( hostName )) {
                 iter.remove();
             }
@@ -67,8 +67,8 @@ public class HostNameList implements Serializable
     { 
         String output = "";
         
-        for ( Iterator iter = hostNameList.iterator(); iter.hasNext() ; ) {
-            HostName hostName = (HostName)iter.next();
+        for ( Iterator<HostName> iter = hostNameList.iterator(); iter.hasNext() ; ) {
+            HostName hostName = iter.next();
             
             output += hostName.toString() + ( iter.hasNext() ? " " : "" );
         }
@@ -95,15 +95,15 @@ public class HostNameList implements Serializable
     /* Merge in the elements of another list into the current list, duplicates are ignored */
     public void merge( HostNameList hl ) 
     {
-        for ( Iterator iter = hl.hostNameList.iterator() ; iter.hasNext() ; ) {
-            add((HostName)iter.next());
+        for ( Iterator<HostName> iter = hl.hostNameList.iterator() ; iter.hasNext() ; ) {
+            add(iter.next());
         }
     }
 
     public void removeReserved()
     {
-        for ( Iterator iter = hostNameList.iterator() ; iter.hasNext() ; ) {
-            HostName hostName = (HostName)iter.next();
+        for ( Iterator<HostName> iter = hostNameList.iterator() ; iter.hasNext() ; ) {
+            HostName hostName = iter.next();
             if ( hostName.isReserved()) iter.remove();
         }
     }
@@ -115,15 +115,15 @@ public class HostNameList implements Serializable
     public void qualify( HostName domain )
     {
         List<HostName> tmp = new LinkedList<HostName>();
-        for ( Iterator iter = this.hostNameList.iterator() ; iter.hasNext() ; ) {
-            HostName hostName = (HostName)iter.next();
+        for ( Iterator<HostName> iter = this.hostNameList.iterator() ; iter.hasNext() ; ) {
+            HostName hostName = iter.next();
             if ( !hostName.isQualified()) {
                 tmp.add( HostName.addDomain( hostName, domain ));
             }
         }
 
-        for ( Iterator iter = tmp.iterator() ; iter.hasNext() ; ) {
-            add((HostName)iter.next());
+        for ( Iterator<HostName> iter = tmp.iterator() ; iter.hasNext() ; ) {
+            add(iter.next());
         }
     }
 

@@ -196,8 +196,9 @@ public class RBLChecker {
         return clientSet.toArray();
     }
 
-    private RBLClient[] createClients(String ipAddr, String invertedIPAddr) {
-        clientMap = new HashMap();
+    private RBLClient[] createClients(String ipAddr, String invertedIPAddr) 
+    {
+        clientMap = new HashMap<RBLClient, RBLClientContext>();
 
         RBLClientContext cContext;
         RBLClient client;
@@ -222,16 +223,9 @@ public class RBLChecker {
         return clients;
     }
 
-    private RBLClientContext[] getClientContexts() {
-        Object[] contexts = clientMap.values().toArray();
-        RBLClientContext[] cContexts = new RBLClientContext[contexts.length];
-        int idx = 0;
-        for (Object context : contexts) {
-            cContexts[idx] = (RBLClientContext)context;
-            idx++;
-        }
-
-        return cContexts;
+    private RBLClientContext[] getClientContexts() 
+    {
+    	return (RBLClientContext[])clientMap.values().toArray();
     }
 
     private void freeClients() {

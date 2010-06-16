@@ -39,7 +39,7 @@ import org.json.JSONObject;
 /**
  * Serialises date and time values
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial","unchecked"})
 public class TimeSerializer extends AbstractSerializer
 {
   /**

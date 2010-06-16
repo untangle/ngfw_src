@@ -152,7 +152,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
      * The set of active sessions (both TCP and UDP), kept as weak
      * references to SessionState object (both TCP/UDP)
      */
-    private ConcurrentHashMap liveSessions;
+    private ConcurrentHashMap<IPSession,IPSession> liveSessions;
 
     private String threadNameBase; // Convenience
 
@@ -207,7 +207,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
         // mainThread = ThreadPool.pool().allocate(this, threadNameBase + "disp");
         // mainThread = new Thread(this, threadNameBase + "mainDisp");
-        liveSessions = new ConcurrentHashMap();
+        liveSessions = new ConcurrentHashMap<IPSession,IPSession>();
 
         LocalMessageManager lmm = LocalUvmContextFactory.context()
             .localMessageManager();
@@ -654,10 +654,10 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     int[] liveSessionIds()
     {
         TIntArrayList idlist = new TIntArrayList(liveSessions.size());
-        for (Iterator i = liveSessions.keySet().iterator(); i.hasNext(); ) {
+        for (Iterator<IPSession> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
             // WeakReference wr = (WeakReference)i.next();
             // SessionState s = (SessionState)wr.get();
-            IPSession sess = (IPSession)i.next();
+            IPSession sess = i.next();
             idlist.add(sess.id());
         }
 
@@ -669,8 +669,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
     IPSessionDesc[] liveSessionDescs()
     {
-        List l = new ArrayList(liveSessions.size());
-        for (Iterator i = liveSessions.keySet().iterator(); i.hasNext(); ) {
+        List<IPSessionDesc> l = new ArrayList<IPSessionDesc>(liveSessions.size());
+        for (Iterator<IPSession> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
             IPSessionImpl sess = (IPSessionImpl)i.next();
             l.add(sess.makeDesc());
         }
@@ -686,7 +686,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         System.out.println("ID\t\tDir\tC State\tC Addr\tC Port\tS State\tS Addr\tS Port\t" +
                            "Created\tLast Activity\tC->T Bs\tT->S Bs\tS->T Bs\tT->C Bs\t" +
                            "c2sDir\ts2cDir\tcio\tsio\tcro\tsro\tcreq\tsreq");
-        for (Iterator i = liveSessions.keySet().iterator(); i.hasNext(); ) {
+        for (Iterator<IPSession> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
             IPSessionImpl sd = (IPSessionImpl)i.next();
             SessionStats stats = sd.stats();
             if (sd instanceof UDPSession)

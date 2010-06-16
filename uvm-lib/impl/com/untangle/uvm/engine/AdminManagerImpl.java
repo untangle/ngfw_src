@@ -316,13 +316,13 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
 
         /* Just return an empty registration */
         if (!regFile.exists() || ( regFile.length() == 0 ))
-            return new RegistrationInfo(new Hashtable());
+            return new RegistrationInfo(new Hashtable<String,String[]>());
         try {
-            Hashtable entries = FormUtil.parsePostData(regFile);
+            Hashtable<String,String[]> entries = FormUtil.parsePostData(regFile);
             return new RegistrationInfo(entries);
         } catch (Exception exn) {
             logger.warn("Exception during parsing registration info: ", exn);
-            return new RegistrationInfo(new Hashtable());
+            return new RegistrationInfo(new Hashtable<String,String[]>());
         }
     }
 

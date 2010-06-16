@@ -25,7 +25,7 @@ import com.untangle.uvm.type.StringBasedUserType;
 @SuppressWarnings("serial")
 public class ProtocolMatcherUserType extends StringBasedUserType
 {
-    public Class returnedClass()
+    public Class<ProtocolMatcher> returnedClass()
     {
         return ProtocolMatcher.class;
     }

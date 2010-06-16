@@ -32,7 +32,7 @@ public class ModeUserType implements UserType
     private static final int[] SQL_TYPES = { Types.VARCHAR };
 
     public int[] sqlTypes() { return SQL_TYPES; }
-    public Class returnedClass() { return Mode.class; }
+    public Class<Mode> returnedClass() { return Mode.class; }
     public boolean equals(Object x, Object y) { return x == y; }
     public Object deepCopy(Object value) { return value; }
     public boolean isMutable() { return false; }

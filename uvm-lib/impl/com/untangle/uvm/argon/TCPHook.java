@@ -246,7 +246,7 @@ public class TCPHook implements NetcapHook
             return new TCPSource( netcapTCPSession.tcpServerSide().fd(), serverSideListener );
         }
 
-        protected void newSessionRequest( ArgonAgent agent, Iterator iter, PipelineEndpoints pe )
+        protected void newSessionRequest( ArgonAgent agent, Iterator<?> iter, PipelineEndpoints pe )
         {
             TCPNewSessionRequest request;
 
@@ -259,17 +259,17 @@ public class TCPHook implements NetcapHook
             // TAPI returns null when rejecting the session
             TCPSession session = agent.getNewSessionEventListener().newSession( request );
 	    
-	    processSession( request, session );
+            processSession( request, session );
 	    
-	    if ( iter.hasNext()) {
-		/* Advance the previous session if the node requested or released the session */
-		if (( request.state() == IPNewSessionRequest.REQUESTED ) ||
-		    ( request.state() == IPNewSessionRequest.RELEASED && session != null )) {
-		    prevSession = session;
-		}
-	    } else {
-		prevSession = null;
-	    }
+            if ( iter.hasNext()) {
+            	/* Advance the previous session if the node requested or released the session */
+            	if (( request.state() == IPNewSessionRequest.REQUESTED ) ||
+            			( request.state() == IPNewSessionRequest.RELEASED && session != null )) {
+            		prevSession = session;
+            	}
+            } else {
+            	prevSession = null;
+            }
         }
 
         protected void liberate()

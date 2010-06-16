@@ -46,7 +46,8 @@ import java.lang.reflect.Proxy;
  */
 public class ProxyGenerator
 {
-    public static Object generateProxy(Class iface, Object impl)
+    @SuppressWarnings("unchecked")
+	public static Object generateProxy(Class iface, Object impl)
     {
         Handler h = new Handler(impl);
         ClassLoader cl = impl.getClass().getClassLoader();

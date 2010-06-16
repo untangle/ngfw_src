@@ -25,7 +25,7 @@ import com.untangle.uvm.type.StringBasedUserType;
 @SuppressWarnings("serial")
 public class IntfMatcherUserType extends StringBasedUserType
 {
-    public Class returnedClass()
+    public Class<IntfMatcher> returnedClass()
     {
         return IntfMatcher.class;
     }

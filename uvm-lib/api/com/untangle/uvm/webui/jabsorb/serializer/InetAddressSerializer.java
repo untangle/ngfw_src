@@ -10,7 +10,7 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial","unchecked"})
 public class InetAddressSerializer extends AbstractSerializer {
     /**
      * Classes that this can serialise.

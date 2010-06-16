@@ -425,7 +425,7 @@ public abstract class VirusNodeImpl extends AbstractNode
     public void reconfigure()
     {
         // FTP
-        Set subscriptions = new HashSet();
+        Set<Subscription> subscriptions = new HashSet<Subscription>();
         {
             Subscription subscription = new Subscription(Protocol.TCP);
             subscriptions.add(subscription);
@@ -433,7 +433,7 @@ public abstract class VirusNodeImpl extends AbstractNode
         pipeSpecs[FTP].setSubscriptions(subscriptions);
 
         // HTTP
-        subscriptions = new HashSet();
+        subscriptions = new HashSet<Subscription>();
         if (settings.getBaseSettings().getHttpConfig().getScan()) {
             Subscription subscription = new Subscription(Protocol.TCP);
             subscriptions.add(subscription);
@@ -441,7 +441,7 @@ public abstract class VirusNodeImpl extends AbstractNode
         pipeSpecs[HTTP].setSubscriptions(subscriptions);
 
         // SMTP
-        subscriptions = new HashSet();
+        subscriptions = new HashSet<Subscription>();
         {
             Subscription subscription = new Subscription(Protocol.TCP);
             subscriptions.add(subscription);
@@ -449,7 +449,7 @@ public abstract class VirusNodeImpl extends AbstractNode
         pipeSpecs[SMTP].setSubscriptions(subscriptions);
 
         // POP
-        subscriptions = new HashSet();
+        subscriptions = new HashSet<Subscription>();
         {
             Subscription subscription = new Subscription(Protocol.TCP);
             subscriptions.add(subscription);

@@ -90,7 +90,7 @@ class UrlBlacklist extends Blacklist
     {
         if (unconfigured) {
             LocalUvmContext uvm = LocalUvmContextFactory.context();
-            Map m = new HashMap();
+            Map<String,String> m = new HashMap<String,String>();
             m.put("key", uvm.getActivationKey());
             ToolboxManager tm = uvm.toolboxManager();
             m.put("client-version", uvm.getFullVersion());

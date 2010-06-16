@@ -177,8 +177,8 @@ public abstract class SpamEvent extends LogEvent
         if (null == messageInfo) {
             return "";
         } else {
-            for (Iterator i = messageInfo.getAddresses().iterator(); i.hasNext(); ) {
-                MessageInfoAddr mi = (MessageInfoAddr)i.next();
+            for (Iterator<MessageInfoAddr> i = messageInfo.getAddresses().iterator(); i.hasNext(); ) {
+                MessageInfoAddr mi = i.next();
 
                 if (mi.getKind() == kind && mi.getPosition() == 1) {
                     String addr = mi.getAddr();

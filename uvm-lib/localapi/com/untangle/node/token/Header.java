@@ -109,7 +109,7 @@ public class Header implements Token
         return (null == f || f.values.size() == 0) ? null : f.values.get(0);
     }
 
-    public List getValues(String key)
+    public List<String> getValues(String key)
     {
         Field f = header.get(key.toUpperCase());
         return ( null == f ) ? null : f.values;
@@ -171,9 +171,9 @@ public class Header implements Token
         StringBuilder sb = new StringBuilder();
         for (Iterator<String> i = keyIterator(); i.hasNext(); ) {
             String k = i.next();
-            List vl = getValues(k);
+            List<String> vl = getValues(k);
             if ( vl != null ) {
-                for ( Iterator vi = vl.iterator(); vi.hasNext(); ) {
+                for ( Iterator<String> vi = vl.iterator(); vi.hasNext(); ) {
                     sb.append(k).append(": ").append( vi.next()).append("\r\n");
                 }
             }

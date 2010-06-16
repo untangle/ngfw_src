@@ -298,8 +298,8 @@ public class EventHandler extends AbstractEventHandler
         AsciiCharBuffer toScan = buffer.asReadOnlyBuffer();
         toScan.flip();
 
-        for (Iterator iterator = _patternSet.iterator(); iterator.hasNext();) {
-            ProtoFilterPattern elem = (ProtoFilterPattern) iterator.next();
+        for (Iterator<ProtoFilterPattern> iterator = _patternSet.iterator(); iterator.hasNext();) {
+            ProtoFilterPattern elem = iterator.next();
             Pattern pat = PatternFactory.createRegExPattern(elem.getDefinition());
             if (pat != null && pat.matcher(toScan).find())
                 return elem; /* XXX - can match multiple patterns */

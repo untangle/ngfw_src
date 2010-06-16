@@ -45,7 +45,7 @@ import com.untangle.uvm.node.ParseException;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public final class MACAddress implements Serializable, Comparable
+public final class MACAddress implements Serializable, Comparable<MACAddress>
 {
     /* Number of hex digits in a MAC address */
     private static final int MACADDRSZ = 6;
@@ -118,8 +118,8 @@ public final class MACAddress implements Serializable, Comparable
         return false;
     }
 
-    public int compareTo( Object o )
+    public int compareTo( MACAddress m )
     {
-        return mac.compareToIgnoreCase(o.toString());
+        return mac.compareToIgnoreCase(m.toString());
     }
 }

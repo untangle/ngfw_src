@@ -41,6 +41,7 @@ import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.SystemStatEvent;
+import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.message.ActiveStat;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
@@ -97,7 +98,7 @@ class MessageManagerImpl implements LocalMessageManager
 
     private volatile Map<String, Object> systemStats = Collections.emptyMap();
 
-    private EventLogger eventLogger = EventLoggerFactory.factory().getEventLogger();
+    private EventLogger<LogEvent> eventLogger = EventLoggerFactory.factory().getEventLogger();
 
     private final Logger logger = Logger.getLogger(getClass());
 

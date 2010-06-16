@@ -41,7 +41,7 @@ public class MimeTypeUserType implements UserType
     private static final int[] SQL_TYPES = { Types.VARCHAR };
 
     public int[] sqlTypes() { return SQL_TYPES; }
-    public Class returnedClass() { return MimeType.class; }
+    public Class<MimeType> returnedClass() { return MimeType.class; }
     public boolean equals(Object x, Object y) { return x.equals(y); }
     public Object deepCopy(Object value) { return value; }
     public boolean isMutable() { return false; }

@@ -55,15 +55,14 @@ class HttpUnparser extends AbstractUnparser
     private final Logger logger = Logger.getLogger(HttpUnparser.class);
 
     // used to keep request with header, IIS requires this
-    private final Queue outputQueue = new LinkedList();
+    private final Queue outputQueue = new LinkedList<String>();
     private final HttpCasing httpCasing;
 
     private int size = 0;
     private int transferEncoding;
     private String sessStr;
 
-    HttpUnparser(TCPSession session, boolean clientSide,
-                 HttpCasing httpCasing)
+    HttpUnparser(TCPSession session, boolean clientSide, HttpCasing httpCasing)
     {
         super(session, clientSide);
         this.httpCasing = httpCasing;
@@ -237,8 +236,8 @@ class HttpUnparser extends AbstractUnparser
     {
         ByteBuffer buf = ByteBuffer.allocate(size);
 
-        for (Iterator i = outputQueue.iterator(); i.hasNext(); ) {
-            ByteBuffer b = (ByteBuffer)i.next();
+        for (Iterator<ByteBuffer> i = outputQueue.iterator(); i.hasNext(); ) {
+            ByteBuffer b = i.next();
             buf.put(b);
         }
 

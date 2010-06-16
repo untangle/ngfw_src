@@ -84,7 +84,7 @@ class BypassMonitor {
      * host-bypassed sites, and removing them if they are expired.
      */
     private final class Monitor implements Worker {
-        private SortedSet<BypassedSite> bypassedSites = new TreeSet();
+        private SortedSet<BypassedSite> bypassedSites = new TreeSet<BypassedSite>();
 	
         public synchronized void addBypassedSite(InetAddress addr, String site) {
             BypassedSite bs = new BypassedSite(addr, site);
@@ -114,12 +114,12 @@ class BypassMonitor {
             try {
                 Map<InetAddress,List<String>> sitesToDelete = new HashMap<InetAddress,List<String>>();
                 synchronized(this) {
-                    Iterator iter = bypassedSites.iterator();
+                    Iterator<BypassedSite> iter = bypassedSites.iterator();
                     BypassedSite bs;
                     List<String> l;
 
                     while (iter.hasNext()) {
-                        bs = (BypassedSite)iter.next();
+                        bs = iter.next();
                         logger.warn("looking at " + bs);
 
                         if (bs.creationTimeMillis > expirationTime) {
@@ -153,7 +153,7 @@ class BypassMonitor {
      * consider two BypassedSites to be equal if the host and the URL
      * are equals, but we order them by creation time.
      */
-    private final class BypassedSite implements Comparable {
+    private final class BypassedSite implements Comparable<BypassedSite> {
         private String site;
         private InetAddress addr;
         private long creationTimeMillis;
@@ -172,8 +172,8 @@ class BypassMonitor {
             return (17 + 37 * (site.hashCode() + addr.hashCode()));
         }
 	
-        public int compareTo(Object other) {
-            return (int)(creationTimeMillis - ((BypassedSite)other).creationTimeMillis);
+        public int compareTo(BypassedSite other) {
+            return (int)(creationTimeMillis - other.creationTimeMillis);
         }
 	
         public String toString() {

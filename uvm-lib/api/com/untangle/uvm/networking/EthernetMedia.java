@@ -47,7 +47,7 @@ import com.untangle.uvm.node.ParseException;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class EthernetMedia implements Serializable, Comparable
+public class EthernetMedia implements Serializable, Comparable<EthernetMedia>
 {
 
     private static final String NAME_AUTO_NEGOTIATE = "Auto-Negotiate";
@@ -148,9 +148,8 @@ public class EthernetMedia implements Serializable, Comparable
         return this.name;
     }
 
-    public int compareTo( Object o )
+    public int compareTo( EthernetMedia other )
     {
-        EthernetMedia other = (EthernetMedia)o;
 
         int oper1 = getType();
         int oper2 = other.getType();

@@ -371,9 +371,9 @@ public class SafelistManager
                         Pattern sndrPattern;
                         Matcher sndrMatcher;
 
-                        for (Iterator iter = m.values().iterator();
+                        for (Iterator<Pattern> iter = m.values().iterator();
                              true == iter.hasNext(); ) {
-                            sndrPattern = (Pattern) iter.next();
+                            sndrPattern = iter.next();
                             sndrMatcher = sndrPattern.matcher(addrStr);
                             if (true == sndrMatcher.matches()) {
                                 m_logger.debug("pattern match: " + sndrPattern

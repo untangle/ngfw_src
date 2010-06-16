@@ -200,9 +200,9 @@ public class SpywareHttpHandler extends HttpStateMachine
             return h;
         }
 
-        for (Iterator i = cookies.iterator(); i.hasNext(); ) {
+        for (Iterator<String> i = cookies.iterator(); i.hasNext(); ) {
             node.incrementHttpClientCookieScan();
-            String cookie = (String)i.next();
+            String cookie = i.next();
             Map m = CookieParser.parseCookie(cookie);
             String domain = (String)m.get("domain");
             if (null == domain) {
@@ -247,9 +247,9 @@ public class SpywareHttpHandler extends HttpStateMachine
 
         if (null == setCookies) { return h; }
 
-        for (Iterator i = setCookies.iterator(); i.hasNext(); ) {
+        for (Iterator<String> i = setCookies.iterator(); i.hasNext(); ) {
             node.incrementHttpServerCookieScan();
-            String v = (String)i.next();
+            String v = i.next();
 
             if (logger.isDebugEnabled()) {
                 logger.debug("handling server cookie: " + v);
@@ -305,8 +305,8 @@ public class SpywareHttpHandler extends HttpStateMachine
             return h;
         }
 
-        for (Iterator i = cookieKillers.iterator(); i.hasNext(); ) {
-            String killer = (String)i.next();
+        for (Iterator<String> i = cookieKillers.iterator(); i.hasNext(); ) {
+            String killer = i.next();
             if (logger.isDebugEnabled()) {
                 logger.debug("adding killer to header: " + killer);
             }

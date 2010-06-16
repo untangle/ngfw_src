@@ -124,8 +124,8 @@ public class CommandLineUtil<T>
 
     public void dumpObject( Object o ) throws Exception
     {
-        if ( o instanceof Iterable ) {
-            Iterable iterable = (Iterable)o;
+        if ( o instanceof Iterable<?> ) {
+            Iterable<Object> iterable = (Iterable<Object>)o;
             for ( Object item : iterable ) {
                 System.out.println(this.serializer.toJSON(item));
             }

@@ -95,13 +95,13 @@ class PortalApplicationManagerImpl implements LocalApplicationManager
     public List<Application> getApplications()
     {
         synchronized (apps) {
-            return new ArrayList(apps);
+            return new ArrayList<Application>(apps);
         }
     }
 
     public List<String> getApplicationNames()
     {
-        List<String> result = new ArrayList(apps.size());
+        List<String> result = new ArrayList<String>(apps.size());
 
         synchronized (apps) {
             for (Application app : apps) {

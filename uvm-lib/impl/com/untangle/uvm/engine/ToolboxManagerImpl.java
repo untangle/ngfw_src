@@ -529,7 +529,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public void update(long millis) throws MackageException
     {
-        FutureTask f = new FutureTask(new Callable()
+        FutureTask<Object> f = new FutureTask<Object>(new Callable<Object>()
             {
                 public Object call() throws Exception
                 {
@@ -893,7 +893,7 @@ class ToolboxManagerImpl implements ToolboxManager
         StringBuilder key = new StringBuilder();
         StringBuilder value = new StringBuilder();
         String line;
-        List<String> hidePkgs = new LinkedList();
+        List<String> hidePkgs = new LinkedList<String>();
         if (System.getProperty("uvm.hidden.libitems") != null) {
             String[] libitems = System.getProperty("uvm.hidden.libitems").split(",");
             hidePkgs = Arrays.asList(libitems);
@@ -986,7 +986,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
     private Map<String, String> readInstalledList(InputStream is) throws IOException
     {
-        Map<String, String> m = new HashMap();
+        Map<String, String> m = new HashMap<String,String>();
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         String line;
         while (null != (line = br.readLine())) {

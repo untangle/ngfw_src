@@ -62,8 +62,8 @@ public class DeletingDataSaver<T> extends DataSaver<T>
     protected final void preSave( Session s )
     {
         Query q = s.createQuery( "from " + className );
-        for ( Iterator iter = q.iterate() ; iter.hasNext() ; ) {
-            T settings = (T)iter.next();
+        for ( Iterator<T> iter = q.iterate() ; iter.hasNext() ; ) {
+            T settings = iter.next();
             s.delete( settings );
         }
     }

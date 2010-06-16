@@ -40,7 +40,7 @@ import org.hibernate.usertype.CompositeUserType;
  */
 public class ColorUserType implements CompositeUserType
 {
-    public Class returnedClass() { return Color.class; }
+    public Class<Color> returnedClass() { return Color.class; }
 
     public boolean equals(Object x, Object y)
     {

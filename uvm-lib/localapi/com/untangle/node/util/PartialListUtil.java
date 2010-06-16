@@ -44,7 +44,6 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.security.Tid;
-import com.untangle.uvm.util.ListUtil;
 import com.untangle.uvm.util.QueryUtil;
 import com.untangle.uvm.util.TransactionWork;
 
@@ -109,7 +108,8 @@ public class PartialListUtil
     }
 
     /* danger, but this is how it comes in from the web ui */
-    public void updateCachedItems( Collection items, List[] modifications )
+    @SuppressWarnings("unchecked")
+	public void updateCachedItems( Collection items, List[] modifications )
     {
         updateCachedItems(items, RULE_HANDLER, modifications );
     }
@@ -128,7 +128,8 @@ public class PartialListUtil
     }
 
     /* not the best type safe solution, but every other case makes it hard to use. */
-    public void updateCachedItems( Collection items, List added, List<Long> deleted, List modified )
+    @SuppressWarnings("unchecked")
+	public void updateCachedItems( Collection items, List added, List<Long> deleted, List modified )
     {
         updateCachedItems(items, RULE_HANDLER, added, deleted, modified );
     }
@@ -138,7 +139,7 @@ public class PartialListUtil
         for ( Iterator<T> i = items.iterator(); i.hasNext(); ) {
             T item = i.next();
             T mItem = null;
-            if ( deleted != null && ListUtil.contains( deleted, handler.getId( item ))) {
+            if ( deleted != null && this.contains( deleted, handler.getId( item ))) {
                 i.remove();
             } else if (modified != null && ( mItem = modifiedItem( handler, item, modified )) != null) {
                 handler.update( item, mItem );
@@ -237,4 +238,17 @@ public class PartialListUtil
         }
     }
 
+    private static boolean contains(List list, Long elem) {
+    	for (int i = 0; i < list.size(); i++) {
+    		Object currentElem = list.get(i);
+    		if (currentElem instanceof Long && currentElem.equals(elem)){
+    			return true;
+    		} else if (currentElem instanceof Integer && 
+    				((Integer)currentElem).longValue() == elem.longValue()){
+    			return true;
+    		}
+		}
+        return false;
+    }
+    
 }

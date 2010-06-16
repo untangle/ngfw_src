@@ -82,7 +82,7 @@ class AddressMapper
 
             /* If a list hasn't been created yet, then create one */
             if ( groupClientList == null ) {
-                groupClientList = new LinkedList();
+                groupClientList = new LinkedList<VpnClientBase>();
                 groupToClientList.put( group, groupClientList );
             }
 

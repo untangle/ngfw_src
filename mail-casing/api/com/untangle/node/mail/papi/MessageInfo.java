@@ -88,7 +88,7 @@ public class MessageInfo implements Serializable
     private Set<MessageInfoAddr> addresses = new HashSet<MessageInfoAddr>();
 
     /* non-persistent fields */
-    public Map counts = new HashMap();
+    public Map<AddressKind,Integer> counts = new HashMap<AddressKind,Integer>();
 
     /* constructors */
     public MessageInfo() { }

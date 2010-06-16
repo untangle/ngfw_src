@@ -52,7 +52,9 @@ public class UtLogger
     public UtLogger(Logger logger) {
         m_logger = logger;
     }
-    public UtLogger(Class category) {
+    
+    @SuppressWarnings("unchecked")
+	public UtLogger(Class category) {
         this(Logger.getLogger(category));
     }
 

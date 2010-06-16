@@ -70,7 +70,8 @@ public class QueuingMVLogger {
         m_list = new CircularQueue<DeferredEntry>(maxSize);
     }
 
-    public QueuingMVLogger(Class category, int maxSize) {
+    @SuppressWarnings("unchecked")
+	public QueuingMVLogger(Class category, int maxSize) {
         this(Logger.getLogger(category), maxSize);
     }
 

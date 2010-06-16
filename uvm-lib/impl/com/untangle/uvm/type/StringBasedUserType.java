@@ -33,7 +33,8 @@ public abstract class StringBasedUserType implements UserType, Serializable
     private static final int[] SQL_TYPES = { Types.VARCHAR };
 
     // abstract methods -------------------------------------------------------
-    public abstract Class returnedClass();
+    @SuppressWarnings("unchecked")
+	public abstract Class returnedClass();
 
     protected abstract String userTypeToString(Object v);
     protected abstract Object createUserType(String val) throws Exception;

@@ -310,9 +310,8 @@ class VirusHttpHandler extends HttpStateMachine
     {
         if (null == extension) { return false; }
 
-        for (Iterator i = node.getExtensions().iterator();
-             i.hasNext();) {
-            StringRule sr = (StringRule)i.next();
+        for (Iterator<StringRule> i = node.getExtensions().iterator(); i.hasNext();) {
+            StringRule sr = i.next();
             if (sr.isLive() && sr.getString().equalsIgnoreCase(extension)) {
                 return true;
             }
@@ -335,9 +334,9 @@ class VirusHttpHandler extends HttpStateMachine
          * XXX This is inefficient, but typically there are only a few
          * rules in this list.
          */
-        for (Iterator i = node.getHttpMimeTypes().iterator(); i.hasNext();) {
+        for (Iterator<MimeTypeRule> i = node.getHttpMimeTypes().iterator(); i.hasNext();) {
 
-            MimeTypeRule mtr = (MimeTypeRule)i.next();
+            MimeTypeRule mtr = i.next();
             String currentMt = mtr.getMimeType().getType();
 
             /* Skip all of the shorter or equal mimetypes */

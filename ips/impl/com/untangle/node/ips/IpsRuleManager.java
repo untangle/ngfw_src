@@ -202,7 +202,7 @@ public class IpsRuleManager
 
     public List<IpsRuleHeader> matchingPortsList(int port, boolean toServer)
     {
-        List<IpsRuleHeader> returnList = new ArrayList();
+        List<IpsRuleHeader> returnList = new ArrayList<IpsRuleHeader>();
         for(IpsRuleHeader header : headers) {
             if(header.portMatches(port, toServer)) {
                 returnList.add(header);
@@ -223,7 +223,7 @@ public class IpsRuleManager
                                                boolean forward,
                                                List<IpsRuleHeader> matchList)
     {
-        Set<IpsRuleSignature> returnSet = new HashSet();
+        Set<IpsRuleSignature> returnSet = new HashSet<IpsRuleSignature>();
         //logger.debug("Total List size: "+matchList.size());
 
         for(IpsRuleHeader header : matchList) {

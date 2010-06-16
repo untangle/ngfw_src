@@ -56,7 +56,7 @@ import com.untangle.uvm.policy.Policy;
 @Entity
 @Table(name="u_tid", schema="settings")
 @SuppressWarnings("serial")
-public class Tid implements Principal, Serializable, Comparable
+public class Tid implements Principal, Serializable, Comparable<Tid>
 {
 
     private Long id;
@@ -140,12 +140,8 @@ public class Tid implements Principal, Serializable, Comparable
 
     // Comparable methods -----------------------------------------------------
 
-    public int compareTo(Object o)
+    public int compareTo(Tid tid)
     {
-        if (!(o instanceof Tid)) { throw new IllegalArgumentException(); }
-
-        Tid tid = (Tid)o;
-
         return id < tid.getId() ? -1 : (id > tid.getId() ? 1 : 0);
     }
 

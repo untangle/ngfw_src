@@ -39,7 +39,7 @@ public class SyslogPriorityUserType implements UserType
     private static final int[] SQL_TYPES = { Types.INTEGER };
 
     public int[] sqlTypes() { return SQL_TYPES; }
-    public Class returnedClass() { return SyslogPriority.class; }
+    public Class<SyslogPriority> returnedClass() { return SyslogPriority.class; }
     public boolean equals(Object x, Object y) { return x == y; }
     public Object deepCopy(Object value) { return value; }
     public boolean isMutable() { return false; }

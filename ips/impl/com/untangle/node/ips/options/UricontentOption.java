@@ -68,8 +68,7 @@ public class UricontentOption extends IpsOption
             return false;
         }
 
-        return stringPattern.equals(uo.stringPattern)
-            && nocase == nocase;
+        return stringPattern.equals(uo.stringPattern); /* && nocase == nocase; */
     }
 
     public int optHashCode()

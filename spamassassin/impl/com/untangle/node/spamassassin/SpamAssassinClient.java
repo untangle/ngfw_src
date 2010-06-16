@@ -360,8 +360,8 @@ public final class SpamAssassinClient implements Runnable {
             try {socket.close();} catch (java.io.IOException e) {}
 
             cleanExit();
-            return;
         }
+        return;
     }
 
     private void cleanExit()

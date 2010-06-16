@@ -130,7 +130,7 @@ class HttpClientCache
             return Collections.emptyList();
         }
 
-        List<Cookie> cookieList = new ArrayList(cookies.length);
+        List<Cookie> cookieList = new ArrayList<Cookie>(cookies.length);
 
         for (Cookie c : cookies) {
             if (c.getName().equals(HTTPCLIENT_ID)) {

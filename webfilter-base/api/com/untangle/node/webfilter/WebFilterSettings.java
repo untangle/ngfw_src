@@ -85,8 +85,8 @@ public class WebFilterSettings implements Serializable
 
     public BlacklistCategory getBlacklistCategory(String name)
     {
-        for (Iterator i = blacklistCategories.iterator(); i.hasNext(); ) {
-            BlacklistCategory bc = (BlacklistCategory)i.next();
+        for (Iterator<BlacklistCategory> i = blacklistCategories.iterator(); i.hasNext(); ) {
+            BlacklistCategory bc = i.next();
             if (name.equals(bc.getName())) {
                 return bc;
             }

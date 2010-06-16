@@ -66,7 +66,7 @@ abstract class ArgonHook implements Runnable
      * List of all of the nodes( ArgonAgents )
      */
     protected PipelineDesc pipelineDesc;
-    protected List pipelineAgents;
+    protected List<ArgonAgent> pipelineAgents;
     protected List<Session> sessionList = new ArrayList<Session>();
     protected List<Session> releasedSessionList = new ArrayList<Session>();
 
@@ -405,8 +405,9 @@ abstract class ArgonHook implements Runnable
         return clientActionCompleted;
     }
 
-    protected void buildPipeline() {
-        LinkedList relayList = new LinkedList();
+    protected void buildPipeline() 
+    {
+        LinkedList<Relay> relayList = new LinkedList<Relay>();
 
         if ( sessionList.isEmpty() ) {
             if ( state == IPNewSessionRequest.ENDPOINTED ) {
@@ -538,12 +539,12 @@ abstract class ArgonHook implements Runnable
      */
     private void razeSessions()
     {
-        for ( Iterator iter = sessionList.iterator() ; iter.hasNext() ; ) {
+        for ( Iterator<Session> iter = sessionList.iterator() ; iter.hasNext() ; ) {
             SessionImpl session = (SessionImpl)iter.next();
             session.raze();
         }
 
-        for ( Iterator iter = releasedSessionList.iterator() ; iter.hasNext() ; ) {
+        for ( Iterator<Session> iter = releasedSessionList.iterator() ; iter.hasNext() ; ) {
             SessionImpl session = (SessionImpl)iter.next();
             /* Raze all of the released sessions */
             session.raze();
@@ -626,7 +627,7 @@ abstract class ArgonHook implements Runnable
 
     protected abstract void liberate();
 
-    protected void printRelays( List relayList )
+    protected void printRelays( List<Relay> relayList )
     {
         if ( logger.isDebugEnabled()) {
             logger.debug( "Relays: " );
@@ -666,7 +667,7 @@ abstract class ArgonHook implements Runnable
     protected abstract Source makeClientSource();
     protected abstract Source makeServerSource();
 
-    protected abstract void newSessionRequest( ArgonAgent agent, Iterator iter, PipelineEndpoints pe );
+    protected abstract void newSessionRequest( ArgonAgent agent, Iterator<?> iter, PipelineEndpoints pe );
 
     protected abstract void raze();
 

@@ -24,7 +24,7 @@ import com.untangle.uvm.type.StringBasedUserType;
 @SuppressWarnings("serial")
 public class MACAddressUserType extends StringBasedUserType
 {
-    public Class returnedClass()
+    public Class<MACAddress> returnedClass()
     {
         return MACAddress.class;
     }

@@ -115,8 +115,8 @@ class VectronTable
         }
 
         /* XXXX THIS IS INCREDIBLY INEFFICIENT AND LOCKS THE CREATION OF NEW SESSIONS */
-        for ( Iterator iter = activeVectrons.entrySet().iterator() ; iter.hasNext() ; ) {
-            Map.Entry<Vector,SessionGlobalState> e = (Map.Entry<Vector,SessionGlobalState>)iter.next();
+        for ( Iterator<Map.Entry<Vector,SessionGlobalState>> iter = activeVectrons.entrySet().iterator() ; iter.hasNext() ; ) {
+            Map.Entry<Vector,SessionGlobalState> e = iter.next();
             boolean isMatch;
 
             SessionGlobalState session = e.getValue();

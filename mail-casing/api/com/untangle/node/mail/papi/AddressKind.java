@@ -58,8 +58,8 @@ public class AddressKind implements Serializable
     // These only apply to IMAP/POP3:
     public static final AddressKind USER   = new AddressKind('U', "USER");
 
-    private static final Map INSTANCES = new HashMap();
-    private static final Map BY_NAME = new HashMap();
+    private static final Map<Character,AddressKind> INSTANCES = new HashMap<Character,AddressKind>();
+    private static final Map<String,AddressKind> BY_NAME = new HashMap<String,AddressKind>();
 
     static {
         INSTANCES.put(FROM.getKey(), FROM);

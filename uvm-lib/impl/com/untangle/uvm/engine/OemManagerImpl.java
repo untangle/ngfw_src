@@ -79,7 +79,7 @@ class OemManagerImpl implements RemoteOemManager
             props.setProperty(OEM_PROPERTY_URL,"http://untangle.com/");
         }
 
-        Enumeration e = props.keys();
+        Enumeration<Object> e = props.keys();
         while(e.hasMoreElements()) {
             String key = (String)e.nextElement();
             logger.info("Setting OEM property " + key +  " = " + props.getProperty(key));

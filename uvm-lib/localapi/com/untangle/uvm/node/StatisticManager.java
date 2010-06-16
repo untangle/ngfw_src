@@ -38,6 +38,7 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.StatisticEvent;
+import com.untangle.uvm.logging.LogEvent;
 
 public abstract class StatisticManager implements Runnable
 {
@@ -53,18 +54,18 @@ public abstract class StatisticManager implements Runnable
     /* Status of the monitor */
     private volatile boolean isAlive = true;
 
-    protected final EventLogger eventLogger;
+    protected final EventLogger<LogEvent> eventLogger;
     private final Logger logger = Logger.getLogger( this.getClass());
     private final LocalUvmContext localContext;
 
-    protected StatisticManager(EventLogger eventLogger)
+    protected StatisticManager(EventLogger<LogEvent> eventLogger)
     {
         this.localContext = LocalUvmContextFactory.context();
         this.eventLogger = eventLogger;
     }
 
     protected StatisticManager(LocalUvmContext localContext,
-                               EventLogger eventLogger)
+                               EventLogger<LogEvent> eventLogger)
     {
         this.localContext = localContext;
         this.eventLogger = eventLogger;

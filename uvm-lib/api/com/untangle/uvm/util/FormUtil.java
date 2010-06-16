@@ -46,19 +46,19 @@ import java.util.StringTokenizer;
 // Helper class for dealing with form data
 public class FormUtil {
 
-    static Hashtable emptyHashtable = new Hashtable();
+    static Hashtable<String,String[]> emptyHashtable = new Hashtable<String,String[]>();
 
     private FormUtil() {}
 
     @SuppressWarnings("unchecked")
-    public static Hashtable parseQueryString(String s) {
+    public static Hashtable<String,String[]> parseQueryString(String s) {
 
         String valArray[] = null;
 
         if (s == null) {
             throw new IllegalArgumentException();
         }
-        Hashtable ht = new Hashtable();
+        Hashtable<String,String[]> ht = new Hashtable<String,String[]>();
         StringBuffer sb = new StringBuffer();
         StringTokenizer st = new StringTokenizer(s, "&");
         while (st.hasMoreTokens()) {
@@ -86,15 +86,15 @@ public class FormUtil {
         return ht;
     }
 
-    public static String unparseQueryString(Hashtable values)
+    public static String unparseQueryString(Hashtable<String,String[]> values)
     {
         if (values == null)
             return "";
         StringBuilder result = new StringBuilder();
         try {
             boolean doneOne = false;
-            for (Iterator iter = values.keySet().iterator(); iter.hasNext();) {
-                String key = (String) iter.next();
+            for (Iterator<String> iter = values.keySet().iterator(); iter.hasNext();) {
+                String key = iter.next();
                 String encodedKey = URLEncoder.encode(key, "UTF-8");
                 String[] vals = (String[]) values.get(key);
                 if (vals != null) {
@@ -114,7 +114,7 @@ public class FormUtil {
         return result.toString();
     }
 
-    public static Hashtable parsePostData(File file)
+    public static Hashtable<String,String[]> parsePostData(File file)
     {
         try {
             InputStream in = new FileInputStream(file);
@@ -128,7 +128,7 @@ public class FormUtil {
             // should a length of 0 be an IllegalArgumentException
 
             if (len <=0)
-                return new Hashtable(); // cheap hack to return an empty hash
+                return new Hashtable<String,String[]>(); // cheap hack to return an empty hash
 
             if (in == null) {
                 throw new IllegalArgumentException();

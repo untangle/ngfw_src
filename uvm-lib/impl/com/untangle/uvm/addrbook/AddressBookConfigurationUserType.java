@@ -36,7 +36,7 @@ public class AddressBookConfigurationUserType implements UserType
     private static final int[] SQL_TYPES = { Types.CHAR };
 
     public int[] sqlTypes() { return SQL_TYPES; }
-    public Class returnedClass() { return AddressBookConfiguration.class; }
+    public Class<AddressBookConfiguration> returnedClass() { return AddressBookConfiguration.class; }
     public boolean equals(Object x, Object y) { return x == y; }
     public Object deepCopy(Object value) { return value; }
     public boolean isMutable() { return false; }

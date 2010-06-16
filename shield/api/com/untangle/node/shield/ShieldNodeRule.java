@@ -59,8 +59,8 @@ public class ShieldNodeRule extends Rule
     private static final String DIVIDER_ENUMERATION[];
     private static final float  DIVIDER_VALUES[];
 
-    private static final Map DIVIDER_MAP_FLOAT_TO_STRING = new HashMap();
-    private static final Map DIVIDER_MAP_STRING_TO_FLOAT = new HashMap();
+    private static final Map<Float,String> DIVIDER_MAP_FLOAT_TO_STRING = new HashMap<Float,String>();
+    private static final Map<String,Float> DIVIDER_MAP_STRING_TO_FLOAT = new HashMap<String,Float>();
 
     /* Hibernate constructor */
     public ShieldNodeRule() { }

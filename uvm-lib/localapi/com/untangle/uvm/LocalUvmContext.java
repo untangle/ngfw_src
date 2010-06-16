@@ -34,6 +34,7 @@
 package com.untangle.uvm;
 
 import java.io.File;
+
 import java.io.IOException;
 
 import com.sleepycat.je.Environment;
@@ -46,6 +47,7 @@ import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.logging.SyslogManager;
+import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.networking.LocalNetworkManager;
@@ -324,7 +326,7 @@ public interface LocalUvmContext extends RemoteUvmContext
 
     Thread newThread(Runnable runnable, String name);
 
-    EventLogger eventLogger();
+    EventLogger<LogEvent> eventLogger();
 
     void waitForStartup();
 

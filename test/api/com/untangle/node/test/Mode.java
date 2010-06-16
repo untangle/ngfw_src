@@ -34,7 +34,7 @@ public class Mode implements Serializable
     // public static final Mode DOUBLE_ENDPOINT = new Mode("DOUBLE_ENDPOINT");
     // public static final Mode READ_ONLY = new Mode("READ_ONLY");
 
-    private static final Map INSTANCES = new HashMap();
+    private static final Map<String,Mode> INSTANCES = new HashMap<String,Mode>();
 
     static {
         INSTANCES.put(RELEASE.toString(), RELEASE);

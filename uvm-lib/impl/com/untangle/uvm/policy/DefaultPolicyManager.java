@@ -66,9 +66,9 @@ class DefaultPolicyManager implements LocalPolicyManager
                 {
                     defaultPolicy = null;
                     Query q = s.createQuery("from Policy p order by id asc");
-                    List results = q.list();
+                    List<Object> results = q.list();
                     for (Object o : results) {
-                        Policy policy = (Policy)o;
+                    	Policy policy = (Policy) o;
                         if (policy.isDefault()) {
                             defaultPolicy = policy;
                             break;

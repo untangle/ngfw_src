@@ -123,7 +123,7 @@ public class HttpParser extends AbstractParser
         if (logger.isDebugEnabled()) {
             logger.debug(sessStr + "parsing chunk: " + b);
         }
-        List l = new LinkedList();
+        List<Token> l = new LinkedList<Token>();
 
         boolean done = false;
         while (!done) {
@@ -511,7 +511,7 @@ public class HttpParser extends AbstractParser
             switch (state) {
             case ACCUMULATE_HEADER_STATE:
                 b.flip();
-                List l = Collections.singletonList(header(b));
+                List<Token> l = Collections.singletonList((Token)header(b));
                 return new ParseResult(l, null);
             default:
                 // I think we want to release in most circumstances
@@ -598,7 +598,7 @@ public class HttpParser extends AbstractParser
 
     // private methods ---------------------------------------------------------
 
-    private Object firstLine(ByteBuffer data) throws ParseException
+    private Token firstLine(ByteBuffer data) throws ParseException
     {
         if (!clientSide) {
             statusLine = statusLine(data);

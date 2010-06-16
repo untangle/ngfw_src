@@ -41,7 +41,7 @@ public class IPMaddrUserType implements UserType
     private static final int[] SQL_TYPES = { Types.VARCHAR };
 
     public int[] sqlTypes() { return SQL_TYPES; }
-    public Class returnedClass() { return IPMaddr.class; }
+    public Class<IPMaddr> returnedClass() { return IPMaddr.class; }
 
     public boolean equals(Object x, Object y)
     {

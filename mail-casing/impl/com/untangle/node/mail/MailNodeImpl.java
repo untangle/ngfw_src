@@ -326,7 +326,7 @@ public class MailNodeImpl extends AbstractNode
                     }
 
                     if(settings.getSafelistSettings() == null) {
-                        ArrayList<SafelistSettings> ss = new ArrayList();
+                        ArrayList<SafelistSettings> ss = new ArrayList<SafelistSettings>();
 
                         //TODO Set defaults here - DEFAULT TO WHAT?????
 

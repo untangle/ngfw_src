@@ -436,14 +436,14 @@ class MailSenderImpl implements MailSender, HasConfigFiles
         sendAlertWithAttachment(subject, bodyText, null);
     }
 
-    private void sendAlertWithAttachment(String subject, String bodyText, List attachment) {
+    private void sendAlertWithAttachment(String subject, String bodyText, List<ByteBuffer> attachment) {
         // Compute the list of recipients from the user list.
-        AdminSettings adminSettings = LocalUvmContextFactory.context()
-            .adminManager().getAdminSettings();
+        AdminSettings adminSettings = LocalUvmContextFactory.context().adminManager().getAdminSettings();
         Set users = adminSettings.getUsers();
-        List alertableUsers = new ArrayList();
-        for (Iterator iter = users.iterator(); iter.hasNext();) {
-            User user = (User) iter.next();
+        List<String> alertableUsers = new ArrayList<String>();
+
+        for (Iterator<User> iter = users.iterator(); iter.hasNext();) {
+            User user = iter.next();
             String userEmail = user.getEmail();
             if (userEmail == null) {
                 if (logger.isDebugEnabled())
@@ -469,18 +469,18 @@ class MailSenderImpl implements MailSender, HasConfigFiles
         }
     }
 
-    private MimeBodyPart makeAttachmentFromList(List list) {
+    private MimeBodyPart makeAttachmentFromList(List<ByteBuffer> list) {
         if (list == null) return null;
 
         int bodySize = 0;
-        for (Iterator iter = list.iterator(); iter.hasNext();) {
-            ByteBuffer buf = (ByteBuffer) iter.next();
+        for (Iterator<ByteBuffer> iter = list.iterator(); iter.hasNext();) {
+            ByteBuffer buf = iter.next();
             bodySize += buf.remaining();
         }
         byte[] text = new byte[bodySize];
         int pos = 0;
-        for (Iterator iter = list.iterator(); iter.hasNext();) {
-            ByteBuffer buf = (ByteBuffer) iter.next();
+        for (Iterator<ByteBuffer> iter = list.iterator(); iter.hasNext();) {
+            ByteBuffer buf = iter.next();
             int size = buf.remaining();
             buf.get(text, pos, size);
             pos += size;
@@ -571,7 +571,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
     }
     
 
-    private void sendMessageWithAttachment(String[] recipients, String subject, String bodyText, List attachment)
+    private void sendMessageWithAttachment(String[] recipients, String subject, String bodyText, List<ByteBuffer> attachment)
     {
         if (attachment == null) {
             sendSimple(alertSession, recipients, subject, bodyText, null);

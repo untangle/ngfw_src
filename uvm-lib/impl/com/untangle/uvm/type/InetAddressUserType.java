@@ -41,7 +41,7 @@ public class InetAddressUserType implements UserType
     private static final int[] SQL_TYPES = { Types.VARCHAR };
 
     public int[] sqlTypes() { return SQL_TYPES; }
-    public Class returnedClass() { return InetAddress.class; }
+    public Class<InetAddress> returnedClass() { return InetAddress.class; }
 
     public boolean equals(Object x, Object y)
     {

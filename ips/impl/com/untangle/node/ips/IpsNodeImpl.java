@@ -203,9 +203,8 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
 	updateVariables(settings.getImmutableVariables(), added, deleted, modified);
     }
     
-    public void updateAll(final IpsBaseSettings baseSettings,
-			final List[] rules, final List[] variables,
-			final List[] immutableVariables) {
+    public void updateAll(final IpsBaseSettings baseSettings, final List<IpsRule>[] rules, final List<IpsVariable>[] variables, final List<IpsVariable>[] immutableVariables)
+    	{
 
 		TransactionWork tw = new TransactionWork() {
 			public boolean doWork(Session s) {
@@ -267,8 +266,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
 
     // private methods ---------------------------------------------------------
 
-    private void updateRules(final Set rules, final List added,
-                             final List<Long> deleted, final List modified)
+    private void updateRules(final Set<?> rules, final List<?> added, final List<Long> deleted, final List<?> modified)
     {
         TransactionWork tw = new TransactionWork()
             {
@@ -285,19 +283,19 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
             };
         getNodeContext().runTransaction(tw);
     }
-
-    private void updateVariables(final Set rules, final List added,
-	    final List<Long> deleted, final List modified)
+    
+    @SuppressWarnings("unchecked")
+    private void updateVariables(final Set rules, final List added, final List<Long> deleted, final List modified)
     {
 	TransactionWork tw = new TransactionWork()
 	{
 	    public boolean doWork(Session s)
 	    {
-		listUtil.updateCachedItems(rules, variableHandler, added, deleted, modified);
+	    	listUtil.updateCachedItems(rules, variableHandler, added, deleted, modified);
 
-		settings = (IpsSettings)s.merge(settings);
+	    	settings = (IpsSettings)s.merge(settings);
 
-		return true;
+	    	return true;
 	    }
 
 	    public Object getResult() { return null; }

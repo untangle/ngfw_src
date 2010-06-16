@@ -43,7 +43,7 @@ import java.util.Collections;
  *
  */
 @SuppressWarnings("serial")
-public final class GroupEntry implements Serializable, Comparable {
+public final class GroupEntry implements Serializable, Comparable<GroupEntry> {
 
     private String m_cn;
     private int m_gid;
@@ -187,8 +187,8 @@ public final class GroupEntry implements Serializable, Comparable {
         return primaryGroupToken;
     }
 
-    public int compareTo(Object g) {
-        return m_cn.compareToIgnoreCase(((GroupEntry)g).getCN());
+    public int compareTo(GroupEntry g) {
+        return m_cn.compareToIgnoreCase(g.getCN());
     }
 
     /**

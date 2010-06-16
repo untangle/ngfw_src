@@ -213,7 +213,7 @@ public class ProxyServlet extends HttpServlet
 
     private void copyHeaders(HttpServletRequest req, HttpMethod method)
     {
-        for (Enumeration e = req.getHeaderNames(); e.hasMoreElements(); ) {
+        for (Enumeration<String> e = req.getHeaderNames(); e.hasMoreElements(); ) {
             String k = (String)e.nextElement();
             if (k.equalsIgnoreCase("transfer-encoding")
                 || k.equalsIgnoreCase("content-length")
@@ -224,7 +224,7 @@ public class ProxyServlet extends HttpServlet
             } else if (k.equalsIgnoreCase("referer")) {
                 method.addRequestHeader("Referer", BASE_URL);
             } else {
-                for (Enumeration f = req.getHeaders(k); f.hasMoreElements(); ) {
+                for (Enumeration<String> f = req.getHeaders(k); f.hasMoreElements(); ) {
                     String v = (String)f.nextElement();
                     method.addRequestHeader(k, v);
                 }

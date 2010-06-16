@@ -39,7 +39,7 @@ public class ReasonUserType implements UserType
     private static final int[] SQL_TYPES = { Types.CHAR };
 
     public int[] sqlTypes() { return SQL_TYPES; }
-    public Class returnedClass() { return Reason.class; }
+    public Class<Reason> returnedClass() { return Reason.class; }
     public boolean equals(Object x, Object y) { return x == y; }
     public Object deepCopy(Object v) { return v; }
     public boolean isMutable() { return false; }

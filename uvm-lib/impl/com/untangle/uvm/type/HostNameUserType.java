@@ -23,7 +23,7 @@ import com.untangle.uvm.node.HostName;
 @SuppressWarnings("serial")
 public class HostNameUserType extends StringBasedUserType
 {
-    public Class returnedClass()
+    public Class<HostName> returnedClass()
     {
         return HostName.class;
     }

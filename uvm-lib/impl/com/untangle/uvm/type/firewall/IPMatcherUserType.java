@@ -25,7 +25,7 @@ import com.untangle.uvm.type.StringBasedUserType;
 @SuppressWarnings("serial")
 public class IPMatcherUserType extends StringBasedUserType
 {
-    public Class returnedClass()
+    public Class<IPMatcher> returnedClass()
     {
         return IPMatcher.class;
     }

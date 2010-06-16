@@ -47,7 +47,7 @@ import org.hibernate.usertype.CompositeUserType;
 
 public class VirusScannerResultUserType implements CompositeUserType
 {
-    public Class returnedClass() { return VirusScannerResult.class; }
+    public Class<VirusScannerResult> returnedClass() { return VirusScannerResult.class; }
 
     public boolean equals(Object x, Object y)
     {

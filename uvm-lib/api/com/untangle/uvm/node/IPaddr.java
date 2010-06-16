@@ -42,7 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("serial")
-public class IPaddr implements Comparable, Serializable
+public class IPaddr implements Comparable<IPaddr>, Serializable
 {
 
     static final String CIDR_STRINGS[] = 
@@ -244,9 +244,8 @@ public class IPaddr implements Comparable, Serializable
         return false;
     }
 
-    public int compareTo(Object o)
+    public int compareTo(IPaddr other)
     {
-        IPaddr other = (IPaddr)o;
         long oper1 = toLong();
         long oper2 = other.toLong();
 

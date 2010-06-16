@@ -55,7 +55,8 @@ public abstract class IpsOption
         return true;
     }
 
-    public static IpsOption buildOption(IpsDetectionEngine engine,
+    @SuppressWarnings("unchecked")
+	public static IpsOption buildOption(IpsDetectionEngine engine,
                                         IpsRuleSignatureImpl signature,
                                         IpsRule rule,
                                         String optionName,
@@ -89,10 +90,8 @@ public abstract class IpsOption
         try {
             // First look for a three arg one, then the two arg one
             // (since most don't care about initializeSettingsTime).
-            Class clazz = Class
-                .forName("com.untangle.node.ips.options."+optionName+"Option");
-            Constructor constructor = clazz
-                .getConstructor(new Class[] { OptionArg.class });
+            Class clazz = Class.forName("com.untangle.node.ips.options."+optionName+"Option");
+            Constructor constructor = clazz.getConstructor(new Class[] { OptionArg.class });
             option = (IpsOption)constructor.newInstance(new Object[] { oa });
         } catch (ClassNotFoundException e) {
             log.info("Could not load option: " + optionName + ", ignoring rule: " + signature.getSid());

@@ -54,7 +54,7 @@ public class LogoutReasonUserType implements UserType
     private static final int[] SQL_TYPES = { Types.CHAR };
 
     public int[] sqlTypes() { return SQL_TYPES; }
-    public Class returnedClass() { return LogoutReason.class; }
+    public Class<LogoutReason> returnedClass() { return LogoutReason.class; }
     public boolean equals(Object x, Object y) { return x == y; }
     public Object deepCopy(Object v) { return v; }
     public boolean isMutable() { return false; }

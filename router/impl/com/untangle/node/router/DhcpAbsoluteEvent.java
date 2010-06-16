@@ -53,7 +53,7 @@ import org.hibernate.annotations.IndexColumn;
 
         public DhcpAbsoluteEvent() {}
 
-        public DhcpAbsoluteEvent( List s )
+        public DhcpAbsoluteEvent( List<DhcpAbsoluteLease> s )
         {
             absoluteLeaseList = s;
         }
@@ -84,7 +84,7 @@ import org.hibernate.annotations.IndexColumn;
         void addAbsoluteLease( DhcpAbsoluteLease lease )
         {
             if ( absoluteLeaseList == null ) {
-                absoluteLeaseList = new LinkedList();
+                absoluteLeaseList = new LinkedList<DhcpAbsoluteLease>();
             }
 
             absoluteLeaseList.add( lease );

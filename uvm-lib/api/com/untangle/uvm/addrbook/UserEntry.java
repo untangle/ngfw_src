@@ -42,7 +42,7 @@ import java.io.Serializable;
  *
  */
 @SuppressWarnings("serial")
-public final class UserEntry implements Serializable, Comparable {
+public final class UserEntry implements Serializable, Comparable<UserEntry> {
 
     public static final String UNCHANGED_PASSWORD = "***UNCHANGED***";
 
@@ -218,8 +218,8 @@ public final class UserEntry implements Serializable, Comparable {
             makeNotNull(other.getStoredIn()).equals(makeNotNull(m_storedIn));
     }
     
-    public int compareTo(Object e) {
-        return m_uid.compareToIgnoreCase(((UserEntry)e).getUID());
+    public int compareTo(UserEntry e) {
+        return m_uid.compareToIgnoreCase(e.getUID());
     }
 
     /**

@@ -51,7 +51,7 @@ import java.util.LinkedList;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class IPMaddr implements Serializable, Comparable
+public class IPMaddr implements Serializable, Comparable<IPMaddr>
 {
 
     // This is the canonical printed representation of the ANY_ADDRESS
@@ -192,7 +192,7 @@ public class IPMaddr implements Serializable, Comparable
         }
     }
 
-    public LinkedList bitString()
+    public LinkedList<Boolean> bitString()
     {
         byte[] addrb = textToNumericFormat(addr);
         LinkedList<Boolean> result = new LinkedList<Boolean>();
@@ -420,9 +420,8 @@ public class IPMaddr implements Serializable, Comparable
         return true;
     }
 
-    public int compareTo(Object o)
+    public int compareTo(IPMaddr other)
     {
-        IPMaddr other = (IPMaddr)o;
         long oper1 = toLong();
         long oper2 = other.toLong();
 

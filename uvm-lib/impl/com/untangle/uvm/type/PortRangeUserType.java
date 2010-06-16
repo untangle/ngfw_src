@@ -41,7 +41,7 @@ import com.untangle.uvm.node.PortRange;
  */
 public class PortRangeUserType implements CompositeUserType
 {
-    public Class returnedClass() { return PortRange.class; }
+    public Class<PortRange> returnedClass() { return PortRange.class; }
 
     public boolean equals(Object x, Object y)
     {

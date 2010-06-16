@@ -55,7 +55,7 @@ import javax.persistence.Transient;
  * @version 1.0
  */
 @MappedSuperclass
-public abstract class LogEvent implements Comparable, Serializable
+public abstract class LogEvent implements Comparable<LogEvent>, Serializable
 {
     public static final int DEFAULT_STRING_SIZE = 255;
 
@@ -141,10 +141,8 @@ public abstract class LogEvent implements Comparable, Serializable
 
     // Comparable methods -----------------------------------------------------
 
-    public int compareTo(Object o)
+    public int compareTo(LogEvent le)
     {
-        LogEvent le = (LogEvent)o;
-
         int i = -timeStamp.compareTo(le.getTimeStamp());
         if (0 == i) {
             if (le.id == id) {

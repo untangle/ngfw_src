@@ -26,7 +26,7 @@ public class HostAddressUserType extends StringBasedUserType
 {
     private static final HostAddress EMPTY_IPADDR = new HostAddress( new IPaddr( null ));
     
-    public Class returnedClass()
+    public Class<HostAddress> returnedClass()
     {
         return HostAddress.class;
     }

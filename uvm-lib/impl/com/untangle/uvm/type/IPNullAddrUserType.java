@@ -24,7 +24,7 @@ import com.untangle.uvm.node.IPNullAddr;
 public class IPNullAddrUserType extends StringBasedUserType
 {
 
-    public Class returnedClass()
+    public Class<IPNullAddr> returnedClass()
     {
         return IPNullAddr.class;
     }

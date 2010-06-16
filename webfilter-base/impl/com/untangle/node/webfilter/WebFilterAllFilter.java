@@ -81,8 +81,8 @@ public class WebFilterAllFilter implements ListEventFilter<WebFilterEvent>
         q.setMaxResults(limit);
 
         int c = 0;
-        for (Iterator i = q.iterate(); i.hasNext() && ++c < limit; ) {
-            RequestLine rl = (RequestLine)i.next();
+        for (Iterator<RequestLine> i = q.iterate(); i.hasNext() && ++c < limit; ) {
+            RequestLine rl = i.next();
             Query evtQ = s.createQuery(evtQuery);
             evtQ.setEntity("requestLine", rl);
             WebFilterEvent evt = (WebFilterEvent)evtQ.uniqueResult();

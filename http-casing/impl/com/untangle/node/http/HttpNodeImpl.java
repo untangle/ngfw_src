@@ -42,7 +42,7 @@ public class HttpNodeImpl extends AbstractNode
     private final CasingPipeSpec pipeSpec = new CasingPipeSpec("http", this, new HttpCasingFactory(this), Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
 
-    private final EventLogger eventLogger;
+    private final EventLogger<LogEvent> eventLogger;
 
     private HttpSettings settings;
 

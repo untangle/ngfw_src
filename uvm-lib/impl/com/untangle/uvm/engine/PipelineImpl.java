@@ -38,15 +38,14 @@ import com.untangle.uvm.vnet.Pipeline;
  */
 class PipelineImpl implements Pipeline
 {
-    private static final File UVM_TMP
-        = new File(System.getProperty("uvm.tmp.dir"));
+    private static final File UVM_TMP = new File(System.getProperty("uvm.tmp.dir"));
 
     private final int sessionId;
     private final List<MPipeFitting> mPipeFittings;
     private final String sessionPrefix;
 
     // This does not need to be concurrent since there is only one thread per pipeline.
-    private final Map objects = new HashMap();
+    private final Map<Long,Object> objects = new HashMap<Long,Object>();
     private final List<File> files = new LinkedList<File>();
 
     private int id = 0;

@@ -105,7 +105,7 @@ public class CsvServlet extends HttpServlet
                     if (s.getName().equals(detail)) {
                         try {
                             DetailSection ds = (DetailSection)s;
-                            List header = new ArrayList();
+                            List<Object> header = new ArrayList<Object>();
                             for (ColumnDesc cd : ds.getColumns()) {
                                 header.add(cd.getTitle());
                             }
@@ -154,7 +154,7 @@ public class CsvServlet extends HttpServlet
             int columnCount = rs.getMetaData().getColumnCount();
 	    logger.info("** got " + columnCount + " columns");
             while (rs.next()) {
-                List l = new ArrayList(columnCount);
+                List<Object> l = new ArrayList<Object>(columnCount);
                 for (int i = 1; i <= columnCount; i++) {
                     l.add(rs.getObject(i));
                 }
@@ -173,7 +173,7 @@ public class CsvServlet extends HttpServlet
         }
     }
 
-    private void writeCsvRow(BufferedWriter bw, List l)
+    private void writeCsvRow(BufferedWriter bw, List<Object> l)
         throws IOException
     {
         for (int i = 0; i < l.size(); i++) {

@@ -52,7 +52,7 @@ class NodePersistentState
     private Long id;
     private Tid tid;
     private String name;
-    private List args;
+    private List<String> args;
     private NodeState targetState;
     private byte[] publicKey;
 
@@ -67,7 +67,7 @@ class NodePersistentState
         this.publicKey = publicKey;
 
         this.targetState = NodeState.INITIALIZED;
-        this.args = new LinkedList();
+        this.args = new LinkedList<String>();
     }
 
     // bean methods -----------------------------------------------------------
@@ -134,7 +134,7 @@ class NodePersistentState
         return args;
     }
 
-    void setArgs(List args)
+    void setArgs(List<String> args)
     {
         this.args = args;
     }

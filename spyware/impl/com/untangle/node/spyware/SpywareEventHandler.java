@@ -58,8 +58,8 @@ public class SpywareEventHandler extends AbstractEventHandler
         } else {
             IPSetTrie set = new IPSetTrie();
 
-            for (Iterator i = list.iterator(); i.hasNext(); ) {
-                IPMaddrRule se = (IPMaddrRule)i.next();
+            for (Iterator<IPMaddrRule> i = list.iterator(); i.hasNext(); ) {
+                IPMaddrRule se = i.next();
                 IPMaddr ipm = se.getIpMaddr();
                 set.add(ipm,(Object)se);
             }

@@ -42,7 +42,7 @@ import java.net.UnknownHostException;
  * This is not a very elegant class, and should be destroyed. (rbs).
  */
 @SuppressWarnings("serial")
-public class IPNullAddr extends IPaddr implements Comparable
+public class IPNullAddr extends IPaddr
 {
 
     private static final IPNullAddr EMPTY_ADDR = new IPNullAddr( null );
@@ -75,9 +75,5 @@ public class IPNullAddr extends IPaddr implements Comparable
         return super.equals(o);
     }
 
-    public int compareTo(Object o)
-    {
-        return super.compareTo(o);
-    }
 }
 

@@ -46,7 +46,7 @@ class MPipeManagerImpl implements MPipeManager
     private static final MPipeManagerImpl MANAGER = new MPipeManagerImpl();
 
     // List of mPipes we manage for the node
-    protected final List allMPipes = new ArrayList();
+    protected final List<MPipeImpl> allMPipes = new ArrayList<MPipeImpl>();
 
     protected MPipeManagerImpl() { }
 

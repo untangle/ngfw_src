@@ -12,7 +12,7 @@ import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
 import com.untangle.uvm.node.firewall.protocol.ProtocolSimpleMatcher;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial","unchecked"})
 public class ProtocolMatcherSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialize to.
