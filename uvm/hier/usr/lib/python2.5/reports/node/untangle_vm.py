@@ -96,7 +96,9 @@ class UvmNode(Node):
                 return r[0]
         except Exception, e:
             return self.name
-
+        finally:
+            conn.commit()
+        
     @print_timing
     def __create_n_admin_logins(self, start_date, end_date):
         sql_helper.create_partitioned_table("""\
