@@ -106,7 +106,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             this.gridCaptureRules = new Ung.EditorGrid({
                 name : "gridCaptureRules",
                 settingsCmp : this,
-                height : 300,
+                height : 500,
                 hasReorder : true,
                 emptyRow : {
                     "live" : true,
