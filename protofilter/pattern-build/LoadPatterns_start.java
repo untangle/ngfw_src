@@ -26,6 +26,7 @@ import java.util.TreeMap;
  *
  * <b>WARNING WARNING WARNING WARNING WARNING WARNING</b>
  */
+@SuppressWarnings("unchecked")
 public class LoadPatterns {
 
     private LoadPatterns() {}

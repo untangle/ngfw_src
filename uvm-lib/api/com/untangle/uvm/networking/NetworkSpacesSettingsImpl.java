@@ -177,7 +177,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         if ( this.interfaceList == null ) {
             this.interfaceList = new LinkedList<Interface>();
         }
-        this.interfaceList.removeAll(java.util.Collections.singleton(null));;
+        if (this.interfaceList != null) this.interfaceList.removeAll(java.util.Collections.singleton(null));;
         return this.interfaceList;
     }
 
@@ -208,7 +208,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         if ( this.networkSpaceList == null ) {
             this.networkSpaceList = new LinkedList<NetworkSpace>();
         }
-        this.networkSpaceList.removeAll(java.util.Collections.singleton(null));
+        if (this.networkSpaceList != null) this.networkSpaceList.removeAll(java.util.Collections.singleton(null));
         return this.networkSpaceList;
     }
 
@@ -237,7 +237,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     public List<Route> getRoutingTable()
     {
         if ( this.routingTable == null ) this.routingTable = new LinkedList<Route>();
-        this.routingTable.removeAll(java.util.Collections.singleton(null));
+        if (this.routingTable != null) this.routingTable.removeAll(java.util.Collections.singleton(null));
         return this.routingTable;
     }
 
@@ -293,7 +293,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     public List<RedirectRule> getRedirectList()
     {
         if ( this.redirectList == null ) this.redirectList = new LinkedList<RedirectRule>();
-        this.redirectList.removeAll(java.util.Collections.singleton(null));
+        if (this.redirectList != null) this.redirectList.removeAll(java.util.Collections.singleton(null));
         return this.redirectList;
     }
 

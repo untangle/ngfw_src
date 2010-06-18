@@ -127,7 +127,7 @@ public class FirewallSettings implements Serializable
     @IndexColumn(name="position")
     public List<FirewallRule> getFirewallRuleList()
     {
-        firewallRuleList.removeAll(java.util.Collections.singleton(null));
+        if (firewallRuleList != null) firewallRuleList.removeAll(java.util.Collections.singleton(null));
         return firewallRuleList;
     }
 

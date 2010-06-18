@@ -10,7 +10,8 @@ import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
 
 @MappedSuperclass
-public abstract class PassedAddress extends Rule {
+public abstract class PassedAddress extends Rule
+{
     private IPDBMatcher address = IPSimpleMatcher.getNilMatcher();
     
     @Column(name="address", nullable=false)
@@ -24,5 +25,4 @@ public abstract class PassedAddress extends Rule {
     {
         this.address = newValue;
     }
-
 }

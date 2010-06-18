@@ -145,7 +145,7 @@ public class Schedule implements Serializable
     @IndexColumn(name="position")
     public List<WeeklyScheduleRule> getWeeklySched()
     {
-        weeklySched.removeAll(java.util.Collections.singleton(null));
+        if (weeklySched != null) weeklySched.removeAll(java.util.Collections.singleton(null));
         return weeklySched;
     }
 

@@ -236,7 +236,7 @@ public class VpnSettings implements Serializable, Validatable
     {
         if ( this.groupList == null ) this.groupList = new LinkedList<VpnGroup>();
 
-        this.groupList.removeAll(java.util.Collections.singleton(null));
+        if (this.groupList != null) this.groupList.removeAll(java.util.Collections.singleton(null));
         return this.groupList;
     }
 
@@ -259,7 +259,7 @@ public class VpnSettings implements Serializable, Validatable
     {
         if ( this.clientList == null ) this.clientList = new LinkedList<VpnClient>();
 
-        this.clientList.removeAll(java.util.Collections.singleton(null));
+        if (this.clientList != null) this.clientList.removeAll(java.util.Collections.singleton(null));
         return this.clientList;
     }
 
@@ -282,7 +282,7 @@ public class VpnSettings implements Serializable, Validatable
     {
         if ( this.siteList == null ) this.siteList = new LinkedList<VpnSite>();
 
-        this.siteList.removeAll(java.util.Collections.singleton(null));
+        if (this.siteList != null) this.siteList.removeAll(java.util.Collections.singleton(null));
         return this.siteList;
     }
 
@@ -390,7 +390,7 @@ public class VpnSettings implements Serializable, Validatable
     {
         if ( this.exportedAddressList == null ) this.exportedAddressList = new LinkedList<ServerSiteNetwork>();
 
-        this.exportedAddressList.removeAll(java.util.Collections.singleton(null));
+        if (this.exportedAddressList != null) this.exportedAddressList.removeAll(java.util.Collections.singleton(null));
         return this.exportedAddressList;
     }
     public void setExportedAddressList( List<ServerSiteNetwork> exportedAddressList )

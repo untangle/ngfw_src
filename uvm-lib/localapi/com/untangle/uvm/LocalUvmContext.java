@@ -202,20 +202,6 @@ public interface LocalUvmContext extends RemoteUvmContext
     LocalLicenseManager localLicenseManager() throws UvmException;
 
     /**
-     * Save settings to local hard drive.
-     *
-     * @exception IOException if the save was unsuccessful.
-     */
-    void localBackup() throws IOException;
-
-    /**
-     * Save settings to USB key drive.
-     *
-     * @exception IOException if the save was unsuccessful.
-     */
-    void usbBackup() throws IOException;
-
-    /**
      * Once settings have been restored, and the UVM has been booted, call
      * into here to get the corresponding OS files rewritten.  This calls through
      * into callbacks in each manager, as appropriate.  All managers that write

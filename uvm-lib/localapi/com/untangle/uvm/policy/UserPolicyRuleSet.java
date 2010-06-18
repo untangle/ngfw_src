@@ -104,7 +104,7 @@ public class UserPolicyRuleSet implements Serializable
     @IndexColumn(name="position")
     public List<UserPolicyRule> getRules()
     {
-        rules.removeAll(java.util.Collections.singleton(null));
+        if (rules != null) rules.removeAll(java.util.Collections.singleton(null));
         return rules;
     }
 

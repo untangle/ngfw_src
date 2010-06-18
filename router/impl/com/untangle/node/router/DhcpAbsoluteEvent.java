@@ -72,7 +72,7 @@ import org.hibernate.annotations.IndexColumn;
         @IndexColumn(name="position")
         public List<DhcpAbsoluteLease> getAbsoluteLeaseList()
         {
-            absoluteLeaseList.removeAll(java.util.Collections.singleton(null));
+            if (absoluteLeaseList != null) absoluteLeaseList.removeAll(java.util.Collections.singleton(null));
             return absoluteLeaseList;
         }
 

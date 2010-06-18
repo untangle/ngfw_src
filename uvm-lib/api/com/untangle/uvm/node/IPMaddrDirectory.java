@@ -105,7 +105,7 @@ public class IPMaddrDirectory implements Serializable
     @IndexColumn(name="position")
     public List<IPMaddrRule> getEntries()
     {
-        entries.removeAll(java.util.Collections.singleton(null));
+        if (entries != null) entries.removeAll(java.util.Collections.singleton(null));
         return entries;
     }
 

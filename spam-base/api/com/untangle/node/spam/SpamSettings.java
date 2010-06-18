@@ -146,7 +146,7 @@ public class SpamSettings implements Serializable
     @IndexColumn(name="position")
     public List<SpamRBL> getSpamRBLList()
     {
-        spamRBLList.removeAll(java.util.Collections.singleton(null));
+        if (spamRBLList != null) spamRBLList.removeAll(java.util.Collections.singleton(null));
         return spamRBLList;
     }
 

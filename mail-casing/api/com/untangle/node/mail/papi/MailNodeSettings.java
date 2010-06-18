@@ -239,7 +239,7 @@ public class MailNodeSettings implements Serializable
     @IndexColumn(name="position")
     public List<SafelistSettings> getSafelistSettings()
     {
-        safelistSettings.removeAll(java.util.Collections.singleton(null));
+        if (safelistSettings != null) safelistSettings.removeAll(java.util.Collections.singleton(null));
         return safelistSettings;
     }
 

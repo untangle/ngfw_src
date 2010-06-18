@@ -259,7 +259,7 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     @IndexColumn(name="position")
     public List<DhcpLeaseRule> getDhcpLeaseList()
     {
-        dhcpLeaseList.removeAll(java.util.Collections.singleton(null));
+        if (dhcpLeaseList != null) dhcpLeaseList.removeAll(java.util.Collections.singleton(null));
         return dhcpLeaseList;
     }
 
@@ -341,7 +341,7 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     @IndexColumn(name="position")
     public List<DnsStaticHostRule> getDnsStaticHostList()
     {
-        dnsStaticHostList.removeAll(java.util.Collections.singleton(null));
+        if (dnsStaticHostList != null) dnsStaticHostList.removeAll(java.util.Collections.singleton(null));
         return dnsStaticHostList;
     }
 

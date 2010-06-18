@@ -203,19 +203,9 @@ public interface RemoteUvmContext
     RemoteOemManager oemManager();
 
     /**
-     * Save settings to local hard drive.
+     * Shut down the untangle-vm
      *
-     * @exception IOException if the save was unsuccessful.
      */
-    void localBackup() throws IOException;
-
-    /**
-     * Save settings to USB key drive.
-     *
-     * @exception IOException if the save was unsuccessful.
-     */
-    void usbBackup() throws IOException;
-
     void shutdown();
 
     /**

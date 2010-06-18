@@ -111,7 +111,7 @@ public class QuarantineSettings implements Serializable {
         if (allowedAddressPatterns == null) {
             setAllowedAddressPatterns(null);
         }
-        allowedAddressPatterns.removeAll(java.util.Collections.singleton(null));
+        if (allowedAddressPatterns != null) allowedAddressPatterns.removeAll(java.util.Collections.singleton(null));
         return allowedAddressPatterns;
     }
 
@@ -150,7 +150,7 @@ public class QuarantineSettings implements Serializable {
         if(addressRemaps == null) {
             setAddressRemaps(null);
         }
-        addressRemaps.removeAll(java.util.Collections.singleton(null));
+        if (addressRemaps != null) addressRemaps.removeAll(java.util.Collections.singleton(null));
         return addressRemaps;
     }
 

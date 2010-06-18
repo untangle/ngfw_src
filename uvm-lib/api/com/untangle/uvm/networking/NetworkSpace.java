@@ -191,7 +191,7 @@ public class NetworkSpace extends Rule
     {
         if ( this.networkList == null ) this.networkList = new LinkedList<IPNetworkRule>();
 
-        this.networkList.removeAll(java.util.Collections.singleton(null));
+        if (this.networkList != null) this.networkList.removeAll(java.util.Collections.singleton(null));
         return this.networkList;
     }
 

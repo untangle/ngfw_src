@@ -82,8 +82,7 @@ class AccessManagerImpl implements LocalAccessManager
         
         /* Need to save the settings to the database, then update the
          * local value, everything is executed later */
-        DataSaver<AccessSettings> saver = 
-            new DeletingDataSaver<AccessSettings>( LocalUvmContextFactory.context(), "AccessSettings" );
+        DataSaver<AccessSettings> saver = new DeletingDataSaver<AccessSettings>( LocalUvmContextFactory.context(), "AccessSettings" );
 
         AccessSettingsInternal newSettings = AccessSettingsInternal.makeInstance( settings );
         saver.saveData( newSettings.toSettings());

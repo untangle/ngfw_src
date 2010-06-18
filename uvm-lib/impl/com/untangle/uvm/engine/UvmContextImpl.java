@@ -488,7 +488,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     public void shutdown()
     {
-        // XXX check access permission
         Thread t = newThread(new Runnable()
             {
                 public void run()
@@ -555,16 +554,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return com.untangle.uvm.Version.getFullVersion();
     }
 
-    public void localBackup() throws IOException
-    {
-        backupManager.localBackup();
-    }
-
-    public void usbBackup() throws IOException
-    {
-        backupManager.usbBackup();
-    }
-
     public void syncConfigFiles()
     {
         // Here it would be nice if we had a list of managers.  Then we could
@@ -573,17 +562,20 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         mailSender.syncConfigFiles();
     }
 
-    public byte[] createBackup() throws IOException {
+    public byte[] createBackup() throws IOException
+    {
         return backupManager.createBackup();
     }
 
     public void restoreBackup(byte[] backupBytes)
-    throws IOException, IllegalArgumentException {
+    throws IOException, IllegalArgumentException
+    {
         backupManager.restoreBackup(backupBytes);
     }
 
     public void restoreBackup(String fileName)
-    throws IOException, IllegalArgumentException {
+    throws IOException, IllegalArgumentException
+    {
         backupManager.restoreBackup(fileName);
     }
 

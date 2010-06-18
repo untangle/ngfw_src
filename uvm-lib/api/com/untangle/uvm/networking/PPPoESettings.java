@@ -129,7 +129,7 @@ public class PPPoESettings implements Serializable, Validatable
         if ( this.connectionList == null )
             this.connectionList = new LinkedList<PPPoEConnectionRule>();
         
-        this.connectionList.removeAll(java.util.Collections.singleton(null));
+        if (this.connectionList != null) this.connectionList.removeAll(java.util.Collections.singleton(null));
         return this.connectionList;
     }
 

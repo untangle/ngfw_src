@@ -75,7 +75,7 @@ public class VpnSite extends VpnClientBase
     {
         if ( this.exportedAddressList == null ) this.exportedAddressList = new LinkedList<ClientSiteNetwork>();
 
-        this.exportedAddressList.removeAll(java.util.Collections.singleton(null));
+        if (this.exportedAddressList != null) this.exportedAddressList.removeAll(java.util.Collections.singleton(null));
         return this.exportedAddressList;
     }
 

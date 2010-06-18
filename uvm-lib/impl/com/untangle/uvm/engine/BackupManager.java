@@ -33,17 +33,14 @@ import com.untangle.uvm.LocalUvmContextFactory;
 /**
  * Helper class to do backup/restore
  */
-class BackupManager {
+class BackupManager
+{
 
     private static final String OLD_BACKUP_SCRIPT;
     private static final String BACKUP_SCRIPT;
     private static final String RESTORE_SCRIPT;
     private static final String LOCAL_ARG = "local";
     private static final String USB_ARG = "usb";
-
-
-
-
 
     private final Logger m_logger =
         Logger.getLogger(BackupManager.class);
@@ -57,17 +54,6 @@ class BackupManager {
             + "/bin/ut-restore-bundled.sh";
     }
 
-
-
-
-    void localBackup() throws IOException {
-        backup(true);
-    }
-
-    void usbBackup() throws IOException {
-        backup(false);
-    }
-
     /**
      * Restore from a previous {@link #createBackup backup}.
      *
@@ -79,7 +65,8 @@ class BackupManager {
      *            to have come from a valid backup (is the user's fault).
      */
     void restoreBackup(String fileName) 
-        throws IOException, IllegalArgumentException {
+        throws IOException, IllegalArgumentException
+    {
 
         try {
             // Read bytes from file and pass to restoreBackup(byte[]) if successful.
@@ -95,7 +82,8 @@ class BackupManager {
     }
 
     void restoreBackup(byte[] backupFileBytes)
-        throws IOException, IllegalArgumentException {
+        throws IOException, IllegalArgumentException
+    {
 
         File tempFile = File.createTempFile("restore_", ".tar.gz");
         SimpleExec.SimpleExecResult result = null;
@@ -158,7 +146,8 @@ class BackupManager {
         }
     }
 
-    byte[] createBackup() throws IOException {
+    byte[] createBackup() throws IOException
+    {
 
         //Create the temp file which will be the tar
         File tempFile = File.createTempFile("localdump", ".tar.gz.tmp");
@@ -199,14 +188,9 @@ class BackupManager {
         }
     }
 
-
-
-    // private methods --------------------------------------------------------
-
     private void backup(boolean local) throws IOException {
 
-        Process p = LocalUvmContextFactory.context().exec(new String[]
-            { OLD_BACKUP_SCRIPT, local ? LOCAL_ARG : USB_ARG });
+        Process p = LocalUvmContextFactory.context().exec(new String[] { OLD_BACKUP_SCRIPT, local ? LOCAL_ARG : USB_ARG });
         for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
 
         while (true) {
