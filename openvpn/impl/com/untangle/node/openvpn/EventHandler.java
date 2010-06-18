@@ -21,10 +21,10 @@ package com.untangle.node.openvpn;
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.apache.log4j.Logger;
+import java.util.Map;
 
 import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.vnet.AbstractEventHandler;
@@ -32,10 +32,14 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
+import org.apache.log4j.Logger;
 
 class EventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger( EventHandler.class );
+
+    /* Are the VPNs bridged with the other networks */
+    private boolean isBridge = false;
 
     /* Is this a VPN client, a VPN client passes all traffic */
     private boolean isUntanglePlatformClient = false;
@@ -192,10 +196,15 @@ class EventHandler extends AbstractEventHandler
                 logger.debug( "clientAddressList: [" + matcher + "]" );
             }
         }
+        
+        Map<String,VpnGroup> groupMap = OpenVpnManager.buildGroupMap(settings);
 
         for ( VpnSite site : (List<VpnSite>)settings.getSiteList()) {
+            VpnGroup group = groupMap.get(site.getGroupName());
             /* Continue if the client isn't live or the group the client is in isn't live */
-            if ( !site.isEnabled()) continue;
+            if ( !site.isEnabled() || ( group == null ) || !group.isLive()) {
+                continue;
+            }
 
             for ( ClientSiteNetwork siteNetwork : site.getExportedAddressList()) {
                 if ( !siteNetwork.isLive()) continue;

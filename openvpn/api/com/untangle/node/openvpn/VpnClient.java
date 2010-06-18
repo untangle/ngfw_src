@@ -32,9 +32,10 @@ import com.untangle.uvm.node.Validatable;
  * @version 1.0
  */
 @Entity
-@Table(name="n_openvpn_client", schema="settings")
+@Table(name="n_openvpn_client_2", schema="settings")
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 @SuppressWarnings("serial")
 public class VpnClient extends VpnClientBase implements Validatable
 {
+    // XXX FIXME private static final long serialVersionUID = -403968809913481068L;
 }

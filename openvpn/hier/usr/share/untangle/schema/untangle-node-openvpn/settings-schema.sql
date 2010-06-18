@@ -21,18 +21,18 @@
 -------------
 
 CREATE TABLE settings.n_openvpn_c_site_network (
-        RULE_ID int8 not null,
-        network inet,
-        netmask inet,
-        NAME text,
-        CATEGORY text,
-        DESCRIPTION text,
-        LIVE bool,
-        ALERT bool,
-        LOG bool,
-        client_id int8,
-        position int4,
-        primary key (RULE_ID));
+        rule_id INT8 NOT NULL,
+        network INET,
+        netmask INET,
+        "name" TEXT,
+        category TEXT,
+        description TEXT,
+        live BOOL,
+        alert BOOL,
+        log BOOL,
+        client_id INT8,
+        "position" INT4,
+        PRIMARY KEY (rule_id));
 
 CREATE TABLE settings.n_openvpn_s_site_network (
         RULE_ID int8 not null,
@@ -48,39 +48,39 @@ CREATE TABLE settings.n_openvpn_s_site_network (
         position int4,
         primary key (RULE_ID));
 
-CREATE TABLE settings.n_openvpn_client (
-        RULE_ID int8 not null,
-        address inet,
-        is_edgeguard bool,
-        group_id int8,
-        NAME text,
-        CATEGORY text,
-        DESCRIPTION text,
-        LIVE bool,
-        ALERT bool,
-        LOG bool,
-        settings_id int8,
-        position int4,
-        dist_key text,
-        dist_passwd text,
-        primary key (RULE_ID));
+CREATE TABLE settings.n_openvpn_client_2 (
+        rule_id INT8 NOT NULL,
+        address INET,
+        is_edgeguard BOOL,
+        group_name TEXT,
+        "name" TEXT,
+        category TEXT,
+        description TEXT,
+        live BOOL,
+        alert bool,
+        log BOOL,
+        settings_id INT8,
+        "position" INT4,
+        dist_key TEXT,
+        dist_passwd TEXT,
+        PRIMARY KEY (rule_id));
 
-CREATE TABLE settings.n_openvpn_site (
-        RULE_ID int8 not null,
-        address inet,
-        is_edgeguard bool,
-        group_id int8,
-        NAME text,
-        CATEGORY text,
-        DESCRIPTION text,
-        LIVE bool,
-        ALERT bool,
-        LOG bool,
-        settings_id int8,
-        position int4,
-        dist_key text,
-        dist_passwd text,
-        primary key (RULE_ID));
+CREATE TABLE settings.n_openvpn_site_2 (
+        rule_id INT8 NOT NULL,
+        address INET,
+        is_edgeguard BOOL,
+        group_name TEXT,
+        "name" TEXT,
+        category TEXT,
+        description TEXT,
+        live BOOL,
+        alert BOOL,
+        log BOOL,
+        settings_id INT8,
+        "position" INT4,
+        dist_key TEXT,
+        dist_passwd TEXT,
+        PRIMARY KEY (rule_id));
 
 CREATE TABLE settings.n_openvpn_group (
         rule_id INT8 not null,
@@ -122,16 +122,16 @@ CREATE TABLE settings.n_openvpn_settings (
         site_name           TEXT,
         primary key (ID));
 
-alter table n_openvpn_c_site_network add constraint FKF75374E830D9EF2D
-        foreign key (client_id) references n_openvpn_site;
+ALTER TABLE n_openvpn_c_site_network ADD CONSTRAINT n_openvpn_c_site_network_to_site
+        FOREIGN KEY (client_id) REFERENCES n_openvpn_site_2;
 
 ALTER TABLE n_openvpn_s_site_network ADD CONSTRAINT FKF75374E89E4538C5
         FOREIGN KEY (settings_id) REFERENCES n_openvpn_settings;
 
-ALTER TABLE n_openvpn_client ADD CONSTRAINT FKF4113219E4538C5
+ALTER TABLE n_openvpn_client_2 ADD CONSTRAINT FKF4113219E4538C5
         FOREIGN KEY (settings_id) REFERENCES n_openvpn_settings;
 
-ALTER TABLE n_openvpn_site ADD CONSTRAINT n_openvpn_site_to_settings
+ALTER TABLE n_openvpn_site_2 ADD CONSTRAINT n_openvpn_site_to_settings
         FOREIGN KEY (settings_id) REFERENCES n_openvpn_settings;
 
 ALTER TABLE n_openvpn_group ADD CONSTRAINT FKB66694699E4538C5

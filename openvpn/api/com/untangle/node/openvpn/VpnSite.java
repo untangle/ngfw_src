@@ -42,13 +42,10 @@ import com.untangle.uvm.node.ValidateException;
  * @version 1.0
  */
 @Entity
-@Table(name="n_openvpn_site", schema="settings")
+@Table(name="n_openvpn_site_2", schema="settings")
 @SuppressWarnings("serial")
 public class VpnSite extends VpnClientBase
 {
-    // XXX Fixme
-
-    /* XXX This should be in one place */
     private static final IPaddr EMPTY_ADDR = new IPaddr( null );
 
     // List of addresses at this site,
@@ -111,7 +108,7 @@ public class VpnSite extends VpnClientBase
     @Transient
     public ClientSiteNetwork getSiteNetwork()
     {
-        List list = getExportedAddressList();
+        List<ClientSiteNetwork> list = getExportedAddressList();
 
         ClientSiteNetwork site;
         if ( list.size() < 1 ) {

@@ -155,8 +155,6 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     // VpnNode methods --------------------------------------------------
     public void setVpnSettings( final VpnSettings newSettings ) throws ValidateException
     {
-        fixGroups(newSettings);
-
         /* Verify that all of the client names are valid. */
         for ( VpnClientBase client : newSettings.getCompleteClientList()) {
             VpnClientBase.validateName( client.getName());
@@ -232,26 +230,6 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         }
     }
     
-    private void fixGroups(VpnSettings newSettings) {
-        Map<Long,VpnGroup> resolveGroupMap = new HashMap<Long,VpnGroup>();
-        for ( VpnGroup group : newSettings.getGroupList()) {
-            resolveGroupMap.put( group.getId(), group );
-        }
-        
-        fixGroups(newSettings.getClientList(), resolveGroupMap);
-        fixGroups(newSettings.getSiteList(), resolveGroupMap);
-    }
-    
-    private void fixGroups(List newClientList, Map<Long,VpnGroup> resolveGroupMap) {
-        for (VpnClientBase client : (List<VpnClientBase>) newClientList) {
-            Long id = client.getGroup().getId();
-            VpnGroup newGroup = resolveGroupMap.get(id);
-            if (newGroup != null) {
-                client.setGroup(newGroup);
-            }
-        }
-    }
-
     private void saveDistributedKeys(VpnSettings newSettings)
     {
         if ( this.settings == null ) return;

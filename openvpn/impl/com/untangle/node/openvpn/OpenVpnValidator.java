@@ -34,11 +34,12 @@ public class OpenVpnValidator extends AddressValidator {
     public static final String ERR_CODE_SITE_LIST_OVERLAP = "ERR_SITE_LIST_OVERLAP";
     public static final String ERR_CODE_EXPORT_LIST_OVERLAP = "ERR_EXPORT_LIST_OVERLAP";
     
-    public ValidationResult validate(Object data) {
+    @SuppressWarnings("unchecked")
+	public ValidationResult validate(Object data) {
 
         try {
             if (data != null) {
-                for(Map.Entry<String,  List> entry : ((HashMap<String,  List>) data).entrySet()) {
+                for(Map.Entry<String,  List<Object>> entry : ((HashMap<String,  List<Object>>) data).entrySet()) {
                     String validationCode = entry.getKey();
                     List entries = entry.getValue();
                     

@@ -29,13 +29,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-
-import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
+import org.apache.log4j.Logger;
 
 /* Class used to assign addresses to clients */
 class AddressMapper
@@ -69,9 +68,11 @@ class AddressMapper
         /* Always add the first group, even if there aren't any clients in it,
          * this is where the server pulls its address from */
         groupToClientList.put( serverGroup, new LinkedList<VpnClientBase>());
+        
+        Map<String,VpnGroup> groupMap = OpenVpnManager.buildGroupMap(settings);
 
         for ( VpnClientBase client : clientList ) {
-            VpnGroup group = client.getGroup();
+            VpnGroup group = groupMap.get(client.getGroupName());
             if ( group == null ) {
                 logger.error( "NULL group for client [" + client.getName() + "]" );
                 continue;

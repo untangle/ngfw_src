@@ -21,6 +21,7 @@ import java.io.File;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,46 +52,46 @@ class OpenVpnManager
     private static final String VPN_STOP_SCRIPT  = Constants.SCRIPT_DIR + "/stop-openvpn";
     private static final String GENERATE_DISTRO_SCRIPT = Constants.SCRIPT_DIR + "/generate-distro";
 
-    private static final String PACKET_FILTER_RULES_FILE = System.getProperty( "uvm.conf.dir" ) + "/openvpn/packet-filter-rules";
+    private static final String PACKET_FILTER_RULES_FILE = System.getProperty( "bunnicula.conf.dir" ) + "/openvpn/packet-filter-rules";
 
     /* Most likely want to bind to the outside address when using NAT */
-    static final String FLAG_LOCAL       = "local";
+    private static final String FLAG_LOCAL       = "local";
 
     /* XXX Have to expose this in the GUI */
-    static final String FLAG_PORT        = "port";
+    private static final String FLAG_PORT        = "port";
 
-    static final String FLAG_PROTOCOL    = "proto";
-    static final String DEFAULT_PROTOCOL = "udp";
-    static final String FLAG_DEVICE      = "dev";
-    static final String DEVICE_BRIDGE    = "tap0";
-    static final String DEVICE_ROUTING   = "tun0";
+    private static final String FLAG_PROTOCOL    = "proto";
+    private static final String DEFAULT_PROTOCOL = "udp";
+    private static final String FLAG_DEVICE      = "dev";
+    private static final String DEVICE_BRIDGE    = "tap0";
+    private static final String DEVICE_ROUTING   = "tun0";
 
-    static final String FLAG_ROUTE        = "route";
-    static final String FLAG_IFCONFIG     = "ifconfig";
-    static final String FLAG_CLI_IFCONFIG = "ifconfig-push";
-    static final String FLAG_CLI_ROUTE    = "iroute";
-    static final String FLAG_BRIDGE_GROUP = "server-bridge";
+    private static final String FLAG_ROUTE        = "route";
+    private static final String FLAG_IFCONFIG     = "ifconfig";
+    private static final String FLAG_CLI_IFCONFIG = "ifconfig-push";
+    private static final String FLAG_CLI_ROUTE    = "iroute";
+    private static final String FLAG_BRIDGE_GROUP = "server-bridge";
 
-    static final String FLAG_PUSH         = "push";
-    static final String FLAG_EXPOSE_CLI   = "client-to-client";
+    private static final String FLAG_PUSH         = "push";
+    private static final String FLAG_EXPOSE_CLI   = "client-to-client";
 
-    static final String FLAG_MAX_CLI      = "max-clients";
+    private static final String FLAG_MAX_CLI      = "max-clients";
 
     static final String FLAG_REMOTE               = "remote";
-    static final String DEFAULT_CIPHER    = "AES-128-CBC";
+    private static final String DEFAULT_CIPHER    = "AES-128-CBC";
 
-    static final String FLAG_CERT         = "cert";
-    static final String FLAG_KEY          = "key";
-    static final String FLAG_CA           = "ca";
+    private static final String FLAG_CERT         = "cert";
+    private static final String FLAG_KEY          = "key";
+    private static final String FLAG_CA           = "ca";
 
     /* The directory where the key material ends up for a client */
-    static final String CLI_KEY_DIR       = "untangle-vpn";
+    private static final String CLI_KEY_DIR       = "untangle-vpn";
 
     /* Ping every x seconds */
-    static final int DEFAULT_PING_TIME      = 10;
+    private static final int DEFAULT_PING_TIME      = 10;
 
     /* If a ping response isn't received in this amount time, assume the connection is dead */
-    static final int DEFAULT_PING_TIMEOUT   = 120;
+    private static final int DEFAULT_PING_TIMEOUT   = 120;
 
     /* Default verbosity in the log messages(0-9) *
      * 0 -- No output except fatal errors.
@@ -181,7 +182,19 @@ class OpenVpnManager
         ScriptRunner.getInstance().exec( VPN_START_SCRIPT );
 
         try {
-            LocalUvmContextFactory.context().localNetworkManager().updateAddress();
+            // XXX ALPACA_INTEGRATION
+            /* ** XXXXXXX Bridge mode is unsupported */
+//             LocalUvmContextFactory.context().localIntfManager().
+//                 registerIntf( DEVICE_ROUTING, IntfConstants.VPN_INTF );
+
+            /* ** XXXXXXX Bridge mode is unsupported */
+
+            // if ( isBridgeMode ) {
+            // am.enableInternalBridgeIntf( LocalUvmContextFactory.context().networkingManager().get(), intf );
+            // }
+            LocalUvmContextFactory.context().networkManager().updateAddress();
+//         } catch ( ArgonException e ) {
+//             throw new NodeException( e );
         } catch ( Exception e ) {
             throw new NodeException( e );
         }
@@ -201,7 +214,7 @@ class OpenVpnManager
         try {
             //
             // am.disableInternalBridgeIntf( LocalUvmContextFactory.context().networkingManager().get());
-            LocalUvmContextFactory.context().localNetworkManager().updateAddress();
+            LocalUvmContextFactory.context().networkManager().updateAddress();
         } catch ( Exception e ) {
             throw new NodeException( e );
         }
@@ -266,10 +279,16 @@ class OpenVpnManager
 
             writePushRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
         }
+        
+        Map<String,VpnGroup> groupMap = buildGroupMap(settings);
 
         /* The client configuration file is written in writeClientFiles */
         for ( VpnSite site : (List<VpnSite>)settings.getSiteList()) {
-            if ( !site.isEnabled()) continue;
+            VpnGroup group = groupMap.get(site.getGroupName());
+            
+            if ( !site.isEnabled() || ( group == null ) || !group.isLive()) {
+                continue;
+            }
 
             for ( ClientSiteNetwork siteNetwork : site.getExportedAddressList()) {
                 if ( !siteNetwork.isLive()) continue;
@@ -374,7 +393,7 @@ class OpenVpnManager
         sw.appendVariable( FLAG_CA,   CLI_KEY_DIR + "/" + siteName + "-ca.crt" );
 
         /* VPN configuratoins needs information from the networking settings. */
-        RemoteNetworkManager networkManager = LocalUvmContextFactory.context().localNetworkManager();
+        RemoteNetworkManager networkManager = LocalUvmContextFactory.context().networkManager();
 
         /* This is kind of janky */
         String publicAddress = networkManager.getPublicAddress();
@@ -409,9 +428,15 @@ class OpenVpnManager
             logger.error( "Unable to delete the previous client configuration files." );
         }
         ServicesInternalSettings sis = LocalUvmContextFactory.context().localNetworkManager().getServicesInternalSettings();
+        
+        Map<String,VpnGroup> groupMap = buildGroupMap(settings);
 
         for ( VpnClient client : settings.getClientList()) {
-            if ( !client.isEnabled()) continue;
+            VpnGroup group = groupMap.get(client.getGroupName());
+            
+            if ( !client.isEnabled() || ( group == null ) || !group.isLive()) {
+                continue;
+            }
 
             ScriptWriter sw = new VpnScriptWriter();
 
@@ -424,7 +449,7 @@ class OpenVpnManager
             /* XXXX This won't work for a bridge configuration */
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
 
-            if(client.getGroup().getUseDNS()) {
+            if(group.getUseDNS()) {
                 List<IPaddr> dnsServers = sis.getDnsServerList();
 
                 if ( settings.getIsDnsOverrideEnabled()) dnsServers = settings.getDnsServerList();
@@ -446,7 +471,12 @@ class OpenVpnManager
         }
 
         for ( VpnSite site : (List<VpnSite>)settings.getSiteList()) {
-            if ( !site.isEnabled()) continue;
+            VpnGroup group = groupMap.get(site.getGroupName());
+            
+            if ( !site.isEnabled() || ( group == null ) || !group.isLive()) {
+                continue;
+            }
+
             ScriptWriter sw = new VpnScriptWriter();
 
             IPaddr localEndpoint  = site.getAddress();
@@ -556,5 +586,13 @@ class OpenVpnManager
         byte[] data = localEndpoint.getAddr().getAddress();
         data[3] += 1;
         return getByAddress( data );
+    }
+
+    public static Map<String, VpnGroup> buildGroupMap(VpnSettings settings) {
+        Map<String,VpnGroup> groupMap = new HashMap<String,VpnGroup>();
+        for ( VpnGroup group : settings.getGroupList()) {
+            groupMap.put(group.getName(), group);
+        }
+        return groupMap;
     }
 }

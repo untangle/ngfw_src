@@ -21,11 +21,7 @@ package com.untangle.node.openvpn;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
@@ -43,9 +39,9 @@ import com.untangle.uvm.node.ValidateException;
  * @version 1.0
  */
 @MappedSuperclass
-@SuppressWarnings("serial")
 public class VpnClientBase extends Rule implements Validatable
 {
+    private static final long serialVersionUID = -3644312179187645702L;
 
     private static final Pattern NAME_PATTERN;
 
@@ -53,8 +49,8 @@ public class VpnClientBase extends Rule implements Validatable
 
     private IPaddr address;            // may be null.
 
-    // The address group to pull this client address
-    private VpnGroup group;
+    // The name of the address group to pull this client address
+    private String groupName;
 
     private String certificateStatus = "Unknown";
 
@@ -85,16 +81,15 @@ public class VpnClientBase extends Rule implements Validatable
     /**
      * @return The address group that this client belongs to.
      */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="group_id")
-    public VpnGroup getGroup()
+    @Column(name="group_name")
+    public String getGroupName()
     {
-        return this.group;
+        return this.groupName;
     }
-
-    public void setGroup( VpnGroup group )
+    
+    public void setGroupName( String newValue )
     {
-        this.group = group;
+        this.groupName = newValue;
     }
 
     /**
@@ -179,13 +174,9 @@ public class VpnClientBase extends Rule implements Validatable
 
     public void validate() throws ValidateException
     {
-        /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
-        String internalName = getInternalName();
         String name = getName();
 
         validateName( name );
-
-        if ( this.group == null ) throw new ValidateException( "Group cannot be null" );
     }
 
     @Transient
@@ -222,7 +213,7 @@ public class VpnClientBase extends Rule implements Validatable
     @Transient
     public boolean isEnabled()
     {
-        return isLive() && ( this.group != null ) && ( this.group.isLive()) && ( this.address != null );
+        return isLive() && ( this.address != null );
     }
 
     static void validateName( String name ) throws ValidateException

@@ -225,13 +225,10 @@ class Sandbox
         
         IPNetwork network = null;
         
-        logger.debug("Trying address pools for VPN network...");
         for ( Map.Entry<IPNetwork,AddressRange> e : AUTO_ADDRESS_POOLS.entrySet()) {
             network = e.getKey();
-            logger.debug("** " +  network);
             for ( AddressRange range : currentNetwork ) {
                 if ( range.overlaps( e.getValue())) {
-                    logger.debug("** ... discarding because it overlaps " + range);
                     network = null;
                     break;
                 }
@@ -243,8 +240,7 @@ class Sandbox
         if ( network == null ) {
             logger.warn( "Unable to auto detect a network for VPN." );
             return;
-        } else
-            logger.info("Selected " + network + "for VPN network" );
+        }
         
         VpnGroup group = new VpnGroup();
         group.setLive( true );
@@ -331,16 +327,16 @@ class Sandbox
         this.siteList = parameters;
     }
 
+    @SuppressWarnings("unchecked")
     private void fixGroups( List newClientList )
         throws ValidateException
     {
         for ( VpnClientBase client : (List<VpnClientBase>)newClientList ) {
-            String name = client.getGroup().getName();
+            String name = client.getGroupName();
             VpnGroup newGroup = resolveGroupMap.get( name );
             if ( newGroup == null ) {
                 throw new ValidateException( "The group '" + name + "' is not in the group list" );
             }
-            client.setGroup( newGroup );
         }
     }
 
