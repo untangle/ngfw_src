@@ -344,8 +344,8 @@ public class TomcatManagerImpl implements LocalTomcatManager
         String bh = System.getProperty("uvm.home");
         String p = bh + "/apache2/conf.d/homepage.conf";
         writeWelcomeFile(p);
-        p = bh + "/apache2/unrestricted-conf.d/homepage.conf";
-        writeWelcomeFile(p);
+        //String p = bh + "/apache2/unrestricted-conf.d/homepage.conf";
+        //writeWelcomeFile(p);
 
         apacheReload();
     }
