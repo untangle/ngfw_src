@@ -570,6 +570,18 @@ Ung.Main=Ext.extend(Object, {
         return rpc.brandingManager;
     },
 
+    getOemManager : function(forceReload) {
+        if (forceReload || rpc.oemManager === undefined) {
+            try {
+                rpc.oemManager = rpc.jsonrpc.RemoteUvmContext.oemManager();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+
+        }
+        return rpc.oemManager;
+    },
+    
     getLicenseManager : function(forceReload) {
         // default functionality is to reload license manager as it might change in uvm
         if (typeof forceReload === 'undefined') {

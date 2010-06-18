@@ -17,6 +17,12 @@ if (!Ung.hasResource["Ung.System"]) {
                 title : i18n._("System")
             }];
             this.companyName=main.getBrandingManager().getCompanyName();
+            this.oemName=main.getOemManager().getOemName();
+	    if (this.oemName == "Untangle") {
+		this.downloadLanguageHTML='<a href="http://pootle.untangle.com">' + i18n._("Download New Language Packs") + '</a>';
+	    } else {
+		this.downloadLanguageHTML='';
+            }
             this.buildSupport();
             this.buildBackup();
             this.buildRestore();
@@ -1021,7 +1027,9 @@ if (!Ung.hasResource["Ung.System"]) {
                             value : "language"
                         }]
                     }
-                }],
+                }, {
+		    html : this.downloadLanguageHTML
+		}],
                 onUpload : function() {
                     var prova = Ext.getCmp("upload_language_form");
                     var cmp = Ext.getCmp(this.parentId);
