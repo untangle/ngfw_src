@@ -209,7 +209,7 @@ Ung.Util= {
         {
             if(exception.code == 550 || exception.code == 12029 || exception.code == 12019 )
             {
-                Ext.MessageBox.alert(i18n._("Failed"),i18n._("The Session has expired. You will be redirected to the start page."), Ung.Util.goToStartPage);
+                Ext.MessageBox.alert(i18n._("Warning"),i18n._("The Session has expired. You will be redirected to the start page."), Ung.Util.goToStartPage);
             }
         }
         if(exception) {
@@ -222,7 +222,7 @@ Ung.Util= {
     handleException: function(exception, handler, type, continueExecution) { //type: alertCallback, alert, noAlert
         if(exception) {
             if(exception.code==550 ||exception.code == 12029 || exception.code == 12019) {
-                Ext.MessageBox.alert(i18n._("Failed"),i18n._("The Session has expired. You will be redirected to the start page."), Ung.Util.goToStartPage);
+                Ext.MessageBox.alert(i18n._("Warning"),i18n._("The Session has expired. You will be redirected to the start page."), Ung.Util.goToStartPage);
                 return true;
             }else {
                 var message=null;
@@ -264,11 +264,11 @@ Ung.Util= {
                 }
                 
                 if (handler==null) {
-                    Ext.MessageBox.alert(i18n._("Failed"), message);
+                    Ext.MessageBox.alert(i18n._("Warning"), message);
                 } else if(type==null || type== "alertCallback"){
-                    Ext.MessageBox.alert(i18n._("Failed"), message, handler);
+                    Ext.MessageBox.alert(i18n._("Warning"), message, handler);
                 } else if (type== "alert") {
-                    Ext.MessageBox.alert(i18n._("Failed"), message);
+                    Ext.MessageBox.alert(i18n._("Warning"), message);
                     handler();
                 } else if (type== "noAlert") {
                     handler();
@@ -653,7 +653,7 @@ Ung.Util.RetryHandler = {
         if (message == null || message == "Unknown") {
           message = i18n._("Please Try Again");
         }
-        Ext.MessageBox.alert(i18n._("Failed"), message);
+        Ext.MessageBox.alert(i18n._("Warning"), message);
     },
 
     callFunction : function( input )
@@ -786,7 +786,7 @@ Ung.ConfigItem = Ext.extend(Ext.Component, {
         if(this.item.handler!=null) {
             this.item.handler.call(this,this.item);
         } else {
-            Ext.MessageBox.alert(i18n._("Failed"),"TODO: implement config "+this.item.name);
+            Ext.MessageBox.alert(i18n._("Warning"),"TODO: implement config "+this.item.name);
         }
     },
     setIconCls: function(iconCls) {
@@ -1654,7 +1654,7 @@ Ung.MessageManager = {
                   message = i18n._("Please Try Again");
                 }
 
-                Ext.MessageBox.alert(i18n._("Failed"), message, function() {
+                Ext.MessageBox.alert(i18n._("Warning"), message, function() {
                     this.cycleCompleted = true;
                 }.createDelegate(this));
             }.createDelegate(this),"noAlert")) return;
@@ -1742,7 +1742,7 @@ Ung.MessageManager = {
                                     if(msg.success) {
                                        Ung.AppItem.updateState(appItemDisplayName, "download_complete");
                                     } else {
-                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error downloading package {0}: {1}"),appItemDisplayName,msg.errorMessage));
+                                        Ext.MessageBox.alert(i18n._("Warning"), Sting.format(i18n._("Error downloading package {0}: {1}"),appItemDisplayName,msg.errorMessage));
                                         Ung.AppItem.updateState(appItemDisplayName);
                                     }
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
@@ -1750,7 +1750,7 @@ Ung.MessageManager = {
                                         this.installInProgress++;
                                        Ung.AppItem.updateState(appItemDisplayName, "installing");
                                     } else {
-                                        Ext.MessageBox.alert(i18n._("Failed"), Sting.format(i18n._("Error installing package {0}: Aborted."),appItemDisplayName));
+                                        Ext.MessageBox.alert(i18n._("Warning"), Sting.format(i18n._("Error installing package {0}: Aborted."),appItemDisplayName));
                                         Ung.AppItem.updateState(appItemDisplayName);
                                     }
                                 } else if(msg.javaClass.indexOf("InstallTimeout") != -1) {
@@ -1774,7 +1774,7 @@ Ung.MessageManager = {
                                     if(!msg.success) {
                                         lastUpgradeDownloadProgressMsg="stop";
                                         startUpgradeMode="stop";
-                                        Ext.MessageBox.alert(i18n._("Failed"), i18n._("Error downloading packages. Install Aborted."));
+                                        Ext.MessageBox.alert(i18n._("Warning"), i18n._("Error downloading packages. Install Aborted."));
                                     }
                                 } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
                                     lastUpgradeDownloadProgressMsg="stop";
@@ -2167,7 +2167,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
         var nodeCmp = Ext.getCmp(this.parentId);
         var activeMetrics=nodeCmp.blingers.activeMetrics.list;
         if(activeMetrics.length>4) {
-            Ext.MessageBox.alert(i18n._("Failed"), String.format(i18n._("The node {0} has {1} metrics. The maximum number of metrics is {2}."),nodeCmp.displayName ,activeMetrics.length,4));
+            Ext.MessageBox.alert(i18n._("Warning"), String.format(i18n._("The node {0} has {1} metrics. The maximum number of metrics is {2}."),nodeCmp.displayName ,activeMetrics.length,4));
         }
         var metricsLen=Math.min(activeMetrics.length,4);
         for(var i=0; i<metricsLen;i++) {
@@ -2214,7 +2214,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
                         "check" : {
                             fn : function(elem, checked) {
                                 if(checked && this.tempMetrics.length>=4) {
-                                    Ext.MessageBox.alert(i18n._("Failed"),i18n._("Please set up to four items."));
+                                    Ext.MessageBox.alert(i18n._("Warning"),i18n._("Please set up to four items."));
                                     elem.setValue(false);
                                     return;
                                 }
@@ -4547,7 +4547,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         if (loadActiveDirectory){
             main.getAppAddressBook().getUserEntries(function(result, exception) {
                 if(Ung.Util.handleException(exception, function() {
-                    Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again."), function(){
+                    Ext.MessageBox.alert(i18n._("Warning"), i18n._("There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again."), function(){
                         this.populateCallback();
                     }.createDelegate(this));
                 }.createDelegate(this),"noAlert")) return;
@@ -4561,7 +4561,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         if (loadActiveDirectory && !this.singleSelectUser){
             main.getAppAddressBook().getGroupEntries(function(result, exception) {
                 if( Ung.Util.handleException(exception, function() {
-                    Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Active Directory groups.  Please check your Active Directory settings and then try again."), function(){
+                    Ext.MessageBox.alert(i18n._("Warning"), i18n._("There was a problem refreshing Active Directory groups.  Please check your Active Directory settings and then try again."), function(){
                         this.populateCallback();
                     }.createDelegate(this));
                 }.createDelegate(this),"noAlert")) return;
@@ -4576,7 +4576,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         if (this.loadLocalDirectoryUsers) {
             main.getAppAddressBook().getUserEntries(function(result, exception) {
                 if(Ung.Util.handleException(exception, function() {
-                    Ext.MessageBox.alert(i18n._("Failed"), i18n._("There was a problem refreshing Local Directory users.  Please check your Local Directory settings and try again."), function(){
+                    Ext.MessageBox.alert(i18n._("Warning"), i18n._("There was a problem refreshing Local Directory users.  Please check your Local Directory settings and try again."), function(){
                         this.populateCallback();
                     }.createDelegate(this));
                 }.createDelegate(this),"noAlert")) return;
