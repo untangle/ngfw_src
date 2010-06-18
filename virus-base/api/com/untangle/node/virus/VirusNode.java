@@ -64,8 +64,8 @@ public interface VirusNode extends Node
     /**
      * Update all settings once, in a single transaction
      */
-    void updateAll(VirusBaseSettings baseSettings, List[] httpMimeTypes,
-                   List[] extensions);
+    @SuppressWarnings("unchecked")
+	void updateAll(VirusBaseSettings baseSettings, List[] httpMimeTypes, List[] extensions);
 
     /* Get the current version of the virus signatures. */
     String getSigVersion();

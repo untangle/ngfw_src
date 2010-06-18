@@ -192,45 +192,39 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         public TableOfContents getTableOfContentsForHost(Date d, int numDays,
                                                          String hostname)
         {
-            return context.reportingManager()
-                .getTableOfContentsForHost(d, numDays, hostname);
+            return context.reportingManager().getTableOfContentsForHost(d, numDays, hostname);
         }
 
         public TableOfContents getTableOfContentsForUser(Date d, int numDays,
                                                          String username)
         {
-            return context.reportingManager()
-                .getTableOfContentsForUser(d, numDays, username);
+            return context.reportingManager().getTableOfContentsForUser(d, numDays, username);
         }
 
         public TableOfContents getTableOfContentsForEmail(Date d, int numDays,
                                                           String email)
         {
-            return context.reportingManager()
-                .getTableOfContentsForEmail(d, numDays, email);
+            return context.reportingManager().getTableOfContentsForEmail(d, numDays, email);
         }
 
         public ApplicationData getApplicationData(Date d, int numDays,
                                                   String appName, String type,
                                                   String value)
         {
-            return context.reportingManager()
-                .getApplicationData(d, numDays, appName, type, value);
+            return context.reportingManager().getApplicationData(d, numDays, appName, type, value);
         }
 
         public ApplicationData getApplicationData(Date d, int numDays,
                                                   String appName)
         {
-            return context.reportingManager()
-                .getApplicationData(d, numDays, appName);
+            return context.reportingManager().getApplicationData(d, numDays, appName);
         }
 
         public ApplicationData getApplicationDataForUser(Date d, int numDays,
                                                          String appName,
                                                          String username)
         {
-            return context.reportingManager()
-                .getApplicationDataForUser(d, numDays, appName, username);
+            return context.reportingManager().getApplicationDataForUser(d, numDays, appName, username);
         }
 
 
@@ -238,33 +232,29 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
                                                           String appName,
                                                           String emailAddr)
         {
-            return context.reportingManager()
-                .getApplicationDataForEmail(d, numDays, appName, emailAddr);
+            return context.reportingManager().getApplicationDataForEmail(d, numDays, appName, emailAddr);
         }
 
         public ApplicationData getApplicationDataForHost(Date d, int numDays,
                                                          String appName,
                                                          String hostname)
         {
-            return context.reportingManager()
-                .getApplicationDataForHost(d, numDays, appName, hostname);
+            return context.reportingManager().getApplicationDataForHost(d, numDays, appName, hostname);
         }
 
-        public List<List> getDetailData(Date d, int numDays, String appName,
+        public List<List<Object>> getDetailData(Date d, int numDays, String appName,
                                         String detailName, String type,
                                         String value)
         {
-            return context.reportingManager()
-                .getDetailData(d, numDays, appName, detailName, type, value);
+            return context.reportingManager().getDetailData(d, numDays, appName, detailName, type, value);
         }
 
 
-        public List<List> getAllDetailData(Date d, int numDays, String appName,
+        public List<List<Object>> getAllDetailData(Date d, int numDays, String appName,
                                            String detailName, String type,
                                            String value)
         {
-            return context.reportingManager()
-                .getAllDetailData(d, numDays, appName, detailName, type, value);
+            return context.reportingManager().getAllDetailData(d, numDays, appName, detailName, type, value);
         }
 
         /**

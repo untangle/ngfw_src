@@ -33,7 +33,8 @@ public interface ShieldNode extends Node
     /**
      * Update all settings once
      */
-    void updateAll(List[] shieldNodeRulesChanges);
+    @SuppressWarnings("unchecked")
+	void updateAll(List[] shieldNodeRulesChanges);
     
     List<ShieldRejectionLogEntry> getLogs( int limit );
 }

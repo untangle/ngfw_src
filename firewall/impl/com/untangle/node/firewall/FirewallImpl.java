@@ -79,7 +79,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
         eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
-        SimpleEventFilter ef = new FirewallAllFilter();
+        SimpleEventFilter<FirewallEvent> ef = new FirewallAllFilter();
         eventLogger.addSimpleEventFilter(ef);
         ef = new FirewallBlockedFilter();
         eventLogger.addSimpleEventFilter(ef);

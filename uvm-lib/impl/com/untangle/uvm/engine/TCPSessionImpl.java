@@ -629,7 +629,6 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
         if (logger.isDebugEnabled())
             debug("read " + numRead + " size chunk from " + sideName);
-        dispatcher.lastSessionNumRead(numRead);
 
         stats.readData(side, numRead);
 

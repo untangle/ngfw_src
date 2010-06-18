@@ -57,34 +57,33 @@ public class PartialListUtil
     }
 
     /* Just a helper function for the most common case of listing from a node. */
-    public List getItems( String queryString, NodeContext nodeContext, Tid tid,
-                          int start, int limit, String ... sortColumns)
+    @SuppressWarnings("unchecked")
+    public List getItems( String queryString, NodeContext nodeContext, Tid tid, int start, int limit, String ... sortColumns)
     {
         return getItems( queryString, nodeContext, tid, null, start, limit, sortColumns );
     }
 
-    public List getItems( String queryString, NodeContext nodeContext, Parameter[] parameters,
-                          int start, int limit, String ... sortColumns)
-
+    @SuppressWarnings("unchecked")
+    public List getItems( String queryString, NodeContext nodeContext, Parameter[] parameters, int start, int limit, String ... sortColumns)
     {
         return getItems(queryString, nodeContext, parameters, null, start, limit, sortColumns);
     }
 
-    public List getItems( String queryString, LocalUvmContext localContext, Parameter[] parameters,
-                          int start, int limit, String ... sortColumns)
-
+    @SuppressWarnings("unchecked")
+    public List getItems( String queryString, LocalUvmContext localContext, Parameter[] parameters, int start, int limit, String ... sortColumns)
     {
         return getItems(queryString, localContext, parameters, null, start, limit, sortColumns);
     }
 
     /* Just a helper function for the most common case of listing from a node. */
-    public List getItems( String queryString, NodeContext nodeContext, Tid tid,
-                          String alias, int start, int limit, String ... sortColumns)
+    @SuppressWarnings("unchecked")
+    public List getItems( String queryString, NodeContext nodeContext, Tid tid, String alias, int start, int limit, String ... sortColumns)
     {
         return getItems( queryString, nodeContext, new Parameter[] { new Parameter( "tid", tid ) },
                          alias, start, limit, sortColumns );
     }
 
+    @SuppressWarnings("unchecked")
     public List getItems( String queryString, NodeContext nodeContext, Parameter[] parameters,
                           String alias, int start, int limit, String ... sortColumns)
 
@@ -95,10 +94,9 @@ public class PartialListUtil
         nodeContext.runTransaction( tw );
         return tw.getResult();
     }
-
-    public List getItems( String queryString, LocalUvmContext localContext, Parameter[] parameters,
-                          String alias, int start, int limit, String ... sortColumns)
-
+    
+    @SuppressWarnings("unchecked")
+    public List getItems( String queryString, LocalUvmContext localContext, Parameter[] parameters, String alias, int start, int limit, String ... sortColumns)
     {
         TransactionWork<List> tw = getItemsTransactionWork( queryString, parameters,
                                                             alias, start, limit, sortColumns );
@@ -159,9 +157,8 @@ public class PartialListUtil
         return null;
     }
 
-    private TransactionWork<List>
-        getItemsTransactionWork( final String queryString, final Parameter[] parameters, final String alias,
-                                 final int start, final int limit, final String ... sortColumns )
+    @SuppressWarnings("unchecked")
+    private TransactionWork<List> getItemsTransactionWork( final String queryString, final Parameter[] parameters, final String alias, final int start, final int limit, final String ... sortColumns )
     {
         return new TransactionWork<List>() {
             private List result;
@@ -238,6 +235,7 @@ public class PartialListUtil
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static boolean contains(List list, Long elem) {
     	for (int i = 0; i < list.size(); i++) {
     		Object currentElem = list.get(i);

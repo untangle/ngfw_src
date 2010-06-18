@@ -84,12 +84,14 @@ public class QuarantineSettings implements Serializable {
     @Id
     @Column(name="settings_id")
     @GeneratedValue
-    public Long getId() {
+    public Long getId() 
+    {
         return id;
     }
 
-    public void setId(Long id) {
-        id = id;
+    public void setId(Long id) 
+    {
+        this.id = id;
     }
 
     /**

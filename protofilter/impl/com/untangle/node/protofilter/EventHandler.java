@@ -44,11 +44,10 @@ public class EventHandler extends AbstractEventHandler
     private final Logger logger = Logger.getLogger(EventHandler.class);
 
     // These are all set at preStart() time by reconfigure()
-    private Set        _patternSet;
-    private int        _byteLimit;
-    private int        _chunkLimit;
-    private String     _unknownString;
-    private boolean    _stripZeros;
+    private Set<ProtoFilterPattern> _patternSet;
+    private int                     _byteLimit;
+    private int                     _chunkLimit;
+    private boolean                 _stripZeros;
     private ProtoFilterImpl node;
 
     private class SessionInfo {
@@ -63,7 +62,6 @@ public class EventHandler extends AbstractEventHandler
         public int clientChunkCount;
 
         public String protocol;
-        public boolean identified;
 
         private Pipeline pipeline;
     }
@@ -127,7 +125,7 @@ public class EventHandler extends AbstractEventHandler
         sess.sendClientPacket(packet, e.header());
     }
 
-    public void patternSet (Set patternSet)
+    public void patternSet (Set<ProtoFilterPattern> patternSet)
     {
         _patternSet = patternSet;
     }
@@ -146,12 +144,6 @@ public class EventHandler extends AbstractEventHandler
     {
         _stripZeros = stripZeros;
     }
-
-    public void unknownString (String unknownString)
-    {
-        _unknownString  = unknownString;
-    }
-
 
     private void _handleChunk (IPDataEvent event, IPSession sess, boolean server)
     {
@@ -230,7 +222,6 @@ public class EventHandler extends AbstractEventHandler
         node.incrementScanCount();
         if (elem != null) {
             sessInfo.protocol = elem.getProtocol();
-            sessInfo.identified = true;
             String l4prot = "";
             if (sess instanceof TCPSession)
                 l4prot = "TCP";

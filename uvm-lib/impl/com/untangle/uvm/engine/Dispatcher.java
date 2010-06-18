@@ -156,31 +156,21 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
     private String threadNameBase; // Convenience
 
-
-    /**
-     * We hold this lock while calling select(), so that only one
-     * thread is selecting at a time.
-     */
-    // private Object selectLock = new Object();=
-    private boolean lastSessionReadFailed = false;
-    private long lastSessionReadTime;
-
     // This one is for the command socket.
     private boolean lastCommandReadFailed = false;
-    private long lastCommandReadTime;
 
     // A dispatcher is created MPipe.start() when user decides this
     // dispatcher should begin handling a newly connected MPipe.
     //
     // Note that order of initialization is important in here, since
     // the "inner" classes access stuff from us.
-    Dispatcher(MPipeImpl mPipe) {
+    Dispatcher(MPipeImpl mPipe) 
+    {
         logger = Logger.getLogger(Dispatcher.class.getName());
         this.mPipe = mPipe;
         this.node = mPipe.node();
         this.nodeContext = mPipe.node().getNodeContext();
         this.nodeManager = UvmContextImpl.getInstance().localNodeManager();
-        lastSessionReadTime = lastCommandReadTime = MetaEnv.currentTimeMillis();
         sessionEventListener = null;
         NodeDesc td = node.getNodeDesc();
         String tidn = td.getTid().getName();
@@ -614,17 +604,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         return mPipe;
     }
 
-    // Called whenever a session socket read occurs.
-    void lastSessionNumRead(long numRead)
-    {
-        if (numRead > 0) {
-            lastSessionReadFailed = false;
-            lastSessionReadTime = MetaEnv.currentTimeMillis();
-        } else {
-            lastSessionReadFailed = true;
-        }
-    }
-
     boolean lastReadFailed()
     {
         // Note that we do *not* consider session reads a failure.  This is a result
@@ -637,7 +616,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     {
         if (numRead > 0) {
             lastCommandReadFailed = false;
-            lastCommandReadTime = MetaEnv.currentTimeMillis();
         } else {
             lastCommandReadFailed = true;
         }

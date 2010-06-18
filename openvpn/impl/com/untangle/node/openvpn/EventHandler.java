@@ -38,9 +38,6 @@ class EventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger( EventHandler.class );
 
-    /* Are the VPNs bridged with the other networks */
-    private boolean isBridge = false;
-
     /* Is this a VPN client, a VPN client passes all traffic */
     private boolean isUntanglePlatformClient = false;
 

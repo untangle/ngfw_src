@@ -125,7 +125,7 @@ public interface RemotePolicyManager extends LicensedProduct
      *
      * @param rules an <code>List</code> of <code>UserPolicyRule</code> values
      */
-    void setUserPolicyRules(List rules);
+    void setUserPolicyRules(List<UserPolicyRule> rules);
 
     /**
      * Helper for the UI -- get all Policy related configuration in a

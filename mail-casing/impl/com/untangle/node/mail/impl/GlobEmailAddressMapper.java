@@ -207,8 +207,7 @@ public class GlobEmailAddressMapper {
 
         abstract String matchAddress(String strLowerCase);
 
-        abstract void reverseMatch(String rightSideLowerCase,
-                                   Set addInto);
+        abstract void reverseMatch(String rightSideLowerCase, Set<String> addInto);
 
     }
 
@@ -217,8 +216,7 @@ public class GlobEmailAddressMapper {
      * Performs exact match on a set of
      * from/to pairings.
      */
-    class SimpleEmailAddressMatcher
-        extends EmailAddressMatcher {
+    class SimpleEmailAddressMatcher extends EmailAddressMatcher {
 
         private final HashMap<String, String> m_map;
 
@@ -235,8 +233,7 @@ public class GlobEmailAddressMapper {
             return m_map.get(strLowerCase);
         }
 
-        void reverseMatch(String rightLower,
-                          Set writeInto) {
+        void reverseMatch(String rightLower, Set<String> writeInto) {
             for(Map.Entry<String, String> entry : m_map.entrySet()) {
                 if(entry.getValue().equalsIgnoreCase(rightLower)) {
                     writeInto.add(entry.getKey().toLowerCase());
@@ -251,19 +248,23 @@ public class GlobEmailAddressMapper {
         private Pattern m_pattern;
         private String m_mapTo;
 
-        RegexEmailAddressMatcher(Pair<String, String> pairing) {
+        RegexEmailAddressMatcher(Pair<String, String> pairing) 
+        {
 
             m_pattern = Pattern.compile(fixupWildcardAddress(pairing.a));
             m_mapTo = pairing.b;
         }
-        String matchAddress(String strLowerCase) {
+        
+        String matchAddress(String strLowerCase) 
+        {
             Matcher m = m_pattern.matcher(strLowerCase);
             return m.matches()?
                 m_mapTo:
             null;
         }
-        void reverseMatch(String rightLower,
-                          Set writeInto) {
+        
+        void reverseMatch(String rightLower, Set<String> writeInto) 
+        {
             if(rightLower.equalsIgnoreCase(rightLower)) {
                 writeInto.add(m_pattern.pattern());
             }

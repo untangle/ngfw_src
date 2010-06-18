@@ -570,7 +570,7 @@ public class SafelistManager
         return renewGetSndrs(safelists, rcpnt);
     }
 
-    private List getHMSafelists()
+    private List<SafelistSettings> getHMSafelists()
     {
         TransactionWork tw = new TransactionWork()
             {
@@ -661,7 +661,7 @@ public class SafelistManager
     // remove sndr - assumes sndr is already in lower-case format
     private Pattern removeSndr(Map<String, Map<String, Pattern>> sndrs, String rcpnt, String sndr)
     {
-        Map m = sndrs.get(rcpnt);
+        Map<String, Pattern> m = sndrs.get(rcpnt);
         if (null == m) {
             return null;
         } else {

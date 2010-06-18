@@ -87,7 +87,8 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
 
     // constructors -----------------------------------------------------------
 
-    public SpamNodeImpl(SpamScanner scanner)
+    @SuppressWarnings("unchecked")
+	public SpamNodeImpl(SpamScanner scanner)
     {
         this.scanner = scanner;
         saDaemon = new SpamAssassinDaemon();
@@ -361,7 +362,8 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
 
     }
 
-    public void updateAll( final SpamBaseSettings baseSettings, final List[] rblRules )
+    @SuppressWarnings("unchecked")
+	public void updateAll( final SpamBaseSettings baseSettings, final List[] rblRules )
     {
         TransactionWork tw = new TransactionWork() {
                 public boolean doWork(Session s) {

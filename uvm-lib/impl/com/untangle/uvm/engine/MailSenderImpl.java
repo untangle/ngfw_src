@@ -440,7 +440,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
     private void sendAlertWithAttachment(String subject, String bodyText, List<ByteBuffer> attachment) {
         // Compute the list of recipients from the user list.
         AdminSettings adminSettings = LocalUvmContextFactory.context().adminManager().getAdminSettings();
-        Set users = adminSettings.getUsers();
+        Set<User> users = adminSettings.getUsers();
         List<String> alertableUsers = new ArrayList<String>();
 
         for (Iterator<User> iter = users.iterator(); iter.hasNext();) {

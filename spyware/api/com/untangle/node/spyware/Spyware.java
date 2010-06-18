@@ -59,7 +59,8 @@ public interface Spyware extends Node
     /**
      * Update all settings once, in a single transaction
      */
-    void updateAll(SpywareBaseSettings baseSettings,
+    @SuppressWarnings("unchecked")
+	void updateAll(SpywareBaseSettings baseSettings,
             List[] activeXRules, List[] cookieRules,
             List[] subnetRules, List[] domainWhitelist);
 

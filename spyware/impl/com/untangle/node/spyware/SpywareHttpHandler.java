@@ -194,7 +194,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         killers.put(requestLine, cookieKillers);
 
         String host = h.getValue("host");
-        List cookies = h.getValues("cookie"); // XXX cookie2 ???
+        List<String> cookies = h.getValues("cookie"); // XXX cookie2 ???
 
         if (null == cookies) {
             return h;
@@ -203,7 +203,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         for (Iterator<String> i = cookies.iterator(); i.hasNext(); ) {
             node.incrementHttpClientCookieScan();
             String cookie = i.next();
-            Map m = CookieParser.parseCookie(cookie);
+            Map<String, String> m = CookieParser.parseCookie(cookie);
             String domain = (String)m.get("domain");
             if (null == domain) {
                 domain = host;
@@ -243,7 +243,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             return h;
         }
 
-        List setCookies = h.getValues("set-cookie");
+        List<String> setCookies = h.getValues("set-cookie");
 
         if (null == setCookies) { return h; }
 

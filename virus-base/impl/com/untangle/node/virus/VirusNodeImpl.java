@@ -194,7 +194,8 @@ public abstract class VirusNodeImpl extends AbstractNode
 
     // constructors -----------------------------------------------------------
 
-    public VirusNodeImpl(VirusScanner scanner)
+    @SuppressWarnings("unchecked")
+	public VirusNodeImpl(VirusScanner scanner)
     {
         this.scanner = scanner;
         this.pipeSpecs = initialPipeSpecs();
@@ -341,9 +342,9 @@ public abstract class VirusNodeImpl extends AbstractNode
         updateRules(getExtensions(), added, deleted, modified);
     }
 
-    public void updateAll(final VirusBaseSettings baseSettings,
-                          final List[] httpMimeTypes, final List[] extensions) {
-
+    @SuppressWarnings("unchecked")
+	public void updateAll(final VirusBaseSettings baseSettings, final List[] httpMimeTypes, final List[] extensions)
+    {
         TransactionWork tw = new TransactionWork() {
                 public boolean doWork(Session s) {
                     if (baseSettings != null) {
@@ -529,7 +530,7 @@ public abstract class VirusNodeImpl extends AbstractNode
 
     private void initMimeTypes(VirusSettings vs)
     {
-        Set s = new HashSet<MimeTypeRule>();
+        Set<MimeTypeRule> s = new HashSet<MimeTypeRule>();
         s.add(new MimeTypeRule(new MimeType("message/*"), "messages", "misc", true));
 
         vs.setHttpMimeTypes(s);
@@ -537,7 +538,7 @@ public abstract class VirusNodeImpl extends AbstractNode
 
     private void initFileExtensions(VirusSettings vs)
     {
-        Set s = new HashSet<StringRule>();
+        Set<StringRule> s = new HashSet<StringRule>();
         /* XXX Need a description here */
         // Note that category is unused in the UI
         s.add(new StringRule("exe", "executable", "download" , true));
@@ -645,12 +646,12 @@ public abstract class VirusNodeImpl extends AbstractNode
         return settings.getBaseSettings().getTricklePercent();
     }
 
-    Set getExtensions()
+    Set<StringRule> getExtensions()
     {
         return settings.getExtensions();
     }
 
-    Set getHttpMimeTypes()
+    Set<MimeTypeRule> getHttpMimeTypes()
     {
         return settings.getHttpMimeTypes();
     }
@@ -763,8 +764,8 @@ public abstract class VirusNodeImpl extends AbstractNode
     }
 
     // private methods --------------------------------------------------------
-    private void updateRules(final Set rules, final List added,
-                             final List<Long> deleted, final List modified)
+    private void updateRules(final Set<?> rules, final List<?> added,
+                             final List<Long> deleted, final List<?> modified)
     {
         TransactionWork tw = new TransactionWork()
             {

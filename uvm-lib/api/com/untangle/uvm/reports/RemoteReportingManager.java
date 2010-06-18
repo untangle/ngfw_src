@@ -51,32 +51,26 @@ public interface RemoteReportingManager
     Date getReportsCutoff();
 
     TableOfContents getTableOfContents(Date d, int numDays);
-    TableOfContents getTableOfContentsForHost(Date d, int numDays,
-                                              String hostname);
-    TableOfContents getTableOfContentsForUser(Date d, int numDays,
-                                              String username);
-    TableOfContents getTableOfContentsForEmail(Date d, int numDays,
-                                               String email);
+    
+    TableOfContents getTableOfContentsForHost(Date d, int numDays, String hostname);
+    
+    TableOfContents getTableOfContentsForUser(Date d, int numDays, String username);
+    
+    TableOfContents getTableOfContentsForEmail(Date d, int numDays, String email);
 
-    ApplicationData getApplicationData(Date d, int numDays, String appName,
-                                       String type, String value);
+    ApplicationData getApplicationData(Date d, int numDays, String appName, String type, String value);
+    
     ApplicationData getApplicationData(Date d, int numDays, String appName);
 
-    ApplicationData getApplicationDataForUser(Date d, int numDays,
-                                              String appName, String username);
+    ApplicationData getApplicationDataForUser(Date d, int numDays, String appName, String username);
 
-    ApplicationData getApplicationDataForEmail(Date d, int numDays,
-                                               String appName,
-                                               String emailAddr);
+    ApplicationData getApplicationDataForEmail(Date d, int numDays, String appName, String emailAddr);
 
-    ApplicationData getApplicationDataForHost(Date d, int numDays,
-                                              String appName, String hostname);
+    ApplicationData getApplicationDataForHost(Date d, int numDays, String appName, String hostname);
 
-    List<List> getDetailData(Date d, int numDays, String appName,
-                             String detailName, String type, String value);
+    List<List<Object>> getDetailData(Date d, int numDays, String appName, String detailName, String type, String value);
 
-    List<List> getAllDetailData(Date d, int numDays, String appName,
-                                String detailName, String type, String value);
+    List<List<Object>> getAllDetailData(Date d, int numDays, String appName, String detailName, String type, String value);
 
     // old stuff ---------------------------------------------------------------
 

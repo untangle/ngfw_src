@@ -416,7 +416,6 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
         if (logger.isDebugEnabled())
             debug("read " + numRead + " size " + crumb.type() + " packet from " + side);
-        dispatcher.lastSessionNumRead(numRead);
 
         stats.readData(side, numRead);
 

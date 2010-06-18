@@ -279,25 +279,23 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return readXml(d, numDays, appName, "email", emailAddr);
     }
 
-    public List<List> getDetailData(Date d, int numDays, String appName,
+    public List<List<Object>> getDetailData(Date d, int numDays, String appName,
                                     String detailName, String type,
                                     String value)
     {
-        return doGetDetailData(d, numDays, appName, detailName, type, value,
-                               true);
+        return doGetDetailData(d, numDays, appName, detailName, type, value, true);
     }
 
-    public List<List> getAllDetailData(Date d, int numDays, String appName,
+    public List<List<Object>> getAllDetailData(Date d, int numDays, String appName,
                                        String detailName, String type,
                                        String value)
     {
-        return doGetDetailData(d, numDays, appName, detailName, type, value,
-                               false);
+        return doGetDetailData(d, numDays, appName, detailName, type, value, false);
     }
 
     // private methods ---------------------------------------------------------
 
-    private List<List> doGetDetailData(Date d, int numDays, String appName,
+    private List<List<Object>> doGetDetailData(Date d, int numDays, String appName,
                                        String detailName, String type,
                                        String value, boolean limitResultSet)
     {
@@ -308,7 +306,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 	if (isDateBefore(getDaysBefore(d, numDays), getReportsCutoff()))
 	    return null;
 
-        List<List> rv = new ArrayList<List>();
+        List<List<Object>> rv = new ArrayList<List<Object>>();
 
         ApplicationData ad = readXml(d, numDays, appName, type, value);
         if (null == ad) {
@@ -320,7 +318,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                 DetailSection sds = (DetailSection)section;
                 if (sds.getName().equals(detailName)) {
                     String sql = sds.getSql();
-		    logger.info("** sql='" + sql + "'");
+                    logger.info("** sql='" + sql + "'");
                     Connection conn = null;
                     try {
                         conn = DataSourceFactory.factory().getConnection();
@@ -330,7 +328,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
                         }
                         ResultSet rs = stmt.executeQuery(sql);
                         int columnCount = rs.getMetaData().getColumnCount();
-			logger.info("** got " + columnCount + " columns.");
+                        logger.info("** got " + columnCount + " columns.");
                         while (rs.next()) {
                             List<Object> l = new ArrayList<Object>(columnCount);
                             for (int i = 1; i <= columnCount; i++) {

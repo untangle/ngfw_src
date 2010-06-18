@@ -72,7 +72,8 @@ public interface WebFilter extends Node
     /**
      * Update all settings once, in a single transaction
      */
-    void updateAll(WebFilterBaseSettings baseSettings,
+    @SuppressWarnings("unchecked")
+	void updateAll(WebFilterBaseSettings baseSettings,
             List[] passedClients, List[] passedUrls,
             List[] blockedUrls, List[] blockedMimeTypes,
             List[] blockedExtensions, List[] blacklistCategories);

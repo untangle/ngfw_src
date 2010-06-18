@@ -80,7 +80,7 @@ class RemotePolicyManagerAdaptor implements RemotePolicyManager
         return pm.getUserPolicyRules();
     }
 
-    public void setUserPolicyRules(List rules)
+    public void setUserPolicyRules(List<UserPolicyRule> rules)
     {
         pm.setUserPolicyRules(rules);
     }

@@ -48,15 +48,14 @@ import org.apache.log4j.Logger;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("unchecked")
 class HttpClientCache
 {
     private static final String HTTP_CLIENT = "httpClient";
     private static final String HTTPCLIENT_ID = "HTTPCLIENTID";
 
-    private final Map<String, Reference<HttpClient>> clients
-        = new HashMap<String, Reference<HttpClient>>();
-    private final Map<Reference<HttpClient>, String> keys
-        = new HashMap<Reference<HttpClient>, String>();
+    private final Map<String, Reference<HttpClient>> clients = new HashMap<String, Reference<HttpClient>>();
+    private final Map<Reference<HttpClient>, String> keys = new HashMap<Reference<HttpClient>, String>();
     private final ReferenceQueue queue = new ReferenceQueue<HttpClient>();
     private final Random random = new Random();
     private final String cookieDomain;

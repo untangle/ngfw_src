@@ -74,7 +74,7 @@ public class I18nTag extends BodyTagSupport
     
     public final int doStartTag() throws JspException
     {
-        return EVAL_BODY_TAG;
+        return EVAL_BODY_BUFFERED;
     }
 
     public final int doEndTag() throws JspException

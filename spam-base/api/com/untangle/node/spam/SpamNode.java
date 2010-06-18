@@ -53,7 +53,8 @@ public interface SpamNode extends Node
     List<SpamRBL> getSpamRBLList( int start, int limit, String ... sortColumns );
     void updateSpamRBLList( List<SpamRBL> added, List<Long> deleted, List<SpamRBL> modified );
 
-    void updateAll( SpamBaseSettings baseSettings, List[] rblRules );
+    @SuppressWarnings("unchecked")
+	void updateAll( SpamBaseSettings baseSettings, List[] rblRules );
 
     EventManager<SpamEvent> getEventManager();
     EventManager<SpamSmtpRblEvent> getRBLEventManager();

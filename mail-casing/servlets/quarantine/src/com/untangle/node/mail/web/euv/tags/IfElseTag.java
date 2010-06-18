@@ -44,7 +44,7 @@ public abstract class IfElseTag
     public final int doStartTag() throws JspException {
 
         if(isConditionTrue() == isIncludeIfTrue()) {
-            return EVAL_BODY_TAG;
+            return EVAL_BODY_BUFFERED;
         }
         return SKIP_BODY;
     }

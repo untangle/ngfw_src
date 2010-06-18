@@ -124,10 +124,10 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
                     {
                         public boolean doWork(Session s) throws SQLException
                         {
-                            Map params;
+                            Map<String,Object> params;
                             if (null != tctx) {
                                 Policy policy = tctx.getTid().getPolicy();
-                                params = Collections.singletonMap("policy", policy);
+                                params = Collections.singletonMap("policy", (Object)policy);
                             } else {
                                 params = Collections.emptyMap();
                             }

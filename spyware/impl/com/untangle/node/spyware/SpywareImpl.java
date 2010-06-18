@@ -154,7 +154,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     // constructors ------------------------------------------------------------
 
-    public SpywareImpl()
+    @SuppressWarnings("unchecked")
+	public SpywareImpl()
     {
         replacementGenerator = new SpywareReplacementGenerator(getTid());
 
@@ -625,7 +626,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
         eventLogger.log(se);
     }
 
-    public void updateAll(final SpywareBaseSettings baseSettings,
+    @SuppressWarnings("unchecked")
+	public void updateAll(final SpywareBaseSettings baseSettings,
                           final List[] activeXRules, final List[] cookieRules,
                           final List[] subnetRules, final List[] domainWhitelist)
     {
@@ -663,8 +665,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     // private methods ---------------------------------------------------------
 
-    private void updateRules(final Set rules, final List added,
-                             final List<Long> deleted, final List modified)
+    private void updateRules(final Set<?> rules, final List<?> added,
+                             final List<Long> deleted, final List<?> modified)
     {
         TransactionWork tw = new TransactionWork()
             {
@@ -711,7 +713,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         int ver = settings.getActiveXVersion();
 
         if (0 > ver || null == settings.getActiveXRules()) {
-            Set l = settings.getActiveXRules();
+            Set<StringRule> l = settings.getActiveXRules();
             if (null != l) {
                 l.clear();
             }
@@ -763,7 +765,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         int ver = settings.getCookieVersion();
 
         if (0 > ver || null == settings.getCookieRules()) {
-            Set l = settings.getCookieRules();
+            Set<StringRule> l = settings.getCookieRules();
             if (null != l) {
                 l.clear();
             }
@@ -817,7 +819,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         int ver = settings.getSubnetVersion();
 
         if (0 > ver || null == settings.getSubnetRules()) {
-            Set l = settings.getSubnetRules();
+            Set<IPMaddrRule> l = settings.getSubnetRules();
             if (null != l) {
                 l.clear();
             }

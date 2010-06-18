@@ -261,7 +261,9 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
      * For this node, updateAll means update only the rules
      * @see com.untangle.node.shield.ShieldNode#updateAll(java.util.List[])
      */
-    public void updateAll(List[] shieldNodeRulesChanges) {
+    @SuppressWarnings("unchecked")
+	public void updateAll(List[] shieldNodeRulesChanges) 
+    {
         if (shieldNodeRulesChanges != null && shieldNodeRulesChanges.length >= 3) {
             updateShieldNodeRules(shieldNodeRulesChanges[0], shieldNodeRulesChanges[1], shieldNodeRulesChanges[2]);
         }

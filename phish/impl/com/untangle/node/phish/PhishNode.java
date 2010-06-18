@@ -109,9 +109,9 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
         phishHttpEventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
-        SimpleEventFilter sef = new PhishHttpBlockedFilter();
+        SimpleEventFilter<PhishHttpEvent> sef = new PhishHttpBlockedFilter();
         phishHttpEventLogger.addSimpleEventFilter(sef);
-        ListEventFilter lef = new PhishHttpAllFilter();
+        ListEventFilter<PhishHttpEvent> lef = new PhishHttpAllFilter();
         phishHttpEventLogger.addListEventFilter(lef);
         lef = new PhishHttpPassedFilter();
         phishHttpEventLogger.addListEventFilter(lef);

@@ -651,7 +651,7 @@ public class Quarantine
         mappings.add(0, new Pair<String, String>(from, to));
 
         //Convert list to form which makes settings happy
-        List newMappingsList = toEmailAddressPairRuleList(mappings);
+        List<EmailAddressPairRule> newMappingsList = toEmailAddressPairRuleList(mappings);
 
         MailNodeSettings settings = m_impl.getMailNodeSettings();
         settings.getQuarantineSettings().setAddressRemaps(newMappingsList);
@@ -687,7 +687,7 @@ public class Quarantine
         List<Pair<String, String>> mappings = newMapper.getRawMappings();
 
         //Convert list to form which makes settings happy
-        List newMappingsList = toEmailAddressPairRuleList(mappings);
+        List<EmailAddressPairRule> newMappingsList = toEmailAddressPairRuleList(mappings);
 
         MailNodeSettings settings = m_impl.getMailNodeSettings();
         settings.getQuarantineSettings().setAddressRemaps(newMappingsList);
@@ -784,12 +784,10 @@ public class Quarantine
         return ret;
     }
 
-    private List<String> fromEmailAddressRule(List list) {
-        ArrayList<String> ret =
-            new ArrayList<String>();
+    private List<String> fromEmailAddressRule(List<EmailAddressRule> list) {
+        ArrayList<String> ret = new ArrayList<String>();
 
-        for(Object o : list) {
-            EmailAddressRule wrapper = (EmailAddressRule) o;
+        for(EmailAddressRule wrapper : list) {
             ret.add(wrapper.getAddress());
         }
         return ret;
@@ -804,12 +802,11 @@ public class Quarantine
         return ret;
     }
 
-    private List<Pair<String, String>> fromEmailAddressRuleListPair(List list) {
+    private List<Pair<String, String>> fromEmailAddressRuleListPair(List<EmailAddressPairRule> list) {
         ArrayList<Pair<String, String>> ret =
             new ArrayList<Pair<String, String>>();
 
-        for(Object o : list) {
-            EmailAddressPairRule eaPair = (EmailAddressPairRule) o;
+        for(EmailAddressPairRule eaPair : list) {
             ret.add(new Pair<String, String>(eaPair.getAddress1(), eaPair.getAddress2()));
         }
         return ret;

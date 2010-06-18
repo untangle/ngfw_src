@@ -120,7 +120,6 @@ public class ProxyServlet extends HttpServlet
             resp.setStatus(sl.getStatusCode());
             copyHeaders(method, resp, req);
 
-            boolean rewriteStream = false;
             for (Header h : method.getResponseHeaders()) {
                 String name = h.getName();
                 String value = h.getValue();
@@ -129,9 +128,6 @@ public class ProxyServlet extends HttpServlet
                     resp.setContentType(value);
 
                     String v = value.toLowerCase();
-                    if (v.startsWith("text/html")) {
-                        rewriteStream = true;
-                    }
                 } else if (name.equalsIgnoreCase("date")) {
                     resp.setHeader(name, value);
                 } else if (name.equalsIgnoreCase("etag")) {

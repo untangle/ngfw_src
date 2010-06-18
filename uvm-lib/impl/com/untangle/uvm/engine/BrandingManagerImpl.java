@@ -35,8 +35,6 @@ class BrandingManagerImpl implements RemoteBrandingManager
     private final String defaultCompanyName = "Untangle";
     private final String defaultCompanyUrl = "http://untangle.com/";
 
-    private final Logger logger = Logger.getLogger(UvmContextImpl.class);
-    
     public BrandingManagerImpl()
     {
         this.defaultBranding = new DefaultBrandingManager();

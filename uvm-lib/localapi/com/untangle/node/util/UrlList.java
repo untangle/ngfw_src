@@ -328,7 +328,7 @@ public abstract class UrlList
                     HttpMethod get = new GetMethod(url.toString());
                     get.setRequestHeader("Accept-Encoding", "gzip");
 
-                    int rc = hc.executeMethod(get);
+                    hc.executeMethod(get);
 
                     Header h = get.getResponseHeader("Content-Encoding");
 

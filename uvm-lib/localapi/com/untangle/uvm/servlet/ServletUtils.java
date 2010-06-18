@@ -88,14 +88,16 @@ public class ServletUtils {
     {
         void registerSerializer(T base, Serializer s) throws Exception;
     }
-    
-    private static Registrator JSON_SERIALIZER_REGISTRATOR = new Registrator<JSONSerializer>(){
+      
+    @SuppressWarnings("unchecked")
+	private static Registrator JSON_SERIALIZER_REGISTRATOR = new Registrator<JSONSerializer>(){
         
         public void registerSerializer(JSONSerializer serializer, Serializer s ) throws Exception {
             serializer.registerSerializer(s);
         }
     };
-    
+
+    @SuppressWarnings("unchecked")
     private static Registrator JSON_RPC_BRIDGE_REGISTRATOR = new Registrator<JSONRPCBridge>(){        
         public void registerSerializer(JSONRPCBridge bridge, Serializer s ) throws Exception {
             bridge.registerSerializer(s);

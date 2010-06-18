@@ -34,7 +34,8 @@ public interface ProtoFilter extends Node
     /**
      * Update all settings once
      */
-    void updateAll(List[] patternsChanges);
+    @SuppressWarnings("unchecked")
+	void updateAll(List[] patternsChanges);
     
     /**
      * Reconfigure node. This method should be called after some settings are updated

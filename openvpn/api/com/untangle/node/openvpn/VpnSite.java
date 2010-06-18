@@ -50,7 +50,7 @@ public class VpnSite extends VpnClientBase
 
     // List of addresses at this site,
     // initially, may not be supported, just use one address.
-    private List    exportedAddressList;
+    private List<ClientSiteNetwork>     exportedAddressList;
 
     private boolean isUntanglePlatform = false;
 
@@ -126,7 +126,7 @@ public class VpnSite extends VpnClientBase
 
     public void setSiteNetwork( IPaddr network, IPaddr netmask )
     {
-        List list = getExportedAddressList();
+    	List<ClientSiteNetwork>  list = getExportedAddressList();
 
         ClientSiteNetwork site;
         if ( list.size() < 1 ) {

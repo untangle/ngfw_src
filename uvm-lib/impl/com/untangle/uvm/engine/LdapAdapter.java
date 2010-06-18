@@ -620,7 +620,7 @@ abstract class LdapAdapter {
                                                       DirContext ctx) throws ServiceUnavailableException, NamingException {
 
         try {
-            NamingEnumeration answer = ctx.search(searchBase, searchFilter, ctls);
+            NamingEnumeration<SearchResult> answer = ctx.search(searchBase, searchFilter, ctls);
             List<Map<String, String[]>> ret = new ArrayList<Map<String, String[]>>();
             while (answer.hasMoreElements()) {
                 SearchResult sr = (SearchResult)answer.next();
@@ -628,11 +628,11 @@ abstract class LdapAdapter {
                 Attributes attrs = sr.getAttributes();
                 if (attrs != null) {
                     Map<String, String[]> map = new HashMap<String, String[]>();
-                    for (NamingEnumeration ae = attrs.getAll();ae.hasMore();) {
+                    for (NamingEnumeration<?> ae = attrs.getAll();ae.hasMore();) {
                         Attribute attr = (Attribute)ae.next();
                         String attrName = attr.getID();
                         ArrayList<String> values = new ArrayList<String>();
-                        NamingEnumeration e = attr.getAll();
+                        NamingEnumeration<?> e = attr.getAll();
                         while(e.hasMore()) {
                             values.add(e.next().toString());
                         }

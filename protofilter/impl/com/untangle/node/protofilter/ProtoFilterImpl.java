@@ -80,7 +80,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         NodeContext tctx = getNodeContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
 
-        SimpleEventFilter ef = new ProtoFilterAllFilter();
+        SimpleEventFilter<ProtoFilterLogEvent> ef = new ProtoFilterAllFilter();
         eventLogger.addSimpleEventFilter(ef);
         ef = new ProtoFilterBlockedFilter();
         eventLogger.addSimpleEventFilter(ef);
@@ -160,7 +160,8 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 	 * For this node, updateAll means update only the patterns and then reconfigure the node
 	 * @see com.untangle.node.protofilter.ProtoFilter#updateAll(java.util.List[])
 	 */
-    public void updateAll(List[] patternsChanges) {
+    @SuppressWarnings("unchecked")
+	public void updateAll(List[] patternsChanges) {
     	if (patternsChanges != null && patternsChanges.length >= 3) {
             updatePatterns(patternsChanges[0], patternsChanges[1], patternsChanges[2]);
     	}
@@ -245,7 +246,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
             throw new NodeException("Failed to get ProtoFilter settings: " + cachedSettings);
         }
 
-        Set curPatterns = cachedSettings.getPatterns();
+        Set<ProtoFilterPattern> curPatterns = cachedSettings.getPatterns();
         if (curPatterns == null)
             logger.error("NULL pattern list. Continuing anyway...");
         else {
@@ -262,7 +263,6 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         handler.patternSet(enabledPatternsSet);
         handler.byteLimit(cachedSettings.getByteLimit());
         handler.chunkLimit(cachedSettings.getChunkLimit());
-        handler.unknownString(cachedSettings.getUnknownString());
         handler.stripZeros(cachedSettings.isStripZeros());
     }
 
@@ -276,7 +276,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
         boolean    madeChange = false;
         TreeMap    factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
-        Set        curPatterns = cachedSettings.getPatterns(); /* Current list of Patterns */
+        Set<ProtoFilterPattern> curPatterns = cachedSettings.getPatterns(); /* Current list of Patterns */
 
         /*
          * Look for updates

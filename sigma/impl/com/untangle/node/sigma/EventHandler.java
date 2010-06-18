@@ -25,10 +25,8 @@ import org.apache.log4j.Logger;
 
 public class EventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(getClass());
-
-    private class SessionInfo {
-        public int myState;
+    private class SessionInfo 
+    {
     }
 
     public EventHandler(Node node)
@@ -40,7 +38,6 @@ public class EventHandler extends AbstractEventHandler
     {
         TCPSession sess = event.session();
         SessionInfo sessInfo = new SessionInfo();
-        sessInfo.myState = 1;
         sess.attach(sessInfo);
     }
 
@@ -49,7 +46,6 @@ public class EventHandler extends AbstractEventHandler
         UDPSession sess = event.session();
 
         SessionInfo sessInfo = new SessionInfo();
-        sessInfo.myState = 1;
         sess.attach(sessInfo);
     }
 

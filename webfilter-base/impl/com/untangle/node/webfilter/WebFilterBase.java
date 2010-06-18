@@ -375,7 +375,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         updateRules(getWebFilterSettings().getPassedUrls(), added, deleted, modified);
     }
 
-    public void updateAll(final WebFilterBaseSettings baseSettings,
+    @SuppressWarnings("unchecked")
+	public void updateAll(final WebFilterBaseSettings baseSettings,
                           final List[] passedClients, final List[] passedUrls, final List[] blockedUrls,
                           final List[] blockedMimeTypes, final List[] blockedExtensions,
                           final List[] blacklistCategories) {

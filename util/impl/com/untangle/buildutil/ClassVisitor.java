@@ -423,7 +423,7 @@ class ClassVisitor
         if (c.startsWith("java") || c.startsWith("javax")) { // make configurable
             return;
         } else if (!visited.contains(c) && !unavailable.contains(c)) {
-            boolean b = toVisit.add(c);
+            toVisit.add(c);
         }
     }
 }

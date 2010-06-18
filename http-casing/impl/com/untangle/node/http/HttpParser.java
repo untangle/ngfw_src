@@ -1081,9 +1081,6 @@ public class HttpParser extends AbstractParser
 
     private TokenStreamer endMarkerStreamer()
     {
-        Pipeline pipeline = LocalUvmContextFactory.context().pipelineFoundry()
-            .getPipeline(session.id());
-
         return new TokenStreamer()
             {
                 private boolean sent = false;

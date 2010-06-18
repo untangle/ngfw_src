@@ -51,7 +51,7 @@ public class SpywareEventHandler extends AbstractEventHandler
         this.node = node;
     }
 
-    public void subnetList(Set list)
+    public void subnetList(Set<IPMaddrRule> list)
     {
         if (null == list) {
             subnetSet = null;

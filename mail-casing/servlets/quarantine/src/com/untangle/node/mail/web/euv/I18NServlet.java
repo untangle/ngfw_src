@@ -56,7 +56,8 @@ public class I18NServlet extends HttpServlet
 	/**
 	 * Creates a JSONObject [JSONObject,JSONArray,JSONNUll] from the map values.
 	 */
-	protected JSONObject createJSON(Map map) throws JSONException {
+	protected JSONObject createJSON(Map<String,String> map) throws JSONException 
+	{
 		return new JSONObject(map);
 	}
 
