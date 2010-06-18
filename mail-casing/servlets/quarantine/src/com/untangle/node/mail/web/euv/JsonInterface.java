@@ -18,9 +18,6 @@
 
 package com.untangle.node.mail.web.euv;
 
-import java.io.Serializable;
-
-import java.util.Date;
 import java.util.List;
 
 import com.untangle.uvm.node.ParseException;

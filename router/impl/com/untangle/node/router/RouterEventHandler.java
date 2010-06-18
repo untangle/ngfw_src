@@ -19,24 +19,12 @@
 package com.untangle.node.router;
 
 import java.net.InetAddress;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.node.IPaddr;
-import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.UDPNewSessionRequest;
-import com.untangle.uvm.vnet.UDPSession;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;

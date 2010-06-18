@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.RemoteBrandingManager;
 
 /**
  * A servlet which will display the start page

@@ -18,7 +18,6 @@
 package com.untangle.node.mail.web.euv;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.security.Principal;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -31,14 +30,10 @@ import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.addrbook.UserEntry;
 import com.untangle.node.mail.papi.quarantine.BadTokenException;
 import com.untangle.node.mail.papi.quarantine.InboxIndex;
-import com.untangle.node.mail.papi.quarantine.InboxRecord;
 import com.untangle.node.mail.papi.quarantine.InboxRecordComparator;
 import com.untangle.node.mail.papi.quarantine.InboxRecordCursor;
 import com.untangle.node.mail.papi.quarantine.NoSuchInboxException;
-import com.untangle.node.mail.papi.quarantine.QuarantineUserActionFailedException;
 import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
-import com.untangle.node.mail.papi.safelist.NoSuchSafelistException;
-import com.untangle.node.mail.papi.safelist.SafelistActionFailedException;
 import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
 import com.untangle.node.mail.web.euv.tags.CurrentAuthTokenTag;
 import com.untangle.node.mail.web.euv.tags.CurrentEmailAddressTag;
@@ -49,7 +44,6 @@ import com.untangle.node.mail.web.euv.tags.MaxDaysIdleInboxTag;
 import com.untangle.node.mail.web.euv.tags.MaxDaysToInternTag;
 import com.untangle.node.mail.web.euv.tags.QuarantineFunctions;
 import com.untangle.node.mail.web.euv.tags.RemappedToTag;
-import com.untangle.node.util.Pair;
 
 /**
  * Controler used for inbox maintenence (purge/rescue/refresh/view).

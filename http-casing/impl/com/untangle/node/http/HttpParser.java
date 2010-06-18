@@ -34,9 +34,7 @@ import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.util.AsciiCharBuffer;
-import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.MimeType;
-import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.TCPSessionDesc;
 

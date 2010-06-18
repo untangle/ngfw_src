@@ -17,7 +17,6 @@
  */
 package com.untangle.node.test;
 
-import java.io.*;
 import java.nio.*;
 
 import com.untangle.uvm.vnet.*;

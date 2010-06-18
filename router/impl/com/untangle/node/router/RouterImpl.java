@@ -17,14 +17,6 @@
  */
 package com.untangle.node.router;
 
-import java.net.InetAddress;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.hibernate.Query;
-import org.hibernate.Session;
-
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -35,9 +27,7 @@ import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.networking.LocalNetworkManager;
-import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.networking.NetworkSettingsListener;
 import com.untangle.uvm.networking.SetupState;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
@@ -45,12 +35,7 @@ import com.untangle.uvm.networking.internal.ServicesInternalSettings;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
-import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStopException;
-import com.untangle.uvm.util.DataLoader;
-import com.untangle.uvm.util.TransactionWork;
-import com.untangle.uvm.util.JsonClient;
-import com.untangle.uvm.node.LocalADConnector;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;

@@ -21,7 +21,6 @@ package com.untangle.node.sigma;
 import com.untangle.uvm.vnet.*;
 import com.untangle.uvm.vnet.event.*;
 import com.untangle.uvm.node.Node;
-import org.apache.log4j.Logger;
 
 public class EventHandler extends AbstractEventHandler
 {

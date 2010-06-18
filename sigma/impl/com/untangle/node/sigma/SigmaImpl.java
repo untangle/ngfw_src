@@ -23,12 +23,7 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.NodeStartException;
-import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 public class SigmaImpl extends AbstractNode implements Sigma
 {

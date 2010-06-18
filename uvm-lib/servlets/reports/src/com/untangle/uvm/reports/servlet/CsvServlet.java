@@ -41,7 +41,6 @@ import com.untangle.uvm.client.RemoteUvmContextFactory;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.engine.DataSourceFactory;
 import com.untangle.uvm.reports.ApplicationData;
-import com.untangle.uvm.reports.Chart;
 import com.untangle.uvm.reports.ColumnDesc;
 import com.untangle.uvm.reports.DetailSection;
 import com.untangle.uvm.reports.RemoteReportingManager;

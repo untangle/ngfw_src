@@ -19,14 +19,9 @@ package com.untangle.uvm.jsp;
 
 import java.io.IOException;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
 public class ScriptTag extends SimpleTagSupport

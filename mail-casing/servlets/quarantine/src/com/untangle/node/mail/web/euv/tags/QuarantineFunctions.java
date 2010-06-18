@@ -24,12 +24,9 @@ import java.net.URLEncoder;
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.PageContext;
 
-import com.untangle.node.mail.web.euv.Constants;
-
 import com.untangle.node.mail.papi.quarantine.InboxRecordCursor;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
 public class QuarantineFunctions
 {

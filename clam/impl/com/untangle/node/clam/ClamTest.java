@@ -19,7 +19,6 @@ package com.untangle.node.clam;
 
 import java.io.File;
 
-import com.untangle.node.virus.VirusScanner;
 import com.untangle.node.virus.VirusScannerResult;
 
 public class ClamTest

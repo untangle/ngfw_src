@@ -20,7 +20,6 @@ package com.untangle.node.mail.web.euv;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,7 +34,6 @@ import com.untangle.node.mail.papi.quarantine.BadTokenException;
 import com.untangle.node.mail.papi.quarantine.InboxAlreadyRemappedException;
 import com.untangle.node.mail.papi.quarantine.InboxIndex;
 import com.untangle.node.mail.papi.quarantine.InboxRecord;
-import com.untangle.node.mail.papi.quarantine.InboxRecordComparator;
 import com.untangle.node.mail.papi.quarantine.InboxRecordCursor;
 import com.untangle.node.mail.papi.quarantine.NoSuchInboxException;
 import com.untangle.node.mail.papi.quarantine.QuarantineUserActionFailedException;

@@ -19,12 +19,6 @@ package com.untangle.node.clam;
 
 import java.io.File;
 import java.lang.Thread;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.node.virus.VirusClientContext;
 import com.untangle.node.virus.VirusClientSocket;

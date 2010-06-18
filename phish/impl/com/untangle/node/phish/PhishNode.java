@@ -56,8 +56,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import static com.untangle.node.util.Ascii.CRLF;
-
 public class PhishNode extends SpamNodeImpl implements Phish
 {
     private final Logger logger = Logger.getLogger(getClass());

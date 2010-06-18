@@ -60,7 +60,6 @@ import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.IPMaddr;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.toolbox.ToolboxManager;

@@ -40,7 +40,6 @@ import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.MimeTypeRule;

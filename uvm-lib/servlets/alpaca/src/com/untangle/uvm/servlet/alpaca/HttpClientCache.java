@@ -18,8 +18,6 @@
 
 package com.untangle.uvm.servlet.alpaca;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
@@ -39,7 +37,6 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 
 /**

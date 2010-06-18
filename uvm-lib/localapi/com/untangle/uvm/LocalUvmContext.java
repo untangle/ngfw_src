@@ -42,7 +42,6 @@ import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.license.LocalLicenseManager;
-import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.RemoteLoggingManager;

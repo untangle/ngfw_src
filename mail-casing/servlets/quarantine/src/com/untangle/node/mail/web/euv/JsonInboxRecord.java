@@ -21,7 +21,6 @@ package com.untangle.node.mail.web.euv;
 import java.util.Date;
 
 import com.untangle.node.mail.papi.quarantine.InboxRecord;
-import com.untangle.node.mail.papi.quarantine.MailSummary;
 
 public class JsonInboxRecord
 {

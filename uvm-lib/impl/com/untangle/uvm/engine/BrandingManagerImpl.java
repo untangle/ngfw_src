@@ -18,11 +18,6 @@
 
 package com.untangle.uvm.engine;
 
-import org.apache.log4j.Logger;
-
-import java.lang.reflect.Constructor;
-
-import com.untangle.node.util.UtLogger;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.NodeState;

@@ -33,7 +33,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.client.RemoteUvmContextFactory;
-import com.untangle.uvm.client.RemoteUvmContext;
 
 
 /**

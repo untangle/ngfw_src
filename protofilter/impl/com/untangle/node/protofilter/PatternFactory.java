@@ -17,7 +17,6 @@
  */
 package com.untangle.node.protofilter;
 
-import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.*;

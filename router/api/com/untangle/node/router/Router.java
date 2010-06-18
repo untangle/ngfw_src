@@ -22,8 +22,6 @@ import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.Node;
 
-import com.untangle.uvm.networking.SetupState;
-
 public interface Router extends Node
 {
     public EventManager<LogEvent> getEventManager();

@@ -20,8 +20,6 @@ package com.untangle.jnetcap;
 
 import java.net.InetAddress;
 
-import java.util.EmptyStackException;
-
 public class NetcapUDPSession extends NetcapSession 
 {
     protected static final int MERGED_DEAD = 0xDEAD00D;

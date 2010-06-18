@@ -18,8 +18,6 @@
 
 package com.untangle.jnetcap;
 
-import java.util.EmptyStackException;
-
 public interface PacketMailbox
 {
     /**

@@ -54,7 +54,6 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.XMLRPCUtil;
-import com.untangle.uvm.node.LocalADConnector;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;

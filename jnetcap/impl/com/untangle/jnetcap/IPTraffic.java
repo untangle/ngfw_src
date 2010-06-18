@@ -19,7 +19,6 @@
 package com.untangle.jnetcap;
 
 import java.net.InetAddress;
-import java.net.Inet4Address;
 
 /* XXX This is not a good name */
 /* This should probably be more generic, but it doesn't exactly apply for TCP, it is mainly only

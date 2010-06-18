@@ -32,7 +32,6 @@ import com.untangle.uvm.servlet.ServletUtils;
 import org.apache.log4j.Logger;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONRPCServlet;
-import org.jabsorb.serializer.impl.JSONBeanSerializer;
 
 /**
  * Initializes the JSONRPCBridge.

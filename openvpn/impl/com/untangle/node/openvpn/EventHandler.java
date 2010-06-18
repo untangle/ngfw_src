@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.vnet.AbstractEventHandler;

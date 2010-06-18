@@ -26,9 +26,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
-
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;

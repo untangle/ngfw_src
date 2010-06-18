@@ -183,7 +183,8 @@ public class RBLChecker {
         return invertedIPAddr;
     }
 
-    private RBLClient createClient(RBLClientContext cContext) {
+    private RBLClient createClient(RBLClientContext cContext) 
+    {
         RBLClient client = new RBLClient(cContext);
         Thread thread = LocalUvmContextFactory.context().newThread(client);
         client.setThread(thread);
@@ -201,14 +202,13 @@ public class RBLChecker {
         clientMap = new HashMap<RBLClient, RBLClientContext>();
 
         RBLClientContext cContext;
-        RBLClient client;
         for (SpamRBL spamRBL : spamRBLList) {
             if (false == spamRBL.getActive()) {
                 logger.debug(spamRBL.getHostname() + " is not active; skipping it");
                 continue;
             }
             cContext = new RBLClientContext(spamRBL.getHostname(), ipAddr, invertedIPAddr);
-            client = createClient(cContext);
+            createClient(cContext);
         }
 
         Object[] cObjects = getClients();

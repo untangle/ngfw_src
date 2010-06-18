@@ -61,7 +61,6 @@ import org.apache.bcel.classfile.StackMap;
 import org.apache.bcel.classfile.StackMapEntry;
 import org.apache.bcel.classfile.Synthetic;
 import org.apache.bcel.classfile.Unknown;
-import org.apache.bcel.classfile.Visitor;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.util.ClassLoaderRepository;
 

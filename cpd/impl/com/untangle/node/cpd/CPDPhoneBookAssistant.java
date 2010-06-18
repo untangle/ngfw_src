@@ -20,9 +20,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.user.PhoneBookAssistant;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.Pulse;
