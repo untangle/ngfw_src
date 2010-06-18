@@ -50,6 +50,9 @@ $(OUTPUT_DIRECTORY)/jabsorb-1.2.2-src: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5 jabs
 $(OUTPUT_DIRECTORY)/AjaxTK-3.1.1_GA_394-src: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5
 
 all: $(packages) ;
+# remove files and directories with spaces in names
+	@find ${OUTPUT_DIRECTORY} -type f -name '* *' -print0 | xargs -0 rm -f
+	@find ${OUTPUT_DIRECTORY} -type d -name '* *' -print0 | xargs -0 rm -rf
 
 ## This verifies that the output directory hasn't been modified, it
 ## should be done before a release.
