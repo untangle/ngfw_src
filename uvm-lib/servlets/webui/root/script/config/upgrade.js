@@ -66,7 +66,8 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                                     var md = upgradeList[i];
 				    var mtype;
 				    var displayName = md.displayNane;
-                                    totalSize+=md.size;
+                    displayName.replace("Untangle",main.getBrandingManager().getCompanyName());
+                    totalSize+=md.size;
 				    // Leave out only libitems
 				    switch (md.type) {
 				    case "LIB_ITEM":
