@@ -1012,9 +1012,11 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         if(!this.progressBar.hidden) {
             return;
         }
-        main.warnOnUpgrades(function() {
-            main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName),"buy");
-        }.createDelegate(this));
+        main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName),"buy");
+	// do not check for upgrades before opening more info (bug #7866)
+	//         main.warnOnUpgrades(function() {
+	//             main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName),"buy");
+	//         }.createDelegate(this));
     },
     // open store page in a new frame
     linkToStoreFn : function(e,action) {
@@ -1024,9 +1026,11 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         if(!this.progressBar.hidden) {
             return;
         }
-        main.warnOnUpgrades(function() {
-            main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName),action);
-        }.createDelegate(this));
+        main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName),action);
+	// do not check for upgrades before opening more info (bug #7866)
+	//         main.warnOnUpgrades(function() {
+	//             main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName),action);
+	//         }.createDelegate(this));
     },
     // install node / uninstall App
     installNodeFn : function(e) {
@@ -1689,11 +1693,14 @@ Ung.MessageManager = {
                                 }else if(main.IEWin != null){
                                     main.IEWin.close();
                                 }
-                                rpc.toolboxManager.installAndInstantiate(function(result, exception) {
+
+                                main.warnOnUpgrades(function() {
+                                    rpc.toolboxManager.installAndInstantiate(function(result, exception) {
                                         if (exception)
                                             Ung.AppItem.updateState(appItemDisplayName, null);
                                         if(Ung.Util.handleException(exception)) return;
-                                }.createDelegate(this),msg.mackageDesc.name, policy);
+                                    }.createDelegate(this),msg.mackageDesc.name, policy);
+                                }.createDelegate(this));
                             }
                         } else if (msg.javaClass.indexOf("MackageUninstallRequest") >= 0) {
                             if(!msg.installed) {

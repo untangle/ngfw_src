@@ -29,8 +29,7 @@ if (!Ung.hasResource["Ung.System"]) {
             this.buildProtocolSettings();
             this.buildRegionalSettings();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings,
-                    this.panelRegionalSettings]);
+            this.buildTabPanel([this.panelSupport, this.panelBackup, this.panelRestore, this.panelProtocolSettings, this.panelRegionalSettings]);
             this.tabs.activate(this.panelSupport);
             if (!this.isHttpLoaded() && !this.isFtpLoaded() && !this.isMailLoaded() ){
                 this.panelProtocolSettings.disable();
@@ -314,17 +313,6 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     });                	
                 }.createDelegate(this),
-                onBackupToHardDisk: function() {
-                    Ext.MessageBox.wait(i18n._("Backing Up..."), i18n._("Please wait"));
-                    var cmp=Ext.getCmp(this.parentId);
-                    rpc.jsonrpc.RemoteUvmContext.localBackup(function (result, exception) {
-                        if(exception) {
-                            Ext.MessageBox.alert(this.i18n._("Backup Failure Warning"),this.i18n._("Error:  The Hard Disk backup procedure failed.  Contact support for further direction.")); 
-                        } else {
-                            Ext.MessageBox.alert(this.i18n._("Backup Success"),this.i18n._("Success:  The Hard Disk backup procedure completed."));
-                        }
-                    }.createDelegate(cmp));
-                },
                 defaults : {
                     xtype : "fieldset",
                     autoHeight : true,
@@ -344,22 +332,6 @@ if (!Ung.hasResource["Ung.System"]) {
                         name: "Backup to File",
                         handler : function() {
                             this.panelBackup.onBackupToFile();
-                        }.createDelegate(this)
-                    }]
-                },{
-                    title : this.i18n._("Backup to Hard Disk"),
-                    items : [{
-                        border : false,
-                    	cls: "description",
-                        html: this.i18n._("You can backup your current system configuration to Hard Disk for later restoration, in the event that you would like to replace new settings with your current settings.") +
-                        		"<br>\n<br>\n" +
-                        		String.format(this.i18n._("After backing up your current system configuration to Hard Disk, you can then restore that configuration through the {0}Backup and Restore Utilities{1}.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into your server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt."),"<b>","</b>")
-                    }],
-                    buttons : [{
-                        text : this.i18n._("Backup to Hard Disk"),
-                        name: "Backup to Hard Disk",
-                        handler : function() {
-                            this.panelBackup.onBackupToHardDisk();
                         }.createDelegate(this)
                     }]
                 }]
@@ -456,15 +428,6 @@ if (!Ung.hasResource["Ung.System"]) {
                             name : "type",
                             value : "restore"
                         }]
-                    }]
-                },{
-                    title : this.i18n._("From Hard Disk"),
-                    items : [{
-                        border : false,
-                        cls: "description",
-                        html: String.format(this.i18n._("After backing up your system configuration, you can restore that configuration through the {0}Recovery Utilities{1} on your server once it is done booting."),"<b>","</b>") +
-                        		"\n<br>\n<br>" +
-                        		String.format(this.i18n._("To access the {0}Recovery Utilities{1}, you must have a monitor and keyboard physically plugged into your server, and then click on the Recovery Utilities toolbar button when it is done booting."),"<b>","</b>")
                     }]
                 }]
             });
