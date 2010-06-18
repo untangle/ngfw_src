@@ -856,7 +856,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     fieldLabel : this.i18n._("Address pool"),
                     store : this.getGroupsStore(),
                     displayField : 'name',
-                    valueField : 'id',
+                    valueField : 'name',
                     editable : false,
                     mode : 'local',
                     triggerAction : 'all',
@@ -1205,6 +1205,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 },{
                     name : 'name'
                 },{
+                    name : 'originalName',
+                    mapping: 'name'
+                },{
                     name : 'address'
                 },{
                     name : 'netmask'
@@ -1533,6 +1536,18 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
             for(var i=0;i<groupList.length;i++) {
                 var groupName = groupList[i].name.toLowerCase();
+
+		var group = groupList[i];
+		if(group.id>=0 && group.name!=group.originalName) {
+                    Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Changing name is not allowed. Create a new group."),
+					 function () {
+					     this.tabs.activate(this.panelClients);
+					 }.createDelegate(this)
+					);
+                    return false;
+		}
+
+
                 if ( groupNames[groupName] != null ) {
                     Ext.MessageBox.alert(this.i18n._('Failed'), String.format(this.i18n._("The group name: \"{0}\" in row: {1} already exists."), groupList[j].name.toLowerCase(), j+1),
                                          function () {
@@ -1556,7 +1571,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             for(var i=0;i<clientList.length;i++) {
                 client = clientList[i];
                 if(client.id>=0 && client.name!=client.originalName) {
-                    Ext.MessageBox.alert(i18n._("Failed"), String.format(this.i18n._("Unable to change name once you've saved. Create a new user. Client name should be {0}."), client.originalName),
+                    Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Changing name is not allowed. Create a new user."),
                         function () {
                             this.tabs.activate(this.panelClients);
                         }.createDelegate(this)
