@@ -782,6 +782,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 },
                 settingsCmp : this,
                 name : 'VPN Clients',
+                sortable : true,
                 // the total records is set from the base settings
                 paginated : false,
                 anchor : "100% 50%",
@@ -832,8 +833,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         return value==null ? this.i18n._("unassigned") : value;
                     }.createDelegate(this)
                 }],
-                // sortField : 'name',
-                // columnsDefaultSortable : true,
+                //sortField : 'name',
+                columnsDefaultSortable : true,
                 plugins : [liveColumn, distributeColumn],
                 // the row input lines used by the row editor window
                 rowEditorInputLines : [{
@@ -980,7 +981,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     })
                 }, distributeColumn],
                 // sortField : 'name',
-                // columnsDefaultSortable : true,
+                columnsDefaultSortable : true,
                 plugins : [liveColumn, distributeColumn],
                 // the row input lines used by the row editor window
                 rowEditorInputLines : [{
@@ -1122,7 +1123,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     })
                 }],
                 // sortField : 'name',
-                // columnsDefaultSortable : true,
+                columnsDefaultSortable : true,
                 plugins : [liveColumn],
                 // the row input lines used by the row editor window
                 rowEditorInputLines : [{
@@ -1245,7 +1246,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     })
                 }, exportDNSColumn],
                 // sortField : 'name',
-                // columnsDefaultSortable : true,
+                columnsDefaultSortable : true,
                 plugins : [liveColumn, exportDNSColumn],
                 // the row input lines used by the row editor window
                 rowEditorInputLines : [{
