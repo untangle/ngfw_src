@@ -16,7 +16,7 @@
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --
 
-DELETE TABLE n_router_dhcp_leases;
-DELETE TABLE n_router_settings;
-DELETE TABLE n_router_redirects;
-DELETE TABLE n_router_dns_hosts;
+DROP TABLE n_router_dhcp_leases;
+DROP TABLE n_router_settings;
+DROP TABLE n_router_redirects;
+DROP TABLE n_router_dns_hosts;
