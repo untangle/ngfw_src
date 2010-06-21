@@ -88,8 +88,7 @@ class Util
     // private methods --------------------------------------------------------
 
     @SuppressWarnings("unchecked")
-	private static void addAnnotatedClasses(ClassLoader cl,
-                                            AnnotationConfiguration cfg)
+	private static void addAnnotatedClasses(ClassLoader cl, AnnotationConfiguration cfg)
     {
         Enumeration<URL> e = null;
 
@@ -130,8 +129,7 @@ class Util
         }
     }
 
-    private static void addAnnotatedClasses(List<File> classDirs, List<JarFile> jfs,
-                                            AnnotationConfiguration cfg)
+    private static void addAnnotatedClasses(List<File> classDirs, List<JarFile> jfs, AnnotationConfiguration cfg)
     {
         List<URL> urls = new ArrayList<URL>();
 

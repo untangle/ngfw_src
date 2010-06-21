@@ -164,13 +164,13 @@ public interface ToolboxManager
      */
     void uninstall(String name) throws MackageUninstallException;
 
-    /**
-     * Updated the system package cache
-     *
-     * @param millis timeout in milliseconds
-     * @exception MackageException when timeout exceeded or an error occurs
-     */
-    void update(long millis) throws MackageException;
+//     /**
+//      * Updated the system package cache
+//      *
+//      * @param millis timeout in milliseconds
+//      * @exception MackageException when timeout exceeded or an error occurs
+//      */
+//     void update(long millis) throws MackageException;
 
     /**
      * Updated the system package cache (default timeout)

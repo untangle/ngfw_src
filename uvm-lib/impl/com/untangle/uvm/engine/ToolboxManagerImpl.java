@@ -87,8 +87,6 @@ import com.untangle.uvm.util.TransactionWork;
  */
 class ToolboxManagerImpl implements ToolboxManager
 {
-    static final int UPDATE_TIMEOUT = 120000;
-
     static final URL TOOLBOX_URL;
 
     private static final Object LOCK = new Object();
@@ -521,44 +519,16 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public void update() throws MackageException
     {
-        update(UPDATE_TIMEOUT);
-    }
-
-    public void update(long millis) throws MackageException
-    {
-        FutureTask<Object> f = new FutureTask<Object>(new Callable<Object>()
-            {
-                public Object call() throws Exception
-                {
-                    updating = true;
-                    execApt("update");
-                    updating = false;
-
-                    return this;
-                }
-            });
-
-        LocalUvmContextFactory.context().newThread(f).start();
-
-        boolean tryAgain;
-        do {
-            tryAgain = false;
-            try {
-                f.get(millis, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException exn) {
-                tryAgain = true;
-            } catch (ExecutionException exn) {
-                Throwable t = exn.getCause();
-                if (t instanceof MackageException) {
-                    throw (MackageException)t;
-                } else {
-                    throw new RuntimeException(t);
-                }
-            } catch (TimeoutException exn) {
-                f.cancel(true);
-                throw new MackageException("ut-apt timed out");
-            }
-        } while (tryAgain);
+        try {
+            // try first with 60 second timeout
+            final int UPDATE_TIMEOUT = 60000;
+            update(UPDATE_TIMEOUT);
+        }
+        catch (MackageException e) {
+            // try again with no timeout
+            logger.warn("ut-apt update exception: " + e + " - trying again...");
+            execApt("update");
+        }
     }
 
     public void upgrade() throws MackageException
@@ -812,6 +782,43 @@ class ToolboxManagerImpl implements ToolboxManager
     }
 
     // package list functions -------------------------------------------------
+
+    private void update(long millis) throws MackageException
+    {
+        FutureTask<Object> f = new FutureTask<Object>(new Callable<Object>()
+            {
+                public Object call() throws Exception
+                {
+                    updating = true;
+                    execApt("update");
+                    updating = false;
+
+                    return this;
+                }
+            });
+
+        LocalUvmContextFactory.context().newThread(f).start();
+
+        boolean tryAgain;
+        do {
+            tryAgain = false;
+            try {
+                f.get(millis, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException exn) {
+                tryAgain = true;
+            } catch (ExecutionException exn) {
+                Throwable t = exn.getCause();
+                if (t instanceof MackageException) {
+                    throw (MackageException)t;
+                } else {
+                    throw new RuntimeException(t);
+                }
+            } catch (TimeoutException exn) {
+                f.cancel(true);
+                throw new MackageException("ut-apt timed out");
+            }
+        } while (tryAgain);
+    }
 
     private void refreshLists()
     {
