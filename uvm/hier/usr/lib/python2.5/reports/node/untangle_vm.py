@@ -456,13 +456,9 @@ ORDER BY evt.time_stamp""", start_date, end_date)
         try:
             curs = conn.cursor()
 
-            curs.execute("""\
+            curs.execute("""
 SELECT hostname_list, static_address
-FROM settings.u_dns_static_host_rule AS rule,
-     settings.n_router_dns_hosts AS list,
-     settings.n_router_settings AS settings
-WHERE rule.rule_id = list.rule_id
-      AND settings.settings_id = list.setting_id""")
+FROM settings.u_dns_static_host_rule""")
 
             while 1:
                 r = curs.fetchone()
