@@ -770,7 +770,6 @@ class Chart:
                     self.__color_num += 1
                     c += 1
             elif display_limit:
-                logger.error("HAHA")
                 if not "others" in self.__datasets:
                     self.__datasets["others"] = 0
                 self.__datasets["others"] += i[1]
