@@ -412,7 +412,7 @@ class Highlight:
         self.__string_template = string_template.replace(self.__name,
                                                          self.__title)
 
-        self.__values = ()
+        self.__values = {}
 
     @property
     def name(self):
@@ -427,7 +427,7 @@ class Highlight:
         except:
             logger.error("could not generate highlight: %s" \
                          % (self.name,), exc_info=True)
-            self.__values = ()
+            self.__values = {}
 
         if not self.__values:
             return None
