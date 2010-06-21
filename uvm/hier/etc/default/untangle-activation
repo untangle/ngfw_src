@@ -25,4 +25,4 @@ case `head -1 $ETC_ISSUE | awk "{ print \\$$i }"` in
   # FIMXE !!!
   *) REPOSITORY=etch SOURCES_LIST=${SOURCES_LIST_NEW} ;;
 esac
-DEFAULT_UNTANGLE_SOURCE="deb http://${KEY_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} stable main premium upstream\ndeb http://${KEY_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} zonda main premium upstream"
+DEFAULT_UNTANGLE_SOURCE="deb http://${KEY_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} stable main premium upstream\ndeb http://${KEY_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} silverado main premium upstream"
