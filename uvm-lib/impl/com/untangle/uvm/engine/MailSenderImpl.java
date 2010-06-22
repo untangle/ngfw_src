@@ -116,7 +116,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
         "dc_use_split_config='false'\n" + 
         "dc_hide_mailname='true'\n" + 
         "dc_mailname_in_oh='true'\n" +
-        "AUTH_CLIENT_ALLOW_NOTLS_PASSWORDS=1";
+        "AUTH_CLIENT_ALLOW_NOTLS_PASSWORDS='1'\n";
 
     private static final Object LOCK = new Object();
 
