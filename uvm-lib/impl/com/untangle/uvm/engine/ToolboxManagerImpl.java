@@ -519,15 +519,17 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public void update() throws MackageException
     {
-        try {
-            // try first with 60 second timeout
-            final int UPDATE_TIMEOUT = 60000;
-            update(UPDATE_TIMEOUT);
-        }
-        catch (MackageException e) {
-            // try again with no timeout
-            logger.warn("ut-apt update exception: " + e + " - trying again...");
-            execApt("update");
+        int maxtries = 4;
+        for (int i=0; i<maxtries; i++) {
+            try {
+                //timeout of 15 seconds * attempt# (15,30,45,60)
+                update(15000*(i+1));
+                return;
+            }
+            catch (MackageException e) {
+                // try again with no timeout
+                logger.warn("ut-apt update exception: " + e + " - trying again...");
+            }
         }
     }
 
