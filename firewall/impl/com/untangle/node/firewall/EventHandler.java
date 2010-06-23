@@ -132,7 +132,11 @@ class EventHandler extends AbstractEventHandler
 
             /* If necessary log the event */
             if (log) {
-                request.attach(new FirewallEvent(request.pipelineEndpoints(), reject, ruleIndex));
+                FirewallEvent fwe = new FirewallEvent(request.pipelineEndpoints(), 
+                                                      reject, 
+                                                      ruleIndex);
+                fwe.setRuleId(rule.getId());
+                request.attach(fwe);
 		node.incrementLogCount(); 
             }
 
@@ -149,8 +153,12 @@ class EventHandler extends AbstractEventHandler
 
             /* If necessary log the event */
             if (log) {
-                request.attach(new FirewallEvent(request.pipelineEndpoints(), reject, ruleIndex));
-		node.incrementLogCount(); 
+                FirewallEvent fwe = new FirewallEvent(request.pipelineEndpoints(), 
+                                                      reject, 
+                                                      ruleIndex);
+                fwe.setRuleId(rule.getId());
+                request.attach(fwe);
+		node.incrementLogCount();
             }
         }
 

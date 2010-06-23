@@ -129,6 +129,10 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
     public void setFirewallRuleList(final List<FirewallRule> rules)
     {
+        for (FirewallRule fwr : rules) {
+            fwr.setId(null);
+        }
+
         TransactionWork tw = new TransactionWork() {
             public boolean doWork(Session s) {
                 settings.setFirewallRuleList(rules);
@@ -148,6 +152,10 @@ public class FirewallImpl extends AbstractNode implements Firewall
     public void updateAll(final FirewallBaseSettings baseSettings,
     		final List<FirewallRule> rules)
     {
+        for (FirewallRule fwr : rules) {
+            fwr.setId(null);
+        }
+
         TransactionWork tw = new TransactionWork() {
             public boolean doWork(Session s) {
                 settings.setBaseSettings(baseSettings);

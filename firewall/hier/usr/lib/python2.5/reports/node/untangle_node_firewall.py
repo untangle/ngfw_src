@@ -61,6 +61,7 @@ class Firewall(Node):
                                   "count(CASE WHEN NOT firewall_was_blocked ISNULL THEN 1 ELSE null END)"))
 
         ft.dimensions.append(Column('firewall_rule_index', 'integer'))
+        ft.dimensions.append(Column('firewall_rule_description', 'text'))
 
     def get_toc_membership(self):
         return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
@@ -104,6 +105,10 @@ ALTER TABLE reports.sessions ADD COLUMN firewall_was_blocked boolean""")
             sql_helper.run_sql("""
 ALTER TABLE reports.sessions ADD COLUMN firewall_rule_index integer""")
         except: pass
+        try:
+            sql_helper.run_sql("""
+ALTER TABLE reports.sessions ADD COLUMN firewall_rule_description text""")
+        except: pass
 
         sd = DateFromMx(sql_helper.get_update_info('sessions[firewall]',
                                                    start_date))
@@ -113,11 +118,14 @@ ALTER TABLE reports.sessions ADD COLUMN firewall_rule_index integer""")
         try:
             sql_helper.run_sql("""\
 UPDATE reports.sessions
-SET firewall_was_blocked = was_blocked, firewall_rule_index = rule_index
-FROM events.n_firewall_evt
+SET firewall_was_blocked = was_blocked,
+    firewall_rule_index = rule_index,
+    firewall_rule_description = description
+FROM events.n_firewall_evt, settings.n_firewall_rule
 WHERE reports.sessions.time_stamp >= %s
-  AND reports.sessions.time_stamp < %s
-  AND reports.sessions.pl_endp_id = events.n_firewall_evt.pl_endp_id""",
+AND reports.sessions.time_stamp < %s
+AND n_firewall_evt.rule_id = n_firewall_rule.rule_id
+AND reports.sessions.pl_endp_id = events.n_firewall_evt.pl_endp_id""",
                                (sd, ed), connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('sessions[firewall]', ed,
@@ -375,7 +383,8 @@ class TopTenBlockingRulesByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT firewall_rule_index, count(*) as hits_sum
+SELECT firewall_rule_index || ' - ' || firewall_rule_description,
+       count(*) as hits_sum
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 AND firewall_blocks > 0
@@ -386,7 +395,7 @@ AND firewall_rule_index IS NOT NULL"""
         elif user:
             query += " AND uid = %s"
 
-        query = query + " GROUP BY firewall_rule_index ORDER BY hits_sum DESC"
+        query = query + " GROUP BY firewall_rule_index, firewall_rule_description ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
@@ -492,6 +501,7 @@ class FirewallDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv = rv + [ColumnDesc('firewall_rule_index', _('Rule Applied')),
+                   ColumnDesc('firewall_rule_description', _('Rule Description')),
                    ColumnDesc('firewall_was_blocked', _('Action')),
                    ColumnDesc('c_server_addr', _('Destination IP')),
                    ColumnDesc('c_server_port', _('Destination Port')),
@@ -511,7 +521,7 @@ class FirewallDetail(DetailSection):
         if not user:
             sql = sql + "uid, "
 
-        sql = sql + ("""firewall_rule_index, firewall_was_blocked::text, host(c_server_addr), c_server_port, host(c_client_addr), c_client_port
+        sql = sql + ("""firewall_rule_index, firewall_rule_description, firewall_was_blocked::text, host(c_server_addr), c_server_port, host(c_client_addr), c_client_port
 FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s
 AND NOT firewall_rule_index IS NULL""" % (DateFromMx(start_date),

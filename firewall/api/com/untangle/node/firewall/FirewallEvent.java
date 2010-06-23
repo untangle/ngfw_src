@@ -43,6 +43,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
 public class FirewallEvent extends PipelineEvent implements Serializable
 {
     private int     ruleIndex;
+    private long    ruleId;
     private boolean wasBlocked;
 
     // Constructors
@@ -86,6 +87,22 @@ public class FirewallEvent extends PipelineEvent implements Serializable
     public void setRuleIndex( int ruleIndex )
     {
         this.ruleIndex = ruleIndex;
+    }
+
+    /**
+     * Rule ID, when this event was triggered.
+     *
+     * @return current rule ID for the rule that triggered this event.
+     */
+    @Column(name="rule_id", nullable=true)
+    public long getRuleId()
+    {
+        return ruleId;
+    }
+
+    public void setRuleId( long ruleId )
+    {
+        this.ruleId = ruleId;
     }
 
     // Syslog methods -----------------------------------------------------

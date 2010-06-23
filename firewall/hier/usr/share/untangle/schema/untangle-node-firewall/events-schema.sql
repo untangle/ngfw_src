@@ -26,6 +26,7 @@ CREATE TABLE events.n_firewall_evt (
     pl_endp_id int8,
     was_blocked bool,
     rule_index int4,
+    rule_id int8,
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
