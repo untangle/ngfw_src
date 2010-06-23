@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package com.untangle.uvm.reports.servlet.jabsorb;
+package com.untangle.uvm.reports.jabsorb;
 
 import java.util.Date;
 import java.util.List;
