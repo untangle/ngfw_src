@@ -9,11 +9,6 @@ function getWinHeight(){
     return window.innerHeight;
 }
 
-Ext.onReady(function()
-            {
-              reports = new Ung.Reports({});
-            });
-
 function handleTimeout(ex)
 {
   if (ex instanceof JSONRpcClient.Exception) {
@@ -81,6 +76,8 @@ Ung.Reports = Ext.extend(Object,{
     breadcrumbs: null,
     //progress bar for various actions
     progressBar : null,
+    //print view for printing summary page
+    printView : false,
 
     appNames: { },
 
@@ -92,7 +89,7 @@ Ung.Reports = Ext.extend(Object,{
     init : function()
     {
         this.initSemaphore = 3;
-        this.progressBar = Ext.MessageBox;
+        this.progressBar = Ext.MessageBox;                
         this.treeNodes =[];
         rpc = {};
         rpc.jsonrpc = new JSONRpcClient("/reports/JSON-RPC");
@@ -213,7 +210,49 @@ Ung.Reports = Ext.extend(Object,{
         if (this.initSemaphore != 0) {
             return;
         }
-        this.startApplication();
+        if(this.printView===true){
+            this.startApplicationPrintView();
+        }else{
+            this.startApplication();
+        }
+    },
+    startApplicationPrintView : function(){
+        var panel = new Ext.Panel({
+            renderTo : 'base',
+            cls : "base-container",
+            layout : 'fit',
+            id : 'report-details',
+            height : getWinHeight()-80,
+            width:740,
+            cls:'full-height', 
+            autoScroll : true,
+            items : [{
+                    title : 'Report Details&nbsp;<span id="breadcrumbs" class="breadcrumbs"></span>',
+                    id : 'report-details',
+                    layout:"fit",
+                    region : "center",
+                    autoScroll : true,
+                    collapsible : false,
+                    split : false,
+                    margins : '2 2 0 2',
+                    cmargins : '2 2 2 2',
+                    width : 700,
+                    defaults: { border: false },
+                    cls:'full-height',                     
+                    items : [{ html:"" }],
+                    listeners : {
+                        'render' : function(){
+
+                        }
+                    }
+            }]
+        });        
+        //reports.changeDate(this.reportsDate.time,this.numDays);
+        //reports.selectedApplication = this.app;
+        reports.breadcrumbs=[];
+        rpc.drilldownType = null;
+        rpc.drilldownValue = null;
+        reports.getApplicationData(reports.selectedApplication, reports.numDays);                    
     },
     startApplication : function()
     {
@@ -611,7 +650,9 @@ Ung.Reports = Ext.extend(Object,{
 
             if (item.dt.time == date.time && item.numDays == numDays) {
                 //Ext.getCmp('report-day-menu').setText(item.text);
-                Ext.getCmp('report-date-range').setText(reports.getDateRangeText(item));
+                if(Ext.getCmp('report-date-range')){
+                    Ext.getCmp('report-date-range').setText(reports.getDateRangeText(item));
+                }
                 found = true;
                 break;
             }
@@ -675,8 +716,11 @@ Ung.Reports = Ext.extend(Object,{
         Ung.Util.loadModuleTranslations( nodeName, i18n,
              function(){
                  try{
+                                     
                      reports.reportDetails = new Ung.ReportDetails({reportType: nodeName});
+                                          
                      reports.progressBar.hide();
+                     
                  }catch(e){
                      alert(e.message);
                  }
@@ -691,17 +735,20 @@ Ung.Reports = Ext.extend(Object,{
             return;
         }
         rpc.applicationData=result;
-        reports.breadcrumbs.push({ text: this.selectedNode.attributes.text,
-                                   handler: this.getApplicationData.createDelegate(this, [nodeName,numDays]),
-                                   drilldownType : rpc.drilldownType,
-                                   drilldownValue : rpc.drilldownValue                                   
-                                 });
+        if(this.selectedNode){
+            reports.breadcrumbs.push({ text: this.selectedNode.attributes.text,
+                                       handler: this.getApplicationData.createDelegate(this, [nodeName,numDays]),
+                                       drilldownType : rpc.drilldownType,
+                                       drilldownValue : rpc.drilldownValue                                   
+                                     });
+        }                                
     
         Ung.Util.loadModuleTranslations( nodeName, i18n,
              function(){
                  try{
                      reports.reportDetails = new Ung.ReportDetails({reportType: nodeName});
                      reports.progressBar.hide();
+                     if(reports.printView){window.setTimeout(function(){window.print()},1000)} //hack but close enough , could not find a reliable event that would fire after template is displayed.                    
                  }catch(e){
                      alert(e.message);
                  }
@@ -1072,9 +1119,23 @@ Ung.ReportDetails = Ext.extend(Object, {
 
     buildSummarySection: function (appName, section) {
         var items = [];
-
+        //add the print button
+        if(reports.printView===false){
+            var printargs = [
+                                ['rdate',reports.reportsDate.time].join('='),
+                                ['duration',reports.numDays].join('='),
+                                ['aname',appName].join('='),
+                            ].join('&');
+                            console.log(printargs);
+            items.push({
+                html:'<a target="_print" href="?'+printargs+'" class="print small-right-margin">'+i18n._('Print')+'</a>',
+                colspan : 2        
+            });
+        }
+        
+        
         for (var i = 0; i < section.summaryItems.list.length; i++) {
-            var summaryItem = section.summaryItems.list[i];
+            var summaryItem = section.summaryItems.list[i];       
 
 	    if (summaryItem.stringTemplate) {
     		str = this.getHighlightHTML(summaryItem,false)
@@ -1198,7 +1259,7 @@ Ung.ReportDetails = Ext.extend(Object, {
             })
                       );
 	    }
-        }
+        }        
         return new Ext.Panel({
             title : section.title,
             layout:'table',
@@ -1211,7 +1272,9 @@ Ung.ReportDetails = Ext.extend(Object, {
                 columns: 2
             },
             items : items
+
         });
+       
     },
 
     buildDetailSection: function (appName, section)

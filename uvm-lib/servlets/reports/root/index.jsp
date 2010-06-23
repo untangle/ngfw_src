@@ -61,7 +61,6 @@ if (!reportsAvailable || !reportingEnabled) {
  </div></div></div><div class="main-bot-left"></div><div class="main-bot-right"></div>
  <!-- Box End -->
 </div>
-
 </body>
 </html>
 
@@ -87,9 +86,22 @@ if (!reportsAvailable || !reportingEnabled) {
     <script type="text/javascript" src="script/reports.js?s=<%=buildStamp%>"></script>
 
     <script type="text/javascript">
+        <%
+        String selectedApplication = request.getParameter("aname");
+        String reportsDate = request.getParameter("rdate");
+        String numDays = request.getParameter("duration");
+        String args = "";
+        if(selectedApplication != null && reportsDate != null && numDays != null){
+            args = "selectedNode:{attributes:{name:'"+selectedApplication+"',text:'Summary'}},printView:true,selectedApplication:'"+selectedApplication+ "',reportsDate:{javaclass:'java.util.Date',time:"+reportsDate +"},numDays:"+numDays+"";
+        }
+        %>
+        Ext.onReady(function(){
+            reports = new Ung.Reports({<%= args %>});
+        });        
     </script>
  </head>
 <body>
+
 <div id="base">
 </div>
 <div id="window-container"></div>
