@@ -336,7 +336,9 @@ def get_averaged_query(sums, table_name, start_date, end_date,
                        extra_where = [],
                        avgs = [],
                        extra_fields = [],
-                       time_field = DEFAULT_TIME_FIELD, time_interval = 60):
+                       time_field = DEFAULT_TIME_FIELD,
+                       time_interval = 60,
+                       debug = False):
 #     time_interval = time.mktime(end_date.timetuple()) - time.mktime(start_date.timetuple())
 #     time_interval = time_interval / slices
 
@@ -377,7 +379,8 @@ GROUP by time"""
     query += """
 ORDER BY time ASC"""
 
-#    logger.debug((query % params_regular) % params_to_quote)
+    if debug:
+        logger.debug((query % params_regular) % params_to_quote)
     
     return query % params_regular, params_to_quote
 
