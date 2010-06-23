@@ -363,9 +363,9 @@ if (!Ung.hasResource["Ung.System"]) {
                         success : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
                             Ung.MessageManager.stop();
-                            Ext.MessageBox.alert(cmp.i18n._("Restore Succes"),
-                            String.format( cmp.i18n._("Success:  The Local File restore procedure completed. You will be redirected to the start page now. The {0} Server will restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."), main.getBrandingManager().getCompanyName()),
-                                Ung.Util.goToStartPage);
+                            Ext.MessageBox.alert(cmp.i18n._("Restore In Progress"),
+						 cmp.i18n._("The restore procedure is running. The server may be unavailable during this time. Once the process is complete you will be able to log in again."), 
+						 Ung.Util.goToStartPage);
                             },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
