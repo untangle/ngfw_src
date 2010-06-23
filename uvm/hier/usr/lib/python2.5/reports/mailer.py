@@ -213,7 +213,7 @@ def __get_branding_info():
         curs = conn.cursor()
 
         curs.execute("""\
-SELECT company_name FROM settings.uvm_branding_settings""")
+SELECT company_name FROM settings.n_branding_settings""")
 
         row = curs.fetchone()
 
