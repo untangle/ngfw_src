@@ -17,6 +17,7 @@
 import gettext
 import logging
 import mx
+import reports.colors as colors
 import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
@@ -188,48 +189,6 @@ class DailyRules(reports.Graph):
         reports.Graph.__init__(self, 'sessions', _('Sessions'))
 
     @sql_helper.print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
-
-        avg_max_query = """\
-SELECT avg(sessions_logged) as avg_sessions_logged, max(sessions_logged) as max_sessions_logged,
-       avg(sessions_blocked) as avg_sessions_blocked, max(sessions_blocked) as max_sessions_blocked
-FROM (select date_trunc('day', time_stamp) AS day,
-      count(CASE WHEN firewall_rule_index IS NOT NULL THEN 1 ELSE null END) AS sessions_logged,
-      count(CASE WHEN firewall_was_blocked THEN 1 ELSE null END) AS sessions_blocked
-      FROM reports.sessions
-      WHERE time_stamp >= %s AND time_stamp < %s"""
-
-        if host:
-            avg_max_query = avg_max_query + " AND hname = %s"
-        elif user:
-            avg_max_query = avg_max_query + " AND uid = %s"
-
-        avg_max_query = avg_max_query + " GROUP BY day) AS foo"
-
-        conn = sql_helper.get_connection()
-        try:
-            lks = []
-
-            curs = conn.cursor()
-            if host:
-                curs.execute(avg_max_query, (one_week, ed, host))
-            elif user:
-                curs.execute(avg_max_query, (one_week, ed, user))
-            else:
-                curs.execute(avg_max_query, (one_week, ed))
-            r = curs.fetchone()
-        finally:
-            conn.commit()
-
-        return lks
-
-    @sql_helper.print_timing
     def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
@@ -263,7 +222,9 @@ FROM (select date_trunc('day', time_stamp) AS day,
                                                  start_date,
                                                  end_date,
                                                  extra_where = extra_where,
-                                                 time_interval = time_interval)
+                                                 time_interval = time_interval,
+                                                 time_field = 'time_stamp')
+            curs.execute(q, h)
 
             dates = []
             logs = []
@@ -283,19 +244,19 @@ FROM (select date_trunc('day', time_stamp) AS day,
                 blocks = [0,]
                 
             rp = sql_helper.get_required_points(start_date, end_date,
-                                                mx.DateTime.DateTimeDelta(1))
+                                                mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
 
-            ks = reports.KeyStatistic(_('Avg'), sum(logs)/len(rp),
-                                      _('logged')+'/'+_(unit))
+            ks = reports.KeyStatistic(_('Avg Blocked'), sum(blocks)/len(rp),
+                                      _('blocks')+'/'+_(unit))
             lks.append(ks)
-            ks = reports.KeyStatistic(_('Max'), max(logs),
-                                      _('logged')+'/'+_(unit))
+            ks = reports.KeyStatistic(_('Max Blocked'), max(blocks),
+                                      _('blocks')+'/'+_(unit))
             lks.append(ks)
-            ks = reports.KeyStatistic(_('Avg'), sum(blocks)/len(rp),
-                                      _('blocked')+'/'+_(unit))
+            ks = reports.KeyStatistic(_('Avg Logged'), sum(logs)/len(rp),
+                                      _('logs')+'/'+_(unit))
             lks.append(ks)
-            ks = reports.KeyStatistic(_('Max'), max(blocks),
-                                      _('blocked')+'/'+_(unit))
+            ks = reports.KeyStatistic(_('Max Logged'), max(logs),
+                                      _('logs')+'/'+_(unit))
             lks.append(ks)
 
             plot = reports.Chart(type=reports.STACKED_BAR_CHART,
@@ -305,8 +266,10 @@ FROM (select date_trunc('day', time_stamp) AS day,
                                  major_formatter=formatter,
                                  required_points=rp)
 
-            plot.add_dataset(dates, blocks, label=_('blocked'))
-            plot.add_dataset(dates, logs, label=_('logged'))
+            plot.add_dataset(dates, blocks, label=_('blocked'),
+                             color=colors.badness)
+            plot.add_dataset(dates, logs, label=_('logged'),
+                             color=colors.detected)
 
         finally:
             conn.commit()
