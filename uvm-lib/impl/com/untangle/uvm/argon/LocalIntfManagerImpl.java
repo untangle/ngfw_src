@@ -44,11 +44,9 @@ import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 /* Manager for controlling argon -> netcap interface matching */
 class LocalIntfManagerImpl implements LocalIntfManager
 {
-    private static final File INTF_ORDER_FILE
-        = new File("/etc/untangle-net-alpaca/interface.properties");
+    private static final File INTF_ORDER_FILE = new File("/etc/untangle-net-alpaca/interface.properties");
 
-    private static final String DEFAULT_INTERFACE_ORDER =
-        "External:eth0:1,DMZ:eth2:3,VPN:tun0:8,Internal:eth1:2";
+    private static final String DEFAULT_INTERFACE_ORDER = "External:eth0:1,DMZ:eth2:3,VPN:tun0:8,Internal:eth1:2";
 
     private ArgonInterfaceConverter intfConverter = null;
 
@@ -249,8 +247,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
                     String osName = d[1];
                     l.add(argon);
 
-                    argonInterfaceList.add(new ArgonInterface(osName, null, argon, netcap, userString, 
-                                                              isWanInterface));
+                    argonInterfaceList.add(new ArgonInterface(osName, null, argon, netcap, userString, isWanInterface));
                 } catch (NumberFormatException exn) {
                     logger.warn("skiping bad interface description: "
                                 + ifd);

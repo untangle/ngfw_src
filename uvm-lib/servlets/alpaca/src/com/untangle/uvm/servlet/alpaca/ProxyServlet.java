@@ -65,7 +65,7 @@ public class ProxyServlet extends HttpServlet
 
     public ProxyServlet()
     {
-        clientCache = new HttpClientCache("localhost");
+        clientCache = new HttpClientCache();
     }
 
     // HttpServlet methods ----------------------------------------------------

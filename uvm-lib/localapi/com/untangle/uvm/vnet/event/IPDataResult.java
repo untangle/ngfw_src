@@ -51,14 +51,12 @@ public class IPDataResult
 
     public static final IPDataResult PASS_THROUGH = new IPDataResult(TYPE_PASS_THROUGH);
 
-
     /**
      * Describe constant <code>DO_NOT_PASS</code> here.  Also means "send nothing more"
      * when used with writable events.
      */
     public static final IPDataResult DO_NOT_PASS = new IPDataResult(null, null, null);
     public static final IPDataResult SEND_NOTHING = DO_NOT_PASS;
-
 
     // No access to this since we require using the immutable singletons for efficiency.
     private byte code = TYPE_NORMAL;
@@ -70,7 +68,8 @@ public class IPDataResult
     private ByteBuffer[] bufsToClient = null;
     private ByteBuffer readBuffer     = null;
 
-    protected IPDataResult(byte code) {
+    protected IPDataResult(byte code) 
+    {
         this.code = code;
     }
 
@@ -94,44 +93,26 @@ public class IPDataResult
      * @param bufsToServer a <code>ByteBuffer[]</code> giving bytes to be written to the server
      * @param readBuffer a <code>ByteBuffer</code> giving the buffer to be further read into.
      */
-    protected IPDataResult(ByteBuffer[] bufsToClient,
-                           ByteBuffer[] bufsToServer,
-                           ByteBuffer readBuffer) {
+    protected IPDataResult(ByteBuffer[] bufsToClient, ByteBuffer[] bufsToServer, ByteBuffer readBuffer) 
+    {
         this.bufsToClient = bufsToClient;
         this.bufsToServer = bufsToServer;
         this.readBuffer = readBuffer;
     }
 
-    public ByteBuffer[] bufsToClient() {
+    public ByteBuffer[] bufsToClient() 
+    {
         return bufsToClient;
     }
 
-    public ByteBuffer[] bufsToServer() {
+    public ByteBuffer[] bufsToServer() 
+    {
         return bufsToServer;
     }
 
-    public ByteBuffer readBuffer() {
+    public ByteBuffer readBuffer() 
+    {
         return readBuffer;
     }
-
-    /*
-     * Streaming now handled in IPSession.
-     *
-
-     protected IPDataResult(IPStreamer clientStreamer, IPStreamer serverStreamer)
-     {
-     this.clientStreamer = clientStreamer;
-     this.serverStreamer = serverStreamer;
-     }
-
-     public IPStreamer clientStreamer() {
-     return clientStreamer;
-     }
-
-     public IPStreamer serverStreamer() {
-     return serverStreamer;
-     }
-
-    */
 }
 

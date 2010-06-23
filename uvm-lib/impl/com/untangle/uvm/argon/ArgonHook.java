@@ -208,8 +208,7 @@ abstract class ArgonHook implements Runnable
                     releasedSessionList.add( session );
                 }
 
-                // Deliver the super secret sauce (if we completed)
-                // (everyone needs the secret sauce)
+                // Complete (if we completed both server and client)
                 if (endpoints != null) ((SessionImpl)session).complete();
             }
 
@@ -254,7 +253,6 @@ abstract class ArgonHook implements Runnable
             String message = e.getMessage();
             if ( message == null ) message = "";
 
-            /* XXXX A janky way of checking if this is an interface conversion error */
             if ( message.startsWith( "Invalid netcap interface" )) {
                 try {
                     logger.warn( "invalid interface: " + sessionGlobalState.netcapSession());
@@ -280,7 +278,9 @@ abstract class ArgonHook implements Runnable
             /* Let the pipeline foundry know */
             if (clientSide != null) {
                 /* Don't log endpoints that don't complete properly */
-                if (( endpoints != null ) && ( endpoints.getCClientAddr() == null )) endpoints = null;
+                if (( endpoints != null ) && ( endpoints.getCClientAddr() == null ))
+                    endpoints = null;
+                /* log and destroy the session */
                 pipelineFoundry.destroy(clientSide, serverSide, endpoints, sessionGlobalState.user());
             }
 

@@ -34,8 +34,6 @@ import com.untangle.uvm.util.ServletStreamer;
 @SuppressWarnings("serial")
 public class ImageInstaller extends HttpServlet
 {
-    private final Logger logger = Logger.getLogger( this.getClass());
-
     private static final String DOWNLOAD_TYPE = "image/png";
     private static final String PARAMETER_LIBITEM = "libitem";
     private static final String PARAMETER_ACTION = "action";

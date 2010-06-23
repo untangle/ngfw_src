@@ -42,14 +42,15 @@ import java.util.Iterator;
  * the whole thing is fake, as we have access to the entire
  * set.
  */
-public final class InboxRecordCursor implements Iterable<InboxRecord> {
+public final class InboxRecordCursor implements Iterable<InboxRecord> 
+{
     private InboxRecord[] m_records;
     private InboxRecordComparator.SortBy m_sortedBy;
     private int m_thisStartingWith;
     private int m_firstID;
     private int m_lastID;
     private int m_windowSz;
-    private int m_nextWindowSz;
+    //unused private int m_nextWindowSz; 
     private int m_prevWindowSz;
     private long m_inboxCount;
     private long m_inboxSize;
@@ -76,7 +77,7 @@ public final class InboxRecordCursor implements Iterable<InboxRecord> {
         m_firstID = firstID;
         m_lastID = lastID;
         m_windowSz = windowSz;
-        m_nextWindowSz = nextWindowSz;
+        //m_nextWindowSz = nextWindowSz;
         m_prevWindowSz = prevWindowSz;
         m_records = records;
         m_inboxCount = inboxCount;

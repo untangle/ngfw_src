@@ -63,7 +63,7 @@ public class EventHandler extends AbstractEventHandler
 
         public String protocol;
 
-        private Pipeline pipeline;
+        //private Pipeline pipeline;
     }
 
     EventHandler( ProtoFilterImpl node )
@@ -81,7 +81,7 @@ public class EventHandler extends AbstractEventHandler
         // We now don't allocate memory until we need it.
         sessInfo.clientBuffer = null;
         sessInfo.serverBuffer = null;
-        sessInfo.pipeline = LocalUvmContextFactory.context().pipelineFoundry().getPipeline(sess.id());
+        //sessInfo.pipeline = LocalUvmContextFactory.context().pipelineFoundry().getPipeline(sess.id());
         sess.attach(sessInfo);
     }
 
@@ -93,7 +93,7 @@ public class EventHandler extends AbstractEventHandler
         // We now don't allocate memory until we need it.
         sessInfo.clientBuffer = null;
         sessInfo.serverBuffer = null;
-        sessInfo.pipeline = LocalUvmContextFactory.context().pipelineFoundry().getPipeline(sess.id());
+        //sessInfo.pipeline = LocalUvmContextFactory.context().pipelineFoundry().getPipeline(sess.id());
         sess.attach(sessInfo);
     }
 

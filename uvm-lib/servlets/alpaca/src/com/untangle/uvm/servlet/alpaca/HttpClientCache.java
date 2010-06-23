@@ -55,14 +55,12 @@ class HttpClientCache
     private final Map<Reference<HttpClient>, String> keys = new HashMap<Reference<HttpClient>, String>();
     private final ReferenceQueue queue = new ReferenceQueue<HttpClient>();
     private final Random random = new Random();
-    private final String cookieDomain;
     private final Logger logger = Logger.getLogger(getClass());
 
-    HttpClientCache(String cookieDomain)
+    HttpClientCache()
     {
-        this.cookieDomain = cookieDomain;
     }
-
+  
     HttpClient getClient(HttpServletRequest req, HttpServletResponse resp)
     {
         HttpSession s = req.getSession();
