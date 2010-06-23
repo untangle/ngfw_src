@@ -49,7 +49,6 @@ class SyslogBuilderImpl implements SyslogBuilder
     private final Logger logger = Logger.getLogger(getClass());
 
     private boolean first = true;
-    private boolean inSection = false;
 
     // public methods ---------------------------------------------------------
 

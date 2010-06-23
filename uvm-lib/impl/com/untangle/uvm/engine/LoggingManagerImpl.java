@@ -41,11 +41,7 @@ import com.untangle.uvm.util.TransactionWork;
  */
 class RemoteLoggingManagerImpl implements RemoteLoggingManager
 {
-    private static final Object LOCK = new Object();
-    private static final boolean LOGGING_DISABLED
-        = Boolean.parseBoolean(System.getProperty("uvm.logging.disabled"));
-
-    private static RemoteLoggingManagerImpl LOGGING_MANAGER;
+    private static final boolean LOGGING_DISABLED = Boolean.parseBoolean(System.getProperty("uvm.logging.disabled"));
 
     private final List<String> initQueue = new LinkedList<String>();
     private final LogWorker logWorker = new LogWorker(this);

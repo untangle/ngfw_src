@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -51,8 +50,6 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
     private final ListEventFilter<E> eventFilter;
 
     private final LinkedList<E> cache = new LinkedList<E>();
-
-    private final Logger logger = Logger.getLogger(getClass());
 
     private boolean cold = true;
 

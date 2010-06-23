@@ -104,7 +104,6 @@ public final class SimpleExec
 
 
     private static final String[] EMPTY_ARRAY = new String[0];
-    private final Logger m_logger;
     private final long m_maxTime;
     private volatile boolean m_wasTimeout = false;
     private volatile boolean m_done = false;
@@ -116,12 +115,9 @@ public final class SimpleExec
     private InputStream m_stdOut;
     private InputStream m_stdErr;
 
-    private SimpleExec(long maxTime,
-                       Logger logAs)
+    private SimpleExec(long maxTime, Logger logAs)
     {
 
-
-        m_logger = logAs==null?Logger.getLogger(SimpleExec.class):logAs;
         m_maxTime = maxTime;
     }
 

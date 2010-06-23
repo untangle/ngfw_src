@@ -37,40 +37,38 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.untangle.uvm.vnet.Pipeline;
-
 /**
  * Class to assemble a TokenResult incrementally.  Handles the
  * impendence mis-match between Tokens and TokenStreamers.  The order
  * in-which tokens/streamers are added is maintained in the {@link
  * #getTokenResult returned result}.
  */
-public class TokenResultBuilder {
-
+public class TokenResultBuilder 
+{
     private List<Token> m_forClientTokens;
     private List<Token> m_forServerTokens;
 
     private DynTokenStreamer m_forClientStreamer;
     private DynTokenStreamer m_forServerStreamer;
 
-    private Pipeline m_pipeline;
-
-    public TokenResultBuilder(Pipeline pipeline) {
-        m_pipeline = pipeline;
+    public TokenResultBuilder() 
+    {
     }
 
     /**
      * Add a token intended to go from
      * server to client
      */
-    public void addTokenForClient(Token token) {
+    public void addTokenForClient(Token token) 
+    {
         addToken(token, true);
     }
     /**
      * Add a token intended to go from
      * client to server
      */
-    public void addTokenForServer(Token token) {
+    public void addTokenForServer(Token token) 
+    {
         addToken(token, false);
     }
     /**

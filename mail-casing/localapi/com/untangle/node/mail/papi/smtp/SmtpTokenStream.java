@@ -50,8 +50,6 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.token.TokenResultBuilder;
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
 
 
@@ -77,7 +75,6 @@ public class SmtpTokenStream
 
     private SmtpTokenStreamHandler m_handler;
     private boolean m_passthru = false;
-    private final Pipeline m_pipeline;
     private boolean m_clientTokensEnabled = true;
     private List<Token> m_queuedClientTokens = new ArrayList<Token>();
     private long m_clientTimestamp;
@@ -86,13 +83,15 @@ public class SmtpTokenStream
     /**
      * Note that withouth a handler, everything just passes through
      */
-    public SmtpTokenStream(TCPSession session) {
+    public SmtpTokenStream(TCPSession session) 
+    {
         this(session, null);
     }
-    public SmtpTokenStream(TCPSession session, SmtpTokenStreamHandler handler) {
+    
+    public SmtpTokenStream(TCPSession session, SmtpTokenStreamHandler handler) 
+    {
         super(session);
         setHandler(handler);
-        m_pipeline = LocalUvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
         updateTimestamps(true, true);
     }
 
@@ -177,7 +176,7 @@ public class SmtpTokenStream
 
         updateTimestamps(true, false);
 
-        TokenResultBuilder trb = new TokenResultBuilder(m_pipeline);
+        TokenResultBuilder trb = new TokenResultBuilder();
 
         //First add the token, to preserve ordering if we have
         //a queue (and while draining someone changes the enablement
@@ -216,7 +215,7 @@ public class SmtpTokenStream
 
         updateTimestamps(false, true);
 
-        TokenResultBuilder trb = new TokenResultBuilder(m_pipeline);
+        TokenResultBuilder trb = new TokenResultBuilder();
 
         while(m_queuedClientTokens.size() > 0 && m_clientTokensEnabled) {
             m_logger.debug("[handleServerToken] Draining Queued Client Token \"" +

@@ -48,7 +48,6 @@ public class QuarantineEnduserServlet extends HttpServlet
     private MailNode m_mailNode;
     private QuarantineUserView m_quarantine;
     private SafelistEndUserView m_safelist;
-    private Exception m_ex;
 
     public QuarantineEnduserServlet()
     {

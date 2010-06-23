@@ -42,8 +42,8 @@ class RouterEventHandler extends AbstractEventHandler
     private static final String PROPERTY_TCP_PORT_END   = PROPERTY_BASE + "tcp-port-end";
     private static final String PROPERTY_UDP_PORT_START = PROPERTY_BASE + "udp-port-start";
     private static final String PROPERTY_UDP_PORT_END   = PROPERTY_BASE + "udp-port-end";
-    private static final String PROPERTY_ICMP_PID_START = PROPERTY_BASE + "icmp-pid-start";
-    private static final String PROPERTY_ICMP_PID_END   = PROPERTY_BASE + "icmp-pid-end";
+    //unused// private static final String PROPERTY_ICMP_PID_START = PROPERTY_BASE + "icmp-pid-start";
+    //unused// private static final String PROPERTY_ICMP_PID_END   = PROPERTY_BASE + "icmp-pid-end";
 
     /* tracks the open TCP ports for NAT */
     private final PortList tcpPortList;

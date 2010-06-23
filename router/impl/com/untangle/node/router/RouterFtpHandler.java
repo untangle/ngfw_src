@@ -44,9 +44,8 @@ class RouterFtpHandler extends FtpStateMachine
     private SessionRedirect portCommandSessionRedirect = null;
     private SessionRedirectKey portCommandKey          = null;
 
-
     /* RFC 959: Syntax error */
-    private static final TokenResult ERROR_REPLY = new TokenResult( new Token[] { FtpReply.makeReply( 500, "Syntax error, command unrecognized") }, null );
+    //unused// private static final TokenResult ERROR_REPLY = new TokenResult( new Token[] { FtpReply.makeReply( 500, "Syntax error, command unrecognized") }, null );
     private static final TokenResult SYNTAX_REPLY = new TokenResult( new Token[] { FtpReply.makeReply( 501, "Syntax error in parameters or arguments") }, null );
 
     RouterFtpHandler( TCPSession session, RouterImpl node )

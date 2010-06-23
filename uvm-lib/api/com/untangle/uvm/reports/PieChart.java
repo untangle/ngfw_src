@@ -52,21 +52,20 @@ import org.jfree.data.io.CSV;
 
 public class PieChart extends Plot
 {
-    private final String xLabel;
-    private final String yLabel;
-    private final String majorFormatter;
+	//unused// private final String xLabel;
+	//unused// private final String yLabel;
+    //unused// private final String majorFormatter;
     private final int displayLimit;
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public PieChart(String title, String xLabel, String yLabel,
-                    String majorFormatter, int displayLimit)
+    public PieChart(String title, String xLabel, String yLabel, String majorFormatter, int displayLimit)
     {
         super(title);
 
-        this.xLabel = xLabel;
-        this.yLabel = yLabel;
-        this.majorFormatter = majorFormatter;
+        //unused// this.xLabel = xLabel;
+        //unused// this.yLabel = yLabel;
+        //unused// this.majorFormatter = majorFormatter;
         this.displayLimit = displayLimit;
     }
 

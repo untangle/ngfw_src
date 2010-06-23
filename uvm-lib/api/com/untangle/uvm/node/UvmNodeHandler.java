@@ -60,12 +60,10 @@ public class UvmNodeHandler extends DefaultHandler
     private final List<String> exports = new LinkedList<String>();
     private final List<String> uvmResources = new LinkedList<String>();
 
-    private String name = null;
     private String className = null;
     private String reportsClassName = null;
     private String nodeBase = null;
     private boolean singleInstance = false;
-    private String displayName = null;
     private boolean hasPowerButton = true;
     private boolean noStart = false;
 
@@ -144,14 +142,10 @@ public class UvmNodeHandler extends DefaultHandler
             String n = attrs.getQName(i);
             String v = attrs.getValue(i);
 
-            if (n.equals("name")) {
-                name = v;
-            } else if (n.equals("single-instance")) {
+            if (n.equals("single-instance")) {
                 singleInstance = Boolean.parseBoolean(v);
             } else if (n.equals("classname")) {
                 className = v;
-            } else if (n.equals("display-name")) {
-                displayName = v;
             } else if (n.equals("reports-classname")) {
                 reportsClassName = v;
             } else if (n.equals("node-base")) {

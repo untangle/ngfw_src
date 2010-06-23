@@ -49,7 +49,8 @@ public class Pulse
     private final Runnable blip;
     private final Ticker ticker;
 
-    public enum PulseState {
+    public enum PulseState 
+    {
         /* Pulse thread has never started running */
         UNBORN,
 
@@ -103,7 +104,7 @@ public class Pulse
     public Pulse( String name, Boolean isDaemon, Runnable blip )
     {
         this.blip = blip;
-        this.ticker = new Ticker( this.blip );
+        this.ticker = new Ticker();
         /* Check if the caller wants to set the thread name */
         if (( null == name ) || ( 0 == name.length())) {
             /* No name */
@@ -256,18 +257,14 @@ public class Pulse
 
     private class Ticker implements Runnable
     {
-        private final Runnable beat;
-
         /* the number of times the beat has occurred */
         private long count = 0;
 
         /* This is the next time that you should wake up */
         private long nextTrigger = Long.MIN_VALUE;
 
-        private Ticker( Runnable beat )
-        {
-            this.beat = beat;
-        }
+        private Ticker()
+        {}      
 
         public void run()
         {

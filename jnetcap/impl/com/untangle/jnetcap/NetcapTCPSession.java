@@ -28,7 +28,7 @@ public class NetcapTCPSession extends NetcapSession
 
     public  static final int NON_LOCAL_BIND             = 1;
     
-    private static final int DEFAULT_SERVER_START_FLAGS    = 0;
+    //unused private static final int DEFAULT_SERVER_START_FLAGS    = 0;
     private static final int DEFAULT_SERVER_COMPLETE_FLAGS = NON_LOCAL_BIND;
     private static final int DEFAULT_CLIENT_COMPLETE_FLAGS = 0;
     private static final int DEFAULT_RESET_FLAGS           = 0;

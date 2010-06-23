@@ -67,7 +67,7 @@ public final class SpamAssassinClient implements Runnable {
     private final static String NMBR = "(-)?" + DGT + "\\." + DGT; // pos or neg number
 
     private final static String ALPHA = "(\\p{Alpha})+"; // alpha chars
-    private final static String EX_CODE = ALPHA + "_" + ALPHA; // exit code
+    //unused// private final static String EX_CODE = ALPHA + "_" + ALPHA; // exit code
 
     // must have at least these many parameters
     private final static int SPAMD_RESPONSE_PARAM_CNT = 3;

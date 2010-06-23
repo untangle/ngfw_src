@@ -23,7 +23,6 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import org.apache.log4j.Logger;
 
 public class SigmaImpl extends AbstractNode implements Sigma
 {
@@ -31,7 +30,6 @@ public class SigmaImpl extends AbstractNode implements Sigma
     private final SoloPipeSpec pipeSpec =
         new SoloPipeSpec("sigma", this, handler, Fitting.OCTET_STREAM,Affinity.CLIENT, 0);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
-    private final Logger logger = Logger.getLogger(SigmaImpl.class);
 
     @Override
     protected PipeSpec[] getPipeSpecs()

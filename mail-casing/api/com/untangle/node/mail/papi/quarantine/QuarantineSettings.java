@@ -78,8 +78,6 @@ public class QuarantineSettings implements Serializable {
     private List<EmailAddressPairRule> addressRemaps;
     private List<EmailAddressRule> allowedAddressPatterns;
     private boolean sendDailyDigests = true;
-    
-    private boolean quarantineExternalMail = false;
 
     @Id
     @Column(name="settings_id")

@@ -36,7 +36,6 @@ class VectronTable
     private static final VectronTable INSTANCE = new VectronTable();
 
     private final Map<Vector,SessionGlobalState> activeVectrons = new HashMap<Vector,SessionGlobalState>();
-    private boolean isAlive = true;
 
     /* Singleton */
     private VectronTable()

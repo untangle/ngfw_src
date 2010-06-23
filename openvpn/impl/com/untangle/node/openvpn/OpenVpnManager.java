@@ -55,13 +55,12 @@ class OpenVpnManager
     private static final String PACKET_FILTER_RULES_FILE = System.getProperty( "bunnicula.conf.dir" ) + "/openvpn/packet-filter-rules";
 
     /* Most likely want to bind to the outside address when using NAT */
-    private static final String FLAG_LOCAL       = "local";
+    //unused private static final String FLAG_LOCAL       = "local";
 
-    /* XXX Have to expose this in the GUI */
     private static final String FLAG_PORT        = "port";
 
-    private static final String FLAG_PROTOCOL    = "proto";
-    private static final String DEFAULT_PROTOCOL = "udp";
+    //unused private static final String FLAG_PROTOCOL    = "proto";
+    //unused private static final String DEFAULT_PROTOCOL = "udp";
     private static final String FLAG_DEVICE      = "dev";
     private static final String DEVICE_BRIDGE    = "tap0";
     private static final String DEVICE_ROUTING   = "tun0";
@@ -70,10 +69,10 @@ class OpenVpnManager
     private static final String FLAG_IFCONFIG     = "ifconfig";
     private static final String FLAG_CLI_IFCONFIG = "ifconfig-push";
     private static final String FLAG_CLI_ROUTE    = "iroute";
-    private static final String FLAG_BRIDGE_GROUP = "server-bridge";
+    //unused private static final String FLAG_BRIDGE_GROUP = "server-bridge";
 
     private static final String FLAG_PUSH         = "push";
-    private static final String FLAG_EXPOSE_CLI   = "client-to-client";
+    //unused private static final String FLAG_EXPOSE_CLI   = "client-to-client";
 
     private static final String FLAG_MAX_CLI      = "max-clients";
 

@@ -29,12 +29,9 @@ import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.UrlDatabaseResult;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
 
 public class PhishHttpHandler extends HttpStateMachine
 {
-    private final Logger logger = Logger.getLogger(getClass());
-
     private final PhishNode node;
 
     // constructors -----------------------------------------------------------

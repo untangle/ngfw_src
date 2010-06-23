@@ -224,9 +224,6 @@ public class RouterImpl extends AbstractNode implements Router
 
     class SettingsListener implements NetworkSettingsListener
     {
-        /* This are the settings passed in by the network settings */
-        private NetworkSpacesInternalSettings settings;
-
         public void event( NetworkSpacesInternalSettings settings )
         {
             if ( logger.isDebugEnabled()) logger.debug( "network settings changed:" + settings );

@@ -237,13 +237,9 @@ class SessionRedirect
     private final Logger logger = Logger.getLogger( this.getClass());
     final SessionRedirectKey key;
 
-    private String CreateRedirectCommand;
-    private String RemoveRedirectCommand;
-
     SessionRedirect( InetAddress clientAddr, int clientPort,
                      InetAddress serverAddr, int serverPort,
-                     int reservedPort, InetAddress myAddr,
-		     SessionRedirectKey key )
+                     int reservedPort, InetAddress myAddr, SessionRedirectKey key )
     {
 	createRedirectRule(clientAddr, clientPort,
 			   serverAddr, serverPort,

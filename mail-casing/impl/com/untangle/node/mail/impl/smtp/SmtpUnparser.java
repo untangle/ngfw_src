@@ -18,18 +18,15 @@
 
 package com.untangle.node.mail.impl.smtp;
 
-import org.apache.log4j.Logger;
-
 import com.untangle.node.mail.impl.AbstractMailUnparser;
 import com.untangle.uvm.vnet.TCPSession;
 
 /**
  * Base class for the SmtpClient/ServerUnparser
  */
-abstract class SmtpUnparser
-    extends AbstractMailUnparser {
+abstract class SmtpUnparser extends AbstractMailUnparser
+{
 
-    private final Logger m_logger = Logger.getLogger(SmtpUnparser.class);
     private CasingSessionTracker m_tracker;
 
     protected SmtpUnparser(TCPSession session,

@@ -57,7 +57,6 @@ import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
-import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.Subscription;
@@ -104,9 +103,6 @@ public abstract class VirusNodeImpl extends AbstractNode
         "was received by $SMTPTransaction:TO$.  The message was found" + CRLF +
         "to contain the virus \"$VirusReport:VIRUS_NAME$\"." + CRLF +
         "The infected portion of the message was removed by Untangle Virus Blocker";
-
-    private static final PipelineFoundry FOUNDRY = LocalUvmContextFactory.context()
-        .pipelineFoundry();
 
     private static final int FTP = 0;
     private static final int HTTP = 1;

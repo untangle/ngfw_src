@@ -41,8 +41,6 @@ import java.nio.ByteBuffer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
-
 import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.AsciiCharBuffer;
@@ -151,8 +149,6 @@ import com.untangle.node.util.AsciiCharBuffer;
  */
 public class PopCommand implements Token
 {
-    private final Logger logger = Logger.getLogger(getClass());
-
     private final static String LWSP = "\\p{Blank}"; /* linear-white-space */
     private final static String START = "^(" + LWSP + ")*";
     private final static String USER = START + "USER(" + LWSP + ")+";

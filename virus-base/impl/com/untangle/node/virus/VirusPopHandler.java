@@ -21,8 +21,6 @@ package com.untangle.node.virus;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
-
 import com.untangle.node.mail.papi.MIMEMessageT;
 import com.untangle.node.mail.papi.MailExport;
 import com.untangle.node.mail.papi.MailNodeSettings;
@@ -40,8 +38,6 @@ import com.untangle.uvm.vnet.TCPSession;
 
 public class VirusPopHandler extends PopStateMachine
 {
-    private final Logger logger = Logger.getLogger(getClass());
-
     private final VirusNodeImpl zNode;
     private final VirusScanner zScanner;
     private final String zVendorName;

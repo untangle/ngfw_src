@@ -17,13 +17,6 @@
  */
 
 package com.untangle.uvm.argon;
-
-
-
-
-
-
-import org.apache.log4j.Logger;
 public class UDPSessionImpl extends IPSessionImpl implements UDPSession
 {
     protected final byte ttl;
@@ -31,8 +24,6 @@ public class UDPSessionImpl extends IPSessionImpl implements UDPSession
     protected final byte options[];
     protected final int  icmpId;
     protected final boolean isPing;
-
-    private final Logger logger = Logger.getLogger(getClass());
 
     public UDPSessionImpl( UDPNewSessionRequest request )
     {

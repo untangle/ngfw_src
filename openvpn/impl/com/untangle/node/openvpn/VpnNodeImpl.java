@@ -907,7 +907,6 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
     class GenerateRules implements Runnable
     {
-        private Exception exception;
         private final Runnable callback;
 
         public GenerateRules( Runnable callback )
@@ -921,7 +920,6 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
                 JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "generate_rules", null );
             } catch ( Exception e ) {
                 logger.error( "Error while generating iptables rules", e );
-                this.exception = e;
             }
 
             if ( this.callback != null ) this.callback.run();

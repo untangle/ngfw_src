@@ -24,11 +24,9 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.untangle.node.util.AsciiCharBuffer;
-import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.MPipeException;
-import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.UDPSession;
 import com.untangle.uvm.vnet.event.IPDataEvent;

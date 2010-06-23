@@ -25,8 +25,6 @@ public class RemoteLicenseManagerImpl implements RemoteLicenseManager
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private String standardLicense;
-
     private final LocalLicenseManager licenseManager;
 
     RemoteLicenseManagerImpl(LocalLicenseManager licenseManager)

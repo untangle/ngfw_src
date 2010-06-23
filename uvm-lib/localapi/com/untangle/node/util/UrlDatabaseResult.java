@@ -42,12 +42,10 @@ package com.untangle.node.util;
 public class UrlDatabaseResult<T>
 {
     private final boolean black;
-    private final T o;
 
-    UrlDatabaseResult(boolean black, T o)
+    UrlDatabaseResult(boolean black)
     {
         this.black = black;
-        this.o = o;
     }
 
     public boolean blacklisted()

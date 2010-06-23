@@ -52,8 +52,6 @@ public class VpnSite extends VpnClientBase
     // initially, may not be supported, just use one address.
     private List<ClientSiteNetwork>     exportedAddressList;
 
-    private boolean isUntanglePlatform = false;
-
     public VpnSite()
     {
         /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXX This should have all of the stuff
@@ -82,23 +80,6 @@ public class VpnSite extends VpnClientBase
     public void setExportedAddressList( List<ClientSiteNetwork> exportedAddressList )
     {
         this.exportedAddressList = exportedAddressList;
-    }
-
-    /**
-     * @return whether the other side is an edgeguard (All sites are
-     * assumed to be edgeguards, they can download the client manually
-     * if they want to setup a non-edgeguard site to site.
-     */
-    @Transient
-    @Override
-    public boolean isUntanglePlatform()
-    {
-        return true;
-    }
-
-    public void setUntanglePlatform( boolean isUntanglePlatform )
-    {
-        this.isUntanglePlatform = isUntanglePlatform;
     }
 
     /**

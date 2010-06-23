@@ -46,14 +46,12 @@ import com.untangle.node.token.ParseException;
  * If we are to understand the ESMTP commands which modify
  * the RCPT line, this class must be modified.
  */
-public class RCPTCommand
-    extends CommandWithEmailAddress {
+public class RCPTCommand extends CommandWithEmailAddress 
+{
 
-    private static final String NULL_TO_STR = "TO:<>";
-
-    public RCPTCommand(String cmd,
-                       String argStr) throws ParseException, FatalMailParseException {
-
+    public RCPTCommand(String cmd, String argStr) 
+    	throws ParseException, FatalMailParseException 
+    {
         super(CommandType.RCPT, cmd, argStr);
 
         if(argStr == null) {

@@ -35,8 +35,6 @@ import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.Release;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.AsciiCharBuffer;
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
 
 public class PopClientParser extends AbstractParser
@@ -48,7 +46,7 @@ public class PopClientParser extends AbstractParser
         AUTH_LOGIN
     };
 
-    private final Pipeline pipeline;
+    //unused// private final Pipeline pipeline;
     private final PopCasing zCasing;
 
     private State state;
@@ -60,7 +58,7 @@ public class PopClientParser extends AbstractParser
         super(session, true);
         lineBuffering(false);
 
-        pipeline = LocalUvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
+        //unused// pipeline = LocalUvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
         this.zCasing = zCasing;
 
         state = State.COMMAND;

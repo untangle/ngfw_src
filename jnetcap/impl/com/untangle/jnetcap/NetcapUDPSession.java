@@ -25,7 +25,7 @@ public class NetcapUDPSession extends NetcapSession
     protected static final int MERGED_DEAD = 0xDEAD00D;
 
     private static final int DEFAULT_LIBERATE_FLAGS = 0;
-    private static final int DEFAULT_SERVER_COMPLETE_FLAGS = 0;
+    //unused private static final int DEFAULT_SERVER_COMPLETE_FLAGS = 0;
     
     /** These cannot conflict with the flags inside of NetcapTCPSession and NetcapSession */
     private final static int FLAG_TTL            = 64;

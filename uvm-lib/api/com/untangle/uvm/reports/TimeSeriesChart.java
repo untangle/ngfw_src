@@ -75,7 +75,7 @@ public class TimeSeriesChart extends Plot
 
     private final String xLabel;
     private final String yLabel;
-    private final String majorFormatter;
+    //unused// private final String majorFormatter;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -86,7 +86,7 @@ public class TimeSeriesChart extends Plot
 
         this.xLabel = xLabel;
         this.yLabel = yLabel;
-        this.majorFormatter = majorFormatter;
+        //this.majorFormatter = majorFormatter;
     }
 
     private Date parseTimeStamp(String timeStr) {

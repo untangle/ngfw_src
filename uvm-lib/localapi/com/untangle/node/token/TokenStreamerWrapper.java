@@ -54,17 +54,13 @@ class TokenStreamerWrapper implements TokenStreamer
     private final Logger logger = Logger.getLogger(getClass());
 
     private final TokenStreamer tokenStreamer;
-    private final Session session;
     private final BlingBlinger blinger;
 
-    TokenStreamerWrapper(TokenStreamer tokenStreamer, Session session,
-                         boolean s2c)
+    TokenStreamerWrapper(TokenStreamer tokenStreamer, Session session, boolean s2c)
     {
         this.tokenStreamer = tokenStreamer;
-        this.session = session;
 
-        LocalMessageManager lmm = LocalUvmContextFactory.context()
-            .localMessageManager();
+        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(session.mPipe().node().getTid());
         if (s2c) {
             blinger = c.getBlingBlinger("n2cBytes");

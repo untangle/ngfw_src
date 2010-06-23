@@ -39,13 +39,7 @@ import com.untangle.uvm.node.IPaddr;
 
 /** An immutable routing entry */
 public class RouteInternal
-{
-    /**
-     * Presently network space is only used to display routes that are
-     * immutable
-     */
-    private final NetworkSpaceInternal networkSpace;
-    
+{    
     private final IPNetwork destination;
     private final IPaddr nextHop;
     
@@ -56,9 +50,8 @@ public class RouteInternal
     private final String description;
 
 
-    private RouteInternal( Route route, NetworkSpaceInternal networkSpace )
+    private RouteInternal( Route route )
     {
-        this.networkSpace = networkSpace;
         this.destination = route.getDestination();
         this.nextHop = route.getNextHop();
         
@@ -127,7 +120,7 @@ public class RouteInternal
 
     public static RouteInternal makeInstance( Route route )
     {
-        return new RouteInternal( route, null );
+        return new RouteInternal( route );
     }
 
     

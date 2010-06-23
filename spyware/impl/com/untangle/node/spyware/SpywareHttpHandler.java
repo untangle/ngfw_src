@@ -43,21 +43,17 @@ import org.apache.log4j.Logger;
 
 public class SpywareHttpHandler extends HttpStateMachine
 {
-    private static final Pattern OBJECT_PATTERN
-        = Pattern.compile("<object", Pattern.CASE_INSENSITIVE);
-    private static final Pattern CLSID_PATTERN
-        = Pattern.compile("clsid:([0-9\\-]*)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern OBJECT_PATTERN = Pattern.compile("<object", Pattern.CASE_INSENSITIVE);
+    private static final Pattern CLSID_PATTERN  = Pattern.compile("clsid:([0-9\\-]*)", Pattern.CASE_INSENSITIVE);
 
     private final TCPSession session;
 
-    private final Map<RequestLineToken, List<String>> killers
-        = new HashMap<RequestLineToken, List<String>>();
+    private final Map<RequestLineToken, List<String>> killers = new HashMap<RequestLineToken, List<String>>();
 
     private final Logger logger = Logger.getLogger(getClass());
 
     private final SpywareImpl node;
 
-    private String extension = "";
     private String mimeType = "";
 
     // constructors -----------------------------------------------------------
@@ -76,15 +72,6 @@ public class SpywareHttpHandler extends HttpStateMachine
     protected RequestLineToken doRequestLine(RequestLineToken requestLine)
     {
         logger.debug("got request line");
-
-        String path = requestLine.getRequestUri().getPath();
-        if (null == path) {
-            extension = "";
-        } else {
-            int i = path.lastIndexOf('.');
-            extension = (0 <= i && path.length() - 1 > i)
-                ? path.substring(i + 1) : null;
-        }
 
         return requestLine;
     }

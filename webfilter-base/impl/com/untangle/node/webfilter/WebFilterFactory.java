@@ -18,8 +18,6 @@
 
 package com.untangle.node.webfilter;
 
-import org.apache.log4j.Logger;
-
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
@@ -33,8 +31,6 @@ import com.untangle.uvm.vnet.TCPSession;
  */
 public class WebFilterFactory implements TokenHandlerFactory
 {
-    private final Logger logger = Logger.getLogger(getClass());
-
     protected final WebFilterBase node;
 
     // constructors -----------------------------------------------------------

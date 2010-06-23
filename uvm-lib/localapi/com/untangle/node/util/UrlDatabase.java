@@ -42,8 +42,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.log4j.Logger;
-
 import com.untangle.node.token.Header;
 import com.untangle.uvm.vnet.TCPSession;
 
@@ -60,8 +58,6 @@ public class UrlDatabase<T>
 
     private final Map<T, UrlList> whitelists = new HashMap<T, UrlList>();
     private final Map<T, UrlList> blacklists = new HashMap<T, UrlList>();
-
-    private final Logger logger = Logger.getLogger(getClass());
 
     private int updatePeriod = DEFAULT_UPDATE_PERIOD;
 
@@ -136,7 +132,7 @@ public class UrlDatabase<T>
             }
 
             if (ul.contains(proto, host, uri)) {
-                return new UrlDatabaseResult<T>(false, o);
+                return new UrlDatabaseResult<T>(false);
             }
         }
 
@@ -147,7 +143,7 @@ public class UrlDatabase<T>
             }
 
             if (ul.contains(proto, host, uri)) {
-                return new UrlDatabaseResult<T>(true, o);
+                return new UrlDatabaseResult<T>(true);
             }
         }
 

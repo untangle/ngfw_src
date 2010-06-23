@@ -47,26 +47,20 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.renderer.xy.StackedXYBarRenderer;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.xy.XYBarDataset;
 import org.jfree.data.io.CSV;
-import org.jfree.data.time.Minute;
 import org.jfree.data.time.SimpleTimePeriod;
 import org.jfree.data.time.TimePeriod;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeTableXYDataset;
 
 import com.untangle.uvm.util.DateTruncator;
@@ -78,12 +72,11 @@ public class StackedBarChart extends Plot
     private static final DateFormat HF = new SimpleDateFormat("HH");
 
     // duplicated from com.uvm.engine.ReportingManagerImpl
-    private static final DateFormat DATE_FORMAT =
-        new SimpleDateFormat("yyyy-MM-dd");
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     private final String xLabel;
     private final String yLabel;
-    private final String majorFormatter;
+    //unused// private final String majorFormatter;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -93,7 +86,7 @@ public class StackedBarChart extends Plot
 
         this.xLabel = xLabel;
         this.yLabel = yLabel;
-        this.majorFormatter = majorFormatter;
+        //this.majorFormatter = majorFormatter;
     }
 
     private int getInterval(String timeStr) {

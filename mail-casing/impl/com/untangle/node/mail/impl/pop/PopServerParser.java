@@ -59,8 +59,6 @@ public class PopServerParser extends AbstractParser
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static final File UVM_TMP = new File(System.getProperty("uvm.tmp.dir"));
-
     private static final int LINE_SZ = 1024;
 
     private enum State {

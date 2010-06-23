@@ -43,8 +43,6 @@ import java.lang.reflect.Method;
  */
 public class RemoteUvmContextFactory
 {
-    private static final RemoteUvmContextFactory FACTORY = new RemoteUvmContextFactory();
-
     private static RemoteUvmContext UVM_CONTEXT = null;
 
     // public methods ---------------------------------------------------------

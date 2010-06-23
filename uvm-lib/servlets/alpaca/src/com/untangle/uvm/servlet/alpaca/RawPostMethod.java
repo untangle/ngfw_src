@@ -27,7 +27,6 @@ import org.apache.commons.httpclient.HttpConnection;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.methods.ExpectContinueMethod;
-import org.apache.log4j.Logger;
 
 /**
  * Provides a HttpClient method that allows arbitrary content from an
@@ -38,8 +37,6 @@ import org.apache.log4j.Logger;
  */
 public class RawPostMethod extends ExpectContinueMethod
 {
-    private final Logger logger = Logger.getLogger(getClass());
-
     private String contentType = null;
     private InputStream is = null;
     private int length = 0;

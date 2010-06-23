@@ -84,22 +84,26 @@ public class EventHandler extends AbstractEventHandler {
     //UDPSession sess = event.session();
     }*/
 
-    public IPDataResult handleTCPClientChunk(TCPChunkEvent event) {
+    public IPDataResult handleTCPClientChunk(TCPChunkEvent event) 
+    {
         ipsEngine.handleChunk(event, event.session(), false);
         return IPDataResult.PASS_THROUGH;
     }
 
-    public IPDataResult handleTCPServerChunk(TCPChunkEvent event) {
+    public IPDataResult handleTCPServerChunk(TCPChunkEvent event) 
+    {
         ipsEngine.handleChunk(event, event.session(), true);
         return IPDataResult.PASS_THROUGH;
     }
 
-    public void handleUDPClientPacket(UDPPacketEvent event) throws MPipeException {
+    public void handleUDPClientPacket(UDPPacketEvent event) throws MPipeException 
+    {
         ipsEngine.handleChunk(event, event.session(),false);
         super.handleUDPClientPacket(event);
     }
 
-    public void handleUDPServerPacket(UDPPacketEvent event) throws MPipeException {
+    public void handleUDPServerPacket(UDPPacketEvent event) throws MPipeException 
+    {
         ipsEngine.handleChunk(event, event.session(),true);
         super.handleUDPServerPacket(event);
     }

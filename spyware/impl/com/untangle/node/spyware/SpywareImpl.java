@@ -97,9 +97,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     private static final URL BLACKLIST_HOME;
 
-    private static final int HTTP = 0;
-    private static final int BYTE = 1;
-
     private static int deployCount = 0;
 
     static {
@@ -145,7 +142,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
     /* the signatures are updated at startup, so using new Date() is
      * not that far off. */
     private Date lastSignatureUpdate = new Date();
-    private String signatureVersion;
 
     private final SpywareReplacementGenerator replacementGenerator;
 

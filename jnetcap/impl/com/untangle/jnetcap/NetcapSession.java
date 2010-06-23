@@ -44,7 +44,7 @@ public abstract class NetcapSession {
     private final static int FLAG_NAT_TO_PORT   = 22;
 
     /* This is the mask for the remove the client/server parts */
-    private final static int FLAG_MASK        = 0xFFF;
+    //unused private final static int FLAG_MASK        = 0xFFF;
 
     protected final Endpoints clientSide;
     protected final Endpoints serverSide;

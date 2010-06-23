@@ -40,7 +40,7 @@ class PipelineImpl implements Pipeline
 {
     private static final File UVM_TMP = new File(System.getProperty("uvm.tmp.dir"));
 
-    private final int sessionId;
+    //unused// private final int sessionId;
     private final List<MPipeFitting> mPipeFittings;
     private final String sessionPrefix;
 
@@ -54,7 +54,7 @@ class PipelineImpl implements Pipeline
 
     PipelineImpl(int sessionId, List<MPipeFitting> mPipeFittings)
     {
-        this.sessionId = sessionId;
+        //unuserd// this.sessionId = sessionId;
         this.mPipeFittings = mPipeFittings;
         this.sessionPrefix = "sess-" + sessionId + "-";
     }
