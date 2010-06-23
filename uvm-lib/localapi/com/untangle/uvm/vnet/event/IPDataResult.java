@@ -50,11 +50,6 @@ public class IPDataResult
     private static final byte TYPE_PASS_THROUGH = 1;
 
     public static final IPDataResult PASS_THROUGH = new IPDataResult(TYPE_PASS_THROUGH);
-
-    /**
-     * Describe constant <code>DO_NOT_PASS</code> here.  Also means "send nothing more"
-     * when used with writable events.
-     */
     public static final IPDataResult DO_NOT_PASS = new IPDataResult(null, null, null);
     public static final IPDataResult SEND_NOTHING = DO_NOT_PASS;
 
@@ -114,5 +109,12 @@ public class IPDataResult
     {
         return readBuffer;
     }
+    
+    public byte getCode()
+    {
+    	return code;
+    }
+
+
 }
 
