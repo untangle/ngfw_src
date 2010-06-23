@@ -1794,6 +1794,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
 
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
     },
+
     afterReauthenticate : function( handler )
     {
         var settings = Ung.SetupWizard.CurrentValues.mailSettings;
@@ -1804,7 +1805,8 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
         settings.smtpPort = 25;
         settings.authUser = "";
         settings.authPass = "";
-
+        settings.reportEmail = Ext.getCmp('registration_email').getValue();
+        
         if ( this.isAdvanced ) {
             settings.fromAddress = this.panel.find( "name", "from-address-textfield" )[0].getValue();
 
