@@ -78,7 +78,7 @@ function callCurl() {
 #
 function createBackup() {
   debug "Creating Backup in " $1
-  uvmdb-backup local $1
+  @UVM_HOME@/bin/uvmdb-backup $1
 #  pushd $1 > /dev/null 2>&1
 #  echo "FOO" > foo.txt;
 #  echo "MOO" > moo.txt;

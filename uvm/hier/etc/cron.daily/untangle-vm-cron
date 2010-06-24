@@ -8,7 +8,7 @@ REGINFO="@UVM_HOME@/registration.info"
 if [ -f "@UVM_HOME@/activation.key" ]; then
     mkdir -p @UVM_HOME@/autodump @UVM_HOME@/tmp
 
-    /usr/bin/uvmdb-backup local @UVM_HOME@/autodump
+    @UVM_HOME@/bin/uvmdb-backup @UVM_HOME@/autodump
     /usr/bin/find @UVM_HOME@/autodump -type f -mtime +31 | /usr/bin/xargs -r /bin/rm
 
     /usr/bin/find /tmp -mtime +31 -name "*.tmp" | /usr/bin/xargs -r /bin/rm
