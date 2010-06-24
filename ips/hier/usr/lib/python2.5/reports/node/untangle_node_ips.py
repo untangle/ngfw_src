@@ -189,7 +189,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
 class TopTenAttacksByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-attacks-by-hits', _('Top Attacks By Hits'))
+        Graph.__init__(self, 'top-attacks-by-hits', _('Top Attacks (by hits)'))
 
         self.__vendor_name = vendor_name
 
