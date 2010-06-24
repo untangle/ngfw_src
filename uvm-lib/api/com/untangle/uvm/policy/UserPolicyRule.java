@@ -36,6 +36,7 @@ package com.untangle.uvm.policy;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,6 +46,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
+import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.InterfaceComparator;
@@ -62,8 +64,7 @@ import com.untangle.uvm.node.firewall.user.UserMatcher;
 import com.untangle.uvm.node.firewall.user.UserMatcherFactory;
 
 /**
- * User Policy Rules.  These are the policy rules that are created by
- * the user.  All of these run before any of the System policy rules.
+ * These are the policy rules that are created by the user.  
  *
  * @author
  * @version 1.0
@@ -73,6 +74,10 @@ import com.untangle.uvm.node.firewall.user.UserMatcherFactory;
 @SuppressWarnings("serial")
 public class UserPolicyRule extends PolicyRule
 {
+    private static final Logger logger = Logger.getLogger(UserPolicyRule.class);
+    
+    private static SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("H:m");
+        
     /* settings */
     private ProtocolMatcher protocol;
 
@@ -88,8 +93,8 @@ public class UserPolicyRule extends PolicyRule
     private PortMatcher clientPort;
     private PortMatcher serverPort;
 
-    private Date startTime;
-    private Date endTime;
+    private String startTimeString;
+    private String endTimeString;
 
     private DayOfWeekMatcher dayOfWeek = DayOfWeekMatcherFactory.getInstance().getAllMatcher();
 
@@ -105,7 +110,7 @@ public class UserPolicyRule extends PolicyRule
                           Policy policy, ProtocolMatcher protocol,
                           IPMatcher clientAddr, IPMatcher serverAddr,
                           PortMatcher clientPort, PortMatcher serverPort,
-                          Date startTime, Date endTime,
+                          String startTimeString, String endTimeString,
                           DayOfWeekMatcher dayOfWeek, UserMatcher user,
                           boolean live, boolean invertEntireDuration)
     {
@@ -117,14 +122,8 @@ public class UserPolicyRule extends PolicyRule
         this.serverAddr = serverAddr;
         this.clientPort = clientPort;
         this.serverPort = serverPort;
-        if( startTime instanceof Timestamp )
-            this.startTime = new Date(startTime.getTime());
-        else
-            this.startTime = startTime;
-        if( endTime instanceof Timestamp )
-            this.endTime = new Date(endTime.getTime());
-        else
-            this.endTime = endTime;
+        this.startTimeString = startTimeString;
+        this.endTimeString = endTimeString;
         this.dayOfWeek = dayOfWeek;
         this.user = user;
         this.invertEntireDuration = invertEntireDuration;
@@ -153,6 +152,15 @@ public class UserPolicyRule extends PolicyRule
         Calendar now = Calendar.getInstance();
         Calendar start = Calendar.getInstance();
         Calendar end = Calendar.getInstance();
+        Date startTime;
+        Date endTime;
+        try {
+            startTime = TIME_FORMATTER.parse(this.startTimeString);
+            endTime = TIME_FORMATTER.parse(this.endTimeString);
+        } catch (java.text.ParseException e) {
+            logger.warn("Invalid date in policy rule (" + startTimeString + "," + endTimeString + ")",e);
+            return false;
+        }
         start.setTime(startTime);
         start.set(Calendar.YEAR, now.get(Calendar.YEAR));
         start.set(Calendar.MONTH, now.get(Calendar.MONTH));
@@ -274,16 +282,15 @@ public class UserPolicyRule extends PolicyRule
      *
      * @return the time of day that the session must start after
      */
-    @Temporal(TemporalType.TIME)
-    @Column(name="start_time")
-    public Date getStartTime()
+    @Column(name="start_time_string")
+    public String getStartTimeString()
     {
-        return startTime;
+        return startTimeString;
     }
 
-    public void setStartTime(Date startTime)
+    public void setStartTimeString(String startTime)
     {
-        this.startTime = startTime;
+        this.startTimeString = startTime;
     }
 
     /**
@@ -291,18 +298,17 @@ public class UserPolicyRule extends PolicyRule
      *
      * @return the time of day that the session must start before
      */
-    @Temporal(TemporalType.TIME)
-    @Column(name="end_time")
-    public Date getEndTime()
+    @Column(name="end_time_string")
+    public String getEndTimeString()
     {
-        return endTime;
+        return endTimeString;
     }
 
-    public void setEndTime(Date endTime)
+    public void setEndTimeString(String endTime)
     {
-        this.endTime = endTime;
+        this.endTimeString = endTime;
     }
-
+    
     /**
      * Day of Week matcher
      *
@@ -407,8 +413,7 @@ public class UserPolicyRule extends PolicyRule
     {
         this.invertEntireDuration = invertEntireDuration;
     }
-
-
+    
     @Transient
     public boolean isSameRow(UserPolicyRule pr)
     {

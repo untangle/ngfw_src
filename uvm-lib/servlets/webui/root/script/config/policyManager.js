@@ -442,10 +442,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     "clientPort" : "any",
                     "serverPort" : "any",
                     "user" : "[any]",
-                    "startTime" : {"time":-7200000,"javaClass":"java.sql.Time"},
-                    "endTime" : {"time":79140000,"javaClass":"java.sql.Time"},
-                    "startTimeFormatted" : "00:00",
-                    "endTimeFormatted" : "23:59",
+                    "startTimeString" : "00:00",
+                    "endTimeString" : "23:59",
                     "dayOfWeek" : "any",
                     "description" : this.i18n._('[no description]')
                 },
@@ -482,17 +480,9 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 }, {
                     name : 'user'
                 }, {
-                    name : 'startTime'
+                    name : 'startTimeString'
                 }, {
-                    name : 'endTime'
-                }, {
-                    name : 'startTimeFormatted',
-                    mapping: 'startTime',
-                    convert : Ung.Util.formatTime
-                }, {
-                    name : 'endTimeFormatted',
-                    mapping: 'endTime',
-                    convert : Ung.Util.formatTime
+                    name : 'endTimeString'
                 }, {
                     name : 'dayOfWeek'
                 }, {
@@ -625,12 +615,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     tooltip: this.i18n._("start time"),
                     width : 55,
                     sortable : true,
-                    dataIndex : 'startTimeFormatted',
-                    renderer : function(value, metadata, record) {
-                        var dt = Date.parseDate(value, "H:i");
-                        record.data.startTime = {"time":dt.getTime(),"javaClass":"java.sql.Time"};
-                        return value;
-                    }.createDelegate(this),
+                    dataIndex : 'startTimeString',
                     editor : new Ung.form.TimeField({
                         format : "H:i",
                         allowBlank : false
@@ -640,12 +625,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     tooltip: this.i18n._("end time"),
                     width : 55,
                     sortable : true,
-                    dataIndex : 'endTimeFormatted',
-                    renderer : function(value, metadata, record) {
-                        var dt = Date.parseDate(value, "H:i");
-                        record.data.endTime = {"time":dt.getTime(),"javaClass":"java.sql.Time"};
-                        return value;
-                    }.createDelegate(this),
+                    dataIndex : 'endTimeString',
                     editor : new Ung.form.TimeField({
                         format : "H:i",
                         allowBlank : false,
@@ -699,8 +679,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                             Ext.getCmp("gridRules_rowEditor_server_address").setValue(record.data.serverAddr);
                             Ext.getCmp("gridRules_rowEditor_server_port").setValue(record.data.serverPort);
                             Ext.getCmp("gridRules_rowEditor_user").setValue(record.data.user);
-                            Ext.getCmp("gridRules_rowEditor_start_time").setValue(record.data.startTimeFormatted);
-                            Ext.getCmp("gridRules_rowEditor_end_time").setValue(record.data.endTimeFormatted);
+                            Ext.getCmp("gridRules_rowEditor_start_time").setValue(record.data.startTimeString);
+                            Ext.getCmp("gridRules_rowEditor_end_time").setValue(record.data.endTimeString);
                             Ext.getCmp("gridRules_rowEditor_sunday").setValue(record.data.dayOfWeek == "any"
                                     || record.data.dayOfWeek.indexOf("Sunday") >= 0);
                             Ext.getCmp("gridRules_rowEditor_monday").setValue(record.data.dayOfWeek == "any"
@@ -733,8 +713,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                                     this.record.set("clientPort", "any");
                                     this.record.set("serverPort", Ext.getCmp("gridRules_rowEditor_server_port").getValue());
                                     this.record.set("user", Ext.getCmp("gridRules_rowEditor_user").getValue());
-                                    this.record.set("startTimeFormatted", Ext.getCmp("gridRules_rowEditor_start_time").getValue());
-                                    this.record.set("endTimeFormatted", Ext.getCmp("gridRules_rowEditor_end_time").getValue());
+                                    this.record.set("startTimeString", Ext.getCmp("gridRules_rowEditor_start_time").getValue());
+                                    this.record.set("endTimeString", Ext.getCmp("gridRules_rowEditor_end_time").getValue());
                                     var dayOfWeek = "";
                                     if (Ext.getCmp("gridRules_rowEditor_sunday").getValue()
                                             && Ext.getCmp("gridRules_rowEditor_monday").getValue()
@@ -794,8 +774,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                                 || Ext.getCmp("gridRules_rowEditor_server_address").getValue() != initial_record_data.serverAddr
                                 || Ext.getCmp("gridRules_rowEditor_server_port").getValue() != initial_record_data.serverPort
                                 || Ext.getCmp("gridRules_rowEditor_user").getValue() != initial_record_data.user
-                                || Ext.getCmp("gridRules_rowEditor_start_time").getValue() != initial_record_data.startTimeFormatted
-                                || Ext.getCmp("gridRules_rowEditor_end_time").getValue() != initial_record_data.endTimeFormatted
+                                || Ext.getCmp("gridRules_rowEditor_start_time").getValue() != initial_record_data.startTimeString
+                                || Ext.getCmp("gridRules_rowEditor_end_time").getValue() != initial_record_data.endTimeString
                                 || Ext.getCmp("gridRules_rowEditor_sunday").getValue() !=
                                     (initial_record_data.dayOfWeek == "any" || initial_record_data.dayOfWeek.indexOf("Sunday") >= 0)
                                 || Ext.getCmp("gridRules_rowEditor_monday").getValue() !=

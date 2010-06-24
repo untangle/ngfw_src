@@ -316,7 +316,7 @@ class DefaultPolicyManager implements LocalPolicyManager
                                        this.defaultPolicy,upr.getProtocol(),
                                        upr.getClientAddr(),upr.getServerAddr(),
                                        upr.getClientPort(),upr.getServerPort(),
-                                       upr.getStartTime(),upr.getEndTime(),
+                                       upr.getStartTimeString(),upr.getEndTimeString(),
                                        upr.getDayOfWeek(),upr.getUser(),
                                        false,upr.isInvertEntireDuration());
 

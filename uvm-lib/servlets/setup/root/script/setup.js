@@ -69,7 +69,7 @@ Ung.SetupWizard.EmailTester = Ext.extend( Object,
 
     testMessageHandler : function( result, exception )
     {
-        var message = i18n._( 'Test email sent.  Check your mailbox to for successful delivery.' );
+        var message = i18n._( 'Test email sent.  Check your mailbox for successful delivery.' );
         if ( exception ) {
             message  = exception.message;
             if (message == null || message == "Unknown") {
