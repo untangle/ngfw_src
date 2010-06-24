@@ -246,6 +246,14 @@ public class StackedBarChart extends Plot
         renderer.setDrawBarOutline(false);
         renderer.setShadowVisible(false);
 
+        if (cd.getColumnCount() == 1) { 
+            // no legend if there's only one serie
+            logger.debug("Disabling legend");
+            renderer.setBaseItemLabelsVisible(false);
+            renderer.setBaseSeriesVisibleInLegend(false);
+            renderer.setItemLabelsVisible(false);
+        }
+
         XYPlot plot = new XYPlot(dataset,
                                  new DateAxis(this.xLabel),
                                  new NumberAxis(this.yLabel),

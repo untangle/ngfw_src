@@ -75,7 +75,7 @@ public class TimeSeriesChart extends Plot
 
     private final String xLabel;
     private final String yLabel;
-    //unused// private final String majorFormatter;
+    private final String majorFormatter;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -86,7 +86,7 @@ public class TimeSeriesChart extends Plot
 
         this.xLabel = xLabel;
         this.yLabel = yLabel;
-        //this.majorFormatter = majorFormatter;
+        this.majorFormatter = majorFormatter;
     }
 
     private Date parseTimeStamp(String timeStr) {
@@ -258,6 +258,14 @@ public class TimeSeriesChart extends Plot
         jfChart.setTitle(new TextTitle(title, TITLE_FONT));
         XYPlot p = (XYPlot)jfChart.getPlot();
         XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer)p.getRenderer();
+        if (cd.getColumnCount() == 1) { 
+            // no legend if there's only one serie
+            logger.debug("Disabling legend");
+            renderer.setBaseItemLabelsVisible(false);
+            renderer.setBaseSeriesVisibleInLegend(false);
+            renderer.setItemLabelsVisible(false);
+        }
+
         for (int i = 0; i < seriesColors.size(); i++) {
             renderer.setSeriesPaint(i, seriesColors.get(i));
         }
