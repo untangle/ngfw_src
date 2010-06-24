@@ -34,14 +34,11 @@ import com.untangle.node.http.RequestLine;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.StatusLine;
 import com.untangle.node.token.Chunk;
-import com.untangle.node.token.EndMarker;
 import com.untangle.node.token.FileChunkStreamer;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.vnet.TCPSession;
@@ -58,17 +55,6 @@ class VirusHttpHandler extends HttpStateMachine
     private static final int TIMEOUT = 30000;
     private static final int SIZE_LIMIT = 256000;
     private static final int MAX_SCAN_LIMIT = 200000000;
-
-    private static final String BLOCK_MESSAGE
-        = "<HTML><HEAD>"
-        + "<TITLE>403 Forbidden</TITLE>"
-        + "</HEAD><BODY>"
-        + "<center><b>Virus Blocked!</b></center>"
-        + "<p>This site blocked because it contained a virus</p>"
-        + "<p>Host: %s</p>"
-        + "<p>URI: %s</p>"
-        + "<p>Please contact %s</p>"
-        + "</BODY></HTML>";
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -279,30 +265,6 @@ class VirusHttpHandler extends HttpStateMachine
                 s.release();
             }
         }
-    }
-
-    private Token[] blockMessage()
-    {
-        StatusLine sl = new StatusLine("HTTP/1.1", 403, "Forbidden");
-
-        RequestLineToken rl = getResponseRequest();
-        String uri = null != rl ? rl.getRequestUri().toString() : "";
-        String host = getResponseHost();
-
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
-        String message = String.format(BLOCK_MESSAGE, host, uri, uvm.brandingManager().getContactHtml());
-
-        Header h = new Header();
-        h.addField("Content-Length", Integer.toString(message.length()));
-        h.addField("Content-Type", "text/html");
-        h.addField("Connection", isResponsePersistent() ? "Keep-Alive" : "Close");
-
-        ByteBuffer buf = ByteBuffer.allocate(message.length());
-        buf.put(message.getBytes());
-        buf.flip();
-        Chunk c = new Chunk(buf);
-
-        return new Token[] { sl, h, c, EndMarker.MARKER };
     }
 
     private boolean matchesExtension(String extension)

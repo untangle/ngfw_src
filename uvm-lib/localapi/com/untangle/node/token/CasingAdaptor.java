@@ -131,9 +131,6 @@ public class CasingAdaptor extends AbstractEventHandler
 
         addCasing(session, casing, pipeline);
 
-        Parser parser = casing.parser();
-        Unparser unparser = casing.unparser();
-
         if (clientSide) {
             session.serverReadLimit(TOKEN_SIZE);
         } else {

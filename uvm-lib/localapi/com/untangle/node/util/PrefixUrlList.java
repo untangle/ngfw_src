@@ -221,7 +221,6 @@ public class PrefixUrlList extends UrlList
         try {
             status = db.get(null, k, v, LockMode.READ_UNCOMMITTED);
             if (OperationStatus.SUCCESS == status) {
-                byte[] data = v.getData();
                 return getValues(host, v.getData());
             } else {
                 return Collections.emptyList();

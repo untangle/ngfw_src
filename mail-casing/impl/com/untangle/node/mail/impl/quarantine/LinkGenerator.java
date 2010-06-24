@@ -17,7 +17,10 @@
  */
 
 package com.untangle.node.mail.impl.quarantine;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.node.mail.papi.quarantine.WebConstants;
 
@@ -31,16 +34,23 @@ import com.untangle.node.mail.papi.quarantine.WebConstants;
 public class LinkGenerator {
 
     private String m_urlBase;
+    
+    private final Logger logger = Logger.getLogger(LinkGenerator.class);
 
-    LinkGenerator(String base,
-                  String authTkn) {
+    LinkGenerator(String base, String authTkn) 
+    {
         StringBuilder sb = new StringBuilder();
         sb.append("https://");
         sb.append(base);
         sb.append("/quarantine/manageuser?");
         sb.append(WebConstants.AUTH_TOKEN_RP);
         sb.append('=');
-        sb.append(URLEncoder.encode(authTkn));
+        try { 
+        	sb.append(URLEncoder.encode(authTkn,"UTF-8"));
+        } catch(java.io.UnsupportedEncodingException e) {
+        	logger.warn("Unsupported Encoding:",e);
+        }
+
         m_urlBase = sb.toString();
     }
 
@@ -86,7 +96,11 @@ public class LinkGenerator {
         StringBuilder sb = new StringBuilder();
         sb.append(base);
         sb.append('&').append(name).append('=');
-        sb.append(URLEncoder.encode(value));
+        try {
+        	sb.append(URLEncoder.encode(value,"UTF-8"));
+        } catch (UnsupportedEncodingException e) {	
+        	logger.warn("Unsupported Encoding:",e);
+        }
         return sb.toString();
     }
 

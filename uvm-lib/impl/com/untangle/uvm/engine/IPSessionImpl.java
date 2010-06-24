@@ -651,7 +651,8 @@ abstract class IPSessionImpl
                 warn("ignoring readEvent called for disabled side " + side);
                 return;
             }
-            IncomingSocketQueue ourin, otherin;
+            @SuppressWarnings("unused")
+			IncomingSocketQueue ourin, otherin;
             OutgoingSocketQueue ourout, otherout;
             OutgoingSocketQueue cout = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
             OutgoingSocketQueue sout = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();

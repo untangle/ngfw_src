@@ -20,11 +20,11 @@ package com.untangle.jnetcap;
 
 import java.net.InetAddress;
 
-/* XXX This is not a good name */
 /* This should probably be more generic, but it doesn't exactly apply for TCP, it is mainly only
  * for ICMP and UDP.  TCP packets died above netcap when we stopped catching SYN/ACKS *
  * All of the methods apply for TCP except for the send method which should only be for UDP traffic
  * objects */
+/* XXX This is not a good name */
 /* XXX Could potentially be abstract */
 public class IPTraffic {
     /**
@@ -40,8 +40,10 @@ public class IPTraffic {
     private static final int FLAG_MARK_EN   = 0x006 | LOCKABLE_MASK;
     private static final int FLAG_MARK      = 0x007 | LOCKABLE_MASK;
     private static final int FLAG_PROTOCOL  = 0x008;    
-    private static final int FLAG_MASK      = 0x0FF | LOCKABLE_MASK;
-    private static final int FLAG_SRC       = 0x100;
+    @SuppressWarnings("unused")
+	private static final int FLAG_MASK      = 0x0FF | LOCKABLE_MASK;
+    @SuppressWarnings("unused")
+	private static final int FLAG_SRC       = 0x100;
     private static final int FLAG_SRC_MASK  = 0x100;
 
     private final MutableEndpoint src;

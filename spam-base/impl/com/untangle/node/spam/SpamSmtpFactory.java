@@ -28,7 +28,6 @@ import com.untangle.node.mail.papi.safelist.SafelistNodeView;
 import com.untangle.node.mail.papi.smtp.sapi.Session;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
-import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.TCPSession;
 
@@ -41,8 +40,8 @@ public class SpamSmtpFactory implements TokenHandlerFactory
     private SafelistNodeView m_safelist;
     private SpamNodeImpl m_spamImpl;
 
-    public SpamSmtpFactory(SpamNodeImpl impl) {
-        Policy p = impl.getTid().getPolicy();
+    public SpamSmtpFactory(SpamNodeImpl impl) 
+    {
         m_mailExport = MailExportFactory.factory().getExport();
         m_quarantine = m_mailExport.getQuarantineNodeView();
         m_safelist = m_mailExport.getSafelistNodeView();

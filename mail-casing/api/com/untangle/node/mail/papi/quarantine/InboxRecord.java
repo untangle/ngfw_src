@@ -141,10 +141,6 @@ public abstract class InboxRecord
         } catch(Exception ex) { return "<unknown>"; }
     }
 
-    public final void setFormattedDate(String date) {
-        String dummy = date;
-    }
-
     public final String getFormattedTime() {
         try {
             Date iDate = new Date(getInternDate());
@@ -153,20 +149,12 @@ public abstract class InboxRecord
         } catch(Exception ex) { return "<unknown>"; }
     }
 
-    public final void setFormattedTime(String time) {
-        String dummy = time;
-    }
-
     // need get and set pair prefixes for velocity
     public final String getFormattedSize() {
         try {
             // in kilobytes
             return String.format("%01.1f", new Float(getSize() / 1024.0));
         } catch(Exception ex) { return "<unknown>"; }
-    }
-
-    public final void setFormattedSize(String size) {
-        String dummy = size;
     }
 
     @Override

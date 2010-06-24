@@ -150,7 +150,6 @@ public class ParamList {
         for(ParamKVP pkvp : m_map.values()) {
             sb.append("; ");
             thisLineLen+=2;
-            int valLen = 0;
 
             String val = MIMEUtil.headerQuoteIfNeeded(pkvp.val);
             if((thisLineLen +

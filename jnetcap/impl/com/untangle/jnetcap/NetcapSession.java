@@ -44,7 +44,8 @@ public abstract class NetcapSession {
     private final static int FLAG_NAT_TO_PORT   = 22;
 
     /* This is the mask for the remove the client/server parts */
-    private final static int FLAG_MASK        = 0xFFF;
+    @SuppressWarnings("unused")
+	private final static int FLAG_MASK        = 0xFFF;
 
     protected final Endpoints clientSide;
     protected final Endpoints serverSide;
@@ -66,7 +67,7 @@ public abstract class NetcapSession {
         /* Create the server and client ICMP mailboxes */
         icmpClientMailbox = new ICMPMailbox( new CPointer( icmpMailbox( true )));
         icmpServerMailbox = new ICMPMailbox( new CPointer( icmpMailbox( false )));
-	updateNatInfo();
+        updateNatInfo();
     }
     
     /* Returns one of Netcap.IPPROTO_UDP, Netcap.IPPROTO_TCP, Netcap.IPPROTO_ICMP */

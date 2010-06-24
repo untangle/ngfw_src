@@ -174,11 +174,8 @@ public class PortServiceNames {
 
 
     // For testing.
-    public static void main(String[] args) throws IOException {
-
-        int portUserTest, portOk, portFail;
-        int errorCount = 0;
-
+    public static void main(String[] args) throws IOException 
+    {
         try {
             System.out.println("Port\t Name");
             PortServiceNames psn = get();

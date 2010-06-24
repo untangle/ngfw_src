@@ -96,8 +96,6 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
     {
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);
 
-        Calendar c = Calendar.getInstance();
-
         List<DateItem> l = new ArrayList<DateItem>();
 
         if (REPORTS_DIR.exists()) {
@@ -354,13 +352,9 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return rv;
     }
 
-    private ApplicationData readXml(Date d, int numDays, String appName,
-                                    String type, String value)
+    private ApplicationData readXml(Date d, int numDays, String appName, String type, String value)
     {
-        ReportXmlHandler h = new ReportXmlHandler();
-
-        File f = new File(getAppDir(d, numDays, appName, type, value)
-                          + "/report.xml");
+        File f = new File(getAppDir(d, numDays, appName, type, value) + "/report.xml");
 
         logger.debug("Trying to XML file '" + f + "'");
 

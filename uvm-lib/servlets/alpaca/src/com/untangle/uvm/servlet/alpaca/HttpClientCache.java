@@ -32,10 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.log4j.Logger;
 
@@ -111,8 +108,6 @@ class HttpClientCache
     private HttpClient makeNewClient()
     {
         HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
-        HttpState state = client.getState();
-        LocalUvmContext ctx = LocalUvmContextFactory.context();
 
         return client;
     }

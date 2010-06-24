@@ -85,7 +85,6 @@ public class UvmRepositorySelector implements RepositorySelector
         synchronized (repositories) {
             hier = repositories.get(ctx);
             if (null == hier) {
-                UvmLoggingContextFactory o = currentContextFactory.get();
                 hier = new UvmHierarchy(ctx);
                 hier.configure();
                 repositories.put(ctx, hier);
@@ -263,8 +262,6 @@ public class UvmRepositorySelector implements RepositorySelector
                 public String getConfigName() { return "log4j-uvm.xml"; }
                 public String getFileName() { return "uvm"; }
                 public String getName() { return "uvm"; }
-
-                public UvmLoggingContext get() { return this; }
             };
 
         UVM_CONTEXT_FACTORY = new UvmLoggingContextFactory()

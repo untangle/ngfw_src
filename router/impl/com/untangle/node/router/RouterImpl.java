@@ -18,9 +18,7 @@
 package com.untangle.node.router;
 
 import com.untangle.node.token.TokenAdaptor;
-import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.UvmState;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
 import com.untangle.uvm.logging.EventLogger;
@@ -166,10 +164,6 @@ public class RouterImpl extends AbstractNode implements Router
     {
         /* Kill all active sessions */
         shutdownMatchingSessions();
-
-        LocalUvmContext context = LocalUvmContextFactory.context();
-
-        UvmState state = context.state();
 
         dhcpMonitor.stop();
 

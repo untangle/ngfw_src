@@ -374,8 +374,8 @@ public class SpywareHttpHandler extends HttpStateMachine
                 return c; // not a match
             }
 
-            int cs = m.start();
-            int ce = m.end();
+            @SuppressWarnings("unused")
+			int cs = m.start();
 
             boolean block = node.getBaseSettings().getBlockAllActiveX();
             String ident = null;

@@ -174,7 +174,6 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
 
         // EventCache methods ------------------------------------------------
         public void log(E e) { }
-        public void checkCold() { }
         public void setEventLogger(EventLoggerImpl<E> el) { }
     }
 

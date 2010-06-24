@@ -282,24 +282,19 @@ public class ContentTypeHeaderField
         return super.getParamParsePolicy(paramName);
     }
 
-    public static void main(String[] args) throws Exception {
-        String crlf = "\r\n";
+    public static void main(String[] args) throws Exception 
+    {
         test("text/plain");
-        test(
-             "multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP");
-        test(
-             "multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP;name=a b c;charset=US-ASCII");
-        test(
-             "multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP;name=a b c; charset=US-ASCII");
-        test(
-             "multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP;name=a b c; charset=US-ASCII (plain text) goo=doo");
-        test(
-             "multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP; foo=\"moo\"");
-        test(
-             "multipart/mixed; a b=\"doo\"; " +
-             "boundary=------------070407010503030002060104 xRND_CRAP; foo=\"moo\"");
+        test("multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP");
+        test("multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP;name=a b c;charset=US-ASCII");
+        test("multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP;name=a b c; charset=US-ASCII");
+        test("multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP;name=a b c; charset=US-ASCII (plain text) goo=doo");
+        test("multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP; foo=\"moo\"");
+        test("multipart/mixed; a b=\"doo\"; " + "boundary=------------070407010503030002060104 xRND_CRAP; foo=\"moo\"");
     }
-    public static void test(String s) throws Exception {
+    
+    public static void test(String s) throws Exception 
+    {
         System.out.println("\n\n========================\n" + s + "\n\n");
         ContentTypeHeaderField hf = new ContentTypeHeaderField();
         hf.assignFromString(s, true);

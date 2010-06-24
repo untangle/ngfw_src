@@ -68,7 +68,8 @@ public class TransactionRunner
      * @return boolean if the transaction was completed, false if
      * rolled back.
      */
-    public boolean runTransaction(TransactionWork tw)
+    @SuppressWarnings("deprecation")
+	public boolean runTransaction(TransactionWork tw)
     {
         TransactionException transExn = null;
 

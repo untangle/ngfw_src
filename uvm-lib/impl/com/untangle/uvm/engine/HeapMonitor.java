@@ -35,7 +35,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 
 /**
  * Class that monitors the total memory size and the prints an error message if grows
- * to quickly.
+ * too quickly.
  */
 class HeapMonitor
 {
@@ -235,8 +235,6 @@ class HeapMonitor
 
         public void run()
         {
-            Runtime runtime = Runtime.getRuntime();
-        
             lastMemory = getMemoryUsageBytes();
             lastRead = System.currentTimeMillis();
             nextTrigger = 0;

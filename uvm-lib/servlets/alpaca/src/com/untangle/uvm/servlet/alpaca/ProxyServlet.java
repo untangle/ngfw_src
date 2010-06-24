@@ -96,12 +96,10 @@ public class ProxyServlet extends HttpServlet
         }
     }
 
-    private void doIt(HttpMethod method, HttpServletRequest req,
-                      HttpServletResponse resp)
+    @SuppressWarnings("unused")
+    private void doIt(HttpMethod method, HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
-        LocalUvmContext ctx = LocalUvmContextFactory.context();
-
         HttpSession s = req.getSession();
 
         HttpClient httpClient = clientCache.getClient(req, resp);
@@ -112,7 +110,7 @@ public class ProxyServlet extends HttpServlet
 
         try {
             copyHeaders(req, method);
-            int rc = httpClient.executeMethod(method);
+			int rc = httpClient.executeMethod(method);
             is = method.getResponseBodyAsStream();
 
             StatusLine sl = method.getStatusLine();

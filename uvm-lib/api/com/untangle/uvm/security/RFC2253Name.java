@@ -188,11 +188,11 @@ public class RFC2253Name implements java.io.Serializable {
      *
      * @return the String
      */
-    public String toRFC2253String() {
+    public String toRFC2253String() 
+    {
         try {
             List<Rdn> rdns = new ArrayList<Rdn>();
 
-            int index = 0;
             for(Pair<String, String> entry : m_members) {
                 rdns.add(new Rdn(entry.a, entry.b));
             }

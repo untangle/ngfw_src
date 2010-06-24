@@ -84,10 +84,6 @@ public final class Inbox implements Serializable
         } catch(Exception ex) { return "<unknown>"; }
     }
 
-    public final void setFormattedTotalSz(String totalSz) {
-        String dummy = totalSz;
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

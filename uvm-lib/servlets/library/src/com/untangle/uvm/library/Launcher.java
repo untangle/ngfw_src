@@ -164,7 +164,6 @@ public class Launcher extends HttpServlet
 
     private URL getActionURL( HttpServletRequest request, String action, String mackageName ) throws MalformedURLException
     {
-        LocalUvmContext context = LocalUvmContextFactory.context();
         String url = System.getProperty(PROPERTY_STORE_URL);
         if (url == null)
             url = DEFAULT_STORE_URL;

@@ -17,8 +17,8 @@
  */
 package com.untangle.node.router;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.TCPSession;
@@ -31,7 +31,7 @@ import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
-import org.apache.log4j.Logger;
+
 
 class RouterFtpHandler extends FtpStateMachine
 {
@@ -168,8 +168,6 @@ class RouterFtpHandler extends FtpStateMachine
             return new TokenResult( null, new Token[] { command } );
         }
 
-        TCPSession session = getSession();
-
         try {
             addr = command.getSocketAddress();
         } catch ( ParseException e ) {
@@ -182,8 +180,7 @@ class RouterFtpHandler extends FtpStateMachine
             return SYNTAX_REPLY;
         }
 
-        InetAddress ip;
-        if (( ip = addr.getAddress()) == null ) {
+        if (addr.getAddress() == null ) {
             logger.warn( "Error parsing port command(null ip address)" );
             return SYNTAX_REPLY;
         }
@@ -256,10 +253,10 @@ class RouterFtpHandler extends FtpStateMachine
         return handlePortCommand( command );
     }
 
-    private TokenResult eprtReply( FtpReply reply ) throws TokenException
-    {
-        return new TokenResult( new Token[] { reply }, null );
-    }
+//    private TokenResult eprtReply( FtpReply reply ) throws TokenException
+//    {
+//        return new TokenResult( new Token[] { reply }, null );
+//    }
 
     private TokenResult pasvCommand( FtpCommand command ) throws TokenException
     {
@@ -269,8 +266,6 @@ class RouterFtpHandler extends FtpStateMachine
     private TokenResult pasvReply( FtpReply reply ) throws TokenException
     {
         InetSocketAddress addr;
-
-        TCPSession session = getSession();
 
         if ( !updateSessionData()) {
             logger.debug( "Ignoring unmodified session" );
@@ -288,8 +283,7 @@ class RouterFtpHandler extends FtpStateMachine
         }
 
         /* Verify that the server is going to the same place */
-        InetAddress ip;
-        if (( ip = addr.getAddress()) == null ) {
+        if (addr.getAddress() == null ) {
             throw new TokenException( "wildcard address" );
         }
 

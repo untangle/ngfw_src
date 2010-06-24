@@ -19,6 +19,7 @@ package com.untangle.node.mail.web.euv.tags;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import javax.servlet.ServletRequest;
@@ -26,10 +27,13 @@ import javax.servlet.jsp.PageContext;
 
 import com.untangle.node.mail.papi.quarantine.InboxRecordCursor;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 
 public class QuarantineFunctions
 {
+    private static final Logger logger = Logger.getLogger(QuarantineFunctions.class);
+    
     private static final String SL_KEY = "untangle.safelist.contents.";
     private static final String INBOX_CURSOR_KEY = "untangle.inbox_cursor";
     private static final String REMAPS_KEY = "untangle.remapps.ReceivingRemapsListTag";
@@ -42,7 +46,13 @@ public class QuarantineFunctions
         String remapped = RemappedToTag.getCurrent(pageContext.getRequest());
         if ( remapped == null ) return null;
 
-        if ( isEncoded ) remapped = URLEncoder.encode( remapped );
+        if ( isEncoded ) {
+        	try {
+        		remapped = URLEncoder.encode( remapped , "UTF-8");
+        	} catch (UnsupportedEncodingException e) {	
+            	logger.warn("Unsupported Encoding:",e);
+            }	
+        }
             
         return remapped;
     }

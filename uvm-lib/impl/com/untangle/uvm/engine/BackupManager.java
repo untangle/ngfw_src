@@ -27,27 +27,19 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.util.IOUtil;
 import com.untangle.node.util.SimpleExec;
-import com.untangle.uvm.LocalUvmContextFactory;
-
 
 /**
  * Helper class to do backup/restore
  */
 class BackupManager
 {
-
-    private static final String OLD_BACKUP_SCRIPT;
     private static final String BACKUP_SCRIPT;
     private static final String RESTORE_SCRIPT;
-    private static final String LOCAL_ARG = "local";
-    private static final String USB_ARG = "usb";
 
     private final Logger m_logger =
         Logger.getLogger(BackupManager.class);
 
     static {
-        OLD_BACKUP_SCRIPT = System.getProperty("uvm.home")
-            + "/../../bin/uvmdb-backup";
         BACKUP_SCRIPT = System.getProperty("uvm.home")
             + "/bin/ut-backup-bundled.sh";
         RESTORE_SCRIPT = System.getProperty("uvm.home")
@@ -187,22 +179,4 @@ class BackupManager
             throw new IOException("Unable to create backup file - can't transfer to client.");//Generic, in case it ever gets shown in the UI
         }
     }
-
-    private void backup(boolean local) throws IOException {
-
-        Process p = LocalUvmContextFactory.context().exec(new String[] { OLD_BACKUP_SCRIPT, local ? LOCAL_ARG : USB_ARG });
-        for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
-
-        while (true) {
-            try {
-                int exitValue = p.waitFor();
-                if (0 != exitValue) {
-                    throw new IOException("dump not successful");
-                } else {
-                    return;
-                }
-            } catch (InterruptedException exn) { }
-        }
-    }
-
 }

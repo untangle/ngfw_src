@@ -536,7 +536,6 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
 
         case REQ_BODY_END_STATE:
             if (Mode.BLOCKED != requestMode) {
-                EndMarker em = (EndMarker)token;
                 Mode preMode = requestMode;
                 doRequestBodyEnd();
 

@@ -47,7 +47,6 @@ import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.util.I18nUtil;
@@ -198,9 +197,7 @@ public abstract class VirusNodeImpl extends AbstractNode
 
         this.replacementGenerator = new VirusReplacementGenerator(getTid());
 
-        NodeContext tctx = getNodeContext();
-        eventLogger = EventLoggerFactory.factory()
-            .getEventLogger(getNodeContext());
+        eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
         String vendor = scanner.getVendorName();
 

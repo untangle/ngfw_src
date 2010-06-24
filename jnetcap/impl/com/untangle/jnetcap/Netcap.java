@@ -200,7 +200,6 @@ public final class Netcap {
      */
     public List<InterfaceData> getInterfaceData( String interfaceString ) throws JNetcapException
     {
-        InetAddress address;
         try {
             /* XXXX 3 is the magic number, this magic number and this comment makes no sense */
             long input[] = new long[MAX_INTERFACE*3];

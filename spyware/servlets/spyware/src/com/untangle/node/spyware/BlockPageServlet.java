@@ -44,7 +44,6 @@ public class BlockPageServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        RemoteBrandingManager bm = uvm.brandingManager();
         LocalNodeManager nm = uvm.localNodeManager();
 
         Map<String,String> i18n_map = LocalUvmContextFactory.context().
@@ -63,7 +62,6 @@ public class BlockPageServlet extends HttpServlet
         SpywareBlockDetails blockDetails = null;
         UserWhitelistMode whitelistMode = null;
 
-        String reason = null;
         if ( !(oNode instanceof Spyware) || ( oNode == null )) {
             response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
                                 I18nUtil.tr( "Feature is not installed.", i18n_map ));

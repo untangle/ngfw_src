@@ -62,7 +62,6 @@ public class ClamScanner implements VirusScanner
             BufferedReader in = new BufferedReader(new InputStreamReader(is));
 
             String line;
-            int i = -1;
 
             /**
              * Drain clamdscan output, one line like; 'ClamAV 0.87/1134/Fri Oct 14 01:07:44 2005'
@@ -70,10 +69,10 @@ public class ClamScanner implements VirusScanner
             try {
                 if ((line = in.readLine()) != null) {
                     StringTokenizer st = new StringTokenizer(line, "/");
-                    String str = null;
 
                     if (st.hasMoreTokens()) {
-                        String clamVersion = st.nextToken();
+                        @SuppressWarnings("unused")
+						String clamVersion = st.nextToken();
                         if (st.hasMoreTokens()) {
                             versionNumber = st.nextToken();
                             if (st.hasMoreTokens()) {

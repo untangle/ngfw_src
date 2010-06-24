@@ -231,11 +231,8 @@ public class IMAPTokenizerTest {
     }
 
 
-    private boolean test(byte[] bytes,
-                         TokenConsumer...tokens) {
-
-        int errCount = 0;
-
+    private boolean test(byte[] bytes, TokenConsumer...tokens) 
+    {
         //    System.out.println("----------Test------------");
 
         for(int i = 1; i<bytes.length-1; i++) {

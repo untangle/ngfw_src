@@ -125,13 +125,8 @@ public class LogIteration
         int accepted = 0;
         int limited = 0;
         int dropped = 0;
-
         int rejected = 0;
-        int relaxed = 0;
-        int lax = 0;
-        int tight = 0;
-        int closed = 0;
-
+        
         if (( length = globals_js.length()) > 0 ) {
             for ( int c = 0 ; c < length ; c++ ) {
                 JSONArray temp_js = globals_js.getJSONArray( c );

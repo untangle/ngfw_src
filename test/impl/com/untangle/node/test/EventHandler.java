@@ -301,13 +301,9 @@ public class EventHandler extends AbstractEventHandler
     public void handleUDPClientPacket(UDPPacketEvent event)
         throws MPipeException
     {
-        UDPSession sess = event.session();
         ByteBuffer packet = event.packet();
         if (!settings.isQuiet())
             logger.debug("Passing packet size " + packet.remaining() + " bytes to server");
-        // if (sess.doubleBuffered()) {
-        // copy it
-        // return new IPDataResult(new ByteBuffer[] { copy_of_packet });
 
         // Send it through;
         super.handleUDPClientPacket(event);
@@ -316,13 +312,9 @@ public class EventHandler extends AbstractEventHandler
     public void handleUDPServerPacket(UDPPacketEvent event)
         throws MPipeException
     {
-        UDPSession sess = event.session();
         ByteBuffer packet = event.packet();
         if (!settings.isQuiet())
             logger.debug("Passing packet size " + packet.remaining() + " bytes to client");
-        // if (sess.doubleBuffered()) {
-        // copy it
-        // return new IPDataResult(new ByteBuffer[] { copy_of_packet });
 
         // Send it through;
         super.handleUDPServerPacket(event);

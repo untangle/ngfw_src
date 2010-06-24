@@ -319,6 +319,7 @@ public class OpenSSLWrapper {
               oldCertFile.renameTo(new File(filename+".old"));
               File newCertFile = new File(filename+".new");
               newCertFile.renameTo(new File(filename));
+              @SuppressWarnings("unused")
               SimpleExec.SimpleExecResult resultRestartApache = SimpleExec.exec("apache2ctl", 
                                                                                 new String[] {
                                                                                   "graceful"
@@ -516,7 +517,8 @@ public class OpenSSLWrapper {
 	    } else {
 		throw new IOException("Error verifying cert against private key and CA");
 	    }
-            SimpleExec.SimpleExecResult resultRestartApache = SimpleExec.exec("apache2ctl", 
+            @SuppressWarnings("unused")
+			SimpleExec.SimpleExecResult resultRestartApache = SimpleExec.exec("apache2ctl", 
                                                                               new String[] {
                                                                                 "graceful"
                                                                               },

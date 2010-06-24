@@ -153,7 +153,8 @@ class BypassMonitor {
      * consider two BypassedSites to be equal if the host and the URL
      * are equals, but we order them by creation time.
      */
-    private final class BypassedSite implements Comparable<BypassedSite> {
+    private final class BypassedSite implements Comparable<BypassedSite> 
+    {
         private String site;
         private InetAddress addr;
         private long creationTimeMillis;
@@ -162,10 +163,6 @@ class BypassMonitor {
             site = mySite;
             addr = myAddr;
             creationTimeMillis = System.nanoTime() / 1000000L;
-        }
-
-        public boolean equals(BypassedSite other) {
-            return ((site == other.site) && (addr == other.addr));
         }
 
         public int hashCode() {

@@ -100,7 +100,7 @@ public /*temp*/ class StoreSummaryDriver
             BufferedReader reader = new BufferedReader(new InputStreamReader(bIn));
 
             //Read version
-            int version = readVersion(reader);
+            //int version = readVersion(reader);
             //Someday, we'll care about version...
 
             StoreSummary ret = new StoreSummary();

@@ -268,6 +268,7 @@ public class EmailAddressHeaderField
      * @param skipBadAddresses if true, bad addresses will be skipped (no exceptions thrown)
      * @return a Listof EmailAddresses.
      */
+    @SuppressWarnings("unused")
     public static List<EmailAddress> parseHeaderLine(String line,
                                                      boolean skipBadAddresses)
         throws HeaderParseException {

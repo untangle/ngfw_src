@@ -242,7 +242,8 @@ public class ScriptWriter
                 exec( new String[] { "/bin/chmod", permissions, fileName } );
 
             /* Read out standard error and input */
-            String line;
+            @SuppressWarnings("unused")
+			String line;
             BufferedReader output = new BufferedReader(new InputStreamReader(p.getErrorStream()));
             while (( line = output.readLine()) != null );
             output = new BufferedReader(new InputStreamReader(p.getInputStream()));

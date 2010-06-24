@@ -189,7 +189,6 @@ public class SystemStatus
         String line;
         Process proc;
         BufferedReader input;
-        int i = 0;
 
         proc = null;
         try {
@@ -394,10 +393,6 @@ public class SystemStatus
     private String _buildUVMStat ()
     {
         StringBuilder sb = new StringBuilder();
-        String line;
-        Process proc;
-        BufferedReader input;
-        int i = 0;
         try {
 
             /**

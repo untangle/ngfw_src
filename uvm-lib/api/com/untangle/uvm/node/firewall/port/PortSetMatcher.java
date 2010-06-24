@@ -110,8 +110,6 @@ public final class PortSetMatcher extends PortDBMatcher
     {
         if ( portSet == null ) return PortSimpleMatcher.getNilMatcher();
         
-        PortMatcherUtil pmu = PortMatcherUtil.getInstance();
-        
         String user = "";
 
         for ( Integer port : portSet ) {

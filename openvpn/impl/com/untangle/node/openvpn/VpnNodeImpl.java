@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -461,11 +462,19 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         case SETUP_EXE : fileName = "setup.exe";  break;
         case ZIP: fileName = "config.zip"; break;
         }
+
+        String key = "";
+        String client = "";
+        try {
+        	key = URLEncoder.encode( this.adminDownloadClientKey , "UTF-8");
+        	client = URLEncoder.encode( clientName , "UTF-8");
+        } catch(java.io.UnsupportedEncodingException e) {
+        	logger.warn("Unsupported Encoding:",e);
+        }
         
         return WEB_APP_PATH + "/" + fileName + 
-            "?" + Constants.ADMIN_DOWNLOAD_CLIENT_KEY + "=" + 
-            URLEncoder.encode( this.adminDownloadClientKey ) + 
-            "&" + Constants.ADMIN_DOWNLOAD_CLIENT_PARAM + "=" + URLEncoder.encode( clientName );
+            "?" + Constants.ADMIN_DOWNLOAD_CLIENT_KEY + "=" + key + 
+            "&" + Constants.ADMIN_DOWNLOAD_CLIENT_PARAM + "=" + client;
     }
 
     /* Returns true if this is the correct authentication key for
@@ -774,8 +783,15 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     {
         generateAdminClientKey();
         
+        String key = "";
+        try {
+        	key = URLEncoder.encode( this.adminDownloadClientKey , "UTF-8");
+        } catch(java.io.UnsupportedEncodingException e) {
+        	logger.warn("Unsupported Encoding:",e);
+        }
+        
         return WEB_APP_PATH + "/clientSetup?" +
-            Constants.ADMIN_DOWNLOAD_CLIENT_KEY + "=" + URLEncoder.encode( this.adminDownloadClientKey );
+            Constants.ADMIN_DOWNLOAD_CLIENT_KEY + "=" + key;
     }
 
     public void completeConfig() throws Exception

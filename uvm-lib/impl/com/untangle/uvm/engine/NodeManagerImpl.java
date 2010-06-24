@@ -636,8 +636,6 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         Map<Tid, NodeDesc> tDescs = loadNodeDescs(unloaded);
         Set<String> loadedParents = new HashSet<String>(unloaded.size());
 
-        UvmContextImpl mctx = UvmContextImpl.getInstance();
-
         while (0 < unloaded.size()) {
             List<NodePersistentState> startQueue = getLoadable(unloaded,
                                                                tDescs,

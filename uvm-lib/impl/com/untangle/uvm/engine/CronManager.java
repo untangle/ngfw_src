@@ -61,7 +61,6 @@ class CronManager
     {
         TimerTask task = cj.getTask();
         task.cancel();
-        Period p = cj.getPeriod();
         schedule(cj);
     }
 

@@ -93,8 +93,8 @@ public class QuarantineStore {
 
     private QuarantineEjectionHandler m_deleter = new DeletingEjectionHandler();
 
-    public QuarantineStore(File rootDir) {
-        boolean knownHosed = false;
+    public QuarantineStore(File rootDir) 
+    {
         m_rootDir = rootDir;
 
         if(!m_rootDir.exists()) {

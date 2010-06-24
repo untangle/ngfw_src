@@ -85,7 +85,6 @@ public class VirusPopHandler extends PopStateMachine
 
             VirusScannerResult zCurResult;
             File zMPFile;
-            boolean bWrap;
 
             for (MIMEPart zMPart : azMPart) {
                 if (true == MIMEUtil.shouldScan(zMPart)) {

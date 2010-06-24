@@ -149,7 +149,8 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
 
         TransactionWork tw = new TransactionWork()
             {
-                public boolean doWork(Session s) throws SQLException
+                @SuppressWarnings("deprecation")
+				public boolean doWork(Session s) throws SQLException
                 {
                     IntfEnum intfEnum = LocalUvmContextFactory.context().localIntfManager().getIntfEnum();
 

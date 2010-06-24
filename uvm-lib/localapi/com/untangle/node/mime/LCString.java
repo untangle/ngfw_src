@@ -67,7 +67,6 @@ public class LCString {
             return false;
         }
         if(obj instanceof LCString) {
-            LCString other = (LCString) obj;
             return str.equals(((LCString) obj).str);
         }
         if(obj instanceof String) {

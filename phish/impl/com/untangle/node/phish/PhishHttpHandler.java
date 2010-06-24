@@ -48,8 +48,6 @@ public class PhishHttpHandler extends HttpStateMachine
     @Override
     protected RequestLineToken doRequestLine(RequestLineToken requestLine)
     {
-        String path = requestLine.getRequestUri().getPath();
-
         return requestLine;
     }
 

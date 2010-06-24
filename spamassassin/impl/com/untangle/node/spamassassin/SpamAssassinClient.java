@@ -23,9 +23,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.lang.InterruptedException;
 import java.net.SocketException;
@@ -177,10 +175,9 @@ public final class SpamAssassinClient implements Runnable {
         return dbgName;
     }
 
-    public void run() {
+    public void run() 
+    {
         Socket socket;
-        OutputStream oSocketStream;
-        InputStream iSocketStream;
         BufferedOutputStream bufOutputStream;
         BufferedReader bufReader;
 

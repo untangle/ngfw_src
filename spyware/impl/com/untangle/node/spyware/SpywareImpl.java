@@ -62,7 +62,6 @@ import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.node.Validator;
-import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
@@ -164,7 +163,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
                     while (fail) {
                         Map<String,String> m = new HashMap<String,String>();
                         m.put("key", uvm.getActivationKey());
-                        ToolboxManager tm = uvm.toolboxManager();
                         m.put("client-version", uvm.getFullVersion());
 
                         try {
@@ -904,7 +902,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
         IPMaddr maddr;
         try {
             maddr = IPMaddr.parse(addr);
-            int i = maddr.maskNumBits(); /* if bad subnet throws exception */
+            @SuppressWarnings("unused")
+			int i = maddr.maskNumBits(); /* if bad subnet throws exception */
         } catch (Exception e) {
             return null;
         }
@@ -1094,7 +1093,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
             HttpClient hc = new HttpClient();
             String url = BLACKLIST_HOME.toString() + "/list";
             HttpMethod get = new GetMethod(url);
-            int rc = hc.executeMethod(get);
+            @SuppressWarnings("unused")
+			int rc = hc.executeMethod(get);
             InputStream is = get.getResponseBodyAsStream();
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);

@@ -266,7 +266,6 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)
         throws MPipeException
     {
-        String sideName = (side == CLIENT ? "client" : "server");
         assert out != null;
         if (out.isFull()) {
             if (warnIfUnable)
@@ -358,7 +357,6 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         throws MPipeException
     {
         int numRead = 0;
-        String sideName = (side == CLIENT ? "client" : "server");
 
         assert in != null;
         if (in.isEmpty()) {
@@ -392,7 +390,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         IPPacketHeader pheader = new IPPacketHeader(pc.ttl(), pc.tos(), pc.options());
         byte[] pcdata = pc.data();
         int pclimit = pc.limit();
-        int pccap = pcdata.length;
+        //int pccap = pcdata.length;
         int pcoffset = pc.offset();
         int pcsize = pclimit - pcoffset;
         if (pcoffset >= pclimit) {

@@ -64,7 +64,8 @@ public class ParseUnparse {
         System.out.println(mp.describe());
         System.out.println("================================");
         mp.changed();
-        File newFile = mp.toFile(new FileFactory() {
+        @SuppressWarnings("unused")
+		File newFile = mp.toFile(new FileFactory() {
                 public File createFile(String name)
                     throws IOException {
                     return createFile();

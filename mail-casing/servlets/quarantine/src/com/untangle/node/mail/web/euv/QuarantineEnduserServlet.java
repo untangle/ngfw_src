@@ -170,8 +170,6 @@ public class QuarantineEnduserServlet extends HttpServlet
             NodeContext tc = ctx.nodeManager().nodeContext(tid);
             MailNode mt = (MailNode) tc.node();
             m_mailNode = mt;
-            QuarantineSettings m_qSettings = mt.getMailNodeSettings().getQuarantineSettings();
-
             m_quarantine = mt.getQuarantineUserView();
             m_safelist = mt.getSafelistEndUserView();
         }
