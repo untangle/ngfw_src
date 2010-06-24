@@ -1126,7 +1126,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                                 ['duration',reports.numDays].join('='),
                                 ['aname',appName].join('='),
                             ].join('&');
-                            console.log(printargs);
+            //                            console.log(printargs);
             items.push({
                 html:'<a target="_print" href="?'+printargs+'" class="print small-right-margin">'+i18n._('Print')+'</a>',
                 colspan : 2        
