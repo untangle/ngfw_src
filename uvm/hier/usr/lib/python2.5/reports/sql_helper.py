@@ -334,7 +334,6 @@ def get_result_dictionary(curs):
 
 def get_averaged_query(sums, table_name, start_date, end_date,
                        extra_where = [],
-                       avgs = [],
                        extra_fields = [],
                        time_field = DEFAULT_TIME_FIELD,
                        time_interval = 60,
@@ -358,8 +357,6 @@ SELECT date(%%(start_date)s) +
         query += ", " + e
     for s in sums:
         query += ", " + s
-    for a in avgs:
-        query += ", " + a + " / %%(time_interval)s"
 
     query += """
 FROM %(table_name)s

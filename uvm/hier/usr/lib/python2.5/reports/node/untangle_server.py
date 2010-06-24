@@ -201,7 +201,7 @@ class MemoryUsage(Graph):
             q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date,
-                                                 avgs=sums)
+                                                 sums=sums)
             curs = conn.cursor()            
             curs.execute(q, h)
 
@@ -270,7 +270,7 @@ class LoadUsage(Graph):
             q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date,
-                                                 avgs=sums)
+                                                 sums=sums)
 
             curs = conn.cursor()
             curs.execute(q, h)
@@ -357,7 +357,7 @@ class CpuUsage(Graph):
             q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date,
-                                                 avgs=sums)
+                                                 sums=sums)
             curs = conn.cursor()            
             curs.execute(q, h)
 
@@ -427,7 +427,7 @@ class DiskUsage(Graph):
             q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date,
-                                                 avgs=sums)
+                                                 sums=sums)
 
             curs = conn.cursor()
             curs.execute(q, h)
@@ -500,7 +500,7 @@ class SwapUsage(Graph):
             q, h = sql_helper.get_averaged_query([], "reports.n_server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
                                                  end_date,
-                                                 avgs=sums)
+                                                 sums=sums)
             curs = conn.cursor()
             curs.execute(q, h)
 
