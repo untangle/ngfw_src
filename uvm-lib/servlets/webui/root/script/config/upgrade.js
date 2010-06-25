@@ -66,8 +66,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                                     var md = upgradeList[i];
 				    var mtype;
 				    var displayName = md.displayNane;
-                    displayName.replace("Untangle",main.getOemManager().getOemName());
-                    totalSize+=md.size;
+				    totalSize+=md.size;
 				    // Leave out only libitems
 				    switch (md.type) {
 				    case "LIB_ITEM":
@@ -88,10 +87,12 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
 				      break;
 				    }
 				    if (displayName == null) {
-				      if (md.shortDescription != null)
-					displayName = md.shortDescription;
-				      else
-					displayName = md.name;
+					if (md.shortDescription != null)
+					    displayName = md.shortDescription;
+					else
+					    displayName = md.name;
+				    } else {
+					displayName.replace("Untangle",main.getOemManager().getOemName());
 				    }
 				    somethingVisibleAdded = true;
 				    upgradeData.push({
@@ -138,7 +139,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 enableHdMenu : false,
                 enableColumnMove: false,
                 disableSelection: true,
-                tbar: [{xtype: 'tbtext', text: "."}],
+                tbar: [{xtype: 'tbtext', text: i18n._("Checking for upgrades...")}],
                 store : new Ext.data.Store({
                     proxy : new Ung.MemoryProxy({
                         root : 'list'
