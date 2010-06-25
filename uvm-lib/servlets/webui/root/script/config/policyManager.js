@@ -120,11 +120,16 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             /* This one should always reload policy management */
             if (this.getPolicyConfiguration(true).hasRackManagement) {
                 items.push(this.gridRacks);
+                items.push( this.gridRules );
             } else {
                 items.push(this.infoLabel);
+                /**
+                 * Grandfather - if you have free and more than one rule still show Rules (bug #7907)
+                 */
+                if (this.getPolicyConfiguration().userPolicyRules.list.length > 0)
+                    items.push( this.gridRules );
             }
 
-            items.push( this.gridRules );
 
             this.panelPolicyManagement = new Ext.Panel({
                 // private fields
@@ -140,34 +145,23 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         buildInfo : function() {
             var items = null;
             
-            if ( this.getPolicyManagerLicenseStatus().expired ) {
-                items = [{
-                    cls: 'description',
-                    border: false,
-                    html : this.i18n._( 'Need to create network-access policies by username or time of the week? Click on "More Info" to learn more.' )
-                },{
-                    xtype : 'button',
-                    text : this.i18n._( "More Info" ),
-                    handler : function() {
-                                var app = Ung.AppItem.getAppByLibItem("untangle-libitem-policy");
-                                if (app != null && app.libItem != null) {
-                            Ung.Window.cancelAction( this.isDirty(),
-                               function() {
-                                    app.linkToStoreFn();
-                               }
-                            );
-                                }
-                    }.createDelegate(this)
-                }];
-            } else {
-                items = [{
-                    cls: 'description',
-                    border: false,
-                    html : this.i18n._( 'Policy Manager is required to add additional racks/policies.' )
-                }];
-            }
+            items = [{
+                cls: 'description',
+                border: false,
+                html : this.i18n._( 'The Policy Manager application is required to create additional policies/racks. Policy Manager allows for the creation and management of different policies for different hosts, users, times of day, etc. ' )
+            },{
+                xtype : 'button',
+                text : this.i18n._( "More Info" ),
+                handler : function() {
+                    var app = Ung.AppItem.getAppByLibItem("untangle-libitem-policy");
+                    if (app != null && app.libItem != null) {
+                        Ung.Window.cancelAction( this.isDirty(), function() {app.linkToStoreFn();});
+                    }
+                }.createDelegate(this)
+            }];
+
             this.infoLabel = new Ext.form.FieldSet({
-                title : this.i18n._("Racks/Policies"),
+                title : this.i18n._("Racks / Policies"),
                 items : items,
                 autoHeight : true
             });
@@ -178,12 +172,12 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             this.gridRacks = new Ung.EditorGrid({
                 settingsCmp : this,
                 anchor :"100% 50%",
-                name : 'Racks',
+                name : "Racks / Policies",
                 height : 250,
                 bodyStyle : 'padding-bottom:15px;',
                 autoScroll : true,
                 parentId : this.getId(),
-                title : this.i18n._('Racks'),
+                title : this.i18n._('Racks / Policies'),
                 recordJavaClass : "com.untangle.uvm.policy.Policy",
                 emptyRow : {
                     "default" : false,
@@ -300,7 +294,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 },
                 addHandler : function() {
                     if (this.getPolicyManagerLicenseStatus(true).expired){
-                        this.showProfessionalMessage();
+                        this.showPolicyManagerRequired();
                     } else {
                         this.updateParentRackStore( this.editorRackCombo, new Ext.data.Record([]));
                         Ung.EditorGrid.prototype.addHandler.call(this.gridRacks);
@@ -308,7 +302,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 }.createDelegate(this),
                 editHandler : function(record) {
                     if (this.getPolicyManagerLicenseStatus(true).expired){
-                        this.showProfessionalMessage();
+                        this.showPolicyManagerRequired();
                     } else {
                         this.updateParentRackStore( this.editorRackCombo, record );
                         Ung.EditorGrid.prototype.editHandler.call(this.gridRacks,record);
@@ -317,7 +311,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 }.createDelegate(this),
                 deleteHandler : function(record) {
                     if (this.getPolicyManagerLicenseStatus(true).expired){
-                        this.showProfessionalMessage();
+                        this.showPolicyManagerRequired();
                     } else {
                         
                         Ung.EditorGrid.prototype.deleteHandler.call(this.gridRacks,record);
@@ -349,10 +343,10 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 this.gridRacks.getView().refresh(false);
             }.createDelegate(this);
         },
-        showProfessionalMessage : function(){
+        showPolicyManagerRequired : function(){
             Ext.MessageBox.show({
-                title: this.i18n._('Professional Package Feature'),
-                msg: this.i18n._('Need to create network-access policies by username or time of the week? Click on "More Info" to learn more.'),
+                title: this.i18n._('Policy Manager is Required'),
+                msg: this.i18n._( 'The Policy Manager application is required to create additional policies/racks. Policy Manager allows for the creation and management of different policies for different hosts, users, times of day, etc. ' ),
                 buttons: {ok:this.i18n._('More Info'), cancel:true},
                 fn: function(btn){
                     if(btn=='ok'){
