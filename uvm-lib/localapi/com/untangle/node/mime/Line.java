@@ -182,7 +182,8 @@ public class Line {
      * <code>len</code> includes any folding for InternetHeader lines.
      * However, they are not returned in the returned String
      */
-    private static String linesToString(Line[] lines,
+    @SuppressWarnings("unused")
+	private static String linesToString(Line[] lines,
                                         int startingAt,
                                         int len,
                                         boolean unfoldLines) {

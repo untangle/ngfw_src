@@ -37,12 +37,12 @@ public class PhishPopHandler extends SpamPopHandler
     PhishPopHandler(TCPSession session, PhishNode node, MailExport zMExport)
     {
         super(session, node, zMExport);
-        this.msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,MOD_BODY_TEMPLATE);
+        PhishPopHandler.msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,MOD_BODY_TEMPLATE);
     }
 
     @Override
     protected WrappedMessageGenerator getMsgGenerator() {
-        return this.msgGenerator;
+        return PhishPopHandler.msgGenerator;
     }
 
 }

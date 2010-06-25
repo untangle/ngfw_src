@@ -44,6 +44,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public abstract class VirusEvent extends LogEvent
 {
     // action types

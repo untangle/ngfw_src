@@ -50,6 +50,7 @@ import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 @MappedSuperclass
 public abstract class TrafficIntfRule extends TrafficRule
 {

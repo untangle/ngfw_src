@@ -21,6 +21,7 @@ package com.untangle.jnetcap;
 
 import java.net.InetAddress;
 
+@SuppressWarnings("unused") //JNI
 public class NetcapTCPSession extends NetcapSession
 {
     private static final int FLAG_FD                    = 32;
@@ -152,7 +153,7 @@ public class NetcapTCPSession extends NetcapSession
     }
 
     /* Deprecated (intf must be specified before completion) (made non-public) */
-    private void   serverComplete()
+	private void   serverComplete()
     {
         serverComplete( DEFAULT_SERVER_COMPLETE_FLAGS );
     }

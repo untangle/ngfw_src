@@ -188,7 +188,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
                         if (fail) {
                             logger.info("failed to update lists, retrying in 15 minutes");
                             try {
-                                Thread.currentThread().sleep(15 * 60 * 1000);
+                                Thread.currentThread();
+								Thread.sleep(15 * 60 * 1000);
                             } catch (InterruptedException exn) {
                                 logger.warn("could not sleep", exn);
                             }

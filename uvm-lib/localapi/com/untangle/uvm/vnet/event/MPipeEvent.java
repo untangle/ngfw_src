@@ -41,6 +41,7 @@ import com.untangle.uvm.vnet.MPipe;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public abstract class MPipeEvent extends java.util.EventObject
 {
     private MPipe mPipe;

@@ -39,6 +39,7 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Request;
@@ -75,7 +76,7 @@ public abstract class OutsideValve extends ValveBase
             String msg = request.getLocalPort() == DEFAULT_HTTP_PORT
                 ? httpErrorMessage() : outsideErrorMessage();
             request.setAttribute(LocalAppServerManager.UVM_WEB_MESSAGE_ATTR, msg);
-            response.sendError(response.SC_FORBIDDEN);
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 

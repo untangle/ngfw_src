@@ -41,6 +41,7 @@ import com.untangle.uvm.security.Tid;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 @Entity
 @Table(name="u_node_state_change", schema="events")
 class NodeStateChange extends LogEvent

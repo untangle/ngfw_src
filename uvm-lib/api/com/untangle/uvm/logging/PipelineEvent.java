@@ -47,6 +47,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 @MappedSuperclass
 public abstract class PipelineEvent extends LogEvent
 {

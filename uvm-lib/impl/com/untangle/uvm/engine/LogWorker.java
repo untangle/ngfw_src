@@ -203,7 +203,7 @@ class LogWorker implements Runnable
 
     void start()
     {
-        if (!loggingManager.isLoggingDisabled()) {
+        if (!RemoteLoggingManagerImpl.isLoggingDisabled()) {
             LocalUvmContextFactory.context().newThread(this).start();
         }
     }

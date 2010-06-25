@@ -48,12 +48,14 @@ public class Message implements Serializable
 {
     private final Date time = new Date();
 
-    private final String getMessageType()
+    @SuppressWarnings("unused")
+	private final String getMessageType()
     {
         return getClass().getName();
     }
 
-    private final Date getTime()
+    @SuppressWarnings("unused")
+	private final Date getTime()
     {
         return time;
     }

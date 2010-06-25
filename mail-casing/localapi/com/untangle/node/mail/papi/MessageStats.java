@@ -80,7 +80,8 @@ import javax.persistence.Table;
 
         /* public methods */
 
-        @Id
+        @SuppressWarnings("unused")
+		@Id
         @Column(name="id")
         @GeneratedValue
         private Long getId()
@@ -88,7 +89,8 @@ import javax.persistence.Table;
             return id;
         }
 
-        private void setId(Long id)
+        @SuppressWarnings("unused")
+		private void setId(Long id)
         {
             this.id = id;
         }

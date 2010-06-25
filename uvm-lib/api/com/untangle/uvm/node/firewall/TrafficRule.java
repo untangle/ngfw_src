@@ -53,6 +53,7 @@ import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 @MappedSuperclass
 abstract class TrafficRule extends Rule
 {

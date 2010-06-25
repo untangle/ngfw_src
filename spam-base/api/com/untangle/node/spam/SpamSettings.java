@@ -87,7 +87,8 @@ public class SpamSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    @Id
+    @SuppressWarnings("unused")
+	@Id
     @Column(name="settings_id")
     @GeneratedValue
     private Long getId()
@@ -95,7 +96,8 @@ public class SpamSettings implements Serializable
         return id;
     }
 
-    private void setId(Long id)
+    @SuppressWarnings("unused")
+	private void setId(Long id)
     {
         this.id = id;
     }

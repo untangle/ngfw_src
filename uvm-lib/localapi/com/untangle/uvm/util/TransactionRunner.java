@@ -92,7 +92,8 @@ public class TransactionRunner
             } catch (TransactionException exn) {
                 transExn = exn;
                 try {
-                    Thread.currentThread().sleep(SLEEP_TIMES[i]);
+                    Thread.currentThread();
+					Thread.sleep(SLEEP_TIMES[i]);
                 } catch (InterruptedException e) { /* keep going */ }
             } catch (Exception exn) {
                 logger.error("Hibernate error, see nested exception below", exn);

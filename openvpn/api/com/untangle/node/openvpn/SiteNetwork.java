@@ -33,6 +33,7 @@ import com.untangle.uvm.node.ValidateException;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 @MappedSuperclass
 public abstract class SiteNetwork extends Rule implements Validatable
 {

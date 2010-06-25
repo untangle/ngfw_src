@@ -46,7 +46,8 @@ class MackageState
         this.enabled = enabled;
     }
 
-    @Id
+    @SuppressWarnings("unused")
+	@Id
     @Column(name="id")
     @GeneratedValue
     private Long getId()
@@ -54,7 +55,8 @@ class MackageState
         return id;
     }
 
-    private void setId(Long id)
+    @SuppressWarnings("unused")
+	private void setId(Long id)
     {
         this.id = id;
     }

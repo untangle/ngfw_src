@@ -28,6 +28,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 
 // NOTE: for mutable objects, please at least override the deepCopy
+@SuppressWarnings("serial")
 public abstract class IntBasedUserType implements UserType, Serializable
 {
     private static final int[] SQL_TYPES = { Types.INTEGER };

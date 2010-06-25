@@ -27,6 +27,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
  * Conditionaly includes page chunk if
  * something is true (or false)
  */
+@SuppressWarnings("serial")
 public abstract class IfElseTag
     extends BodyTagSupport {
 

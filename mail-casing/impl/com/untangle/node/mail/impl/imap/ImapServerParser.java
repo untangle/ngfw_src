@@ -1202,38 +1202,52 @@ public class ImapServerParser
      * Little class to associate all
      * state with grabbing a message
      */
-    private class MessageGrabber {
-
+    private class MessageGrabber 
+    {
         final MessageBoundaryScanner scanner;
         final MIMEAccumulator accumulator;
         private boolean m_isMasterOfAccumulator = true;
         private final int m_totalMsgLen;
         private int m_msgReadSoFar;
 
-        MessageGrabber(int msgLength,
-                       MIMEAccumulator accumulator) {
+        MessageGrabber(int msgLength, MIMEAccumulator accumulator) 
+        {
             scanner = new MessageBoundaryScanner();
             this.accumulator = accumulator;
             this.m_totalMsgLen = msgLength;
             m_msgReadSoFar = 0;
 
         }
-        int getTotalMessageLength() {
+        
+        int getTotalMessageLength() 
+        {
             return m_totalMsgLen;
         }
-        boolean isAccumulatorHosed() {
+       
+        @SuppressWarnings("unused")
+		boolean isAccumulatorHosed() 
+        {
             return accumulator == null;
         }
-        boolean hasMsgRemaining() {
+       
+        boolean hasMsgRemaining() 
+        {
             return getMsgRemaining() > 0;
         }
-        int getMsgRemaining() {
+        
+        int getMsgRemaining() 
+        {
             return m_totalMsgLen - m_msgReadSoFar;
         }
-        void decrementMsgRemaining(int amt) {
+        
+        void decrementMsgRemaining(int amt) 
+        {
             m_msgReadSoFar+=amt;
         }
-        boolean isMasterOfAccumulator() {
+        
+        @SuppressWarnings("unused")
+		boolean isMasterOfAccumulator() 
+        {
             return m_isMasterOfAccumulator;
         }
         /**

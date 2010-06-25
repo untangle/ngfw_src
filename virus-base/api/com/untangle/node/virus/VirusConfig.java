@@ -78,7 +78,8 @@ public class VirusConfig implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    @Id
+    @SuppressWarnings("unused")
+	@Id
     @Column(name="config_id")
     @GeneratedValue
     private Long getId()
@@ -86,7 +87,8 @@ public class VirusConfig implements Serializable
         return id;
     }
 
-    private void setId(Long id)
+    @SuppressWarnings("unused")
+	private void setId(Long id)
     {
         this.id = id;
     }

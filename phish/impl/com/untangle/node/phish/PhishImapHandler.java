@@ -42,11 +42,11 @@ class PhishImapHandler extends SpamImapHandler
                      SpamImapConfig config,
                      SafelistNodeView safelist) {
         super(session, maxClientWait, maxSvrWait, impl, config, safelist);
-        this.msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,MOD_BODY_TEMPLATE);
+        PhishImapHandler.msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,MOD_BODY_TEMPLATE);
     }
 
     @Override
     protected WrappedMessageGenerator getMsgGenerator() {
-        return this.msgGenerator;
+        return PhishImapHandler.msgGenerator;
     }
 }

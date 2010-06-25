@@ -273,7 +273,8 @@ public class UvmRepositorySelector implements RepositorySelector
             {
                 public void sendBuffer(UvmLoggingContext ctx) { }
 
-                public void sendMessage(UvmLoggingContext ctx) { }
+                @SuppressWarnings("unused")
+				public void sendMessage(UvmLoggingContext ctx) { }
             };
 
         SELECTOR = new UvmRepositorySelector();

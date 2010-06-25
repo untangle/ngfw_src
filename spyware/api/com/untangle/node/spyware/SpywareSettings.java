@@ -75,7 +75,8 @@ public class SpywareSettings implements Serializable
 
     // accessors ----------------------------------------------------------
 
-    @Id
+    @SuppressWarnings("unused")
+	@Id
     @Column(name="settings_id")
     @GeneratedValue
     private Long getId()
@@ -83,7 +84,8 @@ public class SpywareSettings implements Serializable
         return id;
     }
 
-    private void setId(Long id)
+    @SuppressWarnings("unused")
+	private void setId(Long id)
     {
         this.id = id;
     }

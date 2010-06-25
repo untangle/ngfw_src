@@ -25,6 +25,7 @@ import javax.servlet.jsp.tagext.TagSupport;
  * a single String value w/o line terminator.
  *
  */
+@SuppressWarnings("serial")
 public abstract class SingleValueTag
     extends TagSupport {
 

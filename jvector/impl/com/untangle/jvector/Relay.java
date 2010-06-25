@@ -21,7 +21,8 @@ package com.untangle.jvector;
 public class Relay
 {
     private native long  relay_create ();
-    private native void relay_free (long relay_ptr);
+    @SuppressWarnings("unused")
+	private native void relay_free (long relay_ptr);
     private native void relay_set_src (long relay_ptr, long src_ptr);
     private native void relay_set_snk (long relay_ptr, long snk_ptr);
 

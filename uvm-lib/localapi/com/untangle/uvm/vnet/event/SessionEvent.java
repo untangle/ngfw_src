@@ -44,6 +44,7 @@ import com.untangle.uvm.vnet.Session;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public abstract class SessionEvent extends MPipeEvent {
     
     protected SessionEvent(MPipe mPipe, Session session)

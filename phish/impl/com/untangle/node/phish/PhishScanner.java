@@ -66,7 +66,7 @@ public class PhishScanner implements SpamScanner
             synchronized(activeScanMonitor) {
                 activeScanCount++;
             }
-            VirusScannerResult vsr = scan.doScan(this.TIMEOUT);
+            VirusScannerResult vsr = scan.doScan(PhishScanner.TIMEOUT);
             SpamReport result;
             if (vsr.isClean() || vsr.getVirusName() == null || !vsr.getVirusName().contains("Phish")) {
                 result = SpamReport.EMPTY;

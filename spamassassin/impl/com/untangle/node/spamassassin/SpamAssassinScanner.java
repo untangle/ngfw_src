@@ -65,7 +65,7 @@ public class SpamAssassinScanner implements SpamScanner
             Thread thread = LocalUvmContextFactory.context().newThread(client);
             client.setThread(thread);
             client.startScan();
-            client.checkProgress(this.timeout);
+            client.checkProgress(SpamAssassinScanner.timeout);
             client.stopScan();
             
             return client.getResult();

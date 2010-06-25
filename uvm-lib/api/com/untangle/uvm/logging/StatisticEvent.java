@@ -33,6 +33,7 @@
 
 package com.untangle.uvm.logging;
 
+@SuppressWarnings("serial")
 public abstract class StatisticEvent extends LogEvent
 {
     /**

@@ -74,11 +74,13 @@ public class ProtoFilterSettings implements java.io.Serializable
         this.patterns = new HashSet<ProtoFilterPattern>();
     }
 
-    @Id
+    @SuppressWarnings("unused")
+	@Id
     @Column(name="settings_id")
     @GeneratedValue
     private Long getId() { return id; }
-    private void setId(Long id) { this.id = id; }
+    @SuppressWarnings("unused")
+	private void setId(Long id) { this.id = id; }
 
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)

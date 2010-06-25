@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 
+@SuppressWarnings("serial")
 public class TemplateBaseSettings implements Serializable
 {
 	private boolean sampleSetting;

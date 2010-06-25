@@ -113,10 +113,11 @@ class BrandingManagerImpl implements RemoteBrandingManager
         return this.defaultBranding;
     }
     
+    @SuppressWarnings("unused")
     private class DefaultBrandingManager implements RemoteBrandingManager
     {
-        public boolean isDefaultLogo() {return true;}
-        public String getContactHtml() {return "<a href='mailto:" + this.getContactEmail() + "'>" + this.getContactName() + "</a>";}
+		public boolean isDefaultLogo() {return true;}
+        public String getContactHtml() {return this.getContactName();}
         public String getContactEmail() {return null;}
         public String getContactName() {return "your network administrator";} 
         public String getCompanyUrl() {return null;} 

@@ -137,7 +137,7 @@ public class PartialListUtil
         for ( Iterator<T> i = items.iterator(); i.hasNext(); ) {
             T item = i.next();
             T mItem = null;
-            if ( deleted != null && this.contains( deleted, handler.getId( item ))) {
+            if ( deleted != null && PartialListUtil.contains( deleted, handler.getId( item ))) {
                 i.remove();
             } else if (modified != null && ( mItem = modifiedItem( handler, item, modified )) != null) {
                 handler.update( item, mItem );

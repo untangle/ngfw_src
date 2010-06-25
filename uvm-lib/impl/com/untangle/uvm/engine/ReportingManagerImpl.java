@@ -673,13 +673,13 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return rv;
     }
 
-    private long getDayBefore(Date d)
-    {
-        Calendar c = Calendar.getInstance();
-        c.setTime(d);
-        c.add(Calendar.DATE, -1);
-        return c.getTimeInMillis();
-    }
+//     private long getDayBefore(Date d)
+//     {
+//         Calendar c = Calendar.getInstance();
+//         c.setTime(d);
+//         c.add(Calendar.DATE, -1);
+//         return c.getTimeInMillis();
+//     }
 
     private Date getDaysBefore(Date d, int numDays)
     {

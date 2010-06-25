@@ -58,7 +58,8 @@ public class SkinSettings implements Serializable{
 
     public SkinSettings() { }
 
-    @Id
+    @SuppressWarnings("unused")
+	@Id
     @Column(name="skin_settings_id")
     @GeneratedValue
     private Long getId()
@@ -66,7 +67,8 @@ public class SkinSettings implements Serializable{
         return id;
     }
 
-    private void setId(Long id)
+    @SuppressWarnings("unused")
+	private void setId(Long id)
     {
         this.id = id;
     }

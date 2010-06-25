@@ -37,6 +37,7 @@ import org.hibernate.annotations.IndexColumn;
 import com.untangle.uvm.message.ActiveStat;
 import com.untangle.uvm.security.Tid;
 
+@SuppressWarnings("serial")
 @Entity
 @Table(name="u_stat_settings", schema="settings")
 class StatSettings implements Serializable
@@ -53,7 +54,8 @@ class StatSettings implements Serializable
         this.activeMetrics = activeMetrics;
     }
 
-    @Id
+    @SuppressWarnings("unused")
+	@Id
     @Column(name="settings_id")
     @GeneratedValue
     private Long getId()
@@ -61,7 +63,8 @@ class StatSettings implements Serializable
         return id;
     }
 
-    private void setId(Long id)
+    @SuppressWarnings("unused")
+	private void setId(Long id)
     {
         this.id = id;
     }

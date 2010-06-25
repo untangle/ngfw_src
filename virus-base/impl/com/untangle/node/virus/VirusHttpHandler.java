@@ -427,7 +427,8 @@ class VirusHttpHandler extends HttpStateMachine
         return new Chunk(inbuf);
     }
 
-    private boolean isPersistent(Header header)
+    @SuppressWarnings("unused")
+	private boolean isPersistent(Header header)
     {
         String con = header.getValue("connection");
         return null == con ? false : con.equalsIgnoreCase("keep-alive");

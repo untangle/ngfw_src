@@ -20,6 +20,7 @@ package com.untangle.jnetcap;
 
 import java.net.InetAddress;
 
+@SuppressWarnings("unused") //JNI
 public class NetcapUDPSession extends NetcapSession 
 {
     protected static final int MERGED_DEAD = 0xDEAD00D;
@@ -188,7 +189,7 @@ public class NetcapUDPSession extends NetcapSession
     private static native void liberate( long sessionPointer, int flags );
 
     /* Complete a session that was previously captured */
-    private static native void serverComplete( long sessionPointer, int flags );
+	private static native void serverComplete( long sessionPointer, int flags );
 
     /* Move over the first packet ID in the session */
     private static native void transferFirstPacketID( long sessionPointer, long serverTraffic );

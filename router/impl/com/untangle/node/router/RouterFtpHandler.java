@@ -241,8 +241,8 @@ class RouterFtpHandler extends FtpStateMachine
         return new TokenResult( null, new Token[] { command } );
     }
 
-
-    private TokenResult portReply( FtpReply reply ) throws TokenException
+    @SuppressWarnings("unused")
+	private TokenResult portReply( FtpReply reply ) throws TokenException
     {
         return new TokenResult( new Token[] { reply }, null );
     }
@@ -252,11 +252,12 @@ class RouterFtpHandler extends FtpStateMachine
         logger.debug( "Handling extended port command" );
         return handlePortCommand( command );
     }
-
-//    private TokenResult eprtReply( FtpReply reply ) throws TokenException
-//    {
-//        return new TokenResult( new Token[] { reply }, null );
-//    }
+    
+    @SuppressWarnings("unused")
+    private TokenResult eprtReply( FtpReply reply ) throws TokenException
+    {
+        return new TokenResult( new Token[] { reply }, null );
+    }
 
     private TokenResult pasvCommand( FtpCommand command ) throws TokenException
     {

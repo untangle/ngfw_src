@@ -38,6 +38,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+@SuppressWarnings("serial")
 public abstract class DayOfWeekDBMatcher implements DayOfWeekMatcher, Serializable
 {
 

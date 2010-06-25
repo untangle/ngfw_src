@@ -71,7 +71,8 @@ public class TestSettings implements Serializable
         buffered = false;
     }
 
-    @Id
+    @SuppressWarnings("unused")
+	@Id
     @Column(name="id")
     @GeneratedValue
     private Long getId()
@@ -79,7 +80,8 @@ public class TestSettings implements Serializable
         return id;
     }
 
-    private void setId(Long id)
+    @SuppressWarnings("unused")
+	private void setId(Long id)
     {
         this.id = id;
     }

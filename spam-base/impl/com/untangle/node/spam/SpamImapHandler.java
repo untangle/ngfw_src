@@ -209,7 +209,7 @@ public class SpamImapHandler extends BufferingImapTokenStreamHandler
      */
     protected WrappedMessageGenerator getMsgGenerator()
     {
-        return this.msgGenerator;
+        return SpamImapHandler.msgGenerator;
     }
 
 }

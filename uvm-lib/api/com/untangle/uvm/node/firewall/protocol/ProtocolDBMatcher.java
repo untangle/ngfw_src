@@ -45,6 +45,7 @@ import com.untangle.uvm.vnet.Protocol;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public abstract class ProtocolDBMatcher implements ProtocolMatcher, Serializable
 {
     /** Package protected so that only classes in the package can add to the list

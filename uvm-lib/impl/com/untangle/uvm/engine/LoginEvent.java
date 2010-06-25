@@ -38,6 +38,7 @@ import com.untangle.uvm.security.LoginFailureReason;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="u_login_evt", schema="events")

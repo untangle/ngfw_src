@@ -36,6 +36,7 @@ package com.untangle.uvm.node.firewall.user;
 import java.io.Serializable;
 import java.util.List;
 
+@SuppressWarnings("serial")
 public abstract class UserDBMatcher implements UserMatcher, Serializable
 {
 

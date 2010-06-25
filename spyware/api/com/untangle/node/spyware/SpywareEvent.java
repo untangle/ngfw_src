@@ -24,6 +24,7 @@ import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.node.PipelineEndpoints;
 
+@SuppressWarnings("serial")
 public abstract class SpywareEvent extends LogEvent
 {
     // constructors -----------------------------------------------------------

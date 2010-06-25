@@ -45,6 +45,7 @@ import java.util.Date;
  * is for the internals of the quarantine system (but may
  * be visible to you because of classloader issues).
  */
+@SuppressWarnings("serial")
 public abstract class InboxRecord
     implements Serializable {
 

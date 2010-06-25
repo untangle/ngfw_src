@@ -46,6 +46,7 @@ import com.untangle.uvm.vnet.SessionStats;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public abstract class SessionDescImpl implements SessionDesc, Serializable {
 
     protected int id;

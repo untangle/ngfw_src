@@ -9,6 +9,7 @@ import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
 
+@SuppressWarnings("serial")
 @MappedSuperclass
 public abstract class PassedAddress extends Rule
 {

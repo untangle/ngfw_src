@@ -75,14 +75,16 @@ public class RepositorySettings implements Serializable
         m_ouFilter = "";
     }
 
-    @Id
+    @SuppressWarnings("unused")
+	@Id
     @Column(name="settings_id")
     @GeneratedValue
     private Long getId() {
         return id;
     }
 
-    private void setId(Long id) {
+    @SuppressWarnings("unused")
+	private void setId(Long id) {
         this.id = id;
     }
 

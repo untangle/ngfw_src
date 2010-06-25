@@ -38,6 +38,7 @@ import com.untangle.uvm.security.Tid;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
+@SuppressWarnings("serial")
 @Entity
 @Table(name="n_template_settings", schema="settings")
 public class TemplateSettings implements Serializable

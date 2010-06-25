@@ -47,6 +47,7 @@ import com.untangle.node.mail.papi.WrappedMessageGenerator;
  * Base class for Virus config information for the differernt email
  * protocols.
  */
+@SuppressWarnings("serial")
 @MappedSuperclass
 public abstract class VirusMailConfig implements Serializable {
 

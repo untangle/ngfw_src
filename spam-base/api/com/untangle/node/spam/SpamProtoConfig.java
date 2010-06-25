@@ -45,6 +45,7 @@ import javax.persistence.Transient;
  * Hibernate mappings for this class are in the UVM resource
  * directory.
  */
+@SuppressWarnings("serial")
 @MappedSuperclass
 public abstract class SpamProtoConfig implements Serializable
 {
@@ -56,11 +57,11 @@ public abstract class SpamProtoConfig implements Serializable
     private Long id;
 
     /* settings */
-    private boolean bScan = this.DEFAULT_SCAN;
-    private int strength = this.DEFAULT_STRENGTH;
-    private boolean addSpamHeaders = this.DEFAULT_ADD_SPAM_HEADERS;
-    private int msgSizeLimit = this.DEFAULT_MESSAGE_SIZE_LIMIT;
-    private String headerName = this.DEFAULT_HEADER_NAME;
+    private boolean bScan = SpamProtoConfig.DEFAULT_SCAN;
+    private int strength = SpamProtoConfig.DEFAULT_STRENGTH;
+    private boolean addSpamHeaders = SpamProtoConfig.DEFAULT_ADD_SPAM_HEADERS;
+    private int msgSizeLimit = SpamProtoConfig.DEFAULT_MESSAGE_SIZE_LIMIT;
+    private String headerName = SpamProtoConfig.DEFAULT_HEADER_NAME;
 
     // constructors -----------------------------------------------------------
 

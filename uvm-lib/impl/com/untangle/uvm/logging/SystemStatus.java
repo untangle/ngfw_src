@@ -532,13 +532,6 @@ public class SystemStatus
             this.maxDelay = 0;
         }
 
-        public void resetLoads()
-        {
-            this.load_1min = 0.0;
-            this.load_5min = 0.0;
-            this.load_15min = 0.0;
-        }
-
         public String toString()
         {
             StringBuilder sb = new StringBuilder();

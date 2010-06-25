@@ -279,7 +279,8 @@ public class TokenAdaptor extends AbstractEventHandler
         return handlerDesc.handler;
     }
 
-    private Pipeline getPipeline(Session session)
+    @SuppressWarnings("unused")
+	private Pipeline getPipeline(Session session)
     {
         HandlerDesc handlerDesc = (HandlerDesc)handlers.get(session);
         return handlerDesc.pipeline;

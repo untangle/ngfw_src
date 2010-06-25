@@ -48,7 +48,7 @@ public class PhishSmtpHandler extends com.untangle.node.spam.SpamSmtpHandler {
                      QuarantineNodeView quarantine,
                      SafelistNodeView safelist) {
         super(session, maxClientWait, maxSvrWait, impl, config, quarantine, safelist);
-        this.msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,MOD_BODY_TEMPLATE);
+        PhishSmtpHandler.msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,MOD_BODY_TEMPLATE);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class PhishSmtpHandler extends com.untangle.node.spam.SpamSmtpHandler {
 
     @Override
     protected WrappedMessageGenerator getMsgGenerator() {
-        return this.msgGenerator;
+        return PhishSmtpHandler.msgGenerator;
     }
 
 }

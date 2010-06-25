@@ -180,7 +180,7 @@ public class SpamPopHandler extends PopStateMachine
      */
     protected WrappedMessageGenerator getMsgGenerator()
     {
-        return this.msgGenerator;
+        return SpamPopHandler.msgGenerator;
     }
 
 }

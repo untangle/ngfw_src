@@ -46,6 +46,7 @@ import com.untangle.uvm.node.Rule;
  * Hibernate mappings for this class are in the subclasses
  * UserPolicyRule.
  */
+@SuppressWarnings("serial")
 @MappedSuperclass
 public abstract class PolicyRule extends Rule
 {
