@@ -244,22 +244,22 @@ Ung.Quarantine.prototype = {
 
         this.releaseButton= new Ext.Button( {
             handler : function() { this.releaseOrDelete( quarantine.rpc.releaseMessages ) }.createDelegate( this ),
-        iconCls : 'icon-move-mails',
+            iconCls : 'icon-move-mails',
             text : i18n._( "Move to Inbox (0  messages)" ),
             disabled : true
-                    } );
-
-        this.deleteButton = new Ext.Button( {
-            handler : function() { this.releaseOrDelete( quarantine.rpc.purgeMessages ) }.createDelegate( this ),
-        iconCls:'icon-delete-row',
-            text : i18n._( "Delete (0  messages)" ),
-            disabled : true
-                } );
+        } );
 
         this.safelistButton = new Ext.Button( {
             handler : function() { this.safelist() }.createDelegate( this ),
-        iconCls:'icon-safe-list',
-            text : i18n._( "Add to Safelist (0  Senders)" ),
+            iconCls:'icon-safe-list',
+            text : i18n._( "Move to Inbox & Add to Safelist (0  Senders)" ),
+            disabled : true
+        } );
+
+        this.deleteButton = new Ext.Button( {
+            handler : function() { this.releaseOrDelete( quarantine.rpc.purgeMessages ) }.createDelegate( this ),
+            iconCls:'icon-delete-row',
+            text : i18n._( "Delete (0  messages)" ),
             disabled : true
         } );
 
@@ -419,19 +419,19 @@ Ung.Quarantine.prototype = {
 
         count = this.addresses.size;
         if ( count == 0 ) {
-            safelistText = i18n._( "Add to Safelist (0  Senders)" );
+            safelistText = i18n._( "Move to Inbox & Add to Safelist (0  Senders)" );
             this.safelistButton.setDisabled( true );
         } else if ( count == 1 ) {
-            safelistText = i18n._( "Add to Safelist (1  Sender)" );
+            safelistText = i18n._( "Move to Inbox & Add to Safelist (1  Sender)" );
             this.safelistButton.setDisabled( false );
         } else {
-            safelistText = String.format( i18n._( "Add to Safelist ({0} Senders)" ), count );
+            safelistText = String.format( i18n._( "Move to Inbox & Add to Safelist ({0} Senders)" ), count );
             this.safelistButton.setDisabled( false );
         }
 
         this.releaseButton.setText( releaseText );
-        this.deleteButton.setText( deleteText );
         this.safelistButton.setText( safelistText );
+        this.deleteButton.setText( deleteText );
     },
 
     showMessage : function( message )
@@ -587,8 +587,8 @@ Ung.QuarantineGrid = Ext.extend( Ext.grid.GridPanel, {
 
         config.tbar = new Ext.Toolbar({
             items: [ this.quarantine.releaseButton,
-                     this.quarantine.deleteButton,
-                     this.quarantine.safelistButton ]
+                     this.quarantine.safelistButton,
+                     this.quarantine.deleteButton]
         });
 
         config.store = this.quarantine.store;
