@@ -100,7 +100,7 @@ public final class InboxIndexImpl extends HashMap<String, InboxRecord> implement
         return get(mailID);
     }
     public InboxRecord[] getAllRecords() {
-        return (InboxRecord[]) values().toArray(new InboxRecord[size()]);
+        return values().toArray(new InboxRecord[size()]);
     }
 
     protected void debugPrint() {

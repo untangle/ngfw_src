@@ -165,7 +165,7 @@ class LogWorker implements Runnable
      */
     private void persist()
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {

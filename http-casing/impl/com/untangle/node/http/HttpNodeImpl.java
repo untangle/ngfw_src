@@ -62,7 +62,7 @@ public class HttpNodeImpl extends AbstractNode
 
     public void setHttpSettings(final HttpSettings settings)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -90,7 +90,7 @@ public class HttpNodeImpl extends AbstractNode
 
     protected void postInit(String[] args)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {

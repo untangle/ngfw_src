@@ -72,14 +72,14 @@ public class DataSaver<T>
     {
         this.data = null;
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork( Session s )
                 {
                     preSave( s );
                     s.merge( newData );
                     postSave( s );
-                    DataSaver.this.data = (T)newData;
+                    DataSaver.this.data = newData;
                     return true;
                 }
 

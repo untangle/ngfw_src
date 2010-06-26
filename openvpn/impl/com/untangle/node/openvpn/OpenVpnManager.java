@@ -18,7 +18,6 @@
 package com.untangle.node.openvpn;
 
 import java.io.File;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -282,7 +281,7 @@ class OpenVpnManager
         Map<String,VpnGroup> groupMap = buildGroupMap(settings);
 
         /* The client configuration file is written in writeClientFiles */
-        for ( VpnSite site : (List<VpnSite>)settings.getSiteList()) {
+        for ( VpnSite site : settings.getSiteList()) {
             VpnGroup group = groupMap.get(site.getGroupName());
             
             if ( !site.isEnabled() || ( group == null ) || !group.isLive()) {
@@ -311,7 +310,7 @@ class OpenVpnManager
 
         sw.appendComment( "Groups" );
 
-        for ( VpnGroup group : (List<VpnGroup>)settings.getGroupList()) {
+        for ( VpnGroup group : settings.getGroupList()) {
             if ( !group.isLive()) continue;
 
             writeRoute( sw, group.getAddress(), group.getNetmask());
@@ -469,7 +468,7 @@ class OpenVpnManager
             sw.writeFile( OPENVPN_CCD_DIR + "/" + name );
         }
 
-        for ( VpnSite site : (List<VpnSite>)settings.getSiteList()) {
+        for ( VpnSite site : settings.getSiteList()) {
             VpnGroup group = groupMap.get(site.getGroupName());
             
             if ( !site.isEnabled() || ( group == null ) || !group.isLive()) {
@@ -517,7 +516,7 @@ class OpenVpnManager
         String value = "\"route ";
         if ( netmask != null ) {
             /* the route command complains you do not pass in the base address */
-            value += IPaddr.and( new IPaddr((Inet4Address)address ), new IPaddr((Inet4Address)netmask ));
+            value += IPaddr.and( new IPaddr(address ), new IPaddr(netmask ));
             value += " " + netmask.getHostAddress();
         } else {
             value += address.getHostAddress();
@@ -571,7 +570,7 @@ class OpenVpnManager
     private IPaddr getByAddress( byte[] data )
     {
         try {
-            return new IPaddr((Inet4Address)InetAddress.getByAddress( data ));
+            return new IPaddr(InetAddress.getByAddress( data ));
         } catch ( UnknownHostException e ) {
             logger.error( "Something happened, array should be 4 actually " + data.length + " bytes", e );
         }

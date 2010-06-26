@@ -22,6 +22,6 @@ import com.untangle.jnetcap.Netcap;
 
 public interface IPSessionDesc extends com.untangle.uvm.node.IPSessionDesc, SessionDesc, SessionEndpoints
 {
-    public final short IPPROTO_TCP = (short)Netcap.IPPROTO_TCP;
-    public final short IPPROTO_UDP = (short)Netcap.IPPROTO_UDP;
+    public final short IPPROTO_TCP = Netcap.IPPROTO_TCP;
+    public final short IPPROTO_UDP = Netcap.IPPROTO_UDP;
 }

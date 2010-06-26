@@ -103,7 +103,7 @@ public class ClientSetup extends HttpServlet
         
         List<FileItem> items = null;
         try {
-            items = (List<FileItem>)upload.parseRequest( request );
+            items = upload.parseRequest( request );
         } catch ( FileUploadException e ) {
             logger.warn( "Unable to parse the request", e );
             writer.write( "{ \"success\" : false, \"code\" : \"client error\", \"type\" : 2 }" );

@@ -175,7 +175,7 @@ public class IPNetwork implements Serializable
      */
     public static IPNetwork makeInstance( InetAddress network, InetAddress netmask )
     {
-        return makeInstance( new IPaddr((Inet4Address)network), new IPaddr((Inet4Address)netmask));
+        return makeInstance( new IPaddr(network), new IPaddr(netmask));
     }
 
     /**

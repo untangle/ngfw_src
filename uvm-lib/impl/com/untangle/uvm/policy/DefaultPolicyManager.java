@@ -59,8 +59,9 @@ class DefaultPolicyManager implements LocalPolicyManager
 
     // constructor ------------------------------------------------------------
 
+    @SuppressWarnings("unchecked") //Query
     DefaultPolicyManager() {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -156,7 +157,7 @@ class DefaultPolicyManager implements LocalPolicyManager
     public void setUserPolicyRules(final List<UserPolicyRule> rules) {
         // Sanity checking XXX
         synchronized(policyRuleLock) {
-            TransactionWork tw = new TransactionWork()
+            TransactionWork<Object> tw = new TransactionWork<Object>()
                 {
                     public boolean doWork(Session s)
                     {
@@ -269,7 +270,7 @@ class DefaultPolicyManager implements LocalPolicyManager
         }
 
         synchronized(policyRuleLock) {
-            TransactionWork tw = new TransactionWork()
+            TransactionWork<Object> tw = new TransactionWork<Object>()
                 {
                     public boolean doWork(Session s)
                     {

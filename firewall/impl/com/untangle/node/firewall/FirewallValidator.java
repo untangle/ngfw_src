@@ -38,8 +38,9 @@ public class FirewallValidator implements Validator {
     public static final String ERR_CODE_INVALID_SRC_PORT = "INVALID_SRC_PORT";
     public static final String ERR_CODE_INVALID_DST_PORT = "INVALID_DST_PORT";
     
-	public ValidationResult validate(Object data) {
-
+    @SuppressWarnings("unchecked") 
+	public ValidationResult validate(Object data) 
+    {
 		try {
 			if (data != null) {
                 for(Map.Entry<String,  List<String>> entry : ((HashMap<String,  List<String>>) data).entrySet()) {

@@ -27,20 +27,19 @@ import java.util.TreeMap;
  *
  * <b>WARNING WARNING WARNING WARNING WARNING WARNING</b>
  */
-@SuppressWarnings("unchecked")
 public class LoadPatterns {
 
     private LoadPatterns() {}
 
-    public static TreeMap getPatterns()
+    public static TreeMap<Integer,ProtoFilterPattern> getPatterns()
     {
         // Now that we have Policies,  we create a new map every time since we don't want sharing.
         return createPatterns();
     }
 
-    private static TreeMap createPatterns()
+    private static TreeMap<Integer,ProtoFilterPattern> createPatterns()
     {
-        TreeMap pats = new TreeMap();
+        TreeMap<Integer,ProtoFilterPattern> pats = new TreeMap<Integer,ProtoFilterPattern>();
 
 
 	pats.put(160, new ProtoFilterPattern(160, "100bao", "Peer to Peer", " a Chinese P2P protocol/program - http://www.100bao.com", "^\\x01\\x01\\x05\\x0a", "ok veryfast fast", false,false,false));

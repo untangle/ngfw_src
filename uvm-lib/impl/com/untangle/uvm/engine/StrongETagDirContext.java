@@ -30,14 +30,14 @@ import org.apache.naming.resources.ResourceAttributes;
  * @author <a href="mailto:cmatei@untangle.com">Catalin Matei</a>
  * @version 1.0
  */
-public class StrongETagDirContext extends FileDirContext {
+@SuppressWarnings("unchecked")
+public class StrongETagDirContext extends FileDirContext
+{
 	
-
 	@Override
-	public Attributes getAttributes(String name, String[] attrIds)
-			throws NamingException {
-		ResourceAttributes r = (ResourceAttributes) super.getAttributes(name,
-				attrIds);
+	public Attributes getAttributes(String name, String[] attrIds) throws NamingException
+    {
+		ResourceAttributes r = (ResourceAttributes) super.getAttributes(name, attrIds);
 		long cl = r.getContentLength();
 		long lm = r.getLastModified();
 

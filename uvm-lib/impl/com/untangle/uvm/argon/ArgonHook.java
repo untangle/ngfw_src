@@ -468,6 +468,7 @@ abstract class ArgonHook implements Runnable
         vector = new Vector( relayList );
     }
 
+    @SuppressWarnings("fallthrough")
     protected void processSession( IPNewSessionRequest request, Session session )
     {
         if ( logger.isDebugEnabled())

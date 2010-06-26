@@ -126,7 +126,7 @@ public class MessageInfo implements Serializable
     /* Business methods */
     public void addAddress(AddressKind kind, String address, String personal)
     {
-        Integer p = (Integer)counts.get(kind);
+        Integer p = counts.get(kind);
         if (null == p) {
             p = 0;
         }

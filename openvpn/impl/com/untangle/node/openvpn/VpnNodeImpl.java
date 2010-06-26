@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -177,7 +176,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         /* Copy in the old keys that were distributed over email */
         saveDistributedKeys(newSettings);
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork( Session s )
                 {
@@ -197,7 +196,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
                     q.setParameter( "tid", getTid());
 
-                    for ( Object o : q.list()) s.delete((VpnSettings)o );
+                    for ( Object o : q.list()) s.delete(o );
 
                     /* Save the new settings */
                     VpnNodeImpl.this.settings = (VpnSettings)s.merge( newSettings );
@@ -350,7 +349,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
             method = "email";
         }
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork( Session s )
                 {
@@ -426,7 +425,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         }
 
         /* Could use a hash map, but why bother ? */
-        for ( final VpnClientBase client : ((List<VpnClientBase>)this.settings.getCompleteClientList())) {
+        for ( final VpnClientBase client : this.settings.getCompleteClientList()) {
             if ( lookupClientDistributionKey( key, clientAddress, client )) return client.getInternalName();
         }
 
@@ -522,7 +521,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         long expiration = System.nanoTime() + DISTRIBUTION_CACHE_NS;
         this.distributionMap.put( key, new DistributionCache( expiration, client.getInternalName(), key ));
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork( Session s )
                 {
@@ -596,7 +595,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     {
         super.postInit( args );
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork( Session s )
                 {

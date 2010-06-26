@@ -201,7 +201,7 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
 
         /* build a linked list of bits that represents addr */
         for (i=addrb.length-1 ; i>=0 ; i--) {
-            sum = (int)addrb[i];
+            sum = addrb[i];
             if (sum < 0) sum = 256 + sum;
 
             for (j=0 ; j<8 ; j++, sum = sum/2) {

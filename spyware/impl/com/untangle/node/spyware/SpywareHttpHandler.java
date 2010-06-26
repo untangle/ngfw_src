@@ -191,7 +191,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             node.incrementHttpClientCookieScan();
             String cookie = i.next();
             Map<String, String> m = CookieParser.parseCookie(cookie);
-            String domain = (String)m.get("domain");
+            String domain = m.get("domain");
             if (null == domain) {
                 domain = host;
             }

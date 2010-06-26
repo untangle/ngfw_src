@@ -219,11 +219,14 @@ public class IpsDetectionEngine
         }
     }
 
-    public IpsSessionInfo getSessionInfo(IPSession session) {
+    public IpsSessionInfo getSessionInfo(IPSession session) 
+    {
         return sessionInfoMap.get(session.id());
     }
 
-    public void processNewSession(IPSession session, Protocol protocol) {
+    @SuppressWarnings("unchecked") //attachment
+    public void processNewSession(IPSession session, Protocol protocol) 
+    {
         Object[] sigs = (Object[]) session.attachment();
         Set<IpsRuleSignature> c2sSignatures = (Set<IpsRuleSignature>) sigs[0];
         Set<IpsRuleSignature> s2cSignatures = (Set<IpsRuleSignature>) sigs[1];
@@ -235,12 +238,14 @@ public class IpsDetectionEngine
         session.attach(null);
     }
 
-    public void processFinalized(IPSession session, Protocol protocol) {
+    public void processFinalized(IPSession session, Protocol protocol) 
+    {
         log.debug("unregistering IpsSessionInfo");
         sessionInfoMap.remove(session.id());
     }
 
-    public IpsRuleManager getRulesForTesting() {
+    public IpsRuleManager getRulesForTesting() 
+    {
         return manager;
     }
 

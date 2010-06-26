@@ -50,7 +50,6 @@ public class FormUtil {
 
     private FormUtil() {}
 
-    @SuppressWarnings("unchecked")
     public static Hashtable<String,String[]> parseQueryString(String s) {
 
         String valArray[] = null;
@@ -72,7 +71,7 @@ public class FormUtil {
             String key = parseName(pair.substring(0, pos), sb);
             String val = parseName(pair.substring(pos+1, pair.length()), sb);
             if (ht.containsKey(key)) {
-                String oldVals[] = (String []) ht.get(key);
+                String oldVals[] = ht.get(key);
                 valArray = new String[oldVals.length + 1];
                 for (int i = 0; i < oldVals.length; i++)
                     valArray[i] = oldVals[i];
@@ -96,7 +95,7 @@ public class FormUtil {
             for (Iterator<String> iter = values.keySet().iterator(); iter.hasNext();) {
                 String key = iter.next();
                 String encodedKey = URLEncoder.encode(key, "UTF-8");
-                String[] vals = (String[]) values.get(key);
+                String[] vals = values.get(key);
                 if (vals != null) {
                     for (int i = 0; i < vals.length; i++) {
                         if (doneOne)

@@ -385,7 +385,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     // service methods --------------------------------------------------------
 
-    public boolean runTransaction(TransactionWork tw)
+    public boolean runTransaction(TransactionWork<?> tw)
     {
         return transactionRunner.runTransaction(tw);
     }

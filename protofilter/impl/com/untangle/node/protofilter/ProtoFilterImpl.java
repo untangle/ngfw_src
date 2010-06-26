@@ -103,7 +103,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
     public void setProtoFilterSettings(final ProtoFilterSettings settings)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -128,7 +128,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     }
 
     public void setBaseSettings(final ProtoFilterBaseSettings baseSettings) {
-        TransactionWork tw = new TransactionWork() {
+        TransactionWork<Object> tw = new TransactionWork<Object>() {
                 public boolean doWork(Session s) {
                     cachedSettings.setBaseSettings(baseSettings);
                     s.merge(cachedSettings);
@@ -142,6 +142,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         getNodeContext().runTransaction(tw);
     }
     
+    @SuppressWarnings("unchecked") //getItems
     public List<ProtoFilterPattern> getPatterns(final int start,
                                                 final int limit, final String... sortColumns) {
         return listUtil.getItems( "select hbs.patterns from ProtoFilterSettings hbs where hbs.tid = :tid ",
@@ -195,7 +196,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     {
         ProtoFilterSettings settings = new ProtoFilterSettings(this.getTid());
         logger.info("INIT: Importing patterns...");
-        TreeMap factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
+        TreeMap<Integer,ProtoFilterPattern> factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
         // Turn on the Instant Messenger ones so it does something by default:
         Set<ProtoFilterPattern> pats = new HashSet<ProtoFilterPattern>(factoryPatterns.values());
         for (ProtoFilterPattern pfp : pats) {
@@ -208,7 +209,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
     protected void postInit(String[] args)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -274,7 +275,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         }
 
         boolean    madeChange = false;
-        TreeMap    factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
+        TreeMap<Integer,ProtoFilterPattern> factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
         Set<ProtoFilterPattern> curPatterns = cachedSettings.getPatterns(); /* Current list of Patterns */
 
         /*
@@ -283,7 +284,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         for (Iterator<ProtoFilterPattern> i = curPatterns.iterator() ; i.hasNext() ; ) {
             ProtoFilterPattern curPat = i.next();
             int mvid = curPat.getMetavizeId();
-            ProtoFilterPattern newPat = (ProtoFilterPattern) factoryPatterns.get(mvid);
+            ProtoFilterPattern newPat = factoryPatterns.get(mvid);
 
             // logger.info("INFO: Found existing pattern " + mvid + " Pattern (" + curPat.getProtocol() + ")");
             if (mvid == ProtoFilterPattern.NEEDS_CONVERSION_METAVIZE_ID) {
@@ -394,7 +395,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     private void updatePatterns(final Set<ProtoFilterPattern> patterns, final List<ProtoFilterPattern> added,
                              final List<Long> deleted, final List<ProtoFilterPattern> modified)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {

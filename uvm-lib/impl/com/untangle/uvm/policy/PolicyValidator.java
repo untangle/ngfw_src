@@ -36,8 +36,9 @@ public class PolicyValidator implements Validator {
     public static final String ERR_CODE_INVALID_SERVER_ADDRESS = "INVALID_SERVER_ADDR";
     public static final String ERR_CODE_INVALID_SERVER_PORT = "INVALID_SERVER_PORT";
     
-	public ValidationResult validate(Object data) {
-
+    @SuppressWarnings("unchecked") 
+	public ValidationResult validate(Object data) 
+	{
 		try {
 			if (data != null) {
                 for(Map.Entry<String,  List<String>> entry : ((HashMap<String,  List<String>>) data).entrySet()) {

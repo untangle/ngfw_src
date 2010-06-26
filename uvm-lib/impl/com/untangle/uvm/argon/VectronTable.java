@@ -79,7 +79,7 @@ class VectronTable
     {
         if ( activeVectrons.isEmpty()) return false;
 
-        for ( Iterator<Vector> iter = (Iterator<Vector>)activeVectrons.keySet().iterator();
+        for ( Iterator<Vector> iter = activeVectrons.keySet().iterator();
               iter.hasNext() ; ) {
             Vector vectron = iter.next();
             vectron.shutdown();
@@ -105,7 +105,7 @@ class VectronTable
             logger.debug( "ALL Session matcher" );
 
             /* Just clear all, without checking for matches */
-            for ( Iterator<Vector> iter = (Iterator<Vector>)activeVectrons.keySet().iterator() ;
+            for ( Iterator<Vector> iter = activeVectrons.keySet().iterator() ;
                   iter.hasNext() ; ) {
                 Vector vectron = iter.next();
                 vectron.shutdown();

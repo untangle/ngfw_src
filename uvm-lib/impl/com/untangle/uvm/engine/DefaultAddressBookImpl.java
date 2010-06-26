@@ -121,7 +121,7 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
         m_settings = newSettings;
 
         //Hibernate stuff
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -219,8 +219,11 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
+
+    @SuppressWarnings("fallthrough")
     public RepositoryType containsEmail(String address, RepositoryType searchIn)
-        throws ServiceUnavailableException {
+        throws ServiceUnavailableException
+    {
         m_logger.info("containsEmail in default address book.");
 
         switch(searchIn) {
@@ -400,8 +403,10 @@ class DefaultAddressBookImpl implements RemoteAddressBook {
     //====================================================
     // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
+    @SuppressWarnings("fallthrough")
     public UserEntry getEntry(String uid, RepositoryType searchIn)
-        throws ServiceUnavailableException {
+        throws ServiceUnavailableException
+    {
         m_logger.info("getEntry <" + uid + ">");
 
         switch(searchIn) {

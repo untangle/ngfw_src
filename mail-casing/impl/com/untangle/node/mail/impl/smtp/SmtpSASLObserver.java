@@ -87,8 +87,7 @@ class SmtpSASLObserver {
      */
     SmtpSASLObserver(SASLObserver observer) {
         m_observer = observer;
-        m_maxEncodedLineSz = (int)
-            (observer.getMaxReasonableMessageSz()*4)/3;
+        m_maxEncodedLineSz = (observer.getMaxReasonableMessageSz()*4)/3;
     }
 
 

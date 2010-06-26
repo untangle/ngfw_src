@@ -74,7 +74,7 @@ public class TestNodeImpl extends AbstractNode
 
     public void setTestSettings(final TestSettings settings)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -107,7 +107,7 @@ public class TestNodeImpl extends AbstractNode
 
     protected void postInit(final String[] args)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {

@@ -123,7 +123,7 @@ public class UncachedEventManager<E extends LogEvent> implements EventManager<E>
         // private methods --------------------------------------------------------
         
 
-
+        @SuppressWarnings("unchecked") //Query
         private void runQuery(String query, Session s, List<T> events, int limit,
                 Map<String, Object> params)
         {

@@ -103,7 +103,7 @@ public class HeadersParser {
                     //            or "attack suspected" exception.
                     throw new InvalidHeaderDataException("Number of header lines exceeded: \"" +
                                                          policy.getMaxHeaderLines() + "\", \n\"" +
-                                                         Line.linesToString((Line[]) allLines.toArray(new Line[allLines.size()]), 0, false) + "\"");
+                                                         Line.linesToString(allLines.toArray(new Line[allLines.size()]), 0, false) + "\"");
                 }
 
                 //Get the byte buffer for this line.  Check if it
@@ -194,9 +194,7 @@ public class HeadersParser {
                     //Complete previous header, if it exists
                     if(currentLines != null) {
                         HeaderField newField = fieldFactory.createHeaderField(headerName);
-                        newField.assignFromLines(new RawHeaderField(
-                                                                    (Line[]) currentLines.toArray(new Line[currentLines.size()]), valueStartOffset),
-                                                 false);
+                        newField.assignFromLines(new RawHeaderField(currentLines.toArray(new Line[currentLines.size()]), valueStartOffset), false);
                         headersInOrder.add(newField);
                         List<HeaderField> headerHolder = headersByName.get(newField.getNameLC());
                         if(headerHolder == null) {
@@ -250,9 +248,7 @@ public class HeadersParser {
         //Clean-up the remaing header
         if(currentLines != null) {
             HeaderField newField = fieldFactory.createHeaderField(headerName);
-            newField.assignFromLines(new RawHeaderField(
-                                                        (Line[]) currentLines.toArray(new Line[currentLines.size()]), valueStartOffset),
-                                     false);
+            newField.assignFromLines(new RawHeaderField(currentLines.toArray(new Line[currentLines.size()]), valueStartOffset), false);
             headersInOrder.add(newField);
             List<HeaderField> headerHolder = headersByName.get(newField.getNameLC());
             if(headerHolder == null) {

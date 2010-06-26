@@ -623,7 +623,7 @@ abstract class LdapAdapter {
             NamingEnumeration<SearchResult> answer = ctx.search(searchBase, searchFilter, ctls);
             List<Map<String, String[]>> ret = new ArrayList<Map<String, String[]>>();
             while (answer.hasMoreElements()) {
-                SearchResult sr = (SearchResult)answer.next();
+                SearchResult sr = answer.next();
                 
                 Attributes attrs = sr.getAttributes();
                 if (attrs != null) {
@@ -636,7 +636,7 @@ abstract class LdapAdapter {
                         while(e.hasMore()) {
                             values.add(e.next().toString());
                         }
-                        map.put(attrName, (String[]) values.toArray(new String[values.size()]));
+                        map.put(attrName, values.toArray(new String[values.size()]));
                     }
                     
                     try {

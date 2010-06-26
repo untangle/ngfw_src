@@ -162,7 +162,7 @@ public class ShieldNodeRule extends Rule
     @Transient
     public String getDividerString()
     {
-        String dividerString = (String)DIVIDER_MAP_FLOAT_TO_STRING
+        String dividerString = DIVIDER_MAP_FLOAT_TO_STRING
             .get(this.divider);
         if (dividerString == null) {
             this.divider  = DIVIDER_VALUES[0];
@@ -174,7 +174,7 @@ public class ShieldNodeRule extends Rule
 
     public void setDivider(String divider)
     {
-        Float dividerValue = (Float)DIVIDER_MAP_STRING_TO_FLOAT.get(divider);
+        Float dividerValue = DIVIDER_MAP_STRING_TO_FLOAT.get(divider);
         if (dividerValue == null) {
             this.divider = DIVIDER_VALUES[0];
         } else {

@@ -77,7 +77,7 @@ class MPipeManagerImpl implements MPipeManager
 
     public MPipe[] mPipes()
     {
-        return (MPipe[])allMPipes.toArray(MPIPE_PROTO);
+        return allMPipes.toArray(MPIPE_PROTO);
     }
 
     // MPipe calls in here after destroying.

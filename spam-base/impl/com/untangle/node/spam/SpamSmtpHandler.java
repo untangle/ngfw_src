@@ -478,7 +478,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
     private boolean quarantineMail(MIMEMessage msg, SmtpTransaction tx, SpamReport report, File file)
     {
         List<EmailAddress> addrList = tx.getRecipients(true);
-        EmailAddress[] addresses = (EmailAddress[]) addrList.toArray(new EmailAddress[addrList.size()]);
+        EmailAddress[] addresses = addrList.toArray(new EmailAddress[addrList.size()]);
 
         return quarantine.quarantineMail(file, new MailSummary(msg.getMMHeaders().getFrom()==null?
                                                                (tx.getFrom()==null?

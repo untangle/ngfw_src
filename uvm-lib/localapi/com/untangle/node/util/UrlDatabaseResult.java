@@ -39,7 +39,7 @@ package com.untangle.node.util;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class UrlDatabaseResult<T>
+public class UrlDatabaseResult
 {
     private final boolean black;
 

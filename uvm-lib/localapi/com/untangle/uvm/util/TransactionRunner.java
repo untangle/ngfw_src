@@ -69,7 +69,7 @@ public class TransactionRunner
      * rolled back.
      */
     @SuppressWarnings("deprecation")
-	public boolean runTransaction(TransactionWork tw)
+	public boolean runTransaction(TransactionWork<?> tw)
     {
         TransactionException transExn = null;
 

@@ -123,7 +123,6 @@ public abstract class BufferingSessionHandler
     /**
      * <b>B</b>lock, <b>P</b>ass, or <b>M</b>odify Evaluation result.
      */
-@SuppressWarnings("serial")
     public static final class BPMEvaluationResult {
         private MIMEMessage m_newMsg;
         private final BlockOrPassResult action;

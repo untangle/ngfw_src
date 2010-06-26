@@ -75,7 +75,7 @@ public class GeneratedAddressTest {
         for(String s : seStrs) {
             seps.add(s);
         }
-        s_separators = (String[]) seps.toArray(new String[seps.size()]);
+        s_separators =  seps.toArray(new String[seps.size()]);
     }
 
 
@@ -91,8 +91,8 @@ public class GeneratedAddressTest {
         List<String> personalsList = createPersonals();
         List<String> addressesList = createAddresses();
 
-        String[] pre = (String[]) personalsList.toArray(new String[personalsList.size()]);
-        String[] addr = (String[]) addressesList.toArray(new String[addressesList.size()]);
+        String[] pre = personalsList.toArray(new String[personalsList.size()]);
+        String[] addr = addressesList.toArray(new String[addressesList.size()]);
 
         System.out.println("Counting Tests...");
         for(List<String> p1 : new CombinationGenerator<String>(pre, addr)) {
@@ -306,7 +306,7 @@ public class GeneratedAddressTest {
                 
                 double periodsRemaining = ((double) m_numTests- (double) m_testNum) / m_notifyEvery;
 
-                long millisRemaining = (long) (((double) diff) * periodsRemaining);
+                long millisRemaining = (long) ((diff) * periodsRemaining);
 
                 //        long millisPerSample = (long) (((double)diff/(double)m_notifyEvery) * (double)m_testNum);
                 //        long millisRemaining = (long)

@@ -330,8 +330,7 @@ public class Quarantine
             String inboxAddress = entry.getKey();
 
             //Get recipients as an array
-            String[] recipientsForThisInbox = (String[])
-                entry.getValue().toArray(new String[entry.getValue().size()]);
+            String[] recipientsForThisInbox = entry.getValue().toArray(new String[entry.getValue().size()]);
 
             //Perform the insert
             Pair<QuarantineStore.AdditionStatus, String> result =
@@ -774,7 +773,9 @@ public class Quarantine
         }
     }
 
-    private List<EmailAddressRule> toEmailAddressRule(List<String> typedList) {
+    @SuppressWarnings("unused")
+	private List<EmailAddressRule> toEmailAddressRule(List<String> typedList) 
+    {
         ArrayList<EmailAddressRule> ret = new ArrayList<EmailAddressRule>();
 
         for(String s : typedList) {
@@ -784,7 +785,8 @@ public class Quarantine
         return ret;
     }
 
-    private List<String> fromEmailAddressRule(List<EmailAddressRule> list) {
+    private List<String> fromEmailAddressRule(List<EmailAddressRule> list) 
+    {
         ArrayList<String> ret = new ArrayList<String>();
 
         for(EmailAddressRule wrapper : list) {

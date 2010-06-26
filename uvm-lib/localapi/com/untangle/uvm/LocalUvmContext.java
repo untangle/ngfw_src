@@ -305,7 +305,7 @@ public interface LocalUvmContext extends RemoteUvmContext
      */
     boolean activate(String key, RegistrationInfo regInfo);
 
-    boolean runTransaction(TransactionWork tw);
+    boolean runTransaction(TransactionWork<?> tw);
 
     Thread newThread(Runnable runnable);
 

@@ -112,7 +112,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     private final EventLogger<SpywareEvent> eventLogger;
 
-    private final UrlDatabase urlDatabase = new UrlDatabase();
+    private final UrlDatabase<String> urlDatabase = new UrlDatabase<String>();
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
         { new SoloPipeSpec("spyware-http", this, tokenAdaptor,
@@ -230,6 +230,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     // SpywareNode methods -----------------------------------------------------
 
+    @SuppressWarnings("unchecked") //getItems
     public List<StringRule> getActiveXRules(final int start, final int limit,
                                             final String... sortColumns)
     {
@@ -245,6 +246,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         updateRules(settings.getActiveXRules(), added, deleted, modified);
     }
 
+    @SuppressWarnings("unchecked") //getItems
     public List<StringRule> getCookieRules(int start, int limit,
                                            String... sortColumns)
     {
@@ -259,8 +261,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
         updateRules(settings.getCookieRules(), added, deleted, modified);
     }
 
-    public List<IPMaddrRule> getSubnetRules(int start, int limit,
-                                            String... sortColumns)
+    @SuppressWarnings("unchecked") //getItems
+    public List<IPMaddrRule> getSubnetRules(int start, int limit, String... sortColumns)
     {
         return listUtil.getItems("select s.subnetRules from SpywareSettings s where s.tid = :tid ",
                                  getNodeContext(), getTid(), start, limit,
@@ -273,6 +275,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         updateRules(settings.getSubnetRules(), added, deleted, modified);
     }
 
+    @SuppressWarnings("unchecked") //getItems
     public List<StringRule> getDomainWhitelist(int start, int limit,
                                                String... sortColumns)
     {
@@ -299,7 +302,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     public void setBaseSettings(final SpywareBaseSettings baseSettings)
     {
-        TransactionWork tw = new TransactionWork() {
+        TransactionWork<Object> tw = new TransactionWork<Object>() {
                 public boolean doWork(Session s) {
                     settings.setBaseSettings(baseSettings);
                     s.merge(settings);
@@ -336,6 +339,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
                 logger.debug("attempting to unblock global in UserWhitelistMode.USER_ONLY");
                 return false;
             }
+            break;
         case USER_AND_GLOBAL:
             // its all good
             break;
@@ -414,7 +418,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     protected void postInit(String[] args)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -625,7 +629,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
                           final List[] activeXRules, final List[] cookieRules,
                           final List[] subnetRules, final List[] domainWhitelist)
     {
-        TransactionWork tw = new TransactionWork() {
+        TransactionWork<Object> tw = new TransactionWork<Object>() {
                 public boolean doWork(Session s) {
                     if (baseSettings != null) {
                         settings.setBaseSettings(baseSettings);
@@ -662,7 +666,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     private void updateRules(final Set<?> rules, final List<?> added,
                              final List<Long> deleted, final List<?> modified)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -724,10 +728,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
     }
 
-    private void updateActiveX(SpywareSettings settings, Set<String> add,
-                               Set<String> remove)
+    private void updateActiveX(SpywareSettings settings, Set<String> add, Set<String> remove)
     {
-        Set<StringRule> rules = (Set<StringRule>)settings.getActiveXRules();
+        Set<StringRule> rules = settings.getActiveXRules();
         if (null == rules) {
             rules = new HashSet<StringRule>();
             settings.setActiveXRules(rules);
@@ -776,10 +779,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
     }
 
-    private void updateCookie(SpywareSettings settings, Set<String> add,
-                              Set<String> remove)
+    private void updateCookie(SpywareSettings settings, Set<String> add, Set<String> remove)
     {
-        Set<StringRule> rules = (Set<StringRule>)settings.getCookieRules();
+        Set<StringRule> rules = settings.getCookieRules();
         if (null == rules) {
             rules = new HashSet<StringRule>();
             settings.setCookieRules(rules);
@@ -831,8 +833,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
     }
 
-    private void updateSubnet(SpywareSettings settings, Set<String> add,
-                              Set<String> rem)
+    private void updateSubnet(SpywareSettings settings, Set<String> add, Set<String> rem)
     {
         Set<IPMaddrRule> remove = new HashSet<IPMaddrRule>();
         for (String s : rem) {
@@ -842,7 +843,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             }
         }
 
-        Set<IPMaddrRule> rules = (Set<IPMaddrRule>)settings.getSubnetRules();
+        Set<IPMaddrRule> rules = settings.getSubnetRules();
         if (null == rules) {
             rules = new HashSet<IPMaddrRule>();
             settings.setSubnetRules(rules);
@@ -1012,7 +1013,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             streamHandler.subnetList(this.settings.getSubnetRules());
         }
 
-        Set<StringRule> l = (Set<StringRule>)settings.getActiveXRules();
+        Set<StringRule> l = settings.getActiveXRules();
         if (null != l) {
             Map<String, StringRule> s = new HashMap<String, StringRule>();
             for (StringRule sr : l) {
@@ -1023,7 +1024,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             activeXRules = null;
         }
 
-        l = (Set<StringRule>)settings.getCookieRules();
+        l = settings.getCookieRules();
         if (null != l) {
             Map<String, StringRule> s = new HashMap<String, StringRule>();
             for (StringRule sr : l) {
@@ -1035,7 +1036,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
 
         Set<String> s = new HashSet<String>();
-        l = (Set<StringRule>)settings.getDomainWhitelist();
+        l = settings.getDomainWhitelist();
         for (StringRule sr : l) {
             if (sr.isLive()) {
                 String str = normalizeDomain(sr.getString());
@@ -1048,7 +1049,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     private void setSpywareSettings(final SpywareSettings settings)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -1107,16 +1108,5 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
 
         return l;
-    }
-
-    /* Probably would be better if URL database took a listener. */
-    private class SpywareUrlDatabase extends UrlDatabase
-    {
-        public void updateAll(boolean async)
-        {
-            super.updateAll(async);
-
-            SpywareImpl.this.lastSignatureUpdate = new Date();
-        }
     }
 }

@@ -363,7 +363,9 @@ class LOGINTokMon
                 break;
             case NEW_LINE:
                 m_logger.debug("Expecting username token, got EOL.  Assume server will return error");
+                break;
             case NONE:
+                break;
             }
             m_state = LTMState.NONE;
             break;//Redundant

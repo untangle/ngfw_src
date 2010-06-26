@@ -17,7 +17,6 @@
  */
 package com.untangle.node.openvpn;
 
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -272,7 +271,7 @@ class AddressMapper
     private IPaddr getByAddress( byte[] data )
     {
         try {
-            return new IPaddr((Inet4Address)InetAddress.getByAddress( data ));
+            return new IPaddr(InetAddress.getByAddress( data ));
         } catch ( UnknownHostException e ) {
             logger.error( "Something happened, array should be 4 actually " + data.length + " bytes", e );
         }

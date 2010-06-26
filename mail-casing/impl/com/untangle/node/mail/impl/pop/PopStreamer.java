@@ -154,7 +154,7 @@ public class PopStreamer implements TCPStreamer
             logger.debug("cannot open input file channel for byte stuffed message file: " + exn);
             return null;
         }
-        zPopStreamer.iDataSz = (int) ((DATA_SZ < iNewFileSz) ? DATA_SZ : iNewFileSz);
+        zPopStreamer.iDataSz = ((DATA_SZ < iNewFileSz) ? DATA_SZ : iNewFileSz);
         zPopStreamer.iFileSz = iNewFileSz;
 
         return zPopStreamer;

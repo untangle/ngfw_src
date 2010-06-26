@@ -43,11 +43,6 @@ public class FirewallBlockedFilter implements SimpleEventFilter<FirewallEvent>
 
     public boolean accept(FirewallEvent e)
     {
-        if (e instanceof FirewallEvent) {
-            FirewallEvent re = (FirewallEvent)e;
-            return re.getWasBlocked();
-        } else {
-            return false;
-        }
+        return e.getWasBlocked();
     }
 }

@@ -281,7 +281,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     public Pipeline getPipeline(int sessionId)
     {
-        return (Pipeline) pipelines.get(sessionId);
+        return pipelines.get(sessionId);
     }
     
     /* Remove all of the cached chains */

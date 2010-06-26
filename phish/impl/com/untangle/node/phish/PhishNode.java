@@ -62,7 +62,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
     private static final URL URL_BASE;
 
-    private static UrlDatabase urlDatabase = null;
+    private static UrlDatabase<String> urlDatabase = null;
     private static int urlDatabaseCount = 0;
     private static int deployCount = 0;
 
@@ -286,7 +286,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
         return false;
     }
 
-    UrlDatabase getUrlDatabase()
+    UrlDatabase<String> getUrlDatabase()
     {
         return urlDatabase;
     }
@@ -350,9 +350,9 @@ public class PhishNode extends SpamNodeImpl implements Phish
         return host.substring(i + 1);
     }
 
-    private UrlDatabase makeUrlDatabase()
+    private UrlDatabase<String> makeUrlDatabase()
     {
-        urlDatabase = new UrlDatabase();
+    	UrlDatabase<String> urlDatabase = new UrlDatabase<String>();
 
         Map<String, String> m = new HashMap<String, String>(1);
         m.put("apikey", "ABQIAAAAcF3DrVo7y87-tH8HDXqeYBTJqIcXJiJ1Klr7Vk1tUUBxWLpa4w");

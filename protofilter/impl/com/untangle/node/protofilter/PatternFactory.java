@@ -59,7 +59,7 @@ public class PatternFactory {
         Pattern result = null;
 
         synchronized(_cachedPatterns) {
-            result = (Pattern) _cachedPatterns.get(inputRegEx);
+            result = _cachedPatterns.get(inputRegEx);
             if (_cachedPatterns.containsKey(inputRegEx))
                 return result;
         }

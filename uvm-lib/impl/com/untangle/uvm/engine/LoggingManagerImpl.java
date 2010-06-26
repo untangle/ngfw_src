@@ -57,7 +57,7 @@ class RemoteLoggingManagerImpl implements RemoteLoggingManager
     {
         this.repositorySelector = repositorySelector;
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -91,7 +91,7 @@ class RemoteLoggingManagerImpl implements RemoteLoggingManager
     {
         this.loggingSettings = loggingSettings;
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {

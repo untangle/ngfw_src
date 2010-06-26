@@ -26,8 +26,7 @@ class LoginEventFilter implements SimpleEventFilter<CPDLoginEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Login Events"));
 
-    private static final String WARM_QUERY
-        = "FROM CPDLoginEvent evt ORDER BY evt.timeStamp DESC";
+    private static final String WARM_QUERY = "FROM CPDLoginEvent evt ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------
 
@@ -43,6 +42,6 @@ class LoginEventFilter implements SimpleEventFilter<CPDLoginEvent>
 
     public boolean accept(CPDLoginEvent e)
     {
-        return e instanceof CPDLoginEvent;
+        return true;
     }
 }

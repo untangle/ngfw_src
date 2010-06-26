@@ -118,9 +118,9 @@ public class PartialListUtil
         if ( modifications == null ) return;
         if ( modifications.length < 3 ) return;
 
-        List<T> added = (List<T>)modifications[0];
-        List<Long> deleted = (List<Long>)modifications[1];
-        List<T> modified = (List<T>)modifications[2];
+        List<T> added = modifications[0];
+        List<Long> deleted = modifications[1];
+        List<T> modified = modifications[2];
 
         updateCachedItems( items, handler, added, deleted, modified );
     }

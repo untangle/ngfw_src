@@ -252,7 +252,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     void removeSession(IPSessionImpl sess)
     {
         liveSessions.remove(sess);
-        ArgonAgent agent = ((MPipeImpl)mPipe).getArgonAgent();
+        ArgonAgent agent = (mPipe).getArgonAgent();
         if (agent == null) {
             logger.warn("attempt to remove session " + sess.id() + " when already destroyed");
         } else {
@@ -653,7 +653,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             l.add(sess.makeDesc());
         }
 
-        return (IPSessionDesc[])l.toArray(SESSION_DESC_ARRAY_PROTO);
+        return l.toArray(SESSION_DESC_ARRAY_PROTO);
     }
 
     // This one is used to dump to our own log, including internal

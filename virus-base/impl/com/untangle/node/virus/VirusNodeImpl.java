@@ -270,7 +270,7 @@ public abstract class VirusNodeImpl extends AbstractNode
 
     public void setBaseSettings(final VirusBaseSettings baseSettings)
     {
-        TransactionWork tw = new TransactionWork() {
+        TransactionWork<Object> tw = new TransactionWork<Object>() {
                 public boolean doWork(Session s) {
                     settings.setBaseSettings(baseSettings);
                     s.merge(settings);
@@ -289,7 +289,7 @@ public abstract class VirusNodeImpl extends AbstractNode
         //TEMP hack - bscott
         ensureTemplateSettings(settings.getBaseSettings());
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -314,6 +314,7 @@ public abstract class VirusNodeImpl extends AbstractNode
         return settings;
     }
 
+    @SuppressWarnings("unchecked") //getItems
     public List<MimeTypeRule> getHttpMimeTypes(final int start, final int limit, final String... sortColumns) {
         return listUtil.getItems("select vs.httpMimeTypes from VirusSettings vs " +
                                  "join vs.httpMimeTypes as httpMimeTypes where vs.tid = :tid ",
@@ -325,6 +326,7 @@ public abstract class VirusNodeImpl extends AbstractNode
         updateRules(getHttpMimeTypes(), added, deleted, modified);
     }
 
+    @SuppressWarnings("unchecked") //getItems
     public List<StringRule> getExtensions(final int start, final int limit, final String... sortColumns) {
         return listUtil.getItems("select vs.extensions from VirusSettings vs where vs.tid = :tid ",
                                  getNodeContext(), getTid(), start, limit, sortColumns);
@@ -338,7 +340,7 @@ public abstract class VirusNodeImpl extends AbstractNode
     @SuppressWarnings("unchecked")
 	public void updateAll(final VirusBaseSettings baseSettings, final List[] httpMimeTypes, final List[] extensions)
     {
-        TransactionWork tw = new TransactionWork() {
+        TransactionWork<Object> tw = new TransactionWork<Object>() {
                 public boolean doWork(Session s) {
                     if (baseSettings != null) {
                         settings.setBaseSettings(baseSettings);
@@ -575,7 +577,7 @@ public abstract class VirusNodeImpl extends AbstractNode
 
     protected void preInit(String args[])
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -760,7 +762,7 @@ public abstract class VirusNodeImpl extends AbstractNode
     private void updateRules(final Set<?> rules, final List<?> added,
                              final List<Long> deleted, final List<?> modified)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {

@@ -399,6 +399,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
 
     // private methods --------------------------------------------------------
 
+    @SuppressWarnings("fallthrough")
     private TokenResult doHandleClientToken(Token token) throws TokenException
     {
         clientState = nextClientState(token);
@@ -584,6 +585,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
         }
     }
 
+    @SuppressWarnings("fallthrough")
     private TokenResult doHandleServerToken(Token token) throws TokenException
     {
         serverState = nextServerState(token);

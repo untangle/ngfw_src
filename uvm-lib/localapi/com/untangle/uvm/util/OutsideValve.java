@@ -62,7 +62,7 @@ public abstract class OutsideValve extends ValveBase
 
     private final Logger logger = Logger.getLogger(OutsideValve.class);
 
-    protected void OutsideValve() { }
+    protected OutsideValve() { }
 
     public void invoke( Request request, Response response )
         throws IOException, ServletException

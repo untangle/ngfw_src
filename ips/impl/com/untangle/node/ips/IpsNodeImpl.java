@@ -111,7 +111,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
 
     public void setBaseSettings(final IpsBaseSettings baseSettings)
     {
-        TransactionWork tw = new TransactionWork() {
+        TransactionWork<Object> tw = new TransactionWork<Object>() {
             public boolean doWork(Session s) {
                 settings.setBaseSettings(baseSettings);
                 settings = (IpsSettings)s.merge(settings);
@@ -155,8 +155,8 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
         return engine;
     }
 
-    public List<IpsRule> getRules(final int start, final int limit,
-                                  final String... sortColumns)
+    @SuppressWarnings("unchecked") //getItems
+    public List<IpsRule> getRules(final int start, final int limit, final String... sortColumns)
     {
         List<IpsRule> rules = listUtil.getItems("select s.rules from IpsSettings s where s.tid = :tid ",
                                  getNodeContext(), getTid(), start, limit,
@@ -173,6 +173,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
         updateRules(settings.getRules(), added, deleted, modified);
     }
 
+    @SuppressWarnings("unchecked") //getItems
     public List<IpsVariable> getVariables(final int start, final int limit,
                                           final String... sortColumns)
     {
@@ -187,6 +188,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
 	updateVariables(settings.getVariables(), added, deleted, modified);
     }
 
+    @SuppressWarnings("unchecked") //getItems
     public List<IpsVariable> getImmutableVariables(final int start,
                                                    final int limit,
                                                    final String... sortColumns)
@@ -206,7 +208,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     public void updateAll(final IpsBaseSettings baseSettings, final List<IpsRule>[] rules, final List<IpsVariable>[] variables, final List<IpsVariable>[] immutableVariables)
     	{
 
-		TransactionWork tw = new TransactionWork() {
+		TransactionWork<Object> tw = new TransactionWork<Object>() {
 			public boolean doWork(Session s) {
 				if (baseSettings != null) {
 					settings.setBaseSettings(baseSettings);
@@ -268,7 +270,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
 
     private void updateRules(final Set<?> rules, final List<?> added, final List<Long> deleted, final List<?> modified)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -287,7 +289,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     @SuppressWarnings("unchecked")
     private void updateVariables(final Set rules, final List added, final List<Long> deleted, final List modified)
     {
-	TransactionWork tw = new TransactionWork()
+	TransactionWork<Object> tw = new TransactionWork<Object>()
 	{
 	    public boolean doWork(Session s)
 	    {
@@ -305,7 +307,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     
     private void setIpsSettings(final IpsSettings settings)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -333,7 +335,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     }
 
     private void queryDBForSettings() {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {

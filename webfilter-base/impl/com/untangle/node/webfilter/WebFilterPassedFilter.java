@@ -67,8 +67,8 @@ public class WebFilterPassedFilter implements ListEventFilter<WebFilterEvent>
         return null == e.getAction() || Action.PASS == e.getAction();
     }
 
-    public void warm(Session s, List<WebFilterEvent> l, int limit,
-                     Map<String, Object> params)
+    @SuppressWarnings("unchecked") //Query
+    public void warm(Session s, List<WebFilterEvent> l, int limit, Map<String, Object> params)
     {
         Query q = s.createQuery(RL_QUERY);
         for (String param : q.getNamedParameters()) {

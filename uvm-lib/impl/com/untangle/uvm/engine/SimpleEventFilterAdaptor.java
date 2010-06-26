@@ -70,8 +70,8 @@ class SimpleEventFilterAdaptor<E extends LogEvent>
 
     // private methods --------------------------------------------------------
 
-    private void runQuery(String query, Session s, List<E> l, int limit,
-                          Map<String, Object> params)
+    @SuppressWarnings("unchecked") //Query
+    private void runQuery(String query, Session s, List<E> l, int limit, Map<String, Object> params)
     {
         Query q = s.createQuery(query);
         for (String param : q.getNamedParameters()) {

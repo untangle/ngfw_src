@@ -142,7 +142,7 @@ class NodePersistentState
     @Transient
     String[] getArgArray()
     {
-        return (String[])args.toArray(new String[args.size()]);
+        return args.toArray(new String[args.size()]);
     }
 
     /**

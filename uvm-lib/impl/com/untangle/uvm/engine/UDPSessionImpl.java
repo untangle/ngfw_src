@@ -137,36 +137,36 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
     public byte clientState()
     {
-        if (((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue() == null) {
-            assert ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue() == null;
+        if ((pSession).clientIncomingSocketQueue() == null) {
+            assert (pSession).clientOutgoingSocketQueue() == null;
             return IPSessionDesc.EXPIRED;
         } else {
-            assert ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue() != null;
+            assert (pSession).clientOutgoingSocketQueue() != null;
             return IPSessionDesc.OPEN;
         }
     }
 
     public byte serverState()
     {
-        if (((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue() == null) {
-            assert ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue() == null;
+        if ((pSession).serverIncomingSocketQueue() == null) {
+            assert (pSession).serverOutgoingSocketQueue() == null;
             return IPSessionDesc.EXPIRED;
         } else {
-            assert ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue() != null;
+            assert (pSession).serverOutgoingSocketQueue() != null;
             return IPSessionDesc.OPEN;
         }
     }
 
     public void expireServer()
     {
-        OutgoingSocketQueue out = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
+        OutgoingSocketQueue out = (pSession).serverOutgoingSocketQueue();
         if (out != null) {
             Crumb crumb = ShutdownCrumb.getInstance(true);
             out.write(crumb);
         }
         // 8/15/05 we also now reset the incoming side, to avoid the race in case a packet outraces
         // the close-other-half event.
-        IncomingSocketQueue in = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
+        IncomingSocketQueue in = (pSession).serverIncomingSocketQueue();
         if (in != null) {
             // Should always happen.
             in.reset();
@@ -175,14 +175,14 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
     public void expireClient()
     {
-        OutgoingSocketQueue out = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
+        OutgoingSocketQueue out = (pSession).clientOutgoingSocketQueue();
         if (out != null) {
             Crumb crumb = ShutdownCrumb.getInstance(true);
             out.write(crumb);
         }
         // 8/15/05 we also now reset the incoming side, to avoid the race in case a packet outraces
         // the close-other-half event.
-        IncomingSocketQueue in = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
+        IncomingSocketQueue in = (pSession).clientIncomingSocketQueue();
         if (in != null) {
             // Should always happen.
             in.reset();
@@ -434,8 +434,8 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
         if (crumb.type() == Crumb.TYPE_ICMP_PACKET) {
             ICMPPacketCrumb icrumb = (ICMPPacketCrumb)crumb;
-            byte icmpType = (byte) icrumb.icmpType();
-            byte icmpCode = (byte) icrumb.icmpCode();
+            byte icmpType = icrumb.icmpType();
+            byte icmpCode = icrumb.icmpCode();
             InetAddress source = icrumb.source();
             UDPErrorEvent event = new UDPErrorEvent(mPipe, this, pbuf, pheader, icmpType, icmpCode, source);
             if (side == CLIENT)

@@ -86,7 +86,7 @@ public interface NodeContext
     // XXX should be LocalNodeContext ------------------------------------
 
     // XXX
-    boolean runTransaction(TransactionWork tw);
+    boolean runTransaction(TransactionWork<?> tw);
 
     InputStream getResourceAsStream(String resource);
 

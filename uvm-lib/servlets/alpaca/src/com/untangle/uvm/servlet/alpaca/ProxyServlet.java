@@ -204,10 +204,11 @@ public class ProxyServlet extends HttpServlet
         os.flush();
     }
 
+    @SuppressWarnings("unchecked") //getHeaderNames
     private void copyHeaders(HttpServletRequest req, HttpMethod method)
     {
         for (Enumeration<String> e = req.getHeaderNames(); e.hasMoreElements(); ) {
-            String k = (String)e.nextElement();
+            String k = e.nextElement();
             if (k.equalsIgnoreCase("transfer-encoding")
                 || k.equalsIgnoreCase("content-length")
                 || k.equalsIgnoreCase("cookie")) {
@@ -218,7 +219,7 @@ public class ProxyServlet extends HttpServlet
                 method.addRequestHeader("Referer", BASE_URL);
             } else {
                 for (Enumeration<String> f = req.getHeaders(k); f.hasMoreElements(); ) {
-                    String v = (String)f.nextElement();
+                    String v = f.nextElement();
                     method.addRequestHeader(k, v);
                 }
             }

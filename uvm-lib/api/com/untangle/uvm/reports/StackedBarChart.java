@@ -251,7 +251,7 @@ public class StackedBarChart extends Plot
             logger.debug("Disabling legend");
             renderer.setBaseItemLabelsVisible(false);
             renderer.setBaseSeriesVisibleInLegend(false);
-            renderer.setItemLabelsVisible(false);
+            renderer.setBaseItemLabelsVisible(false);
         }
 
         XYPlot plot = new XYPlot(dataset,

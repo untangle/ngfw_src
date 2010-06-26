@@ -514,7 +514,7 @@ public class MIMEPart {
     }
 
     private MIMEPart[] mpListToArray(List<MIMEPart> list) {
-        return (MIMEPart[]) list.toArray(new MIMEPart[list.size()]);
+        return list.toArray(new MIMEPart[list.size()]);
     }
 
     /**

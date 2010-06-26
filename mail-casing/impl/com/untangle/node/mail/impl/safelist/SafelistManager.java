@@ -79,7 +79,7 @@ public class SafelistManager
         this.mlImpl = mlImpl;
         this.mlSettings = mlSettings;
         // cast list because xdoclet does not support java 1.5
-        renew((List<SafelistSettings>) mlSettings.getSafelistSettings());
+        renew(mlSettings.getSafelistSettings());
     }
 
     //-------------------- SafelistNodeView ------------------------
@@ -308,7 +308,7 @@ public class SafelistManager
         m_sndrsByRcpnt.remove(rcpnt.toLowerCase());
 
         setSndrs(null, null);
-        renew((List<SafelistSettings>) mlSettings.getSafelistSettings());
+        renew(mlSettings.getSafelistSettings());
         return;
     }
 
@@ -403,7 +403,7 @@ public class SafelistManager
         HashMap<String, ArrayList<SafelistSettings>> allHMSafelistsByRcpnt = new HashMap<String, ArrayList<SafelistSettings>>();
         HashMap<String, SafelistSender> allHMSndrs = new HashMap<String, SafelistSender>();
         // cast list because xdoclet does not support java 1.5
-        List<SafelistSettings> safelists = (List<SafelistSettings>) mlSettings.getSafelistSettings();
+        List<SafelistSettings> safelists = mlSettings.getSafelistSettings();
 
         ArrayList<SafelistSettings> rcpntHMSafelists;
         SafelistRecipient slRcpnt;
@@ -572,7 +572,7 @@ public class SafelistManager
 
     private List<SafelistSettings> getHMSafelists()
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -587,7 +587,7 @@ public class SafelistManager
         mlImpl.getNodeContext().runTransaction(tw);
 
         // cast list because xdoclet does not support java 1.5
-        return (List<SafelistSettings>) mlSettings.getSafelistSettings();
+        return mlSettings.getSafelistSettings();
     }
 
     private void renew(List<SafelistSettings> safelists)
@@ -665,7 +665,7 @@ public class SafelistManager
         if (null == m) {
             return null;
         } else {
-            return (Pattern)m.remove(sndr);
+            return m.remove(sndr);
         }
     }
 
@@ -694,6 +694,6 @@ public class SafelistManager
     // return references to list contents for private use
     private String[] toStringArray(List<String> strs)
     {
-        return (String[])strs.toArray(new String[strs.size()]);
+        return strs.toArray(new String[strs.size()]);
     }
 }

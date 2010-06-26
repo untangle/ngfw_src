@@ -31,14 +31,14 @@ public class LoadPatterns {
 
     private LoadPatterns() {}
 
-    public static TreeMap getPatterns()
+    public static TreeMap<Integer,ProtoFilterPattern> getPatterns()
     {
         // Now that we have Policies,  we create a new map every time since we don't want sharing.
         return createPatterns();
     }
 
-    private static TreeMap createPatterns()
+    private static TreeMap<Integer,ProtoFilterPattern> createPatterns()
     {
-        TreeMap pats = new TreeMap();
+        TreeMap<Integer,ProtoFilterPattern> pats = new TreeMap<Integer,ProtoFilterPattern>();
 
 

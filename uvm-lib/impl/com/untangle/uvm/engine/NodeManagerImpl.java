@@ -265,7 +265,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
     public NodeDesc instantiate(String nodeName, Policy p, String[] args) throws DeployException
     {
         UvmContextImpl mctx = UvmContextImpl.getInstance();
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)mctx.toolboxManager();
+        ToolboxManagerImpl tbm = mctx.toolboxManager();
         MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
 
         if (MackageDesc.Type.SERVICE == mackageDesc.getType()) {
@@ -814,6 +814,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         return tDescs;
     }
 
+    @SuppressWarnings("unchecked") //Query
     private List<NodePersistentState> getUnloaded()
     {
         final List<NodePersistentState> unloaded
@@ -903,7 +904,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
             tid = nodeManagerState.nextTid(policy, nodeName);
         }
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {

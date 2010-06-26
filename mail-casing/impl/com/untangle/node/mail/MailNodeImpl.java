@@ -181,7 +181,7 @@ public class MailNodeImpl extends AbstractNode
 
     public void setMailNodeSettings(final MailNodeSettings settings)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -286,7 +286,7 @@ public class MailNodeImpl extends AbstractNode
     protected void postInit(String[] args)
     {
         logger.debug("postInit()");
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {

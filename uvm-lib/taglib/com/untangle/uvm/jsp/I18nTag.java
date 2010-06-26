@@ -77,6 +77,7 @@ public class I18nTag extends BodyTagSupport
         return EVAL_BODY_BUFFERED;
     }
 
+    @SuppressWarnings("unchecked") //getAttribute
     public final int doEndTag() throws JspException
     {
         BodyContent body = getBodyContent();
@@ -106,6 +107,7 @@ public class I18nTag extends BodyTagSupport
         }
     }
     
+    @SuppressWarnings("unchecked") //getAttribute
     public static String i18n( PageContext pageContext, String value )
     {
         /* Actually translate the string */

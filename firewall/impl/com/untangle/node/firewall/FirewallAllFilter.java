@@ -43,6 +43,6 @@ public class FirewallAllFilter implements SimpleEventFilter<FirewallEvent>
 
     public boolean accept(FirewallEvent e)
     {
-        return e instanceof FirewallEvent;
+        return true;
     }
 }

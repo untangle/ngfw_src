@@ -64,6 +64,7 @@ public class LicenseManagerFactory
         }
     }
 
+    @SuppressWarnings("unchecked") //Class.forName
     private synchronized void loadLicenseManager() throws UvmException
     {
         /* already loaded, this is why it is synchronized */

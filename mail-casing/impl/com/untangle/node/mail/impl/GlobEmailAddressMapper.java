@@ -148,7 +148,7 @@ public class GlobEmailAddressMapper {
             }
         }
 
-        return (String[]) set.toArray(new String[set.size()]);
+        return set.toArray(new String[set.size()]);
     }
 
     /**

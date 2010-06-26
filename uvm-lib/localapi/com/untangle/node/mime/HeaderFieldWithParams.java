@@ -166,6 +166,7 @@ public abstract class HeaderFieldWithParams
      * @param t the tokenizer, positioned after any initial
      *        header value information.
      */
+    @SuppressWarnings("fallthrough")
     private final void parseParams(HeaderFieldTokenizer t)
         throws HeaderParseException {
         HeaderFieldTokenizer.Token token = null;
@@ -240,6 +241,7 @@ public abstract class HeaderFieldWithParams
                 }
                 //Follow through
                 valueB.append(token.toString());
+                // fall through
             default:
                 while((token = t.nextTokenIgnoreComments()) != null) {
                     if(token.getDelim() == ';') {

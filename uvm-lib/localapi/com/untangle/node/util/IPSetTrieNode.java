@@ -55,7 +55,7 @@ public class IPSetTrieNode {
             return;
         }
 
-        boolean b = ((Boolean)bitString.removeFirst()).booleanValue();
+        boolean b = (bitString.removeFirst()).booleanValue();
 
         if (b) {
             if (_1Node != null)
@@ -75,7 +75,7 @@ public class IPSetTrieNode {
     public Object getLeastSpecific (LinkedList<Boolean> bitString, int index)
     {
         Boolean b;
-        try {b = (Boolean)bitString.get(index);}
+        try {b = bitString.get(index);}
         catch (IndexOutOfBoundsException e) {return this.result;}
 
         /* check locally first (less specific) */
@@ -98,7 +98,7 @@ public class IPSetTrieNode {
     public Object getMostSpecific (LinkedList<Boolean> bitString, int index)
     {
         Boolean b;
-        try {b = (Boolean)bitString.get(index);}
+        try {b = bitString.get(index);}
         catch (IndexOutOfBoundsException e) {
             /* You matched correctly to get here, but don't match the next level */
             return this.result;

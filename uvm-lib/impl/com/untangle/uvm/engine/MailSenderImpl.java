@@ -160,7 +160,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
         mimetypesFileTypeMap.addMimeTypes("application/pdf pdf PDF");
         mimetypesFileTypeMap.addMimeTypes("text/css css CSS");
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(org.hibernate.Session s)
                 {
@@ -224,7 +224,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
         return MAIL_SENDER;
     }
 
-    private boolean runTransaction(TransactionWork tw)
+    private boolean runTransaction(TransactionWork<?> tw)
     {
         if (null == transactionRunner) {
             return LocalUvmContextFactory.context().runTransaction(tw);
@@ -244,7 +244,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
 
     public void setMailSettings(final MailSettings settings)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(org.hibernate.Session s)
                 {
@@ -459,7 +459,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
             }
         }
 
-        String[] recipients = (String[]) alertableUsers.toArray(RECIPIENTS_PROTO);
+        String[] recipients = alertableUsers.toArray(RECIPIENTS_PROTO);
         if (recipients.length == 0) {
             logger.warn("Not sending alert email, no recipients");
         } else if (attachment == null) {
@@ -701,7 +701,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
                 logger.warn("Unable to parse \"" + s + "\" into email address");
             }
         }
-        return (Address[]) ret.toArray(new Address[ret.size()]);
+        return ret.toArray(new Address[ret.size()]);
     }
 
 

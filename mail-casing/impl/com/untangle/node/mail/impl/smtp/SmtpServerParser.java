@@ -37,15 +37,12 @@ import com.untangle.uvm.vnet.TCPSession;
 /**
  * ...name says it all...
  */
-class SmtpServerParser
-    extends SmtpParser {
+class SmtpServerParser extends SmtpParser
+{
+    private final Logger m_logger = Logger.getLogger(SmtpServerParser.class);
 
-    private final Logger m_logger =
-        Logger.getLogger(SmtpServerParser.class);
-
-    SmtpServerParser(TCPSession session,
-                     SmtpCasing parent,
-                     CasingSessionTracker tracker) {
+    SmtpServerParser(TCPSession session, SmtpCasing parent, CasingSessionTracker tracker)
+    {
         super(session, parent, tracker, false);
 
         m_logger.debug("Created");
@@ -53,8 +50,9 @@ class SmtpServerParser
     }
 
     @Override
-    protected ParseResult doParse(ByteBuffer buf) {
-
+    @SuppressWarnings("fallthrough")
+    protected ParseResult doParse(ByteBuffer buf)
+    {
         List<Token> toks = new ArrayList<Token>();
         boolean done = false;
 
@@ -73,6 +71,7 @@ class SmtpServerParser
                 case EXCHANGE_COMPLETE:
                     m_logger.debug("SASL Exchange complete");
                     getSmtpCasing().closeSASLExchange();
+                    //fallthrough ?? XXX
                 case IN_PROGRESS:
                     //There should not be any extra bytes
                     //left with "in progress", but what the hell

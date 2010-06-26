@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -132,7 +131,7 @@ class CertificateManager
         Map<String,Boolean> certificateStatusMap = generateCertificateStatusMap();
         Set<String> usedNameSet = new HashSet<String>();
 
-        for ( VpnClientBase client : (List<VpnClientBase>)settings.getCompleteClientList()) {
+        for ( VpnClientBase client : settings.getCompleteClientList()) {
             updateClientCertificateStatus( settings, client, certificateStatusMap, usedNameSet );
         }
         
@@ -237,7 +236,7 @@ class CertificateManager
 
     void createAllClientCertificates( VpnSettings settings ) throws NodeException
     {
-        for ( VpnClientBase client : (List<VpnClientBase>)settings.getCompleteClientList()) createClient( client );
+        for ( VpnClientBase client : settings.getCompleteClientList()) createClient( client );
     }
 
     void createClient( VpnClientBase client ) throws NodeException

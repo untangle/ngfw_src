@@ -91,8 +91,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     protected volatile WebFilterSettings settings;
 
     protected final PartialListUtil listUtil = new PartialListUtil();
-    protected final BlacklistCategoryHandler categoryHandler
-    = new BlacklistCategoryHandler();
+    protected final BlacklistCategoryHandler categoryHandler = new BlacklistCategoryHandler();
 
     protected final BlingBlinger scanBlinger;
     protected final BlingBlinger passBlinger;
@@ -220,6 +219,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 logger.debug("attempting to unblock global in UserWhitelistMode.USER_ONLY");
                 return false;
             }
+            break;
         case USER_AND_GLOBAL:
             // its all good
             break;
@@ -306,6 +306,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         getNodeContext().runTransaction(tw);
     }
 
+    @SuppressWarnings("unchecked") //getItems
     public List<BlacklistCategory> getBlacklistCategories(int start, int limit,
                                                           String... sortColumns) {
         return listUtil.getItems("select blacklistCategory from WebFilterSettings hbs " +
@@ -313,12 +314,14 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                                  getNodeContext(), getTid(), "blacklistCategory", start, limit, sortColumns);
     }
 
+    @SuppressWarnings("unchecked") //getItems
     public List<StringRule> getBlockedExtensions(int start, int limit,
                                                  String... sortColumns) {
         return listUtil.getItems("select hbs.blockedExtensions from WebFilterSettings hbs where hbs.tid = :tid ",
                                  getNodeContext(), getTid(), start, limit, sortColumns);
     }
 
+    @SuppressWarnings("unchecked") //getItems
     public List<MimeTypeRule> getBlockedMimeTypes(int start, int limit,
                                                   String... sortColumns) {
         return listUtil.getItems("select blockedMimeType from WebFilterSettings hbs " +
@@ -326,18 +329,21 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                                  getNodeContext(), getTid(), "blockedMimeType", start, limit, sortColumns);
     }
 
+    @SuppressWarnings("unchecked") //getItems
     public List<StringRule> getBlockedUrls(int start, int limit,
                                            String... sortColumns) {
         return listUtil.getItems("select hbs.blockedUrls from WebFilterSettings hbs where hbs.tid = :tid ",
                                  getNodeContext(), getTid(), start, limit, sortColumns);
     }
 
-    public List<IPMaddrRule> getPassedClients(int start, int limit,
-                                              String... sortColumns) {
+    @SuppressWarnings("unchecked") //getItems
+    public List<IPMaddrRule> getPassedClients(int start, int limit, String... sortColumns) 
+    {
         return listUtil.getItems("select hbs.passedClients from WebFilterSettings hbs where hbs.tid = :tid ",
                                  getNodeContext(), getTid(), start, limit, sortColumns);
     }
 
+    @SuppressWarnings("unchecked") //getItems
     public List<StringRule> getPassedUrls(int start, int limit,
                                           String... sortColumns) {
         return listUtil.getItems("select hbs.passedUrls from WebFilterSettings hbs where hbs.tid = :tid ",

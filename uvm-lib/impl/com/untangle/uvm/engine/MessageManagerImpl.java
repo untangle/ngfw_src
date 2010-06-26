@@ -394,7 +394,7 @@ class MessageManagerImpl implements LocalMessageManager
 
     private void ensureTid0()
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {

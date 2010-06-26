@@ -83,6 +83,7 @@ class SmtpServerUnparser
                 case EXCHANGE_COMPLETE:
                     m_logger.debug("SASL Exchange complete");
                     getSmtpCasing().closeSASLExchange();
+                    break;
                 case IN_PROGRESS:
                     break;//Nothing interesting to do
                 case RECOMMEND_PASSTHRU:
@@ -108,6 +109,7 @@ class SmtpServerUnparser
                 case EXCHANGE_COMPLETE:
                     m_logger.debug("SASL Exchange complete");
                     getSmtpCasing().closeSASLExchange();
+                    break;
                 case IN_PROGRESS:
                     //Nothing to do
                     break;

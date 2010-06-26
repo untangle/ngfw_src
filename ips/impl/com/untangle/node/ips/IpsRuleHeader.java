@@ -111,10 +111,10 @@ public class IpsRuleHeader
                 if (null != c) {
                     h = c;
                 } else {
-                    INSTANCES.put(h, new WeakReference(h));
+                    INSTANCES.put(h, new WeakReference<IpsRuleHeader>(h));
                 }
             } else {
-                INSTANCES.put(h, new WeakReference(h));
+                INSTANCES.put(h, new WeakReference<IpsRuleHeader>(h));
             }
         }
 

@@ -34,7 +34,7 @@ package com.untangle.uvm.util;
 
 public class QuarantineOutsideAccessValve extends OutsideValve
 {
-    public void QuarantineOutsideAccessValve()
+    public QuarantineOutsideAccessValve()
     {
     }
 

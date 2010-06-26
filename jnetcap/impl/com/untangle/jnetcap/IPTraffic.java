@@ -137,12 +137,12 @@ public class IPTraffic {
 
     public void ttl( byte value )
     { 
-        setIntValue( FLAG_TTL, (int)value );
+        setIntValue( FLAG_TTL, value );
     }
     
     public void tos( byte value )
     {
-        setIntValue( FLAG_TOS, (int)value );
+        setIntValue( FLAG_TOS, value );
     }
 
     public void isMarkEnabled( boolean isEnabled )

@@ -254,7 +254,7 @@ public class CasingAdaptor extends AbstractEventHandler
         if (logger.isDebugEnabled()) {
             logger.debug("finalizing " + e.session().id());
         }
-        Casing c = getCasing((TCPSession)e.ipsession());
+        Casing c = getCasing(e.ipsession());
         c.parser().handleFinalized();
         c.unparser().handleFinalized();
         removeCasingDesc(e.session());

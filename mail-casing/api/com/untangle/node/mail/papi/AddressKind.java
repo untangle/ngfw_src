@@ -92,12 +92,12 @@ public class AddressKind implements Serializable
 
     public static AddressKind getInstance(char key)
     {
-        return (AddressKind)INSTANCES.get(key);
+        return INSTANCES.get(key);
     }
 
     public static AddressKind getInstance(String kindStr)
     {
-        AddressKind kind = (AddressKind)BY_NAME.get(kindStr.toUpperCase());
+        AddressKind kind = BY_NAME.get(kindStr.toUpperCase());
         if (null == kind) { /* XXX setting about accepting unknown kinds */
             kind = new AddressKind('X', kindStr);
         }

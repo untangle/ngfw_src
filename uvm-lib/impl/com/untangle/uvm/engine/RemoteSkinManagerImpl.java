@@ -71,7 +71,7 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
     {
     	this.uvmContext = uvmContext;    	
     	
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {

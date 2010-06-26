@@ -136,7 +136,7 @@ public class FileMIMESource
         //Bug 779 - Copy contents of open streams before
         //          attempting to iterate, as iteration
         //          removes from the list
-        MIMEParsingInputStream[] oStreams = (MIMEParsingInputStream[]) openStreams.toArray(new MIMEParsingInputStream[openStreams.size()]);
+        MIMEParsingInputStream[] oStreams = openStreams.toArray(new MIMEParsingInputStream[openStreams.size()]);
 
         for(MIMEParsingInputStream s : oStreams) {
             destroyStream(s);

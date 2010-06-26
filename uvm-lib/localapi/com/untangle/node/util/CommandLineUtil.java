@@ -122,6 +122,7 @@ public class CommandLineUtil<T>
         return this.testInitializer.run(m, base, args);
     }
 
+    @SuppressWarnings("unchecked") 
     public void dumpObject( Object o ) throws Exception
     {
         if ( o instanceof Iterable<?> ) {

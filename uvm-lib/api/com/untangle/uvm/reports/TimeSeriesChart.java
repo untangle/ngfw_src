@@ -260,7 +260,7 @@ public class TimeSeriesChart extends Plot
             logger.debug("Disabling legend");
             renderer.setBaseItemLabelsVisible(false);
             renderer.setBaseSeriesVisibleInLegend(false);
-            renderer.setItemLabelsVisible(false);
+            renderer.setBaseItemLabelsVisible(false);
         }
 
         for (int i = 0; i < seriesColors.size(); i++) {

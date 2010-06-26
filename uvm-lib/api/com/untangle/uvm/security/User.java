@@ -156,7 +156,8 @@ public class User implements Serializable
     }
 
     /* for hibernate only */
-    private void setPassword(byte[] password)
+    @SuppressWarnings("unused")
+	private void setPassword(byte[] password)
     {
         this.password = password;
     }

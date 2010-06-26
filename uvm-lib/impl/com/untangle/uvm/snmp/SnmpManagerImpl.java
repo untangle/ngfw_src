@@ -61,7 +61,7 @@ public class SnmpManagerImpl
 
     private SnmpManagerImpl() {
 
-        TransactionWork tw = new TransactionWork() {
+        TransactionWork<Object> tw = new TransactionWork<Object>() {
                 public boolean doWork(Session s) {
                     Query q = s.createQuery("from SnmpSettings");
                     m_settings = (SnmpSettings)q.uniqueResult();
@@ -103,7 +103,7 @@ public class SnmpManagerImpl
     }
 
     public void setSnmpSettings(final SnmpSettings settings) {
-        TransactionWork tw = new TransactionWork() {
+        TransactionWork<Object> tw = new TransactionWork<Object>() {
                 public boolean doWork(Session s) {
                     s.merge(settings);
                     return true;

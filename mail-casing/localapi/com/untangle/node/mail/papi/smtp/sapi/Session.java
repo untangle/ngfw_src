@@ -500,7 +500,7 @@ public final class Session
             }
         }
 
-        String[] newRespLines = (String[]) finalList.toArray(new String[finalList.size()]);
+        String[] newRespLines = finalList.toArray(new String[finalList.size()]);
         return new Response(resp.getCode(), newRespLines);
     }
 

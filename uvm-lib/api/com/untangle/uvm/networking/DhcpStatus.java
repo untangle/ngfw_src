@@ -34,7 +34,6 @@
 package com.untangle.uvm.networking;
 
 import java.io.Serializable;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 
 import com.untangle.uvm.node.IPaddr;
@@ -79,7 +78,7 @@ public class DhcpStatus implements Serializable
     
     DhcpStatus( InetAddress address, InetAddress netmask )
     {
-        this( new IPaddr((Inet4Address)address ), new IPaddr((Inet4Address)netmask ), null, null, null );
+        this( new IPaddr(address ), new IPaddr(netmask ), null, null, null );
     }
 
     DhcpStatus( IPaddr address, IPaddr netmask, IPaddr defaultRoute, IPaddr dns1, IPaddr dns2 )

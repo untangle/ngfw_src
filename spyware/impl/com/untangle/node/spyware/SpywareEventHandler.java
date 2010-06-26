@@ -61,7 +61,7 @@ public class SpywareEventHandler extends AbstractEventHandler
             for (Iterator<IPMaddrRule> i = list.iterator(); i.hasNext(); ) {
                 IPMaddrRule se = i.next();
                 IPMaddr ipm = se.getIpMaddr();
-                set.add(ipm,(Object)se);
+                set.add(ipm,se);
             }
 
             this.subnetSet = set;

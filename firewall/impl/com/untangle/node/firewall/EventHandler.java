@@ -198,7 +198,7 @@ class EventHandler extends AbstractEventHandler
          * iterating the current list */
         List <FirewallMatcher> firewallRuleList = new LinkedList<FirewallMatcher>();
 
-        List<FirewallRule> list = (List<FirewallRule>)settings.getFirewallRuleList();
+        List<FirewallRule> list = settings.getFirewallRuleList();
 
         if (list == null) {
             logger.error("Settings contain null firewall list");

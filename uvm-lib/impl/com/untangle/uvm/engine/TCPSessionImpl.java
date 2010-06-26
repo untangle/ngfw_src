@@ -183,13 +183,13 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
     public byte clientState()
     {
-        if (((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue() == null)
-            if (((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue() == null)
+        if ((pSession).clientIncomingSocketQueue() == null)
+            if ((pSession).clientOutgoingSocketQueue() == null)
                 return IPSessionDesc.CLOSED;
             else
                 return TCPSessionDesc.HALF_OPEN_OUTPUT;
         else
-            if (((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue() == null)
+            if ((pSession).clientOutgoingSocketQueue() == null)
                 return TCPSessionDesc.HALF_OPEN_INPUT;
             else
                 return IPSessionDesc.OPEN;
@@ -197,13 +197,13 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
     public byte serverState()
     {
-        if (((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue() == null)
-            if (((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue() == null)
+        if ((pSession).serverIncomingSocketQueue() == null)
+            if ((pSession).serverOutgoingSocketQueue() == null)
                 return IPSessionDesc.CLOSED;
             else
                 return TCPSessionDesc.HALF_OPEN_OUTPUT;
         else
-            if (((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue() == null)
+            if ((pSession).serverOutgoingSocketQueue() == null)
                 return TCPSessionDesc.HALF_OPEN_INPUT;
             else
                 return IPSessionDesc.OPEN;
@@ -211,22 +211,22 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
     public void shutdownServer()
     {
-        shutdownSide(SERVER, ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue(), false);
+        shutdownSide(SERVER, (pSession).serverOutgoingSocketQueue(), false);
     }
 
     public void shutdownServer(boolean force)
     {
-        shutdownSide(SERVER, ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue(), force);
+        shutdownSide(SERVER, (pSession).serverOutgoingSocketQueue(), force);
     }
 
     public void shutdownClient()
     {
-        shutdownSide(CLIENT, ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue(), false);
+        shutdownSide(CLIENT, (pSession).clientOutgoingSocketQueue(), false);
     }
 
     public void shutdownClient(boolean force)
     {
-        shutdownSide(CLIENT, ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue(), force);
+        shutdownSide(CLIENT, (pSession).clientOutgoingSocketQueue(), force);
     }
 
     private void shutdownSide(int side, OutgoingSocketQueue out, boolean force)
@@ -247,8 +247,8 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     public void resetServer()
     {
         // Go ahead and write out the reset.
-        OutgoingSocketQueue oursout = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
-        IncomingSocketQueue oursin  = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
+        OutgoingSocketQueue oursout = (pSession).serverOutgoingSocketQueue();
+        IncomingSocketQueue oursin  = (pSession).serverIncomingSocketQueue();
         if (oursout != null) {
             Crumb crumb = ResetCrumb.getInstance();
             boolean success = oursout.write(crumb);
@@ -265,8 +265,8 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     public void resetClient()
     {
         // Go ahead and write out the reset.
-        OutgoingSocketQueue ourcout = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
-        IncomingSocketQueue ourcin  = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
+        OutgoingSocketQueue ourcout = (pSession).clientOutgoingSocketQueue();
+        IncomingSocketQueue ourcin  = (pSession).clientIncomingSocketQueue();
 
         if (ourcout != null) {
             Crumb crumb = ResetCrumb.getInstance();

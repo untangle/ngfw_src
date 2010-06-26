@@ -59,6 +59,7 @@ public class DeletingDataSaver<T> extends DataSaver<T>
     }
     
     /* Overwrite with a method that fixes everything */
+    @SuppressWarnings("unchecked") //Query
     protected final void preSave( Session s )
     {
         Query q = s.createQuery( "from " + className );

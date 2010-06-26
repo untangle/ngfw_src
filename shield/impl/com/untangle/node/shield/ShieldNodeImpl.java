@@ -82,7 +82,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
 
     public void setShieldSettings(final ShieldSettings settings)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -127,7 +127,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
 
     protected void postInit(String[] args)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -147,7 +147,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
     {
         final List<ShieldRejectionLogEntry> l = new ArrayList<ShieldRejectionLogEntry>(limit);
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 @SuppressWarnings("deprecation")
 				public boolean doWork(Session s) throws SQLException
@@ -230,7 +230,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
     }
 
     public void setBaseSettings(final ShieldBaseSettings baseSettings) {
-        TransactionWork tw = new TransactionWork() {
+        TransactionWork<Object> tw = new TransactionWork<Object>() {
             public boolean doWork(Session s) {
                 settings.setBaseSettings(baseSettings);
                 s.merge(settings);
@@ -244,6 +244,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
         getNodeContext().runTransaction(tw);
     }
 
+    @SuppressWarnings("unchecked") //getItems
     public List<ShieldNodeRule> getShieldNodeRules(int start, int limit,
             String... sortColumns) {
         return listUtil.getItems(
@@ -283,7 +284,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
             final List<ShieldNodeRule> added, final List<Long> deleted,
             final List<ShieldNodeRule> modified) {
 
-        TransactionWork tw = new TransactionWork() {
+        TransactionWork<Object> tw = new TransactionWork<Object>() {
             public boolean doWork(Session s) {
                 listUtil.updateCachedItems( rules, added, deleted, modified );
 

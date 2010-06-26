@@ -641,7 +641,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public void setUpgradeSettings(final UpgradeSettings us)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -749,12 +749,12 @@ class ToolboxManagerImpl implements ToolboxManager
     }
 
     // private methods --------------------------------------------------------
-
+    @SuppressWarnings("unchecked") //Query
     private Map<String, MackageState> loadMackageState()
     {
         final Map<String, MackageState> m = new HashMap<String, MackageState>();
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(org.hibernate.Session s)
                 {
@@ -768,19 +768,6 @@ class ToolboxManagerImpl implements ToolboxManager
         LocalUvmContextFactory.context().runTransaction(tw);
 
         return m;
-    }
-
-    private void syncMackageState(final MackageState ms)
-    {
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(org.hibernate.Session s)
-                {
-                    s.merge(ms);
-                    return true;
-                }
-            };
-        LocalUvmContextFactory.context().runTransaction(tw);
     }
 
     // package list functions -------------------------------------------------

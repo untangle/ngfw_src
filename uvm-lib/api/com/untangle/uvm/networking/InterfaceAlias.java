@@ -37,7 +37,6 @@ package com.untangle.uvm.networking;
 import static com.untangle.uvm.networking.NetworkUtil.EMPTY_IPADDR;
 
 import java.io.Serializable;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 
 import com.untangle.uvm.node.IPaddr;
@@ -74,9 +73,9 @@ public class InterfaceAlias implements Serializable
 
     public InterfaceAlias( InetAddress address, InetAddress netmask, InetAddress broadcast )
     {
-        this.address   = new IPaddr((Inet4Address)address );
-        this.netmask   = new IPaddr((Inet4Address)netmask );
-        this.broadcast = new IPaddr((Inet4Address)broadcast );
+        this.address   = new IPaddr(address );
+        this.netmask   = new IPaddr(netmask );
+        this.broadcast = new IPaddr(broadcast );
     }
 
     public IPaddr getAddress()

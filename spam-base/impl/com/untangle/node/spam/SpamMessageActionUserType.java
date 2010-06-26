@@ -48,7 +48,7 @@ public class SpamMessageActionUserType implements UserType
             Object smAction = SpamMessageAction.getInstance(actionKey);
             if (null == smAction) {
                 // need to add new action -> default to PASS for now
-                smAction = (Object) SpamMessageAction.PASS;
+                smAction = SpamMessageAction.PASS;
             }
             return smAction;
         }

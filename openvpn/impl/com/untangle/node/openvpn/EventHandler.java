@@ -182,7 +182,7 @@ class EventHandler extends AbstractEventHandler
 
         IPMatcherFactory imf = IPMatcherFactory.getInstance();
 
-        for ( VpnGroup group : (List<VpnGroup>)settings.getGroupList()) {
+        for ( VpnGroup group : settings.getGroupList()) {
             /* Don't insert inactive groups */
             if ( !group.isLive()) continue;
             IPMatcher matcher = imf.makeSubnetMatcher( group.getAddress(), group.getNetmask());
@@ -195,7 +195,7 @@ class EventHandler extends AbstractEventHandler
         
         Map<String,VpnGroup> groupMap = OpenVpnManager.buildGroupMap(settings);
 
-        for ( VpnSite site : (List<VpnSite>)settings.getSiteList()) {
+        for ( VpnSite site : settings.getSiteList()) {
             VpnGroup group = groupMap.get(site.getGroupName());
             /* Continue if the client isn't live or the group the client is in isn't live */
             if ( !site.isEnabled() || ( group == null ) || !group.isLive()) {

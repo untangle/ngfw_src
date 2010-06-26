@@ -47,6 +47,7 @@ public class PhishHttpAllFilter implements ListEventFilter<PhishHttpEvent>
         return true;
     }
 
+    @SuppressWarnings("unchecked") //Query
     public void warm(Session s, List<PhishHttpEvent> l, int limit,
                      Map<String, Object> params)
     {

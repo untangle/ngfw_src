@@ -69,10 +69,10 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 
     // HttpServlet methods ----------------------------------------------------
 
+    @SuppressWarnings("unchecked") //getAttribute
     public void init()
     {
-        threadRequest = (InheritableThreadLocal<HttpServletRequest>)getServletContext()
-            .getAttribute("threadRequest");
+        threadRequest = (InheritableThreadLocal<HttpServletRequest>)getServletContext().getAttribute("threadRequest");
         if (null == threadRequest) {
             logger.warn("could not get threadRequest");
         }

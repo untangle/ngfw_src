@@ -59,7 +59,7 @@ public class Closure
                 urls = new URL[classpath.length];
                 for (int j = 0; j < classpath.length; j++) {
                     try {
-                        urls[j] = new File(classpath[j]).toURL();
+                        urls[j] = new File(classpath[j]).toURI().toURL();
                     } catch (MalformedURLException exn) {
                         System.err.println("ignoring bad url: " + classpath[j]);
                     }

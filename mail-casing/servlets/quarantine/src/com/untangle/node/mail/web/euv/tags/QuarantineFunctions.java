@@ -202,8 +202,9 @@ public class QuarantineFunctions
     /**
      * Returns null if there are no such messages
      */
-    private static ArrayList<String> getMessages(ServletRequest request,
-                                                 String msgType) {
+    @SuppressWarnings("unchecked") //getAttribute
+    private static ArrayList<String> getMessages(ServletRequest request, String msgType) 
+    {
         return (ArrayList<String>) request.getAttribute(MESSAGES_KEY_PREFIX + msgType);
     }
 

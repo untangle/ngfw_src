@@ -61,7 +61,7 @@ public class FtpNodeImpl extends AbstractNode
 
     public void setFtpSettings(final FtpSettings settings)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -91,7 +91,7 @@ public class FtpNodeImpl extends AbstractNode
 
     protected void postInit(String[] args)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {

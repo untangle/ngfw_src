@@ -99,7 +99,7 @@ public class VpnSite extends VpnClientBase
             site.setLive( true );
             list.add( site );
         } else {
-            site = (ClientSiteNetwork)list.get( 0 );
+            site = list.get( 0 );
         }
 
         return site;
@@ -114,7 +114,7 @@ public class VpnSite extends VpnClientBase
             site = new ClientSiteNetwork();
             list.add( site );
         } else {
-            site = (ClientSiteNetwork)list.get( 0 );
+            site = list.get( 0 );
         }
 
         site.setLive( true );

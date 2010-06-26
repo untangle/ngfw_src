@@ -78,7 +78,7 @@ public final class ASCIIUtil {
             return new String(new byte[]{b});
         }
         else {
-            return "(unprintable) " + Integer.toString((int) b);
+            return "(unprintable) " + Integer.toString(b);
         }
     }
 

@@ -244,6 +244,7 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
      *         the object
      * @throws TransactionException
      */
+    @SuppressWarnings("unchecked") //JSON
     private <T> T loadImpl(Class<T> clz, String packageName, String query)
             throws TransactionException {
         File f = buildHeadPath(clz, packageName, query);
@@ -490,7 +491,9 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
         }
     }
 
-    public static void main(String args[]) throws Exception {
+    @SuppressWarnings("unchecked") //JSON
+    public static void main(String args[]) throws Exception 
+    {
         LocalJStoreManagerImpl jStore = new LocalJStoreManagerImpl();
 
         JSONSerializer serializer = new JSONSerializer();
@@ -507,8 +510,7 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
         list.add("b");
         list.add("c");
 
-        List<String> serializedList = (List<String>) jStore.save(List.class,
-                "simple-test", "key", "value", list);
+        List<String> serializedList = jStore.save(List.class,"simple-test", "key", "value", list);
         System.out.printf("Saved and then loaded the string '%s'\n",
                 serializedList.toString());
 

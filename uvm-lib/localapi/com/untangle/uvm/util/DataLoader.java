@@ -67,13 +67,14 @@ public class DataLoader<T>
         this.data = null;
     }
 
+    @SuppressWarnings("unchecked") //Query
     public T loadData()
     {
         /* Set to null, so if the transaction fails the previous result (if this object is reused)
          * will not be returned.  Could also throw an exception? */
         this.data = null;
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {

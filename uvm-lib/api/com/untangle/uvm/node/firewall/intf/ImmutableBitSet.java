@@ -64,7 +64,7 @@ final class ImmutableBitSet implements Serializable
      */
     boolean get( byte value )
     {
-        return bitSet.get((int)value );
+        return bitSet.get(value );
     }
 
     public int nextSetBit(int fromIndex)

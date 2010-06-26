@@ -106,7 +106,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
     public void setBaseSettings(final FirewallBaseSettings baseSettings)
     {
-        TransactionWork tw = new TransactionWork() {
+        TransactionWork<Object> tw = new TransactionWork<Object>() {
             public boolean doWork(Session s) {
                 settings.setBaseSettings(baseSettings);
                 settings = (FirewallSettings)s.merge(settings);
@@ -133,7 +133,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
             fwr.setId(null);
         }
 
-        TransactionWork tw = new TransactionWork() {
+        TransactionWork<Object> tw = new TransactionWork<Object>() {
             public boolean doWork(Session s) {
                 settings.setFirewallRuleList(rules);
                 settings = (FirewallSettings)s.merge(settings);
@@ -156,7 +156,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
             fwr.setId(null);
         }
 
-        TransactionWork tw = new TransactionWork() {
+        TransactionWork<Object> tw = new TransactionWork<Object>() {
             public boolean doWork(Session s) {
                 settings.setBaseSettings(baseSettings);
                 settings.setFirewallRuleList(rules);
@@ -232,7 +232,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
     protected void postInit(String[] args)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -351,7 +351,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
     private void setFirewallSettings(final FirewallSettings settings)
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {

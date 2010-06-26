@@ -94,7 +94,7 @@ class SpecialSingleSignOn extends SingleSignOn
         } else if (principal instanceof BasePortalLogin) {
             if (logger.isDebugEnabled())
                 logger.debug( "Checking liveness for " + principal.getName());
-            BasePortalManager pmgr = (BasePortalManager) uvmContext.portalManager();
+            BasePortalManager pmgr = uvmContext.portalManager();
             boolean live = pmgr.isLive(principal);
             if (!live) {
                 request.setAuthType(null);

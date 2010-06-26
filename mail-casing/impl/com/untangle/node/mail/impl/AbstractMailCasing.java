@@ -48,9 +48,9 @@ public abstract class AbstractMailCasing implements Casing
         if(m_logger.isEnabledFor(Level.DEBUG)) {
             m_logger.debug("Creating " +
                            (clientSide?"client":"server") + " " + protocolString + " Casing.  Client: " +
-                           session.clientAddr() + "(" + Integer.toString((int) session.clientIntf()) + "), " +
+                           session.clientAddr() + "(" + Integer.toString(session.clientIntf()) + "), " +
                            "Server: " +
-                           session.serverAddr() + "(" + Integer.toString((int) session.serverIntf()) + ")");
+                           session.serverAddr() + "(" + Integer.toString(session.serverIntf()) + ")");
         }
 
         if(m_trace) {

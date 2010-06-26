@@ -248,7 +248,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
         // set lists if not already set
         initSpamRBLList(newSpamSettings);
 
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -321,7 +321,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
 
     public void setBaseSettings(final SpamBaseSettings baseSettings)
     {
-        TransactionWork tw = new TransactionWork() {
+        TransactionWork<Object> tw = new TransactionWork<Object>() {
                 public boolean doWork(Session s) {
                     spamSettings.setBaseSettings(baseSettings);
                     s.merge(spamSettings);
@@ -335,6 +335,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
         getNodeContext().runTransaction(tw);
     }
 
+    @SuppressWarnings("unchecked") //getItems
     public List<SpamRBL> getSpamRBLList( int start, int limit, String ... sortColumns )
     {
         String query = "select s.spamRBLList from SpamSettings s where s.tid = :tid ";
@@ -344,7 +345,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     public void updateSpamRBLList( final List<SpamRBL> added, final List<Long> deleted,
                                    final List<SpamRBL> modified )
     {
-        TransactionWork<Void> tw = new TransactionWork()
+        TransactionWork<Void> tw = new TransactionWork<Void>()
             {
                 public boolean doWork(Session s)
                 {
@@ -365,7 +366,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     @SuppressWarnings("unchecked")
 	public void updateAll( final SpamBaseSettings baseSettings, final List[] rblRules )
     {
-        TransactionWork tw = new TransactionWork() {
+        TransactionWork<Object> tw = new TransactionWork<Object>() {
                 public boolean doWork(Session s) {
                     if (baseSettings != null) {
                         spamSettings.setBaseSettings(baseSettings);
@@ -423,7 +424,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     @Override
     protected void preInit(String args[])
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {

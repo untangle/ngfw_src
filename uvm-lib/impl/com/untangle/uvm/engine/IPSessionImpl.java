@@ -63,6 +63,7 @@ abstract class IPSessionImpl
 
     protected final PipelineEndpoints pipelineEndpoints;
 
+    @SuppressWarnings("unchecked") //generics array creation not supported java6
     protected final List<Crumb>[] crumbs2write = new ArrayList[] { null, null };
 
     protected IPStreamer[] streamer = null;
@@ -213,9 +214,9 @@ abstract class IPSessionImpl
             return;
         OutgoingSocketQueue out;
         if (side == CLIENT)
-            out = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
+            out = (pSession).clientOutgoingSocketQueue();
         else
-            out = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
+            out = (pSession).serverOutgoingSocketQueue();
         if (out == null || out.isClosed()) {
             String sideName = side == CLIENT ? "client" : "server";
             warn("Ignoring crumb for dead " + sideName + " outgoing socket queue");
@@ -296,10 +297,10 @@ abstract class IPSessionImpl
                 debug("raze released");
             } else {
                 if (logger.isDebugEnabled()) {
-                    IncomingSocketQueue ourcin = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
-                    IncomingSocketQueue oursin = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
-                    OutgoingSocketQueue ourcout = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
-                    OutgoingSocketQueue oursout = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
+                    IncomingSocketQueue ourcin = (pSession).clientIncomingSocketQueue();
+                    IncomingSocketQueue oursin = (pSession).serverIncomingSocketQueue();
+                    OutgoingSocketQueue ourcout = (pSession).clientOutgoingSocketQueue();
+                    OutgoingSocketQueue oursout = (pSession).serverOutgoingSocketQueue();
                     debug("raze ourcin: " + ourcin +
                           ", ourcout: " + ourcout + ", ourcsin: " + oursin + ", oursout: " + oursout +
                           "  /  crumbs[CLIENT]: " + crumbs2write[CLIENT] + ", crumbs[SERVER]: " + crumbs2write[SERVER]);
@@ -411,7 +412,7 @@ abstract class IPSessionImpl
             nodeManager.registerThreadContext(tctx);
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
-            IncomingSocketQueue in = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
+            IncomingSocketQueue in = (pSession).clientIncomingSocketQueue();
             if (in != null)
                 in.reset();
             sideDieing(CLIENT);
@@ -449,7 +450,7 @@ abstract class IPSessionImpl
             nodeManager.registerThreadContext(tctx);
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
-            IncomingSocketQueue in = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
+            IncomingSocketQueue in = (pSession).serverIncomingSocketQueue();
             if (in != null)
                 in.reset();
             sideDieing(SERVER);
@@ -475,10 +476,10 @@ abstract class IPSessionImpl
      */
     private void setupForStreaming()
     {
-        IncomingSocketQueue cin = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
-        IncomingSocketQueue sin = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
-        OutgoingSocketQueue cout = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
-        OutgoingSocketQueue sout = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
+        IncomingSocketQueue cin = (pSession).clientIncomingSocketQueue();
+        IncomingSocketQueue sin = (pSession).serverIncomingSocketQueue();
+        OutgoingSocketQueue cout = (pSession).clientOutgoingSocketQueue();
+        OutgoingSocketQueue sout = (pSession).serverOutgoingSocketQueue();
         assert (streamer != null);
 
         if (cin != null)
@@ -508,10 +509,10 @@ abstract class IPSessionImpl
      */
     private void setupForNormal()
     {
-        IncomingSocketQueue cin = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
-        IncomingSocketQueue sin = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
-        OutgoingSocketQueue cout = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
-        OutgoingSocketQueue sout = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
+        IncomingSocketQueue cin = (pSession).clientIncomingSocketQueue();
+        IncomingSocketQueue sin = (pSession).serverIncomingSocketQueue();
+        OutgoingSocketQueue cout = (pSession).clientOutgoingSocketQueue();
+        OutgoingSocketQueue sout = (pSession).serverOutgoingSocketQueue();
         assert (streamer == null);
 
         // We take care not to change the state unless it's really
@@ -591,13 +592,13 @@ abstract class IPSessionImpl
             IncomingSocketQueue ourin;
             OutgoingSocketQueue ourout, otherout;
             if (side == CLIENT) {
-                ourin = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
-                ourout = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
-                otherout = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
+                ourin = (pSession).serverIncomingSocketQueue();
+                ourout = (pSession).clientOutgoingSocketQueue();
+                otherout = (pSession).serverOutgoingSocketQueue();
             } else {
-                ourin = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
-                ourout = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
-                otherout = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
+                ourin = (pSession).clientIncomingSocketQueue();
+                ourout = (pSession).serverOutgoingSocketQueue();
+                otherout = (pSession).clientOutgoingSocketQueue();
             }
             assert out == ourout;
 
@@ -654,16 +655,16 @@ abstract class IPSessionImpl
             @SuppressWarnings("unused")
 			IncomingSocketQueue ourin, otherin;
             OutgoingSocketQueue ourout, otherout;
-            OutgoingSocketQueue cout = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
-            OutgoingSocketQueue sout = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
+            OutgoingSocketQueue cout = (pSession).clientOutgoingSocketQueue();
+            OutgoingSocketQueue sout = (pSession).serverOutgoingSocketQueue();
             if (side == CLIENT) {
-                ourin = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
-                otherin = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
+                ourin = (pSession).clientIncomingSocketQueue();
+                otherin = (pSession).serverIncomingSocketQueue();
                 ourout = sout;
                 otherout = cout;
             } else {
-                ourin = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
-                otherin = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
+                ourin = (pSession).serverIncomingSocketQueue();
+                otherin = (pSession).clientIncomingSocketQueue();
                 ourout = cout;
                 otherout = sout;
             }

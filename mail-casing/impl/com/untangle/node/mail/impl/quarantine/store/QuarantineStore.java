@@ -719,22 +719,6 @@ public class QuarantineStore {
                                                    RelativeFile rf);
     }
 
-    //-------------------- Inner Class ----------------------
-
-    //
-    // Simply selects the entire list
-    //
-    private class SelectsAll
-        extends EjectionSelector {
-
-        List<InboxRecord> selectEjections(InboxIndexImpl index,
-                                          RelativeFile rf) {
-            ArrayList<InboxRecord> ret = new ArrayList<InboxRecord>(
-                                                                    index.values());
-            index.clear();
-            return ret;
-        }
-    }
 
     //-------------------- Inner Class ----------------------
 

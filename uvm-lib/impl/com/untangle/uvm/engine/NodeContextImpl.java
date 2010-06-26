@@ -114,7 +114,7 @@ class NodeContextImpl implements NodeContext
 
             nodePreferences = new NodePreferences(tid);
 
-            TransactionWork tw = new TransactionWork()
+            TransactionWork<Object> tw = new TransactionWork<Object>()
                 {
                     public boolean doWork(Session s)
                     {
@@ -174,7 +174,7 @@ class NodeContextImpl implements NodeContext
                         {
                             final NodeState ts = te.getNodeState();
 
-                            TransactionWork tw = new TransactionWork()
+                            TransactionWork<Object> tw = new TransactionWork<Object>()
                                 {
                                     public boolean doWork(Session s)
                                     {
@@ -214,7 +214,7 @@ class NodeContextImpl implements NodeContext
             nodeManager.deregisterThreadContext();
 
             if (null == node) {
-                TransactionWork tw = new TransactionWork()
+                TransactionWork<Object> tw = new TransactionWork<Object>()
                     {
                         public boolean doWork(Session s)
                         {
@@ -273,7 +273,7 @@ class NodeContextImpl implements NodeContext
 
     // XXX remove this method...
     @Deprecated
-    public boolean runTransaction(TransactionWork tw)
+    public boolean runTransaction(TransactionWork<?> tw)
     {
         return LocalUvmContextFactory.context().runTransaction(tw);
     }
@@ -384,7 +384,7 @@ class NodeContextImpl implements NodeContext
 
     void destroyPersistentState()
     {
-        TransactionWork tw = new TransactionWork()
+        TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
@@ -402,7 +402,7 @@ class NodeContextImpl implements NodeContext
 
     // private classes --------------------------------------------------------
 
-    private class LoadSettings extends TransactionWork
+    private class LoadSettings extends TransactionWork<Object>
     {
         private final Tid tid;
 

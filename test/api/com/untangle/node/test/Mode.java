@@ -48,7 +48,7 @@ public class Mode implements Serializable
 
     public static Mode getInstance(String mode)
     {
-        return (Mode)INSTANCES.get(mode);
+        return INSTANCES.get(mode);
     }
 
     private Mode(String mode)

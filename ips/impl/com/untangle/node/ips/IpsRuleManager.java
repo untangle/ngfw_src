@@ -265,8 +265,8 @@ public class IpsRuleManager
                 imVarSet = getImmutableVariables();
                 varSet = getDefaultVariables();
             } else {
-                imVarSet = (Set<IpsVariable>) engine.getSettings().getImmutableVariables();
-                varSet = (Set<IpsVariable>) engine.getSettings().getVariables();
+                imVarSet = engine.getSettings().getImmutableVariables();
+                varSet = engine.getSettings().getVariables();
             }
             for(IpsVariable var : imVarSet) {
                 string = string.replaceAll("\\"+var.getVariable(),var.getDefinition());

@@ -26,8 +26,9 @@ import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.UserMatcherSerializer;
 
-
-public class ServletUtils {
+@SuppressWarnings("unchecked")
+public class ServletUtils 
+{
     public static final ServletUtils INSTANCE = new ServletUtils();
     
     private ServletUtils()
@@ -89,16 +90,14 @@ public class ServletUtils {
         void registerSerializer(T base, Serializer s) throws Exception;
     }
       
-    @SuppressWarnings("unchecked")
-	private static Registrator JSON_SERIALIZER_REGISTRATOR = new Registrator<JSONSerializer>(){
-        
+
+	private static Registrator JSON_SERIALIZER_REGISTRATOR = new Registrator<JSONSerializer>() {       
         public void registerSerializer(JSONSerializer serializer, Serializer s ) throws Exception {
             serializer.registerSerializer(s);
         }
     };
 
-    @SuppressWarnings("unchecked")
-    private static Registrator JSON_RPC_BRIDGE_REGISTRATOR = new Registrator<JSONRPCBridge>(){        
+    private static Registrator JSON_RPC_BRIDGE_REGISTRATOR = new Registrator<JSONRPCBridge>() {        
         public void registerSerializer(JSONRPCBridge bridge, Serializer s ) throws Exception {
             bridge.registerSerializer(s);
         }

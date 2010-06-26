@@ -85,7 +85,7 @@ public class JsonClient
     private JsonClient()
     {
         HttpConnectionManagerParams params = this.connectionManager.getParams();
-        this.connectionManager.setMaxTotalConnections( DEFAULT_MAX_NUMBER_CONNECTIONS );
+        params.setMaxTotalConnections( DEFAULT_MAX_NUMBER_CONNECTIONS );
         params.setConnectionTimeout( DEFAULT_CONNECTION_TIMEOUT_MS );
         params.setSoTimeout( DEFAULT_SO_TIMEOUT_MS );
     }

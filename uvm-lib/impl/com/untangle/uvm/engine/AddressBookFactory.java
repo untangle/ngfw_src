@@ -52,6 +52,7 @@ class AddressBookFactory
     }
 
     /* Retest for the premium class */
+    @SuppressWarnings("unchecked") //Class.forName
     public void refresh()
     {
         if ( this.premium != null ) {

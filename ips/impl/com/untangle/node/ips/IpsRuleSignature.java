@@ -60,10 +60,10 @@ public class IpsRuleSignature
                 if (null != c) {
                     s = c;
                 } else {
-                    INSTANCES.put(s, new WeakReference(s));
+                    INSTANCES.put(s, new WeakReference<IpsRuleSignature>(s));
                 }
             } else {
-                INSTANCES.put(s, new WeakReference(s));
+                INSTANCES.put(s, new WeakReference<IpsRuleSignature>(s));
             }
         }
 

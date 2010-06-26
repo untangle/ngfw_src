@@ -226,7 +226,7 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
                             Query q = s.createQuery("from HostDatabaseEntry hde where hde.expirationDate > :now ORDER BY hde.expirationDate DESC");
                             q.setDate("now", new Date());
 
-                            List<HostDatabaseEntry> list = (List<HostDatabaseEntry>)q.list();
+                            List<HostDatabaseEntry> list = q.list();
 
                             Date now = new Date();
 

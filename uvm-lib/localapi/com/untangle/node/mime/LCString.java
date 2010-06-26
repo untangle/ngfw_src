@@ -70,7 +70,7 @@ public class LCString {
             return str.equals(((LCString) obj).str);
         }
         if(obj instanceof String) {
-            return str.equals((String) obj);
+            return str.equals(obj);
         }
         return false;
     }
