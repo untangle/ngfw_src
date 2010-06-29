@@ -413,11 +413,11 @@ public class NetworkManagerImpl implements LocalNetworkManager
         throws NetworkException, ValidateException
     {
         /* Send the call onto the alpaca */
-        PPPoEConnectionRule pppoe = basic.getPPPoESettings();
 
         JSONObject jsonObject = new JSONObject();
         String method = null;
         boolean isSingleNicEnabled = false;
+        PPPoESettings pppoe = basic.getPPPoESettings();
 
         try {
             if ( pppoe.isLive()) {

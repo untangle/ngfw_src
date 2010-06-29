@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
+ * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,152 +34,132 @@
 package com.untangle.uvm.networking;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.ValidationException;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
-
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
 
+
 /**
- * Settings to hold the configuration for all of the PPPoE
- * connections.
+ * Settings used for a single PPPoE connection.
  *
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-@Entity
-@Table(name="u_pppoe", schema="settings")
 @SuppressWarnings("serial")
-public class PPPoESettings implements Serializable, Validatable
+public class PPPoESettings extends Rule implements Serializable, Validatable
 {
-    private Long id;
+    /* the username */
+    private String username   = "pppoe";
 
-    /** Set to true in order to enable all of the PPPoE connections that are enabled. */
-    private boolean isEnabled = false;
+    /* the password */
+    private String password   = "eoppp";
 
-    /** List of all of the available PPPoE connections */
-    private List<PPPoEConnectionRule> connectionList;
-
-    public PPPoESettings()
+    private boolean live = false;
+    
+    public PPPoESettings() {}
+    
+    /**
+     * Get the username.
+     *
+     * @return The username.
+     */
+    public String getUsername()
     {
+        if ( this.username == null ) this.username = "";
+        return this.username;
     }
-
-    @Id
-    @Column(name="settings_id")
-    @GeneratedValue
-    protected Long getId()
+    
+    /**
+     * Set the username.
+     *
+     * @param newValue The username.
+     */
+    public void setUsername( String newValue )
     {
-        return id;
-    }
-
-    protected void setId(Long id)
-    {
-        this.id = id;
+        newValue = ( null == newValue ) ? "" : newValue;
+        this.username = newValue.trim();
     }
 
     /**
-     * Main controller to enable/disable of the PPPoE connections.
+     * Get the password.
      *
-     * @return True iff PPPoE connections can be enabled.
+     * @return The password.
      */
-    @Column(name="live")
-    public boolean getIsEnabled()
+    public String getPassword()
     {
-        return this.isEnabled;
+        if ( this.password == null ) this.password = "";
+        return this.password;
     }
 
     /**
-     * Set the main controller to enable/disable of the PPPoE
-     * connections.
+     * Set the password.
      *
-     * @param newValue True iff PPPoE connections can be enabled.
+     * @param newValue The password.
      */
-    public void setIsEnabled( boolean newValue )
+    public void setPassword( String newValue )
     {
-        this.isEnabled = newValue;
+        newValue = ( null == newValue ) ? "" : newValue;
+        this.password = newValue.trim();
     }
 
     /**
-     * A list of the configurations for all of the PPPoE connections.
+     * Is PPPoE live (in use)
      *
-     * @return List of configuration.
+     * @return The live flag
      */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinColumn(name="settings_id")
-    @IndexColumn(name="position")
-    public List<PPPoEConnectionRule> getConnectionList()
+    public boolean isLive()
     {
-        if ( this.connectionList == null )
-            this.connectionList = new LinkedList<PPPoEConnectionRule>();
-        
-        if (this.connectionList != null) this.connectionList.removeAll(java.util.Collections.singleton(null));
-        return this.connectionList;
+        return getLive();
     }
 
     /**
-     * Set the list of the configurations for all of the PPPoE
-     * connections.
+     * Is PPPoE live (in use)
      *
-     * @param newValue List of configuration.
+     * @return The live flag
      */
-    public void setConnectionList( List<PPPoEConnectionRule> newValue )
+    public boolean getLive()
     {
-        if ( newValue == null ) newValue = new LinkedList<PPPoEConnectionRule>();
-
-        this.connectionList = newValue;
+        return this.live;
     }
+    
+    /**
+     * Set the live flag
+     *
+     * @param newValue The live flag.
+     */
+    public void setLive( boolean newValue )
+    {
+        this.live = newValue;
+    }
+    
 
+    
+    public String toString()
+    {
+        return "[PPPoESettings: live:" + this.getLive() + " username:" + this.username + "]";
+    }
 
     /**
      * Validate these PPPoE setting are free of errors.
      *
      * @exception ValidationException Occurs if there is an error in
-     * these settings.  This also validates all of the connection.
+     * these settings.
      */
     public void validate() throws ValidateException
     {
-        /* Nothing to validate if the field is non-empty */
-        if ( !this.isEnabled ) return;
-
-        /* Used to verify there are not two enabled PPPoE Connections for the same interface */
-        Set<Byte> argonIntfSet = new HashSet<Byte>();
-
-        for ( PPPoEConnectionRule connection : getConnectionList()) {
-            connection.validate();
-
-            if ( connection.isLive() && !argonIntfSet.add( connection.getArgonIntf())) {
-                throw new ValidateException( "The interface: " + connection.getArgonIntf() +
-                                             " is in two connections" );
-            }
+        if ( null == this.username || ( 0 == this.username.length())) {
+            throw new ValidateException( "Empty username for PPPoE" );
         }
-    }
 
-    public String toString()
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append( "PPPoE Settings[" + getIsEnabled() + "]\n" );
-
-        for ( PPPoEConnectionRule rule : getConnectionList()) sb.append( rule + "\n" );
-
-        sb.append( "PPPoE Settings END" );
-
-        return sb.toString();
+        if ( null == this.password || ( 0 == this.password.length())) {
+            throw new ValidateException( "Empty password for PPPoE" );
+        }
     }
 }

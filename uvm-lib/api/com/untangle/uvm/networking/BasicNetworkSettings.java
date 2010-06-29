@@ -74,7 +74,7 @@ public class BasicNetworkSettings implements Serializable
     boolean isSingleNicEnabled = false;
 
     /* The configuration for PPPoE */
-    PPPoEConnectionRule pppoe;
+    PPPoESettings pppoe;
     
     /**
      * Get if DHCP is enabled
@@ -249,11 +249,10 @@ public class BasicNetworkSettings implements Serializable
      *
      * @return The current PPPoE configuration.
      */
-    public PPPoEConnectionRule getPPPoESettings()
+    public PPPoESettings getPPPoESettings()
     {
         if ( this.pppoe == null ) {
-            this.pppoe = new PPPoEConnectionRule();
-            this.pppoe.setLive( false );
+            this.pppoe = new PPPoESettings();
         }
 
         return this.pppoe;
@@ -264,7 +263,7 @@ public class BasicNetworkSettings implements Serializable
      *
      * @param newvalue The new PPPoE configuration.
      */
-    public void setPPPoESettings( PPPoEConnectionRule newValue )
+    public void setPPPoESettings( PPPoESettings newValue )
     {
         this.pppoe = newValue;
     }

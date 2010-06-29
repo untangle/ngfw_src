@@ -14,6 +14,7 @@
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --
 
+-- policy mananger changes
 ALTER TABLE settings.u_user_policy_rule
   ADD COLUMN start_time_string text;
 
@@ -28,3 +29,8 @@ ALTER TABLE settings.u_user_policy_rule
 
 ALTER TABLE settings.u_user_policy_rule
   DROP COLUMN end_time;
+
+
+-- pppoe changes
+DROP TABLE u_pppoe;
+DROP TABLE u_pppoe_connection;
