@@ -169,8 +169,9 @@ Ung.Reports = Ext.extend(Object,{
             return;
         }
         rpc.skinSettings = result;
-        Ung.Util.loadCss("/skins/" + rpc.skinSettings.userPagesSkin + "/css/ext-skin.css");
-        Ung.Util.loadCss("/skins/"+rpc.skinSettings.userPagesSkin+"/css/reports.css");
+        var rand = Math.floor(Math.random()*121221121);
+        Ung.Util.loadCss("/skins/" + rpc.skinSettings.userPagesSkin + "/css/ext-skin.css?r="+rand);
+        Ung.Util.loadCss("/skins/"+rpc.skinSettings.userPagesSkin+"/css/reports.css?r="+rand);
         this.postinit();
     },
 
