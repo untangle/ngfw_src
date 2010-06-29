@@ -142,10 +142,6 @@ public class LicenseManagerImpl implements LicenseManager
 
     private final UtLogger logger = new UtLogger(getClass());
 
-    /* Lazily initialized */
-    private String standardLicense = null;
-    private String professionalLicense = null;
-
     private LicenseManagerImpl()
     {
         /*
@@ -549,7 +545,7 @@ public class LicenseManagerImpl implements LicenseManager
     {
         String response = "";
         for (byte b : data) {
-            int c = (int) b;
+            int c = b;
             if (c < 0)
                 c = c + 0x100;
             response += String.format("%02x", c);

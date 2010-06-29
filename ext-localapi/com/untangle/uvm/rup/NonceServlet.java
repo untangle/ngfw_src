@@ -39,7 +39,7 @@ public class NonceServlet extends HttpServlet
         LocalUvmContext uvm = LocalUvmContextFactory.context();
 
         final ProxyNonce nonce = new ProxyNonce(Long.toHexString(rand.nextLong()));
-        uvm.runTransaction(new TransactionWork() {
+        uvm.runTransaction(new TransactionWork<Object>() {
                 public boolean doWork(Session s)
                 {
                     s.save(nonce);
