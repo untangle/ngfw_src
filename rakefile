@@ -23,18 +23,26 @@ task :all => :devel
 
 task :clean do
   Kernel.system( "make -C downloads distclean" )
+  info "[rm -rf  ] #{BuildEnv::SRC.devel}"
   FileUtils.rm_rf(BuildEnv::SRC.devel) if File.exist?(BuildEnv::SRC.devel)
+  info "[rm -rf  ] #{BuildEnv::SRC.staging}"
   FileUtils.rm_rf(BuildEnv::SRC.staging) if File.exist?(BuildEnv::SRC.staging)
+  info "[rm -rf  ] foo.dot"
   FileUtils.rm_rf("foo.dot") if File.exist?("foo.dot")
+  info "[rm -rf  ] debian/dirs"
   FileUtils.rm_rf(FileList['debian/*'].select { |f| File.directory?(f) })
   ## Clear the stamp hashes
   Rake::StampHash.instance.clear
 end
 
 task :kindaclean do
+  info "[rm -rf  ] #{BuildEnv::SRC.devel}"
   FileUtils.rm_rf(BuildEnv::SRC.devel) if File.exist?(BuildEnv::SRC.devel)
+  info "[rm -rf  ] #{BuildEnv::SRC.staging}"
   FileUtils.rm_rf(BuildEnv::SRC.staging) if File.exist?(BuildEnv::SRC.staging)
+  info "[rm -rf  ] foo.dot"
   FileUtils.rm_rf("foo.dot") if File.exist?("foo.dot")
+  info "[rm -rf  ] debian/dirs"
   FileUtils.rm_rf(FileList['debian/*'].select { |f| File.directory?(f) })
   ## Clear the stamp hashes
   Rake::StampHash.instance.clear
