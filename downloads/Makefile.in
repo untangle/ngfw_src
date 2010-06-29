@@ -80,7 +80,6 @@ ANTPACK200_HOME = $(src_root)/downloads/output/ant-pack200
 ANT_CLASSPATH   = $(ANTCONTRIB_HOME)/lib/ant-contrib-$(ANTCONTRIB_VERSION).jar:$(ANTPACK200_HOME)/Pack200Task.jar:${JDK_HOME}/lib/tools.jar
 ANT             = ANT_OPTS="-XX:MaxPermSize=128m" CLASSPATH=$(ANT_CLASSPATH) JDK_HOME=$(JDK_HOME) JAVA_HOME=$(JAVA_HOME) $(ANT_HOME)/bin/ant -Dworld.root=$(build_dist) -Dbuild.prefix=$(build_prefix) -emacs
 
-ENSUREDIR   =   $(BINDIR)/ensure-dir.sh
 INSTALL_DATA=   $(BINDIR)/install.sh
 
 ifeq ($(strip $(USE_DEBUG)),true)
@@ -108,7 +107,7 @@ default: all
 
 ## To use this target, you must define the objects varible
 %.a: $(local_lib_path).$(dir_target)
-	@$(ENSUREDIR) $(local_lib_path)
+	@mkdir -p $(local_lib_path)
 	@echo "==> ld ($(objects)) => $@, $(local_lib_path)/$@"
 	@$(LD) $(LDFLAGS) -r -o tmp.o $(patsubst %,$(source_path)/%,$(objects))
 	@$(STRIPCMD) tmp.o
@@ -118,7 +117,7 @@ default: all
 
 %.$(dir_target):
 	@if [ ! -d $(@:.$(dir_target)=) ] ; then echo "==> Ensure Directory '$(@:.$(dir_target)=)'" ; fi
-	@$(ENSUREDIR) $(@:.$(dir_target)=) $(dir_mode)
+	@mkdir -p $(@:.$(dir_target)=) $(dir_mode)
 
 clean.default:
 	@echo "==> clean *.class, *.o, *.core, core.*, $(source_path)/version.h, test"
