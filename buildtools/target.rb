@@ -584,7 +584,7 @@ class JavaMsgFmtTarget < Target
     # reenable stderr
     $stderr.reopen($stderr2)
 
-    info "[msgfmt  ] => #{@filename}"
+    info "[msgfmt  ] #{@po_file} => #{@dest}official/#{@lang}/#{@basename}.mo"
 
     raise "msgfmt failed" unless
       Kernel.system <<CMD
@@ -594,7 +594,7 @@ CMD
     ensureDirectory "#{@dest}/official/#{@lang}"
     raise "msgfmt failed" unless
       Kernel.system <<CMD
-msgfmt -o #{@dest}/official/#{@lang}/#{@basename}.mo #{@po_file}
+msgfmt -o #{@dest}official/#{@lang}/#{@basename}.mo #{@po_file}
 CMD
 
   end
