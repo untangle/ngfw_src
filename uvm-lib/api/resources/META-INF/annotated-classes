@@ -18,8 +18,6 @@ com.untangle.uvm.networking.Interface
 com.untangle.uvm.networking.MiscSettings
 com.untangle.uvm.networking.NetworkSpace
 com.untangle.uvm.networking.NetworkSpacesSettingsImpl
-com.untangle.uvm.networking.PPPoEConnectionRule
-com.untangle.uvm.networking.PPPoESettings
 com.untangle.uvm.networking.RedirectRule
 com.untangle.uvm.networking.Route
 com.untangle.uvm.networking.ServicesSettingsImpl
