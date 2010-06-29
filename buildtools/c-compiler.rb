@@ -186,7 +186,7 @@ class CCompilerTarget < Target
 
   def make_dependencies
     if 0 == @sourceFiles.length
-      warn "#{self} has no input files."
+      #warn "#{self} has no input files."
       return
     end
 
