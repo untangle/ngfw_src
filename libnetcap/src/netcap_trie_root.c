@@ -1,5 +1,5 @@
 /*
- * $HeadURL:$
+ * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -136,15 +136,13 @@ void*          netcap_trie_data       ( netcap_trie_t* trie )
 
 int            netcap_trie_insert     ( netcap_trie_t* trie, netcap_trie_element_t element )
 {
-    int status;
-
     if ( trie == NULL || element.base == NULL ) return errlogargs();
 
     switch ( element.base->type ) {
     case NC_TRIE_BASE_LEVEL: trie->mem += sizeof(netcap_trie_level_t); break;
     case NC_TRIE_BASE_ITEM: trie->item_count++; break;        
     default:
-        return errlog( ERR_WARNING,"TRIE: Uknown item type inserted (%d)\n", status );
+        return errlog( ERR_WARNING,"TRIE: Uknown item type inserted\n");
     }
 
     return 0;
