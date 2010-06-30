@@ -217,7 +217,7 @@ class JavaCompiler
     dst = jarTarget.jar_file
 
     if File.exist? src
-      info "[jar     ] #{src} -> #{dst}"
+      info "[jar     ] #{src} => #{dst}"
       raise "jar failed" unless
         Kernel.system(JarCommand, "cf", dst, "-C", src, ".")
     end
@@ -229,7 +229,7 @@ class JavaCompiler
     ensureDirectory(dest)
     src = File.expand_path(jt.jar_file)
 
-    info "[unjar   ] #{src} -> #{dest}"
+    info "[unjar   ] #{src} => #{dest}"
     wd = Dir.pwd
     Dir.chdir(dest)
     raise "unjar failed" unless
