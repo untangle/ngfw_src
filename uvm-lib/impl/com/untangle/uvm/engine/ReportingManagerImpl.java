@@ -458,7 +458,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         try {
             conn = DataSourceFactory.factory().getConnection();
 
-            PreparedStatement ps = conn.prepareStatement("SELECT DISTINCT email FROM reports.email WHERE date <= ? AND date > ?");
+            PreparedStatement ps = conn.prepareStatement("SELECT DISTINCT email FROM reports.email WHERE date >= ? AND date < ?");
             ps.setDate(1, new java.sql.Date(getDaysBefore(d, numDays).getTime()));
             ps.setDate(2, new java.sql.Date(d.getTime()));
             ResultSet rs = ps.executeQuery();
