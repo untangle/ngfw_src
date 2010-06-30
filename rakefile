@@ -17,6 +17,7 @@
 #
 
 require "./buildtools/buildtools.rb"
+verbose(false) #disable printing of rake mkdir messages
 
 task :default => :devel
 task :all => :devel
