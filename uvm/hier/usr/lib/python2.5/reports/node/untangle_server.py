@@ -177,23 +177,12 @@ class MemoryUsage(Graph):
         if email or host or user:
             return None
 
-        ed = DateFromMx(end_date)
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        one_week = DateFromMx(start_date)
+
+        lks = []
 
         conn = sql_helper.get_connection()
         try:
-            lks = []
-
-#             ks_query = """\
-# SELECT COALESCE(AVG(mem_free), 0), COALESCE(AVG(mem_cache), 0)
-# FROM reports.n_server_totals
-# WHERE trunc_time >= %s AND trunc_time < %s"""
-
-#             curs = conn.cursor()
-#             curs.execute(ks_query, (one_week, ed))
-#             r = curs.fetchone()
-
             # MB
             sums = ["COALESCE(AVG(mem_free),0) / 1000000",
                     "COALESCE(AVG(mem_cache), 0) / 1000000"]
@@ -247,21 +236,12 @@ class LoadUsage(Graph):
         if email or host or user:
             return None
 
-        ed = DateFromMx(end_date)
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        one_week = DateFromMx(start_date)
+
+        lks = []
 
         conn = sql_helper.get_connection()
         try:
-            lks = []
-
-#             ks_query = """\
-# SELECT COALESCE(AVG(load_1), 0), COALESCE(AVG(load_5), 0), COALESCE(AVG(load_15), 0)
-# FROM reports.n_server_totals
-# WHERE trunc_time >= %s AND trunc_time < %s"""
-
-#             curs.execute(ks_query, (one_week, ed))
-#             r = curs.fetchone()
 
             sums = ["COALESCE(AVG(load_1),0)",
                     "COALESCE(AVG(load_5),0)",
@@ -319,7 +299,7 @@ class LoadUsage(Graph):
 
         plot.add_dataset(dates, load1, _('1-min load'))
         plot.add_dataset(dates, load5, _('5-min load'))
-        plot.add_dataset(dates, load15, _('10-min load'))
+        plot.add_dataset(dates, load15, _('15-min load'))
 
         return (lks, plot)
 
@@ -333,23 +313,12 @@ class CpuUsage(Graph):
         if email or host or user:
             return None
 
-        ed = DateFromMx(end_date)
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        one_week = DateFromMx(start_date)
+
+        lks = []
 
         conn = sql_helper.get_connection()
         try:
-            lks = []
-
-#             ks_query = """\
-# SELECT COALESCE(AVG(cpu_user), 0), COALESCE(AVG(cpu_system), 0)
-# FROM reports.n_server_totals
-# WHERE trunc_time >= %s AND trunc_time < %s"""
-
-#             curs = conn.cursor()
-#             curs.execute(ks_query, (one_week, ed))
-#             r = curs.fetchone()
-
             sums = ["COALESCE(AVG(cpu_user),0)*100",
                     "COALESCE(AVG(cpu_system),0)*100"]
 
@@ -402,23 +371,12 @@ class DiskUsage(Graph):
         if email or host or user:
             return None
 
-        ed = DateFromMx(end_date)
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        one_week = DateFromMx(start_date)
+
+        lks = []
 
         conn = sql_helper.get_connection()
         try:
-            lks = []
-
-#             ks_query = """\
-# SELECT COALESCE(AVG(disk_free), 0), COALESCE(AVG(disk_total), 0)
-# FROM reports.n_server_totals
-# WHERE trunc_time >= %s AND trunc_time < %s"""
-
-#             curs = conn.cursor()
-#             curs.execute(ks_query, (one_week, ed))
-#             r = curs.fetchone()
-
             # GB
             sums = ["round((COALESCE(AVG(disk_free),0) / 1000000000)::numeric, 2)",
                     "round((COALESCE(AVG(disk_total),0) / 1000000000)::numeric, 2)"]
@@ -474,23 +432,12 @@ class SwapUsage(Graph):
         if email or host or user:
             return None
 
-        ed = DateFromMx(end_date)
         start_date = end_date - mx.DateTime.DateTimeDelta(report_days)
-        one_week = DateFromMx(start_date)
+
+        lks = []
 
         conn = sql_helper.get_connection()
         try:
-            lks = []
-
-#             ks_query = """\
-# SELECT COALESCE(AVG(swap_total-swap_free), 0), COALESCE(AVG(swap_total), 0)
-# FROM reports.n_server_totals
-# WHERE trunc_time >= %s AND trunc_time < %s"""
-
-#             curs = conn.cursor()
-#             curs.execute(ks_query, (one_week, ed))
-#             r = curs.fetchone()
-
             # MB
             sums = ["COALESCE(AVG(swap_total-swap_free),0) / 1000000",
                     "COALESCE(AVG(swap_free),0) / 1000000"]
