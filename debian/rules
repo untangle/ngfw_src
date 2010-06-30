@@ -30,10 +30,10 @@ build-arch: configure-stamp  build-arch-stamp
 build-arch-stamp:
 	@dh_testdir
 
-	# FIXME: only one of the 2 build- is needed
+# FIXME: only one of the 2 build- is needed
 	rake build
 
-	# FIXME: what's that ?
+# FIXME: what's that ?
 	rm -f ./debian/tmp/stamp*
 
 	@touch build-arch-stamp

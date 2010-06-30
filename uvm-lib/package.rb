@@ -20,16 +20,18 @@ jnetcap = BuildEnv::SRC['jnetcap']
 jvector = BuildEnv::SRC['jvector']
 uvm_lib = BuildEnv::SRC['untangle-libuvm']
 BuildEnv::SRC.installTarget.register_dependency(uvm_lib)
+uvm = BuildEnv::SRC['untangle-vm']
+BuildEnv::SRC.installTarget.register_dependency(uvm)
 
 ## Heir
-ms = MoveSpec.new("./uvm-lib/hier", FileList["./uvm-lib/hier/**/*"], uvm_lib.distDirectory)
-cf = CopyFiles.new(uvm_lib, ms, 'hier', BuildEnv::SRC.filterset)
-uvm_lib.registerTarget('hier', cf)
+ms = MoveSpec.new("./uvm-lib/hier", FileList["./uvm-lib/hier/**/*"], uvm.distDirectory)
+cf = CopyFiles.new(uvm, ms, 'hier', BuildEnv::SRC.filterset)
+uvm.registerTarget('hier', cf)
 
-##Pycli
-ms = [ MoveSpec.new("#{BuildEnv::downloads}/python-jsonrpc-r19", 'jsonrpc/*.py', "#{uvm_lib.distDirectory}/usr/share/untangle/pycli/") ]
-cf = CopyFiles.new(uvm_lib, ms, 'python-jsonrpc', BuildEnv::SRC.filterset)
-uvm_lib.registerTarget('python-jsonrpc', cf)
+## Pycli
+ms = [ MoveSpec.new("#{BuildEnv::downloads}/python-jsonrpc-r19", 'jsonrpc/*.py', "#{uvm.distDirectory}/usr/share/untangle/pycli/") ]
+cf = CopyFiles.new(uvm, ms, 'python-jsonrpc', BuildEnv::SRC.filterset)
+uvm.registerTarget('python-jsonrpc', cf)
 
 
 jts = []
