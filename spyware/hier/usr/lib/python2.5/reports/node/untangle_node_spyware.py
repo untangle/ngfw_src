@@ -456,7 +456,7 @@ class SpywareUrlsBlocked(Graph):
                          title=self.title,
                          xlabel=_('Date'),
                          ylabel=_('Blocks'),
-                         major_formatter=DATE_FORMATTER,
+                         major_formatter=formatter,
                          required_points=rp)
 
             plot.add_dataset(dates, sw_blacklisted, label=_('URLs'))
@@ -702,7 +702,7 @@ class SpywareCookiesBlocked(Graph):
                          title=self.title,
                          xlabel=_('Date'),
                          ylabel=_('Blocks'),
-                         major_formatter=DATE_FORMATTER,
+                         major_formatter=formatter,
                          required_points=rp)
 
             plot.add_dataset(dates, sw_cookies, label=_('Cookies'))
@@ -899,7 +899,7 @@ class SpywareSubnetsDetected(Graph):
                          title=self.title,
                          xlabel=_('Date'),
                          ylabel=_('Detections'),
-                         major_formatter=DATE_FORMATTER,
+                         major_formatter=formatter,
                          required_points=rp)
 
             plot.add_dataset(dates, sessions, label=_('Detections'))
