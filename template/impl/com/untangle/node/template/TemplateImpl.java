@@ -25,14 +25,19 @@ import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.Affinity;
+import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.vnet.SoloPipeSpec;
 
 public class TemplateImpl extends AbstractNode implements Template
 {   
     private final Logger logger = Logger.getLogger(TemplateImpl.class);
 
-    private final PipeSpec[] pipeSpecs;
-        
+    private final EventHandler handler = new EventHandler(this);
+    private final SoloPipeSpec pipeSpec = new SoloPipeSpec("template", this, handler, Fitting.OCTET_STREAM,Affinity.CLIENT, 0);
+    private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
+
     private TemplateSettings settings;
 
     // constructor ------------------------------------------------------------
@@ -40,7 +45,6 @@ public class TemplateImpl extends AbstractNode implements Template
     public TemplateImpl()
     {
         this.settings = new TemplateSettings();
-        this.pipeSpecs = new PipeSpec[0];        
     }
 
     public void initializeSettings()

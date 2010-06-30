@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/sigma/impl/com/untangle/node/sigma/EventHandler.java $
  * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package com.untangle.node.sigma;
+package com.untangle.node.template;
 
 import com.untangle.uvm.vnet.*;
 import com.untangle.uvm.vnet.event.*;
