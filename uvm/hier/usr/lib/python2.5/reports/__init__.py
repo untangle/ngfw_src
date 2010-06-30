@@ -124,7 +124,14 @@ class UnicodeWriter:
         self.encoding = encoding
 
     def writerow(self, row):
-        self.writer.writerow([unicode(s).encode("utf-8").replace(",", ';') for s in row])
+        row2 = []
+        for s in row:
+            s = unicode(s).encode("utf-8")
+            s = s.replace(',', ';')
+            s = s.replace('\n', '  ')
+            row2.append(s)
+
+        self.writer.writerow(row2)
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()
         data = data.decode("utf-8")
