@@ -307,7 +307,7 @@ class DailyUsage(Graph):
             lks.append(ks)
 
             plot = Chart(type=STACKED_BAR_CHART,
-                         title=self.title, xlabel=_('Date'),
+                         title=self.title, xlabel=_(unit),
                          ylabel=_('Attacks'),
                          major_formatter=HOUR_FORMATTER,
                          required_points=rp)

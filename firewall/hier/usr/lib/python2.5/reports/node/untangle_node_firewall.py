@@ -261,7 +261,7 @@ class DailyRules(reports.Graph):
 
             plot = reports.Chart(type=reports.STACKED_BAR_CHART,
                                  title=_('Sessions'),
-                                 xlabel=_('Date'),
+                                 xlabel=_(unit),
                                  ylabel=_('sessions'),
                                  major_formatter=formatter,
                                  required_points=rp)

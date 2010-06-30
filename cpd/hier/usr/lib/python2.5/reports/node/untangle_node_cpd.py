@@ -325,7 +325,7 @@ SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
         
         plot = Chart(type=STACKED_BAR_CHART,
                      title=self.title,
-                     xlabel=_('Date'),
+                     xlabel=_(unit),
                      ylabel=_('Events'),
                      major_formatter=HOUR_FORMATTER,
                      required_points=rp)

@@ -405,7 +405,7 @@ class DailyVirusesBlocked(Graph):
 
             plot = Chart(type=STACKED_BAR_CHART,
                          title=self.title,
-                         xlabel=_('Date'),
+                         xlabel=_(unit),
                          ylabel=_('Blocks'),
                          major_formatter=formatter,
                          required_points=rp)

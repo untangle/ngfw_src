@@ -504,7 +504,7 @@ class DailySpamRate(Graph):
 
         plot = Chart(type=STACKED_BAR_CHART,
                      title=self.title,
-                     xlabel=_('Date'),
+                     xlabel=_(unit),
                      ylabel=_('Emails per ' + unit),
                      major_formatter=formatter,
                      required_points=rp)

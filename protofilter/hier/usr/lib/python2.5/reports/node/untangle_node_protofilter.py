@@ -286,7 +286,7 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS detections
             lks.append(ks)
 
             plot = Chart(type=STACKED_BAR_CHART,
-                         title=self.title, xlabel=_('Date'),
+                         title=self.title, xlabel=_(unit),
                          ylabel=_('Detections'),
                          major_formatter=HOUR_FORMATTER,
                          required_points=rp)

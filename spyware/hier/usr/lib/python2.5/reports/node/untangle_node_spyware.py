@@ -340,7 +340,7 @@ class HourlyRates(Graph):
 
             plot = Chart(type=STACKED_BAR_CHART,
                          title=self.title,
-                         xlabel=_('Date'),
+                         xlabel=_(unit),
                          ylabel=_('Incidents'),
                          major_formatter=formatter,
                          required_points=rp)
@@ -454,7 +454,7 @@ class SpywareUrlsBlocked(Graph):
 
             plot = Chart(type=STACKED_BAR_CHART,
                          title=self.title,
-                         xlabel=_('Date'),
+                         xlabel=_(unit),
                          ylabel=_('Blocks'),
                          major_formatter=formatter,
                          required_points=rp)
@@ -700,7 +700,7 @@ class SpywareCookiesBlocked(Graph):
 
             plot = Chart(type=STACKED_BAR_CHART,
                          title=self.title,
-                         xlabel=_('Date'),
+                         xlabel=_(unit),
                          ylabel=_('Blocks'),
                          major_formatter=formatter,
                          required_points=rp)
@@ -897,7 +897,7 @@ class SpywareSubnetsDetected(Graph):
 
             plot = Chart(type=STACKED_BAR_CHART,
                          title=self.title,
-                         xlabel=_('Date'),
+                         xlabel=_(unit),
                          ylabel=_('Detections'),
                          major_formatter=formatter,
                          required_points=rp)

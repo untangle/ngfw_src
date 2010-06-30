@@ -303,7 +303,7 @@ class DailyWebUsage(Graph):
 
         plot = Chart(type=STACKED_BAR_CHART,
                      title=self.title,
-                     xlabel=_('Date'),
+                     xlabel=_(unit),
                      ylabel=_('Hits'),
                      major_formatter=formatter,
                      required_points=rp)
