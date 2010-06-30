@@ -117,7 +117,7 @@ default: all
 
 %.$(dir_target):
 	@if [ ! -d $(@:.$(dir_target)=) ] ; then echo "==> Ensure Directory '$(@:.$(dir_target)=)'" ; fi
-	@mkdir -p $(@:.$(dir_target)=) $(dir_mode)
+	@mkdir -p $(@:.$(dir_target)=) -m $(dir_mode)
 
 clean.default:
 	@echo "==> clean *.class, *.o, *.core, core.*, $(source_path)/version.h, test"
@@ -159,7 +159,7 @@ endif
 ## install_includes to a space separated list of values
 build.default: $(build_lib_path).$(dir_target) $(build_inc_path).$(dir_target) $(install_includes)
 ifdef INSTALL_LIB
-	mkdir -p $(build_lib_path)
+	@mkdir -p $(build_lib_path)
 	@echo "==> $(local_lib_path)/$(lib_file_name) => $(build_lib_path)/$(lib_file_name)"
 	@rm -f $(build_lib_path)/$(lib_file_name)
 	@$(INSTALL_DATA) -m $(lib_mode) $(local_lib_path)/$(lib_file_name) $(build_lib_path)
