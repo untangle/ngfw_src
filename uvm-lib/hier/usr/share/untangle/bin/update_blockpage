@@ -28,21 +28,25 @@ requires_update()
     
     if [ "${t_available_version}" = "unknown" ]; then
         echo "[`date`] Unable to determine the available version, cancelling."
+        $logger "Unable to determine the available version, cancelling."
         return 0
     fi
     
     if [ "${t_current_version}" -gt "${t_current_time}" ]; then
         echo "[`date`] The current version is in the future, forcing a refresh."
+        $logger "The current version is in the future, forcing a refresh."
         return 1
     fi
 
     if [ "${t_current_version}" -ge "${t_available_version}" ]; then
         echo "[`date`] The current version ${t_current_version} is up to date."
+        $logger "The current version ${t_current_version} is up to date."
         return 0
     fi
 
 
     echo "[`date`] The current version (${t_current_version}) is not up to date (${t_available_version})."
+    $logger "The current version (${t_current_version}) is not up to date (${t_available_version})."
     return 1
 }
 
@@ -50,23 +54,32 @@ download_update()
 {
     local t_output
     t_output=$1
+    src_url="http://guide.untangle.com/download/patches/v2/blockpage.tar.gz"
 
-    wget -O ${t_output} http://guide.untangle.com/download/patches/v2/blockpage.tar.gz 2> /dev/null
+    echo "Downloading from ${src_url} to ${t_output}"
+    $logger "Downloading from ${src_url} to ${t_output}"
+    wget -O ${t_output} ${src_url} 2> /dev/null
 }
 
 install_update()
 {
     local t_archive
     t_archive=$1
-
+    
+    echo "Installing new blockpage."
+    $logger "Installing new blockpage."
+    
     ## Expand the archive into the blockpage directory, only expand files in that directory.
     tar -C / -zxf ${t_archive} usr/share/untangle/web/blockpage
-    
+    $logger "Saving ${available_version} as the current version."    
     echo "${available_version}" > ${version_file}
 }
 
+
 ## For testing, just source from another a test script and try out the functions.
 if [ `basename "$0"` = "update_blockpage" ] ; then
+    prog=$(basename $0)
+    logger="logger -t $prog"
     set -e
     version_file="/usr/share/untangle/web/blockpage/.version.txt"
     current_version=`get_current_version`
