@@ -43,6 +43,8 @@ import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
@@ -50,6 +52,7 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.vnet.Protocol;
 
 public class FirewallImpl extends AbstractNode implements Firewall
 {
@@ -68,6 +71,30 @@ public class FirewallImpl extends AbstractNode implements Firewall
     private final BlingBlinger blockBlinger;
     private final BlingBlinger loggedBlinger;
 
+    /* This can't be static because it uses policy which is per node */
+    private final SessionMatcher FIREWALL_SESSION_MATCHER = new SessionMatcher() {
+            
+            /* Kill all sessions that should be blocked */
+            public boolean isMatch(Policy sessionPolicy, IPSessionDesc client, IPSessionDesc server)
+            {
+                if (handler == null)
+                    return false;
+                
+                FirewallMatcher matcher = handler.findMatchingRule(Protocol.getInstance(client.protocol()),
+                                                                   client.clientIntf(), client.clientAddr(), client.clientPort(),
+                                                                   server.serverIntf(), client.serverAddr(), client.serverPort());
+
+                if (matcher == null)
+                    return false;
+
+                logger.info("Firewall Save Setting Matcher: " +
+                            client.clientAddr() + ":" + client.clientPort() + " -> " +
+                            server.serverAddr() + ":" + server.serverPort() + " :: block:" + matcher.isTrafficBlocker());
+                
+                return matcher.isTrafficBlocker();
+            }
+        };
+    
     public FirewallImpl()
     {
         this.handler = new EventHandler(this);
@@ -119,7 +146,8 @@ public class FirewallImpl extends AbstractNode implements Firewall
         };
         getNodeContext().runTransaction(tw);
 
-        shutdownMatchingSessions();
+        /* check for any sessions that should be killed according to new rules */
+        this.killMatchingSessions(FIREWALL_SESSION_MATCHER);
     }
 
     public List<FirewallRule> getFirewallRuleList()
@@ -146,11 +174,11 @@ public class FirewallImpl extends AbstractNode implements Firewall
         };
         getNodeContext().runTransaction(tw);
 
-        shutdownMatchingSessions();
+        /* check for any sessions that should be killed according to new rules */
+        this.killMatchingSessions(FIREWALL_SESSION_MATCHER);
     }
     
-    public void updateAll(final FirewallBaseSettings baseSettings,
-    		final List<FirewallRule> rules)
+    public void updateAll(final FirewallBaseSettings baseSettings, final List<FirewallRule> rules)
     {
         for (FirewallRule fwr : rules) {
             fwr.setId(null);
@@ -171,10 +199,12 @@ public class FirewallImpl extends AbstractNode implements Firewall
         getNodeContext().runTransaction(tw);
         handler.configure(settings);
 
-        shutdownMatchingSessions();
+        /* check for any sessions that should be killed according to new rules */
+        this.killMatchingSessions(FIREWALL_SESSION_MATCHER);
     }
 
-    public Validator getValidator() {
+    public Validator getValidator()
+    {
         return new FirewallValidator();
     }
 
@@ -199,12 +229,6 @@ public class FirewallImpl extends AbstractNode implements Firewall
         return pipeSpecs;
     }
 
-    /* Kill all sessions when starting or stopping this node */
-    protected SessionMatcher sessionMatcher()
-    {
-        return SessionMatcherFactory.makePolicyInstance(getPolicy());
-    }
-
     protected void preStart() throws NodeStartException
     {
         try {
@@ -219,13 +243,13 @@ public class FirewallImpl extends AbstractNode implements Firewall
     protected void postStart()
     {
         /* Kill all active sessions */
-        shutdownMatchingSessions();
+        this.killMatchingSessions(SessionMatcherFactory.makePolicyInstance(getPolicy()));
     }
 
     protected void postStop()
     {
         /* Kill all active sessions */
-        shutdownMatchingSessions();
+        this.killMatchingSessions(SessionMatcherFactory.makePolicyInstance(getPolicy()));
 
         statisticManager.stop();
     }

@@ -396,8 +396,7 @@ public abstract class NodeBase implements Node
         changeState(ts, syncState, null);
     }
 
-    private void changeState(NodeState ts, boolean syncState,
-                             String[] args)
+    private void changeState(NodeState ts, boolean syncState, String[] args)
     {
         runState = ts;
 
@@ -422,9 +421,7 @@ public abstract class NodeBase implements Node
         }
     }
 
-    // XXX i am worried about races in the lifecycle methods
-    private void init(boolean syncState, String[] args)
-        throws NodeException, IllegalStateException
+    private void init(boolean syncState, String[] args) throws NodeException, IllegalStateException
     {
         if (NodeState.LOADED != runState) {
             logger.warn("Init called in state: " + runState);
@@ -475,8 +472,7 @@ public abstract class NodeBase implements Node
         logger.info("started node");
     }
 
-    private void stop(boolean syncState)
-        throws NodeStopException, IllegalStateException
+    private void stop(boolean syncState) throws NodeStopException, IllegalStateException
     {
         if (NodeState.RUNNING != getRunState()) {
             logger.warn("Stop called in state: " + getRunState());
@@ -513,8 +509,7 @@ public abstract class NodeBase implements Node
         logger.info("stopped node");
     }
 
-    private void destroy(boolean syncState)
-        throws NodeException, IllegalStateException
+    private void destroy(boolean syncState) throws NodeException, IllegalStateException
     {
         if (NodeState.INITIALIZED != runState
             && NodeState.LOADED != runState
@@ -545,8 +540,7 @@ public abstract class NodeBase implements Node
         }
     }
 
-    private void parentStop()
-        throws NodeStopException, IllegalStateException
+    private void parentStop() throws NodeStopException, IllegalStateException
     {
         boolean childrenStopped = true;
 
@@ -567,19 +561,13 @@ public abstract class NodeBase implements Node
     }
 
     /**
-     * This shutdowns all of the related/matching sessions for this
-     * node.  By default, this won't kill any sessions, override
-     * sessionMatcher to actually kill sessions
+     * This kills/resets all of the matching sessions 
      */
-    protected void shutdownMatchingSessions()
+    protected void killMatchingSessions(SessionMatcher matcher)
     {
-        LocalUvmContextFactory.context().argonManager()
-            .shutdownMatches(sessionMatcher());
-    }
-
-    protected SessionMatcher sessionMatcher()
-    {
-        /* By default use the session matcher that doesn't match anything */
-        return SessionMatcherFactory.getNullInstance();
+        if (matcher == null)
+            return;
+        
+        LocalUvmContextFactory.context().argonManager().shutdownMatches(matcher);
     }
 }

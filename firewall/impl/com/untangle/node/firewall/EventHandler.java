@@ -43,7 +43,7 @@ class EventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(EventHandler.class);
 
-    private List <FirewallMatcher> firewallRuleList = new LinkedList<FirewallMatcher>();
+    private List<FirewallMatcher> firewallRuleList = new LinkedList<FirewallMatcher>();
 
     private boolean isQuickExit = true;
     private boolean rejectSilently = true;
@@ -54,63 +54,46 @@ class EventHandler extends AbstractEventHandler
     /* Firewall Node */
     private final FirewallImpl node;
 
-    EventHandler(FirewallImpl node)
+    public EventHandler(FirewallImpl node)
     {
         super(node);
 
         this.node = node;
     }
 
-    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
-        throws MPipeException
+    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event) throws MPipeException
     {
         handleNewSessionRequest(event.sessionRequest(), Protocol.TCP);
     }
 
-    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
-        throws MPipeException
+    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event) throws MPipeException
     {
         handleNewSessionRequest(event.sessionRequest(), Protocol.UDP);
     }
 
-    private void handleNewSessionRequest(IPNewSessionRequest request,
-                                         Protocol protocol)
+    private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol)
     {
-        InetAddress origClientAddr = request.clientAddr();
-        InetAddress newServerAddr = request.getNatToHost();
-
-        int origClientPort = request.clientPort();
-        int newServerPort  = request.getNatToPort();
-
-        byte clientIntf = request.clientIntf();
-        byte serverIntf = request.serverIntf();
-
-        /* By default, do whatever the first rule is */
-        boolean reject    = !isDefaultAccept;
+        boolean reject    = !isDefaultAccept; /* By default, do whatever the first rule is */
+        boolean log = false;
         FirewallRule rule = null;
         int ruleIndex     = 0;
 
-        LocalUvmContext uc = LocalUvmContextFactory.context();
-        InterfaceComparator c = uc.localIntfManager().getInterfaceComparator();
-
-        for (Iterator<FirewallMatcher> iter = firewallRuleList.iterator() ; iter.hasNext() ;) {
-            FirewallMatcher matcher = iter.next();
-
-            if (matcher.isMatch(protocol, clientIntf, serverIntf,
-                origClientAddr, newServerAddr,
-                origClientPort, newServerPort, c)) {
+        /**
+         * Find the matching rule compute block/log verdicts
+         */
+        FirewallMatcher matcher = findMatchingRule(protocol, request);
+        if (matcher != null) {
+            rule      = matcher.rule();
+            ruleIndex = matcher.ruleIndex();
+            if (rule != null) {
                 reject = matcher.isTrafficBlocker();
-
-                if (isQuickExit) {
-                    rule      = matcher.rule();
-                    ruleIndex = matcher.ruleIndex();
-                    break;
-                }
+                log = rule.getLog();
             }
         }
 
-        boolean log = (rule != null && rule.getLog()) ? true : false;
-
+        /**
+         * Take the appropriate actions
+         */
         if (reject) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Rejecting session: " + request);
@@ -132,15 +115,13 @@ class EventHandler extends AbstractEventHandler
 
             /* If necessary log the event */
             if (log) {
-                FirewallEvent fwe = new FirewallEvent(request.pipelineEndpoints(), 
-                                                      reject, 
-                                                      ruleIndex);
+                FirewallEvent fwe = new FirewallEvent(request.pipelineEndpoints(), reject, ruleIndex);
                 fwe.setRuleId(rule.getId());
                 request.attach(fwe);
-		node.incrementLogCount(); 
+                node.incrementLogCount(); 
             }
 
-        } else {
+        } else { /* not rejected */
             if (logger.isDebugEnabled()) {
                 logger.debug("Releasing session: " + request);
             }
@@ -167,8 +148,7 @@ class EventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPComplete(TCPSessionEvent event)
-        throws MPipeException
+    public void handleTCPComplete(TCPSessionEvent event) throws MPipeException
     {
         Session s = event.session();
         FirewallEvent fe = (FirewallEvent)s.attachment();
@@ -178,8 +158,7 @@ class EventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleUDPComplete(UDPSessionEvent event)
-        throws MPipeException
+    public void handleUDPComplete(UDPSessionEvent event) throws MPipeException
     {
         Session s = event.session();
         FirewallEvent fe = (FirewallEvent)s.attachment();
@@ -188,7 +167,7 @@ class EventHandler extends AbstractEventHandler
         }
     }
 
-    void configure(FirewallSettings settings)
+    public void configure(FirewallSettings settings)
     {
         this.isQuickExit = settings.getBaseSettings().isQuickExit();
         this.rejectSilently = settings.getBaseSettings().isRejectSilently();
@@ -216,4 +195,33 @@ class EventHandler extends AbstractEventHandler
 
         this.firewallRuleList = firewallRuleList;
     }
+
+    protected FirewallMatcher findMatchingRule( Protocol protocol,
+                                                byte clientIntf, InetAddress clientAddr, int clientPort,
+                                                byte serverIntf, InetAddress serverAddr, int serverPort)
+    {
+        InterfaceComparator ifCompare = LocalUvmContextFactory.context().localIntfManager().getInterfaceComparator();
+
+        for (FirewallMatcher matcher : firewallRuleList) {
+
+            if (matcher.isMatch(protocol,
+                                clientIntf, serverIntf,
+                                clientAddr, serverAddr,
+                                clientPort, serverPort, ifCompare)) {
+
+                return matcher;
+            }
+        }
+
+        return null;
+    }
+    
+    protected FirewallMatcher findMatchingRule( Protocol protocol, IPNewSessionRequest request )
+    {
+        return findMatchingRule( protocol,
+                                 request.clientIntf(), request.clientAddr(), request.clientPort(),
+                                 request.serverIntf(), request.getNatToHost(), request.getNatToPort());
+    }
+    
+
 }

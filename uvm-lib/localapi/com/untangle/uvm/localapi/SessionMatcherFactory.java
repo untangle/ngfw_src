@@ -64,7 +64,6 @@ public class SessionMatcherFactory
             }
         };
 
-
     static final SessionMatcher UDP_MATCHER = new SessionMatcher() {
             public boolean isMatch( Policy policy, IPSessionDesc client, IPSessionDesc server )
             {

@@ -179,6 +179,10 @@
     <priority value="WARN"/>
   </category>
 
+  <category name="com.untangle.node.firewall">
+    <priority value="WARN"/>
+  </category>
+
   <category name="com.untangle.node.cpd">
     <priority value="WARN"/>
   </category>

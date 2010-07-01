@@ -157,13 +157,13 @@ public class RouterImpl extends AbstractNode implements Router
     protected void postStart()
     {
         /* Kill all active sessions */
-        shutdownMatchingSessions();
+        killMatchingSessions(SessionMatcherFactory.getAllInstance());
     }
 
     protected void postStop() throws NodeStopException
     {
         /* Kill all active sessions */
-        shutdownMatchingSessions();
+        killMatchingSessions(SessionMatcherFactory.getAllInstance());
 
         dhcpMonitor.stop();
 
@@ -198,12 +198,6 @@ public class RouterImpl extends AbstractNode implements Router
         if ( isDhcpEnabled ) dhcpMonitor.start();
         else dhcpMonitor.stop();
 
-    }
-
-    /* Kill all sessions when starting or stopping this node */
-    protected SessionMatcher sessionMatcher()
-    {
-        return SessionMatcherFactory.getAllInstance();
     }
 
     RouterSessionManager getSessionManager()

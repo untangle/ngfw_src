@@ -150,36 +150,22 @@ public abstract class VirusNodeImpl extends AbstractNode
                     return false;
                 }
 
-                if (testClientPort(client.clientPort())
-                    || testServerPort(client.serverPort())
-                    || testClientPort(server.clientPort())
-                    || testServerPort(server.serverPort())) {
+                if (testServerPort(client.serverPort()) || testServerPort(server.serverPort())) {
                     return true;
                 }
 
-                return false;
-            }
-
-
-            private boolean testClientPort( int clientPort )
-            {
-                /* FTP responds on port 20 */
-                if (clientPort == 20) {
-                    return true;
-                }
                 return false;
             }
 
             private boolean testServerPort( int serverPort )
             {
                 /* FTP server is on 21, HTTP server is on 80 */
-                if (serverPort == 21 || serverPort == 80 || serverPort == 20) {
+                if (serverPort == 21 || serverPort == 80) {
                     return true;
                 }
 
                 /* email SMTP (25) / POP3 (110) / IMAP (143) */
-                if (serverPort == 25 || serverPort == 110
-                    || serverPort == 143) {
+                if (serverPort == 25 || serverPort == 110 || serverPort == 143) {
                     return true;
                 }
 
@@ -304,7 +290,7 @@ public abstract class VirusNodeImpl extends AbstractNode
                 public Object getResult() { return null; }
             };
         getNodeContext().runTransaction(tw);
-        shutdownMatchingSessions();
+        killMatchingSessions(VIRUS_SESSION_MATCHER);
     }
 
     public VirusSettings getVirusSettings()
@@ -614,7 +600,7 @@ public abstract class VirusNodeImpl extends AbstractNode
 
     protected void postStart()
     {
-        shutdownMatchingSessions();
+        killMatchingSessions(VIRUS_SESSION_MATCHER);
     }
 
     @Override
@@ -664,11 +650,6 @@ public abstract class VirusNodeImpl extends AbstractNode
     void log(VirusEvent evt)
     {
         eventLogger.log(evt);
-    }
-
-    protected SessionMatcher sessionMatcher()
-    {
-        return VIRUS_SESSION_MATCHER;
     }
 
     /**
