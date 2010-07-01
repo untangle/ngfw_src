@@ -218,7 +218,7 @@ function get_redirect_url()
     }
 
     /* Otherwise send them to untangle.com */
-    return "http://guide.untangle.com/captive-portal";
+    return "http://google.com/";
 }
 
 function get_time_remaining()
