@@ -56,7 +56,7 @@ procset /proc/sys/net/ipv4/icmp_frag_accept 1 1
 procset /proc/sys/net/ipv4/ip_local_port_range "3200   9000" 1
 procset /proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_loose 0 1
 # Optional
-procset /proc/sys/vm/swappiness 5
+procset /proc/sys/vm/swappiness 60
 procset /proc/sys/net/ipv4/tcp_synack_retries 0
 procset /proc/sys/net/ipv4/tcp_syncookies 1
 procset /proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait 30
