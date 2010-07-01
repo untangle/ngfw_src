@@ -1,7 +1,7 @@
 <?php
 
 include "config.php";
-
+session_cache_limiter('nocache');
 session_start();
 
 /* Clear the username variable, the user should only go here if they got redirected */
