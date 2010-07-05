@@ -180,7 +180,12 @@ public class CsvServlet extends HttpServlet
             if (null == o) {
                 o = "";
             }
+
             String s = o.toString();
+            if (s.matches("^\\d{4}-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d.*")) {
+                s = s.replaceAll("\\.\\d+$", "");
+            }
+                
             boolean enclose = false;
             if (0 <= s.indexOf(',')) {
                 enclose = true;
