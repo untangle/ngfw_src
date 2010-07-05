@@ -189,7 +189,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
 class TopTenAttacksByHits(Graph):
     def __init__(self, vendor_name):
-        Graph.__init__(self, 'top-attacks-by-hits', _('Top Attacks (by hits)'))
+        Graph.__init__(self, 'top-attacks-by-hits', _('Top Attacks (by Hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -230,7 +230,7 @@ AND ips_description != ''"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'))
+                ks = KeyStatistic(r[0], r[1], _('Hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -238,7 +238,7 @@ AND ips_description != ''"""
 
         plot = Chart(type=PIE_CHART,
                      title=self.title, xlabel=_('Attacks'),
-                     ylabel=_('Hits per Day'))
+                     ylabel=_('Hits Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -300,10 +300,10 @@ class DailyUsage(Graph):
 
             ks = KeyStatistic(_('Avg Attacks Blocked'),
                               sum(attacks) / len(rp),
-                              _('blocks')+'/'+_(unit))
+                              _('Blocks')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Max Attacks Blocked'), max(attacks),
-                              _('blocks')+'/'+_(unit))
+                              _('Blocks')+'/'+_(unit))
             lks.append(ks)
 
             plot = Chart(type=STACKED_BAR_CHART,
@@ -312,7 +312,7 @@ class DailyUsage(Graph):
                          major_formatter=HOUR_FORMATTER,
                          required_points=rp)
 
-            plot.add_dataset(dates, attacks, label=_('attacks'))
+            plot.add_dataset(dates, attacks, label=_('Attacks'))
         finally:
             conn.commit()
 
@@ -333,7 +333,7 @@ class IpsDetail(DetailSection):
         if not user:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv = rv + [ColumnDesc('ips_description', _('SID:description')),
+        rv = rv + [ColumnDesc('ips_description', _('Sid:description')),
                    ColumnDesc('ips_blocked', _('Blocked')),
                    ColumnDesc('c_server_addr', _('Server')),
                    ColumnDesc('c_server_port', _('Port'))]

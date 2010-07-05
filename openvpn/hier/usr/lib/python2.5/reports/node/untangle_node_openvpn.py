@@ -208,10 +208,10 @@ class BandwidthUsage(Graph):
             plot = Chart(type=TIME_SERIES_CHART,
                          title=_('Bandwidth Usage'),
                          xlabel=_('Date'),
-                         ylabel=_('Throughput (kB/s)'),
+                         ylabel=_('Throughput (kb/s)'),
                          major_formatter=TIMESTAMP_FORMATTER)
 
-            plot.add_dataset(dates, throughput, _('Usage (kB/sec)'))
+            plot.add_dataset(dates, throughput, _('Usage (kb/sec)'))
         finally:
             conn.commit()
 
@@ -250,7 +250,7 @@ ORDER BY throughput desc"""
                 client_name = r[0]
                 num = r[1]
 
-                lks.append(KeyStatistic(client_name, num, _('bytes')))
+                lks.append(KeyStatistic(client_name, num, _('Bytes')))
                 pds[client_name] = num
         finally:
             conn.commit()

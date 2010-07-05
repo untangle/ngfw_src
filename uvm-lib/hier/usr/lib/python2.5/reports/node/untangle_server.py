@@ -209,10 +209,10 @@ class MemoryUsage(Graph):
                 cached = [0,]
 
             ks = KeyStatistic(_('Avg Free Memory'), sum(free)/len(free),
-                              N_('MB'))
+                              N_('Mb'))
             lks.append(ks)
             ks = KeyStatistic(_('Avg Cached Memory'), sum(cached)/len(cached),
-                              N_('MB'))
+                              N_('Mb'))
             lks.append(ks)
         finally:
             conn.commit()
@@ -221,14 +221,14 @@ class MemoryUsage(Graph):
                      xlabel=_('Time'), ylabel=_('Memory (MB)'),
                      major_formatter=TIMESTAMP_FORMATTER)
 
-        plot.add_dataset(dates, free, _('Free memory'))
-        plot.add_dataset(dates, cached, _('Cached memory'))
+        plot.add_dataset(dates, free, _('Free Memory'))
+        plot.add_dataset(dates, cached, _('Cached Memory'))
 
         return (lks, plot)
 
 class LoadUsage(Graph):
     def __init__(self):
-        Graph.__init__(self, 'load-usage', _('CPU Load'))
+        Graph.__init__(self, 'load-usage', _('Cpu Load'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -297,15 +297,15 @@ class LoadUsage(Graph):
                      xlabel=_('Time'), ylabel=_('Load'),
                      major_formatter=TIMESTAMP_FORMATTER)
 
-        plot.add_dataset(dates, load1, _('1-min load'))
-        plot.add_dataset(dates, load5, _('5-min load'))
-        plot.add_dataset(dates, load15, _('15-min load'))
+        plot.add_dataset(dates, load1, _('1-min Load'))
+        plot.add_dataset(dates, load5, _('5-min Load'))
+        plot.add_dataset(dates, load15, _('15-min Load'))
 
         return (lks, plot)
 
 class CpuUsage(Graph):
     def __init__(self):
-        Graph.__init__(self, 'cpu-usage', _('CPU Usage'))
+        Graph.__init__(self, 'cpu-usage', _('Cpu Usage'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -343,10 +343,10 @@ class CpuUsage(Graph):
             if not cpuSystem:
                 cpuSystem = [0,]
 
-            ks = KeyStatistic(_('Avg CPU User'), sum(cpuUser)/len(cpuUser),
+            ks = KeyStatistic(_('Avg Cpu User'), sum(cpuUser)/len(cpuUser),
                               N_('%'))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg CPU System'), sum(cpuSystem)/len(cpuSystem),
+            ks = KeyStatistic(_('Avg Cpu System'), sum(cpuSystem)/len(cpuSystem),
                               N_('%'))
             lks.append(ks)
         finally:
@@ -356,8 +356,8 @@ class CpuUsage(Graph):
                      xlabel=_('Time'), ylabel=_('CPU (%)'),
                      major_formatter=TIMESTAMP_FORMATTER)
 
-        plot.add_dataset(dates, cpuUser, _('CPU user'))
-        plot.add_dataset(dates, cpuSystem, _('CPU system'))
+        plot.add_dataset(dates, cpuUser, _('Cpu User'))
+        plot.add_dataset(dates, cpuSystem, _('Cpu System'))
 
         return (lks, plot)
 
@@ -404,7 +404,7 @@ class DiskUsage(Graph):
                 avgp = 100 * avg / diskTotal[0]
                 
             ks = KeyStatistic(_('Avg Disk Free'), avg,
-                              N_('GB'))
+                              N_('Gb'))
             lks.append(ks)
             ks = KeyStatistic(_('Avg Disk Free'), avgp,
                               N_('%'))
@@ -418,7 +418,7 @@ class DiskUsage(Graph):
                      xlabel=_('Time'), ylabel=_('Disk (GB)'),
                      major_formatter=TIMESTAMP_FORMATTER)
 
-        plot.add_dataset(dates, diskFree, _('Free disk'))
+        plot.add_dataset(dates, diskFree, _('Free Disk'))
 
         return (lks, plot)
 
@@ -464,7 +464,7 @@ class SwapUsage(Graph):
                 swapFree = [0,]
 
             ks = KeyStatistic(_('Avg Swap Free'), sum(swapFree)/len(swapFree),
-                              N_('MB'))
+                              N_('Mb'))
             lks.append(ks)
             ks = KeyStatistic(_('Avg Swap Used'), sum(swapUsed)/len(swapUsed),
                               N_('%'))

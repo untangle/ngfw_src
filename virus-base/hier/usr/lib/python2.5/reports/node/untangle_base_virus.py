@@ -397,10 +397,10 @@ class DailyVirusesBlocked(Graph):
 
             ks = KeyStatistic(_('Avg Viruses Blocked'),
                               sum(blocks) / len(rp),
-                              _('blocks')+'/'+_(unit))
+                              _('Blocks')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Max Viruses Blocked'), max(blocks),
-                              _('blocks')+'/'+_(unit))
+                              _('Blocks')+'/'+_(unit))
             lks.append(ks)
 
             plot = Chart(type=STACKED_BAR_CHART,
@@ -465,7 +465,7 @@ ORDER BY virus_%s_detected DESC
                 if not key_name or key_name == '':
                     key_name = _('Unknown')
                 if r[1] > 0:
-                    ks = KeyStatistic(str(key_name), r[1], _('viruses'))
+                    ks = KeyStatistic(str(key_name), r[1], _('Viruses'))
                     lks.append(ks)
                     dataset[str(key_name)] = r[1]
         finally:
@@ -473,8 +473,8 @@ ORDER BY virus_%s_detected DESC
 
         plot = Chart(type=PIE_CHART,
                      title=self.title,
-                     xlabel=_('name'),
-                     ylabel=_('count'))
+                     xlabel=_('Name'),
+                     ylabel=_('Count'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -524,7 +524,7 @@ ORDER BY virus_%s_detected DESC
                 r = curs.fetchone()
                 if not r:
                     break
-                ks = KeyStatistic(r[0], r[1], _('viruses'))
+                ks = KeyStatistic(r[0], r[1], _('Viruses'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -602,7 +602,7 @@ ORDER BY sum DESC""" % self.__vendor_name
                 if not key_name or key_name == '':
                     key_name = _('Unknown')
 
-                ks = KeyStatistic(key_name, r[1], _('viruses'))
+                ks = KeyStatistic(key_name, r[1], _('Viruses'))
                 lks.append(ks)
                 dataset[key_name] = r[1]
         finally:
@@ -637,8 +637,8 @@ class VirusWebDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('virus_%s_name' % (self.__vendor_name), _('Virus Name')),
-               ColumnDesc('url', _('URL'), 'URL'),
-               ColumnDesc('s_server_addr', _('Server IP')),
+               ColumnDesc('url', _('Url'), 'URL'),
+               ColumnDesc('s_server_addr', _('Server Ip')),
                ColumnDesc('s_server_port', _('Server Port'))]
 
         return rv
@@ -682,7 +682,7 @@ class VirusMailDetail(DetailSection):
         rv += [ColumnDesc('virus_%s_name' % (self.__vendor_name,), _('Virus Name')),
                ColumnDesc('subject', _('Subject')),
                ColumnDesc('addr', _('Recipient'), 'EmailLink'), # FIXME: or is it sender ?
-               ColumnDesc('c_client_addr', _('Client IP')),
+               ColumnDesc('c_client_addr', _('Client Ip')),
                ColumnDesc('c_client_port', _('Client Port'))]
 
         return rv

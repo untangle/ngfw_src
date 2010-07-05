@@ -297,27 +297,27 @@ SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
                                             mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
 
             ks = KeyStatistic(_('Average Logins'), sum(logins) / len(rp),
-                              N_('events')+'/'+_(unit))
+                              N_('Events')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Max Logins'), max(logins),
-                              N_('events')+'/'+_(unit))
+                              N_('Events')+'/'+_(unit))
             ks = KeyStatistic(_('Average Logouts'), sum(logouts) / len(rp),
-                              N_('events')+'/'+_(unit))
+                              N_('Events')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Max Logouts'), max(logouts),
-                              N_('events')+'/'+_(unit))
+                              N_('Events')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Average Failures'), sum(failures) / len(rp),
-                              N_('events')+'/'+_(unit))
+                              N_('Events')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Max Failures'), max(failures),
-                              N_('events')+'/'+_(unit))
+                              N_('Events')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Average Events'), sum(logins+logouts+failures) / len(rp),
-                              N_('events')+'/'+_(unit))
+                              N_('Events')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Max Events'), max(logouts+logouts+failures),
-                              N_('events')+'/'+_(unit))
+                              N_('Events')+'/'+_(unit))
             lks.append(ks)
 
         finally:
@@ -329,11 +329,11 @@ SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
                      ylabel=_('Events'),
                      major_formatter=HOUR_FORMATTER,
                      required_points=rp)
-        plot.add_dataset(dates, logins, label=_('logins'),
+        plot.add_dataset(dates, logins, label=_('Logins'),
                          color=colors.goodness)
-        plot.add_dataset(dates, logouts, label=_('logouts'),
+        plot.add_dataset(dates, logouts, label=_('Logouts'),
                          color=colors.detected)
-        plot.add_dataset(dates, failures, label=_('failures'),
+        plot.add_dataset(dates, failures, label=_('Failures'),
                          color=colors.badness)
 
         return (lks, plot)
@@ -373,7 +373,7 @@ GROUP BY login_name"""
                 uid = r[0]
                 logins = r[1]
 
-                ks = KeyStatistic(uid, logins, N_('logins'))
+                ks = KeyStatistic(uid, logins, N_('Logins'))
                 lks.append(ks)
 
                 pie_data[uid] = logins
@@ -418,7 +418,7 @@ GROUP BY client_address"""
                 client_address = r[0]
                 blocks = r[1]
 
-                ks = KeyStatistic(client_address, blocks, _('blocks'))
+                ks = KeyStatistic(client_address, blocks, _('Blocks'))
                 lks.append(ks)
 
                 pie_data[client_address] = blocks
@@ -441,7 +441,7 @@ class LoginDetail(DetailSection):
             return None
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date'),
-              ColumnDesc('login_name', _('Login name')),
+              ColumnDesc('login_name', _('Login Name')),
               ColumnDesc('event', _('Type'))]
 
         return rv

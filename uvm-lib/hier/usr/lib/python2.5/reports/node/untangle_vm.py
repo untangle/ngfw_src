@@ -714,7 +714,7 @@ class BandwidthUsage(Graph):
 
             ks = KeyStatistic(_('Avg Data Rate'),
                               sum(throughput)/len(throughput),
-                              N_('kB/s'))
+                              N_('Kb/s'))
             lks.append(ks)
             ks = KeyStatistic(_('Max Data Rate'), max(throughput), N_('kB/s'))
             lks.append(ks)
@@ -824,10 +824,10 @@ class ActiveSessions(Graph):
 
             ks = KeyStatistic(_('Avg Active Sessions'),
                               int(sum(num_sessions)/len(num_sessions)),
-                              _('sessions'))
+                              _('Sessions'))
             lks.append(ks)
             ks = KeyStatistic(_('Max Active Sessions'),
-                              int(max(num_sessions)), _('sessions'))
+                              int(max(num_sessions)), _('Sessions'))
             lks.append(ks)
             ks = KeyStatistic(_('Total Sessions'), int(sum(num_sessions)), _('sessions'))
             lks.append(ks)
@@ -835,7 +835,7 @@ class ActiveSessions(Graph):
             conn.commit()
 
         plot = Chart(type=TIME_SERIES_CHART, title=self.title,
-                     xlabel=_('Hour of Day'), ylabel=_('Sessions'),
+                     xlabel=_('Hour Of Day'), ylabel=_('Sessions'),
                      major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, num_sessions, _("Usage"))
@@ -887,7 +887,7 @@ ORDER BY sessions DESC"""
             for r in curs.fetchall():
                 port = r[0]
                 sessions = r[1]
-                ks = KeyStatistic(str(port), sessions, _('sessions'))
+                ks = KeyStatistic(str(port), sessions, _('Sessions'))
                 lks.append(ks)
                 pds[port] = sessions
         finally:
@@ -947,7 +947,7 @@ class AdministrativeLoginsDetail(DetailSection):
 
         rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
-        rv += [ColumnDesc('client_addr', _('Client IP')),
+        rv += [ColumnDesc('client_addr', _('Client Ip')),
                ColumnDesc('succeeded', _('Success'))]
 
         return rv

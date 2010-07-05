@@ -323,19 +323,19 @@ class HourlyRates(Graph):
             rp = sql_helper.get_required_points(start_date, end_date,
                                             mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
 
-            ks = KeyStatistic(_('Avg URLs Blocked'),
+            ks = KeyStatistic(_('Avg Urls Blocked'),
                               sum(sw_blacklisted) / len(rp),
-                              _('blocks')+'/'+_(unit))
+                              _('Blocks')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max URLs Blocked'), max(sw_blacklisted),
-                              _('blocks')+'/'+_(unit))
+            ks = KeyStatistic(_('Max Urls Blocked'), max(sw_blacklisted),
+                              _('Blocks')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Avg Cookies Blocked'),
                               sum(sw_cookies) / len(rp),
-                              _('blocks')+'/'+_(unit))
+                              _('Blocks')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Max Cookies Blocked'), max(sw_cookies),
-                              _('blocks')+'/'+_(unit))
+                              _('Blocks')+'/'+_(unit))
             lks.append(ks)
 
             plot = Chart(type=STACKED_BAR_CHART,
@@ -345,8 +345,8 @@ class HourlyRates(Graph):
                          major_formatter=formatter,
                          required_points=rp)
 
-            plot.add_dataset(dates, sw_blacklisted, label=_('URLs'))
-            plot.add_dataset(dates, sw_cookies, label=_('cookies'))
+            plot.add_dataset(dates, sw_blacklisted, label=_('Urls'))
+            plot.add_dataset(dates, sw_cookies, label=_('Cookies'))
 
             sums = ["coalesce(sum(sw_accesses), 0)"]
 
@@ -376,11 +376,11 @@ class HourlyRates(Graph):
 
             ks = KeyStatistic(_('Avg Suspicious Traffic'),
                               sum(sw_accesses) / len(rp),
-                              _('detected')+'/'+_(unit))
+                              _('Detected')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Max Suspicious Traffic'),
                               max(sw_accesses),
-                              _('detected')+'/'+_(unit))
+                              _('Detected')+'/'+_(unit))
             lks.append(ks)
 
             plot.add_dataset(dates, sw_accesses, label=_('Detections'))
@@ -392,7 +392,7 @@ class HourlyRates(Graph):
 class SpywareUrlsBlocked(Graph):
     def __init__(self):
         Graph.__init__(self, 'summary-blocked-urls',
-                       _('Blocked URLs'))
+                       _('Blocked Urls'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -444,12 +444,12 @@ class SpywareUrlsBlocked(Graph):
             rp = sql_helper.get_required_points(start_date, end_date,
                                             mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
 
-            ks = KeyStatistic(_('Avg URLs Blocked'),
+            ks = KeyStatistic(_('Avg Urls Blocked'),
                               sum(sw_blacklisted) / len(rp),
-                              _('blocks')+'/'+_(unit))
+                              _('Blocks')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max URLs Blocked'), max(sw_blacklisted),
-                              _('blocks')+'/'+_(unit))
+            ks = KeyStatistic(_('Max Urls Blocked'), max(sw_blacklisted),
+                              _('Blocks')+'/'+_(unit))
             lks.append(ks)
 
             plot = Chart(type=STACKED_BAR_CHART,
@@ -459,7 +459,7 @@ class SpywareUrlsBlocked(Graph):
                          major_formatter=formatter,
                          required_points=rp)
 
-            plot.add_dataset(dates, sw_blacklisted, label=_('URLs'))
+            plot.add_dataset(dates, sw_blacklisted, label=_('Urls'))
 
         finally:
             conn.commit()
@@ -468,7 +468,7 @@ class SpywareUrlsBlocked(Graph):
 
 class TopTenBlockedSpywareSitesByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-ten-blocked-blocked-urls-by-hits', _('Top Ten Blocked URLs (by hits)'))
+        Graph.__init__(self, 'top-ten-blocked-blocked-urls-by-hits', _('Top Ten Blocked Urls (by Hits)'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -507,7 +507,7 @@ AND (sw_blacklisted + sw_cookies) > 0"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'))
+                ks = KeyStatistic(r[0], r[1], _('Hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -516,7 +516,7 @@ AND (sw_blacklisted + sw_cookies) > 0"""
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Site'),
-                     ylabel=_('Blocks per Day'))
+                     ylabel=_('Blocks Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -524,7 +524,7 @@ AND (sw_blacklisted + sw_cookies) > 0"""
 
 class TopTenBlockedHostsByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-ten-blocked-hosts-by-hits', _('Top Ten Blocked Hosts (by hits)'))
+        Graph.__init__(self, 'top-ten-blocked-hosts-by-hits', _('Top Ten Blocked Hosts (by Hits)'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -563,7 +563,7 @@ AND (sw_blacklisted + sw_cookies) > 0"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'),
+                ks = KeyStatistic(r[0], r[1], _('Hits'),
                                   link_type=reports.HNAME_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
@@ -573,7 +573,7 @@ AND (sw_blacklisted + sw_cookies) > 0"""
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Host'),
-                     ylabel=_('Blocks per Day'))
+                     ylabel=_('Blocks Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -621,7 +621,7 @@ AND sw_cookies > 0"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'))
+                ks = KeyStatistic(r[0], r[1], _('Hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -630,7 +630,7 @@ AND sw_cookies > 0"""
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Cookie'),
-                     ylabel=_('Blocks per Day'))
+                     ylabel=_('Blocks Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -692,10 +692,10 @@ class SpywareCookiesBlocked(Graph):
 
             ks = KeyStatistic(_('Avg Cookies Blocked'),
                               sum(sw_cookies) / len(rp),
-                              _('blocks')+'/'+_(unit))
+                              _('Blocks')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Max Cookies Blocked'), max(sw_cookies),
-                              _('blocks')+'/'+_(unit))
+                              _('Blocks')+'/'+_(unit))
             lks.append(ks)
 
             plot = Chart(type=STACKED_BAR_CHART,
@@ -757,7 +757,7 @@ ORDER BY hits_sum DESC"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'))
+                ks = KeyStatistic(r[0], r[1], _('Hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -766,7 +766,7 @@ ORDER BY hits_sum DESC"""
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Subnet'),
-                     ylabel=_('Blocks per Day'))
+                     ylabel=_('Blocks Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -774,7 +774,7 @@ ORDER BY hits_sum DESC"""
 
 class TopTenSuspiciousTrafficHostsByHits(Graph):
     def __init__(self):
-        Graph.__init__(self, 'top-suspicious-traffic-hosts-by-hits', _('Top Suspicious Traffic Hosts (by hits)'))
+        Graph.__init__(self, 'top-suspicious-traffic-hosts-by-hits', _('Top Suspicious Traffic Hosts (by Hits)'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -814,7 +814,7 @@ AND sw_accesses > 0"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'),
+                ks = KeyStatistic(r[0], r[1], _('Hits'),
                                   link_type=reports.HNAME_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
@@ -824,7 +824,7 @@ AND sw_accesses > 0"""
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Host'),
-                     ylabel=_('Blocks per Day'))
+                     ylabel=_('Blocks Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -889,10 +889,10 @@ class SpywareSubnetsDetected(Graph):
 
             ks = KeyStatistic(_('Avg Suspicious Detections'),
                               sum(sessions) / len(rp),
-                              _('blocks')+'/'+_(unit))
+                              _('Blocks')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Max Suspicious Detections'), max(sessions),
-                              _('blocks')+'/'+_(unit))
+                              _('Blocks')+'/'+_(unit))
             lks.append(ks)
 
             plot = Chart(type=STACKED_BAR_CHART,
@@ -930,7 +930,7 @@ class CookieDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('sw_cookie_ident', _('Cookie')),
-               ColumnDesc('s_server_addr', _('Server IP')),
+               ColumnDesc('s_server_addr', _('Server Ip')),
                ColumnDesc('s_server_port', _('Server Port'))]
 
         return rv
@@ -955,7 +955,7 @@ WHERE time_stamp >= %s AND time_stamp < %s
 
 class UrlBlockDetail(DetailSection):
     def __init__(self):
-        DetailSection.__init__(self, 'url-events', _('URL Blocklist Events'))
+        DetailSection.__init__(self, 'url-events', _('Url Blocklist Events'))
 
     def get_columns(self, host=None, user=None, email=None):
         if email:
@@ -974,8 +974,8 @@ class UrlBlockDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('s_server', _('Server')),
-               ColumnDesc('uri', _('URI')),
-               ColumnDesc('s_server_addr', _('Server IP')),
+               ColumnDesc('uri', _('Uri')),
+               ColumnDesc('s_server_addr', _('Server Ip')),
                ColumnDesc('s_server_port', _('Server Port'))]
 
         return rv
@@ -1019,7 +1019,7 @@ class SubnetDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('sw_blacklisted', _('Subnet')),
-               ColumnDesc('c_server_addr', _('Server IP')),
+               ColumnDesc('c_server_addr', _('Server Ip')),
                ColumnDesc('c_server_port', _('Server Port'))]
 
         return rv

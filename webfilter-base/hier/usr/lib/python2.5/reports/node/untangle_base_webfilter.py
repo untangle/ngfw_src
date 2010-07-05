@@ -308,10 +308,10 @@ class DailyWebUsage(Graph):
                      major_formatter=formatter,
                      required_points=rp)
 
-        plot.add_dataset(dates, hits, label=_('clean hits'), color=colors.goodness)
-        plot.add_dataset(dates, violations, label=_('violations'),
+        plot.add_dataset(dates, hits, label=_('Clean Hits'), color=colors.goodness)
+        plot.add_dataset(dates, violations, label=_('Violations'),
                          color=colors.detected)
-        plot.add_dataset(dates, blocks, label=_('blocks'),
+        plot.add_dataset(dates, blocks, label=_('Blocks'),
                          color=colors.badness)
 
         return (lks, plot)
@@ -372,7 +372,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,
             conn.commit()
 
         plot = Chart(type=PIE_CHART, title=self.title, xlabel=_('Date'),
-                     ylabel=_('Hits per Day'))
+                     ylabel=_('Hits Per Day'))
 
         plot.add_pie_dataset({_('Total Clean Hits'): hits-violations-blocks,
                               _('Total Violations'): violations,
@@ -386,7 +386,7 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,
 class TopTenWebPolicyViolationsByHits(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-categories-of-violations-by-hits',
-                       _('Top Categories of Violations (by hits)'))
+                       _('Top Categories Of Violations (by Hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -432,7 +432,7 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC
                 cat = r[0]
                 if not cat or cat == '':
                     cat = _('Uncategorized')
-                ks = KeyStatistic(cat, r[1], _('hits'))
+                ks = KeyStatistic(cat, r[1], _('Hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -441,7 +441,7 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Policy'),
-                     ylabel=_('Hits per Day'))
+                     ylabel=_('Hits Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -450,7 +450,7 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC
 class TopTenWebBlockedPolicyViolationsByHits(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-web-categories-of-blocked-violations-by-hits',
-                       _('Top Categories of Blocked Violations (by hits)'))
+                       _('Top Categories Of Blocked Violations (by Hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -493,7 +493,7 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC""" \
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'))
+                ks = KeyStatistic(r[0], r[1], _('Hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -502,7 +502,7 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC""" \
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Policy'),
-                     ylabel=_('Blocks per Day'))
+                     ylabel=_('Blocks Per Day'))
         plot.add_pie_dataset(dataset, display_limit=10)
 
         return (lks, plot, 10)
@@ -510,7 +510,7 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC""" \
 class TopTenWebBrowsingHostsByHits(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-web-browsing-hosts-by-hits',
-                       _('Top Web Browsing Hosts (by hits)'))
+                       _('Top Web Browsing Hosts (by Hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -538,7 +538,7 @@ GROUP BY hname ORDER BY hits_sum DESC"""
 
             curs.execute(query, (one_week, ed))
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'),
+                ks = KeyStatistic(r[0], r[1], _('Hits'),
                                   link_type=reports.HNAME_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
@@ -549,7 +549,7 @@ GROUP BY hname ORDER BY hits_sum DESC"""
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Host'),
-                     ylabel=_('Hits per Day'))
+                     ylabel=_('Hits Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -558,7 +558,7 @@ GROUP BY hname ORDER BY hits_sum DESC"""
 class TopTenWebBrowsingUsersByHits(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-web-browsing-users-by-hits',
-                       _('Top Web Browsing Users (by hits)'))
+                       _('Top Web Browsing Users (by Hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -586,7 +586,7 @@ GROUP BY uid ORDER BY hits_sum DESC"""
 
             curs.execute(query, (one_week, ed))
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'),
+                ks = KeyStatistic(r[0], r[1], _('Hits'),
                                   link_type=reports.USER_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
@@ -597,7 +597,7 @@ GROUP BY uid ORDER BY hits_sum DESC"""
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('User'),
-                     ylabel=_('Hits per Day'))
+                     ylabel=_('Hits Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -606,7 +606,7 @@ GROUP BY uid ORDER BY hits_sum DESC"""
 class TopTenWebBrowsingUsersBySize(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-web-browsing-users-by-size',
-                       _('Top Web Browsing Users (by size)'))
+                       _('Top Web Browsing Users (by Size)'))
 
         self.__vendor_name = vendor_name
 
@@ -634,7 +634,7 @@ GROUP BY uid ORDER BY size_sum DESC"""
 
             curs.execute(query, (one_week, ed))
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('bytes'),
+                ks = KeyStatistic(r[0], r[1], _('Bytes'),
                                   link_type=reports.USER_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
@@ -645,7 +645,7 @@ GROUP BY uid ORDER BY size_sum DESC"""
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('User'),
-                     ylabel=_('bytes/day'))
+                     ylabel=_('Bytes/day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -654,7 +654,7 @@ GROUP BY uid ORDER BY size_sum DESC"""
 class TopTenWebPolicyViolatorsByHits(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-host-violators-by-hits',
-                       _('Top Host Violators (by hits)'))
+                       _('Top Host Violators (by Hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -684,7 +684,7 @@ ORDER BY blocks_sum DESC""" % ((self.__vendor_name,)*2)
 
             curs.execute(query, (one_week, ed))
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'),
+                ks = KeyStatistic(r[0], r[1], _('Hits'),
                                   link_type=reports.HNAME_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
@@ -695,7 +695,7 @@ ORDER BY blocks_sum DESC""" % ((self.__vendor_name,)*2)
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Host'),
-                     ylabel=_('Hits per Day'))
+                     ylabel=_('Hits Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -704,7 +704,7 @@ ORDER BY blocks_sum DESC""" % ((self.__vendor_name,)*2)
 class TopTenWebPolicyViolatorsADByHits(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-violators-by-hits',
-                       _('Top User Violators (by hits)'))
+                       _('Top User Violators (by Hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -737,7 +737,7 @@ GROUP BY uid ORDER BY blocks_sum DESC""" \
 
             curs.execute(query, (one_week, ed))
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'),
+                ks = KeyStatistic(r[0], r[1], _('Hits'),
                                   link_type=reports.USER_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
@@ -746,8 +746,8 @@ GROUP BY uid ORDER BY blocks_sum DESC""" \
 
         plot = Chart(type=PIE_CHART,
                      title=self.title,
-                     xlabel=_('UID'),
-                     ylabel=_('Hits per Day'))
+                     xlabel=_('Uid'),
+                     ylabel=_('Hits Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -756,7 +756,7 @@ GROUP BY uid ORDER BY blocks_sum DESC""" \
 class TopTenWebBrowsingHostsBySize(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-web-browsing-hosts-by-size',
-                       _('Top Web Browsing Hosts (by size)'))
+                       _('Top Web Browsing Hosts (by Size)'))
 
         self.__vendor_name = vendor_name
 
@@ -784,7 +784,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
             curs.execute(query, (one_week, ed))
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('bytes'),
+                ks = KeyStatistic(r[0], r[1], N_('Bytes'),
                                   link_type=reports.HNAME_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
@@ -795,7 +795,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Host'),
-                     ylabel=_('bytes/day'))
+                     ylabel=_('Bytes/day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -804,7 +804,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 class TopTenWebsitesByHits(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-websites-by-hits',
-                       _('Top Websites (by hits)'))
+                       _('Top Websites (by Hits)'))
 
         self.__vendor_name = vendor_name
 
@@ -842,7 +842,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'), link_type=reports.URL_LINK)
+                ks = KeyStatistic(r[0], r[1], _('Hits'), link_type=reports.URL_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -851,7 +851,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Hosts'),
-                     ylabel=_('Hits per Day'))
+                     ylabel=_('Hits Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -860,7 +860,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 class TopTenWebsitesBySize(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-websites-by-size',
-                       _('Top Websites (by size)'))
+                       _('Top Websites (by Size)'))
 
         self.__vendor_name = vendor_name
 
@@ -899,7 +899,7 @@ GROUP BY host ORDER BY size_sum DESC"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('bytes'), link_type=reports.URL_LINK)
+                ks = KeyStatistic(r[0], r[1], N_('Bytes'), link_type=reports.URL_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
 
@@ -909,7 +909,7 @@ GROUP BY host ORDER BY size_sum DESC"""
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Hosts'),
-                     ylabel=_('bytes/day'))
+                     ylabel=_('Bytes/day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -958,7 +958,7 @@ AND NOT wf_%s_reason = 'I'""" % (self.__vendor_name, self.__vendor_name)
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'))
+                ks = KeyStatistic(r[0], r[1], _('Hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -967,7 +967,7 @@ AND NOT wf_%s_reason = 'I'""" % (self.__vendor_name, self.__vendor_name)
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Hosts'),
-                     ylabel=_('Hits per Day'))
+                     ylabel=_('Hits Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -1018,7 +1018,7 @@ AND wf_%s_blocks > 0""" % (self.__vendor_name, self.__vendor_name,
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'))
+                ks = KeyStatistic(r[0], r[1], _('Hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -1027,7 +1027,7 @@ AND wf_%s_blocks > 0""" % (self.__vendor_name, self.__vendor_name,
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Hosts'),
-                     ylabel=_('Hits per Day'))
+                     ylabel=_('Hits Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -1057,9 +1057,9 @@ class WebFilterDetail(DetailSection):
 
         rv += [ColumnDesc('wf_%s_category' % self.__vendor_name, _('Category')),
                ColumnDesc('case', _('Blocked')),
-               ColumnDesc('url', _('URL'), 'URL'),
-               ColumnDesc('s_server_addr', _('Server IP')),
-               ColumnDesc('c_client_addr', _('Client IP'))]
+               ColumnDesc('url', _('Url'), 'URL'),
+               ColumnDesc('s_server_addr', _('Server Ip')),
+               ColumnDesc('c_client_addr', _('Client Ip'))]
 
         return rv
 
@@ -1111,9 +1111,9 @@ class WebFilterDetailAll(DetailSection):
 
         rv += [ColumnDesc('wf_%s_category' % self.__vendor_name, _('Category')),
                ColumnDesc('case', _('Blocked')),
-               ColumnDesc('url', _('URL'), 'URL'),
-               ColumnDesc('s_server_addr', _('Server IP')),
-               ColumnDesc('c_client_addr', _('Client IP'))]
+               ColumnDesc('url', _('Url'), 'URL'),
+               ColumnDesc('s_server_addr', _('Server Ip')),
+               ColumnDesc('c_client_addr', _('Client Ip'))]
 
         return rv
 
@@ -1151,7 +1151,7 @@ class WebFilterDetailDomains(DetailSection):
 
         rv = [ColumnDesc('domain', _('Site')),
               ColumnDesc('hits', _('Hits')),
-              ColumnDesc('size', _('Size (MB)'))]
+              ColumnDesc('size', _('Size (mb)'))]
 
         return rv
 
@@ -1225,7 +1225,7 @@ ORDER BY count_events DESC""" % self.__vendor_name
                 stat_key = r[0]
                 if stat_key is None:
                     stat_key = _('Uncategorized')
-                ks = KeyStatistic(stat_key, r[1], _('hits'))
+                ks = KeyStatistic(stat_key, r[1], _('Hits'))
                 lks.append(ks)
                 dataset[stat_key] = r[1]
         finally:
@@ -1234,7 +1234,7 @@ ORDER BY count_events DESC""" % self.__vendor_name
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Category'),
-                     ylabel=_('Hits per Day'))
+                     ylabel=_('Hits Per Day'))
         plot.add_pie_dataset(dataset, display_limit=10)
 
         return (lks[0:10], plot)
@@ -1286,7 +1286,7 @@ ORDER BY blocks_sum DESC""" % self.__vendor_name
                 stat_key = r[0]
                 if stat_key is None:
                     stat_key = _('Uncategorized')
-                ks = KeyStatistic(stat_key, r[1], _('hits'))
+                ks = KeyStatistic(stat_key, r[1], _('Hits'))
                 lks.append(ks)
                 dataset[stat_key] = r[1]
         finally:
@@ -1295,7 +1295,7 @@ ORDER BY blocks_sum DESC""" % self.__vendor_name
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Category'),
-                     ylabel=_('Hits per Day'))
+                     ylabel=_('Hits Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 

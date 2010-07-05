@@ -275,9 +275,9 @@ AND addr_kind = 'T'""" % (self.__short_name,)
 
             ks = KeyStatistic(_('Total'), total, _('messages'))
             lks.append(ks)
-            ks = KeyStatistic(self.__spam_label, spam, _('messages'))
+            ks = KeyStatistic(self.__spam_label, spam, _('Messages'))
             lks.append(ks)
-            ks = KeyStatistic(self.__ham_label, ham, _('messages'))
+            ks = KeyStatistic(self.__ham_label, ham, _('Messages'))
             lks.append(ks)
 
             plot = Chart(type=PIE_CHART, title=self.title)
@@ -341,11 +341,11 @@ AND addr_kind = 'T'""" % (self.__short_name,)
 
             ks = KeyStatistic(_('Mail Rate'), email_rate, _('messages/hour'))
             lks.append(ks)
-            ks = KeyStatistic(_('%s rate') % self.__spam_label, spam_rate,
-                              _('messages/hour'))
+            ks = KeyStatistic(_('%s Rate') % self.__spam_label, spam_rate,
+                              _('Messages/hour'))
             lks.append(ks)
-            ks = KeyStatistic(_('%s rate') % self.__ham_label, ham_rate,
-                              _('messages/hour'))
+            ks = KeyStatistic(_('%s Rate') % self.__ham_label, ham_rate,
+                              _('Messages/hour'))
             lks.append(ks)
 
             # per hour
@@ -379,8 +379,8 @@ AND addr_kind = 'T'""" % (self.__short_name,)
 
         plot = Chart(type=TIME_SERIES_CHART,
                      title=self.title,
-                     xlabel=_('Hour of Day'),
-                     ylabel=_('Emails per Hour'),
+                     xlabel=_('Hour Of Day'),
+                     ylabel=_('Emails Per Hour'),
                      major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, spam, gettext.gettext(self.__spam_label),
@@ -461,17 +461,17 @@ class DailySpamRate(Graph):
             lks.append(ks)
             ks = KeyStatistic(_('Max Mail Rate'), max(totals), _('messages')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg %s rate') % self.__spam_label, sum(spams)/len(rp),
-                              _('messages')+'/'+_(unit))
+            ks = KeyStatistic(_('Avg %s Rate') % self.__spam_label, sum(spams)/len(rp),
+                              _('Messages')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max %s rate') % self.__spam_label, max(spams),
-                              _('messages')+'/'+_(unit))
+            ks = KeyStatistic(_('Max %s Rate') % self.__spam_label, max(spams),
+                              _('Messages')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg %s rate') % self.__ham_label, sum(hams)/len(rp),
-                              _('messages')+'/'+_(unit))
+            ks = KeyStatistic(_('Avg %s Rate') % self.__ham_label, sum(hams)/len(rp),
+                              _('Messages')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max %s rate') % self.__ham_label, max(hams),
-                              _('messages')+'/'+_(unit))
+            ks = KeyStatistic(_('Max %s Rate') % self.__ham_label, max(hams),
+                              _('Messages')+'/'+_(unit))
             lks.append(ks)
 
             curs = conn.cursor()
@@ -566,11 +566,11 @@ class SpamDetail(DetailSection):
         rv.append(ColumnDesc('hname', _('Client'), 'String'))
 
         rv += [ColumnDesc('%s_score' % (self.__short_name,), _('Score')),
-               ColumnDesc('m2.addr', _('Msg sender')),
+               ColumnDesc('m2.addr', _('Msg Sender')),
                ColumnDesc('subject', _('Subject')),
-               ColumnDesc('s_server_addr', _('Destination IP')),
+               ColumnDesc('s_server_addr', _('Destination Ip')),
                ColumnDesc('case', _('Action')),
-               ColumnDesc('addr', _('Msg receiver'), 'EmailLink')]
+               ColumnDesc('addr', _('Msg Receiver'), 'EmailLink')]
 
         return rv
 
@@ -595,12 +595,12 @@ AND m1.%s_is_spam AND m1.addr_kind = 'T'
 AND m2.addr_kind = 'F'
 AND m1.msg_id = m2.msg_id
 """ % (self.__short_name, self.__short_name,
-       _('passed'),
-       _('blocked'),
-       _('marked'),
-       _('quarantined'),
-       _('safelisted'),
-       _('oversize'),
+       _('Passed'),
+       _('Blocked'),
+       _('Marked'),
+       _('Quarantined'),
+       _('Safelisted'),
+       _('Oversize'),
        DateFromMx(start_date), DateFromMx(end_date),
        DateFromMx(start_date), DateFromMx(end_date),
        self.__short_name)

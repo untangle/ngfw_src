@@ -187,33 +187,33 @@ class DailyRequest(Graph):
                 blocked = [0,]
 
             ks = KeyStatistic(_('Avg Requests'), sum(accepted+limited+blocked)/len(accepted),
-                              _('sessions/minute'))
+                              _('Sessions/minute'))
             lks.append(ks)
             ks = KeyStatistic(_('Max Requests'), sum(accepted+limited+blocked),
-                              _('sessions/minute'))
+                              _('Sessions/minute'))
             lks.append(ks)
             ks = KeyStatistic(_('Avg Limited'), sum(limited)/len(accepted),
-                              _('sessions/minute'))
+                              _('Sessions/minute'))
             lks.append(ks)
             ks = KeyStatistic(_('Max Limited'), sum(limited),
-                              _('sessions/minute'))
+                              _('Sessions/minute'))
             lks.append(ks)
             ks = KeyStatistic(_('Avg Blocked'), sum(blocked)/len(accepted),
-                              _('sessions/minute'))
+                              _('Sessions/minute'))
             lks.append(ks)
             ks = KeyStatistic(_('Max Blocked'), sum(blocked),
-                              _('sessions/minute'))
+                              _('Sessions/minute'))
             lks.append(ks)
 
             plot = Chart(type=TIME_SERIES_CHART,
                          title=_('Daily Request'),
                          xlabel=_('Date'),
-                         ylabel=_('Requests per Minute'),
+                         ylabel=_('Requests Per Minute'),
                          major_formatter=TIMESTAMP_FORMATTER)
 
-            plot.add_dataset(times, accepted, label=_('accepted'))
-            plot.add_dataset(times, limited, label=_('limited'))
-            plot.add_dataset(times, blocked, label=_('blocked'))
+            plot.add_dataset(times, accepted, label=_('Accepted'))
+            plot.add_dataset(times, limited, label=_('Limited'))
+            plot.add_dataset(times, blocked, label=_('Blocked'))
                 
         finally:
             conn.commit()
@@ -254,7 +254,7 @@ ORDER BY blocked desc"""
                 host = r[0]
                 num = r[1]
 
-                lks.append(KeyStatistic(host, num, _('blocks'),
+                lks.append(KeyStatistic(host, num, _('Blocks'),
                            link_type=reports.HNAME_LINK))
                 pds[host] = num
         finally:
@@ -302,7 +302,7 @@ ORDER BY limited desc"""
                 host = r[0]
                 num = r[1]
 
-                lks.append(KeyStatistic(host, num, _('limited'),
+                lks.append(KeyStatistic(host, num, _('Limited'),
                                         link_type=reports.HNAME_LINK))
                 pds[host] = num
         finally:

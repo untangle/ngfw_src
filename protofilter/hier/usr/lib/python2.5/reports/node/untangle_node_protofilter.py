@@ -279,10 +279,10 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS detections
 
             ks = KeyStatistic(_('Avg Detections'),
                               sum(detections) / len(rp),
-                              _('blocks')+'/'+_(unit))
+                              _('Blocks')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Max Detections'), max(detections),
-                              _('blocks')+'/'+_(unit))
+                              _('Blocks')+'/'+_(unit))
             lks.append(ks)
 
             plot = Chart(type=STACKED_BAR_CHART,
@@ -291,7 +291,7 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS detections
                          major_formatter=HOUR_FORMATTER,
                          required_points=rp)
 
-            plot.add_dataset(dates, detections, label=_('detections'))
+            plot.add_dataset(dates, detections, label=_('Detections'))
         finally:
             conn.commit()
 
@@ -339,16 +339,16 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
             for r in curs.fetchall():
                 if r[1] > 0:
-                    ks = KeyStatistic(r[0], r[1], _('hits'))
+                    ks = KeyStatistic(r[0], r[1], _('Hits'))
                     lks.append(ks)
                     dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Blocked Protocols (by hits)'),
+                     title=_('Top Ten Blocked Protocols (by Hits)'),
                      xlabel=_('Protocol'),
-                     ylabel=_('Blocks per Day'))
+                     ylabel=_('Blocks Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -398,16 +398,16 @@ WHERE trunc_time >= %s AND trunc_time < %s
 
             for r in curs.fetchall():
                 if r[1] > 0:
-                    ks = KeyStatistic(r[0], r[1], _('hits'))
+                    ks = KeyStatistic(r[0], r[1], _('Hits'))
                     lks.append(ks)
                     dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Detected Protocols (by hits)'),
+                     title=_('Top Ten Detected Protocols (by Hits)'),
                      xlabel=_('Protocol'),
-                     ylabel=_('Blocks per Day'))
+                     ylabel=_('Blocks Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -458,7 +458,7 @@ AND pf_protocol != ''
 
             for r in curs.fetchall():
                 if r[1] > 0:
-                    ks = KeyStatistic(r[0], r[1], _('hits'),
+                    ks = KeyStatistic(r[0], r[1], _('Hits'),
                                       link_type=reports.HNAME_LINK)
                     lks.append(ks)
                     dataset[r[0]] = r[1]
@@ -466,9 +466,9 @@ AND pf_protocol != ''
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Blocked Hosts (by hits)'),
+                     title=_('Top Ten Blocked Hosts (by Hits)'),
                      xlabel=_('Host'),
-                     ylabel=_('Blocks per Day'))
+                     ylabel=_('Blocks Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -518,16 +518,16 @@ AND pf_protocol != ''
 
             for r in curs.fetchall():
                 if r[1] > 0:
-                    ks = KeyStatistic(r[0], r[1], _('hits'), link_type=reports.HNAME_LINK)
+                    ks = KeyStatistic(r[0], r[1], _('Hits'), link_type=reports.HNAME_LINK)
                     lks.append(ks)
                     dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Logged Hosts (by hits)'),
+                     title=_('Top Ten Logged Hosts (by Hits)'),
                      xlabel=_('Host'),
-                     ylabel=_('Blocks per Day'))
+                     ylabel=_('Blocks Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -578,16 +578,16 @@ AND pf_protocol != ''
 
             for r in curs.fetchall():
                 if r[1] > 0:
-                    ks = KeyStatistic(r[0], r[1], _('hits'), link_type=reports.USER_LINK)
+                    ks = KeyStatistic(r[0], r[1], _('Hits'), link_type=reports.USER_LINK)
                     lks.append(ks)
                     dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Blocked Users (by hits)'),
+                     title=_('Top Ten Blocked Users (by Hits)'),
                      xlabel=_('User'),
-                     ylabel=_('Blocks per Day'))
+                     ylabel=_('Blocks Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -637,16 +637,16 @@ AND pf_protocol != ''
 
             for r in curs.fetchall():
                 if r[1] > 0:
-                    ks = KeyStatistic(r[0], r[1], _('hits'), link_type=reports.USER_LINK)
+                    ks = KeyStatistic(r[0], r[1], _('Hits'), link_type=reports.USER_LINK)
                     lks.append(ks)
                     dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Logged Users (by hits)'),
+                     title=_('Top Ten Logged Users (by Hits)'),
                      xlabel=_('User'),
-                     ylabel=_('Blocks per Day'))
+                     ylabel=_('Blocks Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 

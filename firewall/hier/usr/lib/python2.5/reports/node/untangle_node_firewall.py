@@ -247,28 +247,28 @@ class DailyRules(reports.Graph):
                                                 mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
 
             ks = reports.KeyStatistic(_('Avg Blocked'), sum(blocks)/len(rp),
-                                      _('blocks')+'/'+_(unit))
+                                      _('Blocks')+'/'+_(unit))
             lks.append(ks)
             ks = reports.KeyStatistic(_('Max Blocked'), max(blocks),
-                                      _('blocks')+'/'+_(unit))
+                                      _('Blocks')+'/'+_(unit))
             lks.append(ks)
             ks = reports.KeyStatistic(_('Avg Logged'), sum(logs)/len(rp),
-                                      _('logs')+'/'+_(unit))
+                                      _('Logs')+'/'+_(unit))
             lks.append(ks)
             ks = reports.KeyStatistic(_('Max Logged'), max(logs),
-                                      _('logs')+'/'+_(unit))
+                                      _('Logs')+'/'+_(unit))
             lks.append(ks)
 
             plot = reports.Chart(type=reports.STACKED_BAR_CHART,
                                  title=_('Sessions'),
                                  xlabel=_(unit),
-                                 ylabel=_('sessions'),
+                                 ylabel=_('Sessions'),
                                  major_formatter=formatter,
                                  required_points=rp)
 
-            plot.add_dataset(dates, blocks, label=_('blocked'),
+            plot.add_dataset(dates, blocks, label=_('Blocked'),
                              color=colors.badness)
-            plot.add_dataset(dates, logs, label=_('logged'),
+            plot.add_dataset(dates, logs, label=_('Logged'),
                              color=colors.detected)
 
         finally:
@@ -318,16 +318,16 @@ AND firewall_rule_index IS NOT NULL"""
                 curs.execute(query, (one_week, ed))
 
                 for r in curs.fetchall():
-                    ks = KeyStatistic(r[0], r[1], _('hits'), link_type=reports.HNAME_LINK)
+                    ks = KeyStatistic(r[0], r[1], _('Hits'), link_type=reports.HNAME_LINK)
                     lks.append(ks)
                     dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Firewall Blocked Hosts (by hits)'),
+                     title=_('Top Ten Firewall Blocked Hosts (by Hits)'),
                      xlabel=_('Host'),
-                     ylabel=_('Blocks per Day'))
+                     ylabel=_('Blocks Per Day'))
         plot.add_pie_dataset(dataset, display_limit=10)
 
         return (lks, plot, 10)
@@ -375,16 +375,16 @@ AND firewall_rule_index IS NOT NULL"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'))
+                ks = KeyStatistic(r[0], r[1], _('Hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Firewall Blocking Rules (by hits)'),
+                     title=_('Top Ten Firewall Blocking Rules (by Hits)'),
                      xlabel=_('Rule #'),
-                     ylabel=_('Blocks per Day'))
+                     ylabel=_('Blocks Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -433,16 +433,16 @@ AND firewall_rule_index IS NOT NULL"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('hits'), link_type=reports.USER_LINK)
+                ks = KeyStatistic(r[0], r[1], _('Hits'), link_type=reports.USER_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
             conn.commit()
 
         plot = Chart(type=PIE_CHART,
-                     title=_('Top Ten Firewall Blocked Users (by hits)'),
+                     title=_('Top Ten Firewall Blocked Users (by Hits)'),
                      xlabel=_('User'),
-                     ylabel=_('Blocks per Day'))
+                     ylabel=_('Blocks Per Day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -466,9 +466,9 @@ class FirewallDetail(DetailSection):
         rv = rv + [ColumnDesc('firewall_rule_index', _('Rule Applied')),
                    ColumnDesc('firewall_rule_description', _('Rule Description')),
                    ColumnDesc('firewall_was_blocked', _('Action')),
-                   ColumnDesc('c_server_addr', _('Destination IP')),
+                   ColumnDesc('c_server_addr', _('Destination Ip')),
                    ColumnDesc('c_server_port', _('Destination Port')),
-                   ColumnDesc('c_client_addr', _('Source IP')),
+                   ColumnDesc('c_client_addr', _('Source Ip')),
                    ColumnDesc('c_client_port', _('Source Port'))]
 
         return rv
