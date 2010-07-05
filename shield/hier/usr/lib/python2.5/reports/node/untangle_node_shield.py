@@ -151,10 +151,9 @@ class DailyRequest(Graph):
         conn = sql_helper.get_connection()
         curs = conn.cursor()
         try:
-            # per minute
-            sums = ["coalesce(sum(accepted), 0) * 60",
-                    "coalesce(sum(limited), 0) * 60",
-                    "coalesce(sum(dropped+rejected), 0) * 60"]
+            sums = ["coalesce(sum(accepted), 0)",
+                    "coalesce(sum(limited), 0)",
+                    "coalesce(sum(dropped+rejected), 0)"]
 
             extra_where = []
             if host:
