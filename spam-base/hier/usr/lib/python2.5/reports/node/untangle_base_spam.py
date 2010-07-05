@@ -411,30 +411,7 @@ class DailySpamRate(Graph):
         try:
             lks = []
 
-#             ks_query = """
-# SELECT COALESCE(sum(msgs), 0)::float / %%s AS email_rate,
-#        COALESCE(sum(%s_spam_msgs), 0)::float / %%s AS spam_rate
-# FROM reports.n_mail_addr_totals
-# WHERE trunc_time >= %%s AND trunc_time < %%s
-# AND addr_kind = 'T'""" % (self.__short_name,)
-
-#             if email:
-#                 ks_query += " AND addr = %s"
-#             else:
-#                 ks_query += " AND addr_pos = '1'"
-
-#             curs = conn.cursor()
-#             if email:
-#                 curs.execute(ks_query, (report_days, report_days, email,
-#                                         one_week, ed))
-#             else:
-#                 curs.execute(ks_query, (report_days, report_days, one_week, ed))
-
-
-#             r = curs.fetchone()
-
-
-            sums = ["COALESCE(SUM(msgs), 0)::float",
+            sums = ["COALESCE(SUM(msgs)-SUM(%s_spam_msgs), 0)::float" % (self.__short_name,),
                     "COALESCE(SUM(%s_spam_msgs), 0)::float" % (self.__short_name,)]
             
             extra_where = [("addr_kind = 'T'", {})]
@@ -631,4 +608,4 @@ AND m1.msg_id = m2.msg_id
         if email:
             sql += " AND m1.addr = %s" % QuotedString(email)
 
-        return sql + " ORDER BY time_stamp DESC"
+        return sql + " ORDER BY m1.time_stamp DESC"
