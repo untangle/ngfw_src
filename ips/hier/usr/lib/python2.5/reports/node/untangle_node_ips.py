@@ -333,7 +333,7 @@ class IpsDetail(DetailSection):
         if not user:
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
-        rv = rv + [ColumnDesc('ips_description', _('Sid:description')),
+        rv = rv + [ColumnDesc('ips_description', _('SID:description')),
                    ColumnDesc('ips_blocked', _('Blocked')),
                    ColumnDesc('c_server_addr', _('Server')),
                    ColumnDesc('c_server_port', _('Port'))]

@@ -208,10 +208,10 @@ class BandwidthUsage(Graph):
             plot = Chart(type=TIME_SERIES_CHART,
                          title=_('Bandwidth Usage'),
                          xlabel=_('Date'),
-                         ylabel=_('Throughput (kb/s)'),
+                         ylabel=_('Throughput (kB/s)'),
                          major_formatter=TIMESTAMP_FORMATTER)
 
-            plot.add_dataset(dates, throughput, _('Usage (kb/sec)'))
+            plot.add_dataset(dates, throughput, _('Usage (kB/sec)'))
         finally:
             conn.commit()
 

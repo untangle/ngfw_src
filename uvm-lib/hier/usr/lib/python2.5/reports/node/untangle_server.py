@@ -209,10 +209,10 @@ class MemoryUsage(Graph):
                 cached = [0,]
 
             ks = KeyStatistic(_('Avg Free Memory'), sum(free)/len(free),
-                              N_('Mb'))
+                              N_('MB'))
             lks.append(ks)
             ks = KeyStatistic(_('Avg Cached Memory'), sum(cached)/len(cached),
-                              N_('Mb'))
+                              N_('MB'))
             lks.append(ks)
         finally:
             conn.commit()
@@ -404,7 +404,7 @@ class DiskUsage(Graph):
                 avgp = 100 * avg / diskTotal[0]
                 
             ks = KeyStatistic(_('Avg Disk Free'), avg,
-                              N_('Gb'))
+                              N_('GB'))
             lks.append(ks)
             ks = KeyStatistic(_('Avg Disk Free'), avgp,
                               N_('%'))
@@ -464,7 +464,7 @@ class SwapUsage(Graph):
                 swapFree = [0,]
 
             ks = KeyStatistic(_('Avg Swap Free'), sum(swapFree)/len(swapFree),
-                              N_('Mb'))
+                              N_('MB'))
             lks.append(ks)
             ks = KeyStatistic(_('Avg Swap Used'), sum(swapUsed)/len(swapUsed),
                               N_('%'))

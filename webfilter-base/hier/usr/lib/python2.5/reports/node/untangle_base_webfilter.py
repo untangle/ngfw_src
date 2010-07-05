@@ -1151,7 +1151,7 @@ class WebFilterDetailDomains(DetailSection):
 
         rv = [ColumnDesc('domain', _('Site')),
               ColumnDesc('hits', _('Hits')),
-              ColumnDesc('size', _('Size (mb)'))]
+              ColumnDesc('size', _('Size (MB)'))]
 
         return rv
 
