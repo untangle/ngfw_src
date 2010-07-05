@@ -261,11 +261,11 @@ SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
 
             if report_days == 1:
                 time_interval = 60 * 60
-                unit = "hour"
+                unit = "Hour"
                 formatter = HOUR_FORMATTER
             else:
                 time_interval = 24 * 60 * 60
-                unit = "day"
+                unit = "Day"
                 formatter = DATE_FORMATTER
                 
             q, h = sql_helper.get_averaged_query(sums, "reports.n_cpd_login_totals",

@@ -202,11 +202,11 @@ class DailyRules(reports.Graph):
         try:
             if report_days == 1:
                 time_interval = 60 * 60
-                unit = "hour"
+                unit = "Hour"
                 formatter = HOUR_FORMATTER
             else:
                 time_interval = 24 * 60 * 60
-                unit = "day"
+                unit = "Day"
                 formatter = DATE_FORMATTER
 
             sums = ["COUNT(CASE WHEN firewall_rule_index IS NOT NULL AND firewall_was_blocked IS NULL THEN 1 ELSE null END)",

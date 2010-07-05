@@ -242,11 +242,11 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS detections
         try:
             if report_days == 1:
                 time_interval = 60 * 60
-                unit = "hour"
+                unit = "Hour"
                 formatter = HOUR_FORMATTER
             else:
                 time_interval = 24 * 60 * 60
-                unit = "day"
+                unit = "Day"
                 formatter = DATE_FORMATTER
 
             sums = ["COUNT(*)"]

@@ -283,11 +283,11 @@ class HourlyRates(Graph):
         try:
             if report_days == 1:
                 time_interval = 60 * 60
-                unit = "hour"
+                unit = "Hour"
                 formatter = HOUR_FORMATTER
             else:
                 time_interval = 24 * 60 * 60
-                unit = "day"
+                unit = "Day"
                 formatter = DATE_FORMATTER
 
             sums = ["coalesce(sum(sw_blacklisted), 0)",
@@ -409,11 +409,11 @@ class SpywareUrlsBlocked(Graph):
         try:
             if report_days == 1:
                 time_interval = 60 * 60
-                unit = "hour"
+                unit = "Hour"
                 formatter = HOUR_FORMATTER
             else:
                 time_interval = 24 * 60 * 60
-                unit = "day"
+                unit = "Day"
                 formatter = DATE_FORMATTER
 
             sums = ["coalesce(sum(sw_blacklisted), 0)",]
@@ -655,11 +655,11 @@ class SpywareCookiesBlocked(Graph):
         try:
             if report_days == 1:
                 time_interval = 60 * 60
-                unit = "hour"
+                unit = "Hour"
                 formatter = HOUR_FORMATTER
             else:
                 time_interval = 24 * 60 * 60
-                unit = "day"
+                unit = "Day"
                 formatter = DATE_FORMATTER
 
             sums = ["coalesce(sum(sw_cookies), 0)",]
@@ -850,11 +850,11 @@ class SpywareSubnetsDetected(Graph):
         try:
             if report_days == 1:
                 time_interval = 60 * 60
-                unit = "hour"
+                unit = "Hour"
                 formatter = HOUR_FORMATTER
             else:
                 time_interval = 24 * 60 * 60
-                unit = "day"
+                unit = "Day"
                 formatter = DATE_FORMATTER
 
 
