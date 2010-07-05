@@ -264,7 +264,7 @@ AND addr_kind = 'T'""" % (self.__short_name,)
             curs = conn.cursor()
 
             if email:
-                curs.execute(query, (email, one_week, ed))
+                curs.execute(query, (one_week, ed, email))
             else:
                 curs.execute(query, (one_week, ed))
             r = curs.fetchone()
