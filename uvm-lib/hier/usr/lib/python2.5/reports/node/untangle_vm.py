@@ -898,7 +898,7 @@ ORDER BY sessions DESC"""
 
         plot.add_pie_dataset(pds, display_limit=10)
 
-        return (lks[0:10], plot)
+        return (lks, plot, 10)
 
 class Lease:
     def __init__(self, row):
