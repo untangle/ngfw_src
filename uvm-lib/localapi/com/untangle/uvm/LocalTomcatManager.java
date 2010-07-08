@@ -31,5 +31,7 @@ public interface LocalTomcatManager
     public ServletContext loadInsecureApp(String urlBase, String rootDir);
 
     public ServletContext loadInsecureApp(String urlBase, String rootDir, Valve valve);
-        
+
+    public boolean unloadWebApp(String contextRoot);
+    
 }

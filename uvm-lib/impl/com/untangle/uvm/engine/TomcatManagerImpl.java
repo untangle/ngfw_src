@@ -228,7 +228,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
         return loadWebApp(urlBase, rootDir, null, null, valve);
     }
 
-    boolean unloadWebApp(String contextRoot)
+    public boolean unloadWebApp(String contextRoot)
     {
         try {
             if (null != baseHost) {
