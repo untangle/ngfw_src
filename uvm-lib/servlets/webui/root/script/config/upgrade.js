@@ -91,7 +91,8 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
 					    displayName = md.shortDescription;
 					else
 					    displayName = md.name;
-				    } else {
+				    } 
+				    if (displayName != null) {
 					displayName.replace("Untangle",main.getOemManager().getOemName());
 				    }
 				    somethingVisibleAdded = true;
