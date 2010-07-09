@@ -65,7 +65,7 @@ public class Launcher extends HttpServlet
     private static final String DEFAULT_STORE_URL = "https://store.untangle.com";
 
     private static final String PROPERTY_LICENSE_URL = "uvm.license.url";
-    private static final String DEFAULT_LICENSE_URL = "http://www.untangle.com/license";
+    private static final String DEFAULT_LICENSE_URL = "http://www.untangle.com/legal";
     
     private final Logger logger = Logger.getLogger( this.getClass());
 
