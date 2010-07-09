@@ -205,7 +205,7 @@ class DailyRequest(Graph):
             lks.append(ks)
 
             plot = Chart(type=TIME_SERIES_CHART,
-                         title=_('Daily Request'),
+                         title=_('Request'),
                          xlabel=_('Date'),
                          ylabel=_('Requests Per Minute'),
                          major_formatter=TIMESTAMP_FORMATTER)
