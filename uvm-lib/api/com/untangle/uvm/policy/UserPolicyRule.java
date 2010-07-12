@@ -157,6 +157,9 @@ public class UserPolicyRule extends PolicyRule
         } catch (java.text.ParseException e) {
             logger.warn("Invalid date in policy rule (" + startTimeString + "," + endTimeString + ")",e);
             return false;
+        } catch (java.lang.NumberFormatException e) {
+            logger.warn("Invalid date in policy rule (" + startTimeString + "," + endTimeString + ")",e);
+            return false;
         }
         start.setTime(startTime);
         start.set(Calendar.YEAR, now.get(Calendar.YEAR));
