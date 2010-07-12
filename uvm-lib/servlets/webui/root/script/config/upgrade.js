@@ -93,7 +93,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
 					    displayName = md.name;
 				    } 
 				    if (displayName != null) {
-					displayName.replace("Untangle",main.getOemManager().getOemName());
+					displayName = displayName.replace("Untangle",main.getOemManager().getOemName());
 				    }
 				    somethingVisibleAdded = true;
 				    upgradeData.push({
