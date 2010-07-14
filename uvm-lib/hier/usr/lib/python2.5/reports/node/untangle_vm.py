@@ -653,38 +653,12 @@ class BandwidthUsage(Graph):
         if email:
             return None
 
-        ed = DateFromMx(end_date)
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        lks = []
 
         conn = sql_helper.get_connection()
         try:
-            lks = []
-
-#             ks_query = """\
-# SELECT COALESCE(sum(s2c_bytes + c2s_bytes), 0) AS total,
-#        COALESCE(max(s2c_bytes + c2s_bytes), 0) AS max
-# FROM reports.session_totals
-# WHERE trunc_time >= %s AND trunc_time < %s"""
-
-#             if user:
-#                 ks_query += "AND uid = %s"
-#             elif host:
-#                 ks_query += "AND hname = %s"
-
-#             curs = conn.cursor()
-
-#             if user:
-#                 curs.execute(ks_query, (one_week, ed, user))
-#             elif host:
-#                 curs.execute(ks_query, (one_week, ed, host))
-#             else:
-#                 curs.execute(ks_query, (one_week, ed))
-
-#             r = curs.fetchone()
-
-#             total = r[0]
-#             max = r[1]
-
             curs = conn.cursor()
 
             # kB
@@ -726,7 +700,7 @@ class BandwidthUsage(Graph):
             conn.commit()
 
         plot = Chart(type=TIME_SERIES_CHART, title=self.title,
-                     xlabel=_('Time'), ylabel=_('Throughput (KB/s)'),
+                     xlabel=_('Date'), ylabel=_('Throughput (KB/s)'),
                      major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, throughput, _('Usage'))
@@ -743,57 +717,12 @@ class ActiveSessions(Graph):
         if email:
             return None
 
-        ed = DateFromMx(end_date)
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+        lks = []
 
         conn = sql_helper.get_connection()
         try:
-            lks = []
-
-#             ks_query = """\
-# SELECT COALESCE(sum(num_sessions), 0) AS total,
-#        COALESCE(max(num_sessions), 0)::int AS max
-# FROM reports.session_counts
-# WHERE trunc_time >= %s AND trunc_time < %s"""
-
-#             if user:
-#                 ks_query += "AND uid = %s"
-#             elif host:
-#                 ks_query += "AND hname = %s"
-
-#             if user:
-#                 curs.execute(ks_query, (one_week, ed, user))
-#             elif host:
-#                 curs.execute(ks_query, (one_week, ed, host))
-#             else:
-#                 curs.execute(ks_query, (one_week, ed))
-
-#             r = curs.fetchone()
-
-#             total = r[0]
-#             max = r[1]
-
-#             ks_query = """\
-# SELECT sum(new_sessions)::int AS total
-# FROM reports.session_totals
-# WHERE trunc_time >= %s AND trunc_time < %s"""
-
-#             if user:
-#                 ks_query += "AND uid = %s"
-#             elif host:
-#                 ks_query += "AND hname = %s"
-
-#             curs = conn.cursor()
-
-#             if user:
-#                  curs.execute(ks_query, (one_week, ed, user))
-#             elif host:
-#                  curs.execute(ks_query, (one_week, ed, host))
-#             else:
-#                 curs.execute(ks_query, (one_week, ed))
-
-#             total = r[0]
-
             # per minute
             sums = ["coalesce(sum(num_sessions), 0)"]
 
@@ -835,7 +764,7 @@ class ActiveSessions(Graph):
             conn.commit()
 
         plot = Chart(type=TIME_SERIES_CHART, title=self.title,
-                     xlabel=_('Hour Of Day'), ylabel=_('Sessions'),
+                     xlabel=_('Date'), ylabel=_('Sessions'),
                      major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, num_sessions, _("Usage"))
