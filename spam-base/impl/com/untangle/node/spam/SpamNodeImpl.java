@@ -179,7 +179,8 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
         emailReceivedBlinger.increment();
     }
 
-    protected void initSpamRBLList(SpamSettings tmpSpamSettings) {
+    protected void initSpamRBLList(SpamSettings tmpSpamSettings)
+    {
         initSpamRBLList(tmpSpamSettings.getSpamRBLList());
     }
 

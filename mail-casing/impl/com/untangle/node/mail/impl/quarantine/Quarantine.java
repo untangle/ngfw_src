@@ -762,8 +762,7 @@ public class Quarantine
         return ret;
     }
 
-    private void checkAndThrowCommonErrors(QuarantineStore.GenericStatus status,
-                                           String account)
+    private void checkAndThrowCommonErrors(QuarantineStore.GenericStatus status, String account)
         throws NoSuchInboxException, QuarantineUserActionFailedException {
 
         if(status == QuarantineStore.GenericStatus.NO_SUCH_INBOX) {

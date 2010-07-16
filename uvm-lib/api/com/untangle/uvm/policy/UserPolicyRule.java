@@ -149,17 +149,32 @@ public class UserPolicyRule extends PolicyRule
         Calendar now = Calendar.getInstance();
         Calendar start = Calendar.getInstance();
         Calendar end = Calendar.getInstance();
-        Date startTime;
-        Date endTime;
+        Date startTime = null;
+        Date endTime = null;
         try {
             startTime = TIME_FORMATTER.parse(this.startTimeString);
             endTime = TIME_FORMATTER.parse(this.endTimeString);
         } catch (java.text.ParseException e) {
             logger.warn("Invalid date in policy rule (" + startTimeString + "," + endTimeString + ")",e);
-            return false;
+            startTime = null;
+            endTime = null;
         } catch (java.lang.NumberFormatException e) {
             logger.warn("Invalid date in policy rule (" + startTimeString + "," + endTimeString + ")",e);
-            return false;
+            startTime = null;
+            endTime = null;
+        } finally {
+            /**
+             * If there was any problem just match on all times
+             */
+            if (startTime == null || endTime == null) {
+                try {
+                    startTime = TIME_FORMATTER.parse("00:00");
+                    endTime = TIME_FORMATTER.parse("23:59");
+                }
+                catch (Exception e) {
+                    logger.warn("Invalid date in policy rule (00:00,23:59)",e);
+                }
+            }
         }
         start.setTime(startTime);
         start.set(Calendar.YEAR, now.get(Calendar.YEAR));
