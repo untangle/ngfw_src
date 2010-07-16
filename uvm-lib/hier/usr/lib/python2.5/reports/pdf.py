@@ -318,6 +318,12 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
     story.append(NextPageTemplate('Body'))
     story.append(PageBreak())
 
+    try:
+        doc.multiBuild(story)
+    except Exception, e:
+        logger.error("Exception while building initial section of PDF report, aborting: ", exc_info = True)
+        raise
+
     mail_reports.sort(__node_cmp)
 
     # higlights summary
