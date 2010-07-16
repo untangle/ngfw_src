@@ -134,16 +134,19 @@ public class ReportXmlHandler extends DefaultHandler
             String yLabel = attrs.getValue("y-label");
             String majorFormatter = attrs.getValue("major-formatter");
             String displayLimit = attrs.getValue("display-limit");
+            String yAxisLowerBound = attrs.getValue("y-axis-lower-bound");
 
             if (null == type) {
                 logger.warn("null plot type");
             }
             if (type.equals("time-series-chart")) {
                 currentPlot = new TimeSeriesChart(title, xLabel, yLabel,
-                                                  majorFormatter);
+                                                  majorFormatter, 
+                                                  yAxisLowerBound);
             } else if (type.equals("stacked-bar-chart")) {
                 currentPlot = new StackedBarChart(title, xLabel, yLabel,
-                                                  majorFormatter);
+                                                  majorFormatter,
+                                                  yAxisLowerBound);
             } else if (type.equals("pie-chart")) {
                 int dl = -1;
 

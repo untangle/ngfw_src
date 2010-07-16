@@ -690,7 +690,7 @@ class Graph:
 class Chart:
     def __init__(self, type=TIME_SERIES_CHART, title=None, xlabel=None,
                  ylabel=None, major_formatter=IDENTITY_FORMATTER,
-                 required_points=[]):
+                 required_points=[], y_axis_lower_bound=None):
         self.__type = type
 
         self.__title = title
@@ -713,6 +713,8 @@ class Chart:
         self.__color_num = 0
 
         self.__required_points = required_points
+
+        self.__y_axis_lower_bound = y_axis_lower_bound
 
         self.__display_limit = None
 
@@ -832,6 +834,8 @@ class Chart:
             element.set('major-formatter', self.__major_formatter.name)
         if self.__display_limit:
             element.set('display-limit', str(self.__display_limit))
+        if self.__y_axis_lower_bound is not None:
+            element.set('y-axis-lower-bound', str(self.__y_axis_lower_bound))
 
         for t, c in self.__colors.iteritems():
             ce = Element('color')

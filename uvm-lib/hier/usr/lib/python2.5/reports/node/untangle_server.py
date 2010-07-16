@@ -416,7 +416,8 @@ class DiskUsage(Graph):
 
         plot = Chart(type=TIME_SERIES_CHART, title=self.title,
                      xlabel=_('Time'), ylabel=_('Disk (GB)'),
-                     major_formatter=TIMESTAMP_FORMATTER)
+                     major_formatter=TIMESTAMP_FORMATTER,
+                     y_axis_lower_bound=0)
 
         plot.add_dataset(dates, diskFree, _('Free Disk'))
 
@@ -475,9 +476,10 @@ class SwapUsage(Graph):
 
         plot = Chart(type=TIME_SERIES_CHART, title=self.title,
                      xlabel=_('Time'), ylabel=_('Swap (MB)'),
-                     major_formatter=TIMESTAMP_FORMATTER)
+                     major_formatter=TIMESTAMP_FORMATTER,
+                     y_axis_lower_bound=0)
 
-        plot.add_dataset(dates, swapFree, _('Swap Used'))
+        plot.add_dataset(dates, swapUsed, _('Swap Used'))
 
         return (lks, plot)
 

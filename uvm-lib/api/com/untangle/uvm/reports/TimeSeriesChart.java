@@ -53,6 +53,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.TextTitle;
@@ -73,16 +74,19 @@ public class TimeSeriesChart extends Plot
 
     private final String xLabel;
     private final String yLabel;
+    private final String yAxisLowerBound;
     //private final String majorFormatter;
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public TimeSeriesChart(String title, String xLabel, String yLabel, String majorFormatter)
+    public TimeSeriesChart(String title, String xLabel, String yLabel,
+                           String majorFormatter, String yAxisLowerBound)
     {
         super(title);
 
         this.xLabel = xLabel;
         this.yLabel = yLabel;
+        this.yAxisLowerBound = yAxisLowerBound;
         //this.majorFormatter = majorFormatter;
     }
 
@@ -266,7 +270,13 @@ public class TimeSeriesChart extends Plot
         for (int i = 0; i < seriesColors.size(); i++) {
             renderer.setSeriesPaint(i, seriesColors.get(i));
         }
-        p.getRangeAxis().setLabelFont(AXIS_FONT);
+        ValueAxis va = p.getRangeAxis();
+        va.setLabelFont(AXIS_FONT);
+        if (this.yAxisLowerBound != null) {
+            va.setLowerBound(Double.parseDouble(this.yAxisLowerBound));
+            va.setUpperBound(va.getUpperBound() * 1.05);
+        }
+
         DateAxis da = (DateAxis)p.getDomainAxis();
         da.setLabelFont(AXIS_FONT);
 

@@ -53,6 +53,7 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.renderer.xy.StackedXYBarRenderer;
@@ -76,16 +77,19 @@ public class StackedBarChart extends Plot
 
     private final String xLabel;
     private final String yLabel;
+    private final String yAxisLowerBound;
     //unused// private final String majorFormatter;
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public StackedBarChart(String title, String xLabel, String yLabel, String majorFormatter)
+    public StackedBarChart(String title, String xLabel, String yLabel,
+                           String majorFormatter, String yAxisLowerBound)
     {
         super(title);
 
         this.xLabel = xLabel;
         this.yLabel = yLabel;
+        this.yAxisLowerBound = yAxisLowerBound;
         //this.majorFormatter = majorFormatter;
     }
 
@@ -267,7 +271,13 @@ public class StackedBarChart extends Plot
             renderer.setSeriesPaint(i, seriesColors.get(i));
         }
 
-        plot.getRangeAxis().setLabelFont(AXIS_FONT);
+        ValueAxis va = plot.getRangeAxis();
+        va.setLabelFont(AXIS_FONT);
+        if (this.yAxisLowerBound != null) {
+            va.setLowerBound(Double.parseDouble(this.yAxisLowerBound));
+            va.setUpperBound(va.getUpperBound() * 1.05);
+        }
+
         DateAxis da = (DateAxis)plot.getDomainAxis();
         da.setLabelFont(AXIS_FONT);
 
