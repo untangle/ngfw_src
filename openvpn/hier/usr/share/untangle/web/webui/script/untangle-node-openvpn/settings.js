@@ -809,7 +809,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name : 'originalName',
                     mapping: 'name'
                 },{
-                    name : 'groupName',
+                    name : 'groupName'
                 },{
                     name : 'address'
                 }],
