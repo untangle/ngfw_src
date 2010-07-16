@@ -86,7 +86,7 @@ class InboxIndexDriver
             BufferedReader reader = new BufferedReader(new InputStreamReader(bIn));
 
             //Read version
-            //int version = readVersion(reader);
+            readVersion(reader);
             //Someday, we'll care about version...
 
             InboxIndexImpl ret = new InboxIndexImpl();
