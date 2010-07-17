@@ -418,7 +418,8 @@ class NetworkUtilPriv extends NetworkUtil
             NetworkSpaceInternal networkSpace = networkSpaceMap.get(( bridge == null ) ? name : bridge );
             
             if ( networkSpace == null ) {
-                logger.warn( "Unable to find a network space for: '" + name + "'" );
+                if (!"tun0".equals(name)) /* don't show warning for tun0 */
+                    logger.warn( "Unable to find a network space for: '" + name + "'" );
                 /* this is not all that legit */
                 networkSpace = parseConfig( name + ";" + NetworkUtil.BOGUS_ADDRESS + "/32" );
             }
