@@ -21,12 +21,11 @@ import getopt
 import logging
 import mx
 import os
-import psycopg
 import sys
 import tempfile
 import shutil
 
-from psycopg import DateFromMx
+from psycopg2.extensions import DateFromMx
 
 def usage():
      print """\
@@ -42,17 +41,19 @@ Options:
   -e | --events-retention     number of days in events schema to keep
   -r | --report-length        number of days to report on
   -l | --locale               locale
+  -s cs | --simulate=cs       run reports of the remote DB specified by the connection string
   -d y-m-d | --date=y-m-d\
 """ % sys.argv[0]
 
 # main
 
 try:
-     opts, args = getopt.getopt(sys.argv[1:], "hncgpmave:r:d:l:t:",
+     opts, args = getopt.getopt(sys.argv[1:], "hncgpmave:r:d:l:t:s:",
                                 ['help', 'no-migration', 'no-cleanup',
                                  'no-data-gen', 'no-mail', 'no-plot-gen',
                                  'verbose', 'attach-csv', 'events-retention',
                                  'report-length', 'date=', 'locale=',
+                                 'simulate='
                                  'trial-report'])
 
 except getopt.GetoptError, err:
@@ -68,10 +69,6 @@ NODE_MODULE_DIR = '%s/reports/node' % REPORTS_PYTHON_DIR
 if (PREFIX != ''):
      sys.path.insert(0, REPORTS_PYTHON_DIR)
 
-import reports.i18n_helper
-import reports.engine
-import reports.mailer
-import reports.sql_helper as sql_helper
 from reports.log import *
 logger = getLogger(__name__)
 
@@ -90,7 +87,7 @@ locale = None
 db_retention = None
 file_retention = None
 trial_report = None
-
+simulate = None
 no_cleanup = False
 
 for opt in opts:
@@ -121,9 +118,20 @@ for opt in opts:
      elif k == '-d' or k == '--date':
           end_date_forced = True
           end_date = mx.DateTime.DateFrom(v)
+     elif k == '-s' or k == '--simulate':
+          simulate = v
      elif k == '-l' or k == '--locale':
           locale = v
 
+import reports.i18n_helper
+import reports.engine
+import reports.mailer
+import reports.sql_helper as sql_helper
+
+if simulate:
+     sql_helper.SCHEMA = 'reports_simulation'
+     sql_helper.CONNECTION_STRING = simulate
+     
 def get_report_lengths(date):
     lengths = []
 
@@ -273,16 +281,17 @@ else:
      logger.info('locale not set')
 
 # if old reports schema detected, drop the schema
-if (sql_helper.table_exists('reports', 'daystoadd')
-    or sql_helper.table_exists('reports', 'webpages')
-    or sql_helper.table_exists('reports', 'emails')):
-     try:
-          sql_helper.run_sql('DROP SCHEMA reports CASCADE')
-     except psycopg.ProgrammingError, e:
-          logger.warn(e, exc_info=True)
+if not simulate:
+     if (sql_helper.table_exists('reports', 'daystoadd')
+         or sql_helper.table_exists('reports', 'webpages')
+         or sql_helper.table_exists('reports', 'emails')):
+          try:
+               sql_helper.run_sql('DROP SCHEMA reports CASCADE')
+          except psycopg2.ProgrammingError, e:
+               logger.warn(e, exc_info=True)
 
 try:
-     sql_helper.run_sql("CREATE SCHEMA reports");
+     sql_helper.run_sql("CREATE SCHEMA %s" % (sql_helper.SCHEMA));
 except Exception:
      pass
 
@@ -365,8 +374,9 @@ except Exception, e:
                      exc_info=True)
 
 if not no_cleanup:
-     events_cutoff = end_date - mx.DateTime.DateTimeDelta(events_retention)
-     reports.engine.events_cleanup(events_cutoff)
+     if not simulate:
+          events_cutoff = end_date - mx.DateTime.DateTimeDelta(events_retention)
+          reports.engine.events_cleanup(events_cutoff)
 
      reports_cutoff = end_date - mx.DateTime.DateTimeDelta(db_retention)
      reports.engine.reports_cleanup(reports_cutoff)     

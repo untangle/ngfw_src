@@ -20,7 +20,7 @@
 import inspect
 import logging
 import mx
-import psycopg
+import psycopg2
 import re
 import string
 import md5
@@ -28,7 +28,7 @@ import sys
 import time
 
 from sets import Set
-from psycopg import DateFromMx
+from psycopg2.extensions import DateFromMx
 
 from reports.log import *
 logger = getLogger(__name__)
@@ -38,6 +38,26 @@ HOURLY_REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 60 * 60)
 
 DEFAULT_TIME_FIELD = 'trunc_time'
 DEFAULT_SLICES = 150
+
+DEFAULT_SCHEMA = 'reports'
+SCHEMA = 'reports'
+
+CONNECTION_STRING = "dbname=uvm user=postgres"
+
+class Cursor(psycopg2.extensions.cursor):
+    def execute(self, sql, args=None):
+        sql = sql.replace('%s.' % (DEFAULT_SCHEMA,), '%s.' % (SCHEMA,))
+        psycopg2.extensions.cursor.execute(self, sql, args)
+
+    def fetchone(self):
+        try:
+            return psycopg2.extensions.cursor.fetchone(self)
+        except:
+            return None
+
+class Connection(psycopg2.extensions.connection):
+    def cursor(self):
+        return psycopg2.extensions.connection.cursor(self, cursor_factory=Cursor)
 
 def print_timing(func):
     def wrapper(*arg):
@@ -68,7 +88,8 @@ def get_connection():
     global __conn
 
     if not __conn:
-        __conn = psycopg.connect("dbname=uvm user=postgres")
+        __conn = psycopg2.connect(CONNECTION_STRING,
+                                  connection_factory=Connection)
 
     try:
         __conn.commit()
@@ -82,7 +103,8 @@ def get_connection():
             __conn.close()
         except:
             pass
-        __conn = psycopg.connect("dbname=uvm user=postgres")
+        __conn = psycopg2.connect(CONNECTION_STRING,
+                                  connection_factory=Connection)
 
     return __conn
 
@@ -100,7 +122,10 @@ def create_index(table, columns):
 def create_table_as_sql(tablename, query, args):
     run_sql("CREATE TABLE %s AS %s" % (tablename, query), args)
 
-def run_sql(sql, args=None, connection=get_connection(), auto_commit=True, force_propagate=False):
+def run_sql(sql, args=None, connection=None, auto_commit=True, force_propagate=False):
+    if not connection:
+        connection = get_connection()
+        
     try:
         curs = connection.cursor()
         if args:
@@ -138,7 +163,7 @@ def add_column(tablename, column, type):
 def drop_partitioned_table(tablename, cutoff_date):
     for t, date in find_partitioned_tables(tablename):
         if date < cutoff_date:
-            drop_table(t, schema='reports')
+            drop_table(t, schema=SCHEMA)
 
 def clear_partitioned_tables(start_date, end_date, tablename=None):
     logger.debug('Forcing removal of existing partitioned...')
@@ -147,13 +172,14 @@ def clear_partitioned_tables(start_date, end_date, tablename=None):
         if date >= start_date and date < end_date:
             drop_table(table, 'reports')
     run_sql("UPDATE reports.table_updates SET last_update = %s",
-            (DateFromMx(start_date),))
+            (DateFromMx(date_convert(start_date)),))
 
 def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
                              clear_tables=False):
     (schema, tablename) = __get_tablename(table_ddl)
-
+    
     if schema:
+        schema = SCHEMA
         full_tablename = "%s.%s" % (schema, tablename)
     else:
         full_tablename = tablename
@@ -167,7 +193,7 @@ def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
         if date >= start_date and date < end_date:
             existing_dates.add(date)
         elif clear_tables:
-            drop_table(t, schema='reports')
+            drop_table(t, schema=SCHEMA)
 
     all_dates = Set(get_date_range(start_date, end_date))
 
@@ -181,7 +207,8 @@ def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
 CREATE TABLE %s
 (CHECK (%s >= %%s AND %s < %%s))
 INHERITS (%s)""" % (tn, timestamp_column, timestamp_column, full_tablename),
-                (DateFromMx(d), DateFromMx(d + mx.DateTime.DateTimeDelta(1))))
+                (DateFromMx(date_convert(d)),
+                 DateFromMx(date_convert(d + mx.DateTime.DateTimeDelta(1)))))
         logger.debug("created partitioned table %s" % (__tablename_for_date(full_tablename, d)))
 
     if clear_tables:
@@ -210,10 +237,13 @@ SELECT last_update FROM reports.table_updates WHERE tablename = %s
     finally:
         conn.commit()
 
-    return rv
+    return date_convert(rv)
 
-def set_update_info(tablename, last_update, connection=get_connection(),
+def set_update_info(tablename, last_update, connection=None,
                     auto_commit=True):
+    if not connection:
+        connection = get_connection()
+    
     logger.debug("Setting update_info for %s to %s" % (tablename, last_update))
     try:
         curs = connection.cursor()
@@ -241,7 +271,7 @@ UPDATE reports.table_updates SET last_update = %s WHERE tablename = %s
             connection.rollback()
         raise e
 
-def drop_table(table, schema=None):
+def drop_table(table, schema=SCHEMA):
     if schema:
         tn = '%s.%s' % (schema, table)
     else:
@@ -252,7 +282,7 @@ def drop_table(table, schema=None):
         curs = conn.cursor()
         curs.execute('DROP TABLE %s' % (tn,))
         logger.debug("dropped table '%s'" % (table,))
-    except psycopg.ProgrammingError:
+    except psycopg2.ProgrammingError:
         logger.debug('cannot drop table: %s' % (table,))
     finally:
         conn.commit()
@@ -302,7 +332,7 @@ def find_partitioned_tables(tablename=None):
         prefix = '%s_' % tablename
         
     tables = []
-    for t in get_tables(schema='reports', prefix=prefix):
+    for t in get_tables(schema=SCHEMA, prefix=prefix):
         m = re.search('%s(\d+)_(\d+)_(\d+)' % prefix, t)
         if m:
             d = mx.DateTime.Date(*map(int, m.groups()))
@@ -452,3 +482,9 @@ def __get_tablename(table_ddl):
       return (string.join(s[0:-1], '.'), s[-1])
     else:
       raise ValueError("Cannot find table in: %s" % table_ddl)
+
+def date_convert(t):
+    try:
+        return mx.DateTime.DateTime(t.year,t.month,t.day,t.hour,t.minute,t.second+1e-6*t.microsecond)
+    except:
+        return mx.DateTime.DateTime(t.year,t.month,t.day,t.hour,t.minute,t.second)    

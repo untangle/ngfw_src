@@ -17,15 +17,14 @@
 import gettext
 import logging
 import mx
-import psycopg
 import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
 
 from mx.DateTime import DateTimeDelta
-from psycopg import DateFromMx
-from psycopg import QuotedString
-from psycopg import TimestampFromMx
+from psycopg2.extensions import DateFromMx
+from psycopg2.extensions import QuotedString
+from psycopg2.extensions import TimestampFromMx
 from reports import Chart
 from reports import ColumnDesc
 from reports import DATE_FORMATTER
@@ -863,8 +862,9 @@ class Lease:
                       or self.end_of_lease < event.end_of_lease))
 
     def values(self):
-        return (self.ip, self.hostname, TimestampFromMx(self.start),
-                TimestampFromMx(self.end_of_lease))
+        return (self.ip, self.hostname,
+                TimestampFromMx(sql_helper.date_convert(self.start)),
+                TimestampFromMx(sql_helper.date_convert(self.end_of_lease)))
 
 class AdministrativeLoginsDetail(DetailSection):
     def __init__(self):

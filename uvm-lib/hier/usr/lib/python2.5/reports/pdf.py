@@ -337,8 +337,11 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
                     if isinstance(i, reports.Highlight):
                         node_base = get_node_base(r.name, date_base,
                                                   report_days=report_days)
+                        try:
+                            hs.append([Paragraph(i.get_string(), STYLESHEET['Smaller']),])
+                        except Exception, e:
+                            logger.error("Exception while getting highlights for %s, not including it: " % (r.name,), exc_info = True)
                         
-                        hs.append([Paragraph(i.get_string(), STYLESHEET['Smaller']),])
     zebra_colors = [HexColor(0xE0E0E0), None]
     style = [ ['ROWBACKGROUNDS', (0, 1), (-1, -1), zebra_colors],
               ['BACKGROUND', (0, 0), (-1, 0), grey],

@@ -22,8 +22,8 @@ import reports.i18n_helper
 import reports.engine
 import reports.sql_helper as sql_helper
 
-from psycopg import DateFromMx
-from psycopg import QuotedString
+from psycopg2.extensions import DateFromMx
+from psycopg2.extensions import QuotedString
 from reports import Chart
 from reports import ColumnDesc
 from reports import DATE_FORMATTER

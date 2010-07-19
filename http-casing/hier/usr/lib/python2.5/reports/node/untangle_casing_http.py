@@ -18,7 +18,7 @@ import reports.engine
 import reports.sql_helper as sql_helper
 import sys
 
-from psycopg import DateFromMx
+from psycopg2.extensions import DateFromMx
 from reports.engine import Column
 from reports.engine import FactTable
 from reports.engine import Node
