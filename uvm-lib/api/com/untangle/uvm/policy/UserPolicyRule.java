@@ -152,8 +152,10 @@ public class UserPolicyRule extends PolicyRule
         Date startTime = null;
         Date endTime = null;
         try {
-            startTime = TIME_FORMATTER.parse(this.startTimeString);
-            endTime = TIME_FORMATTER.parse(this.endTimeString);
+            synchronized (TIME_FORMATTER) {
+                startTime = TIME_FORMATTER.parse(this.startTimeString);
+                endTime = TIME_FORMATTER.parse(this.endTimeString);
+            }
         } catch (java.text.ParseException e) {
             logger.warn("Invalid date in policy rule (" + startTimeString + "," + endTimeString + ")",e);
             startTime = null;
@@ -168,8 +170,10 @@ public class UserPolicyRule extends PolicyRule
              */
             if (startTime == null || endTime == null) {
                 try {
-                    startTime = TIME_FORMATTER.parse("00:00");
-                    endTime = TIME_FORMATTER.parse("23:59");
+                    synchronized (TIME_FORMATTER) {
+                        startTime = TIME_FORMATTER.parse("00:00");
+                        endTime = TIME_FORMATTER.parse("23:59");
+                    }
                 }
                 catch (Exception e) {
                     logger.warn("Invalid date in policy rule (00:00,23:59)",e);
