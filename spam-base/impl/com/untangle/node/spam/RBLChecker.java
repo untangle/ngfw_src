@@ -20,6 +20,7 @@ package com.untangle.node.spam;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -111,7 +112,7 @@ public class RBLChecker {
             }
         }
 
-        RBLClientContext[] cContexts = getClientContexts(); // get contexts
+        Collection<RBLClientContext> cContexts = clientMap.values(); // get contexts
         freeClients(); // destroy checkers
 
         // examine results
@@ -221,19 +222,6 @@ public class RBLChecker {
         }
 
         return clients;
-    }
-
-    private RBLClientContext[] getClientContexts()
-    {
-        Object[] contexts = clientMap.values().toArray();
-        RBLClientContext[] cContexts = new RBLClientContext[contexts.length];
-        int idx = 0;
-        for (Object context : contexts) {
-            cContexts[idx] = (RBLClientContext)context;
-            idx++;
-        }
-
-        return cContexts;
     }
 
     private void freeClients() {
