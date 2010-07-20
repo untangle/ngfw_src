@@ -223,9 +223,17 @@ public class RBLChecker {
         return clients;
     }
 
-    private RBLClientContext[] getClientContexts() 
+    private RBLClientContext[] getClientContexts()
     {
-    	return (RBLClientContext[])clientMap.values().toArray();
+        Object[] contexts = clientMap.values().toArray();
+        RBLClientContext[] cContexts = new RBLClientContext[contexts.length];
+        int idx = 0;
+        for (Object context : contexts) {
+            cContexts[idx] = (RBLClientContext)context;
+            idx++;
+        }
+
+        return cContexts;
     }
 
     private void freeClients() {
