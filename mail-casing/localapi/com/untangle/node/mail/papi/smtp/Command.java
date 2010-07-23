@@ -88,15 +88,15 @@ public class Command
     private final String m_cmdStr;
     private String m_argStr;
 
-    public Command(CommandType type,
-                   String cmdStr,
-                   String argStr) throws ParseException {
+    public Command(CommandType type, String cmdStr, String argStr) throws ParseException
+    {
         m_type = type;
         m_cmdStr = cmdStr;
         m_argStr = argStr;
     }
 
-    public Command(CommandType type) {
+    public Command(CommandType type)
+    {
         m_type = type;
         m_cmdStr = type.toString();
         m_argStr = null;
@@ -105,11 +105,13 @@ public class Command
     /**
      * Get the string of the command (i.e. "HELO", "RCPT").
      */
-    public String getCmdString() {
+    public String getCmdString()
+    {
         return m_cmdStr;
     }
 
-    protected void setArgStr(String argStr) {
+    protected void setArgStr(String argStr)
+    {
         m_argStr = argStr;
     }
 
@@ -119,7 +121,8 @@ public class Command
      * in "MAIL FROM:<>" "FROM:<>" is the argument. This may
      * be null.
      */
-    public String getArgString() {
+    public String getArgString()
+    {
         return m_argStr;
     }
 
@@ -127,7 +130,8 @@ public class Command
      * Get the type of the command.  Be warned -
      * the type may be "UNKNOWN"
      */
-    public CommandType getType() {
+    public CommandType getType()
+    {
         return m_type;
     }
 
@@ -137,7 +141,8 @@ public class Command
      * This is done by appending the type with
      * the results of {@link #getArgString getArgString()}.
      */
-    public ByteBuffer getBytes() {
+    public ByteBuffer getBytes()
+    {
         //Do a bit of fixup on the string
         String cmdStr = m_type.toString();
         if(getType() == CommandType.UNKNOWN) {
@@ -145,24 +150,30 @@ public class Command
         }
 
         String argStr = getArgString();
-
-        ByteBuffer buf = ByteBuffer.allocate(
-                                             cmdStr.length()/*always 4?*/ +
-                                             (argStr == null?(0):(argStr.length() + 1)) +
-                                             3);
-
-        buf.put(cmdStr.getBytes());
-
-        if(argStr != null) {
+        boolean arg = false;
+        if (argStr != null) {
             argStr = argStr.trim();
-            if(!"".equals(argStr)) {
-                buf.put((byte)SP);
-                buf.put(argStr.getBytes());
-            }
+            arg = true;
+        }
+        else {
+            argStr = "";
+            arg = false;
+        }
+        
+        byte[] cmdBytes = cmdStr.getBytes();
+        byte[] argBytes = argStr.getBytes();
+        
+        int size = cmdBytes.length + (arg ? argBytes.length + 1 : 0 ) + 3;
+        ByteBuffer buf = ByteBuffer.allocate(size);
+
+        buf.put(cmdBytes);
+        if(arg) {
+            buf.put((byte)SP);
+            buf.put(argBytes);
         }
         buf.put((byte)CR);
         buf.put((byte)LF);
-
+        
         buf.flip();
 
         return buf;
@@ -171,13 +182,15 @@ public class Command
     /**
      * For debug logging
      */
-    public String toDebugString() {
+    public String toDebugString()
+    {
         ByteBuffer buf = getBytes();
         buf.limit(buf.limit() - 2);//Remove CRLF for debugging
         return bbToString(buf);
     }
 
-    public String toString() {
+    public String toString()
+    {
         return toDebugString();
     }
 
@@ -185,8 +198,8 @@ public class Command
      * Converts the given String to a CommandType.  Note that
      * the type may come back as "UNKNOWN".
      */
-    public static CommandType stringToCommandType(String cmdStr) {
-
+    public static CommandType stringToCommandType(String cmdStr)
+    {
         //Commands, aligned with their enum type.
 
         if(cmdStr.equalsIgnoreCase("HELO")) {
