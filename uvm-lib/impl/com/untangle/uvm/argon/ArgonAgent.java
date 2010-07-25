@@ -34,7 +34,8 @@ package com.untangle.uvm.argon;
  * @author <a href="mailto:jdi@untangle.com"></a>
  * @version 1.0
  */
-public interface ArgonAgent {
+public interface ArgonAgent
+{
     // States.  Easy for now, just live and destroyed/disconnected/dead.
     public static final int LIVE_ARGON = 1;
     public static final int DEAD_ARGON = 0;
