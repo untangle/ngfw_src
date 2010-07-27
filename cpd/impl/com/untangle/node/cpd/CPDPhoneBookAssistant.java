@@ -132,7 +132,9 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
 
         newCacheEntry.expirationDate = new Date(System.currentTimeMillis() + (this.cpd.getCPDSettings().getBaseSettings().getTimeout()*1000));
         newCacheEntry.username = username;
-        cache.put(addr,newCacheEntry);
+        synchronized(cache) {
+            cache.put(addr,newCacheEntry);
+        }
         logger.debug( "Add    Cache Entry: (IP " + addr + ") (Username " + username + ")");
 
         LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
@@ -149,7 +151,10 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
     public void removeCache(InetAddress addr)
     {
         logger.debug( "Remove Cache Entry: (IP " + addr + ")");
-        Object k = cache.remove(addr);
+        Object k = null;
+        synchronized(cache) {
+            k = cache.remove(addr);
+        }
         if (k == null) {
             logger.debug( "Failed Remove Cache Entry: (IP " + addr + ") - Missing key");
         }
@@ -249,29 +254,31 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
                                     cacheEntry.expirationDate = new Date(now.getTime() + (cpd.getCPDSettings().getBaseSettings().getTimeout()*1000));
                                 }
                             }
+                            
+                            synchronized(cache) {
+                                Set<InetAddress> inets = cache.keySet();
 
-                            Set<InetAddress> inets = cache.keySet();
-
-                            /**
-                             * Remove expired entries
-                             * Also remove entries far in future (this indicateds clock shift)
-                             */
-                            for ( InetAddress inet : inets ) {
-                                MapValue value = cache.get(inet);
                                 /**
-                                 * expiration time has lapsed
+                                 * Remove expired entries
+                                 * Also remove entries far in future (this indicateds clock shift)
                                  */
-                                if (value.expirationDate.before(now)) {
-                                    removeCache(inet);
-                                }
-                                /**
-                                 * too far in future - oldest entries should expire in DATABASE_CACHE_TIME
-                                 */
-                                if (value.expirationDate.after(new Date(now.getTime() + (cpd.getCPDSettings().getBaseSettings().getTimeout()*1000)*10))) {
-                                    logger.warn("cache entry expires too far in the future - removing");
-                                    removeCache(inet);
-                                }
+                                for ( InetAddress inet : inets ) {
+                                    MapValue value = cache.get(inet);
+                                    /**
+                                     * expiration time has lapsed
+                                     */
+                                    if (value.expirationDate.before(now)) {
+                                        removeCache(inet);
+                                    }
+                                    /**
+                                     * too far in future - oldest entries should expire in DATABASE_CACHE_TIME
+                                     */
+                                    if (value.expirationDate.after(new Date(now.getTime() + (cpd.getCPDSettings().getBaseSettings().getTimeout()*1000)*10))) {
+                                        logger.warn("cache entry expires too far in the future - removing");
+                                        removeCache(inet);
+                                    }
 
+                                }
                             }
                         }
 
