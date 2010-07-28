@@ -138,7 +138,7 @@ public class ProxyServlet extends HttpServlet
             copyStream(is, os);
 
         } catch (UnknownHostException exn) {
-            logger.warn("unknown host", exn);
+            logger.warn("Unknown host (method: " + method +")", exn);
             try {
                 LocalUvmContext uvm = LocalUvmContextFactory.context();
                 Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
@@ -147,7 +147,7 @@ public class ProxyServlet extends HttpServlet
                 logger.warn("could not send error page", e);
             }
         } catch (IOException exn) {
-            logger.warn("unknown host", exn);
+            logger.warn("IO Exception", exn);
             try {
                 LocalUvmContext uvm = LocalUvmContextFactory.context();
                 Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
