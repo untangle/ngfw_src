@@ -36,7 +36,8 @@ import com.untangle.uvm.vnet.TCPNewSessionRequest;
  *
  * @author Kai Blankenhorn &lt;<a href="mailto:pub01@bitfolge.de">pub01@bitfolge.de</a>&gt;
  */
-public class RBLChecker {
+public class RBLChecker
+{
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final int MSECS_PER_SEC = 1000;
@@ -49,7 +50,8 @@ public class RBLChecker {
     private List<SpamRBL> spamRBLList;
     private final SpamNodeImpl m_spamImpl;
 
-    public RBLChecker(List<SpamRBL> spamRBLList,SpamNodeImpl m_spamImpl) {
+    public RBLChecker(List<SpamRBL> spamRBLList,SpamNodeImpl m_spamImpl)
+    {
         this.spamRBLList = spamRBLList;
         this.m_spamImpl = m_spamImpl;
     }
@@ -85,7 +87,8 @@ public class RBLChecker {
       127.0.0.9 Open proxy servers
     */
 
-    public boolean check(TCPNewSessionRequest tsr, long timeoutSec) {
+    public boolean check(TCPNewSessionRequest tsr, long timeoutSec)
+    {
         String ipAddr = tsr.clientAddr().getHostAddress();
         String invertedIPAddr = invertIPAddress(ipAddr);
 
@@ -113,7 +116,8 @@ public class RBLChecker {
         }
 
         Collection<RBLClientContext> cContexts = clientMap.values(); // get contexts
-        freeClients(); // destroy checkers
+
+        logger.debug("DNSBL: results_size:" + cContexts.size());
 
         // examine results
         // - if any confirmation is found, log it and then report it
@@ -122,19 +126,24 @@ public class RBLChecker {
         Boolean result;
         for (RBLClientContext cContext : cContexts) {
             result = cContext.getResult();
-            if (null == result)
+            if (null == result) {
+                logger.debug("DNSBL: null result");
                 continue; // assume not blacklisted
+            }
 
-            if (true == result.equals(Boolean.TRUE)) {
+            if (result.equals(Boolean.TRUE)) {
+                logger.debug("DNSBL: true result");
                 isBlacklisted = logRBLEvent(cContext, tsr, ipAddr); // log/done
                 break;
             }
         }
 
+        freeClients(); // destroy checkers
         return isBlacklisted; // report
     }
 
-    private boolean logRBLEvent(RBLClientContext cContext, TCPNewSessionRequest tsr, String ipAddr) {
+    private boolean logRBLEvent(RBLClientContext cContext, TCPNewSessionRequest tsr, String ipAddr)
+    {
         boolean isBlacklisted = true;
 
         // we have a confirmed hit
@@ -224,7 +233,8 @@ public class RBLChecker {
         return clients;
     }
 
-    private void freeClients() {
+    private void freeClients()
+    {
         clientMap.clear();
         return;
     }
