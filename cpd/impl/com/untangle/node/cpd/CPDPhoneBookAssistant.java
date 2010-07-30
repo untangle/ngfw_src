@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -48,6 +49,8 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
     private boolean registered = false;
 
     private CPDImpl cpd;
+    
+    private List<HostDatabaseEntry> localStatus = new LinkedList<HostDatabaseEntry>();    
     
     /* -------------- Constructors -------------- */
     public CPDPhoneBookAssistant(CPDImpl cpd)
@@ -290,5 +293,23 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
 
         }
     }
+   
+    @SuppressWarnings("unchecked") /* for cast of Query result */
+    public List<HostDatabaseEntry> getCaptiveStatus()
+    {
+        if (this.cpd.getRunState() !=  NodeState.RUNNING) return(null);
 
+            TransactionWork<Void> tw = new TransactionWork<Void>()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("from HostDatabaseEntry");
+                    localStatus = q.list();
+                    return true;
+                }
+            };
+    
+        this.cpd.getNodeContext().runTransaction(tw);
+        return(localStatus);
+    }
 }

@@ -3,13 +3,16 @@ if (!Ung.hasResource["Ung.CPD"]) {
     Ung.NodeWin.registerClassName("untangle-node-cpd", "Ung.CPD");
 
     Ung.CPD = Ext.extend(Ung.NodeWin, {
+        panelCaptiveStatus : null,
+        gridCaptiveStatus : null,
+
         panelCaptiveHosts: null,
         gridCaptureRules : null,
-        
+
         panelPassedHosts : null,
         panelUserAuthentication : null,
         panelCaptivePage : null,
-        
+
         gridLoginEventLog : null,
         gridBlockEventLog : null,
         pageParameters : null,
@@ -33,8 +36,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 this.pageParameters = {};
             }
             this.initialPageParameters = Ung.Util.clone(this.pageParameters);
-            
+
             // builds the tabs
+            this.buildCaptiveStatus();
             this.buildCaptiveHosts();
             this.buildPassedHosts();
             this.buildCaptivePage();
@@ -43,11 +47,141 @@ if (!Ung.hasResource["Ung.CPD"]) {
             this.buildBlockEventLog();
 
             // builds the tab panel with the tabs
-            this.buildTabPanel([ this.panelCaptiveHosts, this.panelPassedHosts, this.panelCaptivePage, 
+            this.buildTabPanel([ this.panelCaptiveStatus, this.panelCaptiveHosts, this.panelPassedHosts, this.panelCaptivePage,
                                  this.panelUserAuthentication, this.gridLoginEventLog, this.gridBlockEventLog ]);
 
             Ung.CPD.superclass.initComponent.call(this);
         },
+
+        buildCaptiveStatus : function() {
+
+            this.buildGridCaptiveStatus();
+
+            this.panelCaptiveStatus = new Ext.Panel({
+                name : 'Status',
+                parentId : this.getId(),
+                title : this.i18n._('Status'),
+                layout : "anchor",
+                defaults: {
+                        anchor: "98%"
+                },
+                cls: 'ung-panel',
+                autoScroll : true,
+                items : [{
+                    title : this.i18n._('Status'),
+                    name : 'Status',
+                    xtype : 'fieldset',
+                    autoHeight : true,
+                    items: [{
+                        html : String.format(this.i18n._('Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.'),'<b>','</b>'),
+                        cls: 'description',
+                        border : false}
+                    ]
+                 },this.gridCaptiveStatus]
+            })
+        },
+
+        buildGridCaptiveStatus : function()
+        {
+            // this function will logout an active user
+            userLogout = function(record) {
+                this.getRpcNode().logout( record.data.ipv4Address );
+                this.gridCaptiveStatus.store.reload();
+            }.createDelegate( this );
+
+            // logout is a button column
+            var logoutColumn = new Ext.grid.ButtonColumn({
+                width : 80,
+                sortable : false,
+                header : this.i18n._("Control"),
+                dataIndex : null,
+                handle : userLogout,
+                renderer : function(value, metadata, record) {
+                    var out= '';
+                    if(record.data.id>=0) {
+                        out = '<div class="ung-button button-column" style="text-align:center;" >' + this.i18n._("Logout") + '</div>';
+                    }
+                    return out;
+                }.createDelegate( this )
+            });
+
+            this.gridCaptiveStatus = new Ung.EditorGrid({
+                name : "gridCaptiveStatus",
+                settingsCmp : this,
+                height : 500,
+                parentId : this.getId(),
+                hasAdd : false,
+                configAdd : null,
+                hasEdit : false,
+                configEdit : null,
+                hasDelete : false,
+                configDelete : null,
+                columnsDefaultSortable : true,
+                title : this.i18n._("Active Sessions"),
+                qtip : this.i18n._("The Active Sessions list shows authenticated users."),
+                paginated : false,
+                bbar : new Ext.Toolbar({
+                    items : [
+                        '-',
+                        {
+                            xtype : 'tbbutton',
+                            id: "refresh_"+this.getId(),
+                            text : i18n._('Refresh'),
+                            name : "Refresh",
+                            tooltip : i18n._('Refresh'),
+                            iconCls : 'icon-refresh',
+                            handler : function() {
+                                this.gridCaptiveStatus.store.reload();
+                            }.createDelegate(this)
+                        }
+                    ]
+                }),
+                recordJavaClass : "com.untangle.node.cpd.HostDatabaseEntry",
+                proxyRpcFn : this.getRpcNode().getCaptiveStatus,
+                plugins : [logoutColumn],
+                fields : [{
+                    name : "ipv4Address"
+                },{
+                    name : "username"
+                },{
+                    name : "lastSession"
+                },{
+                    name : "sessionStart"
+                },{
+                    name : "expirationDate"
+                },{
+                    name : "hardwareAddress"
+                },{
+                    name : "id"
+                }],
+                columns : [{
+                    id : "ipv4Address",
+                    header : this.i18n._("IP Address"),
+                    width : 150
+                },{
+                    id : "username",
+                    header : this.i18n._("User Name"),
+                    width : 200
+                },{
+                    id : "lastSession",
+                    header : this.i18n._("Last Session"),
+                    width : 180,
+                    renderer : function(value) { return i18n.timestampFormat(value); }
+                },{
+                    id : "sessionStart",
+                    header : this.i18n._("Current Session"),
+                    width : 180,
+                    renderer : function(value) { return i18n.timestampFormat(value); }
+                },{
+                    id : "expirationDate",
+                    header : this.i18n._("Expiration"),
+                    width : 180,
+                    renderer : function(value) { return i18n.timestampFormat(value); }
+                },logoutColumn]
+            })
+
+        },
+
         // Rules Panel
         buildCaptiveHosts : function()
         {
@@ -83,10 +217,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         }
                     }]
                 }]
-                         
+
             });
         },
-        
+
         buildGridCaptureRules : function()
         {
             // enable is a check column
@@ -95,14 +229,14 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 dataIndex : "live",
                 fixed : true
             });
-            
+
             // Capture  a check column
             var captureColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("Capture"),
                 dataIndex : "capture",
                 fixed : true
             });
-            
+
             this.gridCaptureRules = new Ung.EditorGrid({
                 name : "gridCaptureRules",
                 settingsCmp : this,
@@ -174,7 +308,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             var rowEditor = this.buildGridCaptureRulesRowEditor();
             this.gridCaptureRules.rowEditor = rowEditor;
         },
-    
+
         buildGridCaptureRulesRowEditor : function()
         {
             return new Ung.RowEditorWindow({
@@ -307,16 +441,16 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         dataIndex : "sat",
                         boxLabel : this.i18n._("Saturday"),
                         hideLabel : true
-                    }]                    
+                    }]
                 }],
-                                
+
                 populate : function(record, addMode) {
                     var days = record.get("days").split( "," );
                     for ( var c = 0 ; c < Ung.CPD.daysOfWeek.length ; c++ ) {
                         var day = Ung.CPD.daysOfWeek[c];
                         record.set( day, days.indexOf( day ) >= 0 );
                     }
-                    
+
                     Ung.RowEditorWindow.prototype.populateTree.call(this, record, addMode);
                 },
                 isFormValid : function() {
@@ -324,7 +458,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 },
                 updateAction : function() {
                     Ung.RowEditorWindow.prototype.updateActionTree.call(this);
-                    
+
                     if ( this.record !== null ) {
                         /* Create an array of the days, and then convert it to a string */
                         var days = [];
@@ -335,7 +469,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             }
                             this.record.set( day, null );
                         }
-                        
+
                         this.record.set( "days", days.join( "," ));
                     }
                 },
@@ -347,20 +481,20 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
         buildPassedHosts : function()
         {
-            this.gridPassedClients = 
-                this.buildGridPassedList( "gridPassedClients", 
-                                          this.i18n._( "Pass Listed Client Addresses"), 
-                                          "com.untangle.node.cpd.PassedClient", 
+            this.gridPassedClients =
+                this.buildGridPassedList( "gridPassedClients",
+                                          this.i18n._( "Pass Listed Client Addresses"),
+                                          "com.untangle.node.cpd.PassedClient",
                                           this.getRpcNode().getPassedClients,
                                           "Pass Listed Client Addresses is a list of Client IPs that are not subjected to the Captive Portal.");
 
-            this.gridPassedServers = 
-                this.buildGridPassedList( "gridPassedServers", 
-                                          this.i18n._( "Pass Listed Server Addresses"), 
-                                          "com.untangle.node.cpd.PassedServer", 
+            this.gridPassedServers =
+                this.buildGridPassedList( "gridPassedServers",
+                                          this.i18n._( "Pass Listed Server Addresses"),
+                                          "com.untangle.node.cpd.PassedServer",
                                           this.getRpcNode().getPassedServers,
                                           "Pass Listed Server Addresses is a list of Server IPs that unauthenticated clients can access without authentication.");
-            
+
             this.panelPassedHosts = new Ext.Panel({
                 name : "panelPassedHosts",
                 helpSource : "passed_hosts",
@@ -382,7 +516,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 dataIndex : "live",
                 fixed : true
             });
-            
+
             return new Ung.EditorGrid({
                 name : name,
                 tooltip  : tooltip,
@@ -600,7 +734,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             var values = [ "BASIC_LOGIN", "BASIC_MESSAGE", "CUSTOM" ];
             for ( var c = 0 ; c < values.length ; c++ ) {
                 var item = values[c];
-                Ext.each( this.panelCaptivePage.find( "pageType", item ), function( component ) { 
+                Ext.each( this.panelCaptivePage.find( "pageType", item ), function( component ) {
                     if ( component.setContainerVisible ) {
                         component.setContainerVisible( currentValue == item );
                     } else {
@@ -610,8 +744,8 @@ if (!Ung.hasResource["Ung.CPD"]) {
             }
         },
         setCaptivePageDefaults : function (){
-            this.panelCaptivePage.find( "name", "pageType" )[0].setValue(this.getBaseSettings().pageType);  
-            this.captivePageHideComponents(this.getBaseSettings().pageType );                          
+            this.panelCaptivePage.find( "name", "pageType" )[0].setValue(this.getBaseSettings().pageType);
+            this.captivePageHideComponents(this.getBaseSettings().pageType );
         },
 
         buildCaptivePage : function()
@@ -623,12 +757,12 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     this.captivePageHideComponents( elem.inputValue );
                 }
             }.createDelegate(this);
-            
+
             var onRenderRadioButton = function( elem )
             {
                 this.panelCaptivePage.find( "name", "pageType" )[0].setValue(this.getBaseSettings().pageType);
             }.createDelegate(this);
-            
+
             this.panelCaptivePage = new Ext.Panel({
                 name : "panelCaptivePage",
                 helpSource : "captive_page",
@@ -863,13 +997,13 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         handler : function()
                         {
                             if ( this.node.state != "on" ) {
-                                Ext.MessageBox.alert(this.i18n._("Captive Portal is Disabled"), 
+                                Ext.MessageBox.alert(this.i18n._("Captive Portal is Disabled"),
                                                      this.i18n._("You must turn on the Captive Portal to preview the Captive Page." ));
                                 return;
                             }
 
                             if ( this.isDirty()) {
-                                Ext.MessageBox.alert(this.i18n._("Unsaved Changes"), 
+                                Ext.MessageBox.alert(this.i18n._("Unsaved Changes"),
                                                      this.i18n._("You must save your settings before previewing the page." ));
                                 return;
                             }
@@ -940,7 +1074,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
         uploadCustomFileFailure : function()
         {
-            Ext.MessageBox.alert(this.i18n._("Failed"), 
+            Ext.MessageBox.alert(this.i18n._("Failed"),
                                  this.i18n._("There was an error uploading the Custom Captive Portal Page." ));
         },
 
@@ -965,7 +1099,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 },{
                     name : "event"
                 }],
-                
+
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : 130,
@@ -998,7 +1132,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             return this.i18n._( "access denied" );
                         case "UPDATE":
                             return this.i18n._( "re-authenticated" );
-                            
+
                         case "LOGOUT":
                             return this.i18n._( "logout" );
                         }
@@ -1018,7 +1152,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         case "ACTIVE_DIRECTORY":
                             return this.i18n._( "Active Directory" );
                         case "RADIUS":
-                            return this.i18n._( "RADIUS" );                            
+                            return this.i18n._( "RADIUS" );
                         }
 
                         return "";
@@ -1058,7 +1192,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         return record.serverAddress + ":" + record.serverPort;
                     }
                 }],
-                
+
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : 130,
@@ -1096,7 +1230,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             });
         },
 
-        //apply function 
+        //apply function
         applyAction : function()
         {
             this.commitSettings(this.reloadSettings.createDelegate(this));
@@ -1132,7 +1266,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 this.pageParameters = {};
             }
             this.initialPageParameters = Ung.Util.clone(this.pageParameters);
-            
+
             /* Only reload the data for the grids if they have already been rendered. */
             if ( this.gridCaptureRules.rendered ) {
                 this.gridCaptureRules.reloadGrid();
@@ -1151,17 +1285,17 @@ if (!Ung.hasResource["Ung.CPD"]) {
             /* Iterate all of the fields checking if they are valid */
             if ( !this.find( "name", "idleTimeout" )[0].isValid() ||
                  !this.find( "name", "timeout" )[0].isValid()) {
-                Ext.MessageBox.alert(this.i18n._("Warning"), 
+                Ext.MessageBox.alert(this.i18n._("Warning"),
                                      this.i18n._("Please correct any highlighted fields."),
                                      function () {
                                          this.tabs.activate(this.panelUserAuthentication);
                                      }.createDelegate(this));
                 return false;
             }
-            
+
             if ( this.getBaseSettings().pageType == "BASIC_MESSAGE" ) {
                 if (this.getBaseSettings().authenticationType != "NONE" ) {
-                    Ext.MessageBox.alert(this.i18n._("Warning"), 
+                    Ext.MessageBox.alert(this.i18n._("Warning"),
                                          this.i18n._("When using 'Basic Message', 'Authentication' must be set to 'None'."),
                                          function () {
                                              this.tabs.activate(this.panelUserAuthentication);
@@ -1170,7 +1304,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 }
 
                 if ( !this.getBaseSettings().concurrentLoginsEnabled ) {
-                    Ext.MessageBox.alert(this.i18n._("Warning"), 
+                    Ext.MessageBox.alert(this.i18n._("Warning"),
                                          this.i18n._("When using 'Basic Message', 'Allow Concurrent Logins' must be enabled."),
                                          function () {
                                              this.tabs.activate(this.panelUserAuthentication);
@@ -1181,7 +1315,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
             if ( this.getBaseSettings().pageType == "BASIC_LOGIN" ) {
                 if (this.getBaseSettings().authenticationType == "NONE" ) {
-                    Ext.MessageBox.alert(this.i18n._("Warning"), 
+                    Ext.MessageBox.alert(this.i18n._("Warning"),
                                          this.i18n._("When using 'Basic Login', 'Authentication' cannot be set to 'None'."),
                                          function () {
                                              this.tabs.activate(this.panelUserAuthentication);
@@ -1201,24 +1335,24 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 this.getBaseSettings().pageParameters = Ext.util.JSON.encode( this.pageParameters );
 
                 if ( this.gridCaptureRules.rendered ) {
-                    captureRules = { 
-                        javaClass : "java.util.ArrayList", 
+                    captureRules = {
+                        javaClass : "java.util.ArrayList",
                         list : this.gridCaptureRules.getFullSaveList()
                     };
                 }
                 if ( this.gridPassedClients.rendered ) {
                     passedClients = {
-                        javaClass : "java.util.ArrayList", 
+                        javaClass : "java.util.ArrayList",
                         list : this.gridPassedClients.getFullSaveList()
                     };
                 }
                 if ( this.gridPassedServers.rendered ) {
                     passedServers = {
-                        javaClass : "java.util.ArrayList", 
+                        javaClass : "java.util.ArrayList",
                         list : this.gridPassedServers.getFullSaveList()
                     };
                 }
-                
+
                 var wrapper = function( result, exception )
                 {
                     if(Ung.Util.handleException(exception)) {
@@ -1226,14 +1360,14 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     }
                     callback();
                 }.createDelegate(this);
-                this.getRpcNode().setAll(wrapper, this.getBaseSettings(), 
+                this.getRpcNode().setAll(wrapper, this.getBaseSettings(),
                                          captureRules, passedClients, passedServers );
             }
         },
         isDirty : function() {
             return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings)
                 || !Ung.Util.equals(this.pageParameters, this.initialPageParameters )
-                || this.gridCaptureRules.isDirty() 
+                || this.gridCaptureRules.isDirty()
                 || this.gridPassedClients.isDirty()
                 || this.gridPassedServers.isDirty();
         },
@@ -1242,7 +1376,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
         {
             Ext.MessageBox.wait(i18n._("Loading Config..."),
                                 i18n._("Please wait"));
-            
+
             Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.LocalDirectory",Ung.Util.getScriptSrc("script/config/localDirectory.js"), function() {
 
                 main.localDirectoryWin=new Ung.LocalDirectory({

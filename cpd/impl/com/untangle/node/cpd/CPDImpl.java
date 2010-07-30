@@ -19,6 +19,7 @@ package com.untangle.node.cpd;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -198,6 +199,14 @@ public class CPDImpl extends AbstractNode implements CPD {
         getNodeContext().runTransaction(tw);
         
         reconfigure();
+    }
+
+    @Override
+    public List<HostDatabaseEntry> getCaptiveStatus()
+    {
+        List<HostDatabaseEntry> captiveStatus = new LinkedList<HostDatabaseEntry>();
+        captiveStatus = assistant.getCaptiveStatus();
+        return captiveStatus;
     }
 
     @Override

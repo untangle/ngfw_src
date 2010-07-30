@@ -37,6 +37,8 @@ public interface CPD extends Node
     public CPDBaseSettings getBaseSettings();
     public void setBaseSettings(CPDBaseSettings baseSettings) throws NodeException;
     
+    public List<HostDatabaseEntry> getCaptiveStatus();
+
     public List<CaptureRule> getCaptureRules();
     public void setCaptureRules( List<CaptureRule> captureRules ) throws NodeException;
     
