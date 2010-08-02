@@ -77,8 +77,12 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         cls: 'description',
                         border : false}
                     ]
-                 },this.gridCaptiveStatus]
+                 }]
             })
+
+            if ( this.node.state == "on" ) {
+                this.panelCaptiveStatus.add( this.gridCaptiveStatus );
+            }
         },
 
         buildGridCaptiveStatus : function()
