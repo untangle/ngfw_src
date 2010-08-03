@@ -687,7 +687,7 @@ class BandwidthUsage(Graph):
 
             ks = KeyStatistic(_('Avg Data Rate'),
                               sum(throughput)/len(throughput),
-                              N_('Kb/s'))
+                              N_('kB/s'))
             lks.append(ks)
             ks = KeyStatistic(_('Max Data Rate'), max(throughput), N_('kB/s'))
             lks.append(ks)
@@ -699,7 +699,7 @@ class BandwidthUsage(Graph):
             conn.commit()
 
         plot = Chart(type=TIME_SERIES_CHART, title=self.title,
-                     xlabel=_('Date'), ylabel=_('Throughput (KB/s)'),
+                     xlabel=_('Date'), ylabel=_('Throughput (kB/s)'),
                      major_formatter=TIMESTAMP_FORMATTER)
 
         plot.add_dataset(dates, throughput, _('Usage'))
