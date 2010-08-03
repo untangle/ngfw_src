@@ -285,17 +285,17 @@ class DailyWebUsage(Graph):
             if not violations:
                 violations = [0,]
 
-            ks = KeyStatistic(_('Avg Hits'), sum(hits) / len(rp), _('hits')+'/'+_(unit))
+            ks = KeyStatistic(_('Avg Hits'), sum(hits) / len(rp), _('Hits')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Hits'), max(hits), _('hits')+'/'+_(unit))
+            ks = KeyStatistic(_('Max Hits'), max(hits), _('Hits')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg Violations'), sum(violations) / len(rp), _('violations')+'/'+_(unit))
+            ks = KeyStatistic(_('Avg Violations'), sum(violations) / len(rp), _('Violations')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Violations'), max(violations), _('violations')+'/'+_(unit))
+            ks = KeyStatistic(_('Max Violations'), max(violations), _('Violations')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg Blocked Violations'), sum(blocks) / len(rp), _('blocked violations')+'/'+_(unit))
+            ks = KeyStatistic(_('Avg Blocked Violations'), sum(blocks) / len(rp), _('Blocked Violations')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Blocked Violations'), max(blocks), _('blocked violations')+'/'+_(unit))
+            ks = KeyStatistic(_('Max Blocked Violations'), max(blocks), _('Blocked Violations')+'/'+_(unit))
             lks.append(ks)
 
         finally:
@@ -362,11 +362,11 @@ WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,
             blocks = r[2]
             violations = r[1] - blocks
             
-            ks = KeyStatistic(_('Total Clean Hits'), hits-violations-blocks, 'hits')
+            ks = KeyStatistic(_('Total Clean Hits'), hits-violations-blocks, 'Hits')
             lks.append(ks)
-            ks = KeyStatistic(_('Total Violations'), violations, 'violations')
+            ks = KeyStatistic(_('Total Violations'), violations, 'Violations')
             lks.append(ks)
-            ks = KeyStatistic(_('Total Blocked Violations'), blocks, 'blocks')
+            ks = KeyStatistic(_('Total Blocked Violations'), blocks, 'Blocks')
             lks.append(ks)
         finally:
             conn.commit()

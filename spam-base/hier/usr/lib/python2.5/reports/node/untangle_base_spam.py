@@ -273,7 +273,7 @@ AND addr_kind = 'T'""" % (self.__short_name,)
             spam = r[1]
             ham = total - spam
 
-            ks = KeyStatistic(_('Total'), total, _('messages'))
+            ks = KeyStatistic(_('Total'), total, _('Messages'))
             lks.append(ks)
             ks = KeyStatistic(self.__spam_label, spam, _('Messages'))
             lks.append(ks)
@@ -339,7 +339,7 @@ AND addr_kind = 'T'""" % (self.__short_name,)
             spam_rate = r[1]
             ham_rate = email_rate - spam_rate
 
-            ks = KeyStatistic(_('Mail Rate'), email_rate, _('messages/hour'))
+            ks = KeyStatistic(_('Mail Rate'), email_rate, _('Messages/hour'))
             lks.append(ks)
             ks = KeyStatistic(_('%s Rate') % self.__spam_label, spam_rate,
                               _('Messages/hour'))
@@ -457,9 +457,9 @@ class DailySpamRate(Graph):
                 spams = [0,]
                 hams = [0,]
 
-            ks = KeyStatistic(_('Avg Mail Rate'), sum(totals)/len(rp), _('messages')+'/'+_(unit))
+            ks = KeyStatistic(_('Avg Mail Rate'), sum(totals)/len(rp), _('Messages')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Mail Rate'), max(totals), _('messages')+'/'+_(unit))
+            ks = KeyStatistic(_('Max Mail Rate'), max(totals), _('Messages')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Avg %s Rate') % self.__spam_label, sum(spams)/len(rp),
                               _('Messages')+'/'+_(unit))
