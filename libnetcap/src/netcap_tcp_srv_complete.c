@@ -67,8 +67,7 @@ static int _srv_wait_complete( int ep_fd, netcap_session_t* netcap_sess, struct 
 static int _icmp_mailbox_init    ( netcap_session_t* netcap_sess );
 static int _icmp_mailbox_destroy ( netcap_session_t* netcap_sess );
 
-int  _netcap_tcp_callback_srv_complete ( netcap_session_t* netcap_sess, netcap_callback_action_t action, 
-                                         netcap_callback_flag_t flags )
+int  _netcap_tcp_callback_srv_complete ( netcap_session_t* netcap_sess, netcap_callback_action_t action, netcap_callback_flag_t flags )
 {
     int ret = 0;
 

@@ -117,8 +117,6 @@ public class RBLChecker
 
         Collection<RBLClientContext> cContexts = clientMap.values(); // get contexts
 
-        logger.debug("DNSBL: results_size:" + cContexts.size());
-
         // examine results
         // - if any confirmation is found, log it and then report it
         boolean isBlacklisted = false;
@@ -127,12 +125,11 @@ public class RBLChecker
         for (RBLClientContext cContext : cContexts) {
             result = cContext.getResult();
             if (null == result) {
-                logger.debug("DNSBL: null result");
                 continue; // assume not blacklisted
             }
 
             if (result.equals(Boolean.TRUE)) {
-                logger.debug("DNSBL: true result");
+                logger.debug("DNSBL: " + ipAddr + " is blacklisted.");
                 isBlacklisted = logRBLEvent(cContext, tsr, ipAddr); // log/done
                 break;
             }
