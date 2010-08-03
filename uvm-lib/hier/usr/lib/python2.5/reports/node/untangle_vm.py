@@ -603,6 +603,15 @@ ON min_idx = position""")
 
 class VmHighlight(Highlight):
     def __init__(self, name, branded_name):
+        xml_escapes = { '&' : '&amp;',
+                        '>' : '&gt;',
+                        '<' : '&lt;',
+                        "'" : '&apos',
+                        '"' : '&quot;' }
+
+        for char, escape in xml_escapes.iteritems():
+            branded_name = branded_name.replace(char, escape)
+
         Highlight.__init__(self, name,
                            branded_name + " " +
                            _("scanned") + " " +
