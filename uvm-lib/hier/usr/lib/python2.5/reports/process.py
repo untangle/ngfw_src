@@ -360,7 +360,7 @@ try:
               reports.engine.generate_plots(reports_output_base, end_date,
                                             report_days)
 
-         if not no_mail:
+         if not no_mail and not simulate:
               logger.info("About to email reports for %s days" % (report_days,))          
               f = reports.pdf.generate_pdf(reports_output_base, end_date,
                                            report_days, mail_reports,
@@ -373,18 +373,17 @@ except Exception, e:
      logger.critical("Exception while building report: %s" % (e,),
                      exc_info=True)
 
-if not no_cleanup:
-     if not simulate:
-          events_cutoff = end_date - mx.DateTime.DateTimeDelta(events_retention)
-          reports.engine.events_cleanup(events_cutoff)
+if not no_cleanup and not simulate:
+    events_cutoff = end_date - mx.DateTime.DateTimeDelta(events_retention)
+    reports.engine.events_cleanup(events_cutoff)
 
-     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(db_retention)
-     reports.engine.reports_cleanup(reports_cutoff)     
-     write_cutoff_date(DateFromMx(reports_cutoff))
+    reports_cutoff = end_date - mx.DateTime.DateTimeDelta(db_retention)
+    reports.engine.reports_cleanup(reports_cutoff)     
+    write_cutoff_date(DateFromMx(reports_cutoff))
 
-     files_cutoff = end_date - mx.DateTime.DateTimeDelta(file_retention)
-     reports.engine.delete_old_reports('%s/data' % REPORTS_OUTPUT_BASE,
-                                       files_cutoff)
+    files_cutoff = end_date - mx.DateTime.DateTimeDelta(file_retention)
+    reports.engine.delete_old_reports('%s/data' % REPORTS_OUTPUT_BASE,
+                                      files_cutoff)
 
 # These are only for end of trial, a reboot will delete these files since they are in /tmp
 # if trial_report and ( reports_output_base != REPORTS_OUTPUT_BASE ):
