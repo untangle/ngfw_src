@@ -74,12 +74,12 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     private final BlingBlinger n2cBytes;
     
     protected TCPSessionImpl(Dispatcher disp,
-                             com.untangle.uvm.argon.TCPSession pSession,
+                             com.untangle.uvm.argon.TCPSession argonSession,
                              PipelineEndpoints pe,
                              int clientReadBufferSize,
                              int serverReadBufferSize)
     {
-        super(disp, pSession, pe);
+        super(disp, argonSession, pe);
 
         logPrefix = "T" + id();
 
@@ -183,13 +183,13 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
     public byte clientState()
     {
-        if ((pSession).clientIncomingSocketQueue() == null)
-            if ((pSession).clientOutgoingSocketQueue() == null)
+        if ((argonSession).clientIncomingSocketQueue() == null)
+            if ((argonSession).clientOutgoingSocketQueue() == null)
                 return IPSessionDesc.CLOSED;
             else
                 return TCPSessionDesc.HALF_OPEN_OUTPUT;
         else
-            if ((pSession).clientOutgoingSocketQueue() == null)
+            if ((argonSession).clientOutgoingSocketQueue() == null)
                 return TCPSessionDesc.HALF_OPEN_INPUT;
             else
                 return IPSessionDesc.OPEN;
@@ -197,13 +197,13 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
     public byte serverState()
     {
-        if ((pSession).serverIncomingSocketQueue() == null)
-            if ((pSession).serverOutgoingSocketQueue() == null)
+        if ((argonSession).serverIncomingSocketQueue() == null)
+            if ((argonSession).serverOutgoingSocketQueue() == null)
                 return IPSessionDesc.CLOSED;
             else
                 return TCPSessionDesc.HALF_OPEN_OUTPUT;
         else
-            if ((pSession).serverOutgoingSocketQueue() == null)
+            if ((argonSession).serverOutgoingSocketQueue() == null)
                 return TCPSessionDesc.HALF_OPEN_INPUT;
             else
                 return IPSessionDesc.OPEN;
@@ -211,22 +211,22 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
     public void shutdownServer()
     {
-        shutdownSide(SERVER, (pSession).serverOutgoingSocketQueue(), false);
+        shutdownSide(SERVER, (argonSession).serverOutgoingSocketQueue(), false);
     }
 
     public void shutdownServer(boolean force)
     {
-        shutdownSide(SERVER, (pSession).serverOutgoingSocketQueue(), force);
+        shutdownSide(SERVER, (argonSession).serverOutgoingSocketQueue(), force);
     }
 
     public void shutdownClient()
     {
-        shutdownSide(CLIENT, (pSession).clientOutgoingSocketQueue(), false);
+        shutdownSide(CLIENT, (argonSession).clientOutgoingSocketQueue(), false);
     }
 
     public void shutdownClient(boolean force)
     {
-        shutdownSide(CLIENT, (pSession).clientOutgoingSocketQueue(), force);
+        shutdownSide(CLIENT, (argonSession).clientOutgoingSocketQueue(), force);
     }
 
     private void shutdownSide(int side, OutgoingSocketQueue out, boolean force)
@@ -247,8 +247,8 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     public void resetServer()
     {
         // Go ahead and write out the reset.
-        OutgoingSocketQueue oursout = (pSession).serverOutgoingSocketQueue();
-        IncomingSocketQueue oursin  = (pSession).serverIncomingSocketQueue();
+        OutgoingSocketQueue oursout = (argonSession).serverOutgoingSocketQueue();
+        IncomingSocketQueue oursin  = (argonSession).serverIncomingSocketQueue();
         if (oursout != null) {
             Crumb crumb = ResetCrumb.getInstance();
             boolean success = oursout.write(crumb);
@@ -259,14 +259,14 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         if ( oursin != null )
             oursin.reset();
 
-        // Will result in server's outgoing and incoming socket queue being set to null in pSession.
+        // Will result in server's outgoing and incoming socket queue being set to null in argonSession.
     }
 
     public void resetClient()
     {
         // Go ahead and write out the reset.
-        OutgoingSocketQueue ourcout = (pSession).clientOutgoingSocketQueue();
-        IncomingSocketQueue ourcin  = (pSession).clientIncomingSocketQueue();
+        OutgoingSocketQueue ourcout = (argonSession).clientOutgoingSocketQueue();
+        IncomingSocketQueue ourcin  = (argonSession).clientIncomingSocketQueue();
 
         if (ourcout != null) {
             Crumb crumb = ResetCrumb.getInstance();
@@ -277,7 +277,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         if ( ourcin != null )
             ourcin.reset();
 
-        // Will result in client's outgoing and incoming socket queue being set to null in pSession.
+        // Will result in client's outgoing and incoming socket queue being set to null in argonSession.
     }
 
     public void beginClientStream(TCPStreamer streamer)
@@ -702,7 +702,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     protected void killSession(String reason)
     {
         // Sends a RST both directions and nukes the socket queues.
-        pSession.killSession();
+        argonSession.killSession();
     }
 
     // Don't need equal or hashcode since we can only have one of

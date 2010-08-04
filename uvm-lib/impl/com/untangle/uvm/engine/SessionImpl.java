@@ -20,6 +20,7 @@ package com.untangle.uvm.engine;
 
 import com.untangle.uvm.vnet.MPipe;
 import com.untangle.uvm.vnet.Session;
+import com.untangle.uvm.argon.ArgonSession;
 
 import org.apache.log4j.Logger;
 
@@ -41,16 +42,15 @@ abstract class SessionImpl implements Session
 
     /**
      * The pipeline session that corresponds to this (node) Session.
-     *
      */
-    protected com.untangle.uvm.argon.Session pSession;
+    protected ArgonSession argonSession;
 
     protected volatile Object attachment = null;
 
-    protected SessionImpl(MPipeImpl mPipe, com.untangle.uvm.argon.Session pSession)
+    protected SessionImpl(MPipeImpl mPipe, ArgonSession argonSession)
     {
         this.mPipe = mPipe;
-        this.pSession = pSession;
+        this.argonSession = argonSession;
     }
 
     public MPipe mPipe()
@@ -60,12 +60,12 @@ abstract class SessionImpl implements Session
 
     public int id()
     {
-        return pSession.id();
+        return argonSession.id();
     }
 
     public String user()
     {
-        return pSession.user();
+        return argonSession.user();
     }
 
     public Object attach(Object ob)
@@ -84,12 +84,12 @@ abstract class SessionImpl implements Session
     public Object globalAttach(String key, Object ob)
     {
         logger.warn("globalAttach( " + key + " , " + ob + " )");
-        return this.pSession.sessionGlobalState().attach(key,ob);
+        return this.argonSession.sessionGlobalState().attach(key,ob);
     }
 
     public Object globalAttachment(String key)
     {
-        return this.pSession.sessionGlobalState().attachment(key);
+        return this.argonSession.sessionGlobalState().attachment(key);
     }
     
     /**
@@ -97,7 +97,7 @@ abstract class SessionImpl implements Session
      */
     public long c2tBytes()
     {
-        return this.pSession.c2tBytes();
+        return this.argonSession.c2tBytes();
     }
 
     /**
@@ -105,7 +105,7 @@ abstract class SessionImpl implements Session
      */
     public long t2sBytes()
     {
-        return this.pSession.t2sBytes();
+        return this.argonSession.t2sBytes();
     }
 
     /**
@@ -113,7 +113,7 @@ abstract class SessionImpl implements Session
      */
     public long s2tBytes()
     {
-        return this.pSession.s2tBytes();
+        return this.argonSession.s2tBytes();
     }
 
     /**
@@ -121,7 +121,7 @@ abstract class SessionImpl implements Session
      */
     public long t2cBytes()
     {
-        return this.pSession.t2cBytes();
+        return this.argonSession.t2cBytes();
     }
 
     /**
@@ -129,7 +129,7 @@ abstract class SessionImpl implements Session
      */
     public long c2tChunks()
     {
-        return this.pSession.c2tChunks();
+        return this.argonSession.c2tChunks();
     }
 
     /**
@@ -137,7 +137,7 @@ abstract class SessionImpl implements Session
      */
     public long t2sChunks()
     {
-        return this.pSession.t2sChunks();
+        return this.argonSession.t2sChunks();
     }
 
     /**
@@ -145,7 +145,7 @@ abstract class SessionImpl implements Session
      */
     public long s2tChunks()
     {
-        return this.pSession.s2tChunks();
+        return this.argonSession.s2tChunks();
     }
 
     /**
@@ -153,7 +153,7 @@ abstract class SessionImpl implements Session
      */
     public long t2cChunks()
     {
-        return this.pSession.t2cChunks();
+        return this.argonSession.t2cChunks();
     }
 
 }

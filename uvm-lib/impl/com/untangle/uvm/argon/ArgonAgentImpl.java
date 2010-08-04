@@ -44,7 +44,7 @@ import com.untangle.uvm.policy.Policy;
 public class ArgonAgentImpl implements ArgonAgent {
     protected int state = LIVE_ARGON;
     protected NewSessionEventListener listener = NULL_NEW_SESSION_LISTENER;
-    protected Set<Session> activeSessions = new HashSet<Session>();
+    protected Set<ArgonSession> activeSessions = new HashSet<ArgonSession>();
     private final String name; /* to aid debugging */
     private boolean isDestroyed = false;
 
@@ -147,14 +147,14 @@ public class ArgonAgentImpl implements ArgonAgent {
         return listener;
     }
 
-    public synchronized boolean addSession( Session session )
+    public synchronized boolean addSession( ArgonSession session )
     {
         if ( state == DEAD_ARGON ) return false;
 
         return activeSessions.add( session );
     }
 
-    public synchronized boolean removeSession( Session session )
+    public synchronized boolean removeSession( ArgonSession session )
     {
         if ( isDestroyed ) return false;
 
@@ -173,16 +173,17 @@ public class ArgonAgentImpl implements ArgonAgent {
         private final Set<Integer> activeSessionIds;
         private final Set<Integer> shtudownSessionIds;
 
-        private ActiveSessionMatcher( Set<Session> sessionSet )
+        private ActiveSessionMatcher( Set<ArgonSession> sessionSet )
         {
             this.activeSessionIds = new HashSet<Integer>( sessionSet.size());
             this.shtudownSessionIds = new HashSet<Integer>( sessionSet.size());
 
-            for ( Session session : sessionSet ) this.activeSessionIds.add( session.id());
+            for ( ArgonSession session : sessionSet ) this.activeSessionIds.add( session.id());
         }
         /**
          * Tells if the session matches */
-        public boolean isMatch( Policy policy, com.untangle.uvm.node.IPSessionDesc clientSide,
+        public boolean isMatch( Policy policy,
+                                com.untangle.uvm.node.IPSessionDesc clientSide,
                                 com.untangle.uvm.node.IPSessionDesc serverSide )
         {
             Integer id = clientSide.id();

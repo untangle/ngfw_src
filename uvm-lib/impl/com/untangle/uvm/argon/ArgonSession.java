@@ -22,7 +22,7 @@ import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
 
-public interface Session extends SessionDesc {
+public interface ArgonSession extends SessionDesc {
 
     /**
      * <code>argonAgent</code> returns the ArgonAgent that this session lives on.

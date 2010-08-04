@@ -27,7 +27,7 @@ import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.jvector.SocketQueueListener;
 import com.untangle.jvector.Vector;
 
-public abstract class SessionImpl implements Session
+public abstract class ArgonSessionImpl implements ArgonSession
 {
     protected int maxInputSize  = 0;
     protected int maxOutputSize = 0;
@@ -72,7 +72,7 @@ public abstract class SessionImpl implements Session
 
     /* Package method just used create released sessions,
      * released session should set isVectored to false */
-    public SessionImpl( NewSessionRequest request, boolean isVectored )
+    public ArgonSessionImpl( NewSessionRequest request, boolean isVectored )
     {
         sessionGlobalState        = request.sessionGlobalState();
         argonAgent                = request.argonAgent();

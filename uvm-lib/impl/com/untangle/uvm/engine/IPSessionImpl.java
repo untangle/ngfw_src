@@ -77,10 +77,10 @@ abstract class IPSessionImpl
     private final NodeManagerImpl nodeManager;
 
     protected IPSessionImpl(Dispatcher disp,
-                            com.untangle.uvm.argon.IPSession pSession,
+                            com.untangle.uvm.argon.IPSession argonSession,
                             PipelineEndpoints pe)
     {
-        super(disp.mPipe(), pSession);
+        super(disp.mPipe(), argonSession);
         this.dispatcher = disp;
         this.stats = new RWSessionStats();
         this.pipelineEndpoints = pe;
@@ -95,27 +95,27 @@ abstract class IPSessionImpl
 
     public short protocol()
     {
-        return ((com.untangle.uvm.argon.IPSession)pSession).protocol();
+        return ((com.untangle.uvm.argon.IPSession)argonSession).protocol();
     }
 
     public InetAddress clientAddr()
     {
-        return ((com.untangle.uvm.argon.IPSession)pSession).clientAddr();
+        return ((com.untangle.uvm.argon.IPSession)argonSession).clientAddr();
     }
 
     public InetAddress serverAddr()
     {
-        return ((com.untangle.uvm.argon.IPSession)pSession).serverAddr();
+        return ((com.untangle.uvm.argon.IPSession)argonSession).serverAddr();
     }
 
     public int clientPort()
     {
-        return ((com.untangle.uvm.argon.IPSession)pSession).clientPort();
+        return ((com.untangle.uvm.argon.IPSession)argonSession).clientPort();
     }
 
     public int serverPort()
     {
-        return ((com.untangle.uvm.argon.IPSession)pSession).serverPort();
+        return ((com.untangle.uvm.argon.IPSession)argonSession).serverPort();
     }
 
     public SessionStats stats()
@@ -161,12 +161,12 @@ abstract class IPSessionImpl
 
     public byte clientIntf()
     {
-        return ((com.untangle.uvm.argon.IPSession)pSession).clientIntf();
+        return ((com.untangle.uvm.argon.IPSession)argonSession).clientIntf();
     }
 
     public byte serverIntf()
     {
-        return ((com.untangle.uvm.argon.IPSession)pSession).serverIntf();
+        return ((com.untangle.uvm.argon.IPSession)argonSession).serverIntf();
     }
 
     public boolean released()
@@ -214,9 +214,9 @@ abstract class IPSessionImpl
             return;
         OutgoingSocketQueue out;
         if (side == CLIENT)
-            out = (pSession).clientOutgoingSocketQueue();
+            out = (argonSession).clientOutgoingSocketQueue();
         else
-            out = (pSession).serverOutgoingSocketQueue();
+            out = (argonSession).serverOutgoingSocketQueue();
         if (out == null || out.isClosed()) {
             String sideName = side == CLIENT ? "client" : "server";
             warn("Ignoring crumb for dead " + sideName + " outgoing socket queue");
@@ -297,10 +297,10 @@ abstract class IPSessionImpl
                 debug("raze released");
             } else {
                 if (logger.isDebugEnabled()) {
-                    IncomingSocketQueue ourcin = (pSession).clientIncomingSocketQueue();
-                    IncomingSocketQueue oursin = (pSession).serverIncomingSocketQueue();
-                    OutgoingSocketQueue ourcout = (pSession).clientOutgoingSocketQueue();
-                    OutgoingSocketQueue oursout = (pSession).serverOutgoingSocketQueue();
+                    IncomingSocketQueue ourcin = (argonSession).clientIncomingSocketQueue();
+                    IncomingSocketQueue oursin = (argonSession).serverIncomingSocketQueue();
+                    OutgoingSocketQueue ourcout = (argonSession).clientOutgoingSocketQueue();
+                    OutgoingSocketQueue oursout = (argonSession).serverOutgoingSocketQueue();
                     debug("raze ourcin: " + ourcin +
                           ", ourcout: " + ourcout + ", ourcsin: " + oursin + ", oursout: " + oursout +
                           "  /  crumbs[CLIENT]: " + crumbs2write[CLIENT] + ", crumbs[SERVER]: " + crumbs2write[SERVER]);
@@ -412,7 +412,7 @@ abstract class IPSessionImpl
             nodeManager.registerThreadContext(tctx);
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
-            IncomingSocketQueue in = (pSession).clientIncomingSocketQueue();
+            IncomingSocketQueue in = (argonSession).clientIncomingSocketQueue();
             if (in != null)
                 in.reset();
             sideDieing(CLIENT);
@@ -450,7 +450,7 @@ abstract class IPSessionImpl
             nodeManager.registerThreadContext(tctx);
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
-            IncomingSocketQueue in = (pSession).serverIncomingSocketQueue();
+            IncomingSocketQueue in = (argonSession).serverIncomingSocketQueue();
             if (in != null)
                 in.reset();
             sideDieing(SERVER);
@@ -476,10 +476,10 @@ abstract class IPSessionImpl
      */
     private void setupForStreaming()
     {
-        IncomingSocketQueue cin = (pSession).clientIncomingSocketQueue();
-        IncomingSocketQueue sin = (pSession).serverIncomingSocketQueue();
-        OutgoingSocketQueue cout = (pSession).clientOutgoingSocketQueue();
-        OutgoingSocketQueue sout = (pSession).serverOutgoingSocketQueue();
+        IncomingSocketQueue cin = (argonSession).clientIncomingSocketQueue();
+        IncomingSocketQueue sin = (argonSession).serverIncomingSocketQueue();
+        OutgoingSocketQueue cout = (argonSession).clientOutgoingSocketQueue();
+        OutgoingSocketQueue sout = (argonSession).serverOutgoingSocketQueue();
         assert (streamer != null);
 
         if (cin != null)
@@ -509,10 +509,10 @@ abstract class IPSessionImpl
      */
     private void setupForNormal()
     {
-        IncomingSocketQueue cin = (pSession).clientIncomingSocketQueue();
-        IncomingSocketQueue sin = (pSession).serverIncomingSocketQueue();
-        OutgoingSocketQueue cout = (pSession).clientOutgoingSocketQueue();
-        OutgoingSocketQueue sout = (pSession).serverOutgoingSocketQueue();
+        IncomingSocketQueue cin = (argonSession).clientIncomingSocketQueue();
+        IncomingSocketQueue sin = (argonSession).serverIncomingSocketQueue();
+        OutgoingSocketQueue cout = (argonSession).clientOutgoingSocketQueue();
+        OutgoingSocketQueue sout = (argonSession).serverOutgoingSocketQueue();
         assert (streamer == null);
 
         // We take care not to change the state unless it's really
@@ -592,13 +592,13 @@ abstract class IPSessionImpl
             IncomingSocketQueue ourin;
             OutgoingSocketQueue ourout, otherout;
             if (side == CLIENT) {
-                ourin = (pSession).serverIncomingSocketQueue();
-                ourout = (pSession).clientOutgoingSocketQueue();
-                otherout = (pSession).serverOutgoingSocketQueue();
+                ourin = (argonSession).serverIncomingSocketQueue();
+                ourout = (argonSession).clientOutgoingSocketQueue();
+                otherout = (argonSession).serverOutgoingSocketQueue();
             } else {
-                ourin = (pSession).clientIncomingSocketQueue();
-                ourout = (pSession).serverOutgoingSocketQueue();
-                otherout = (pSession).clientOutgoingSocketQueue();
+                ourin = (argonSession).clientIncomingSocketQueue();
+                ourout = (argonSession).serverOutgoingSocketQueue();
+                otherout = (argonSession).clientOutgoingSocketQueue();
             }
             assert out == ourout;
 
@@ -655,16 +655,16 @@ abstract class IPSessionImpl
             @SuppressWarnings("unused")
 			IncomingSocketQueue ourin, otherin;
             OutgoingSocketQueue ourout, otherout;
-            OutgoingSocketQueue cout = (pSession).clientOutgoingSocketQueue();
-            OutgoingSocketQueue sout = (pSession).serverOutgoingSocketQueue();
+            OutgoingSocketQueue cout = (argonSession).clientOutgoingSocketQueue();
+            OutgoingSocketQueue sout = (argonSession).serverOutgoingSocketQueue();
             if (side == CLIENT) {
-                ourin = (pSession).clientIncomingSocketQueue();
-                otherin = (pSession).serverIncomingSocketQueue();
+                ourin = (argonSession).clientIncomingSocketQueue();
+                otherin = (argonSession).serverIncomingSocketQueue();
                 ourout = sout;
                 otherout = cout;
             } else {
-                ourin = (pSession).serverIncomingSocketQueue();
-                otherin = (pSession).clientIncomingSocketQueue();
+                ourin = (argonSession).serverIncomingSocketQueue();
+                otherin = (argonSession).clientIncomingSocketQueue();
                 ourout = cout;
                 otherout = sout;
             }

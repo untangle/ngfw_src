@@ -66,14 +66,14 @@ public interface ArgonAgent
      * @return True if the session was added, false if the agent is dead, or the session
      *   has already been added.
      */
-    boolean addSession( Session session );
+    boolean addSession( ArgonSession session );
 
     /**
      * Remove a session from the map of active sessions associated with this argon agent.
      * @return True if the session was removed, false if the session was not in the list 
      *   of active session.
      */
-    boolean removeSession( Session session );
+    boolean removeSession( ArgonSession session );
 }
 
 

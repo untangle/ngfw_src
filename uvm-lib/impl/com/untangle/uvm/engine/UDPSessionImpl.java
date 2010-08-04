@@ -65,12 +65,12 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     private final BlingBlinger n2cBytes;
 
     protected UDPSessionImpl(Dispatcher disp,
-                             com.untangle.uvm.argon.UDPSession pSession,
+                             com.untangle.uvm.argon.UDPSession argonSession,
                              PipelineEndpoints pe,
                              int clientMaxPacketSize,
                              int serverMaxPacketSize)
     {
-        super(disp, pSession, pe);
+        super(disp, argonSession, pe);
 
         if (clientMaxPacketSize < 2 || clientMaxPacketSize > UDP_MAX_MESG_SIZE)
             throw new IllegalArgumentException("Illegal maximum client packet bufferSize: " + clientMaxPacketSize);
@@ -95,20 +95,25 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         n2cBytes = c.getBlingBlinger("n2cBytes");
     }
 
-    public int serverMaxPacketSize() {
+    public int serverMaxPacketSize()
+    {
         return maxPacketSize[SERVER];
     }
 
-    public void serverMaxPacketSize(int numBytes) {
+    public void serverMaxPacketSize(int numBytes)
+    {
         if (numBytes < 2 || numBytes > UDP_MAX_MESG_SIZE)
             throw new IllegalArgumentException("Illegal maximum packet bufferSize: " + numBytes);
         maxPacketSize[SERVER] = numBytes;
     }
 
-    public int clientMaxPacketSize() {
+    public int clientMaxPacketSize()
+    {
         return maxPacketSize[CLIENT];
     }
-    public void clientMaxPacketSize(int numBytes) {
+
+    public void clientMaxPacketSize(int numBytes)
+    {
         if (numBytes < 2 || numBytes > UDP_MAX_MESG_SIZE)
             throw new IllegalArgumentException("Illegal maximum packet bufferSize: " + numBytes);
         maxPacketSize[CLIENT] = numBytes;
@@ -119,12 +124,12 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
      */
     public boolean isPing()
     {
-        return ((com.untangle.uvm.argon.UDPSession)pSession).isPing();
+        return ((com.untangle.uvm.argon.UDPSession)argonSession).isPing();
     }
 
     public int icmpId()
     {
-        return ((com.untangle.uvm.argon.UDPSession)pSession).icmpId();
+        return ((com.untangle.uvm.argon.UDPSession)argonSession).icmpId();
     }
 
     public IPSessionDesc makeDesc()
@@ -137,36 +142,36 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
     public byte clientState()
     {
-        if ((pSession).clientIncomingSocketQueue() == null) {
-            assert (pSession).clientOutgoingSocketQueue() == null;
+        if ((argonSession).clientIncomingSocketQueue() == null) {
+            assert (argonSession).clientOutgoingSocketQueue() == null;
             return IPSessionDesc.EXPIRED;
         } else {
-            assert (pSession).clientOutgoingSocketQueue() != null;
+            assert (argonSession).clientOutgoingSocketQueue() != null;
             return IPSessionDesc.OPEN;
         }
     }
 
     public byte serverState()
     {
-        if ((pSession).serverIncomingSocketQueue() == null) {
-            assert (pSession).serverOutgoingSocketQueue() == null;
+        if ((argonSession).serverIncomingSocketQueue() == null) {
+            assert (argonSession).serverOutgoingSocketQueue() == null;
             return IPSessionDesc.EXPIRED;
         } else {
-            assert (pSession).serverOutgoingSocketQueue() != null;
+            assert (argonSession).serverOutgoingSocketQueue() != null;
             return IPSessionDesc.OPEN;
         }
     }
 
     public void expireServer()
     {
-        OutgoingSocketQueue out = (pSession).serverOutgoingSocketQueue();
+        OutgoingSocketQueue out = (argonSession).serverOutgoingSocketQueue();
         if (out != null) {
             Crumb crumb = ShutdownCrumb.getInstance(true);
             out.write(crumb);
         }
         // 8/15/05 we also now reset the incoming side, to avoid the race in case a packet outraces
         // the close-other-half event.
-        IncomingSocketQueue in = (pSession).serverIncomingSocketQueue();
+        IncomingSocketQueue in = (argonSession).serverIncomingSocketQueue();
         if (in != null) {
             // Should always happen.
             in.reset();
@@ -175,14 +180,14 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
     public void expireClient()
     {
-        OutgoingSocketQueue out = (pSession).clientOutgoingSocketQueue();
+        OutgoingSocketQueue out = (argonSession).clientOutgoingSocketQueue();
         if (out != null) {
             Crumb crumb = ShutdownCrumb.getInstance(true);
             out.write(crumb);
         }
         // 8/15/05 we also now reset the incoming side, to avoid the race in case a packet outraces
         // the close-other-half event.
-        IncomingSocketQueue in = (pSession).clientIncomingSocketQueue();
+        IncomingSocketQueue in = (argonSession).clientIncomingSocketQueue();
         if (in != null) {
             // Should always happen.
             in.reset();
@@ -480,7 +485,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     protected void killSession(String reason)
     {
         // Sends a RST both directions and nukes the socket queues.
-        pSession.killSession();
+        argonSession.killSession();
     }
 
     // Don't need equal or hashcode since we can only have one of these objects per

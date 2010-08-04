@@ -20,7 +20,7 @@ package com.untangle.uvm.argon;
 
 import java.net.InetAddress;
 
-public abstract class IPSessionImpl extends SessionImpl implements IPSession 
+public abstract class IPSessionImpl extends ArgonSessionImpl implements IPSession 
 {
     protected final short protocol;
     protected final InetAddress clientAddr;

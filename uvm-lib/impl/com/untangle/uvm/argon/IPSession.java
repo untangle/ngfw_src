@@ -26,7 +26,7 @@ package com.untangle.uvm.argon;
  * @version 1.0
  */
 
-public interface IPSession extends Session, IPSessionDesc  {
+public interface IPSession extends ArgonSession, IPSessionDesc  {
     // Closes both sides
     // void close();
 

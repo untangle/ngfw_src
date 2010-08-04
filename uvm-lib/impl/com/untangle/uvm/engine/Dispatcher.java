@@ -239,7 +239,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         if (agent == null) {
             logger.warn("attempt to remove session " + sess.id() + " when already destroyed");
         } else {
-            agent.removeSession(sess.pSession);
+            agent.removeSession(sess.argonSession);
         }
 
         if (sess instanceof UDPSession) {
@@ -342,12 +342,12 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             }
 
             // Create the session, client and server channels
-            com.untangle.uvm.argon.TCPSession pSession = new com.untangle.uvm.argon.TCPSessionImpl(request);
-            TCPSessionImpl session = new TCPSessionImpl(this, pSession, request.pipelineEndpoints(),
+            com.untangle.uvm.argon.TCPSession argonSession = new com.untangle.uvm.argon.TCPSessionImpl(request);
+            TCPSessionImpl session = new TCPSessionImpl(this, argonSession, request.pipelineEndpoints(),
                                                         td.getTcpClientReadBufferSize(),
                                                         td.getTcpServerReadBufferSize());
             session.attach(treq.attachment());
-            registerPipelineListener(pSession, session);
+            registerPipelineListener(argonSession, session);
             if (RWSessionStats.DoDetailedTimes)
                 madeSessionTime = MetaEnv.currentTimeMillis();
 
@@ -382,7 +382,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
                 times[SessionStats.NEW_HANDLED] = newHandledTime;
                 times[SessionStats.FINISH_NEW] = finishNewTime;
             }
-            return pSession;
+            return argonSession;
         } catch (MPipeException x) {
             String message = "MPipeException building TCP session  " + sessionId;
             logger.error(message,  x);
@@ -462,13 +462,13 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             }
 
             // Create the session, client and server channels
-            com.untangle.uvm.argon.UDPSession pSession =
+            com.untangle.uvm.argon.UDPSession argonSession =
                 new com.untangle.uvm.argon.UDPSessionImpl(request);
-            UDPSessionImpl session = new UDPSessionImpl(this, pSession, request.pipelineEndpoints(),
+            UDPSessionImpl session = new UDPSessionImpl(this, argonSession, request.pipelineEndpoints(),
                                                         td.getUdpMaxPacketSize(),
                                                         td.getUdpMaxPacketSize());
             session.attach(ureq.attachment());
-            registerPipelineListener(pSession, session);
+            registerPipelineListener(argonSession, session);
             if (RWSessionStats.DoDetailedTimes)
                 madeSessionTime = MetaEnv.currentTimeMillis();
 
@@ -504,7 +504,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
                 times[SessionStats.NEW_HANDLED] = newHandledTime;
                 times[SessionStats.FINISH_NEW] = finishNewTime;
             }
-            return pSession;
+            return argonSession;
         } catch (MPipeException x) {
             String message = "MPipeException building UDP session  " + sessionId;
             logger.error(message, x);
@@ -518,9 +518,9 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         }
     }
 
-    void registerPipelineListener(com.untangle.uvm.argon.IPSession pSession, IPSessionImpl session)
+    void registerPipelineListener(com.untangle.uvm.argon.IPSession argonSession, IPSessionImpl session)
     {
-        pSession.registerListener(session);
+        argonSession.registerListener(session);
     }
 
     /**
