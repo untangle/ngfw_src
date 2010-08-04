@@ -330,18 +330,11 @@ typedef struct netcap_session {
         in_addr_t src;
     } dead_tcp;
     
-    //    u_int seq;
-
     /* Client information */
     int                client_sock;
 
     /* Server information */
     int                server_sock;
-
-    /**
-     * flags of this connection
-     */
-    // int flags;
 
     /**
      * For ICMP echo session, this is the message id for the client side and server side.

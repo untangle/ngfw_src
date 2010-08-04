@@ -41,7 +41,8 @@ import com.untangle.uvm.vnet.event.TCPStreamer;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public interface TCPSession extends TCPSessionDesc, IPSession {
+public interface TCPSession extends TCPSessionDesc, IPSession
+{
 
     static final int TCP_MAX_CHUNK_SIZE = 65536;
 
@@ -178,4 +179,5 @@ public interface TCPSession extends TCPSessionDesc, IPSession {
      * @param streamer a <code>TCPStreamer</code> value
      */
     void beginServerStream(TCPStreamer streamer);
+
 }

@@ -60,6 +60,8 @@ abstract class IPSessionImpl
     protected boolean released = false;
     protected boolean needsFinalization = true;
 
+    private static DateFormat formatter = new AbsoluteTimeDateFormat();
+    
     protected final Dispatcher dispatcher;
 
     protected final PipelineEndpoints pipelineEndpoints;
@@ -471,112 +473,37 @@ abstract class IPSessionImpl
         }
     }
 
-
     /**
-     * This one sets up the socket queues for streaming to begin.
+     * <code>clientMark</code> returns the server-side socket mark for this session
      */
-    private void setupForStreaming()
+    public int  clientMark()
     {
-        IncomingSocketQueue cin = (argonSession).clientIncomingSocketQueue();
-        IncomingSocketQueue sin = (argonSession).serverIncomingSocketQueue();
-        OutgoingSocketQueue cout = (argonSession).clientOutgoingSocketQueue();
-        OutgoingSocketQueue sout = (argonSession).serverOutgoingSocketQueue();
-        assert (streamer != null);
-
-        if (cin != null)
-            cin.disable();
-        if (sin != null)
-            sin.disable();
-        if (streamer[CLIENT] != null) {
-            if (cout != null)
-                cout.enable();
-            if (sout != null)
-                sout.disable();
-        } else {
-            if (sout != null)
-                sout.enable();
-            if (cout != null)
-                cout.disable();
-        }
-
-        if (logger.isDebugEnabled()) {
-            debug("entering streaming mode c: " + streamer[CLIENT] + ", s: " + streamer[SERVER]);
-        }
+        return this.argonSession.sessionGlobalState().netcapSession().clientMark();
     }
 
     /**
-     * This one sets up the socket queues for normal operation; used
-     * when streaming ends.
+     * <code>clientMark</code> sets the server-side socket mark for this session
      */
-    private void setupForNormal()
+    public void clientMark(int newmark)
     {
-        IncomingSocketQueue cin = (argonSession).clientIncomingSocketQueue();
-        IncomingSocketQueue sin = (argonSession).serverIncomingSocketQueue();
-        OutgoingSocketQueue cout = (argonSession).clientOutgoingSocketQueue();
-        OutgoingSocketQueue sout = (argonSession).serverOutgoingSocketQueue();
-        assert (streamer == null);
-
-        // We take care not to change the state unless it's really
-        // changing, as changing the state calls notifymvpoll() every
-        // time.
-        if (sout != null && !sout.isEnabled())
-            sout.enable();
-        if (sout == null || (sout.isEmpty() && crumbs2write[SERVER] == null)) {
-            if (cin != null && !cin.isEnabled())
-                cin.enable();
-        } else {
-            if (cin != null && cin.isEnabled())
-                cin.disable();
-        }
-        if (cout != null && !cout.isEnabled())
-            cout.enable();
-        if (cout == null || (cout.isEmpty() && crumbs2write[CLIENT] == null)) {
-            if (sin != null && !sin.isEnabled())
-                sin.enable();
-        } else {
-            if (sin != null && sin.isEnabled())
-                sin.disable();
-        }
+        this.argonSession.sessionGlobalState().netcapSession().clientMark(newmark);
     }
 
     /**
-     * Returns true if we did something.
-     *
-     * @param side an <code>int</code> value
-     * @param out an <code>OutgoingSocketQueue</code> value
-     * @return a <code>boolean</code> value
+     * <code>serverMark</code> returns the server-side socket mark for this session
      */
-    private boolean doWrite(int side, OutgoingSocketQueue out)
-        throws MPipeException
+    public int  serverMark()
     {
-        boolean didSomething = false;
-        if (out != null && out.isEmpty()) {
-            if (crumbs2write[side] != null) {
-                // Do this first, before checking streamer, so we
-                // drain out any remaining buffer.
-                tryWrite(side, out, true);
-                didSomething = true;
-            } else if (streamer != null) {
-                IPStreamer s = streamer[side];
-                if (s != null) {
-                    // It's the right one.
-                    addStreamBuf(side, s);
-                    if (crumbs2write[side] != null) {
-                        tryWrite(side, out, true);
-                        didSomething = true;
-                    }
-                }
-            }
-        }
-        return didSomething;
+        return this.argonSession.sessionGlobalState().netcapSession().serverMark();
     }
 
-    //==================================================
-    // 8/2/05 - wrs.  Added "MDC" stuff to cause
-    // the session ID to be accessible from the
-    // log appender
-    //
-    //===================================================
+    /**
+     * <code>serverMark</code> sets the server-side socket mark for this session
+     */
+    public void serverMark(int newmark)
+    {
+        this.argonSession.sessionGlobalState().netcapSession().serverMark(newmark);
+    }
 
     // This is the main write hook called by the Vectoring machine
     public void writeEvent(int side, OutgoingSocketQueue out)
@@ -633,7 +560,6 @@ abstract class IPSessionImpl
         }
 
     }
-
 
     public void readEvent(int side, IncomingSocketQueue in)
     {
@@ -771,39 +697,106 @@ abstract class IPSessionImpl
     }
 
     /**
-     * <code>isSideDieing</code> returns true if the incoming socket queue
-     * contains an event that will cause the end of the session (at least on
-     * that side). These are RST for TCP and EXPIRE for UDP.
+     * This one sets up the socket queues for streaming to begin.
+     */
+    private void setupForStreaming()
+    {
+        IncomingSocketQueue cin = (argonSession).clientIncomingSocketQueue();
+        IncomingSocketQueue sin = (argonSession).serverIncomingSocketQueue();
+        OutgoingSocketQueue cout = (argonSession).clientOutgoingSocketQueue();
+        OutgoingSocketQueue sout = (argonSession).serverOutgoingSocketQueue();
+        assert (streamer != null);
+
+        if (cin != null)
+            cin.disable();
+        if (sin != null)
+            sin.disable();
+        if (streamer[CLIENT] != null) {
+            if (cout != null)
+                cout.enable();
+            if (sout != null)
+                sout.disable();
+        } else {
+            if (sout != null)
+                sout.enable();
+            if (cout != null)
+                cout.disable();
+        }
+
+        if (logger.isDebugEnabled()) {
+            debug("entering streaming mode c: " + streamer[CLIENT] + ", s: " + streamer[SERVER]);
+        }
+    }
+
+    /**
+     * This one sets up the socket queues for normal operation; used
+     * when streaming ends.
+     */
+    private void setupForNormal()
+    {
+        IncomingSocketQueue cin = (argonSession).clientIncomingSocketQueue();
+        IncomingSocketQueue sin = (argonSession).serverIncomingSocketQueue();
+        OutgoingSocketQueue cout = (argonSession).clientOutgoingSocketQueue();
+        OutgoingSocketQueue sout = (argonSession).serverOutgoingSocketQueue();
+        assert (streamer == null);
+
+        // We take care not to change the state unless it's really
+        // changing, as changing the state calls notifymvpoll() every
+        // time.
+        if (sout != null && !sout.isEnabled())
+            sout.enable();
+        if (sout == null || (sout.isEmpty() && crumbs2write[SERVER] == null)) {
+            if (cin != null && !cin.isEnabled())
+                cin.enable();
+        } else {
+            if (cin != null && cin.isEnabled())
+                cin.disable();
+        }
+        if (cout != null && !cout.isEnabled())
+            cout.enable();
+        if (cout == null || (cout.isEmpty() && crumbs2write[CLIENT] == null)) {
+            if (sin != null && !sin.isEnabled())
+                sin.enable();
+        } else {
+            if (sin != null && sin.isEnabled())
+                sin.disable();
+        }
+    }
+
+    /**
+     * Returns true if we did something.
      *
-     * @param in an <code>IncomingSocketQueue</code> value
+     * @param side an <code>int</code> value
+     * @param out an <code>OutgoingSocketQueue</code> value
      * @return a <code>boolean</code> value
      */
-    abstract protected boolean isSideDieing(int side, IncomingSocketQueue in);
+    private boolean doWrite(int side, OutgoingSocketQueue out)
+        throws MPipeException
+    {
+        boolean didSomething = false;
+        if (out != null && out.isEmpty()) {
+            if (crumbs2write[side] != null) {
+                // Do this first, before checking streamer, so we
+                // drain out any remaining buffer.
+                tryWrite(side, out, true);
+                didSomething = true;
+            } else if (streamer != null) {
+                IPStreamer s = streamer[side];
+                if (s != null) {
+                    // It's the right one.
+                    addStreamBuf(side, s);
+                    if (crumbs2write[side] != null) {
+                        tryWrite(side, out, true);
+                        didSomething = true;
+                    }
+                }
+            }
+        }
+        return didSomething;
+    }
 
-    abstract protected void sideDieing(int side) throws MPipeException;
-
-    abstract void killSession(String message);
-
-    public abstract IPSessionDesc makeDesc();
-
-    abstract void sendWritableEvent(int side) throws MPipeException;
-
-    abstract void sendCompleteEvent() throws MPipeException;
-
-    abstract void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)
-        throws MPipeException;
-
-    abstract void addStreamBuf(int side, IPStreamer streamer)
-        throws MPipeException;
-
-    abstract void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable)
-        throws MPipeException;
-
-    abstract String idForMDC();
-
-    private static DateFormat formatter = new AbsoluteTimeDateFormat();
-
-    private void reportTimes(long[] times) {
+    private void reportTimes(long[] times)
+    {
         StringBuffer result = new StringBuffer("times for ");
         result.append(id());
         result.append("\n");
@@ -824,6 +817,37 @@ abstract class IPSessionImpl
         timesLogger.info(result.toString());
     }
 
+    
+    abstract public IPSessionDesc makeDesc();
+
+    /**
+     * <code>isSideDieing</code> returns true if the incoming socket queue
+     * contains an event that will cause the end of the session (at least on
+     * that side). These are RST for TCP and EXPIRE for UDP.
+     *
+     * @param in an <code>IncomingSocketQueue</code> value
+     * @return a <code>boolean</code> value
+     */
+    abstract protected boolean isSideDieing(int side, IncomingSocketQueue in);
+
+    abstract protected void sideDieing(int side) throws MPipeException;
+
+    abstract protected void killSession(String message);
+
+    abstract protected void sendWritableEvent(int side) throws MPipeException;
+
+    abstract protected void sendCompleteEvent() throws MPipeException;
+
+    abstract protected void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)
+        throws MPipeException;
+
+    abstract protected void addStreamBuf(int side, IPStreamer streamer)
+        throws MPipeException;
+
+    abstract protected void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable)
+        throws MPipeException;
+
+    abstract protected String idForMDC();
 
     // Don't need equal or hashcode since we can only have one of
     // these objects per session (so the memory address is ok for

@@ -56,6 +56,8 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 {
     protected int[] maxPacketSize;
 
+    private final String logPrefix;
+    
     private final BlingBlinger s2nChunks;
     private final BlingBlinger c2nChunks;
     private final BlingBlinger n2sChunks;
@@ -73,6 +75,8 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     {
         super(disp, argonSession, pe);
 
+        logPrefix = "UDP" + id();
+        
         if (clientMaxPacketSize < 2 || clientMaxPacketSize > UDP_MAX_MESG_SIZE)
             throw new IllegalArgumentException("Illegal maximum client packet bufferSize: " + clientMaxPacketSize);
         if (serverMaxPacketSize < 2 || serverMaxPacketSize > UDP_MAX_MESG_SIZE)
@@ -83,8 +87,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
         logger = mPipe.sessionLoggerUDP();
 
-        LocalMessageManager lmm = LocalUvmContextFactory.context()
-            .localMessageManager();
+        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(mPipe.node().getTid());
         s2nChunks = c.getBlingBlinger("s2nChunks");
         c2nChunks = c.getBlingBlinger("c2nChunks");
@@ -269,7 +272,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         addCrumb(side, crumb);
     }
 
-    void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)
+    protected void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)
         throws MPipeException
     {
         assert out != null;
@@ -307,7 +310,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         }
     }
 
-    void addStreamBuf(int side, IPStreamer ipStreamer)
+    protected void addStreamBuf(int side, IPStreamer ipStreamer)
         throws MPipeException
     {
 
@@ -359,7 +362,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     }
 
     // Handles the actual reading from the client
-    void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable)
+    protected void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable)
         throws MPipeException
     {
         int numRead = 0;
@@ -460,11 +463,9 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     }
 
     @Override
-    String idForMDC()
+    protected String idForMDC()
     {
-        StringBuilder logPrefix = new StringBuilder("U");
-        logPrefix.append(id());
-        return logPrefix.toString();
+        return logPrefix;
     }
 
     @Override

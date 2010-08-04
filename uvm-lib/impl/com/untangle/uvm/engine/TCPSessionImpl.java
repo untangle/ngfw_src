@@ -82,7 +82,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     {
         super(disp, argonSession, pe);
 
-        logPrefix = "T" + id();
+        logPrefix = "TCP" + id();
 
         if (clientReadBufferSize < 2 || clientReadBufferSize > TCP_MAX_CHUNK_SIZE)
             throw new IllegalArgumentException("Illegal maximum client read bufferSize: " + clientReadBufferSize);
@@ -95,8 +95,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
         logger = mPipe.sessionLoggerTCP();
 
-        LocalMessageManager lmm = LocalUvmContextFactory.context()
-            .localMessageManager();
+        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(mPipe.node().getTid());
         s2nChunks = c.getBlingBlinger("s2nChunks");
         c2nChunks = c.getBlingBlinger("c2nChunks");
@@ -108,11 +107,13 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         n2cBytes = c.getBlingBlinger("n2cBytes");
     }
 
-    public int serverReadBufferSize() {
+    public int serverReadBufferSize()
+    {
         return readBufferSize[SERVER];
     }
 
-    public void serverReadBufferSize(int numBytes) {
+    public void serverReadBufferSize(int numBytes)
+    {
         if (numBytes < 2 || numBytes > TCP_MAX_CHUNK_SIZE)
             throw new IllegalArgumentException("Illegal maximum read bufferSize: " + numBytes);
         readBufferSize[SERVER] = numBytes;
@@ -120,10 +121,13 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             readLimit[SERVER] = numBytes;
     }
 
-    public int clientReadBufferSize() {
+    public int clientReadBufferSize()
+    {
         return readBufferSize[CLIENT];
     }
-    public void clientReadBufferSize(int numBytes) {
+
+    public void clientReadBufferSize(int numBytes)
+    {
         if (numBytes < 2 || numBytes > TCP_MAX_CHUNK_SIZE)
             throw new IllegalArgumentException("Illegal maximum read bufferSize: " + numBytes);
         readBufferSize[CLIENT] = numBytes;
@@ -131,10 +135,13 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             readLimit[CLIENT] = numBytes;
     }
 
-    public int serverReadLimit() {
+    public int serverReadLimit()
+    {
         return readLimit[SERVER];
     }
-    public void serverReadLimit(int numBytes) {
+
+    public void serverReadLimit(int numBytes)
+    {
         if (numBytes > readBufferSize[SERVER])
             numBytes = readBufferSize[SERVER];
         if (numBytes < 1 || numBytes > TCP_MAX_CHUNK_SIZE)
@@ -142,10 +149,13 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         readLimit[SERVER] = numBytes;
     }
 
-    public int clientReadLimit() {
+    public int clientReadLimit()
+    {
         return readLimit[CLIENT];
     }
-    public void clientReadLimit(int numBytes) {
+
+    public void clientReadLimit(int numBytes)
+    {
         if (numBytes > readBufferSize[CLIENT])
             numBytes = readBufferSize[CLIENT];
         if (numBytes < 1 || numBytes > TCP_MAX_CHUNK_SIZE)
@@ -332,7 +342,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         sendRSTEvent(side);
     }
 
-    void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)
+    protected void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)
         throws MPipeException
     {
         String sideName = (side == CLIENT ? "client" : "server");
@@ -372,7 +382,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         }
     }
 
-    void addStreamBuf(int side, IPStreamer ipStreamer)
+    protected void addStreamBuf(int side, IPStreamer ipStreamer)
         throws MPipeException
     {
         TCPStreamer streamer = (TCPStreamer)ipStreamer;
@@ -490,14 +500,14 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             dispatcher.dispatchTCPServerRST(wevent);
     }
 
-    void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable)
+    protected void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable)
         throws MPipeException
     {
         tryReadInt(side, in, warnIfUnable);
     }
 
     // Handles the actual reading from the client
-    int tryReadInt(int side, IncomingSocketQueue in, boolean warnIfUnable)
+    protected int tryReadInt(int side, IncomingSocketQueue in, boolean warnIfUnable)
         throws MPipeException
     {
         int numRead = 0;
@@ -677,7 +687,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     }
 
     @Override
-    String idForMDC()
+    protected String idForMDC()
     {
         return logPrefix;
     }

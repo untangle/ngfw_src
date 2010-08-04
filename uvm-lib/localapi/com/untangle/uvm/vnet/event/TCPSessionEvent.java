@@ -43,8 +43,9 @@ import com.untangle.uvm.vnet.TCPSession;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class TCPSessionEvent extends IPSessionEvent {
-    
+public class TCPSessionEvent extends IPSessionEvent
+{
+
     public TCPSessionEvent(MPipe mPipe, TCPSession session)
     {
         super(mPipe, session);
@@ -54,4 +55,5 @@ public class TCPSessionEvent extends IPSessionEvent {
     {
         return (TCPSession)getSource();
     }
+
 }

@@ -45,7 +45,8 @@ import com.untangle.uvm.vnet.Session;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public abstract class SessionEvent extends MPipeEvent {
+public abstract class SessionEvent extends MPipeEvent
+{
     
     protected SessionEvent(MPipe mPipe, Session session)
     {

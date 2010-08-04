@@ -226,6 +226,75 @@ JNIEXPORT jstring JNICALL JF_Session( getStringValue )
 
 /*
  * Class:     com_untangle_jnetcap_NetcapSession
+ * Method:    getClientMark
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL JF_Session( getClientMark )
+(JNIEnv* env, jclass _this, jlong session_ptr )
+{
+    netcap_session_t* session;
+
+    JLONG_TO_SESSION( session, session_ptr );
+    
+    errlog( ERR_WARNING, "getClientMark\n" );
+
+    return 1;
+}
+
+/*
+ * Class:     com_untangle_jnetcap_NetcapSession
+ * Method:    setClientMark
+ * Signature: (JI)I
+ */
+JNIEXPORT void JNICALL JF_Session( setClientMark )
+(JNIEnv* env, jclass _this, jlong session_ptr, jint mark )
+{
+    netcap_session_t* session;
+
+    JLONG_TO_SESSION_VOID( session, session_ptr );
+    
+    errlog( ERR_WARNING, "setClientMark\n" );
+
+    return;
+}
+
+/*
+ * Class:     com_untangle_jnetcap_NetcapSession
+ * Method:    getServerMark
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL JF_Session( getServerMark )
+(JNIEnv* env, jclass _this, jlong session_ptr )
+{
+    netcap_session_t* session;
+
+    JLONG_TO_SESSION( session, session_ptr );
+    
+    errlog( ERR_WARNING, "getServerMark\n" );
+
+    return 1;
+}
+
+/*
+ * Class:     com_untangle_jnetcap_NetcapSession
+ * Method:    setServerMark
+ * Signature: (JI)I
+ */
+JNIEXPORT void JNICALL JF_Session( setServerMark )
+(JNIEnv* env, jclass _this, jlong session_ptr, jint mark )
+{
+    netcap_session_t* session;
+
+    JLONG_TO_SESSION_VOID( session, session_ptr );
+    
+    errlog( ERR_WARNING, "setServerMark\n" );
+
+    return;
+}
+
+
+/*
+ * Class:     com_untangle_jnetcap_NetcapSession
  * Method:    raze
  * Signature: (J)I
  */

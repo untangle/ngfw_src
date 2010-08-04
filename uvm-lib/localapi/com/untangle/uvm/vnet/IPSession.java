@@ -112,5 +112,29 @@ public interface IPSession extends IPSessionDesc, Session  {
      */
     void cancelTimer();
 
+    /**
+     * <code>clientMark</code> returns the server-side socket mark for this session
+     */
+    int  clientMark();
+
+    /**
+     * <code>clientMark</code> sets the server-side socket mark for this session
+     */
+    void clientMark(int newmark);
+
+    /**
+     * <code>serverMark</code> returns the server-side socket mark for this session
+     */
+    int  serverMark();
+
+    /**
+     * <code>serverMark</code> sets the server-side socket mark for this session
+     */
+    void serverMark(int newmark);
+
+    /**
+     * Get the pipeline endpoints for this session
+     */
     PipelineEndpoints pipelineEndpoints();
+
 }

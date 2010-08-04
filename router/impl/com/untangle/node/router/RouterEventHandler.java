@@ -84,80 +84,80 @@ class RouterEventHandler extends AbstractEventHandler
     private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol)
         throws MPipeException
     {
-	InetAddress origClientAddr = request.clientAddr();
-	InetAddress newClientAddr = request.getNatFromHost();
-	InetAddress origServerAddr = request.serverAddr();
-	InetAddress newServerAddr = request.getNatToHost();
-	int origClientPort = request.clientPort();
-	int newClientPort  = request.getNatFromPort();
-	int origServerPort = request.serverPort();
-	int newServerPort  = request.getNatToPort();
+        InetAddress origClientAddr = request.clientAddr();
+        InetAddress newClientAddr = request.getNatFromHost();
+        InetAddress origServerAddr = request.serverAddr();
+        InetAddress newServerAddr = request.getNatToHost();
+        int origClientPort = request.clientPort();
+        int newClientPort  = request.getNatFromPort();
+        int origServerPort = request.serverPort();
+        int newServerPort  = request.getNatToPort();
 
-	if ( logger.isDebugEnabled()) {
-	    logger.debug( "pre-translation: " + origClientAddr + ":" + origClientPort +  " -> "
-			  + origServerAddr + ":" + origServerPort );
-	    logger.debug( "pre-translation: " + newClientAddr + ":" + newClientPort +  " -> "
-			  + newServerAddr + ":" + newServerPort );
-	}
+        if ( logger.isDebugEnabled()) {
+            logger.debug( "pre-translation: " + origClientAddr + ":" + origClientPort +  " -> "
+                          + origServerAddr + ":" + origServerPort );
+            logger.debug( "pre-translation: " + newClientAddr + ":" + newClientPort +  " -> "
+                          + newServerAddr + ":" + newServerPort );
+        }
 
         RouterAttachment attachment = new RouterAttachment();
 
         request.attach( attachment );
 
-	// if  we are a redirected session, we will already be registered with the
-	// session manager. If so it will automatically delete the iptables rule that was used to
-	// start this session
-	if (node.getSessionManager().isSessionRedirect(request, protocol,node)){
-	    if ( logger.isDebugEnabled()) {
-		logger.debug( "Found a redirected session");
-	    }
-	}
+        // if  we are a redirected session, we will already be registered with the
+        // session manager. If so it will automatically delete the iptables rule that was used to
+        // start this session
+        if (node.getSessionManager().isSessionRedirect(request, protocol,node)){
+            if ( logger.isDebugEnabled()) {
+                logger.debug( "Found a redirected session");
+            }
+        }
 
-	// if the kernel changed anything then we must be NATing.
-	if ( !origClientAddr.equals(newClientAddr) ||
-	     !origServerAddr.equals(newServerAddr) ||
-	     (origClientPort != newClientPort) ||
-	     (origServerPort != newServerPort) ){
+        // if the kernel changed anything then we must be NATing.
+        if ( !origClientAddr.equals(newClientAddr) ||
+             !origServerAddr.equals(newServerAddr) ||
+             (origClientPort != newClientPort) ||
+             (origServerPort != newServerPort) ){
 
-	    /* Update the session information so it matches what is in the NAT info */
-	    /* Here is where we have to insert the magic, just for TCP */
-	    request.clientAddr( newClientAddr );
-	    if( protocol == Protocol.TCP && !origClientAddr.equals(newClientAddr)){
-		// if we changed the source addr of a TCP connection,
-		// we will need to allocate client port manually because the kernel will not know about
-		// ports we are non-locally bound to and may try to reuse them prematurly.
-		int port = getNextPort( Protocol.TCP );
-		if ( logger.isDebugEnabled()) {
-		    logger.debug( "Mangling client port from " + origClientPort + " to " + port );
-		}
-		request.clientPort( port );
+            /* Update the session information so it matches what is in the NAT info */
+            /* Here is where we have to insert the magic, just for TCP */
+            request.clientAddr( newClientAddr );
+            if( protocol == Protocol.TCP && !origClientAddr.equals(newClientAddr)){
+                // if we changed the source addr of a TCP connection,
+                // we will need to allocate client port manually because the kernel will not know about
+                // ports we are non-locally bound to and may try to reuse them prematurly.
+                int port = getNextPort( Protocol.TCP );
+                if ( logger.isDebugEnabled()) {
+                    logger.debug( "Mangling client port from " + origClientPort + " to " + port );
+                }
+                request.clientPort( port );
                 attachment.releasePort( port );
-	    } else {
-		request.clientPort( newClientPort );
-	    }
-	    request.serverAddr( newServerAddr );
-	    request.serverPort( newServerPort );
+            } else {
+                request.clientPort( newClientPort );
+            }
+            request.serverAddr( newServerAddr );
+            request.serverPort( newServerPort );
 
 
-	    if (isFtp(request,protocol)){
-		if ( logger.isDebugEnabled()) {
-		    logger.debug( "Ftp Session NATed, registering with the SessionManager");
-		}
-		node.getSessionManager().registerSession( request, protocol,
-							  origClientAddr, origClientPort,
-							  origServerAddr, origServerPort );
+            if (isFtp(request,protocol)){
+                if ( logger.isDebugEnabled()) {
+                    logger.debug( "Ftp Session NATed, registering with the SessionManager");
+                }
+                node.getSessionManager().registerSession( request, protocol,
+                                                          origClientAddr, origClientPort,
+                                                          origServerAddr, origServerPort );
 
                 attachment.isManagedSession( true );
-	    }else{
-		if ( logger.isDebugEnabled()) {
-		    logger.debug( "non-Ftp Session NATed, not registering with the SessionManager");
-		}
-	    }
-	}else{
-	    if ( logger.isDebugEnabled()) {
-		logger.debug( "Session Not NATed, so not registering with the SessionManager");
-	    }
-	}
+            }else{
+                if ( logger.isDebugEnabled()) {
+                    logger.debug( "non-Ftp Session NATed, not registering with the SessionManager");
+                }
+            }
+        }else{
+            if ( logger.isDebugEnabled()) {
+                logger.debug( "Session Not NATed, so not registering with the SessionManager");
+            }
+        }
 
     }
 

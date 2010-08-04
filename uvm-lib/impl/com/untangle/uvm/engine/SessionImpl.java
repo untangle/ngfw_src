@@ -41,7 +41,7 @@ abstract class SessionImpl implements Session
     protected MPipeImpl mPipe;
 
     /**
-     * The pipeline session that corresponds to this (node) Session.
+     * The argon session that corresponds to this (node) Session.
      */
     protected ArgonSession argonSession;
 

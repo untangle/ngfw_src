@@ -96,6 +96,9 @@ public class EventHandler extends AbstractEventHandler
 
     public IPDataResult handleTCPClientChunk (TCPChunkEvent e)
     {
+        logger.warn("ServerMark: " + e.session().serverMark());
+        e.session().serverMark(1);
+        
         _handleChunk(e, e.session(), false);
         return IPDataResult.PASS_THROUGH;
     }

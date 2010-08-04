@@ -21,7 +21,8 @@ package com.untangle.jnetcap;
 
 import java.net.InetAddress;
 
-public abstract class NetcapSession {
+public abstract class NetcapSession
+{
     /* Pointer to the netcap_session_t structure in netcap */
     protected CPointer pointer;
 
@@ -31,7 +32,6 @@ public abstract class NetcapSession {
 
     protected final static int FLAG_IF_CLIENT_MASK = 0x2000;
     protected final static int FLAG_IF_SRC_MASK    = 0x1000;
-    
 
     /* For the following options one of FLAG_ClientMask or FLAG_ServerMask AND FLAG_SrcMask or FLAG_DstMask,
      * must also be set */
@@ -112,6 +112,26 @@ public abstract class NetcapSession {
         return toString( pointer.value(), true );
     }
 
+    public int  clientMark()
+    {
+        return getClientMark( pointer.value() );
+    }
+    
+    public void clientMark(int newmark)
+    {
+        setClientMark( pointer.value(), newmark );
+    }
+
+    public int  serverMark()
+    {
+        return getServerMark( pointer.value() );
+    }
+    
+    public void serverMark(int newmark)
+    {
+        setServerMark( pointer.value(), newmark );
+    }
+
     public void determineServerIntf( boolean isSingleNicMode )
     {
         determineServerIntf( pointer.value(), isSingleNicMode );
@@ -126,14 +146,13 @@ public abstract class NetcapSession {
 
     private void updateNatInfo()
     {
-	natInfo = new NatInfo();
-	natInfo.fromHost = Inet4AddressConverter.toAddress(getLongValue( FLAG_NAT_FROM_HOST, pointer.value()));
-	natInfo.fromPort = getIntValue( FLAG_NAT_FROM_PORT, pointer.value());
-	natInfo.toHost   = Inet4AddressConverter.toAddress(getLongValue( FLAG_NAT_TO_HOST, pointer.value()));
-	natInfo.toPort   = getIntValue( FLAG_NAT_TO_PORT, pointer.value());
+        natInfo = new NatInfo();
+        natInfo.fromHost = Inet4AddressConverter.toAddress(getLongValue( FLAG_NAT_FROM_HOST, pointer.value()));
+        natInfo.fromPort = getIntValue( FLAG_NAT_FROM_PORT, pointer.value());
+        natInfo.toHost   = Inet4AddressConverter.toAddress(getLongValue( FLAG_NAT_TO_HOST, pointer.value()));
+        natInfo.toPort   = getIntValue( FLAG_NAT_TO_PORT, pointer.value());
     }
 
-    
     protected abstract Endpoints makeEndpoints( boolean ifClient );
 
     public Endpoints clientSide() { return clientSide; }
@@ -143,10 +162,14 @@ public abstract class NetcapSession {
     private static native void raze( long session );
     private static native void determineServerIntf( long session, boolean isSingleNicMode );
 
+    private static native int  getClientMark( long session );
+    private static native void setClientMark( long session, int mark );
+    private static native int  getServerMark( long session );
+    private static native void setServerMark( long session, int mark );
+
     protected static native long   getLongValue  ( int id, long session );
     protected static native int    getIntValue   ( int id, long session );
     protected static native String getStringValue( int id, long session );
-
     protected static native String toString( long session, boolean ifClient );
 
     static
@@ -156,10 +179,10 @@ public abstract class NetcapSession {
 
     public class NatInfo 
     {
-	public InetAddress fromHost;
-	public int fromPort;
-	public InetAddress toHost;
-	public int toPort;
+        public InetAddress fromHost;
+        public int fromPort;
+        public InetAddress toHost;
+        public int toPort;
     }
 
     protected class SessionEndpoints implements Endpoints
