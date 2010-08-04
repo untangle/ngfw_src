@@ -84,7 +84,7 @@ public class UDPHook implements NetcapHook
         protected IPTraffic serverTraffic = null;
         protected IPTraffic clientTraffic = null;
 
-        protected UDPSession prevSession = null;
+        protected ArgonUDPSession prevSession = null;
 
         protected UDPArgonHook( int id )
         {
@@ -127,7 +127,7 @@ public class UDPHook implements NetcapHook
                 serverTraffic = new IPTraffic( netcapUDPSession.serverSide());
             } else {
                 /* Setup the UDP parameters to use the parameters from the last session in the chain */
-                UDPSession session = (UDPSession)sessionList.get( sessionList.size() - 1 );
+                ArgonUDPSession session = (ArgonUDPSession)sessionList.get( sessionList.size() - 1 );
 
                 if ( logger.isInfoEnabled()) {
                     logger.info( "UDP: Completing session:" );
@@ -243,7 +243,7 @@ public class UDPHook implements NetcapHook
                 request = new UDPNewSessionRequestImpl( prevSession, agent, pe, sessionGlobalState );
             }
 
-            UDPSession session = agent.getNewSessionEventListener().newSession( request );
+            ArgonUDPSession session = agent.getNewSessionEventListener().newSession( request );
 
             processSession( request, session );
 

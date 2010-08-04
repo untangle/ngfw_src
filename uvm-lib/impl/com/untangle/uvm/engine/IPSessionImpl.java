@@ -35,6 +35,7 @@ import com.untangle.jvector.DataCrumb;
 import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.uvm.argon.PipelineListener;
+import com.untangle.uvm.argon.ArgonIPSession;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeState;
@@ -77,7 +78,7 @@ abstract class IPSessionImpl
     private final NodeManagerImpl nodeManager;
 
     protected IPSessionImpl(Dispatcher disp,
-                            com.untangle.uvm.argon.IPSession argonSession,
+                            ArgonIPSession argonSession,
                             PipelineEndpoints pe)
     {
         super(disp.mPipe(), argonSession);
@@ -95,27 +96,27 @@ abstract class IPSessionImpl
 
     public short protocol()
     {
-        return ((com.untangle.uvm.argon.IPSession)argonSession).protocol();
+        return ((ArgonIPSession)argonSession).protocol();
     }
 
     public InetAddress clientAddr()
     {
-        return ((com.untangle.uvm.argon.IPSession)argonSession).clientAddr();
+        return ((ArgonIPSession)argonSession).clientAddr();
     }
 
     public InetAddress serverAddr()
     {
-        return ((com.untangle.uvm.argon.IPSession)argonSession).serverAddr();
+        return ((ArgonIPSession)argonSession).serverAddr();
     }
 
     public int clientPort()
     {
-        return ((com.untangle.uvm.argon.IPSession)argonSession).clientPort();
+        return ((ArgonIPSession)argonSession).clientPort();
     }
 
     public int serverPort()
     {
-        return ((com.untangle.uvm.argon.IPSession)argonSession).serverPort();
+        return ((ArgonIPSession)argonSession).serverPort();
     }
 
     public SessionStats stats()
@@ -161,12 +162,12 @@ abstract class IPSessionImpl
 
     public byte clientIntf()
     {
-        return ((com.untangle.uvm.argon.IPSession)argonSession).clientIntf();
+        return ((ArgonIPSession)argonSession).clientIntf();
     }
 
     public byte serverIntf()
     {
-        return ((com.untangle.uvm.argon.IPSession)argonSession).serverIntf();
+        return ((ArgonIPSession)argonSession).serverIntf();
     }
 
     public boolean released()

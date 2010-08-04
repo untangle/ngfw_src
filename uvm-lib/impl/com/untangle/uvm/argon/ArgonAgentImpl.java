@@ -52,14 +52,14 @@ public class ArgonAgentImpl implements ArgonAgent {
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final NewSessionEventListener NULL_NEW_SESSION_LISTENER = new NewSessionEventListener() {
-            public UDPSession newSession( UDPNewSessionRequest request )
+            public ArgonUDPSession newSession( UDPNewSessionRequest request )
             {
                 /* Release everything */
                 request.release();
                 return null;
             }
 
-            public TCPSession newSession( TCPNewSessionRequest request )
+            public ArgonTCPSession newSession( TCPNewSessionRequest request )
             {
                 /* Release everything */
                 request.release();

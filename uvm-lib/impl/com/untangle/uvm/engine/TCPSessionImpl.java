@@ -32,6 +32,7 @@ import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.util.MetaEnv;
+import com.untangle.uvm.argon.ArgonTCPSession;
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.SessionStats;
@@ -74,7 +75,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     private final BlingBlinger n2cBytes;
     
     protected TCPSessionImpl(Dispatcher disp,
-                             com.untangle.uvm.argon.TCPSession argonSession,
+                             ArgonTCPSession argonSession,
                              PipelineEndpoints pe,
                              int clientReadBufferSize,
                              int serverReadBufferSize)

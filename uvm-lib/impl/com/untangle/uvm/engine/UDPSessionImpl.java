@@ -33,6 +33,7 @@ import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.argon.ArgonUDPSession;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.IPSessionDesc;
@@ -65,7 +66,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     private final BlingBlinger n2cBytes;
 
     protected UDPSessionImpl(Dispatcher disp,
-                             com.untangle.uvm.argon.UDPSession argonSession,
+                             ArgonUDPSession argonSession,
                              PipelineEndpoints pe,
                              int clientMaxPacketSize,
                              int serverMaxPacketSize)
@@ -124,12 +125,12 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
      */
     public boolean isPing()
     {
-        return ((com.untangle.uvm.argon.UDPSession)argonSession).isPing();
+        return ((ArgonUDPSession)argonSession).isPing();
     }
 
     public int icmpId()
     {
-        return ((com.untangle.uvm.argon.UDPSession)argonSession).icmpId();
+        return ((ArgonUDPSession)argonSession).icmpId();
     }
 
     public IPSessionDesc makeDesc()

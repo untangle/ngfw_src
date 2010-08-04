@@ -75,7 +75,7 @@ public class TCPHook implements NetcapHook
         protected boolean ifServerComplete = false;
         protected boolean ifClientComplete = false;
 
-        protected TCPSession prevSession = null;
+        protected ArgonTCPSession prevSession = null;
         protected final TCPSideListener clientSideListener = new TCPSideListener();
         protected final TCPSideListener serverSideListener = new TCPSideListener();
 
@@ -120,7 +120,7 @@ public class TCPHook implements NetcapHook
                 serverPort = netcapTCPSession.serverSide().server().port();
             } else {
                 /* Complete with the parameters from the last node */
-                TCPSession session = (TCPSession)sessionList.get( sessionList.size() - 1 );
+                ArgonTCPSession session = (ArgonTCPSession)sessionList.get( sessionList.size() - 1 );
 
                 clientAddr = session.clientAddr();
                 clientPort = session.clientPort();
@@ -252,7 +252,7 @@ public class TCPHook implements NetcapHook
             }
 
             // newSession() returns null when rejecting the session
-            TCPSession session = agent.getNewSessionEventListener().newSession( request );
+            ArgonTCPSession session = agent.getNewSessionEventListener().newSession( request );
 	    
             processSession( request, session );
 	    

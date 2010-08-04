@@ -81,7 +81,7 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     /* Two ways to create an IPNewSessionRequest:
      * B. Pass in the previous request and get the parameters from there
      */
-    public IPNewSessionRequestImpl( IPSession session, ArgonAgent agent, PipelineEndpoints pe, SessionGlobalState sessionGlobalState)
+    public IPNewSessionRequestImpl( ArgonIPSession session, ArgonAgent agent, PipelineEndpoints pe, SessionGlobalState sessionGlobalState)
     {
         super( session.sessionGlobalState(), agent);
 

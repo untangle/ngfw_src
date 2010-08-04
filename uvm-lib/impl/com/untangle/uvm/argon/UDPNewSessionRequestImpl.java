@@ -29,8 +29,7 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
     protected int icmpId;
     private final boolean isPing;
 
-    public UDPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent,
-                                     PipelineEndpoints pe )
+    public UDPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent, PipelineEndpoints pe )
     {
         super( sessionGlobalState, agent, pe );
 
@@ -45,8 +44,7 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
         this.isPing = netcapUDPSession.isIcmpSession();
     }
     
-    public UDPNewSessionRequestImpl( UDPSession session, ArgonAgent agent, PipelineEndpoints pe,
-				     SessionGlobalState sessionGlobalState)
+    public UDPNewSessionRequestImpl( ArgonUDPSession session, ArgonAgent agent, PipelineEndpoints pe, SessionGlobalState sessionGlobalState)
     {
         super( session, agent, pe, sessionGlobalState );
 

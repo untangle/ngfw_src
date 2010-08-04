@@ -26,26 +26,8 @@ package com.untangle.uvm.argon;
  * @version 1.0
  */
 
-public interface IPSession extends ArgonSession, IPSessionDesc  {
-    // Closes both sides
-    // void close();
-
-    /**
-     * <code>closeClient</code> closes the connection to the client (both input and output).
-     *
-     * For UDP, this could also be called expireClient(). XX
-     *
-     */
-    // void closeClient();
-
-    /**
-     * <code>closeServer</code> closes the connection to the server (both input and output).
-     *
-     * For TCP, this could also be called expireClient(). XX
-     *
-     */
-    // void closeServer();
-
+public interface ArgonIPSession extends ArgonSession, IPSessionDesc
+{
     /**
      * <code>release</code> releases all interest in further events for this session.
      *

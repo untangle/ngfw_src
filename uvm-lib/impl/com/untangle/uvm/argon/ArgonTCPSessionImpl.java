@@ -18,10 +18,9 @@
 
 package com.untangle.uvm.argon;
 
-
-public class TCPSessionImpl extends IPSessionImpl implements TCPSession 
+public class ArgonTCPSessionImpl extends ArgonIPSessionImpl implements ArgonTCPSession 
 {
-    public TCPSessionImpl( TCPNewSessionRequest request )
+    public ArgonTCPSessionImpl( TCPNewSessionRequest request )
     {
         super( request );
     }

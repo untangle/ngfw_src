@@ -17,7 +17,8 @@
  */
 
 package com.untangle.uvm.argon;
-public class UDPSessionImpl extends IPSessionImpl implements UDPSession
+
+public class ArgonUDPSessionImpl extends ArgonIPSessionImpl implements ArgonUDPSession
 {
     protected final byte ttl;
     protected final byte tos;
@@ -25,7 +26,7 @@ public class UDPSessionImpl extends IPSessionImpl implements UDPSession
     protected final int  icmpId;
     protected final boolean isPing;
 
-    public UDPSessionImpl( UDPNewSessionRequest request )
+    public ArgonUDPSessionImpl( UDPNewSessionRequest request )
     {
         super( request );
 
