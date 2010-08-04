@@ -41,7 +41,8 @@ import com.untangle.uvm.policy.Policy;
  * @author <a href="mailto:jdi@untangle.com"></a>
  * @version 1.0
  */
-public class ArgonAgentImpl implements ArgonAgent {
+public class ArgonAgentImpl implements ArgonAgent
+{
     protected int state = LIVE_ARGON;
     protected NewSessionEventListener listener = NULL_NEW_SESSION_LISTENER;
     protected Set<ArgonSession> activeSessions = new HashSet<ArgonSession>();
@@ -52,14 +53,14 @@ public class ArgonAgentImpl implements ArgonAgent {
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final NewSessionEventListener NULL_NEW_SESSION_LISTENER = new NewSessionEventListener() {
-            public ArgonUDPSession newSession( UDPNewSessionRequest request )
+            public ArgonUDPSession newSession( ArgonUDPNewSessionRequest request )
             {
                 /* Release everything */
                 request.release();
                 return null;
             }
 
-            public ArgonTCPSession newSession( TCPNewSessionRequest request )
+            public ArgonTCPSession newSession( ArgonTCPNewSessionRequest request )
             {
                 /* Release everything */
                 request.release();
@@ -167,7 +168,6 @@ public class ArgonAgentImpl implements ArgonAgent {
         return "ArgonAgent[" + name + "]";
     }
 
-    /******************************** PRIVATE ********************************/
     private class ActiveSessionMatcher implements SessionMatcher
     {
         private final Set<Integer> activeSessionIds;

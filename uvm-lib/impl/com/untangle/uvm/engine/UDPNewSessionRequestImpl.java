@@ -19,6 +19,7 @@
 package com.untangle.uvm.engine;
 
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
+import com.untangle.uvm.argon.ArgonUDPNewSessionRequest;
 
 /**
  * Implementation class for UDP new session requests
@@ -26,11 +27,12 @@ import com.untangle.uvm.vnet.UDPNewSessionRequest;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNewSessionRequest {
+class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNewSessionRequest
+{
 
-    protected UDPNewSessionRequestImpl(Dispatcher disp,
-                                       com.untangle.uvm.argon.UDPNewSessionRequest pRequest) {
-        super(disp, pRequest);
+    protected UDPNewSessionRequestImpl(Dispatcher disp, ArgonUDPNewSessionRequest argonRequest)
+    {
+        super(disp, argonRequest);
     }
 
     /**
@@ -38,7 +40,7 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
      */
     public boolean isPing()
     {
-        return ((com.untangle.uvm.argon.UDPNewSessionRequest)pRequest).isPing();
+        return ((ArgonUDPNewSessionRequest)argonRequest).isPing();
     }
 
     /**
@@ -46,7 +48,7 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
      */
     public int icmpId()
     {
-        return ((com.untangle.uvm.argon.UDPNewSessionRequest)pRequest).icmpId();
+        return ((ArgonUDPNewSessionRequest)argonRequest).icmpId();
     }
 
     /**
@@ -55,7 +57,7 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
      */
     public void icmpId(int value)
     {
-        ((com.untangle.uvm.argon.UDPNewSessionRequest)pRequest).icmpId(value);
+        ((ArgonUDPNewSessionRequest)argonRequest).icmpId(value);
     }
 
 }

@@ -31,6 +31,14 @@ import org.apache.log4j.MDC;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.argon.ArgonAgent;
+import com.untangle.uvm.argon.ArgonIPSession;
+import com.untangle.uvm.argon.ArgonUDPSession;
+import com.untangle.uvm.argon.ArgonTCPSession;
+import com.untangle.uvm.argon.ArgonUDPSessionImpl;
+import com.untangle.uvm.argon.ArgonTCPSessionImpl;
+import com.untangle.uvm.argon.ArgonTCPNewSessionRequest;
+import com.untangle.uvm.argon.ArgonUDPNewSessionRequest;
+import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
 import com.untangle.uvm.benchmark.Benchmark;
 import com.untangle.uvm.benchmark.Event;
 import com.untangle.uvm.benchmark.LocalBenchmarkManager;
@@ -44,11 +52,6 @@ import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.util.SessionUtil;
-import com.untangle.uvm.argon.ArgonIPSession;
-import com.untangle.uvm.argon.ArgonUDPSession;
-import com.untangle.uvm.argon.ArgonTCPSession;
-import com.untangle.uvm.argon.ArgonUDPSessionImpl;
-import com.untangle.uvm.argon.ArgonTCPSessionImpl;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.MPipeException;
@@ -254,7 +257,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         }
     }
 
-    public ArgonTCPSession newSession(com.untangle.uvm.argon.TCPNewSessionRequest request)
+    public ArgonTCPSession newSession(ArgonTCPNewSessionRequest request)
     {
         try {
             nodeManager.registerThreadContext(nodeContext);
@@ -266,7 +269,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         }
     }
 
-    public ArgonUDPSession newSession(com.untangle.uvm.argon.UDPNewSessionRequest request)
+    public ArgonUDPSession newSession(ArgonUDPNewSessionRequest request)
     {
         try {
             nodeManager.registerThreadContext(nodeContext);
@@ -280,7 +283,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
 
     // Here's the callback that Argon calls to notify of a new TCP session:
-    public ArgonTCPSession newSessionInternal(com.untangle.uvm.argon.TCPNewSessionRequest request)
+    public ArgonTCPSession newSessionInternal(ArgonTCPNewSessionRequest request)
     {
         int sessionId = -1;
 
@@ -310,8 +313,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
             // Check the session only if it was not rejected.
             switch (treq.state()) {
-            case com.untangle.uvm.argon.IPNewSessionRequest.REJECTED:
-            case com.untangle.uvm.argon.IPNewSessionRequest.REJECTED_SILENT:
+            case ArgonIPNewSessionRequest.REJECTED:
+            case ArgonIPNewSessionRequest.REJECTED_SILENT:
                 if (treq.needsFinalization()) {
                     logger.debug("rejecting (with finalization)");
                 } else {
@@ -323,7 +326,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
                  * exists just to modify the session or to get the raze() call
                  * from Argon when the session is razed. */
                 break;
-            case com.untangle.uvm.argon.IPNewSessionRequest.RELEASED:
+            case ArgonIPNewSessionRequest.RELEASED:
                 boolean needsFinalization = treq.needsFinalization();
                 boolean modified = treq.modified();
                 if (needsFinalization)
@@ -340,8 +343,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
                  * exists just to modify the session or to get the raze() call
                  * from Argon when the session is razed. */
                 break;
-            case com.untangle.uvm.argon.IPNewSessionRequest.REQUESTED:
-            case com.untangle.uvm.argon.IPNewSessionRequest.ENDPOINTED:
+            case ArgonIPNewSessionRequest.REQUESTED:
+            case ArgonIPNewSessionRequest.ENDPOINTED:
             default:
                 break;
             }
@@ -363,7 +366,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
                             session.serverAddr().getHostAddress() + ":" + session.serverPort());
             if (RWSessionStats.DoDetailedTimes)
                 dispatchNewTime = MetaEnv.currentTimeMillis();
-            if (treq.state() == com.untangle.uvm.argon.IPNewSessionRequest.RELEASED) {
+            if (treq.state() == ArgonIPNewSessionRequest.RELEASED) {
                 session.release(treq.needsFinalization());
             } else {
                 TCPSessionEvent tevent = new TCPSessionEvent(mPipe, session);
@@ -401,7 +404,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         }
     }
 
-    public ArgonUDPSession newSessionInternal(com.untangle.uvm.argon.UDPNewSessionRequest request)
+    public ArgonUDPSession newSessionInternal(ArgonUDPNewSessionRequest request)
     {
         int sessionId = -1;
 
@@ -430,8 +433,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
             // Check the session only if it was not rejected.
             switch (ureq.state()) {
-            case com.untangle.uvm.argon.IPNewSessionRequest.REJECTED:
-            case com.untangle.uvm.argon.IPNewSessionRequest.REJECTED_SILENT:
+            case ArgonIPNewSessionRequest.REJECTED:
+            case ArgonIPNewSessionRequest.REJECTED_SILENT:
                 if (ureq.needsFinalization()) {
                     logger.debug("rejecting (with finalization)");
                 } else {
@@ -443,7 +446,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
                  * exists just to modify the session or to get the raze() call
                  * from Argon when the session is razed. */
                 break;
-            case com.untangle.uvm.argon.IPNewSessionRequest.RELEASED:
+            case ArgonIPNewSessionRequest.RELEASED:
                 boolean needsFinalization = ureq.needsFinalization();
                 boolean modified = ureq.modified();
                 if (needsFinalization)
@@ -460,8 +463,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
                  * exists just to modify the session or to get the raze() call
                  * from Argon when the session is razed. */
                 break;
-            case com.untangle.uvm.argon.IPNewSessionRequest.REQUESTED:
-            case com.untangle.uvm.argon.IPNewSessionRequest.ENDPOINTED:
+            case ArgonIPNewSessionRequest.REQUESTED:
+            case ArgonIPNewSessionRequest.ENDPOINTED:
             default:
                 break;
             }
@@ -485,7 +488,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
                             session.serverAddr().getHostAddress() + ":" + session.serverPort());
             if (RWSessionStats.DoDetailedTimes)
                 dispatchNewTime = MetaEnv.currentTimeMillis();
-            if (ureq.state() == com.untangle.uvm.argon.IPNewSessionRequest.RELEASED) {
+            if (ureq.state() == ArgonIPNewSessionRequest.RELEASED) {
                 session.release(ureq.needsFinalization());
             } else {
                 UDPSessionEvent tevent = new UDPSessionEvent(mPipe, session);

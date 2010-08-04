@@ -183,16 +183,16 @@ public class TCPHook implements NetcapHook
             if ( logger.isDebugEnabled()) logger.debug( "TCP - Rejecting client" );
 
             switch( rejectCode ) {
-            case IPNewSessionRequest.TCP_REJECT_RESET:
+            case ArgonIPNewSessionRequest.TCP_REJECT_RESET:
                 netcapTCPSession.clientReset();
                 break;
 
-            case IPNewSessionRequest.NET_UNREACHABLE:
-            case IPNewSessionRequest.HOST_UNREACHABLE:
-            case IPNewSessionRequest.PROTOCOL_UNREACHABLE:
-            case IPNewSessionRequest.PORT_UNREACHABLE:
-            case IPNewSessionRequest.DEST_HOST_UNKNOWN:
-            case IPNewSessionRequest.PROHIBITED:
+            case ArgonIPNewSessionRequest.NET_UNREACHABLE:
+            case ArgonIPNewSessionRequest.HOST_UNREACHABLE:
+            case ArgonIPNewSessionRequest.PROTOCOL_UNREACHABLE:
+            case ArgonIPNewSessionRequest.PORT_UNREACHABLE:
+            case ArgonIPNewSessionRequest.DEST_HOST_UNKNOWN:
+            case ArgonIPNewSessionRequest.PROHIBITED:
                 netcapTCPSession.clientSendIcmpDestUnreach((byte)rejectCode );
                 break;
 
@@ -243,12 +243,12 @@ public class TCPHook implements NetcapHook
 
         protected void newSessionRequest( ArgonAgent agent, Iterator<?> iter, PipelineEndpoints pe )
         {
-            TCPNewSessionRequest request;
+            ArgonTCPNewSessionRequest request;
 
             if ( prevSession == null ) {
-                request = new TCPNewSessionRequestImpl( sessionGlobalState, agent, pe );
+                request = new ArgonTCPNewSessionRequestImpl( sessionGlobalState, agent, pe );
             } else {
-                request = new TCPNewSessionRequestImpl( prevSession, agent, pe, sessionGlobalState );
+                request = new ArgonTCPNewSessionRequestImpl( prevSession, agent, pe, sessionGlobalState );
             }
 
             // newSession() returns null when rejecting the session
@@ -258,8 +258,8 @@ public class TCPHook implements NetcapHook
 	    
             if ( iter.hasNext()) {
             	/* Advance the previous session if the node requested or released the session */
-            	if (( request.state() == IPNewSessionRequest.REQUESTED ) ||
-            			( request.state() == IPNewSessionRequest.RELEASED && session != null )) {
+            	if (( request.state() == ArgonIPNewSessionRequest.REQUESTED ) ||
+            			( request.state() == ArgonIPNewSessionRequest.RELEASED && session != null )) {
             		prevSession = session;
             	}
             } else {

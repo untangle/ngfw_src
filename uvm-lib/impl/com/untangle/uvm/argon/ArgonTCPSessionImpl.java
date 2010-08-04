@@ -20,7 +20,7 @@ package com.untangle.uvm.argon;
 
 public class ArgonTCPSessionImpl extends ArgonIPSessionImpl implements ArgonTCPSession 
 {
-    public ArgonTCPSessionImpl( TCPNewSessionRequest request )
+    public ArgonTCPSessionImpl( ArgonTCPNewSessionRequest request )
     {
         super( request );
     }

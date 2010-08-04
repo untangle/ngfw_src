@@ -18,24 +18,29 @@
 
 package com.untangle.uvm.argon;
 
+import com.untangle.jnetcap.NetcapSession;
 
-public interface TCPNewSessionRequest extends IPNewSessionRequest, TCPSessionDesc
+public interface ArgonNewSessionRequest extends SessionDesc
 {
     /**
-     * <code>acked</code> returns true if the new session has already been ACKed to the client.
-     * This occurs when the SYN shield has been activated.</p>
+     * Gets the Netcap Session associated with this session request.</p>
      *
-     * If false, the SYN has not yet been ACKed.  In this case, the option to
-     * <code>rejectReturnRst</code> is still available and if used will look to the client
-     * as if no server was listening on that port.</p>
-     *
-     * @return True if the session was acked, false otherwise.
+     * @return the Netcap Session.
      */
-    boolean acked();
+    NetcapSession netcapSession();
     
     /**
-     * <code>rejectReturnRst</code> rejects the new connection and sends a RST to the client.
-     * Note that if <code>acked</code> is true, then a simple close is done instead.
+     * Gets the Argon agent associated with this session request.</p>
+     *
+     * @return the Argon agent.
      */
-    void rejectReturnRst();
+    public ArgonAgent argonAgent();
+
+    /**
+     * Gets the global state for the session.</p>
+     * @return session global state.
+     */
+    public SessionGlobalState sessionGlobalState();
+
+
 }

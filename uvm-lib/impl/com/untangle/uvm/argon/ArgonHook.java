@@ -88,7 +88,7 @@ abstract class ArgonHook implements Runnable
     /**
      * State of the session
      */
-    protected int state      = IPNewSessionRequest.REQUESTED;
+    protected int state      = ArgonIPNewSessionRequest.REQUESTED;
     protected int rejectCode = REJECT_CODE_SRV;
 
     /**
@@ -314,7 +314,7 @@ abstract class ArgonHook implements Runnable
         for ( Iterator<ArgonAgent> iter = pipelineAgents.iterator() ; iter.hasNext() ; ) {
             ArgonAgent agent = iter.next();
 
-            if ( state == IPNewSessionRequest.REQUESTED ) {
+            if ( state == ArgonIPNewSessionRequest.REQUESTED ) {
                 newSessionRequest( agent, iter, pe );
             } else {
                 /* Session has been rejected or endpointed, remaining
@@ -337,26 +337,26 @@ abstract class ArgonHook implements Runnable
     {
         boolean serverActionCompleted = true;
         switch ( state ) {
-        case IPNewSessionRequest.REQUESTED:
+        case ArgonIPNewSessionRequest.REQUESTED:
             /* If the server doesn't complete, we have to "vector" the reset */
             if ( !serverComplete()) {
                 /* ??? May want to send different codes, or something ??? */
                 if ( vectorReset()) {
                     /* Forward the rejection type that was passed from
                      * the server */
-                    state        = IPNewSessionRequest.REJECTED;
+                    state        = ArgonIPNewSessionRequest.REJECTED;
                     rejectCode = REJECT_CODE_SRV;
                     serverActionCompleted = false;
                 } else {
-                    state = IPNewSessionRequest.ENDPOINTED;
+                    state = ArgonIPNewSessionRequest.ENDPOINTED;
                 }
             }
             break;
 
             /* Nothing to do on the server side */
-        case IPNewSessionRequest.ENDPOINTED: /* fallthrough */
-        case IPNewSessionRequest.REJECTED: /* fallthrough */
-        case IPNewSessionRequest.REJECTED_SILENT: /* fallthrough */
+        case ArgonIPNewSessionRequest.ENDPOINTED: /* fallthrough */
+        case ArgonIPNewSessionRequest.REJECTED: /* fallthrough */
+        case ArgonIPNewSessionRequest.REJECTED_SILENT: /* fallthrough */
             break;
 
         default:
@@ -377,21 +377,21 @@ abstract class ArgonHook implements Runnable
         boolean clientActionCompleted = true;
 
         switch ( state ) {
-        case IPNewSessionRequest.REQUESTED:
-        case IPNewSessionRequest.ENDPOINTED:
+        case ArgonIPNewSessionRequest.REQUESTED:
+        case ArgonIPNewSessionRequest.ENDPOINTED:
             if ( !clientComplete()) {
                 logger.info( "Unable to complete connection to client" );
-                state = IPNewSessionRequest.REJECTED;
+                state = ArgonIPNewSessionRequest.REJECTED;
                 clientActionCompleted = false;
             }
             break;
 
-        case IPNewSessionRequest.REJECTED:
+        case ArgonIPNewSessionRequest.REJECTED:
             logger.debug( "Rejecting session" );
             clientReject();
             break;
 
-        case IPNewSessionRequest.REJECTED_SILENT:
+        case ArgonIPNewSessionRequest.REJECTED_SILENT:
             logger.debug( "Rejecting session silently" );
             clientRejectSilent();
             break;
@@ -408,7 +408,7 @@ abstract class ArgonHook implements Runnable
         LinkedList<Relay> relayList = new LinkedList<Relay>();
 
         if ( sessionList.isEmpty() ) {
-            if ( state == IPNewSessionRequest.ENDPOINTED ) {
+            if ( state == ArgonIPNewSessionRequest.ENDPOINTED ) {
                 throw new IllegalStateException( "Endpointed session without any nodes" );
             }
 
@@ -451,13 +451,13 @@ abstract class ArgonHook implements Runnable
                 first = false;
             }
 
-            if ( state == IPNewSessionRequest.REQUESTED ) {
+            if ( state == ArgonIPNewSessionRequest.REQUESTED ) {
                 serverSource = makeServerSource();
                 serverSink   = makeServerSink();
 
                 relayList.add( new Relay( prevOutgoingSQ, serverSink ));
                 relayList.add( new Relay( serverSource, prevIncomingSQ ));
-            } else if ( state == IPNewSessionRequest.ENDPOINTED ) {
+            } else if ( state == ArgonIPNewSessionRequest.ENDPOINTED ) {
                 /* XXX Also have to close the socket queues if the
                  * session is endpointed */
             } else {
@@ -470,13 +470,13 @@ abstract class ArgonHook implements Runnable
     }
 
     @SuppressWarnings("fallthrough")
-    protected void processSession( IPNewSessionRequest request, ArgonSession session )
+    protected void processSession( ArgonIPNewSessionRequest request, ArgonSession session )
     {
         if ( logger.isDebugEnabled())
             logger.debug( "Processing session: with state: " + request.state() + " session: " + session );
 
         switch ( request.state()) {
-        case IPNewSessionRequest.RELEASED:
+        case ArgonIPNewSessionRequest.RELEASED:
             if ( session == null ) {
                 /* Released sessions don't need a session, but for
                  * those that redirects may modify session
@@ -498,12 +498,12 @@ abstract class ArgonHook implements Runnable
             sessionList.add( session );
             break;
 
-        case IPNewSessionRequest.ENDPOINTED:
+        case ArgonIPNewSessionRequest.ENDPOINTED:
             /* Set the state to endpointed */
-            state = IPNewSessionRequest.ENDPOINTED;
+            state = ArgonIPNewSessionRequest.ENDPOINTED;
 
             /* fallthrough */
-        case IPNewSessionRequest.REQUESTED:
+        case ArgonIPNewSessionRequest.REQUESTED:
             if ( session == null ) {
                 throw new IllegalStateException( "Session required for this state: " + request.state());
             }
@@ -514,11 +514,11 @@ abstract class ArgonHook implements Runnable
             sessionList.add( session );
             break;
 
-        case IPNewSessionRequest.REJECTED:
+        case ArgonIPNewSessionRequest.REJECTED:
             rejectCode  = request.rejectCode();
 
             /* fallthrough */
-        case IPNewSessionRequest.REJECTED_SILENT:
+        case ArgonIPNewSessionRequest.REJECTED_SILENT:
             state = request.state();
 
             /* Done if the session wants to be notified of complete */
@@ -565,7 +565,7 @@ abstract class ArgonHook implements Runnable
         logger.debug( "vectorReset: " + state );
 
         /* No need to vector, the session wasn't even requested */
-        if ( state != IPNewSessionRequest.REQUESTED ) return true;
+        if ( state != ArgonIPNewSessionRequest.REQUESTED ) return true;
 
         int size = sessionList.size();
         boolean isEndpointed = false;
@@ -617,7 +617,7 @@ abstract class ArgonHook implements Runnable
 
     protected boolean alive()
     {
-        if ( state == IPNewSessionRequest.REQUESTED || state == IPNewSessionRequest.ENDPOINTED ) {
+        if ( state == ArgonIPNewSessionRequest.REQUESTED || state == ArgonIPNewSessionRequest.ENDPOINTED ) {
             return true;
         }
 

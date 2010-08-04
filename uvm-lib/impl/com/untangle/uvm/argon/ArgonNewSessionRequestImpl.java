@@ -20,12 +20,12 @@ package com.untangle.uvm.argon;
 
 import com.untangle.jnetcap.NetcapSession;
 
-abstract class NewSessionRequestImpl implements NewSessionRequest
+abstract class ArgonNewSessionRequestImpl implements ArgonNewSessionRequest
 {
     protected final ArgonAgent    argonAgent;
     protected final SessionGlobalState sessionGlobalState;
     
-    NewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent )
+    ArgonNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent )
     {
         this.sessionGlobalState = sessionGlobalState;
         this.argonAgent         = agent;

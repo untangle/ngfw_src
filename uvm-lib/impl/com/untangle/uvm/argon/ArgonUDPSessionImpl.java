@@ -26,7 +26,7 @@ public class ArgonUDPSessionImpl extends ArgonIPSessionImpl implements ArgonUDPS
     protected final int  icmpId;
     protected final boolean isPing;
 
-    public ArgonUDPSessionImpl( UDPNewSessionRequest request )
+    public ArgonUDPSessionImpl( ArgonUDPNewSessionRequest request )
     {
         super( request );
 

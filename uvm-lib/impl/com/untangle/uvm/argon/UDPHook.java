@@ -160,13 +160,13 @@ public class UDPHook implements NetcapHook
             if ( isIcmpSession ) {
                 if ( !netcapUDPSession.icmpMerge( serverTraffic, icmpServerId, intf )) {
                     /* Merged out and indicate that the session was rejected */
-                    state = IPNewSessionRequest.REJECTED;
+                    state = ArgonIPNewSessionRequest.REJECTED;
                     return false;
                 }
             } else {
                 if ( !netcapUDPSession.merge( serverTraffic, intf )) {
                     /* Merged out and indicate that the session was rejected */
-                    state = IPNewSessionRequest.REJECTED;
+                    state = ArgonIPNewSessionRequest.REJECTED;
                     return false;
                 }
             }
@@ -235,12 +235,12 @@ public class UDPHook implements NetcapHook
 
         protected void newSessionRequest( ArgonAgent agent, Iterator<?> iter, PipelineEndpoints pe )
         {
-            UDPNewSessionRequest request;
+            ArgonUDPNewSessionRequest request;
 
             if ( prevSession == null ) {
-                request = new UDPNewSessionRequestImpl( sessionGlobalState, agent, pe );
+                request = new ArgonUDPNewSessionRequestImpl( sessionGlobalState, agent, pe );
             } else {
-                request = new UDPNewSessionRequestImpl( prevSession, agent, pe, sessionGlobalState );
+                request = new ArgonUDPNewSessionRequestImpl( prevSession, agent, pe, sessionGlobalState );
             }
 
             ArgonUDPSession session = agent.getNewSessionEventListener().newSession( request );
@@ -249,8 +249,8 @@ public class UDPHook implements NetcapHook
 
             if ( iter.hasNext()) {
                 /* Only advance the previous session if the node requested the session */
-                if (( request.state() == IPNewSessionRequest.REQUESTED ) ||
-                    ( request.state() == IPNewSessionRequest.RELEASED && session != null )) {
+                if (( request.state() == ArgonIPNewSessionRequest.REQUESTED ) ||
+                    ( request.state() == ArgonIPNewSessionRequest.RELEASED && session != null )) {
                     logger.debug( "Passing new session data client: " + session.clientAddr());
                     prevSession = session;
                 } else {

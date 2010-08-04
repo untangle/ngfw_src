@@ -72,7 +72,7 @@ public abstract class ArgonSessionImpl implements ArgonSession
 
     /* Package method just used create released sessions,
      * released session should set isVectored to false */
-    public ArgonSessionImpl( NewSessionRequest request, boolean isVectored )
+    public ArgonSessionImpl( ArgonNewSessionRequest request, boolean isVectored )
     {
         sessionGlobalState        = request.sessionGlobalState();
         argonAgent                = request.argonAgent();

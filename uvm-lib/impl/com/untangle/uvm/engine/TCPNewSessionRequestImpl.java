@@ -19,6 +19,7 @@
 package com.untangle.uvm.engine;
 
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
+import com.untangle.uvm.argon.ArgonTCPNewSessionRequest;
 
 /**
  * Implementation class for TCP new session requests
@@ -26,23 +27,26 @@ import com.untangle.uvm.vnet.TCPNewSessionRequest;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNewSessionRequest {
-
-    protected TCPNewSessionRequestImpl(Dispatcher disp, com.untangle.uvm.argon.TCPNewSessionRequest pRequest)
+class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNewSessionRequest
+{
+    protected TCPNewSessionRequestImpl(Dispatcher disp, ArgonTCPNewSessionRequest argonRequest)
     {
-        super(disp, pRequest);
+        super(disp, argonRequest);
     }
 
-    public boolean acked() {
-        return ((com.untangle.uvm.argon.TCPNewSessionRequest)pRequest).acked();
+    public boolean acked()
+    {
+        return ((ArgonTCPNewSessionRequest)argonRequest).acked();
     }
 
-    public void rejectReturnRst(boolean needsFinalization) {
-        ((com.untangle.uvm.argon.TCPNewSessionRequest)pRequest).rejectReturnRst();
+    public void rejectReturnRst(boolean needsFinalization)
+    {
+        ((ArgonTCPNewSessionRequest)argonRequest).rejectReturnRst();
         this.needsFinalization = needsFinalization;
     }
 
-    public void rejectReturnRst() {
+    public void rejectReturnRst()
+    {
         rejectReturnRst(false);
     }
 

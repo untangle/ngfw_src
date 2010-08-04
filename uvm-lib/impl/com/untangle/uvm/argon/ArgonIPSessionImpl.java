@@ -30,9 +30,9 @@ public abstract class ArgonIPSessionImpl extends ArgonSessionImpl implements Arg
     protected final byte clientIntf;
     protected final byte serverIntf;
 
-    public ArgonIPSessionImpl( IPNewSessionRequest request )
+    public ArgonIPSessionImpl( ArgonIPNewSessionRequest request )
     {
-        super( request, request.state() == IPNewSessionRequest.REQUESTED || request.state() == IPNewSessionRequest.ENDPOINTED );
+        super( request, request.state() == ArgonIPNewSessionRequest.REQUESTED || request.state() == ArgonIPNewSessionRequest.ENDPOINTED );
 
         protocol      = request.protocol();
         clientAddr    = request.clientAddr();

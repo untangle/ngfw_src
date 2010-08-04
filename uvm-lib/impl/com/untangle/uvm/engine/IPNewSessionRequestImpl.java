@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
 
 /**
  * Abstract base class for IP new session request implementations
@@ -30,7 +31,8 @@ import com.untangle.uvm.vnet.MPipe;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
+abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
+{
 
     protected final MPipeImpl mPipe;
 
@@ -43,12 +45,12 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
      * The pipeline request that corresponds to this (node) request.
      *
      */
-    protected final com.untangle.uvm.argon.IPNewSessionRequest pRequest;
+    protected final ArgonIPNewSessionRequest argonRequest;
 
-    protected IPNewSessionRequestImpl(Dispatcher disp, com.untangle.uvm.argon.IPNewSessionRequest pRequest)
+    protected IPNewSessionRequestImpl(Dispatcher disp, ArgonIPNewSessionRequest argonRequest)
     {
         this.mPipe = disp.mPipe();
-        this.pRequest = pRequest;
+        this.argonRequest = argonRequest;
     }
 
     public MPipe mPipe()
@@ -58,76 +60,76 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
 
     public int id()
     {
-        return pRequest.id();
+        return argonRequest.id();
     }
 
     public short protocol()
     {
-        return pRequest.protocol();
+        return argonRequest.protocol();
     }
 
     public InetAddress clientAddr()
     {
-        return pRequest.clientAddr();
+        return argonRequest.clientAddr();
     }
 
     public InetAddress serverAddr()
     {
-        return pRequest.serverAddr();
+        return argonRequest.serverAddr();
     }
 
     public int clientPort()
     {
-        return pRequest.clientPort();
+        return argonRequest.clientPort();
     }
 
     public int serverPort()
     {
-        return pRequest.serverPort();
+        return argonRequest.serverPort();
     }
 
     public byte clientIntf()
     {
-        return pRequest.clientIntf();
+        return argonRequest.clientIntf();
     }
 
     public byte serverIntf()
     {
-        return pRequest.serverIntf();
+        return argonRequest.serverIntf();
     }
 
     public PipelineEndpoints pipelineEndpoints()
     {
-        return pRequest.pipelineEndpoints();
+        return argonRequest.pipelineEndpoints();
     }
 
     public void clientAddr(InetAddress addr)
     {
-        pRequest.clientAddr(addr);
+        argonRequest.clientAddr(addr);
         modified = true;
     }
 
     public void serverAddr(InetAddress addr)
     {
-        pRequest.serverAddr(addr);
+        argonRequest.serverAddr(addr);
         modified = true;
     }
 
     public void clientPort(int port)
     {
-        pRequest.clientPort(port);
+        argonRequest.clientPort(port);
         modified = true;
     }
 
     public void serverPort(int port)
     {
-        pRequest.serverPort(port);
+        argonRequest.serverPort(port);
         modified = true;
     }
 
     public void rejectSilently(boolean needsFinalization)
     {
-        pRequest.rejectSilently();
+        argonRequest.rejectSilently();
         this.needsFinalization = needsFinalization;
     }
 
@@ -138,12 +140,12 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
 
     public void endpoint()
     {
-        pRequest.endpoint();
+        argonRequest.endpoint();
     }
 
     public void rejectReturnUnreachable(byte code, boolean needsFinalization)
     {
-        pRequest.rejectReturnUnreachable(code);
+        argonRequest.rejectReturnUnreachable(code);
         this.needsFinalization = needsFinalization;
     }
 
@@ -155,7 +157,7 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
     public void release(boolean needsFinalization)
     {
         this.needsFinalization = needsFinalization;
-        pRequest.release();
+        argonRequest.release();
     }
 
     public void release()
@@ -177,7 +179,7 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
 
     public byte state()
     {
-        return pRequest.state();
+        return argonRequest.state();
     }
 
     public boolean needsFinalization()
@@ -192,21 +194,21 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
 
     public InetAddress getNatFromHost()
     {
-	return pRequest.getNatFromHost();
+	return argonRequest.getNatFromHost();
     }
 
     public int getNatFromPort()
     {
-        return pRequest.getNatFromPort();
+        return argonRequest.getNatFromPort();
     }
 
     public InetAddress getNatToHost()
     {
-        return pRequest.getNatToHost();
+        return argonRequest.getNatToHost();
     }
 
     public int getNatToPort()
     {
-        return pRequest.getNatToPort();
+        return argonRequest.getNatToPort();
     }
 }

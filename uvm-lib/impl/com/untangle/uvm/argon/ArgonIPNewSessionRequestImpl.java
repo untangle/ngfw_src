@@ -25,7 +25,7 @@ import com.untangle.jnetcap.Endpoints;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.node.PipelineEndpoints;
 
-public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl implements IPNewSessionRequest
+public abstract class ArgonIPNewSessionRequestImpl extends ArgonNewSessionRequestImpl implements ArgonIPNewSessionRequest
 {
     protected InetAddress clientAddr;
     protected int clientPort;
@@ -50,7 +50,7 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     /* Two ways to create an IPNewSessionRequest:
      * A. Pass in the netcap session and get the parameters from there.
      */
-    public IPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent, PipelineEndpoints pe )
+    public ArgonIPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent, PipelineEndpoints pe )
     {
         super( sessionGlobalState, agent );
 
@@ -81,7 +81,7 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     /* Two ways to create an IPNewSessionRequest:
      * B. Pass in the previous request and get the parameters from there
      */
-    public IPNewSessionRequestImpl( ArgonIPSession session, ArgonAgent agent, PipelineEndpoints pe, SessionGlobalState sessionGlobalState)
+    public ArgonIPNewSessionRequestImpl( ArgonIPSession session, ArgonAgent agent, PipelineEndpoints pe, SessionGlobalState sessionGlobalState)
     {
         super( session.sessionGlobalState(), agent);
 

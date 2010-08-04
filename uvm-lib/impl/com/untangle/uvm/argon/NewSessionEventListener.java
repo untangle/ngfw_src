@@ -25,12 +25,12 @@ public interface NewSessionEventListener
      *
      * @param request - A UDP Session request.
      */
-    public ArgonUDPSession newSession( UDPNewSessionRequest request );
+    public ArgonUDPSession newSession( ArgonUDPNewSessionRequest request );
 
     /**
      * A new TCP session event event.  This function converts a request into a session.</p>
      *
      * @param request - A TCP Session request.
      */
-    public ArgonTCPSession newSession( TCPNewSessionRequest request );
+    public ArgonTCPSession newSession( ArgonTCPNewSessionRequest request );
 }
