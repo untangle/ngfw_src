@@ -455,7 +455,7 @@ public abstract class Blacklist
 
         BlacklistCategory category = findBestCategory(host, port, uri);
 
-        if (category != null) {
+        if (category != null && sess != null) {
             /**
              * Tag the session with metadata
              * Use KEY_SITEFILTER_BEST_CATEGORY or KEY_WEBFILTER_BEST_CATEGORY
