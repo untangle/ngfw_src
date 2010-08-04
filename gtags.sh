@@ -1,6 +1,7 @@
 echo "Warning: this file needs to be *sourced*"
 
 DEFAULT_RUP=../../hades/rup
+[ ! -d "$DEFAULT_RUP" ] && DEFAULT_RUP=../hades/rup
 
 while getopts "u" flag ; do
   if [ "$flag" = "u" ] ; then
