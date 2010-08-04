@@ -131,6 +131,10 @@ class Node:
             if m:
                 view_position = int(m.group(1))
 
+        if not title: # somehow the apt-cache is empty
+            title = self.__name
+            view_position = 1
+            
         return (title, view_position)
 
 class FactTable:
