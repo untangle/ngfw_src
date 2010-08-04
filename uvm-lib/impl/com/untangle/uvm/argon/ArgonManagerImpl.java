@@ -42,16 +42,16 @@ public class ArgonManagerImpl implements ArgonManager
         return Argon.getInstance().getIntfManager();
     }
     
-    /** Get the number of sessions from the VectronTable */
+    /** Get the number of sessions from the ArgonSessionTable */
     public int getSessionCount()
     {
-        return VectronTable.getInstance().count();
+        return ArgonSessionTable.getInstance().count();
     }
     
     /** Shutdown all of the sessions that match <code>matcher</code> */
     public void shutdownMatches( SessionMatcher matcher )
     {
-        VectronTable.getInstance().shutdownMatches( matcher );
+        ArgonSessionTable.getInstance().shutdownMatches( matcher );
     }
 
     public static final ArgonManagerImpl getInstance()

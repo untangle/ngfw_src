@@ -124,7 +124,7 @@ public class ArgonAgentImpl implements ArgonAgent {
         /* Create a session matcher to shutdown all active sessions */
         ActiveSessionMatcher matcher = new ActiveSessionMatcher( this.activeSessions );
 
-        VectronTable.getInstance().shutdownMatches( matcher );
+        ArgonSessionTable.getInstance().shutdownMatches( matcher );
 
         int numActiveSessions = matcher.getNumberActiveSessions();
         if ( numActiveSessions == 0 ) {

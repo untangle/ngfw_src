@@ -28,19 +28,19 @@ import com.untangle.jvector.Vector;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
 
-
-class VectronTable
+/**
+ * This table stores a global list of all currently active sessions being vectored
+ */
+class ArgonSessionTable
 {
     /* Debugging */
     private final Logger logger = Logger.getLogger(getClass());
-    private static final VectronTable INSTANCE = new VectronTable();
+    private static final ArgonSessionTable INSTANCE = new ArgonSessionTable();
 
-    private final Map<Vector,SessionGlobalState> activeVectrons = new HashMap<Vector,SessionGlobalState>();
+    private final Map<Vector,SessionGlobalState> activeSessions = new HashMap<Vector,SessionGlobalState>();
 
     /* Singleton */
-    private VectronTable()
-    {
-    }
+    private ArgonSessionTable() {}
 
     /**
      * Add a vectron to the hash set.
@@ -49,7 +49,7 @@ class VectronTable
      */
     synchronized boolean put( Vector vectron, SessionGlobalState session )
     {
-        return ( activeVectrons.put( vectron, session ) == null ) ? true : false;
+        return ( activeSessions.put( vectron, session ) == null ) ? true : false;
     }
 
     /**
@@ -59,7 +59,7 @@ class VectronTable
      */
     synchronized boolean remove( Vector vectron )
     {
-        return ( activeVectrons.remove( vectron ) == null ) ? false : true;
+        return ( activeSessions.remove( vectron ) == null ) ? false : true;
     }
 
     /**
@@ -67,7 +67,7 @@ class VectronTable
      */
     synchronized int count()
     {
-        return activeVectrons.size();
+        return activeSessions.size();
     }
 
     /**
@@ -77,9 +77,9 @@ class VectronTable
      * @return - Returns false if there are no active sessions. */
     synchronized boolean shutdownActive()
     {
-        if ( activeVectrons.isEmpty()) return false;
+        if ( activeSessions.isEmpty()) return false;
 
-        for ( Iterator<Vector> iter = activeVectrons.keySet().iterator();
+        for ( Iterator<Vector> iter = activeSessions.keySet().iterator();
               iter.hasNext() ; ) {
             Vector vectron = iter.next();
             vectron.shutdown();
@@ -95,7 +95,7 @@ class VectronTable
 
         logger.debug( "Shutting down matching sessions with: matcher " + matcher );
 
-        if ( activeVectrons.isEmpty()) return;
+        if ( activeSessions.isEmpty()) return;
 
         /* This matcher doesn't match anything */
         if ( matcher == SessionMatcherFactory.getNullInstance()) {
@@ -105,7 +105,7 @@ class VectronTable
             logger.debug( "ALL Session matcher" );
 
             /* Just clear all, without checking for matches */
-            for ( Iterator<Vector> iter = activeVectrons.keySet().iterator() ;
+            for ( Iterator<Vector> iter = activeSessions.keySet().iterator() ;
                   iter.hasNext() ; ) {
                 Vector vectron = iter.next();
                 vectron.shutdown();
@@ -114,7 +114,7 @@ class VectronTable
         }
 
         /* XXXX THIS IS INCREDIBLY INEFFICIENT AND LOCKS THE CREATION OF NEW SESSIONS */
-        for ( Iterator<Map.Entry<Vector,SessionGlobalState>> iter = activeVectrons.entrySet().iterator() ; iter.hasNext() ; ) {
+        for ( Iterator<Map.Entry<Vector,SessionGlobalState>> iter = activeSessions.entrySet().iterator() ; iter.hasNext() ; ) {
             Map.Entry<Vector,SessionGlobalState> e = iter.next();
             boolean isMatch;
 
@@ -134,7 +134,7 @@ class VectronTable
         }
     }
 
-    static VectronTable getInstance()
+    static ArgonSessionTable getInstance()
     {
         return INSTANCE;
     }

@@ -195,15 +195,15 @@ public class Argon
         Netcap.unregisterTCPHook();
         Netcap.unregisterUDPHook();
 
-        VectronTable activeVectrons = VectronTable.getInstance();
+        ArgonSessionTable activeSessions = ArgonSessionTable.getInstance();
 
         /* Close all of the vectoring machines */
         for ( int c = 0; c <  SHUTDOWN_ATTEMPTS ; c++ ) {
             if ( logger.isInfoEnabled()) {
-                logger.info( "" + activeVectrons.count() + " active sessions remaining" );
+                logger.info( "" + activeSessions.count() + " active sessions remaining" );
             }
 
-            if ( !activeVectrons.shutdownActive()) break;
+            if ( !activeSessions.shutdownActive()) break;
 
             /* Sleep a little while vectrons shutdown. */
             try {

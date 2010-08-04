@@ -54,7 +54,7 @@ import com.untangle.uvm.security.Tid;
 abstract class ArgonHook implements Runnable
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private static final VectronTable activeVectrons = VectronTable.getInstance();
+    private static final ArgonSessionTable activeSessions = ArgonSessionTable.getInstance();
 
     /* Reject the client with whatever response the server returned */
     protected static final int REJECT_CODE_SRV = -1;
@@ -219,7 +219,7 @@ abstract class ArgonHook implements Runnable
                     buildPipeline();
 
                     /* Insert the vector */
-                    activeVectrons.put( vector, sessionGlobalState );
+                    activeSessions.put( vector, sessionGlobalState );
 
                     /* Set the timeout for the vectoring machine */
                     vector.timeout( timeout());
@@ -288,7 +288,7 @@ abstract class ArgonHook implements Runnable
             /* You must remove the vector before razing, or else the
              * vector may receive a message(eg shutdown) from another
              * thread */
-            activeVectrons.remove( vector );
+            activeSessions.remove( vector );
         } catch ( Exception e ) {
             logger.error( "Exception destroying pipeline", e );
         }

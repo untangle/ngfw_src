@@ -41,7 +41,7 @@ public interface ArgonManager
     /** Get the interface manager */
     public LocalIntfManager getIntfManager();
     
-    /** Get the number of sessions from the VectronTable */
+    /** Get the number of sessions from the ArgonSessionTable */
     public int getSessionCount();
     
     /** Shutdown all of the sessions that match <code>matcher</code> */

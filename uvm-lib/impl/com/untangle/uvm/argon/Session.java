@@ -47,15 +47,14 @@ public interface Session extends SessionDesc {
      */
     boolean isVectored();
 
-    // For sizes, it means 'buffer' for TCP, 'packet' for UDP
+    /**
+     * For sizes, it means 'buffer' for TCP, 'packet' for UDP
+     */
     int maxInputSize();
     void maxInputSize(int size);
 
     int maxOutputSize();
     void maxOutputSize(int size);
-
-    /* ??? Techincally, having a server and a client at the Session level isn't correct
-     * because a broadcast session will not a have a client and a session, but whatever */
 
     /**
      * Shutdown the client side of the connection.
