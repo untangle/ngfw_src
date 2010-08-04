@@ -44,7 +44,6 @@ public abstract class ArgonIPSessionImpl extends ArgonSessionImpl implements Arg
         serverIntf    = request.serverIntf();
     }
 
-    /* IPSessionDesc */
     /** This should be abstract and reference the sub functions. */
     public short protocol()
     {

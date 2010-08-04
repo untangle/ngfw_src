@@ -27,7 +27,7 @@ import com.untangle.jnetcap.Endpoints;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.uvm.localapi.LocalIntfManager;
 
-class NetcapIPSessionDescImpl implements IPSessionDesc
+class NetcapIPSessionDescImpl implements ArgonIPSessionDesc
 {
     protected final SessionGlobalState sessionGlobalState;
     protected final Logger logger =  Logger.getLogger(getClass());

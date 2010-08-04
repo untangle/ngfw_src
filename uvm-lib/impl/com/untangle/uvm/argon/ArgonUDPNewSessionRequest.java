@@ -19,7 +19,7 @@
 package com.untangle.uvm.argon;
 
 
-public interface ArgonUDPNewSessionRequest extends ArgonIPNewSessionRequest, UDPSessionDesc
+public interface ArgonUDPNewSessionRequest extends ArgonIPNewSessionRequest, ArgonUDPSessionDesc
 {
     /**
      * Retrieve the TTL for a session, this only has an impact for the last session in the chain

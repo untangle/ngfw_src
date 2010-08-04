@@ -18,6 +18,7 @@
 
 package com.untangle.uvm.argon;
 
-public interface UDPSessionDesc extends com.untangle.uvm.node.UDPSessionDesc, IPSessionDesc
+public interface ArgonSessionDesc extends com.untangle.uvm.node.SessionDesc
 {
 }
+

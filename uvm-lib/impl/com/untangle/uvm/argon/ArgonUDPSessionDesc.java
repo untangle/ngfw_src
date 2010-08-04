@@ -18,10 +18,6 @@
 
 package com.untangle.uvm.argon;
 
-import com.untangle.jnetcap.Netcap;
-
-public interface IPSessionDesc extends com.untangle.uvm.node.IPSessionDesc, SessionDesc, SessionEndpoints
+public interface ArgonUDPSessionDesc extends com.untangle.uvm.node.UDPSessionDesc, ArgonIPSessionDesc
 {
-    public final short IPPROTO_TCP = Netcap.IPPROTO_TCP;
-    public final short IPPROTO_UDP = Netcap.IPPROTO_UDP;
 }

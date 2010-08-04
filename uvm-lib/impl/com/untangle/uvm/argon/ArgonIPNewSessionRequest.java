@@ -22,7 +22,7 @@ import java.net.InetAddress;
 
 import com.untangle.uvm.node.PipelineEndpoints;
 
-public interface ArgonIPNewSessionRequest extends ArgonNewSessionRequest, IPSessionDesc
+public interface ArgonIPNewSessionRequest extends ArgonNewSessionRequest, ArgonIPSessionDesc
 {
     /**
      * Sets the client address for this session.</p>

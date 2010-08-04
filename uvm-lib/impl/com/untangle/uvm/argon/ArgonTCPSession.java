@@ -18,6 +18,6 @@
 
 package com.untangle.uvm.argon;
 
-public interface ArgonTCPSession extends ArgonIPSession, TCPSessionDesc
+public interface ArgonTCPSession extends ArgonIPSession, ArgonTCPSessionDesc
 {
 }

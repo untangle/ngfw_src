@@ -396,7 +396,7 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
     pkt->ttl = ip_header->ttl;
     pkt->tos = ip_header->tos;
 
-    /* XXX If nececssary, options should be copied out here */
+    /* XXX If necessary, options should be copied out here */
     /* XXX The flags should always be initialized to zero has to be cleared out */
     pkt->th_flags = 0;
     if ( ip_header->protocol == IPPROTO_TCP ) {
@@ -483,7 +483,7 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
                 unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
                 unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port );
     } else {
-      debug( 10, "NFQUEUE Input device %d\n", pkt->src_intf );
+        debug( 10, "NFQUEUE Input device %d\n", pkt->src_intf );
     }    
 
     /* First lookup the physdev_out */
@@ -491,17 +491,17 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
     u_int32_t out_dev = 0;
     if (ip_header->protocol == IPPROTO_ICMP) { 
         debug(10, "ICMP packets dont have outdev info\n");
-	pkt->dst_intf = NC_INTF_UNK;
+        pkt->dst_intf = NC_INTF_UNK;
     }else{
         out_dev = nfq_get_physoutdev( nfa );
-	if ( out_dev == 0 ) out_dev = nfq_get_outdev( nfa );
-	if ( out_dev == 0 ) {
-	  errlog( ERR_WARNING, "Unable to determine the destination interface with nfq_get_physoutdev\n");
-	}
-	if (( pkt->dst_intf = netcap_interface_index_to_intf( out_dev )) == 0 ) {
-	  /* This occurs when the interface is a bridge */
-	  pkt->dst_intf = NC_INTF_UNK;
-	}
+        if ( out_dev == 0 ) out_dev = nfq_get_outdev( nfa );
+        if ( out_dev == 0 ) {
+            errlog( ERR_WARNING, "Unable to determine the destination interface with nfq_get_physoutdev\n");
+        }
+        if (( pkt->dst_intf = netcap_interface_index_to_intf( out_dev )) == 0 ) {
+            /* This occurs when the interface is a bridge */
+            pkt->dst_intf = NC_INTF_UNK;
+        }
     }
 
     debug( 10, "NFQUEUE Output device %d\n", pkt->dst_intf );

@@ -18,7 +18,8 @@
 
 package com.untangle.jnetcap;
 
-public interface NetcapHook {
+public interface NetcapHook
+{
     /* This the callback that will be called for the UDP/TCP/ICMP hooks */
     public void event( int sessionId );
 }

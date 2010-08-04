@@ -20,7 +20,7 @@ package com.untangle.uvm.argon;
 
 import com.untangle.jnetcap.NetcapSession;
 
-public interface ArgonNewSessionRequest extends SessionDesc
+public interface ArgonNewSessionRequest extends ArgonSessionDesc
 {
     /**
      * Gets the Netcap Session associated with this session request.</p>

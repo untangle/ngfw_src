@@ -26,7 +26,7 @@ package com.untangle.uvm.argon;
  * @version 1.0
  */
 
-public interface ArgonIPSession extends ArgonSession, IPSessionDesc
+public interface ArgonIPSession extends ArgonSession, ArgonIPSessionDesc
 {
     /**
      * <code>release</code> releases all interest in further events for this session.

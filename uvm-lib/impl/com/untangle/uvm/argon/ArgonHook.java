@@ -76,8 +76,8 @@ abstract class ArgonHook implements Runnable
 
     protected SessionGlobalState sessionGlobalState;
 
-    protected IPSessionDesc clientSide = null;
-    protected IPSessionDesc serverSide = null;
+    protected ArgonIPSessionDesc clientSide = null;
+    protected ArgonIPSessionDesc serverSide = null;
 
     protected Policy policy = null;
 
