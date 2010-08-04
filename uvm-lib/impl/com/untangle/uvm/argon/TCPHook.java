@@ -38,7 +38,8 @@ public class TCPHook implements NetcapHook
     private final Logger logger = Logger.getLogger(getClass());
 
 
-    public static TCPHook getInstance() {
+    public static TCPHook getInstance()
+    {
         if ( INSTANCE == null )
             init();
 
@@ -46,9 +47,7 @@ public class TCPHook implements NetcapHook
     }
 
     /* Singleton */
-    private TCPHook()
-    {
-    }
+    private TCPHook() {}
 
     private static synchronized void init()
     {
@@ -58,11 +57,8 @@ public class TCPHook implements NetcapHook
         ArgonHook.init();
     }
 
-
     public void event( int sessionID )
     {
-        /* XXX Need to change the priority of the thread */
-        // new Thread( new TCPArgonHook( sessionID )).start();
         new TCPArgonHook( sessionID ).run();
     }
 
@@ -149,8 +145,7 @@ public class TCPHook implements NetcapHook
 
             try {
                 byte intf = Argon.getInstance().getIntfManager().toNetcap( clientSide.serverIntf());
-                netcapTCPSession.serverComplete( clientAddr, clientPort, serverAddr, serverPort, intf,
-                                                 flags );
+                netcapTCPSession.serverComplete( clientAddr, clientPort, serverAddr, serverPort, intf, flags );
                 netcapTCPSession.tcpServerSide().blocking( false );
                 ifServerComplete = true;
             } catch ( Exception e ) {
@@ -256,7 +251,7 @@ public class TCPHook implements NetcapHook
                 request = new TCPNewSessionRequestImpl( prevSession, agent, pe, sessionGlobalState );
             }
 
-            // TAPI returns null when rejecting the session
+            // newSession() returns null when rejecting the session
             TCPSession session = agent.getNewSessionEventListener().newSession( request );
 	    
             processSession( request, session );
@@ -274,10 +269,10 @@ public class TCPHook implements NetcapHook
 
         protected void liberate()
         {
-	    if (logger.isDebugEnabled()) {
-		logger.debug("Liberating TCP Session: "+netcapTCPSession);
-	    }
-	    netcapTCPSession.liberate();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Liberating TCP Session: "+netcapTCPSession);
+            }
+            netcapTCPSession.liberate();
         }
 
         protected void raze()

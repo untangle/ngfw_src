@@ -39,7 +39,8 @@ package com.untangle.uvm.vnet;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public interface TCPNewSessionRequest extends IPNewSessionRequest {
+public interface TCPNewSessionRequest extends IPNewSessionRequest
+{
     /**
      * <code>acked</code> returns true if the new session has already been ACKed to the client.
      * This occurs when the SYN shield has been activated.</p>

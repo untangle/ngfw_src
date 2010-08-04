@@ -139,7 +139,7 @@ class EventHandler extends AbstractEventHandler
                                                       ruleIndex);
                 fwe.setRuleId(rule.getId());
                 request.attach(fwe);
-		node.incrementLogCount();
+                node.incrementLogCount();
             }
         }
 

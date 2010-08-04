@@ -81,8 +81,7 @@ abstract class ArgonHook implements Runnable
 
     protected Policy policy = null;
 
-    protected static final PipelineFoundryImpl pipelineFoundry =
-        (PipelineFoundryImpl)LocalUvmContextFactory.context().pipelineFoundry();
+    protected static final PipelineFoundryImpl pipelineFoundry = (PipelineFoundryImpl)LocalUvmContextFactory.context().pipelineFoundry();
     
     private static final Tid TOTALS = new Tid(0l);
 
@@ -110,12 +109,10 @@ abstract class ArgonHook implements Runnable
             ClassLoader cl = getClass().getClassLoader();
             Thread.currentThread().setContextClassLoader(cl);
 
-            sessionGlobalState = new SessionGlobalState( netcapSession(), clientSideListener(),
-                                                         serverSideListener(), this );
+            sessionGlobalState = new SessionGlobalState( netcapSession(), clientSideListener(), serverSideListener(), this );
             NetcapSession netcapSession = sessionGlobalState.netcapSession();
             if ( logger.isDebugEnabled()) {
-                logger.debug( "New thread for session id: " + netcapSession.id() +
-                              " " + sessionGlobalState );
+                logger.debug( "New thread for session id: " + netcapSession.id() + " " + sessionGlobalState );
             }
 
             LocalNetworkManager lnm = LocalUvmContextFactory.context().localNetworkManager();
@@ -124,11 +121,12 @@ abstract class ArgonHook implements Runnable
             /* Update the server interface */
             netcapSession.determineServerIntf( isSingleNicMode );
 
-            /* If the server interface is still unknown, drop the session */
+            /**
+             * If the server interface is still unknown, drop the session
+             */
             byte serverIntf = netcapSession.serverSide().interfaceId();
             byte clientIntf = netcapSession.clientSide().interfaceId();
-            if ( IntfConstants.NETCAP_UNKNOWN == serverIntf ||
-                 IntfConstants.NETCAP_LOOPBACK == serverIntf ) {
+            if ( IntfConstants.NETCAP_UNKNOWN == serverIntf || IntfConstants.NETCAP_LOOPBACK == serverIntf ) {
                 if ( logger.isInfoEnabled()) {
                     logger.info( "" + netcapSession + " destined to unknown or local interface, raze." );
                 }
@@ -136,7 +134,9 @@ abstract class ArgonHook implements Runnable
                 return;
             }
 
-            //we dont want to watch internal traffic that is redirected back to the internal network
+            /**
+             * we dont want to watch internal traffic that is redirected back to the internal network
+             */
             if (serverIntf == clientIntf) {
                 liberate();
                 raze();
@@ -318,9 +318,10 @@ abstract class ArgonHook implements Runnable
                 newSessionRequest( agent, iter, pe );
             } else {
                 /* Session has been rejected or endpointed, remaining
-                 * nodes need not be informed */
-                // Don't need to remove anything from the pipeline, it
-                // is just used here iter.remove();
+                 * nodes need not be informed 
+                 * Don't need to remove anything from the pipeline, it
+                 * is just used here iter.remove();
+                 */
                 break;
             }
         }

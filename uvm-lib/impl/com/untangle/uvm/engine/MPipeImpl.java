@@ -42,7 +42,8 @@ import com.untangle.uvm.vnet.event.SessionEventListener;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-class MPipeImpl implements MPipe {
+class MPipeImpl implements MPipe
+{
     protected ArgonAgent argon;
 
     // Our owner/manager/factory

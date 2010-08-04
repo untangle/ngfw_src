@@ -28,8 +28,8 @@ import com.untangle.uvm.vnet.TCPNewSessionRequest;
  */
 class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNewSessionRequest {
 
-    protected TCPNewSessionRequestImpl(Dispatcher disp,
-                                       com.untangle.uvm.argon.TCPNewSessionRequest pRequest) {
+    protected TCPNewSessionRequestImpl(Dispatcher disp, com.untangle.uvm.argon.TCPNewSessionRequest pRequest)
+    {
         super(disp, pRequest);
     }
 

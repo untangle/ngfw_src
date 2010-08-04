@@ -22,23 +22,31 @@ import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.NetcapTCPSession;
 import com.untangle.jnetcap.NetcapUDPSession;
 
+import org.apache.log4j.Logger;
+
+import java.util.HashMap;
+
+/**
+ * This stores the global system-wide state for a given session
+ */
 public class SessionGlobalState
 {
+    private final Logger logger = Logger.getLogger(getClass());
 
     protected final NetcapSession netcapSession;
 
     protected final int id;
     protected final short protocol;
-    protected String user;      // Not final since we can set it later
+    protected String user; // Not final since we can set it later
 
     protected final SideListener clientSideListener;
     protected final SideListener serverSideListener;
 
     protected final ArgonHook argonHook;
 
-
-    SessionGlobalState( NetcapSession netcapSession, SideListener clientSideListener, 
-                        SideListener serverSideListener, ArgonHook argonHook )
+    protected HashMap<String,Object> attachments;
+        
+    SessionGlobalState( NetcapSession netcapSession, SideListener clientSideListener, SideListener serverSideListener, ArgonHook argonHook )
     {
         this.argonHook = argonHook;
 
@@ -50,6 +58,8 @@ public class SessionGlobalState
 
         this.clientSideListener = clientSideListener;
         this.serverSideListener = serverSideListener;
+
+        this.attachments = new HashMap<String,Object>();
     }
 
     public int id()
@@ -107,5 +117,16 @@ public class SessionGlobalState
     public ArgonHook argonHook()
     {
         return argonHook;
+    }
+
+    public Object attach(String key, Object attachment)
+    {
+        logger.warn("globalAttach( " + key + " , " + attachment + " )");
+        return this.attachments.put(key,attachment);
+    }
+
+    public Object attachment(String key)
+    {
+        return this.attachments.get(key);
     }
 }

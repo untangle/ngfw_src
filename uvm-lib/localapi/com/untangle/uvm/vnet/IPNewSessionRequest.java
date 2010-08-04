@@ -44,7 +44,8 @@ import com.untangle.uvm.node.SessionEndpoints;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints {
+public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints
+{
     /**
      * Sets the client address for this session.
      */
@@ -63,7 +64,6 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints
     /**
      * Sets the server port for this session.
      */
-
     void serverPort( int port );
 
     PipelineEndpoints pipelineEndpoints();

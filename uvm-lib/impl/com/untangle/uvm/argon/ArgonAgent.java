@@ -22,8 +22,7 @@ package com.untangle.uvm.argon;
 /**
  * The <code>ArgonAgent</code> interface represents an active Node as seen by
  * the node API and the pipeline implementation (Argon).  Most nodes
- * only have one active <code>ArgonAgent</code> at a time, the rest have exactly 2
- * (casings).
+ * only have one active <code>ArgonAgent</code> at a time. Casings have two.
  *
  * This class's instances represent and contain the subscription state, pipeline state,
  * and accessors to get the live sessions for the pipe.
@@ -34,7 +33,8 @@ package com.untangle.uvm.argon;
  * @author <a href="mailto:jdi@untangle.com"></a>
  * @version 1.0
  */
-public interface ArgonAgent {
+public interface ArgonAgent
+{
     // States.  Easy for now, just live and destroyed/disconnected/dead.
     public static final int LIVE_ARGON = 1;
     public static final int DEAD_ARGON = 0;

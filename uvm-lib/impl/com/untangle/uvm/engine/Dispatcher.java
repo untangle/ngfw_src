@@ -71,19 +71,25 @@ import com.untangle.uvm.vnet.event.UDPSessionEvent;
 class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 {
 
-    // This should be a config param XXX
-    // Note we only send a heartbeat once we haven't communicated with
-    // mPipe in that long.  any command or new session (incoming
-    // command) resets the timer.
+    /**
+     * 
+     * Note we only send a heartbeat once we haven't communicated with
+     * mPipe in that long.  any command or new session (incoming
+     * command) resets the timer.
+     */
     public static final int DEFAULT_HEARTBEAT_INTERVAL = 30000;
     public static final int DEFAULT_CHECKUP_RESPONSE_TIMEOUT = 10000;
 
-    // 8 seconds is the longest interval we wait between each attempt
-    // to try to connect to MPipe.
+    /**
+     * 8 seconds is the longest interval we wait between each attempt
+     * to try to connect to MPipe.
+     */
     public static final int MAX_CONNECT_BACKOFF_TIME = 8000;
 
-    // Set to true to disable use of the session and newSession thread
-    // pools and run everything in the command/session dispatchers.
+    /**
+     * Set to true to disable use of the session and newSession thread
+     * pools and run everything in the command/session dispatchers.
+     */
     public static final boolean HANDLE_ALL_INLINE = true;
 
     static final String SESSION_ID_MDC_KEY = "SessionID";
@@ -114,6 +120,9 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
     private SessionEventListener sessionEventListener;
 
+    /**
+     * A specific logger for this session
+     */
     private Logger sessionEventLogger;
 
 
@@ -154,17 +163,19 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
      */
     private ConcurrentHashMap<IPSession,IPSession> liveSessions;
 
-    private String threadNameBase; // Convenience
-
-    // This one is for the command socket.
+    /**
+     * This one is for the command socket.
+     */
     private boolean lastCommandReadFailed = false;
 
-    // A dispatcher is created MPipe.start() when user decides this
-    // dispatcher should begin handling a newly connected MPipe.
-    //
-    // Note that order of initialization is important in here, since
-    // the "inner" classes access stuff from us.
-    Dispatcher(MPipeImpl mPipe) 
+    /**
+     * dispatcher is created MPipe.start() when user decides this
+     * dispatcher should begin handling a newly connected MPipe.
+     *
+     * Note that order of initialization is important in here, since
+     * the "inner" classes access stuff from us.
+     */
+    public Dispatcher(MPipeImpl mPipe) 
     {
         logger = Logger.getLogger(Dispatcher.class.getName());
         this.mPipe = mPipe;
@@ -174,48 +185,20 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         sessionEventListener = null;
         NodeDesc td = node.getNodeDesc();
         String tidn = td.getTid().getName();
-        // dirtySessions = new LinkedQueue(); // FIFO
-        // readySessions = new LinkedQueue(); // FIFO
 
-        threadNameBase = td.getName() + "(";
-        // Find out if we're the inside or outside if a Casing node.  This
-        // is super ugly. XXX
-        /*
-          if (tt instanceof CasingNode) {
-          CasingNode ct = (CasingNode)tt;
-          if (ct.getMPipe(true) == mPipe)
-          threadNameBase += "i";
-          else
-          threadNameBase += "o";
-          }
-        */
-        threadNameBase += tidn + ") ";
-
-        //singleThreadedSessions = td.isSingleThreadedSessions();
         sessionEventLogger = mPipe.sessionEventLogger();
         releasedHandler = new ReleasedEventHandler(node);
 
-        // mainThread = ThreadPool.pool().allocate(this, threadNameBase + "disp");
-        // mainThread = new Thread(this, threadNameBase + "mainDisp");
         liveSessions = new ConcurrentHashMap<IPSession,IPSession>();
 
-        LocalMessageManager lmm = LocalUvmContextFactory.context()
-            .localMessageManager();
+        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(node.getTid());
-        udpLiveSessionCounter = c.makeLoadCounter("udpLiveSessionCounter",
-                                                  "UDP sessions");
-        tcpLiveSessionCounter = c.makeLoadCounter("tcpLiveSessionCounter",
-                                                  "TCP sessions");
-        udpTotalSessionCounter = c.addMetric("udpTotalSessionCounter",
-                                             I18nUtil.marktr("UDP sessions"), null, false);
-        tcpTotalSessionCounter = c.addMetric("tcpTotalSessionCounter",
-                                        I18nUtil.marktr("TCP sessions"), null, false);
-        udpTotalSessionRequestCounter = c
-            .addMetric("udpTotalSessionRequestCounter", I18nUtil.marktr("UDP session requests"),
-                       null, false);
-        tcpTotalSessionRequestCounter = c
-            .addMetric("tcpTotalSessionRequestCounter", I18nUtil.marktr("TCP session requests"),
-                       null, false);        
+        udpLiveSessionCounter = c.makeLoadCounter("udpLiveSessionCounter", "UDP sessions");
+        tcpLiveSessionCounter = c.makeLoadCounter("tcpLiveSessionCounter", "TCP sessions");
+        udpTotalSessionCounter = c.addMetric("udpTotalSessionCounter", I18nUtil.marktr("UDP sessions"), null, false);
+        tcpTotalSessionCounter = c.addMetric("tcpTotalSessionCounter", I18nUtil.marktr("TCP sessions"), null, false);
+        udpTotalSessionRequestCounter = c.addMetric("udpTotalSessionRequestCounter", I18nUtil.marktr("UDP session requests"), null, false);
+        tcpTotalSessionRequestCounter = c.addMetric("tcpTotalSessionRequestCounter", I18nUtil.marktr("TCP session requests"), null, false);        
     }
 
     /*
@@ -359,8 +342,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             }
 
             // Create the session, client and server channels
-            com.untangle.uvm.argon.TCPSession pSession =
-                new com.untangle.uvm.argon.TCPSessionImpl(request);
+            com.untangle.uvm.argon.TCPSession pSession = new com.untangle.uvm.argon.TCPSessionImpl(request);
             TCPSessionImpl session = new TCPSessionImpl(this, pSession, request.pipelineEndpoints(),
                                                         td.getTcpClientReadBufferSize(),
                                                         td.getTcpServerReadBufferSize());
@@ -369,8 +351,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             if (RWSessionStats.DoDetailedTimes)
                 madeSessionTime = MetaEnv.currentTimeMillis();
 
-            // Send the new session event.  Maybe this should be done on the session handler
-            // thread instead?  XX
+            // Send the new session event.  
             if (logger.isInfoEnabled())
                 logger.info("New TCP session " +
                             session.clientAddr().getHostAddress() + ":" + session.clientPort() + " -> " +
@@ -608,11 +589,13 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     {
         // Note that we do *not* consider session reads a failure.  This is a result
         // of how we currently handle session shutdown.
-        return (lastCommandReadFailed);
+        return this.lastCommandReadFailed;
     }
 
-    // Called whenever a command socket read occurs.
-    void lastCommandNumRead(int numRead)
+    /**
+     * Called whenever a command socket read occurs.
+     */
+    public void lastCommandNumRead(int numRead)
     {
         if (numRead > 0) {
             lastCommandReadFailed = false;
@@ -621,15 +604,12 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         }
     }
 
-    void setSessionEventListener(SessionEventListener listener)
+    public void setSessionEventListener(SessionEventListener listener)
     {
         sessionEventListener = listener;
     }
 
-
-    //
-
-    int[] liveSessionIds()
+    public int[] liveSessionIds()
     {
         TIntArrayList idlist = new TIntArrayList(liveSessions.size());
         for (Iterator<IPSession> i = liveSessions.keySet().iterator(); i.hasNext(); ) {

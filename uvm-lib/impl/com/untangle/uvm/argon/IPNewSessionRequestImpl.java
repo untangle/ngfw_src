@@ -50,8 +50,7 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     /* Two ways to create an IPNewSessionRequest:
      * A. Pass in the netcap session and get the parameters from there.
      */
-    public IPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent,
-                                    PipelineEndpoints pe )
+    public IPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent, PipelineEndpoints pe )
     {
         super( sessionGlobalState, agent );
 
@@ -73,17 +72,16 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
         serverAddr = server.host();
         serverPort = server.port();
 
-	natFromHost = sessionGlobalState.netcapSession.natInfo.fromHost;
-	natFromPort = sessionGlobalState.netcapSession.natInfo.fromPort;
-	natToHost = sessionGlobalState.netcapSession.natInfo.toHost;
-	natToPort = sessionGlobalState.netcapSession.natInfo.toPort;
+        natFromHost = sessionGlobalState.netcapSession.natInfo.fromHost;
+        natFromPort = sessionGlobalState.netcapSession.natInfo.fromPort;
+        natToHost = sessionGlobalState.netcapSession.natInfo.toHost;
+        natToPort = sessionGlobalState.netcapSession.natInfo.toPort;
     }
 
     /* Two ways to create an IPNewSessionRequest:
      * B. Pass in the previous request and get the parameters from there
      */
-    public IPNewSessionRequestImpl( IPSession session, ArgonAgent agent, PipelineEndpoints pe,
-				    SessionGlobalState sessionGlobalState)
+    public IPNewSessionRequestImpl( IPSession session, ArgonAgent agent, PipelineEndpoints pe, SessionGlobalState sessionGlobalState)
     {
         super( session.sessionGlobalState(), agent);
 
@@ -96,14 +94,13 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
         serverPort = session.serverPort();
         serverIntf = session.serverIntf();
 
-	natFromHost = sessionGlobalState.netcapSession.natInfo.fromHost;
-	natFromPort = sessionGlobalState.netcapSession.natInfo.fromPort;
-	natToHost = sessionGlobalState.netcapSession.natInfo.toHost;
-	natToPort = sessionGlobalState.netcapSession.natInfo.toPort;
+        natFromHost = sessionGlobalState.netcapSession.natInfo.fromHost;
+        natFromPort = sessionGlobalState.netcapSession.natInfo.fromPort;
+        natToHost = sessionGlobalState.netcapSession.natInfo.toHost;
+        natToPort = sessionGlobalState.netcapSession.natInfo.toPort;
 
         this.pipelineEndpoints = pe;
     }
-
 
     public short protocol()
     {

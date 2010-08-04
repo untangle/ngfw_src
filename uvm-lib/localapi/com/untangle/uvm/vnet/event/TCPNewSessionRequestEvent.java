@@ -43,7 +43,8 @@ import com.untangle.uvm.vnet.TCPNewSessionRequest;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class TCPNewSessionRequestEvent extends MPipeEvent {
+public class TCPNewSessionRequestEvent extends MPipeEvent
+{
     
     public TCPNewSessionRequestEvent(MPipe mPipe, TCPNewSessionRequest sessionRequest)
     {
@@ -54,4 +55,5 @@ public class TCPNewSessionRequestEvent extends MPipeEvent {
     {
         return (TCPNewSessionRequest)getSource();
     }
+
 }

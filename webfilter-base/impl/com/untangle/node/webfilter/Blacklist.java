@@ -42,6 +42,7 @@ import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
+import com.untangle.uvm.vnet.TCPSession;
 
 /**
  * Does blacklist lookups in the database.
@@ -51,15 +52,13 @@ import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
  */
 public abstract class Blacklist
 {
-    private static final Pattern IP_PATTERN = Pattern
-        .compile("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+    private static final Pattern IP_PATTERN = Pattern.compile("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 
     private final Logger logger = Logger.getLogger(Blacklist.class);
 
     private final WebFilterBase node;
 
-    private final Map<InetAddress, Set<String>> hostWhitelists
-        = new HashMap<InetAddress, Set<String>>();
+    private final Map<InetAddress, Set<String>> hostWhitelists = new HashMap<InetAddress, Set<String>>();
 
     private volatile WebFilterSettings settings;
     private volatile String[] blockedUrls = new String[0];
@@ -98,9 +97,8 @@ public abstract class Blacklist
 
     protected abstract boolean getLookupSubdomains();
 
-    // package protected methods ----------------------------------------------
 
-    void addWhitelistHost(InetAddress addr, String site)
+    public  void addWhitelistHost(InetAddress addr, String site)
     {
         Set<String> wl;
         synchronized (hostWhitelists) {
@@ -122,7 +120,7 @@ public abstract class Blacklist
      *
      * @param map a Map<InetAddress, List<String>>
      */
-    void removeUnblockedSites(Map<InetAddress, List<String>> map)
+    public void removeUnblockedSites(Map<InetAddress, List<String>> map)
     {
     logger.info("about to remove host-bypassed sites for "  + map.size() + " host(s)");
 
@@ -156,14 +154,13 @@ public abstract class Blacklist
     /**
      * Remove all the unblocked sites for all the clients.
      */
-    void removeAllUnblockedSites() {
+    public void removeAllUnblockedSites() {
         hostWhitelists.clear();
     }
 
-    public String checkRequest(InetAddress clientIp, int port,
-                               RequestLineToken requestLine, Header header)
+    public String checkRequest(TCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, Header header)
     {
-        return checkRequest(clientIp, port, requestLine, header, null);
+        return checkRequest(sess, clientIp, port, requestLine, header, null);
     }
 
     /**
@@ -177,9 +174,7 @@ public abstract class Blacklist
      * @param event This is the new sessions request associated with this request, (or null if this is later.)
      * @return an HTML response.
      */
-    public String checkRequest(InetAddress clientIp, int port,
-                               RequestLineToken requestLine, Header header,
-                               TCPNewSessionRequestEvent event)
+    public String checkRequest(TCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, Header header, TCPNewSessionRequestEvent event)
     {
         URI uri = null;
         try {
@@ -207,9 +202,7 @@ public abstract class Blacklist
         // check client IP address pass list
         description = isClientPassListed(clientIp);
         if (null != description) {
-            WebFilterEvent hbe = new WebFilterEvent
-                (requestLine.getRequestLine(), Action.PASS, Reason.PASS_CLIENT,
-                 description, node.getVendor());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Action.PASS, Reason.PASS_CLIENT,description, node.getVendor());
             logger.info(hbe);
             return null;
         }
@@ -217,9 +210,7 @@ public abstract class Blacklist
         // check passlisted rules
         description = isSitePassListed(host,uri);
         if (null != description) {
-            WebFilterEvent hbe = new WebFilterEvent
-                (requestLine.getRequestLine(), Action.PASS,
-                 Reason.PASS_URL, description, node.getVendor());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Action.PASS,Reason.PASS_URL, description, node.getVendor());
             logger.debug("LOG: in pass list: " + requestLine.getRequestLine());
             node.log(hbe, host, port, event);
             return null;
@@ -227,10 +218,7 @@ public abstract class Blacklist
 
         // check bypasses
         if (isSiteBypassed(host, uri, clientIp)) {
-            WebFilterEvent hbe = new WebFilterEvent
-                (requestLine.getRequestLine(), Action.PASS,
-                 Reason.PASS_BYPASS, "unblocked",
-                 node.getVendor());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Action.PASS,Reason.PASS_BYPASS, "unblocked",node.getVendor());
             logger.debug("LOG: in bypass list: " + requestLine.getRequestLine());
             node.log(hbe, host, port, event);
             return null;
@@ -239,25 +227,21 @@ public abstract class Blacklist
         // only check block all IP hosts on http traffic
         if (80 == port && settings.getBaseSettings().getBlockAllIpHosts()) {
             if (null == host || IP_PATTERN.matcher(host).matches()) {
-                WebFilterEvent hbe = new WebFilterEvent
-                    (requestLine.getRequestLine(), Action.BLOCK,
-                     Reason.BLOCK_IP_HOST, host, node.getVendor());
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Action.BLOCK, Reason.BLOCK_IP_HOST, host, node.getVendor());
                 logger.debug("LOG: block all IPs: " + requestLine.getRequestLine());
                 node.log(hbe, host, port, event);
 
-                Map<String,String> i18nMap = LocalUvmContextFactory.context().
-                    languageManager().getTranslations("untangle-node-webfilter");
+                Map<String,String> i18nMap = LocalUvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
 
-                WebFilterBlockDetails bd = new WebFilterBlockDetails
-                    (settings, host, uri.toString(),
-                     I18nUtil.tr("host name is an IP address ({0})", host, i18nMap),
-                     clientIp, node.getNodeTitle());
+                WebFilterBlockDetails bd = new WebFilterBlockDetails(settings, host, uri.toString(),
+                                                                     I18nUtil.tr("host name is an IP address ({0})", host, i18nMap),
+                                                                     clientIp, node.getNodeTitle());
                 return node.generateNonce(bd);
             }
         }
 
         // check in WebFilterSettings
-        String nonce = checkBlacklist(clientIp, host, port, requestLine, event);
+        String nonce = checkBlacklist(sess, clientIp, host, port, requestLine, event);
 
         if (null != nonce) {
             return nonce;
@@ -270,14 +254,11 @@ public abstract class Blacklist
                 if (logger.isDebugEnabled()) {
                     logger.debug("blocking extension " + exn);
                 }
-                WebFilterEvent hbe = new WebFilterEvent
-                    (requestLine.getRequestLine(), Action.BLOCK,
-                     Reason.BLOCK_EXTENSION, exn, node.getVendor());
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Action.BLOCK,Reason.BLOCK_EXTENSION, exn, node.getVendor());
                 logger.debug("LOG: in extensions list: " + requestLine.getRequestLine());
                 node.log(hbe, host, port, event);
 
-                Map<String,String> i18nMap = LocalUvmContextFactory.context().
-                    languageManager().getTranslations("untangle-node-webfilter");
+                Map<String,String> i18nMap = LocalUvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
 
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri.toString(),
@@ -287,16 +268,13 @@ public abstract class Blacklist
             }
         }
 
-        WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(),
-                                                null, null, null,
-                                                node.getVendor(), true);
+        WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(),null, null, null,node.getVendor(), true);
         node.log(hbe, host, port, event);
 
         return null;
     }
 
-    public String checkResponse(InetAddress clientIp,
-                                RequestLineToken requestLine, Header header)
+    public String checkResponse(InetAddress clientIp, RequestLineToken requestLine, Header header)
     {
         if (null == requestLine) {
             return null;
@@ -344,10 +322,8 @@ public abstract class Blacklist
         return null;
     }
 
-    // protected methods ------------------------------------------------------
 
-    protected abstract String checkBlacklistDatabase(String dom, int port,
-                                                     String uri);
+    protected abstract String checkBlacklistDatabase(String dom, int port, String uri);
 
     protected abstract void updateToCurrentCategories(WebFilterSettings s);
 
@@ -376,8 +352,7 @@ public abstract class Blacklist
         return catName;
     }
 
-    // private methods --------------------------------------------------------
-
+    
     /**
      * isSitePassListed checks the host+uri against the pass list
      *
@@ -462,8 +437,7 @@ public abstract class Blacklist
         return host;
     }
 
-    private String checkBlacklist(InetAddress clientIp, String host, int port,
-                                  RequestLineToken requestLine, TCPNewSessionRequestEvent event)
+    private String checkBlacklist(TCPSession sess, InetAddress clientIp, String host, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event)
     {
         URI reqUri = requestLine.getRequestUri();
 
@@ -481,6 +455,19 @@ public abstract class Blacklist
 
         BlacklistCategory category = findBestCategory(host, port, uri);
 
+        if (category != null) {
+            /**
+             * Tag the session with metadata
+             * Use KEY_SITEFILTER_BEST_CATEGORY or KEY_WEBFILTER_BEST_CATEGORY
+             */
+            logger.warn("attaching");
+            sess.globalAttach(node.getVendor()+"-best-category-id",category.getId());
+            sess.globalAttach(node.getVendor()+"-best-category-name",category.getName());
+            sess.globalAttach(node.getVendor()+"-best-category-description",category.getDescription());
+            sess.globalAttach(node.getVendor()+"-best-category-logged",category.getLog());
+            sess.globalAttach(node.getVendor()+"-best-category-blocked",category.getBlock());
+        }
+        
         StringRule stringRule;
         if (null == category || !category.getBlock()) {
             stringRule = findBestRule(host, uri, port, requestLine, event);
@@ -491,33 +478,23 @@ public abstract class Blacklist
         if (category != null && category.getBlock()) {
             Action a = Action.BLOCK;
             Reason reason = Reason.BLOCK_CATEGORY;
-            WebFilterEvent hbe = new WebFilterEvent
-                (requestLine.getRequestLine(), a, reason,
-                 category.getDisplayName(), node.getVendor());
-            node.log(hbe, host, port,event);
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), a, reason, category.getDisplayName(), node.getVendor());
+            node.log(hbe, host, port, event);
 
-            WebFilterBlockDetails bd = new WebFilterBlockDetails
-                (settings, host, uri, category.getDescription(), clientIp,
-                 node.getNodeTitle());
+            WebFilterBlockDetails bd = new WebFilterBlockDetails(settings, host, uri, category.getDescription(), clientIp, node.getNodeTitle());
             return node.generateNonce(bd);
         } else if (stringRule != null && stringRule.isLive()) {
             Action a = Action.BLOCK;
             Reason reason = Reason.BLOCK_URL;
-            WebFilterEvent hbe = new WebFilterEvent
-                (requestLine.getRequestLine(), a, reason,
-                 stringRule.getDescription(), node.getVendor());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), a, reason, stringRule.getDescription(), node.getVendor());
             node.log(hbe, host, port, event);
 
-            WebFilterBlockDetails bd = new WebFilterBlockDetails
-                (settings, host, uri, stringRule.getDescription(), clientIp,
-                 node.getNodeTitle());
+            WebFilterBlockDetails bd = new WebFilterBlockDetails(settings, host, uri, stringRule.getDescription(), clientIp, node.getNodeTitle());
             return node.generateNonce(bd);
         } else if (category != null) {
             Action a = Action.PASS;
             Reason reason = Reason.BLOCK_CATEGORY;
-            WebFilterEvent hbe = new WebFilterEvent
-                (requestLine.getRequestLine(), a, reason,
-                 category.getDisplayName(), node.getVendor());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), a, reason, category.getDisplayName(), node.getVendor());
             node.log(hbe, host, port, event);
             node.incrementPassLogCount();
             return null;
@@ -525,9 +502,7 @@ public abstract class Blacklist
             Action a = Action.PASS;
             Reason reason = Reason.BLOCK_URL;
             node.incrementPassLogCount();
-            WebFilterEvent hbe = new WebFilterEvent
-                (requestLine.getRequestLine(), a, reason,
-                 stringRule.getDescription(), node.getVendor());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), a, reason, stringRule.getDescription(), node.getVendor());
             node.log(hbe, host, port, event);
             return null;
         } else {
@@ -535,8 +510,7 @@ public abstract class Blacklist
         }
     }
 
-    private BlacklistCategory findBestCategory(String host, int port,
-                                               String uri)
+    private BlacklistCategory findBestCategory(String host, int port, String uri)
     {
         BlacklistCategory category = null;
         boolean blockFound = false;
@@ -568,8 +542,7 @@ public abstract class Blacklist
         return category;
     }
 
-    private StringRule findBestRule(String host, String uri, int port,
-                                    RequestLineToken requestLine, TCPNewSessionRequestEvent event)
+    private StringRule findBestRule(String host, String uri, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event)
     {
         StringRule stringRule = null;
         boolean blockFound = false;
@@ -600,8 +573,7 @@ public abstract class Blacklist
         return stringRule;
     }
 
-    private StringRule findCategory(CharSequence[] strs, String val,
-                                    Set<StringRule> rules)
+    private StringRule findCategory(CharSequence[] strs, String val, Set<StringRule> rules)
     {
         int i = findMatch(strs, val);
         return 0 > i ? null : lookupCategory(strs[i], rules);
@@ -656,8 +628,7 @@ public abstract class Blacklist
 	return -1; // no matches at all
     }
 
-    private StringRule lookupCategory(CharSequence match,
-                                      Set<StringRule> rules)
+    private StringRule lookupCategory(CharSequence match, Set<StringRule> rules)
     {
         for (StringRule rule : rules) {
             String uri = normalizeDomain(rule.getString());

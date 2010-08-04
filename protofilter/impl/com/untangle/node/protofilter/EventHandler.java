@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.uvm.vnet.AbstractEventHandler;
+import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.TCPSession;
@@ -79,7 +80,6 @@ public class EventHandler extends AbstractEventHandler
         // We now don't allocate memory until we need it.
         sessInfo.clientBuffer = null;
         sessInfo.serverBuffer = null;
-        //sessInfo.pipeline = LocalUvmContextFactory.context().pipelineFoundry().getPipeline(sess.id());
         sess.attach(sessInfo);
     }
 
@@ -91,7 +91,6 @@ public class EventHandler extends AbstractEventHandler
         // We now don't allocate memory until we need it.
         sessInfo.clientBuffer = null;
         sessInfo.serverBuffer = null;
-        //sessInfo.pipeline = LocalUvmContextFactory.context().pipelineFoundry().getPipeline(sess.id());
         sess.attach(sessInfo);
     }
 
@@ -236,6 +235,13 @@ public class EventHandler extends AbstractEventHandler
                 }
             }
 
+            /**
+             * Tag the session with metadata
+             */
+            sess.globalAttach(Session.KEY_PROTOFILTER_PROTOCOL,elem.getProtocol());
+            sess.globalAttach(Session.KEY_PROTOFILTER_PROTOCOL_CATEGORY,elem.getCategory());
+            sess.globalAttach(Session.KEY_PROTOFILTER_PROTOCOL_DESCRIPTION,elem.getDescription());
+                              
             node.incrementDetectCount();
 
             if(elem.getAlert()) {

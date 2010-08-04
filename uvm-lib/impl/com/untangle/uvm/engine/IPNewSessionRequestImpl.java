@@ -45,45 +45,54 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
      */
     protected final com.untangle.uvm.argon.IPNewSessionRequest pRequest;
 
-    protected IPNewSessionRequestImpl(Dispatcher disp,
-                                      com.untangle.uvm.argon.IPNewSessionRequest pRequest) {
+    protected IPNewSessionRequestImpl(Dispatcher disp, com.untangle.uvm.argon.IPNewSessionRequest pRequest)
+    {
         this.mPipe = disp.mPipe();
         this.pRequest = pRequest;
     }
 
-    public MPipe mPipe() {
+    public MPipe mPipe()
+    {
         return mPipe;
     }
 
-    public int id() {
+    public int id()
+    {
         return pRequest.id();
     }
 
-    public short protocol() {
+    public short protocol()
+    {
         return pRequest.protocol();
     }
 
-    public InetAddress clientAddr() {
+    public InetAddress clientAddr()
+    {
         return pRequest.clientAddr();
     }
 
-    public InetAddress serverAddr() {
+    public InetAddress serverAddr()
+    {
         return pRequest.serverAddr();
     }
 
-    public int clientPort() {
+    public int clientPort()
+    {
         return pRequest.clientPort();
     }
 
-    public int serverPort() {
+    public int serverPort()
+    {
         return pRequest.serverPort();
     }
 
-    public byte clientIntf() {
+    public byte clientIntf()
+    {
         return pRequest.clientIntf();
     }
 
-    public byte serverIntf() {
+    public byte serverIntf()
+    {
         return pRequest.serverIntf();
     }
 
@@ -149,7 +158,8 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
         pRequest.release();
     }
 
-    public void release() {
+    public void release()
+    {
         release(false);
     }
 
@@ -165,16 +175,17 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
         return attachment;
     }
 
-    byte state() {
+    public byte state()
+    {
         return pRequest.state();
     }
 
-    boolean needsFinalization()
+    public boolean needsFinalization()
     {
         return needsFinalization;
     }
 
-    boolean modified()
+    public boolean modified()
     {
         return modified;
     }
@@ -198,5 +209,4 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
     {
         return pRequest.getNatToPort();
     }
-
 }

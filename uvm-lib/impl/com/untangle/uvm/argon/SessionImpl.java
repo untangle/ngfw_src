@@ -53,52 +53,26 @@ public abstract class SessionImpl implements Session
      * have to be checked everywhere */
     protected PipelineListener listener = NULL_PIPELINE_LISTENER;
 
-    /* NULL Pipeline listener used once an argon agent dies */
-    /* This allows the agent to be stopped without waiting for the entire pipeline to stop.
+    /**
+     * NULL Pipeline listener used once an argon agent dies 
+     * This allows the agent to be stopped without waiting for the entire pipeline to stop.
      */
     private static final PipelineListener NULL_PIPELINE_LISTENER = new PipelineListener() {
-            public void clientEvent( IncomingSocketQueue in )
-            {
-            }
-
-            public void clientEvent( OutgoingSocketQueue out )
-            {
-            }
-
-            public void serverEvent( IncomingSocketQueue in )
-            {
-            }
-
-            public void serverOutputResetEvent( OutgoingSocketQueue out )
-            {
-            }
-
-
-            public void serverEvent( OutgoingSocketQueue out )
-            {
-            }
-
-            public void clientOutputResetEvent( OutgoingSocketQueue out )
-            {
-            }
-
-            public void raze()
-            {
-            }
-
-            public void complete()
-            {
-            }
+            public void clientEvent( IncomingSocketQueue in ) {}
+            public void clientEvent( OutgoingSocketQueue out ) {}
+            public void serverEvent( IncomingSocketQueue in ) {}
+            public void serverOutputResetEvent( OutgoingSocketQueue out ) {}
+            public void serverEvent( OutgoingSocketQueue out ) {}
+            public void clientOutputResetEvent( OutgoingSocketQueue out ) {}
+            public void raze() {}
+            public void complete() {}
         };
 
-    static void init()
-    {
-    }
-
+    static void init() {}
 
     /* Package method just used create released sessions,
      * released session should set isVectored to false */
-    SessionImpl( NewSessionRequest request, boolean isVectored )
+    public SessionImpl( NewSessionRequest request, boolean isVectored )
     {
         sessionGlobalState        = request.sessionGlobalState();
         argonAgent                = request.argonAgent();
@@ -331,7 +305,6 @@ public abstract class SessionImpl implements Session
         if ( serverIncomingSocketQueue != null ) serverIncomingSocketQueue.raze();
         if ( serverOutgoingSocketQueue != null ) serverOutgoingSocketQueue.raze();
     }
-
 
     /* XXX All this does is remove the session from the argon agent table, this is being
      * done from the tapi, so it is no longer necessary */

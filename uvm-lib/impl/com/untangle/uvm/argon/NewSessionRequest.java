@@ -41,4 +41,6 @@ public interface NewSessionRequest extends SessionDesc
      * @return session global state.
      */
     public SessionGlobalState sessionGlobalState();
+
+
 }

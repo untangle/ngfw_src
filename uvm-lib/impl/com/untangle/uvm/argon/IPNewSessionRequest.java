@@ -117,4 +117,5 @@ public interface IPNewSessionRequest extends NewSessionRequest, IPSessionDesc
     public int getNatFromPort();
     public InetAddress getNatToHost();
     public int getNatToPort();
+
 }

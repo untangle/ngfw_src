@@ -21,14 +21,18 @@ package com.untangle.uvm.engine;
 import com.untangle.uvm.vnet.MPipe;
 import com.untangle.uvm.vnet.Session;
 
+import org.apache.log4j.Logger;
+
 /**
  * Abstract base class for all live sessions
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-abstract class SessionImpl implements Session {
-
+abstract class SessionImpl implements Session
+{
+    private final Logger logger = Logger.getLogger(SessionImpl.class);
+    
     // For when we use a two-element array to store state for both sides.
     protected static final int CLIENT = 0;
     protected static final int SERVER = 1;
@@ -76,6 +80,18 @@ abstract class SessionImpl implements Session {
         return attachment;
     }
 
+
+    public Object globalAttach(String key, Object ob)
+    {
+        logger.warn("globalAttach( " + key + " , " + ob + " )");
+        return this.pSession.sessionGlobalState().attach(key,ob);
+    }
+
+    public Object globalAttachment(String key)
+    {
+        return this.pSession.sessionGlobalState().attachment(key);
+    }
+    
     /**
      * Number of bytes received from the client.
      */

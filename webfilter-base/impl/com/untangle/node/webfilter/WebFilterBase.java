@@ -307,31 +307,31 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     }
 
     @SuppressWarnings("unchecked") //getItems
-    public List<BlacklistCategory> getBlacklistCategories(int start, int limit,
-                                                          String... sortColumns) {
+    public List<BlacklistCategory> getBlacklistCategories(int start, int limit, String... sortColumns)
+    {
         return listUtil.getItems("select blacklistCategory from WebFilterSettings hbs " +
                                  "join hbs.blacklistCategories as blacklistCategory where hbs.tid = :tid ",
                                  getNodeContext(), getTid(), "blacklistCategory", start, limit, sortColumns);
     }
 
     @SuppressWarnings("unchecked") //getItems
-    public List<StringRule> getBlockedExtensions(int start, int limit,
-                                                 String... sortColumns) {
+    public List<StringRule> getBlockedExtensions(int start, int limit, String... sortColumns)
+    {
         return listUtil.getItems("select hbs.blockedExtensions from WebFilterSettings hbs where hbs.tid = :tid ",
                                  getNodeContext(), getTid(), start, limit, sortColumns);
     }
 
     @SuppressWarnings("unchecked") //getItems
-    public List<MimeTypeRule> getBlockedMimeTypes(int start, int limit,
-                                                  String... sortColumns) {
+    public List<MimeTypeRule> getBlockedMimeTypes(int start, int limit, String... sortColumns)
+    {
         return listUtil.getItems("select blockedMimeType from WebFilterSettings hbs " +
                                  "join hbs.blockedMimeTypes as blockedMimeType where hbs.tid = :tid ",
                                  getNodeContext(), getTid(), "blockedMimeType", start, limit, sortColumns);
     }
 
     @SuppressWarnings("unchecked") //getItems
-    public List<StringRule> getBlockedUrls(int start, int limit,
-                                           String... sortColumns) {
+    public List<StringRule> getBlockedUrls(int start, int limit, String... sortColumns)
+    {
         return listUtil.getItems("select hbs.blockedUrls from WebFilterSettings hbs where hbs.tid = :tid ",
                                  getNodeContext(), getTid(), start, limit, sortColumns);
     }
@@ -344,40 +344,40 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     }
 
     @SuppressWarnings("unchecked") //getItems
-    public List<StringRule> getPassedUrls(int start, int limit,
-                                          String... sortColumns) {
+    public List<StringRule> getPassedUrls(int start, int limit, String... sortColumns)
+    {
         return listUtil.getItems("select hbs.passedUrls from WebFilterSettings hbs where hbs.tid = :tid ",
                                  getNodeContext(), getTid(), start, limit, sortColumns);
     }
 
-    public void updateBlacklistCategories(List<BlacklistCategory> added,
-                                          List<Long> deleted, List<BlacklistCategory> modified) {
+    public void updateBlacklistCategories(List<BlacklistCategory> added, List<Long> deleted, List<BlacklistCategory> modified)
+    {
         updateCategories(getWebFilterSettings().getBlacklistCategories(), added, deleted, modified);
     }
 
-    public void updateBlockedExtensions(List<StringRule> added,
-                                        List<Long> deleted, List<StringRule> modified) {
+    public void updateBlockedExtensions(List<StringRule> added, List<Long> deleted, List<StringRule> modified)
+    {
         updateRules(getWebFilterSettings().getBlockedExtensions(), added,
                     deleted, modified);
     }
 
-    public void updateBlockedMimeTypes(List<MimeTypeRule> added,
-                                       List<Long> deleted, List<MimeTypeRule> modified) {
+    public void updateBlockedMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified)
+    {
         updateRules(getWebFilterSettings().getBlockedMimeTypes(), added, deleted, modified);
     }
 
-    public void updateBlockedUrls(List<StringRule> added, List<Long> deleted,
-                                  List<StringRule> modified) {
+    public void updateBlockedUrls(List<StringRule> added, List<Long> deleted, List<StringRule> modified)
+    {
         updateRules(getWebFilterSettings().getBlockedUrls(), added, deleted, modified);
     }
 
-    public void updatePassedClients(List<IPMaddrRule> added,
-                                    List<Long> deleted, List<IPMaddrRule> modified) {
+    public void updatePassedClients(List<IPMaddrRule> added, List<Long> deleted, List<IPMaddrRule> modified)
+    {
         updateRules(getWebFilterSettings().getPassedClients(), added, deleted, modified);
     }
 
-    public void updatePassedUrls(List<StringRule> added, List<Long> deleted,
-                                 List<StringRule> modified) {
+    public void updatePassedUrls(List<StringRule> added, List<Long> deleted, List<StringRule> modified)
+    {
         updateRules(getWebFilterSettings().getPassedUrls(), added, deleted, modified);
     }
 
@@ -416,7 +416,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         reconfigure();
     }
 
-    public Validator getValidator() {
+    public Validator getValidator()
+    {
         return new IPMaddrValidator();
     }
 
