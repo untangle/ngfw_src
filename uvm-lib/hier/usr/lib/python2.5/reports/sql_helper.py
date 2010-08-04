@@ -17,6 +17,7 @@
 # Aaron Read <amread@untangle.com>
 # Sebastien Delafond <seb@untangle.com>
 
+import datetime
 import inspect
 import logging
 import mx
@@ -347,7 +348,7 @@ def get_required_points(start, end, interval):
     a = []
     v = start
     while v < end:
-        a.append(v)
+        a.append(datetime.datetime.fromtimestamp(v))
         v = v + interval
     return a
 
