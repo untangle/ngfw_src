@@ -39,7 +39,7 @@ public class IPTraffic
     private static final int FLAG_TTL       = 0x004;
     private static final int FLAG_TOS       = 0x005;
     private static final int FLAG_MARK_EN   = 0x006 | LOCKABLE_MASK;
-    private static final int FLAG_MARK      = 0x007 | LOCKABLE_MASK;
+    private static final int FLAG_MARK      = 0x007;
     private static final int FLAG_PROTOCOL  = 0x008;    
     @SuppressWarnings("unused")
 	private static final int FLAG_MASK      = 0x0FF | LOCKABLE_MASK;

@@ -37,6 +37,9 @@ public class NetcapUDPSession extends NetcapSession
     
     private final PacketMailbox clientMailbox;
     private final PacketMailbox serverMailbox;
+
+    private IPTraffic serverTraffic = null;
+    private IPTraffic clientTraffic = null;
     
     public NetcapUDPSession( int id ) 
     {
@@ -151,6 +154,40 @@ public class NetcapUDPSession extends NetcapSession
         // serverComplete( pointer.value(), DEFAULT_SERVER_COMPLETE_FLAGS );
     }
 
+    public void setServerTraffic(IPTraffic serverTraffic)
+    {
+        this.serverTraffic = serverTraffic;
+    }
+
+    public void setClientTraffic(IPTraffic clientTraffic)
+    {
+        this.clientTraffic = clientTraffic;
+    }
+
+    @Override
+    public int  clientMark()
+    {
+        return this.clientTraffic.mark();
+    }
+    
+    @Override
+    public void clientMark(int newmark)
+    {
+        this.clientTraffic.mark(newmark);
+    }
+
+    @Override
+    public int  serverMark()
+    {
+        return this.serverTraffic.mark();
+    }
+    
+    @Override
+    public void serverMark(int newmark)
+    {
+        this.serverTraffic.mark(newmark);
+    }
+    
     private static native long   read( long sessionPointer, boolean ifClient, int timeout );
     private static native byte[] data( long packetPointer );
     private static native int    getData( long packetPointer, byte[] buffer );

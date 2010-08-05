@@ -222,7 +222,7 @@ abstract class ArgonHook implements Runnable
                     activeSessions.put( vector, sessionGlobalState );
 
                     /* Set the timeout for the vectoring machine */
-                    vector.timeout( timeout());
+                    vector.timeout( timeout() );
 
                     if ( logger.isDebugEnabled())
                         logger.debug( "Starting vectoring for session " + sessionGlobalState );

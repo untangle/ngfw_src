@@ -150,9 +150,11 @@ public class UDPHook implements NetcapHook
             /* Setup the marking */
             serverTraffic.isMarkEnabled( true );
             
-            serverTraffic.mark( lim.toNetcap( clientSide.clientIntf()));
+            serverTraffic.mark( lim.toNetcap( clientSide.clientIntf()) );
 
             serverTraffic.lock();
+
+            this.netcapUDPSession.setServerTraffic(serverTraffic);
 
             byte intf = lim.toNetcap( serverSide.serverIntf());
 
@@ -190,9 +192,12 @@ public class UDPHook implements NetcapHook
             clientTraffic.isMarkEnabled( true );
                 
             /* Packets cannot go back out on the server interface */
-            clientTraffic.mark( Argon.getInstance().getIntfManager().toNetcap( serverSide.serverIntf()));
+            clientTraffic.mark( Argon.getInstance().getIntfManager().toNetcap( serverSide.serverIntf()) );
 
             clientTraffic.lock();
+
+            this.netcapUDPSession.setClientTraffic(clientTraffic);
+
             return true;
         }
 

@@ -315,7 +315,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
             netcap_udp_session_raze( !NC_SESSTABLE_LOCK, session );
             //netcap_pkt_action_raze( pkt, NF_DROP );
             SESSTABLE_UNLOCK();
-            return errlog( ERR_CRITICAL, "_insert_first_pkt\n" );
+            return errlog( ERR_WARNING, "_insert_first_pkt\n" );
         }
 
         SESSTABLE_UNLOCK();
@@ -426,12 +426,15 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     char               control[MAX_CONTROL_MSG];
     u_short            sport;
     int                ret;
-    u_int              nfmark = ( MARK_ANTISUB | MARK_NOTRACK | ( pkt->is_marked ? pkt->nfmark : 0 )); 
-    /* mark is  antisub + notrack + whatever packet marks are specified */
-
+    /**
+     * mark packet with:  MARK_ANTISUB + whatever packet marks are specified 
+     * MARK_NOTRACK is commented out because it appears to not be needed and it interferes with proper QoS tracking
+     */
+    u_int              nfmark = ( MARK_ANTISUB | /* MARK_NOTRACK | */ ( pkt->is_marked ? pkt->nfmark : 0 )); 
+    
     /* if the caller uses the force flag, then override the default bits of the mark */
     if ( pkt->is_marked == IS_MARKED_FORCE_FLAG ) nfmark = pkt->nfmark;
-
+    
     if ( pkt->dst_intf != NC_INTF_UNK ) errlog(ERR_CRITICAL,"NC_INTF_UNK Unsupported (IP_DEVICE)\n");
 
     /* Setup the destination */
@@ -681,7 +684,7 @@ static int _insert_first_pkt( netcap_session_t* session, netcap_pkt_t* pkt )
 {
     /* Copy the packet id into the first_pkt structure */
     if (( session->first_pkt_id = pkt->packet_id ) == 0 ) {
-        return errlog( ERR_CRITICAL, "UDP SESSION: First packet already dropped.\n" );
+        return errlog( ERR_WARNING, "UDP SESSION: First packet already dropped.\n" );
     }
 
     pkt->packet_id = 0;
