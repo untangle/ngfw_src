@@ -121,8 +121,6 @@ typedef struct netcap_endpoints {
     netcap_endpoint_t srv;
 } netcap_endpoints_t;
 
-#define IS_MARKED_FORCE_FLAG 0xD0ED1273
-
 typedef struct netcap_ip_tuple
 {
     u_int32_t src_address;
@@ -139,6 +137,8 @@ typedef struct nat_info {
   netcap_ip_tuple reply;
 } nat_info_t;
 
+// random value to signal default
+#define IS_MARKED_FORCE_FLAG 0x00001200
 
 typedef struct netcap_pkt {
     /**
@@ -240,7 +240,6 @@ typedef struct netcap_session {
     int syn_mode; /* 1 = syn_mode, 0 = opaque mode */
 
     nat_info_t  nat_info;
-
 
     /**
      * alive: Just for UDP!  Only modify if you have a lock on the session table
@@ -562,6 +561,26 @@ int  netcap_endpoints_bzero         ( netcap_endpoints_t* tuple );
  * Toggle opaque mode
  */
 int  netcap_tcp_syn_mode (int toggle);
+
+/**
+ * Gets the socket mark - used on packets sent to the server
+ */
+int  netcap_tcp_get_server_mark ( netcap_session_t* netcap_sess );
+
+/**
+ * Sets the socket mark - used on packets sent to the server
+ */
+int  netcap_tcp_set_server_mark ( netcap_session_t* netcap_sess , int nfmark );
+
+/**
+ * Gets the socked mark - used on packets sent to the client
+ */
+int  netcap_tcp_get_client_mark ( netcap_session_t* netcap_sess );
+
+/**
+ * Sets the socked mark - used on packets sent to the client
+ */
+int  netcap_tcp_set_client_mark ( netcap_session_t* netcap_sess , int nfmark );
 
 /**
  * netcap_sched_donate: Donate a thread to the scheduler.

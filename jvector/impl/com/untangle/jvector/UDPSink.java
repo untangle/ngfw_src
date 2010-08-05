@@ -146,8 +146,7 @@ public class UDPSink extends Sink
         default:
         }
 
-        numWritten = write(traffic.pointer(), crumb.data(), crumb.offset(), size, ttl, tos, 
-                           options, isUdp, sourceAddress );
+        numWritten = write(traffic.pointer(), crumb.data(), crumb.offset(), size, ttl, tos, options, isUdp, sourceAddress );
 
         if ( numWritten < 0 ) {
             Vector.logWarn( "UDP: Unable to write crumb" );
@@ -199,8 +198,6 @@ public class UDPSink extends Sink
      * @param src     - Source address, used only for an ICMP message. (unused if zero)
      * @return Number of bytes written
      */
-    // protected static native int write( int pointer, byte[] data, int offset, int size, int packet );
-    protected static native int write( long pointer, byte[] data, int offset, int size, int ttl,
-                                       int tos, byte[] options, boolean isUdp, long srcAddress );
+    protected static native int write( long pointer, byte[] data, int offset, int size, int ttl, int tos, byte[] options, boolean isUdp, long srcAddress );
     protected static native int shutdown( long pointer );
 }

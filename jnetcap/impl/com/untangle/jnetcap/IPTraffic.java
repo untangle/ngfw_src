@@ -26,7 +26,8 @@ import java.net.InetAddress;
  * objects */
 /* XXX This is not a good name */
 /* XXX Could potentially be abstract */
-public class IPTraffic {
+public class IPTraffic
+{
     /**
      * The items with this bit are lockable, meaning once the lock flag is set
      * you are no longer able to modify these values
@@ -221,8 +222,16 @@ public class IPTraffic {
         pointer.raze();
     }
 
-    public void send( byte[] data ) { if ( send( pointer.value(), data ) < 0 ) Netcap.error(); }
-    public void send( String data ) { send( data.getBytes()); }
+    public void send( byte[] data )
+    {
+        if ( send( pointer.value(), data ) < 0 )
+            Netcap.error();
+    }
+    
+    public void send( String data )
+    {
+        send( data.getBytes());
+    }
 
     public void lock()
     {

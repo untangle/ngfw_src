@@ -92,10 +92,11 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client );
 static int  _netcap_tcp_syn_hook    ( netcap_pkt_t* syn );
 
 /* Util functions */
-extern int _netcap_tcp_setsockopt_cli( int sock );
-extern int _netcap_tcp_cli_send_reset( netcap_pkt_t* pkt );
+extern int _netcap_tcp_setsockopt_cli ( int sock );
+extern int _netcap_tcp_cli_send_reset ( netcap_pkt_t* pkt );
 
-
+static int _netcap_tcp_get_mark ( int sock );
+static int _netcap_tcp_set_mark ( int sock, int mark );
 
 static netcap_session_t* _netcap_get_or_create_sess( int* created_flag,
                                                      in_addr_t cli_addr, u_short cli_port, int cli_sock,
@@ -139,6 +140,76 @@ int  netcap_tcp_redirect_socks( int** sock_array )
     return RDR_TCP_LOCALS_SOCKS;
 }
 
+int  netcap_tcp_set_server_mark ( netcap_session_t* netcap_sess , int mark)
+{
+    if ( !netcap_sess )
+        return errlogargs();
+
+    if ( netcap_sess->protocol != IPPROTO_TCP ) {
+        return errlogargs();
+    }
+
+    return _netcap_tcp_set_mark( netcap_sess->server_sock, mark );
+}
+
+int  netcap_tcp_set_client_mark ( netcap_session_t* netcap_sess , int mark)
+{
+    if ( !netcap_sess )
+        return errlogargs();
+
+    if ( netcap_sess->protocol != IPPROTO_TCP ) {
+        return errlogargs();
+    }
+
+    return _netcap_tcp_set_mark( netcap_sess->client_sock, mark);
+}
+
+int  netcap_tcp_get_server_mark ( netcap_session_t* netcap_sess )
+{
+    if ( !netcap_sess )
+        return errlogargs();
+
+    return _netcap_tcp_get_mark( netcap_sess->server_sock );
+}
+
+int  netcap_tcp_get_client_mark ( netcap_session_t* netcap_sess )
+{
+    if ( !netcap_sess )
+        return errlogargs();
+
+    return _netcap_tcp_get_mark( netcap_sess->client_sock );
+}
+    
+static int _netcap_tcp_get_mark ( int sock )
+{
+    struct ip_sendnfmark_opts nfmark = {
+        .on = 0,
+        .mark = 0
+    };
+    u_int size = sizeof(nfmark);
+    
+    if ( getsockopt(sock,SOL_IP,IP_SENDNFMARK,&nfmark,&size) < 0 )
+        return perrlog( "setsockopt" );
+
+    return nfmark.mark;
+}
+
+
+static int _netcap_tcp_set_mark ( int sock, int mark )
+{
+    if ( sock < 1 )
+        return errlogargs();
+
+    struct ip_sendnfmark_opts nfmark = {
+        .on = 1,
+        .mark = mark
+    };
+
+    if ( setsockopt(sock,SOL_IP,IP_SENDNFMARK,&nfmark,sizeof(nfmark)) < 0 )
+        return perrlog( "setsockopt" );
+
+    return 0;
+}
 
 int  netcap_tcp_syn_mode ( int toggle )
 {
@@ -218,7 +289,6 @@ void netcap_tcp_cleanup_hook ( netcap_session_t* netcap_sess, void *arg )
     /* Remove the session */
     netcap_session_raze( netcap_sess );
 }
-
 
 tcp_msg_t* netcap_tcp_msg_malloc  ( void )
 {

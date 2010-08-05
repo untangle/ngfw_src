@@ -235,10 +235,17 @@ JNIEXPORT jint JNICALL JF_Session( getClientMark )
     netcap_session_t* session;
 
     JLONG_TO_SESSION( session, session_ptr );
-    
-    errlog( ERR_WARNING, "getClientMark\n" );
 
-    return 1;
+    if (!session)
+        jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid session (null)\n");
+
+    if (session->protocol == IPPROTO_TCP) {
+        return netcap_tcp_get_client_mark( session );
+    } else {
+        jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "getClientMark unsupported protocol (%i)\n",session->protocol);
+    }
+
+    return -1;
 }
 
 /*
@@ -252,8 +259,15 @@ JNIEXPORT void JNICALL JF_Session( setClientMark )
     netcap_session_t* session;
 
     JLONG_TO_SESSION_VOID( session, session_ptr );
-    
-    errlog( ERR_WARNING, "setClientMark\n" );
+
+    if (!session)
+        jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid session (null)\n");
+
+    if (session->protocol == IPPROTO_TCP) {
+        netcap_tcp_set_client_mark( session, mark );
+    } else {
+        jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "setClientMark unsupported protocol (%i)\n",session->protocol);
+    }
 
     return;
 }
@@ -269,10 +283,17 @@ JNIEXPORT jint JNICALL JF_Session( getServerMark )
     netcap_session_t* session;
 
     JLONG_TO_SESSION( session, session_ptr );
-    
-    errlog( ERR_WARNING, "getServerMark\n" );
 
-    return 1;
+    if (!session)
+        jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid session (null)\n");
+
+    if (session->protocol == IPPROTO_TCP) {
+        return netcap_tcp_get_server_mark( session );
+    } else {
+        jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "setServerMark unsupported protocol (%i)\n",session->protocol);
+    }
+
+    return -1;
 }
 
 /*
@@ -286,8 +307,15 @@ JNIEXPORT void JNICALL JF_Session( setServerMark )
     netcap_session_t* session;
 
     JLONG_TO_SESSION_VOID( session, session_ptr );
-    
-    errlog( ERR_WARNING, "setServerMark\n" );
+
+    if (!session)
+        jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid session (null)\n");
+
+    if (session->protocol == IPPROTO_TCP) {
+        netcap_tcp_set_server_mark( session, mark );
+    } else {
+        jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "setServerMark unsupported protocol (%i)\n",session->protocol);
+    }
 
     return;
 }

@@ -63,15 +63,15 @@ public class UDPHook implements NetcapHook
 
     public void event( int sessionID )
     {
-        /* XXX Need to change the priority of the thread */
-        // new Thread( new UDPArgonHook( sessionID )).start();
         new UDPArgonHook( sessionID ).run();
     }
 
     private class UDPArgonHook extends ArgonHook
     {
-        /** Default 70 second timeout for UDP sessions this fixes VOIP
-         * which defaults to a 60 second timeout. **/
+        /**
+         * Default 70 second timeout for UDP sessions this fixes VOIP
+         * which defaults to a 60 second timeout.
+         **/
         protected static final int TIMEOUT = 70 * 1000;
 
         protected final NetcapUDPSession netcapUDPSession;
@@ -213,14 +213,12 @@ public class UDPHook implements NetcapHook
             int icmpClientId = 0;
             if ( netcapUDPSession.isIcmpSession()) icmpClientId = netcapUDPSession.icmpClientId();
 
-            return new UDPSink( clientTraffic, clientSideListener, netcapUDPSession.icmpClientMailbox(),
-                                icmpClientId );
+            return new UDPSink( clientTraffic, clientSideListener, netcapUDPSession.icmpClientMailbox(), icmpClientId );
         }
 
         protected Sink makeServerSink()
         {
-            return new UDPSink( serverTraffic, serverSideListener, netcapUDPSession.icmpServerMailbox(),
-                                icmpServerId );
+            return new UDPSink( serverTraffic, serverSideListener, netcapUDPSession.icmpServerMailbox(), icmpServerId );
         }
 
         protected Source makeClientSource()

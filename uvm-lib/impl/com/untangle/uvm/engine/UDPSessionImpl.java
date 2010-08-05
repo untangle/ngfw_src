@@ -236,8 +236,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             offset = 0;
         }
 
-        UDPPacketCrumb crumb = new UDPPacketCrumb(header.ttl(), header.tos(), header.options(),
-                                                  array, offset, limit);
+        UDPPacketCrumb crumb = new UDPPacketCrumb(header.ttl(), header.tos(), header.options(), array, offset, limit);
         addCrumb(side, crumb);
     }
 
