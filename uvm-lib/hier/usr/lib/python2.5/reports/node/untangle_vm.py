@@ -42,7 +42,7 @@ from reports.engine import Column
 from reports.engine import FactTable
 from reports.engine import Node
 from reports.engine import get_wan_clause
-from sql_helper import print_timing
+from reports.sql_helper import print_timing
 
 EVT_TYPE_REGISTER = 0
 EVT_TYPE_RENEW    = 1

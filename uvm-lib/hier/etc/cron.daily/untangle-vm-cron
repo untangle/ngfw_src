@@ -14,11 +14,11 @@ if [ -f "@UVM_HOME@/activation.key" ]; then
     /usr/bin/find /tmp -mtime +31 -name "*.tmp" | /usr/bin/xargs -r /bin/rm
     /usr/bin/find @UVM_HOME@/tmp -name velocity -prune -o -type f -mtime +15 -print | /usr/bin/xargs -r /bin/rm
 
-    /usr/lib/python2.5/reports/process.py
+    /usr/share/untangle/bin/generate-reports.py
 
     yesterday=$(date --date="1 day ago" "+%y-%m-%d")
     for trial in $(/usr/share/untangle/bin/expiring_packages $yesterday) ; do
-      /usr/lib/python2.5/reports/process.py -t $trial
+      /usr/share/untangle/bin/generate-reports.py -t $trial
     done
 
     @UVM_HOME@/bin/utregister

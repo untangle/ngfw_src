@@ -42,7 +42,7 @@ from reports.engine import Column
 from reports.engine import FactTable
 from reports.engine import Node
 from reports.engine import TOP_LEVEL
-from sql_helper import print_timing
+from reports.sql_helper import print_timing
 
 _ = reports.i18n_helper.get_translation('untangle-node-shield').lgettext
 

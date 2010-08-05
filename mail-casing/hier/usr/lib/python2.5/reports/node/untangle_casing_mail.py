@@ -22,7 +22,7 @@ from psycopg2.extensions import DateFromMx
 from reports.engine import Column
 from reports.engine import FactTable
 from reports.engine import Node
-from sql_helper import print_timing
+from reports.sql_helper import print_timing
 
 class MailCasing(Node):
     def __init__(self):

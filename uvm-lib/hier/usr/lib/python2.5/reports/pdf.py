@@ -48,7 +48,7 @@ import reports
 import reports.i18n_helper
 
 from reports.engine import get_node_base
-from sql_helper import print_timing
+from reports.sql_helper import print_timing
 from log import *
 logger = getLogger(__name__)
 

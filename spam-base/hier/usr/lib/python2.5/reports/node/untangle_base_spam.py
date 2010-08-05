@@ -43,7 +43,7 @@ from reports.engine import Column
 from reports.engine import EMAIL_DRILLDOWN
 from reports.engine import Node
 from reports.engine import TOP_LEVEL
-from sql_helper import print_timing
+from reports.sql_helper import print_timing
 
 _ = reports.i18n_helper.get_translation('untangle-base-spam').lgettext
 

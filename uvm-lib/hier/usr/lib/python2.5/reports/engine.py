@@ -29,7 +29,7 @@ import sys
 
 from mx.DateTime import DateTimeDelta
 from psycopg2.extensions import DateFromMx
-from sql_helper import print_timing
+from reports.sql_helper import print_timing
 from reports.log import *
 logger = getLogger(__name__)
 

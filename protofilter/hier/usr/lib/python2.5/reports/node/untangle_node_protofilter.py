@@ -44,7 +44,7 @@ from reports.engine import HOST_DRILLDOWN
 from reports.engine import Node
 from reports.engine import TOP_LEVEL
 from reports.engine import USER_DRILLDOWN
-from sql_helper import print_timing
+from reports.sql_helper import print_timing
 
 _ = reports.i18n_helper.get_translation('untangle-node-protofilter').lgettext
 
