@@ -85,10 +85,10 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 // patternsLength field
                 totalRecords : this.getBaseSettings().patternsLength,
                 emptyRow : {
-                    "category" : this.i18n._("[no category]"),
                     "protocol" : this.i18n._("[no protocol]"),
-                    "blocked" : false,
+                    "category" : this.i18n._("[no category]"),
                     "log" : false,
+                    "blocked" : false,
                     "description" : this.i18n._("[no description]"),
                     "definition" : this.i18n._("[no signature]")
                 },
@@ -106,15 +106,15 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 // this field is internationalized so a converter was
                 // added
                 {
+                    name : 'protocol',
+                    type : 'string'
+                },{
                     name : 'category',
                     type : 'string'
                 }, {
-                    name : 'protocol',
-                    type : 'string'
+                    name : 'log'
                 }, {
                     name : 'blocked'
-                }, {
-                    name : 'log'
                 }, {
                     name : 'description',
                     type : 'string'
@@ -123,6 +123,14 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 }],
                 // the list of columns for the column model
                 columns : [{
+                    id : 'protocol',
+                    header : this.i18n._("protocol"),
+                    width : 200,
+                    dataIndex : 'protocol',
+                    editor : new Ext.form.TextField({
+                        allowBlank : false
+                    })
+                }, {
                     id : 'category',
                     header : this.i18n._("category"),
                     width : 200,
@@ -131,15 +139,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                }, {
-                    id : 'protocol',
-                    header : this.i18n._("protocol"),
-                    width : 200,
-                    dataIndex : 'protocol',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
-                }, blockedColumn, logColumn, {
+                }, logColumn, blockedColumn, {
                     id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
@@ -152,26 +152,26 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 columnsDefaultSortable : true,
                 plugins : [blockedColumn, logColumn],
                 // the row input lines used by the row editor window
-                rowEditorInputLines : [new Ext.form.TextField({
-                    name : "Category",
-                    dataIndex : "category",
-                    fieldLabel : this.i18n._("Category"),
-                    allowBlank : false,
-                    width : 200
-                }), new Ext.form.TextField({
+                rowEditorInputLines : [ new Ext.form.TextField({
                     name : "Protocol",
                     dataIndex : "protocol",
                     fieldLabel : this.i18n._("Protocol"),
                     allowBlank : false,
                     width : 200
-                }), new Ext.form.Checkbox({
-                    name : "Block",
-                    dataIndex : "blocked",
-                    fieldLabel : this.i18n._("Block")
+                }), new Ext.form.TextField({
+                    name : "Category",
+                    dataIndex : "category",
+                    fieldLabel : this.i18n._("Category"),
+                    allowBlank : false,
+                    width : 200
                 }), new Ext.form.Checkbox({
                     name : "Log",
                     dataIndex : "log",
                     fieldLabel : this.i18n._("Log")
+                }), new Ext.form.Checkbox({
+                    name : "Block",
+                    dataIndex : "blocked",
+                    fieldLabel : this.i18n._("Block")
                 }), new Ext.form.TextArea({
                     name : "Description",
                     dataIndex : "description",
