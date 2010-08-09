@@ -3,14 +3,64 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
     Ung.NodeWin.registerClassName('untangle-node-protofilter', 'Ung.Protofilter');
 
     Ung.Protofilter = Ext.extend(Ung.NodeWin, {
+    	panelStatus: null,
         gridProtocolList : null,
         gridEventLog : null,
         initComponent : function() {
+            this.buildStatus();
             this.buildProtocolList();
             this.buildEventLog();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.gridProtocolList, this.gridEventLog]);
+            this.buildTabPanel([this.panelStatus, this.gridProtocolList, this.gridEventLog]);
             Ung.Protofilter.superclass.initComponent.call(this);
+        },
+        // Status Panel
+        buildStatus : function() {
+            this.panelStatus = new Ext.Panel({
+                name : 'Status',
+                helpSource : 'status',
+                parentId : this.getId(),
+
+                title : this.i18n._('Status'),
+                layout : "form",
+                cls: 'ung-panel',
+                autoScroll : true,
+                defaults : {
+                    xtype : 'fieldset',
+                    autoHeight : true,
+                    buttonAlign : 'left'
+                },
+                items : [{
+                    title : this.i18n._('Status'),
+                    cls: 'description',
+                    html : String.format(this.i18n._("Protocol Control uses signatures to detect the protocols of network traffic. It is useful for detecting unwanted or interesting protocols in use on the network."))
+                }, {
+                    title : this.i18n._(''),
+				    layout:'form',
+                    labelWidth: 230,
+                    defaults: {
+                    	xtype: "textfield",
+                    	disabled: true
+					},
+                    items: [{
+                        fieldLabel : this.i18n._('Total Signatures Available'),
+                        name: 'Total Signatures Available',
+                        value: this.getBaseSettings().patternsLength
+                    }, {
+                        fieldLabel : this.i18n._('Total Signatures Logging'),
+                        name: 'Total Signatures Logging',
+                        value: this.getBaseSettings().patternsLoggedLength
+                    }, {
+                        fieldLabel : this.i18n._('Total Signatures Blocking'),
+                        name: 'Total Signatures Blocking',
+                        value: this.getBaseSettings().patternsBlockedLength
+                    }]
+                }, {
+                    title : this.i18n._('Note'),
+                    cls: 'description',
+                    html : String.format(this.i18n._("Caution and discretion is advised using block at the the risk of false positives and intelligent applications shifting protocol usage to avoid blocking."))
+                }]
+            });
         },
         // Protocol list grid
         buildProtocolList : function() {
@@ -29,7 +79,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
 
             this.gridProtocolList = new Ung.EditorGrid({
                 settingsCmp : this,
-                name : 'Protocol List',
+                name : 'Signatures',
                 helpSource : 'protocol_list',
                 // the total records is set from the base settings
                 // patternsLength field
@@ -42,7 +92,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     "description" : this.i18n._("[no description]"),
                     "definition" : this.i18n._("[no signature]")
                 },
-                title : this.i18n._("Protocol List"),
+                title : this.i18n._("Signatures"),
                 // the column is autoexpanded if the grid width permits
                 autoExpandColumn : 'description',
                 recordJavaClass : "com.untangle.node.protofilter.ProtoFilterPattern",

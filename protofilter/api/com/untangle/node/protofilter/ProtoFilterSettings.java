@@ -78,26 +78,44 @@ public class ProtoFilterSettings implements java.io.Serializable
 	@Id
     @Column(name="settings_id")
     @GeneratedValue
-    private Long getId() { return id; }
+    private Long getId()
+    { return id; }
+
     @SuppressWarnings("unused")
-	private void setId(Long id) { this.id = id; }
+	private void setId(Long id)
+    { this.id = id; }
 
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    public Tid getTid() { return tid; }
-    public void setTid(Tid tid) { this.tid = tid; }
+    public Tid getTid()
+    { return tid; }
 
-    public int getByteLimit() { return this.byteLimit; }
-    public void setByteLimit(int i) { this.byteLimit = i; }
+    public void setTid(Tid tid)
+    { this.tid = tid; }
 
-    public int getChunkLimit() { return this.chunkLimit; }
-    public void setChunkLimit(int i) { this.chunkLimit = i; }
+    public int getByteLimit()
+    { return this.byteLimit; }
 
-    public String getUnknownString() { return this.unknownString; }
-    public void setUnknownString(String s) { this.unknownString = s; }
+    public void setByteLimit(int i)
+    { this.byteLimit = i; }
 
-    public boolean isStripZeros() { return this.stripZeros; }
-    public void setStripZeros(boolean b) { this.stripZeros = b; }
+    public int getChunkLimit()
+    { return this.chunkLimit; }
+
+    public void setChunkLimit(int i)
+    { this.chunkLimit = i; }
+
+    public String getUnknownString()
+    { return this.unknownString; }
+
+    public void setUnknownString(String s)
+    { this.unknownString = s; }
+
+    public boolean isStripZeros()
+    { return this.stripZeros; }
+
+    public void setStripZeros(boolean b)
+    { this.stripZeros = b; }
 
     /**
      * Pattern rules.
@@ -108,19 +126,40 @@ public class ProtoFilterSettings implements java.io.Serializable
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
-    public Set<ProtoFilterPattern> getPatterns() { return patterns; }
-    public void setPatterns(Set<ProtoFilterPattern> s) { this.patterns = s; }
+    public Set<ProtoFilterPattern> getPatterns()
+    { return patterns; }
+
+    public void setPatterns(Set<ProtoFilterPattern> s)
+    { this.patterns = s; }
 
     @Embedded
-	public ProtoFilterBaseSettings getBaseSettings() {
+	public ProtoFilterBaseSettings getBaseSettings()
+    {
         if (null != baseSettings) {
-            baseSettings.setPatternsLength(null == patterns ? 0 : patterns.size());
+            int loggedPatterns = 0;
+            int blockedPatterns = 0;
+            int numPatterns = 0;
+            if ( this.patterns != null ) {
+                numPatterns = patterns.size();
+
+                for ( ProtoFilterPattern pattern : this.patterns ) {
+                    if (pattern.getLog())
+                        loggedPatterns++;
+                    if (pattern.isBlocked())
+                        blockedPatterns++;
+                }
+            }
+
+            baseSettings.setPatternsLength( numPatterns );
+            baseSettings.setPatternsLoggedLength( loggedPatterns );
+            baseSettings.setPatternsBlockedLength( blockedPatterns );
         }
 
         return baseSettings;
 	}
 
-	public void setBaseSettings(ProtoFilterBaseSettings baseSettings) {
+	public void setBaseSettings(ProtoFilterBaseSettings baseSettings)
+    {
 		if (null == baseSettings) {
 			baseSettings = new ProtoFilterBaseSettings();
 		}

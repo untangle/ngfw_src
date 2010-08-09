@@ -31,20 +31,45 @@ import javax.persistence.Transient;
  */
 @Embeddable
 @SuppressWarnings("serial")
-public class ProtoFilterBaseSettings implements Serializable {
-	
+public class ProtoFilterBaseSettings implements Serializable
+{
 	private int patternsLength;
+	private int patternsLoggedLength;
+	private int patternsBlockedLength;
 	
-	public ProtoFilterBaseSettings() {
-	}
+	public ProtoFilterBaseSettings() {}
 	
 	@Transient
-	public int getPatternsLength() {
+	public int getPatternsLength()
+    {
 		return patternsLength;
 	}
 
-	public void setPatternsLength(int patternsLength) {
+	public void setPatternsLength(int patternsLength)
+    {
 		this.patternsLength = patternsLength;
 	}
 
+	@Transient
+	public int getPatternsLoggedLength()
+    {
+		return patternsLoggedLength;
+	}
+
+	public void setPatternsLoggedLength(int patternsLoggedLength)
+    {
+		this.patternsLoggedLength = patternsLoggedLength;
+	}
+
+	@Transient
+	public int getPatternsBlockedLength()
+    {
+		return patternsBlockedLength;
+	}
+
+	public void setPatternsBlockedLength(int patternsBlockedLength)
+    {
+		this.patternsBlockedLength = patternsBlockedLength;
+	}
+    
 }
