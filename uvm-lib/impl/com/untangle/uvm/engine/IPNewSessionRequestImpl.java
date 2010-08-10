@@ -177,6 +177,16 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
         return attachment;
     }
 
+    public Object globalAttach(String key, Object ob)
+    {
+        return this.argonRequest.sessionGlobalState().attach(key,ob);
+    }
+
+    public Object globalAttachment(String key)
+    {
+        return this.argonRequest.sessionGlobalState().attachment(key);
+    }
+    
     public byte state()
     {
         return argonRequest.state();

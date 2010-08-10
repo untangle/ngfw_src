@@ -83,7 +83,6 @@ abstract class SessionImpl implements Session
 
     public Object globalAttach(String key, Object ob)
     {
-        logger.warn("globalAttach( " + key + " , " + ob + " )");
         return this.argonSession.sessionGlobalState().attach(key,ob);
     }
 

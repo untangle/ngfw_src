@@ -42,6 +42,7 @@ import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
 import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
 import com.untangle.uvm.node.LocalADConnector;
@@ -155,10 +156,11 @@ abstract class ArgonHook implements Runnable
             /* lookup the user information */
             LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().localNodeManager().node("untangle-node-adconnector");
             if (adconnector != null) {
-                String username = adconnector.getPhoneBook().tryLookupUser( clientSide.clientAddr());
+                String username = adconnector.getPhoneBook().tryLookupUser( clientSide.clientAddr() );
                 if (username != null && username.length() > 0 ) { 
                     logger.debug( "user information: " + username );
                     sessionGlobalState.setUser( username );
+                    sessionGlobalState.attach( Session.KEY_PLATFORM_ADCONNECTOR_USERNAME, username );
                 }
             }
             

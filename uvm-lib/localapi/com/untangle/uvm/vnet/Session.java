@@ -120,6 +120,7 @@ public interface Session extends SessionDesc
     public final String KEY_WEBFILTER_BEST_CATEGORY_DESCRIPTION = "untangle-best-category-description";
     public final String KEY_WEBFILTER_BEST_CATEGORY_LOGGED = "untangle-best-category-logged";
     public final String KEY_WEBFILTER_BEST_CATEGORY_BLOCKED = "untangle-best-category-blocked";
+    public final String KEY_PLATFORM_ADCONNECTOR_USERNAME = "platform-adconnector-username";
 
 }
 

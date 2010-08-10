@@ -52,7 +52,7 @@ public abstract class MPipeEvent extends java.util.EventObject
         this.mPipe = mPipe;
     }
 
-    public MPipe mPipe() 
+    public MPipe mPipe()
     {
         return mPipe;
     }

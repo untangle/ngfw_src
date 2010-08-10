@@ -35,20 +35,17 @@ class RouterSessionManager
 {
     Map<Integer,RouterSessionData> map = new ConcurrentHashMap<Integer,RouterSessionData>();
 
-    Map<SessionRedirectKey,SessionRedirect> redirectMap =
-        new ConcurrentHashMap<SessionRedirectKey,SessionRedirect>();
+    Map<SessionRedirectKey,SessionRedirect> redirectMap = new ConcurrentHashMap<SessionRedirectKey,SessionRedirect>();
 
     private final Logger logger = Logger.getLogger( this.getClass());
-    RouterImpl node;
+    private RouterImpl node;
 
-    RouterSessionManager( RouterImpl node )
+    public RouterSessionManager( RouterImpl node )
     {
         this.node = node;
     }
 
-    void registerSession( IPNewSessionRequest request, Protocol protocol,
-                          InetAddress clientAddr, int clientPort,
-                          InetAddress serverAddr, int serverPort )
+    void registerSession( IPNewSessionRequest request, Protocol protocol, InetAddress clientAddr, int clientPort, InetAddress serverAddr, int serverPort )
     {
         RouterSessionData data =
             new RouterSessionData( clientAddr, clientPort,
@@ -206,7 +203,6 @@ class SessionRedirectKey
         return "SessionRedirectKey| [" + protocol +"] " + "/" + serverAddr + ":" + serverPort;
     }
 
-
     private int calculateHashCode()
     {
         int result = 17;
@@ -237,13 +233,11 @@ class SessionRedirect
     private final Logger logger = Logger.getLogger( this.getClass());
     final SessionRedirectKey key;
 
-    SessionRedirect( InetAddress clientAddr, int clientPort,
-                     InetAddress serverAddr, int serverPort,
-                     int reservedPort, InetAddress myAddr, SessionRedirectKey key )
+    SessionRedirect( InetAddress clientAddr, int clientPort, InetAddress serverAddr, int serverPort, int reservedPort, InetAddress myAddr, SessionRedirectKey key )
     {
-	createRedirectRule(clientAddr, clientPort,
-			   serverAddr, serverPort,
-			   reservedPort, myAddr);
+        createRedirectRule(clientAddr, clientPort,
+                           serverAddr, serverPort,
+                           reservedPort, myAddr);
 
         this.clientAddr   = clientAddr;
         this.clientPort   = clientPort;
@@ -266,65 +260,65 @@ class SessionRedirect
 
         if ( reservedPort > 0 ) {
             node.getHandler().releasePort( key.protocol, reservedPort );
-	    removeRedirectRule();
+            removeRedirectRule();
         }
 
         reservedPort = 0;
     }
+    
     private String redirectRuleFilter;
     private String redirectRuleIp;
     private int redirectRulePort;
-    private synchronized void createRedirectRule( InetAddress clientAddr, int clientPort,
-						  InetAddress serverAddr, int serverPort,
-						  int reservedPort, InetAddress myAddr )
+
+    private synchronized void createRedirectRule( InetAddress clientAddr, int clientPort, InetAddress serverAddr, int serverPort, int reservedPort, InetAddress myAddr )
     {
         if (logger.isDebugEnabled()) {
-	    logger.debug("clientAddr:"+clientAddr);
-	    logger.debug("clientPort:"+clientPort);
-	    logger.debug("serverAddr:"+serverAddr);
-	    logger.debug("serverPort:"+serverPort);
-	    logger.debug("reservedPort:"+reservedPort);
-	}
-	redirectRuleFilter =
-	    "-p tcp "
-	    + " -d " + myAddr.getHostAddress()
-	    + " --dport "+ reservedPort ;
-	redirectRuleIp = serverAddr.getHostAddress();
-	redirectRulePort = serverPort;
-	if (logger.isDebugEnabled()) {
-	    logger.debug("Asking the Alpaca to CREATE redirect rule");
-	    logger.debug("rule filter: "+redirectRuleFilter);
-	    logger.debug("rule clientIp: "+redirectRuleIp);
-	    logger.debug("rule clientPort: "+redirectRulePort);
-	}
-	try {
+            logger.debug("clientAddr:"+clientAddr);
+            logger.debug("clientPort:"+clientPort);
+            logger.debug("serverAddr:"+serverAddr);
+            logger.debug("serverPort:"+serverPort);
+            logger.debug("reservedPort:"+reservedPort);
+        }
+        redirectRuleFilter =
+            "-p tcp "
+            + " -d " + myAddr.getHostAddress()
+            + " --dport "+ reservedPort ;
+        redirectRuleIp = serverAddr.getHostAddress();
+        redirectRulePort = serverPort;
+        if (logger.isDebugEnabled()) {
+            logger.debug("Asking the Alpaca to CREATE redirect rule");
+            logger.debug("rule filter: "+redirectRuleFilter);
+            logger.debug("rule clientIp: "+redirectRuleIp);
+            logger.debug("rule clientPort: "+redirectRulePort);
+        }
+        try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put( "filter", redirectRuleFilter );
             jsonObject.put( "new_ip", redirectRuleIp );
             jsonObject.put( "new_port", redirectRulePort );
-	    JsonClient.getInstance().callAlpaca("uvm", "session_redirect_create", jsonObject );
-	} catch(Exception e){
-	    logger.error("Failure creating redirect rule:"+ e);
-	}
-	return;
+            JsonClient.getInstance().callAlpaca("uvm", "session_redirect_create", jsonObject );
+        } catch(Exception e){
+            logger.error("Failure creating redirect rule:"+ e);
+        }
+        return;
     }
 
     private synchronized void removeRedirectRule()
     {
-	if (logger.isDebugEnabled()) {
-	    logger.debug("Asking the Alpaca to DESTROY redirect rule");
-	    logger.debug("rule filter: "+redirectRuleFilter);
-	    logger.debug("rule clientIp: "+redirectRuleIp);
-	    logger.debug("rule clientPort: "+redirectRulePort);
-	}
-	try{
+        if (logger.isDebugEnabled()) {
+            logger.debug("Asking the Alpaca to DESTROY redirect rule");
+            logger.debug("rule filter: "+redirectRuleFilter);
+            logger.debug("rule clientIp: "+redirectRuleIp);
+            logger.debug("rule clientPort: "+redirectRulePort);
+        }
+        try{
             JSONObject jsonObject = new JSONObject();
             jsonObject.put( "filter", redirectRuleFilter );
             jsonObject.put( "new_ip", redirectRuleIp );
             jsonObject.put( "new_port", redirectRulePort );
-	    JsonClient.getInstance().callAlpaca("uvm","session_redirect_delete", jsonObject );
-	} catch(Exception e){
-	    logger.error("Failure creating redirect rule:"+ e);
-	}
+            JsonClient.getInstance().callAlpaca("uvm","session_redirect_delete", jsonObject );
+        } catch(Exception e){
+            logger.error("Failure creating redirect rule:"+ e);
+        }
     }
 }

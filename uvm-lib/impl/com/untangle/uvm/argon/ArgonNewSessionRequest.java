@@ -42,5 +42,4 @@ public interface ArgonNewSessionRequest extends ArgonSessionDesc
      */
     public SessionGlobalState sessionGlobalState();
 
-
 }

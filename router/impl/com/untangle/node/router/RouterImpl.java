@@ -46,7 +46,7 @@ public class RouterImpl extends AbstractNode implements Router
 {
     private final RouterEventHandler handler;
     private final RouterSessionManager sessionManager;
-    final RouterStatisticManager statisticManager;
+    private final RouterStatisticManager statisticManager;
     private final DhcpMonitor dhcpMonitor;
     /* Done with an inner class so the GUI doesn't freak out about not
      * having the NetworkSettingsListener class */
@@ -71,8 +71,9 @@ public class RouterImpl extends AbstractNode implements Router
         this.dhcpMonitor      = new DhcpMonitor( this, LocalUvmContextFactory.context());
         this.listener         = new SettingsListener();
 
-        /* Have to figure out pipeline ordering, this should always next
-         * to towards the outside */
+        /**
+         * Have to figure out pipeline ordering, this should always towards the server
+         */
         natPipeSpec = new SoloPipeSpec("nat", this, this.handler, Fitting.OCTET_STREAM, Affinity.SERVER, SoloPipeSpec.MAX_STRENGTH - 1);
 
         /* This subscription has to evaluate after NAT */

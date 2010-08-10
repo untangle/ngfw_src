@@ -83,4 +83,32 @@ public interface NewSessionRequest
      *          or <tt>null</tt> if there is no attachment
      */
     Object attachment();
+
+    /**
+     * Attaches the given object to this session
+     * This is visible and modifiable by all Nodes
+     *
+     * <p> An attached object may later be retrieved via the {@link
+     * #attachment attachment} method.  Only one object may be
+     * attached at a time for a given key; invoking this method
+     * causes any previous attachment to be discarded.  The
+     * current attachment may be discarded by attaching <tt>null</tt>.
+     *
+     * @param key The string key; may be <tt>null</tt>
+     * @param ob The object to be attached; may be <tt>null</tt>
+     *
+     * @return The previously-attached object, if any, otherwise
+     *          <tt>null</tt>
+     */
+    Object globalAttach(String key, Object ob);
+
+    /**
+     * Retrieves the current attachment.
+     *
+     * @param key The string key; may be <tt>null</tt>
+     * 
+     * @return The object currently attached to this session, or
+     *          <tt>null</tt> if there is no attachment
+     */
+    Object globalAttachment(String key);
 }
