@@ -79,6 +79,7 @@ class Jars
   Slf4j      = [ Jars.downloadTarget( 'slf4j-1.4.3/slf4j-log4j12-1.4.3.jar'),
                  Jars.downloadTarget( 'slf4j-1.4.3/slf4j-api-1.4.3.jar' ) ]
   YUICompressor    = [ Jars.downloadTarget('yuicompressor-2.4.2/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar') ]
+  Gson       = [ Jars.downloadTarget('google-gson-1.4-release/google-gson-1.4/gson-1.4.jar') ]
 
   TomcatCommon = [ 'commons-el.jar',
                    'jasper-compiler.jar',
@@ -109,7 +110,7 @@ class Jars
   ## XmlRpc Jars
   XmlRpc     = [ Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-client-3.1.jar'),
                  Jars.downloadTarget('xmlrpc-3.1/lib/xmlrpc-common-3.1.jar'),
-         Jars.downloadTarget('xmlrpc-3.1/lib/ws-commons-util-1.0.2.jar') ]
+                 Jars.downloadTarget('xmlrpc-3.1/lib/ws-commons-util-1.0.2.jar') ]
 
   ## GUIJars
   Alloy      = [ Jars.downloadTarget('alloylnf-1_4_4-1/alloy.jar') ]
@@ -165,7 +166,7 @@ class Jars
                               GetText, JavaMail, TomcatEmb, Velocity, 
                               Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc,
                               Jstl, XStream, Json, Jabsorb, Slf4j, DnsJava,
-                              Jnlp, JFreeChart)
+                              Jnlp, JFreeChart, Gson)
 
   Commons    = %w( commons-beanutils-1.7.0/commons-beanutils.jar
                    hibernate-3.2/lib/commons-collections-2.1.1.jar
