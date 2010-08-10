@@ -33,7 +33,7 @@ tarballs_bz2=ant-contrib-1.0b2.tar.bz2 jaf-1.0.2.tar.bz2 \
 
 zips=ant-pack200.zip javamail-1_3_3_01.zip alloylnf-1_4_4-1.zip \
 	htmlparser1_6_20060319.zip xstream-distribution-1.3-bin.zip \
-	jabsorb-1.2.2-src.zip yuicompressor-2.4.2.zip
+	jabsorb-1.2.2-src.zip yuicompressor-2.4.2.zip google-gson-1.4-release.zip
 
 jars=itext-1.3.jar hibernate-client.jar gettext-commons-0.9.1.jar \
 	properJavaRDP-1.1.jar java-getopt-1.0.12.jar jnlp.jar
@@ -68,36 +68,36 @@ md5sum:
 	@find $(OUTPUT_DIRECTORY) | sort | md5sum | sed 's/$$/ Directory structure/' >> output.md5
 
 $(OUTPUT_DIRECTORY)/%: %.tar.gz %.excl $(OUTPUT_DIRECTORY).$(dir_target)
-	@echo "==> tar $< -> $@"
+	@echo "[untar gz] $< -> $@"
 	@$(RM_DIR) $@
 	@$(TAR) -C $(OUTPUT_DIRECTORY) -X $(<:.tar.gz=.excl) -zxf $<
-	@if [ -x $(<:.tar.gz=.post) ]; then ./$(<:.tar.gz=.post) $(OUTPUT_DIRECTORY); fi
+	@if [ -x $(<:.tar.gz=.post) ]; then echo "[post    ] ./$(<:.zip=.post) $(OUTPUT_DIRECTORY)" ; ./$(<:.tar.gz=.post) $(OUTPUT_DIRECTORY) > /dev/null 2>&1; fi
 	@touch $@
 
 $(OUTPUT_DIRECTORY)/%: %.tar.bz2 %.excl $(OUTPUT_DIRECTORY).$(dir_target)
-	@echo "==> tar $< -> $@"
+	@echo "[untar bz] $< -> $@"
 	@$(RM_DIR) $@
 	@$(TAR) -C $(OUTPUT_DIRECTORY) -X $(<:.tar.bz2=.excl) -jxf $<
-	@if [ -x $(<:.tar.bz2=.post) ]; then ./$(<:.tar.bz2=.post) $(OUTPUT_DIRECTORY); fi
+	@if [ -x $(<:.tar.bz2=.post) ]; then echo "[post    ] ./$(<:.zip=.post) $(OUTPUT_DIRECTORY)" ; ./$(<:.tar.bz2=.post) $(OUTPUT_DIRECTORY) > /dev/null 2>&1; fi
 	@touch $@
 
 # Zip doesn't support exclude list files, just via arguments Assume
 # zips made from directory itself (yuck) Also, unzip can exit with
 # status 2 when everything is ok!
 $(OUTPUT_DIRECTORY)/%: %.zip $(OUTPUT_DIRECTORY).$(dir_target)
-	@echo "==> unzip $< -> $@"
+	@echo "[unzip   ] $< -> $@"
 	@$(RM_DIR) $@
-	@-$(UNZIP) -d $@ $<
-	@if [ -x $(<:.zip=.post) ]; then ./$(<:.zip=.post) $(OUTPUT_DIRECTORY); fi
+	@-$(UNZIP) -d $@ $< > /dev/null 2>&1
+	@if [ -x $(<:.zip=.post) ]; then echo "[post    ] ./$(<:.zip=.post) $(OUTPUT_DIRECTORY)" ; ./$(<:.zip=.post) $(OUTPUT_DIRECTORY) > /dev/null 2>&1; fi
 	@touch $@
 
 # Jars are simpler since there is no exclusion.
 $(OUTPUT_DIRECTORY)/%: %.jar $(OUTPUT_DIRECTORY).$(dir_target)
-	@echo "==> jar $< -> $@"
+	@echo "[unjar   ] $< -> $@"
 	@$(RM_DIR) $@
 	@$(MK_DIR) $@
 	@$(CP) $< $@
-	@if [ -x $(<:.jar=.post) ]; then ./$(<:.jar=.post) $(OUTPUT_DIRECTORY); fi
+	@if [ -x $(<:.jar=.post) ]; then echo "[post    ] ./$(<:.zip=.post) $(OUTPUT_DIRECTORY)" ; ./$(<:.jar=.post) $(OUTPUT_DIRECTORY) > /dev/null 2>&1; fi
 	@touch $@
 
 ## Delete the output directory

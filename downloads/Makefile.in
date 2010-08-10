@@ -116,7 +116,7 @@ default: all
 	@$(RM) tmp.o
 
 %.$(dir_target):
-	@if [ ! -d $(@:.$(dir_target)=) ] ; then echo "==> Ensure Directory '$(@:.$(dir_target)=)'" ; fi
+	@if [ ! -d $(@:.$(dir_target)=) ] ; then echo "[ensurdir] '$(@:.$(dir_target)=)'" ; fi
 	@mkdir -p $(@:.$(dir_target)=) -m $(dir_mode)
 
 clean.default:
