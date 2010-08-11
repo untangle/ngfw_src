@@ -102,7 +102,8 @@ $(OUTPUT_DIRECTORY)/%: %.jar $(OUTPUT_DIRECTORY).$(dir_target)
 
 ## Delete the output directory
 distclean:
-	rm -rf $(OUTPUT_DIRECTORY)
+	@echo "[rm -rf  ] $(OUTPUT_DIRECTORY)"
+	@rm -rf $(OUTPUT_DIRECTORY)
 
 ## Nothing to do
 clean: ;
