@@ -27,13 +27,12 @@ CPD cpd = (CPD)uvm.nodeManager().node("untangle-node-cpd");
 
 boolean isLoggedOut = false;
 
-/* Do not allow people to log out other people */
 if ( cpd != null ) {
-    String address = (String)(( session == null ) ? null : session.getAttribute("logout-ip"));
-
-    if ( address != null && request.getRemoteAddr().equals( address )) {
-        isLoggedOut = cpd.logout( request.getRemoteAddr());
-    }
+    /**
+     * 8.0 change:
+     * If the traffic is coming from the host - assume it valid
+     */
+    isLoggedOut = cpd.logout( request.getRemoteAddr());
 
     if ( session != null ) {
         session.invalidate();
@@ -45,5 +44,4 @@ js.put( "status", "success" );
 js.put( "loggedOut", isLoggedOut );
 
 %>
-
 <%= js.toString() %>
