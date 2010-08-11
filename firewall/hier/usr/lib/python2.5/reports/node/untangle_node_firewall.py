@@ -59,7 +59,7 @@ class Firewall(Node):
         ft = reports.engine.get_fact_table('reports.session_totals')
 
         ft.measures.append(Column('firewall_blocks', 'integer',
-                                  "count(CASE WHEN NOT firewall_was_blocked ISNULL THEN 1 ELSE null END)"))
+                                  "count(CASE WHEN firewall_was_blocked THEN 1 ELSE null END)"))
 
         ft.dimensions.append(Column('firewall_rule_index', 'integer'))
         ft.dimensions.append(Column('firewall_rule_description', 'text'))
@@ -209,7 +209,7 @@ class DailyRules(reports.Graph):
                 unit = "Day"
                 formatter = DATE_FORMATTER
 
-            sums = ["COUNT(CASE WHEN firewall_rule_index IS NOT NULL AND firewall_was_blocked IS NULL THEN 1 ELSE null END)",
+            sums = ["COUNT(CASE WHEN firewall_rule_index IS NOT NULL AND NOT firewall_was_blocked THEN 1 ELSE null END)",
                     "COUNT(CASE WHEN firewall_was_blocked THEN 1 ELSE null END)"]
 
             extra_where = []
@@ -465,7 +465,7 @@ class FirewallDetail(DetailSection):
 
         rv = rv + [ColumnDesc('firewall_rule_index', _('Rule Applied')),
                    ColumnDesc('firewall_rule_description', _('Rule Description')),
-                   ColumnDesc('firewall_was_blocked', _('Action')),
+                   ColumnDesc('firewall_was_blocked', _('Blocked')),
                    ColumnDesc('c_server_addr', _('Destination Ip')),
                    ColumnDesc('c_server_port', _('Destination Port')),
                    ColumnDesc('c_client_addr', _('Source Ip')),
