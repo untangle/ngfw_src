@@ -48,7 +48,7 @@ end
 
 # XXX Move this into main rakefile
 if File.exist?('./downloads') and not $CleanBuild
-  Kernel.system("make -C ./downloads")
+  Kernel.system("make --no-print-directory -C ./downloads")
 end
 
 require "./buildtools/stamp-task.rb"

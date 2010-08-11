@@ -49,12 +49,10 @@ public final class IntfSimpleMatcher extends IntfDBMatcher
 {
 
     /* An interface matcher that matches everything */
-    private static final IntfDBMatcher ALL_MATCHER
-        = new IntfSimpleMatcher(true);
+    private static final IntfDBMatcher ALL_MATCHER = new IntfSimpleMatcher(true);
 
     /* An interface matcher that doesn't match anything */
-    private static final IntfDBMatcher NOTHING_MATCHER
-        = new IntfSimpleMatcher(false);
+    private static final IntfDBMatcher NOTHING_MATCHER = new IntfSimpleMatcher(false);
 
     /* true if this is the all matcher */
     private final boolean isAll;

@@ -615,14 +615,14 @@ public abstract class Blacklist
 
 	    // match
 	    try {
-		if (Pattern.matches(re, val)) {
-		    logger.debug("findMatch: ** matches pattern '" + re + "'");
-		    return i; // done, we do not care if others match too
-		} else {
-		    logger.debug("findMatch: ** does not match '" + re + "'");		
-		}
+            if (Pattern.matches(re, val)) {
+                logger.debug("findMatch: ** matches pattern '" + re + "'");
+                return i; // done, we do not care if others match too
+            } else {
+                logger.debug("findMatch: ** does not match '" + re + "'");		
+            }
 	    } catch (PatternSyntaxException e) {
-		logger.error("findMatch: ** invalid pattern '" + re + "'");		
+            logger.error("findMatch: ** invalid pattern '" + re + "'");		
 	    }
 	}
 	return -1; // no matches at all

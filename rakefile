@@ -24,7 +24,7 @@ task :default => :devel
 task :all => :devel
 
 task :clean do
-  Kernel.system( "make -C downloads distclean" )
+  Kernel.system( "make --no-print-directory -C downloads distclean" )
   info "[rm -rf  ] #{BuildEnv::SRC.devel}"
   FileUtils.rm_rf(BuildEnv::SRC.devel) if File.exist?(BuildEnv::SRC.devel)
   info "[rm -rf  ] #{BuildEnv::SRC.staging}"

@@ -53,9 +53,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 {
     private final EventHandler handler = new EventHandler( this );
 
-    private final SoloPipeSpec pipeSpec = new SoloPipeSpec
-        ("protofilter", this, handler, Fitting.OCTET_STREAM,
-         Affinity.CLIENT, 0);
+    private final SoloPipeSpec pipeSpec = new SoloPipeSpec("protofilter", this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, 0);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
 
     private final EventLogger<ProtoFilterLogEvent> eventLogger;
@@ -127,7 +125,8 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         return cachedSettings.getBaseSettings();
     }
 
-    public void setBaseSettings(final ProtoFilterBaseSettings baseSettings) {
+    public void setBaseSettings(final ProtoFilterBaseSettings baseSettings)
+    {
         TransactionWork<Object> tw = new TransactionWork<Object>() {
                 public boolean doWork(Session s) {
                     cachedSettings.setBaseSettings(baseSettings);
@@ -143,14 +142,14 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     }
     
     @SuppressWarnings("unchecked") //getItems
-    public List<ProtoFilterPattern> getPatterns(final int start,
-                                                final int limit, final String... sortColumns) {
+    public List<ProtoFilterPattern> getPatterns(final int start, final int limit, final String... sortColumns)
+    {
         return listUtil.getItems( "select hbs.patterns from ProtoFilterSettings hbs where hbs.tid = :tid ",
                                   getNodeContext(), getTid(), start, limit, sortColumns );
     }
     
-    public void updatePatterns(List<ProtoFilterPattern> added,
-                               List<Long> deleted, List<ProtoFilterPattern> modified) {
+    public void updatePatterns(List<ProtoFilterPattern> added, List<Long> deleted, List<ProtoFilterPattern> modified)
+    {
         
         updatePatterns(getProtoFilterSettings().getPatterns(), added, deleted,
                        modified);
@@ -161,7 +160,8 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 	 * @see com.untangle.node.protofilter.ProtoFilter#updateAll(java.util.List[])
 	 */
     @SuppressWarnings("unchecked")
-	public void updateAll(List[] patternsChanges) {
+	public void updateAll(List[] patternsChanges)
+    {
     	if (patternsChanges != null && patternsChanges.length >= 3) {
             updatePatterns(patternsChanges[0], patternsChanges[1], patternsChanges[2]);
     	}
@@ -392,8 +392,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         eventLogger.log(se);
     }
 
-    private void updatePatterns(final Set<ProtoFilterPattern> patterns, final List<ProtoFilterPattern> added,
-                             final List<Long> deleted, final List<ProtoFilterPattern> modified)
+    private void updatePatterns(final Set<ProtoFilterPattern> patterns, final List<ProtoFilterPattern> added, final List<Long> deleted, final List<ProtoFilterPattern> modified)
     {
         TransactionWork<Object> tw = new TransactionWork<Object>()
             {

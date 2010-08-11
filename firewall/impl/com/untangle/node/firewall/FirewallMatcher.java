@@ -42,8 +42,7 @@ class FirewallMatcher extends TrafficIntfMatcher {
                            PortMatcher srcPort, PortMatcher dstPort,
                            boolean isTrafficBlocker )
     {
-        super(isEnabled, protocol, srcIntf, dstIntf, srcAddress, dstAddress,
-              srcPort, dstPort);
+        super(isEnabled, protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort);
 
         /* Attributes of the firewall rule */
         this.isTrafficBlocker = isTrafficBlocker;

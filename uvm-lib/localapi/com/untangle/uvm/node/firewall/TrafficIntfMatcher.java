@@ -85,13 +85,11 @@ public abstract class TrafficIntfMatcher extends TrafficMatcher
                            InetAddress srcAddress, InetAddress dstAddress,
                            int srcPort, int dstPort, InterfaceComparator c)
     {
-        return (isMatchIntf(srcIntf, dstIntf, c) &&
-                super.isMatch(protocol, srcAddress, dstAddress, srcPort, dstPort));
+        return (isMatchIntf(srcIntf, dstIntf, c) && super.isMatch(protocol, srcAddress, dstAddress, srcPort, dstPort));
     }
 
     public boolean isMatchIntf(byte src, byte dst, InterfaceComparator c)
     {
-        return this.srcIntf.isMatch(src, dst, c)
-            && this.dstIntf.isMatch(dst, src, c);
+        return this.srcIntf.isMatch(src, dst, c) && this.dstIntf.isMatch(dst, src, c);
     }
 }

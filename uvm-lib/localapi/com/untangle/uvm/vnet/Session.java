@@ -107,20 +107,25 @@ public interface Session extends SessionDesc
      * The following are attachment keys used by various nodes to
      * share information with other nodes.
      */
-    public final String KEY_PROTOFILTER_PROTOCOL = "protofilter-protocol";
-    public final String KEY_PROTOFILTER_PROTOCOL_CATEGORY = "protofilter-category";
-    public final String KEY_PROTOFILTER_PROTOCOL_DESCRIPTION = "protofilter-description";
-    public final String KEY_SITEFILTER_BEST_CATEGORY_ID = "esoft-best-category-id";
-    public final String KEY_SITEFILTER_BEST_CATEGORY_NAME = "esoft-best-category-name";
-    public final String KEY_SITEFILTER_BEST_CATEGORY_DESCRIPTION = "esoft-best-category-description";
-    public final String KEY_SITEFILTER_BEST_CATEGORY_LOGGED = "esoft-best-category-logged";
-    public final String KEY_SITEFILTER_BEST_CATEGORY_BLOCKED = "esoft-best-category-blocked";
-    public final String KEY_WEBFILTER_BEST_CATEGORY_ID = "untangle-best-category-id";
-    public final String KEY_WEBFILTER_BEST_CATEGORY_NAME = "untangle-best-category-name";
-    public final String KEY_WEBFILTER_BEST_CATEGORY_DESCRIPTION = "untangle-best-category-description";
-    public final String KEY_WEBFILTER_BEST_CATEGORY_LOGGED = "untangle-best-category-logged";
-    public final String KEY_WEBFILTER_BEST_CATEGORY_BLOCKED = "untangle-best-category-blocked";
-    public final String KEY_PLATFORM_ADCONNECTOR_USERNAME = "platform-adconnector-username";
+    public final String KEY_PLATFORM_ADCONNECTOR_USERNAME = "platform-adconnector-username"; /* String */
+
+    public final String KEY_PROTOFILTER_SIGNATURE = "protofilter-protocol"; /* String */
+    public final String KEY_PROTOFILTER_SIGNATURE_CATEGORY = "protofilter-category"; /* String */
+    public final String KEY_PROTOFILTER_SIGNATURE_DESCRIPTION = "protofilter-description"; /* String */
+    public final String KEY_PROTOFILTER_SIGNATURE_MATCHED = "protofilter-matched";  /* Boolean */
+
+    public final String KEY_SITEFILTER_BEST_CATEGORY_ID = "esoft-best-category-id"; /* String */
+    public final String KEY_SITEFILTER_BEST_CATEGORY_NAME = "esoft-best-category-name"; /* String */
+    public final String KEY_SITEFILTER_BEST_CATEGORY_DESCRIPTION = "esoft-best-category-description"; /* String */
+    public final String KEY_SITEFILTER_BEST_CATEGORY_LOGGED = "esoft-best-category-logged"; /* String */
+    public final String KEY_SITEFILTER_BEST_CATEGORY_BLOCKED = "esoft-best-category-blocked"; /* String */
+
+    public final String KEY_WEBFILTER_BEST_CATEGORY_ID = "untangle-best-category-id"; /* String */
+    public final String KEY_WEBFILTER_BEST_CATEGORY_NAME = "untangle-best-category-name"; /* String */
+    public final String KEY_WEBFILTER_BEST_CATEGORY_DESCRIPTION = "untangle-best-category-description"; /* String */
+    public final String KEY_WEBFILTER_BEST_CATEGORY_LOGGED = "untangle-best-category-logged"; /* String */
+    public final String KEY_WEBFILTER_BEST_CATEGORY_BLOCKED = "untangle-best-category-blocked"; /* String */
+
 
 }
 

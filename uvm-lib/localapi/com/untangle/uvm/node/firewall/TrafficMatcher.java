@@ -83,8 +83,7 @@ abstract class TrafficMatcher
 
     protected TrafficMatcher( TrafficRule rule )
     {
-        this( rule.isLive(), rule.getProtocol(),
-              rule.getSrcAddress(), rule.getDstAddress(), rule.getSrcPort(), rule.getDstPort());
+        this( rule.isLive(), rule.getProtocol(), rule.getSrcAddress(), rule.getDstAddress(), rule.getSrcPort(), rule.getDstPort());
     }
 
     public boolean isEnabled()
@@ -115,15 +114,13 @@ abstract class TrafficMatcher
                  isTimeMatch());
     }
 
-    protected boolean isMatch( Protocol protocol, InetAddress srcAddress, InetAddress dstAddress,
-                               int srcPort, int dstPort )
+    protected boolean isMatch( Protocol protocol, InetAddress srcAddress, InetAddress dstAddress, int srcPort, int dstPort )
     {
         return ( isEnabled &&
                  isMatchProtocol( protocol, srcPort, dstPort ) &&
                  isMatchAddress( srcAddress, dstAddress) &&
                  isTimeMatch());
     }
-
 
     public boolean isMatchProtocol( Protocol protocol, int srcPort, int dstPort )
     {

@@ -236,9 +236,10 @@ public class EventHandler extends AbstractEventHandler
             /**
              * Tag the session with metadata
              */
-            sess.globalAttach(Session.KEY_PROTOFILTER_PROTOCOL,elem.getProtocol());
-            sess.globalAttach(Session.KEY_PROTOFILTER_PROTOCOL_CATEGORY,elem.getCategory());
-            sess.globalAttach(Session.KEY_PROTOFILTER_PROTOCOL_DESCRIPTION,elem.getDescription());
+            sess.globalAttach(Session.KEY_PROTOFILTER_SIGNATURE,elem.getProtocol());
+            sess.globalAttach(Session.KEY_PROTOFILTER_SIGNATURE_CATEGORY,elem.getCategory());
+            sess.globalAttach(Session.KEY_PROTOFILTER_SIGNATURE_DESCRIPTION,elem.getDescription());
+            sess.globalAttach(Session.KEY_PROTOFILTER_SIGNATURE_MATCHED,Boolean.TRUE);
                               
             node.incrementDetectCount();
 
@@ -278,8 +279,9 @@ public class EventHandler extends AbstractEventHandler
             // sessInfo.protocol = this._unknownString;
             // sessInfo.identified = true;
             if (logger.isDebugEnabled())
-                logger.debug("Giving up after " + bufferSize + " bytes and " +
-                             (sessInfo.clientChunkCount+sessInfo.serverChunkCount) + " chunks");
+                logger.debug("Giving up after " + bufferSize + " bytes and " + (sessInfo.clientChunkCount+sessInfo.serverChunkCount) + " chunks");
+
+            sess.globalAttach(Session.KEY_PROTOFILTER_SIGNATURE_MATCHED,Boolean.FALSE);
             sess.attach(null);
             sess.release();
         }

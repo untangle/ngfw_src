@@ -81,9 +81,6 @@ public interface SessionEndpoints
      */
     InetAddress serverAddr();
 
-    // We provide these here, confident that nothing other than UDP or TCP
-    // will be a session, others will be stateless.  (Or this will just be 0)
-
     /**
      * Gets the client port for this session.</p>
      * @return the client port.

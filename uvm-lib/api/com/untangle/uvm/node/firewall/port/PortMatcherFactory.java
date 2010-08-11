@@ -53,8 +53,7 @@ public class PortMatcherFactory
     private PortMatcherFactory()
     {
         this.parser = new ParsingFactory<PortDBMatcher>( "port matcher" );
-        this.parser.registerParsers( PortSimpleMatcher.PARSER, PortSingleMatcher.PARSER,
-                                     PortSetMatcher.PARSER, PortRangeMatcher.PARSER );
+        this.parser.registerParsers( PortSimpleMatcher.PARSER, PortSingleMatcher.PARSER, PortSetMatcher.PARSER, PortRangeMatcher.PARSER );
     }
 
     /**
