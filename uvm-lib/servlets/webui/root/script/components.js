@@ -3706,6 +3706,9 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             this.columns.push(reorderColumn);
         }
         if (this.hasEdit) {
+            if (this.configEdit == null) 
+                throw i18n._("Invalid configEdit for Grid with Edit enabled");
+            
             var editColumn = new Ext.grid.EditColumn(this.configEdit);
             if (!this.plugins) {
                 this.plugins = [];
