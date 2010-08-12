@@ -5,11 +5,7 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-outdir=@UVM_DUMP@
-if [ $# -eq 2 ]; then
-  outdir=$1
-fi
-
+outdir=$1
 mkdir -p $outdir
 
 datestamp=$(date '+%Y%m%d%H%M')
@@ -45,7 +41,7 @@ tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
 # Tar exits with non-zero when some files don't exist, which can happen.
 # [ $? -eq 0 ] || exit 1
 
-@UVM_HOME@/bin/mkg installed > $outdir/installed-$datestamp
+@UVM_HOME@/bin/ut-apt installed > $outdir/installed-$datestamp
 
 [ $? -eq 0 ] || exit 1
 

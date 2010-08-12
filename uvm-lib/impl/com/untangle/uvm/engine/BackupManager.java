@@ -36,14 +36,11 @@ class BackupManager
     private static final String BACKUP_SCRIPT;
     private static final String RESTORE_SCRIPT;
 
-    private final Logger m_logger =
-        Logger.getLogger(BackupManager.class);
+    private final Logger m_logger = Logger.getLogger(BackupManager.class);
 
     static {
-        BACKUP_SCRIPT = System.getProperty("uvm.home")
-            + "/bin/ut-backup-bundled.sh";
-        RESTORE_SCRIPT = System.getProperty("uvm.home")
-            + "/bin/ut-restore-bundled.sh";
+        BACKUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-backup-bundled.sh";
+        RESTORE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-restore-bundled.sh";
     }
 
     /**
