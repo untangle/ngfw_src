@@ -41,11 +41,5 @@ JSONObject js = new JSONObject();
 js.put( "status", "success" );
 js.put( "authenticate", isAuthenticated );
 
-if ( isAuthenticated ) {
-    /* This is the IP Address that is authorized to logout of this session */
-    session.setAttribute( "logout-ip",  request.getRemoteAddr());
-}
-
 %>
-
 <%= js.toString() %>
