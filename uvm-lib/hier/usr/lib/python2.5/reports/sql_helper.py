@@ -50,6 +50,10 @@ class Cursor(psycopg2.extensions.cursor):
         sql = sql.replace('%s.' % (DEFAULT_SCHEMA,), '%s.' % (SCHEMA,))
         psycopg2.extensions.cursor.execute(self, sql, args)
 
+    def executemany(self, sql, args=None):
+        sql = sql.replace('%s.' % (DEFAULT_SCHEMA,), '%s.' % (SCHEMA,))
+        psycopg2.extensions.cursor.executemany(self, sql, args)
+
     def fetchone(self):
         try:
             return psycopg2.extensions.cursor.fetchone(self)
