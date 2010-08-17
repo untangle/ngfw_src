@@ -123,15 +123,21 @@ def create_index(table, columns):
 def create_table_as_sql(tablename, query, args):
     run_sql("CREATE TABLE %s AS %s" % (tablename, query), args)
 
-def run_sql(sql, args=None, connection=None, auto_commit=True, force_propagate=False):
+def run_sql(sql, args=None, connection=None,
+            auto_commit=True, force_propagate=False,
+            debug=False):
     if not connection:
         connection = get_connection()
-        
+
     try:
         curs = connection.cursor()
         if args:
+            if debug:
+                logger.debug("Executing: %s" % (sql % args,))
             curs.execute(sql, args)
         else:
+            if debug:
+                logger.debug("Executing: %s" % (sql,))            
             curs.execute(sql)
 
         if auto_commit:
