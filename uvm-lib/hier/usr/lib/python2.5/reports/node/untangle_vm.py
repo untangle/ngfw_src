@@ -238,7 +238,8 @@ INSERT INTO reports.hnames (date, hname)
     SELECT DISTINCT date_trunc('day', trunc_time)::date, hname
     FROM reports.session_totals
     WHERE trunc_time >= %s AND trunc_time < %s
-    AND client_intf IN """ + get_wan_clause() + """ AND NOT hname ISNULL""", (sd, ed),
+    AND (server_intf = 0 OR client_intf IN """ + get_wan_clause() + """)
+    AND NOT hname ISNULL""", (sd, ed),
                                connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('reports.hnames', ed,
