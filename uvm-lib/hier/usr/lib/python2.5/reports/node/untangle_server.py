@@ -467,7 +467,7 @@ class SwapUsage(Graph):
                               N_('MB'))
             lks.append(ks)
             ks = KeyStatistic(_('Avg Swap Used'), sum(swapUsed)/len(swapUsed),
-                              N_('%'))
+                              N_('MB'))
             lks.append(ks)
                 
         finally:
