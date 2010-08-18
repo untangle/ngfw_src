@@ -26,7 +26,7 @@ import com.untangle.uvm.util.I18nUtil;
 /**
  * Selects Unblocked HTTP traffic.
  *
- * @author <a href="mailto:seb@untangle.com">Sébastien Delafond</a>
+ * @author <a href="mailto:seb@untangle.com">Sebastien Delafond</a>
  * @version 1.0
  */
 public class UnblockEventAllFilter

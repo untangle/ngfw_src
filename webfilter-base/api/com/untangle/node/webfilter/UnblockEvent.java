@@ -38,7 +38,7 @@ import com.untangle.uvm.policy.Policy;
 /**
  * Log event for a blocked request.
  *
- * @author <a href="mailto:seb@untangle.com">Sébastien Delafond</a>
+ * @author <a href="mailto:seb@untangle.com">Sebastien Delafond</a>
  * @version 1.0
  */
 @Entity

@@ -26,7 +26,7 @@ import javax.persistence.Transient;
 /**
  * Log event for system stats.
  *
- * @author <a href="mailto:seb@untangle.com">Sébastien Delafond</a>
+ * @author <a href="mailto:seb@untangle.com">Sebastien Delafond</a>
  * @version 1.0
  */
 @Entity

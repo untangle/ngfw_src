@@ -41,7 +41,7 @@ import java.util.Date;
  *
  * Created: Fri Dec 18 06:49:58 2009
  *
- * @author <a href="mailto:seb@untangle.com">Sébastien Delafond</a>
+ * @author <a href="mailto:seb@untangle.com">Sebastien Delafond</a>
  * @version 1.0
  */
 public class DateTruncator {
