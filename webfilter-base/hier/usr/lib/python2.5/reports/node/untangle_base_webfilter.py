@@ -620,7 +620,7 @@ class TopTenWebBrowsingUsersBySize(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT uid, COALESCE(sum(s2c_content_length), 0)::bigint as size_sum
+SELECT uid, COALESCE(sum(s2c_content_length)/1000000, 0)::bigint as size_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s AND NOT uid IS NULL AND uid != ''
 GROUP BY uid ORDER BY size_sum DESC"""
@@ -634,7 +634,7 @@ GROUP BY uid ORDER BY size_sum DESC"""
 
             curs.execute(query, (one_week, ed))
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('Bytes'),
+                ks = KeyStatistic(r[0], r[1], _('MB'),
                                   link_type=reports.USER_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
@@ -645,7 +645,7 @@ GROUP BY uid ORDER BY size_sum DESC"""
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('User'),
-                     ylabel=_('Bytes/day'))
+                     ylabel=_('MB/day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -770,7 +770,7 @@ class TopTenWebBrowsingHostsBySize(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT hname, COALESCE(sum(s2c_content_length), 0)::bigint as size_sum
+SELECT hname, COALESCE(sum(s2c_content_length)/1000000, 0)::bigint as size_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
         query += " GROUP BY hname ORDER BY size_sum DESC"
@@ -784,7 +784,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
 
             curs.execute(query, (one_week, ed))
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('Bytes'),
+                ks = KeyStatistic(r[0], r[1], N_('MB'),
                                   link_type=reports.HNAME_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
@@ -795,7 +795,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Host'),
-                     ylabel=_('Bytes/day'))
+                     ylabel=_('MB/day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 
@@ -874,7 +874,7 @@ class TopTenWebsitesBySize(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT host, coalesce(sum(s2c_content_length), 0)::bigint as size_sum
+SELECT host, coalesce(sum(s2c_content_length)/1000000, 0)::bigint as size_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
         if host:
@@ -899,7 +899,7 @@ GROUP BY host ORDER BY size_sum DESC"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('Bytes'), link_type=reports.URL_LINK)
+                ks = KeyStatistic(r[0], r[1], N_('MB'), link_type=reports.URL_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
 
@@ -909,7 +909,7 @@ GROUP BY host ORDER BY size_sum DESC"""
         plot = Chart(type=PIE_CHART,
                      title=self.title,
                      xlabel=_('Hosts'),
-                     ylabel=_('Bytes/day'))
+                     ylabel=_('MB/day'))
 
         plot.add_pie_dataset(dataset, display_limit=10)
 

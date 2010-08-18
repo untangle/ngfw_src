@@ -231,7 +231,7 @@ class TopUsers(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT client_name, sum(rx_bytes + tx_bytes)::int AS throughput
+SELECT client_name, (sum(rx_bytes + tx_bytes)/1000000)::int AS throughput
 FROM reports.n_openvpn_connect_totals
 WHERE trunc_time >= %s AND trunc_time < %s
 GROUP BY client_name
@@ -250,7 +250,7 @@ ORDER BY throughput desc"""
                 client_name = r[0]
                 num = r[1]
 
-                lks.append(KeyStatistic(client_name, num, _('Bytes')))
+                lks.append(KeyStatistic(client_name, num, _('MB')))
                 pds[client_name] = num
         finally:
             conn.commit()
