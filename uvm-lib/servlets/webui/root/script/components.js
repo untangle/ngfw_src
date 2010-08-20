@@ -131,7 +131,6 @@ Ext.override( Ext.form.Field, {
 });
 
 
-
 Ung.form.TimeField = Ext.extend(Ext.form.TimeField, {
     /* Default the format to 24 hour */
     format : "H:i",
@@ -4108,6 +4107,18 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 }
             }.createDelegate(this), this, cd);
         }
+    },
+    // Get the full list of all data
+    getList : function() {
+        var datar = [];
+        var records = this.store.getRange();
+        for (var i = 0; i < records.length; i++) {
+            var record = records[i].data;
+            record["javaClass"] = this.recordJavaClass;
+            datar.push(records[i].data);
+        }
+
+        return datar;
     },
     // Get the save list from the changed data
     getSaveList : function() {
