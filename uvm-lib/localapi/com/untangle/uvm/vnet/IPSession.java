@@ -123,6 +123,16 @@ public interface IPSession extends IPSessionDesc, Session  {
     void clientMark(int newmark);
 
     /**
+     * <code>orClientMark</code> bitwise ORs the provided bitmask with the current client-side conn-mark
+     */
+    void orClientMark(int bitmask);
+
+    /**
+     * <code>setClientQosMark</code> sets the connmark so this session' client-side packets get the provided QoS priority
+     */
+    void setClientQosMark(int priority);
+    
+    /**
      * <code>serverMark</code> returns the server-side socket mark for this session
      */
     int  serverMark();
@@ -133,8 +143,19 @@ public interface IPSession extends IPSessionDesc, Session  {
     void serverMark(int newmark);
 
     /**
+     * <code>orServerMark</code> bitwise ORs the provided bitmask with the current server-side conn-mark
+     */
+    void orServerMark(int bitmask);
+
+    /**
+     * <code>setServerQosMark</code> sets the connmark so this session' server-side packets get the provided QoS priority
+     */
+    void setServerQosMark(int priority);
+    
+    /**
      * Get the pipeline endpoints for this session
      */
     PipelineEndpoints pipelineEndpoints();
 
+    
 }
