@@ -490,6 +490,34 @@ abstract class IPSessionImpl
     }
 
     /**
+     * <code>orClientMark</code> bitwise ORs the provided bitmask with the current client-side conn-mark
+     */
+    public void orClientMark(int bitmask)
+    {
+        int orig_client_mark = this.clientMark();
+        int client_mark = orig_client_mark | bitmask;
+
+        java.lang.StringBuilder sb = new java.lang.StringBuilder();
+        java.util.Formatter formatter = new java.util.Formatter(sb, java.util.Locale.US);
+        logger.warn(formatter.format("Set ClientMark to 0x%08x",client_mark).toString()); sb.setLength(0);
+
+        if (client_mark == orig_client_mark)
+            return;
+        
+        this.clientMark(client_mark);
+    }
+
+    /**
+     * <code>setClientQosMark</code> sets the connmark so this session' client-side packets get the provided QoS priority
+     */
+    public void setClientQosMark(int priority)
+    {
+        //QoSMask = 0x00700000 (20 bits to the left)
+        logger.warn("Set Client QosMark to " + priority);
+        this.orClientMark(priority << 20);
+    }
+    
+    /**
      * <code>serverMark</code> returns the server-side socket mark for this session
      */
     public int  serverMark()
@@ -505,6 +533,35 @@ abstract class IPSessionImpl
         this.argonSession.sessionGlobalState().netcapSession().serverMark(newmark);
     }
 
+    /**
+     * <code>orServerMark</code> bitwise ORs the provided bitmask with the current server-side conn-mark
+     */
+    public void orServerMark(int bitmask)
+    {
+        int orig_server_mark = this.serverMark();
+        int server_mark = bitmask | orig_server_mark;
+
+        java.lang.StringBuilder sb = new java.lang.StringBuilder();
+        java.util.Formatter formatter = new java.util.Formatter(sb, java.util.Locale.US);
+        logger.warn(formatter.format("Set ServerMark to 0x%08x",server_mark).toString()); sb.setLength(0);
+
+        if (server_mark == orig_server_mark)
+            return;
+        
+        this.serverMark(server_mark);
+    }
+
+    /**
+     * <code>setServerQosMark</code> sets the connmark so this session' server-side packets get the provided QoS priority
+     */
+    public void setServerQosMark(int priority)
+    {
+        //QoSMask = 0x00700000 (20 bits to the left)
+        logger.warn("Set Server QosMark to " + priority);
+        this.orServerMark(priority << 20);
+    }
+    
+    
     // This is the main write hook called by the Vectoring machine
     public void writeEvent(int side, OutgoingSocketQueue out)
     {

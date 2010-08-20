@@ -80,7 +80,6 @@ abstract class SessionImpl implements Session
         return attachment;
     }
 
-
     public Object globalAttach(String key, Object ob)
     {
         return this.argonSession.sessionGlobalState().attach(key,ob);
