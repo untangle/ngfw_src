@@ -3968,6 +3968,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 scope : scope,
                 arg : arg
             });
+            this.getStore().load({params:{start:0}}); //load the data
         } else {
             this.getStore().load({
                 params : {
