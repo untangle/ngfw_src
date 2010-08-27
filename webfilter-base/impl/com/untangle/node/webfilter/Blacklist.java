@@ -464,7 +464,7 @@ public abstract class Blacklist
             sess.globalAttach(node.getVendor()+"-best-category-id",category.getId());
             sess.globalAttach(node.getVendor()+"-best-category-name",category.getName());
             sess.globalAttach(node.getVendor()+"-best-category-description",category.getDescription());
-            sess.globalAttach(node.getVendor()+"-best-category-logged",category.getLog());
+            sess.globalAttach(node.getVendor()+"-best-category-flagged",category.getLog());
             sess.globalAttach(node.getVendor()+"-best-category-blocked",category.getBlock());
         }
         
