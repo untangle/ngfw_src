@@ -499,7 +499,7 @@ abstract class IPSessionImpl
 
         java.lang.StringBuilder sb = new java.lang.StringBuilder();
         java.util.Formatter formatter = new java.util.Formatter(sb, java.util.Locale.US);
-        logger.warn(formatter.format("Set ClientMark to 0x%08x",client_mark).toString()); sb.setLength(0);
+        logger.debug(formatter.format("Set ClientMark to 0x%08x",client_mark).toString()); sb.setLength(0);
 
         if (client_mark == orig_client_mark)
             return;
@@ -513,7 +513,7 @@ abstract class IPSessionImpl
     public void setClientQosMark(int priority)
     {
         //QoSMask = 0x00700000 (20 bits to the left)
-        logger.info("Set Client QosMark to " + priority);
+        logger.debug("Set Client QosMark to " + priority);
         this.orClientMark(priority << 20);
     }
     
@@ -543,7 +543,7 @@ abstract class IPSessionImpl
 
         java.lang.StringBuilder sb = new java.lang.StringBuilder();
         java.util.Formatter formatter = new java.util.Formatter(sb, java.util.Locale.US);
-        logger.warn(formatter.format("Set ServerMark to 0x%08x",server_mark).toString()); sb.setLength(0);
+        logger.debug(formatter.format("Set ServerMark to 0x%08x",server_mark).toString()); sb.setLength(0);
 
         if (server_mark == orig_server_mark)
             return;
@@ -557,7 +557,7 @@ abstract class IPSessionImpl
     public void setServerQosMark(int priority)
     {
         //QoSMask = 0x00700000 (20 bits to the left)
-        logger.info("Set Server QosMark to " + priority);
+        logger.debug("Set Server QosMark to " + priority);
         this.orServerMark(priority << 20);
     }
     
