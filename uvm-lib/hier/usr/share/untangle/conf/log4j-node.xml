@@ -119,6 +119,10 @@
     <priority value="WARN"/>
   </category>
 
+  <category name="com.untangle.node.bandwidth">
+    <priority value="DEBUG"/>
+  </category>
+
   <category name="com.untangle.node.virus">
     <priority value="WARN"/>
   </category>

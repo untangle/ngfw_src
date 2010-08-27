@@ -513,7 +513,7 @@ abstract class IPSessionImpl
     public void setClientQosMark(int priority)
     {
         //QoSMask = 0x00700000 (20 bits to the left)
-        logger.warn("Set Client QosMark to " + priority);
+        logger.info("Set Client QosMark to " + priority);
         this.orClientMark(priority << 20);
     }
     
@@ -557,7 +557,7 @@ abstract class IPSessionImpl
     public void setServerQosMark(int priority)
     {
         //QoSMask = 0x00700000 (20 bits to the left)
-        logger.warn("Set Server QosMark to " + priority);
+        logger.info("Set Server QosMark to " + priority);
         this.orServerMark(priority << 20);
     }
     
