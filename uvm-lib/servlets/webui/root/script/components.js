@@ -359,20 +359,26 @@ Ung.Util= {
         Ext.MessageBox.alert(i18n._("TODO"),"TODO: implement this.");
     },
     interfaceEnumeration : null,
-    getInterfaceStore : function(simpleMatchers) {
+    getInterfaceList : function(wanMatchers, anyMatcher) {
+        var data = [];
+        var datacount = 0;
+
         if(this.interfaceEnumeration==null) {
             var intfManager = main.getIntfManager();
             this.interfaceEnumeration = intfManager.getIntfMatcherEnumeration();
         }
-        
-        var data = [];
-        var datacount = 0;
-        
+
         for ( var c = 0 ; c < this.interfaceEnumeration.length ; c++ ) {
             var key =this.interfaceEnumeration[c];
             var name = key;
             switch ( key ) {
-            case "any": name = i18n._("any") ; break;
+            case "any":
+                if ( anyMatcher === false ) {
+                    key = null;
+                    break;
+                }
+                name = i18n._("any") ;
+                break;
             case "0": name = i18n._("External") ; break;
             case "1": name = i18n._("Internal") ; break;
             case "2": name = i18n._("DMZ") ; break;
@@ -382,19 +388,19 @@ Ung.Util= {
             case "6": name = String.format( i18n._("Interface {0}"), key ); break;
             case "7": name = i18n._("VPN") ; break;
             case "wan": 
-                if ( simpleMatchers === true ) {
+                if ( wanMatchers === false ) {
                     key = null;
                     break;
                 }
-                name = i18n._("Any WAN Interface") ; 
+                name = i18n._("Any WAN") ; 
                 break;
 
             case "non_wan": 
-                if ( simpleMatchers === true ) {
+                if ( wanMatchers === false ) {
                     key = null;
                     break;
                 }
-                name = i18n._("Any non-WAN Interface") ;
+                name = i18n._("Any non-WAN") ;
                 break;
 
             default :
@@ -406,6 +412,18 @@ Ung.Util= {
                 datacount++;
             }
         }
+
+        return data;
+    },
+    getInterfaceStore : function(simpleMatchers) {
+
+        var data = [];
+        
+        /* simple Matchers excludes WAN matchers */
+        if (simpleMatchers)
+            data = getInterfaceList(false, true);
+        else
+            data = getInterfaceList(true, true);
         
         var interfaceStore=new Ext.data.SimpleStore({
             fields : ['key', 'name'],
