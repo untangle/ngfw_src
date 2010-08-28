@@ -114,6 +114,9 @@ public interface Session extends SessionDesc
     public final String KEY_PROTOFILTER_SIGNATURE_DESCRIPTION = "protofilter-description"; /* String */
     public final String KEY_PROTOFILTER_SIGNATURE_MATCHED = "protofilter-matched";  /* Boolean */
 
+    public final String KEY_HTTP_HOSTNAME = "http-hostname";  /* String */
+    public final String KEY_HTTP_URI = "http-uri";  /* String */
+    
     public final String KEY_SITEFILTER_BEST_CATEGORY_ID = "esoft-best-category-id"; /* String */
     public final String KEY_SITEFILTER_BEST_CATEGORY_NAME = "esoft-best-category-name"; /* String */
     public final String KEY_SITEFILTER_BEST_CATEGORY_DESCRIPTION = "esoft-best-category-description"; /* String */

@@ -53,8 +53,7 @@ public abstract class AbstractTokenHandler implements TokenHandler
     protected AbstractTokenHandler(TCPSession session)
     {
         this.session = session;
-        this.pipeline = LocalUvmContextFactory.context().pipelineFoundry()
-            .getPipeline(session.id());
+        this.pipeline = LocalUvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
     }
 
     // TokenHandler methods ---------------------------------------------------

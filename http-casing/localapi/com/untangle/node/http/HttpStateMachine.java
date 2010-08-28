@@ -51,6 +51,7 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import com.untangle.node.token.TokenStreamer;
+import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.vnet.TCPSession;
 
 /**
@@ -120,11 +121,14 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
     private boolean requestPersistent;
     private boolean responsePersistent;
 
+    private final TCPSession session;
+
     // constructors -----------------------------------------------------------
 
     protected HttpStateMachine(TCPSession session)
     {
         super(session);
+        this.session = session;
     }
 
     // protected abstract methods ---------------------------------------------
@@ -448,7 +452,15 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
                 h = doRequestHeader(h);
 
                 String host = h.getValue("host");
+
                 hosts.put(requestLineToken, host);
+
+                /**
+                 * Attach metadata
+                 */
+                this.session.globalAttach(Session.KEY_HTTP_HOSTNAME,host);
+                String uri = getRequestLine().getRequestUri().normalize().getPath();
+                this.session.globalAttach(Session.KEY_HTTP_URI,uri);
 
                 switch (requestMode) {
                 case QUEUEING:
