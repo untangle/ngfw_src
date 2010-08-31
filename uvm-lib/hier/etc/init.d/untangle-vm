@@ -255,7 +255,7 @@ case "$1" in
         ;;
 
     *)
-        echo "Usage: /etc/init.d/uvm {start|stop|restart|force-reload}"
+        echo "Usage: /etc/init.d/untangle-vm {start|stop|restart|force-reload}"
         exit
 esac
 
