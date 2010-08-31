@@ -382,7 +382,11 @@ public interface LocalUvmContext extends RemoteUvmContext
 
     Environment getBdbEnvironment();
 
-    String getPopID();
+    /**
+     * Returns the UID of the server
+     * Example: aaaa-bbbb-cccc-dddd
+     */
+    String getServerUID();
     
     UploadManager uploadManager();
     
@@ -390,7 +394,7 @@ public interface LocalUvmContext extends RemoteUvmContext
      * Retrieve the jStore manager. See
      * http://wiki-private/mediawiki/index.php/JStore for more information.
      */
-    LocalJStoreManager jStoreManager();
+    SettingsManager settingsManager();
     
     /**
      * Retrieve the benchmark manager.

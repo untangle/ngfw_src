@@ -218,6 +218,8 @@ public class Main
         System.setProperty("uvm.web.dir", uvmWeb);
         String uvmConf = uvmHome + "/conf";
         System.setProperty("uvm.conf.dir", uvmConf);
+        String uvmSettings = uvmHome + "/settings";
+        System.setProperty("uvm.settings.dir", uvmSettings);
         String uvmTmp = uvmHome + "/tmp";
         System.setProperty("uvm.tmp.dir", uvmTmp);
         String uvmSkins = "/var/www/skins";
@@ -225,16 +227,17 @@ public class Main
         String uvmLang = uvmHome + "/lang";
         System.setProperty("uvm.lang.dir", uvmLang);
 
-        logger.info("uvm.home        " + uvmHome);
-        logger.info("uvm.lib.dir     " + uvmLib);
-        logger.info("uvm.toolbox.dir " + uvmToolbox);
-        logger.info("uvm.log.dir     " + uvmLog);
-        logger.info("uvm.data.dir    " + uvmData);
-        logger.info("uvm.db.dir    " + uvmData);
-        logger.info("uvm.web.dir     " + uvmWeb);
-        logger.info("uvm.conf.dir    " + uvmConf);
-        logger.info("uvm.tmp.dir     " + uvmTmp);
-        logger.info("uvm.skins.dir     " + uvmSkins);
+        logger.info("uvm.home         " + uvmHome);
+        logger.info("uvm.lib.dir      " + uvmLib);
+        logger.info("uvm.toolbox.dir  " + uvmToolbox);
+        logger.info("uvm.log.dir      " + uvmLog);
+        logger.info("uvm.data.dir     " + uvmData);
+        logger.info("uvm.db.dir       " + uvmData);
+        logger.info("uvm.web.dir      " + uvmWeb);
+        logger.info("uvm.conf.dir     " + uvmConf);
+        logger.info("uvm.settings.dir " + uvmSettings);
+        logger.info("uvm.tmp.dir      " + uvmTmp);
+        logger.info("uvm.skins.dir    " + uvmSkins);
 
         File f = new File(uvmConf + "/uvm.properties");
         if (f.exists()) {

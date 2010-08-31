@@ -287,7 +287,7 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
         try {
             FileWriter writer = new FileWriter(regFile);
             writer.write("regKey=");
-            writer.write(uvmContext.getPopID());
+            writer.write(uvmContext.getServerUID());
             writer.write("&version=");
             writer.write(uvmContext.version());
             writer.write("&brand=");

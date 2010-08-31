@@ -192,6 +192,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     /*
      * First time initialization
      */
+    @Override
     public void initializeSettings()
     {
         ProtoFilterSettings settings = new ProtoFilterSettings(this.getTid());

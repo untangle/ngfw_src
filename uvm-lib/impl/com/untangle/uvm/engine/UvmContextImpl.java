@@ -38,7 +38,7 @@ import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.untangle.uvm.CronJob;
-import com.untangle.uvm.LocalJStoreManager;
+import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalTomcatManager;
 import com.untangle.uvm.Period;
@@ -99,8 +99,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private static final String ACTIVATE_SCRIPT;
     private static final String ACTIVATION_KEY_FILE;
     private static final String REGISTRATION_INFO_FILE;
-    private static final String POP_ID_FILE;
-    private static final String ARGON_FAKE_KEY;
+    private static final String UID_FILE;
 
     /* true if running in a development environment */
     private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel";
@@ -146,7 +145,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private TomcatManagerImpl tomcatManager;
     private HeapMonitor heapMonitor;
     private UploadManagerImpl uploadManager;
-    private LocalJStoreManagerImpl jStoreManager;
+    private SettingsManagerImpl settingsManager;
     private LocalBenchmarkManagerImpl benchmarkManager;
     private OemManagerImpl oemManager;
     
@@ -595,7 +594,8 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         logger.info("using PortalManager: " + this.portalManager.getClass());
     }
 
-    public boolean isActivated() {
+    public boolean isActivated()
+    {
         // This is ez since we aren't concerned about local box
         // security -- the key is ultimately checked on the release
         // webserver, which is what matters.
@@ -603,7 +603,8 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return keyFile.exists();
     }
 
-    public boolean isRegistered() {
+    public boolean isRegistered()
+    {
         File regFile = new File(REGISTRATION_INFO_FILE);
         return regFile.exists();
     }
@@ -721,20 +722,20 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
         this.uploadManager = new UploadManagerImpl();
         
-        this.jStoreManager = new LocalJStoreManagerImpl();
+        this.settingsManager = new SettingsManagerImpl();
         
         this.benchmarkManager = new LocalBenchmarkManagerImpl();
         
         JSONSerializer serializer = new JSONSerializer();
         try {
             ServletUtils.getInstance().registerSerializers(serializer);
-            jStoreManager.setSerializer(serializer);
+            settingsManager.setSerializer(serializer);
         } catch (Exception e) {
             throw new IllegalStateException("register serializers should never fail!", e);
         }
         
-        String jStorePath = System.getProperty( "uvm.conf.dir" ) + "/jStore";
-        jStoreManager.setBasePath(jStorePath);
+        String settingsPath = System.getProperty( "uvm.settings.dir" );
+        settingsManager.setBasePath(settingsPath);
         
         uploadManager.registerHandler(new RestoreUploadHandler());
 
@@ -822,10 +823,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         this.licenseManagerFactory = LicenseManagerFactory.makeInstance();
         
         // start vectoring:
-        String argonFake = System.getProperty(ARGON_FAKE_KEY);
-        if (null == argonFake || !argonFake.equalsIgnoreCase("yes")) {
-            Argon.getInstance().run( networkManager );
-        }
+        Argon.getInstance().run( networkManager );
 
         // Start statistic gathering
         localMessageManager.start();
@@ -877,14 +875,12 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
             localMessageManager.stop();
 
         // stop vectoring:
-        String argonFake = System.getProperty(ARGON_FAKE_KEY);
-        if (null == argonFake || !argonFake.equalsIgnoreCase("yes")) {
-            try {
-                Argon.getInstance().destroy();
-            } catch (Exception exn) {
-                logger.warn("could not destroy Argon", exn);
-            }
+        try {
+            Argon.getInstance().destroy();
+        } catch (Exception exn) {
+            logger.warn("could not destroy Argon", exn);
         }
+
 
         // stop nodes:
         try {
@@ -1040,10 +1036,10 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return null;
     }
 
-    public String getPopID()
+    public String getServerUID()
     {
         try {
-            File keyFile = new File(POP_ID_FILE);
+            File keyFile = new File(UID_FILE);
             if (keyFile.exists()) {
                 BufferedReader reader = new BufferedReader(new FileReader(keyFile));
                 return reader.readLine();
@@ -1061,9 +1057,9 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     }
     
     @Override 
-    public LocalJStoreManager jStoreManager()
+    public SettingsManager settingsManager()
     {
-        return this.jStoreManager;
+        return this.settingsManager;
     }
 
     @Override
@@ -1169,7 +1165,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         ACTIVATE_SCRIPT = System.getProperty("uvm.bin.dir") + "/utactivate";
         ACTIVATION_KEY_FILE = System.getProperty("uvm.home") + "/activation.key";
         REGISTRATION_INFO_FILE = System.getProperty("uvm.home") + "/registration.info";
-        POP_ID_FILE = System.getProperty("uvm.home") + "/popid";
-        ARGON_FAKE_KEY = "argon.fake";
+        UID_FILE = System.getProperty("uvm.home") + "/popid";
     }
 }

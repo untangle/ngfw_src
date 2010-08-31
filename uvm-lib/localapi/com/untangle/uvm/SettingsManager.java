@@ -2,7 +2,7 @@ package com.untangle.uvm;
 
 import java.util.Map;
 
-public interface LocalJStoreManager
+public interface SettingsManager
 {
     /**
      * Load the settings from the store for a singleton.
@@ -14,10 +14,9 @@ public interface LocalJStoreManager
      * @param packageName
      *            Name of the debian package that is making the request.
      * @return The object that was loaded or null if an object was not loaded.
-     * @throws TransactionException
+     * @throws SettingsException
      */
-    public <T> T load(Class<T> clz, String packageName)
-            throws TransactionException;
+    public <T> T load(Class<T> clz, String packageName) throws SettingsException;
 
     /**
      * Load the settings from the store using a unique identifier.
@@ -31,10 +30,9 @@ public interface LocalJStoreManager
      * @param id
      *            Unique identifier to select the object.
      * @return The object that was loaded or null if an object was not loaded.
-     * @throws TransactionException
+     * @throws SettingsException
      */
-    public <T> T load(Class<T> clz, String packageName, String id)
-            throws TransactionException;
+    public <T> T load(Class<T> clz, String packageName, String id) throws SettingsException;
 
     /**
      * Load the settings from the store using a unique identifier.
@@ -50,10 +48,9 @@ public interface LocalJStoreManager
      * @param v
      *            Value for the key k.
      * @return The object that was loaded or null if an object was not loaded.
-     * @throws TransactionException
+     * @throws SettingsException
      */
-    public <T> T load(Class<T> clz, String packageName, String k, String v)
-            throws TransactionException;
+    public <T> T load(Class<T> clz, String packageName, String k, String v) throws SettingsException;
 
     /**
      * Load the settings from the store using a unique identifier.
@@ -67,10 +64,9 @@ public interface LocalJStoreManager
      * @param criteria
      *            Map of key value pairs to select on.
      * @return The object that was loaded or null if an object was not loaded.
-     * @throws TransactionException
+     * @throws SettingsException
      */
-    public <T> T load(Class<T> clz, String packageName,
-            Map<String, String> criteria) throws TransactionException;
+    public <T> T load(Class<T> clz, String packageName, Map<String, String> criteria) throws SettingsException;
 
     /**
      * Save the settings from the store for a singleton.
@@ -84,10 +80,9 @@ public interface LocalJStoreManager
      * @param value
      *            The value to be saved.
      * @return The object that was saved.
-     * @throws TransactionException
+     * @throws SettingsException
      */
-    public <T> T save(Class<T> clz, String packageName, T value)
-            throws TransactionException;
+    public <T> T save(Class<T> clz, String packageName, T value) throws SettingsException;
 
     /**
      * Save the settings from the store using a unique identifier.
@@ -103,10 +98,9 @@ public interface LocalJStoreManager
      * @param value
      *            The value to be saved.
      * @return The object that was saved.
-     * @throws TransactionException
+     * @throws SettingsException
      */
-    public <T> T save(Class<T> clz, String packageName, String id, T value)
-            throws TransactionException;
+    public <T> T save(Class<T> clz, String packageName, String id, T value) throws SettingsException;
 
     /**
      * Save the settings from the store using a unique identifier.
@@ -124,10 +118,9 @@ public interface LocalJStoreManager
      * @param value
      *            The value to be saved.
      * @return The object that was saved.
-     * @throws TransactionException
+     * @throws SettingsException
      */
-    public <T> T save(Class<T> clz, String packageName, String k, String v,
-            T value) throws TransactionException;
+    public <T> T save(Class<T> clz, String packageName, String k, String v, T value) throws SettingsException;
 
     /**
      * Save the settings from the store using a unique identifier.
@@ -143,23 +136,22 @@ public interface LocalJStoreManager
      * @param value
      *            The value to be saved.
      * @return The object that was saved.
-     * @throws TransactionException
+     * @throws SettingsException
      */
-    public <T> T save(Class<T> clz, String packageName,
-            Map<String, String> criteria, T value) throws TransactionException; 
+    public <T> T save(Class<T> clz, String packageName, Map<String, String> criteria, T value) throws SettingsException; 
 
 @SuppressWarnings("serial")
-    public static class TransactionException extends Exception {
+    public static class SettingsException extends Exception {
 
-        public TransactionException(String message) {
+        public SettingsException(String message) {
             super(message);
         }
 
-        public TransactionException(String message, Throwable cause) {
+        public SettingsException(String message, Throwable cause) {
             super(message, cause);
         }
 
-        public TransactionException(Throwable cause) {
+        public SettingsException(Throwable cause) {
             super(cause);
         }
     }

@@ -20,30 +20,40 @@ import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.MarshallException;
 import org.jabsorb.serializer.UnmarshallException;
 
-import com.untangle.uvm.LocalJStoreManager;
+import com.untangle.uvm.SettingsManager;
 
-public class LocalJStoreManagerImpl implements LocalJStoreManager {
-    public static final Pattern VALID_CHARACTERS = Pattern
-            .compile("^[a-zA-Z0-9]+$");
+public class SettingsManagerImpl implements SettingsManager
+{
+
+    /**
+     * Valid characters for settings file names
+     */
+    public static final Pattern VALID_CHARACTERS = Pattern.compile("^[a-zA-Z0-9]+$");
+
+    /**
+     * Hard-coded ID for singleton objects which have no unique ID
+     */
+
     public static final String SINGLETON_ID = "singleton";
     /**
      * Formatting for the version string (yyyy-mm-dd-hhmm)
      */
-    public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat(
-            "yyyy-MM-dd-HHmm");
+    public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd-HHmm");
 
     private static final EntryComparator ENTRY_COMPARATOR = new EntryComparator();
 
-    private String basePath = "/usr/share/untangle/conf/jstore";
+    private String basePath = "/usr/share/untangle/settings";
     private JSONSerializer serializer = null;
 
     private final Map<String, Object> pathLocks = new HashMap<String, Object>();
 
-    String getBasePath() {
+    String getBasePath()
+    {
         return this.basePath;
     }
 
-    void setBasePath(String basePath) {
+    void setBasePath(String basePath)
+    {
         this.basePath = basePath;
     }
 
@@ -51,14 +61,16 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
      * @param serializer
      *            the serializer to set
      */
-    void setSerializer(JSONSerializer serializer) {
+    void setSerializer(JSONSerializer serializer)
+    {
         this.serializer = serializer;
     }
 
     /**
      * @return the serializer
      */
-    JSONSerializer getSerializer() {
+    JSONSerializer getSerializer()
+    {
         return serializer;
     }
 
@@ -72,10 +84,11 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
      * @param packageName
      *            Name of the debian package that is making the request.
      * @return The object that was loaded or null if an object was not loaded.
-     * @throws TransactionException
+     * @throws SettingsException
      */
     public <T> T load(Class<T> clz, String packageName)
-            throws TransactionException {
+        throws SettingsException
+    {
         return load(clz, packageName, SINGLETON_ID);
     }
 
@@ -91,10 +104,11 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
      * @param id
      *            Unique identifier to select the object.
      * @return The object that was loaded or null if an object was not loaded.
-     * @throws TransactionException
+     * @throws SettingsException
      */
     public <T> T load(Class<T> clz, String packageName, String id)
-            throws TransactionException {
+        throws SettingsException
+    {
         if (!VALID_CHARACTERS.matcher(id).matches()) {
             throw new IllegalArgumentException("Invalid id value: '" + id + "'");
         }
@@ -116,10 +130,11 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
      * @param v
      *            Value for the key k.
      * @return The object that was loaded or null if an object was not loaded.
-     * @throws TransactionException
+     * @throws SettingsException
      */
     public <T> T load(Class<T> clz, String packageName, String k, String v)
-            throws TransactionException {
+        throws SettingsException
+    {
         return loadImpl(clz, packageName, buildQuery(k, v));
     }
 
@@ -135,10 +150,11 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
      * @param criteria
      *            Map of key value pairs to select on.
      * @return The object that was loaded or null if an object was not loaded.
-     * @throws TransactionException
+     * @throws SettingsException
      */
-    public <T> T load(Class<T> clz, String packageName,
-            Map<String, String> criteria) throws TransactionException {
+    public <T> T load(Class<T> clz, String packageName, Map<String, String> criteria)
+        throws SettingsException
+    {
         return loadImpl(clz, packageName, buildQuery(criteria));
     }
 
@@ -154,10 +170,11 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
      * @param value
      *            The value to be saved.
      * @return The object that was saved.
-     * @throws TransactionException
+     * @throws SettingsException
      */
     public <T> T save(Class<T> clz, String packageName, T value)
-            throws TransactionException {
+        throws SettingsException
+    {
         return save(clz, packageName, SINGLETON_ID, value);
     }
 
@@ -175,10 +192,11 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
      * @param value
      *            The value to be saved.
      * @return The object that was saved.
-     * @throws TransactionException
+     * @throws SettingsException
      */
     public <T> T save(Class<T> clz, String packageName, String id, T value)
-            throws TransactionException {
+        throws SettingsException
+    {
         if (!VALID_CHARACTERS.matcher(id).matches()) {
             throw new IllegalArgumentException("Invalid id value: '" + id + "'");
         }
@@ -202,10 +220,10 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
      * @param value
      *            The value to be saved.
      * @return The object that was saved.
-     * @throws TransactionException
+     * @throws SettingsException
      */
-    public <T> T save(Class<T> clz, String packageName, String k, String v,
-            T value) throws TransactionException {
+    public <T> T save(Class<T> clz, String packageName, String k, String v, T value)
+        throws SettingsException {
         return saveImpl(clz, packageName, buildQuery(k, v), value);
     }
 
@@ -223,10 +241,11 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
      * @param value
      *            The value to be saved.
      * @return The object that was saved.
-     * @throws TransactionException
+     * @throws SettingsException
      */
-    public <T> T save(Class<T> clz, String packageName,
-            Map<String, String> criteria, T value) throws TransactionException {
+    public <T> T save(Class<T> clz, String packageName, Map<String, String> criteria, T value)
+        throws SettingsException
+    {
         return saveImpl(clz, packageName, buildQuery(criteria), value);
     }
 
@@ -242,11 +261,12 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
      *            The unique query string that was built ahead.
      * @return null if the object doesn't exist, otherwise it returns a copy of
      *         the object
-     * @throws TransactionException
+     * @throws SettingsException
      */
     @SuppressWarnings("unchecked") //JSON
     private <T> T loadImpl(Class<T> clz, String packageName, String query)
-            throws TransactionException {
+        throws SettingsException
+    {
         File f = buildHeadPath(clz, packageName, query);
         if (!f.exists()) {
             return null;
@@ -273,10 +293,10 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
                 return (T) serializer.fromJSON(jsonString.toString());
 
             } catch (IOException e) {
-                throw new TransactionException("Unable to load the file: '" + f
+                throw new SettingsException("Unable to load the file: '" + f
                         + "'", e);
             } catch (UnmarshallException e) {
-                throw new TransactionException(
+                throw new SettingsException(
                         "Unable to unmarshal string the file: '" + f + "'", e);
             } finally {
                 try {
@@ -289,11 +309,11 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
         }
     }
 
-    private <T> T saveImpl(Class<T> clz, String packageName, String query,
-            T value) throws TransactionException {
+    private <T> T saveImpl(Class<T> clz, String packageName, String query, T value)
+        throws SettingsException
+    {
         File link = buildHeadPath(clz, packageName, query);
         File output = buildVersionPath(clz, packageName);
-        File history = buildHistoryPath(clz, packageName);
 
         Object lock = this.getLock(output);
 
@@ -303,8 +323,7 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
          */
         synchronized (lock) {
             if (output.exists()) {
-                throw new TransactionException("Output file '"
-                        + output.toString() + "'already exists!");
+                throw new SettingsException("Output file '" + output.toString() + "'already exists!");
             }
 
             FileWriter fileWriter = null;
@@ -324,8 +343,7 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
                  * Why must SUN/Oracle try everyone's patience; The API for
                  * creating symbolic links is in Java 1.7
                  */
-                String cmdArray[] = new String[] { "ln", "-sf",
-                        output.toString(), link.toString() };
+                String cmdArray[] = new String[] { "ln", "-sf", output.toString(), link.toString() };
 
                 Process process = UvmContextImpl.context().exec(cmdArray);
                 int exitCode = process.waitFor();
@@ -342,28 +360,26 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
                 }
 
                 if (exitCode != 0) {
-                    throw new TransactionException(
+                    throw new SettingsException(
                             "Unable to create symbolic link[" + exitCode + "]");
                 }
                 process.destroy();
 
                 /* Append the history to the end of the history file. */
-                fileWriter = new FileWriter(history, true);
-
-                fileWriter.append(String.valueOf(System.currentTimeMillis()));
-                fileWriter.append(": ").append(link.getName()).append(" ")
-                        .append(output.getName()).append("\n");
-                fileWriter.close();
-                fileWriter = null;
+                /**
+                 * File history = buildHistoryPath(clz, packageName);
+                 *  fileWriter = new FileWriter(history, true);
+                 *  fileWriter.append(String.valueOf(System.currentTimeMillis()));
+                 *  fileWriter.append(": ").append(link.getName()).append(" ").append(output.getName()).append("\n");
+                 *  fileWriter.close();
+                 *  fileWriter = null;
+                 */
             } catch (IOException e) {
-                throw new TransactionException("Unable to load the file: '"
-                        + output + "'", e);
+                throw new SettingsException("Unable to load the file: '" + output + "'", e);
             } catch (MarshallException e) {
-                throw new TransactionException(
-                        "Unable to marshal json string:", e);
+                throw new SettingsException("Unable to marshal json string:", e);
             } catch (InterruptedException e) {
-                throw new TransactionException(
-                        "Unable to create symbolic link:", e);
+                throw new SettingsException("Unable to create symbolic link:", e);
             } finally {
                 try {
                     if (fileWriter != null) {
@@ -376,7 +392,8 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
         }
     }
 
-    private String buildQuery(String k, String v) {
+    private String buildQuery(String k, String v)
+    {
         if (!VALID_CHARACTERS.matcher(k).matches()) {
             throw new IllegalArgumentException("Invalid key value: '" + v + "'");
         }
@@ -388,7 +405,8 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
         return k + "_" + v;
     }
 
-    private String buildQuery(Map<String, String> criteria) {
+    private String buildQuery(Map<String, String> criteria)
+    {
         StringBuilder queryBuilder = new StringBuilder();
 
         List<Map.Entry<String, String>> criteriaList = new LinkedList<Map.Entry<String, String>>(
@@ -406,8 +424,7 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
             String v = entry.getValue();
 
             if (!VALID_CHARACTERS.matcher(k).matches()) {
-                throw new IllegalArgumentException("Invalid key value: '" + k
-                        + "'");
+                throw new IllegalArgumentException("Invalid key value: '" + k + "'");
             }
 
             if (!VALID_CHARACTERS.matcher(v).matches()) {
@@ -420,20 +437,20 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
         return queryBuilder.toString();
     }
 
-    private File buildHeadPath(Class<?> clz, String packageName, String query) {
+    private File buildHeadPath(Class<?> clz, String packageName, String query)
+    {
         String clzName = clz.getCanonicalName();
         if (clzName == null) {
-            throw new IllegalArgumentException("null canonical name: '"
-                    + clz.toString() + "'");
+            throw new IllegalArgumentException("null canonical name: '" + clz.toString() + "'");
         }
 
         /* First build the file string */
         String s = File.separator;
-        return new File(this.basePath + s + packageName + s + clzName + s
-                + "head-" + query + ".js");
+        return new File(this.basePath + s + packageName + s + clzName + s + "head-" + query + ".js");
     }
 
-    private File buildVersionPath(Class<?> clz, String packageName) {
+    private File buildVersionPath(Class<?> clz, String packageName)
+    {
         String clzName = clz.getCanonicalName();
         if (clzName == null) {
             throw new IllegalArgumentException("null canonical name: '"
@@ -443,24 +460,8 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
         /* First build the file string */
         String s = File.separator;
 
-        String versionString = String.valueOf(System.currentTimeMillis()) + "-"
-                + DATE_FORMATTER.format(new Date());
-        return new File(this.basePath + s + packageName + s + clzName + s
-                + "version-" + versionString + ".js");
-    }
-
-    private File buildHistoryPath(Class<?> clz, String packageName) {
-        String clzName = clz.getCanonicalName();
-        if (clzName == null) {
-            throw new IllegalArgumentException("null canonical name: '"
-                    + clz.toString() + "'");
-        }
-
-        /* First build the file string */
-        String s = File.separator;
-
-        return new File(this.basePath + s + packageName + s + clzName + s
-                + "history.txt");
+        String versionString = String.valueOf(System.currentTimeMillis()) + "-" + DATE_FORMATTER.format(new Date());
+        return new File(this.basePath + s + packageName + s + clzName + s + "version-" + versionString + ".js");
     }
 
     /**
@@ -472,7 +473,8 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
      *            The path to lock on.
      * @return An object that can be used to lock on path.
      */
-    private Object getLock(File file) {
+    private Object getLock(File file)
+    {
         String path = file.getParentFile().getAbsolutePath();
         Object lock = this.pathLocks.get(path);
         if (lock == null) {
@@ -483,8 +485,8 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
         return lock;
     }
 
-    private static class EntryComparator implements
-            Comparator<Map.Entry<String, String>> {
+    private static class EntryComparator implements Comparator<Map.Entry<String, String>>
+    {
         public int compare(Map.Entry<String, String> o1,
                 Map.Entry<String, String> o2) {
             return o1.getKey().compareTo(o2.getKey());
@@ -494,7 +496,7 @@ public class LocalJStoreManagerImpl implements LocalJStoreManager {
     @SuppressWarnings("unchecked") //JSON
     public static void main(String args[]) throws Exception 
     {
-        LocalJStoreManagerImpl jStore = new LocalJStoreManagerImpl();
+        SettingsManagerImpl jStore = new SettingsManagerImpl();
 
         JSONSerializer serializer = new JSONSerializer();
         serializer.registerDefaultSerializers();
