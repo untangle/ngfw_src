@@ -35,7 +35,7 @@ package com.untangle.uvm.node;
 
 import java.io.InputStream;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.IPSessionDesc;
@@ -49,11 +49,11 @@ import com.untangle.uvm.vnet.IPSessionDesc;
 public interface NodeContext
 {
     /**
-     * Get the Tid for this instance.
+     * Get the NodeId for this instance.
      *
      * @return the node id.
      */
-    Tid getTid();
+    NodeId getNodeId();
 
     /**
      * Get the node for this context.

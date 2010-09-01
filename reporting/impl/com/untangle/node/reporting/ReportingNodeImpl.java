@@ -73,7 +73,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
             public boolean doWork(Session s) {
                 Query q = s
                 .createQuery("from ReportingSettings ts where ts.tid = :tid");
-                q.setParameter("tid", getTid());
+                q.setParameter("tid", getNodeId());
                 settings = (ReportingSettings) q.uniqueResult();
 
                 if (null == settings) {
@@ -111,7 +111,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
     private ReportingSettings initSettings()
     {
         ReportingSettings settings = new ReportingSettings();
-        settings.setTid(getTid());
+        settings.setTid(getNodeId());
 
         loadReportingUsers(settings);
 

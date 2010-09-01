@@ -40,7 +40,7 @@ import java.util.Map;
 
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 /**
  * Class for registering LoadStats and CounterStats objects and
@@ -51,7 +51,7 @@ import com.untangle.uvm.security.Tid;
  */
 public class Counters
 {
-    private final Tid tid;
+    private final NodeId tid;
 
     private final Map<String, BlingBlinger> metrics
         = new LinkedHashMap<String, BlingBlinger>();
@@ -62,7 +62,7 @@ public class Counters
     private final Map<String, LoadMaster> loads
         = new LinkedHashMap<String, LoadMaster>();
 
-    public Counters(Tid tid)
+    public Counters(NodeId tid)
     {
         this.tid = tid;
     }

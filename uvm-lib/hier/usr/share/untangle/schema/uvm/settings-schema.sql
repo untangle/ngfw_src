@@ -184,7 +184,7 @@ CREATE TABLE settings.u_string_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.untangle.uvm.security.Tid
+-- com.untangle.uvm.security.NodeId
 CREATE TABLE settings.u_tid (
     id int8 NOT NULL,
     policy_id int8,

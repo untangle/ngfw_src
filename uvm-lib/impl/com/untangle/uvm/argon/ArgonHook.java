@@ -46,7 +46,7 @@ import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
 import com.untangle.uvm.node.LocalADConnector;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 
 /**
@@ -84,7 +84,7 @@ abstract class ArgonHook implements Runnable
 
     protected static final PipelineFoundryImpl pipelineFoundry = (PipelineFoundryImpl)LocalUvmContextFactory.context().pipelineFoundry();
     
-    private static final Tid TOTALS = new Tid(0l);
+    private static final NodeId TOTALS = new NodeId(0l);
 
     /**
      * State of the session

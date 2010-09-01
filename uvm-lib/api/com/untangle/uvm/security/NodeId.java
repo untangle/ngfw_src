@@ -56,7 +56,7 @@ import com.untangle.uvm.policy.Policy;
 @Entity
 @Table(name="u_tid", schema="settings")
 @SuppressWarnings("serial")
-public class Tid implements Principal, Serializable, Comparable<Tid>
+public class NodeId implements Principal, Serializable, Comparable<NodeId>
 {
 
     private Long id;
@@ -67,19 +67,19 @@ public class Tid implements Principal, Serializable, Comparable<Tid>
     // tid?
     private String nodeName;
 
-    public Tid()
+    public NodeId()
     {
         nodeName = null;
     }
 
-    public Tid(Long id, Policy policy, String nodeName)
+    public NodeId(Long id, Policy policy, String nodeName)
     {
         this.id = id;
         this.policy = policy;
         this.nodeName = nodeName;
     }
 
-    public Tid(Long id)
+    public NodeId(Long id)
     {
         this.id = id;
         this.policy = null;
@@ -87,9 +87,9 @@ public class Tid implements Principal, Serializable, Comparable<Tid>
     }
 
     /**
-     * The Long representation of this Tid.
+     * The Long representation of this NodeId.
      *
-     * @return the Tid as a Long.
+     * @return the NodeId as a Long.
      */
     @Id
     @Column(name="id")
@@ -106,7 +106,7 @@ public class Tid implements Principal, Serializable, Comparable<Tid>
     /**
      * Policy that this TID lives in
      *
-     * @return Policy for this Tid
+     * @return Policy for this NodeId
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="policy_id")
@@ -140,7 +140,7 @@ public class Tid implements Principal, Serializable, Comparable<Tid>
 
     // Comparable methods -----------------------------------------------------
 
-    public int compareTo(Tid tid)
+    public int compareTo(NodeId tid)
     {
         return id < tid.getId() ? -1 : (id > tid.getId() ? 1 : 0);
     }
@@ -155,10 +155,10 @@ public class Tid implements Principal, Serializable, Comparable<Tid>
 
     public boolean equals(Object o)
     {
-        if (!(o instanceof Tid)) {
+        if (!(o instanceof NodeId)) {
             return false;
         }
-        Tid t = (Tid)o;
+        NodeId t = (NodeId)o;
 
         return id.equals(t.getId());
     }

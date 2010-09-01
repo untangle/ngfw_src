@@ -2,7 +2,7 @@ package com.untangle.uvm.benchmark;
 
 import java.util.List;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 public interface RemoteBenchmarkManager {
     public boolean isEnabled();
@@ -20,7 +20,7 @@ public interface RemoteBenchmarkManager {
      * @param tid The tid of the benchmark to lookup or 0 for the totals.
      * @return List of the benchmarks or null if none exist for this tid.
      */
-    public List<Benchmark> getBenchmarks(Tid tid);
+    public List<Benchmark> getBenchmarks(NodeId tid);
     
     /**
      * Get all of the benchmarks for a particular node name.
@@ -35,7 +35,7 @@ public interface RemoteBenchmarkManager {
      * @param name
      * @return
      */
-    public Benchmark getBenchmark(Tid tid, String name );
+    public Benchmark getBenchmark(NodeId tid, String name );
     
     /**
      * Reset all of the benchmarks.

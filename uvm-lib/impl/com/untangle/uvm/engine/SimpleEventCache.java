@@ -123,7 +123,7 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
                         {
                             Map<String,Object> params;
                             if (null != tctx) {
-                                Policy policy = tctx.getTid().getPolicy();
+                                Policy policy = tctx.getNodeId().getPolicy();
                                 params = Collections.singletonMap("policy", (Object)policy);
                             } else {
                                 params = Collections.emptyMap();

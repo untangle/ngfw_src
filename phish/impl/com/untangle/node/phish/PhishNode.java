@@ -96,7 +96,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
     {
         super(new PhishScanner());
 
-        replacementGenerator = new PhishReplacementGenerator(getTid());
+        replacementGenerator = new PhishReplacementGenerator(getNodeId());
 
         synchronized (PhishNode.class) {
             if (null == urlDatabase) {
@@ -192,7 +192,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
     {
         logger.debug("Initializing Settings");
 
-        PhishSettings tmpSpamSettings = new PhishSettings(getTid());
+        PhishSettings tmpSpamSettings = new PhishSettings(getNodeId());
         tmpSpamSettings.setEnableGooglePhishList(true);
         configureSpamSettings(tmpSpamSettings);
         tmpSpamSettings.getBaseSettings().getSmtpConfig().setBlockSuperSpam(false);
@@ -240,7 +240,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
     protected Query getSettingsQuery(Session s)
     {
         Query q = s.createQuery("from PhishSettings ss where ss.tid = :tid");
-        q.setParameter("tid", getTid());
+        q.setParameter("tid", getNodeId());
         return q;
     }
 

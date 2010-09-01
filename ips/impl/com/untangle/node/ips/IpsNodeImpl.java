@@ -91,11 +91,11 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
 
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
-        Counters c = lmm.getCounters(getTid());
+        Counters c = lmm.getCounters(getNodeId());
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Sessions scanned"), null, I18nUtil.marktr("SCAN"));
         detectBlinger = c.addActivity("detect", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("LOG"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Sessions blocked"), null, I18nUtil.marktr("BLOCK"));
-        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, detectBlinger, blockBlinger);
+        lmm.setActiveMetricsIfNotSet(getNodeId(), scanBlinger, detectBlinger, blockBlinger);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     public void initializeSettings()
     {
         logger.info("Loading Variables...");
-        IpsSettings settings = new IpsSettings(getTid());
+        IpsSettings settings = new IpsSettings(getNodeId());
         settings.setVariables(IpsRuleManager.getDefaultVariables());
         settings.setImmutableVariables(IpsRuleManager.getImmutableVariables());
 
@@ -159,7 +159,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     public List<IpsRule> getRules(final int start, final int limit, final String... sortColumns)
     {
         List<IpsRule> rules = listUtil.getItems("select s.rules from IpsSettings s where s.tid = :tid ",
-                                 getNodeContext(), getTid(), start, limit,
+                                 getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
         for(IpsRule rule : rules) {
             engine.addRule(rule);
@@ -178,7 +178,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
                                           final String... sortColumns)
     {
         return listUtil.getItems("select s.variables from IpsSettings s where s.tid = :tid ",
-                                 getNodeContext(), getTid(), start, limit,
+                                 getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
     }
 
@@ -194,7 +194,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
                                                    final String... sortColumns)
     {
         return listUtil.getItems("select s.immutableVariables from IpsSettings s where s.tid = :tid ",
-                                 getNodeContext(), getTid(), start, limit,
+                                 getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
     }
 
@@ -340,7 +340,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
                 public boolean doWork(Session s)
                 {
                     Query q = s.createQuery("from IpsSettings ips where ips.tid = :tid");
-                    q.setParameter("tid", getTid());
+                    q.setParameter("tid", getNodeId());
                     IpsNodeImpl.this.settings = (IpsSettings)q.uniqueResult();
                     return true;
                 }

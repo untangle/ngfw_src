@@ -42,21 +42,21 @@ import com.untangle.uvm.license.LicenseStatus;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 @SuppressWarnings("serial")
 public class RackView implements Serializable
 {
     private List<Application> applications;
     private List<NodeDesc> instances;
-    private Map<Tid, StatDescs> statDescs;
+    private Map<NodeId, StatDescs> statDescs;
     private Map<String, LicenseStatus> licenseStatus;
-    private Map<Tid, NodeState> runStates;
+    private Map<NodeId, NodeState> runStates;
 
     public RackView(List<Application> applications, List<NodeDesc> instances,
-                    Map<Tid, StatDescs> statDescs,
+                    Map<NodeId, StatDescs> statDescs,
                     Map<String, LicenseStatus> licenseStatus,
-                    Map<Tid, NodeState> runStates)
+                    Map<NodeId, NodeState> runStates)
     {
         this.applications = Collections.unmodifiableList(applications);
         this.instances = Collections.unmodifiableList(instances);
@@ -75,7 +75,7 @@ public class RackView implements Serializable
         return instances;
     }
 
-    public Map<Tid, StatDescs> getStatDescs()
+    public Map<NodeId, StatDescs> getStatDescs()
     {
         return statDescs;
     }
@@ -85,7 +85,7 @@ public class RackView implements Serializable
         return licenseStatus;
     }
 
-    public Map<Tid, NodeState> getRunStates() {
+    public Map<NodeId, NodeState> getRunStates() {
         return runStates;
     }
 

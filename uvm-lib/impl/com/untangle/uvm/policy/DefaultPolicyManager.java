@@ -35,7 +35,7 @@ import com.untangle.uvm.localapi.SessionMatcherFactory;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.Validator;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.PipelineFoundry;
 
@@ -187,7 +187,7 @@ class DefaultPolicyManager implements LocalPolicyManager
         result.setHasRackManagement(false);
         
         LocalNodeManager nodeManager = LocalUvmContextFactory.context().localNodeManager();
-        List<Tid> l = nodeManager.nodeInstances( "untangle-node-adconnector" );
+        List<NodeId> l = nodeManager.nodeInstances( "untangle-node-adconnector" );
         result.setHasUserManagement(false);
         
         if ( l.size() > 0 ) {
@@ -333,7 +333,7 @@ class DefaultPolicyManager implements LocalPolicyManager
 
     public boolean matchesPolicy(Node node, Policy p)
     {
-        Policy tp = node.getTid().getPolicy();
+        Policy tp = node.getNodeId().getPolicy();
         
         if (null == tp) {
             return true;

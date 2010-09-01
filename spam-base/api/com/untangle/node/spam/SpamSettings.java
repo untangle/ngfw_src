@@ -54,7 +54,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 /**
  * Settings for the SpamNode.
@@ -70,7 +70,7 @@ public class SpamSettings implements Serializable
 {
 
     private Long id;
-    private Tid tid;
+    private NodeId tid;
 
     SpamBaseSettings baseSettings = new SpamBaseSettings();
     private List<SpamRBL> spamRBLList; // spam only
@@ -79,7 +79,7 @@ public class SpamSettings implements Serializable
 
     public SpamSettings() {}
 
-    public SpamSettings(Tid tid)
+    public SpamSettings(NodeId tid)
     {
         this.tid = tid;
         spamRBLList = new LinkedList<SpamRBL>();
@@ -109,12 +109,12 @@ public class SpamSettings implements Serializable
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    public Tid getTid()
+    public NodeId getTid()
     {
         return tid;
     }
 
-    public void setTid(Tid tid)
+    public void setTid(NodeId tid)
     {
         this.tid = tid;
     }

@@ -58,7 +58,7 @@ import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStateChange;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 
@@ -73,7 +73,7 @@ public abstract class NodeBase implements Node
     private final Logger logger = Logger.getLogger(NodeBase.class);
 
     private final NodeContext nodeContext;
-    private final Tid tid;
+    private final NodeId tid;
     private final Set<NodeBase> parents = new HashSet<NodeBase>();
     private final Set<Node> children = new HashSet<Node>();
     private final LocalNodeManager nodeManager;
@@ -89,7 +89,7 @@ public abstract class NodeBase implements Node
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         nodeManager = uvm.localNodeManager();
         nodeContext = nodeManager.threadContext();
-        tid = nodeContext.getTid();
+        tid = nodeContext.getNodeId();
 
         Counters c = uvm.localMessageManager().getCounters(tid);
         c.addMetric("s2nChunks", I18nUtil.marktr("Server to node chunks"), null, false);
@@ -165,7 +165,7 @@ public abstract class NodeBase implements Node
         return nodeContext;
     }
 
-    public Tid getTid()
+    public NodeId getNodeId()
     {
         return tid;
     }

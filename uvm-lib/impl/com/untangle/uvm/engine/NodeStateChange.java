@@ -33,7 +33,7 @@ import org.hibernate.annotations.Type;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 /**
  * Record of node state change.
@@ -46,14 +46,14 @@ import com.untangle.uvm.security.Tid;
 @Table(name="u_node_state_change", schema="events")
 class NodeStateChange extends LogEvent
 {
-    private Tid tid;
+    private NodeId tid;
     private NodeState state;
 
     // constructors -----------------------------------------------------------
 
     NodeStateChange() { }
 
-    NodeStateChange(Tid tid, NodeState state)
+    NodeStateChange(NodeId tid, NodeState state)
     {
         this.tid = tid;
         this.state = state;
@@ -85,12 +85,12 @@ class NodeStateChange extends LogEvent
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    Tid getTid()
+    NodeId getNodeId()
     {
         return tid;
     }
 
-    void setTid(Tid tid)
+    void setNodeId(NodeId tid)
     {
         this.tid = tid;
     }

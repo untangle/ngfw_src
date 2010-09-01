@@ -46,7 +46,7 @@ import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.TooManyInstancesException;
 import com.untangle.uvm.node.UndeployException;
 import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.IPSessionDesc;
@@ -66,7 +66,7 @@ class NodeContextImpl implements NodeContext
     private final Logger logger = Logger.getLogger(getClass());
 
     private final NodeDesc nodeDesc;
-    private final Tid tid;
+    private final NodeId tid;
     private final NodePreferences nodePreferences;
     private final NodePersistentState persistentState;
     private final boolean isNew;
@@ -231,7 +231,7 @@ class NodeContextImpl implements NodeContext
 
     // NodeContext -------------------------------------------------------
 
-    public Tid getTid()
+    public NodeId getNodeId()
     {
         return tid;
     }
@@ -404,12 +404,12 @@ class NodeContextImpl implements NodeContext
 
     private class LoadSettings extends TransactionWork<Object>
     {
-        private final Tid tid;
+        private final NodeId tid;
 
         private NodePersistentState persistentState;
         private NodePreferences nodePreferences;
 
-        public LoadSettings(Tid tid)
+        public LoadSettings(NodeId tid)
         {
             this.tid = tid;
         }
@@ -458,7 +458,7 @@ class NodeContextImpl implements NodeContext
         if (nodeDesc.isSingleInstance()) {
             String n = nodeDesc.getName();
             Policy p = nodeDesc.getTid().getPolicy();
-            List<Tid> l = nodeManager.nodeInstances(n, p,false);
+            List<NodeId> l = nodeManager.nodeInstances(n, p,false);
 
             if (1 == l.size()) {
                 if (!tid.equals(l.get(0))) {
@@ -496,8 +496,8 @@ class NodeContextImpl implements NodeContext
             logger.debug("Parent does not exist, instantiating");
 
             try {
-                Tid parentTid = nodeManager.instantiate(parent, policy).getTid();
-                pctx = nodeManager.nodeContext(parentTid);
+                NodeId parentNodeId = nodeManager.instantiate(parent, policy).getTid();
+                pctx = nodeManager.nodeContext(parentNodeId);
             } catch (TooManyInstancesException exn) {
                 pctx = getParentContext(parent);
             }
@@ -512,7 +512,7 @@ class NodeContextImpl implements NodeContext
 
     private NodeContext getParentContext(String parent)
     {
-        for (Tid t : nodeManager.nodeInstances(parent)) {
+        for (NodeId t : nodeManager.nodeInstances(parent)) {
             Policy p = t.getPolicy();
             if (null == p || p.equals(tid.getPolicy())) {
                 return nodeManager.nodeContext(t);

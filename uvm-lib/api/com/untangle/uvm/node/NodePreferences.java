@@ -48,7 +48,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Type;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 /**
  * Runtime Node settings.
@@ -63,14 +63,14 @@ public class NodePreferences implements Serializable
 {
 
     private Long id;
-    private Tid tid;
+    private NodeId tid;
     private Color guiBackgroundColor = Color.PINK;
 
     // constructors -----------------------------------------------------------
 
     public NodePreferences() { }
 
-    public NodePreferences(Tid tid)
+    public NodePreferences(NodeId tid)
     {
         this.tid = tid;
     }
@@ -99,13 +99,13 @@ public class NodePreferences implements Serializable
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    public Tid getTid()
+    public NodeId getTid()
     {
         return tid;
     }
 
     @SuppressWarnings("unused")
-    private void setTid(Tid tid)
+    private void setTid(NodeId tid)
     {
         this.tid = tid;
     }

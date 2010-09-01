@@ -31,7 +31,7 @@ com.untangle.uvm.policy.Policy
 com.untangle.uvm.policy.UserPolicyRule
 com.untangle.uvm.policy.UserPolicyRuleSet
 com.untangle.uvm.security.AdminSettings
-com.untangle.uvm.security.Tid
+com.untangle.uvm.security.NodeId
 com.untangle.uvm.security.User
 com.untangle.uvm.snmp.SnmpSettings
 com.untangle.uvm.toolbox.UpgradeSettings

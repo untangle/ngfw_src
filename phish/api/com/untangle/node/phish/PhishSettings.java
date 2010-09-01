@@ -24,7 +24,7 @@ import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 import com.untangle.node.spam.SpamSettings;
 
 /**
@@ -47,7 +47,7 @@ public class PhishSettings extends SpamSettings implements Serializable
 
     public PhishSettings() {}
 
-    public PhishSettings(Tid tid)
+    public PhishSettings(NodeId tid)
     {
         super(tid);
     }

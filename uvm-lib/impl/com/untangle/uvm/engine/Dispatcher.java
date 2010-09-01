@@ -200,7 +200,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         liveSessions = new ConcurrentHashMap<IPSession,IPSession>();
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
-        Counters c = lmm.getCounters(node.getTid());
+        Counters c = lmm.getCounters(node.getNodeId());
         udpLiveSessionCounter = c.makeLoadCounter("udpLiveSessionCounter", "UDP sessions");
         tcpLiveSessionCounter = c.makeLoadCounter("tcpLiveSessionCounter", "TCP sessions");
         udpTotalSessionCounter = c.addMetric("udpTotalSessionCounter", I18nUtil.marktr("UDP sessions"), null, false);
@@ -1156,7 +1156,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         if ( !bm.isEnabled()) {
             this.benchmark = null;
         } else if ( this.benchmark == null ) {
-            benchmark = bm.getBenchmark(mPipe.node().getTid(), mPipe.getPipeSpec().getName(), true);
+            benchmark = bm.getBenchmark(mPipe.node().getNodeId(), mPipe.getPipeSpec().getName(), true);
         }
     }
 }

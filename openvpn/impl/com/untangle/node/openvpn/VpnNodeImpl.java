@@ -128,16 +128,16 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
-        Counters c = lmm.getCounters(getTid());
+        Counters c = lmm.getCounters(getNodeId());
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Clients blocked"), null, I18nUtil.marktr("BLOCK"));
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Clients passed"), null, I18nUtil.marktr("PASS"));
         connectBlinger = c.addActivity("connect", I18nUtil.marktr("Clients connected"), null, I18nUtil.marktr("CONNECT"));
-        lmm.setActiveMetricsIfNotSet(getTid(), blockBlinger, passBlinger, connectBlinger);
+        lmm.setActiveMetricsIfNotSet(getNodeId(), blockBlinger, passBlinger, connectBlinger);
     }
 
     @Override public void initializeSettings()
     {
-        VpnSettings settings = new VpnSettings( this.getTid());
+        VpnSettings settings = new VpnSettings( this.getNodeId());
         logger.info( "Initializing Settings... to unconfigured" );
 
         try {
@@ -194,7 +194,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
                         q.setParameter( "id", newSettingsId );
                     }
 
-                    q.setParameter( "tid", getTid());
+                    q.setParameter( "tid", getNodeId());
 
                     for ( Object o : q.list()) s.delete(o );
 
@@ -264,7 +264,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     {
         /* XXXXXXXXXXXXXXXXXXXX This is not really legit, done so the schema doesn't have to be
          * written for a little while */
-        if ( this.settings == null ) this.settings = new VpnSettings( this.getTid());
+        if ( this.settings == null ) this.settings = new VpnSettings( this.getNodeId());
 
         return this.settings;
     }
@@ -601,7 +601,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
                 {
                     Query q = s.createQuery( "from VpnSettings ts where ts.tid = :tid" );
 
-                    q.setParameter( "tid", getTid());
+                    q.setParameter( "tid", getNodeId());
 
                     settings = (VpnSettings)q.uniqueResult();
                     return true;
@@ -795,7 +795,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
     public void completeConfig() throws Exception
     {
-        VpnSettings newSettings = this.sandbox.completeConfig( this.getTid());
+        VpnSettings newSettings = this.sandbox.completeConfig( this.getNodeId());
 
         /* Generate new settings */
         if ( newSettings.isUntanglePlatformClient()) {

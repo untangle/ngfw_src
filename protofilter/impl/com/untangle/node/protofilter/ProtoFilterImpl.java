@@ -83,11 +83,11 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         eventLogger.addSimpleEventFilter(ef);
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
-        Counters c = lmm.getCounters(getTid());
+        Counters c = lmm.getCounters(getNodeId());
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Sessions scanned"), null, I18nUtil.marktr("SCAN"));
         detectBlinger = c.addActivity("detect", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("LOG"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Sessions blocked"), null, I18nUtil.marktr("BLOCK"));
-        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, detectBlinger, blockBlinger);
+        lmm.setActiveMetricsIfNotSet(getNodeId(), scanBlinger, detectBlinger, blockBlinger);
     }
 
     // ProtoFilter methods ----------------------------------------------------
@@ -145,7 +145,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     public List<ProtoFilterPattern> getPatterns(final int start, final int limit, final String... sortColumns)
     {
         return listUtil.getItems( "select hbs.patterns from ProtoFilterSettings hbs where hbs.tid = :tid ",
-                                  getNodeContext(), getTid(), start, limit, sortColumns );
+                                  getNodeContext(), getNodeId(), start, limit, sortColumns );
     }
     
     public void updatePatterns(List<ProtoFilterPattern> added, List<Long> deleted, List<ProtoFilterPattern> modified)
@@ -195,7 +195,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     @Override
     public void initializeSettings()
     {
-        ProtoFilterSettings settings = new ProtoFilterSettings(this.getTid());
+        ProtoFilterSettings settings = new ProtoFilterSettings(this.getNodeId());
         logger.info("INIT: Importing patterns...");
         TreeMap<Integer,ProtoFilterPattern> factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
         // Turn on the Instant Messenger ones so it does something by default:
@@ -215,7 +215,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
                 public boolean doWork(Session s)
                 {
                     Query q = s.createQuery("from ProtoFilterSettings hbs where hbs.tid = :tid");
-                    q.setParameter("tid", getTid());
+                    q.setParameter("tid", getNodeId());
                     ProtoFilterImpl.this.cachedSettings = (ProtoFilterSettings)q.uniqueResult();
 
                     return true;

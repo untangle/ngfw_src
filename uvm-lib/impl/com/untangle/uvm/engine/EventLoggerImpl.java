@@ -64,7 +64,7 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
         this.nodeContext = nodeContext;
         inputQueue = UvmContextImpl.getInstance().loggingManager().getInputQueue();
         String name = nodeContext.getNodeDesc().getSyslogName();
-        this.tag = name + "[" + nodeContext.getTid().getId() + "]: ";
+        this.tag = name + "[" + nodeContext.getNodeId().getId() + "]: ";
     }
 
     // EventManager methods ---------------------------------------------------

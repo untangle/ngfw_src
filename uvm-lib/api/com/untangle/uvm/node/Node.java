@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.node;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.vnet.IPSessionDesc;
 
 /**
@@ -47,7 +47,7 @@ public interface Node
 {
     // accessors --------------------------------------------------------------
 
-    public Tid getTid();
+    public NodeId getNodeId();
 
     // lifecycle methods ------------------------------------------------------
 

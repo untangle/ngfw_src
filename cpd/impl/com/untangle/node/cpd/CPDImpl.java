@@ -101,17 +101,17 @@ public class CPDImpl extends AbstractNode implements CPD {
         this.pipeSpecs = new PipeSpec[0];
         
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
-        Counters c = lmm.getCounters(getTid());
+        Counters c = lmm.getCounters(getNodeId());
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Blocked Sessions"), null, I18nUtil.marktr("BLOCK"));
         authorizeBlinger = c.addActivity("authorize", I18nUtil.marktr("Authorized Clients"), null, I18nUtil.marktr("AUTHORIZE"));
-        lmm.setActiveMetricsIfNotSet(getTid(), blockBlinger, authorizeBlinger);
+        lmm.setActiveMetricsIfNotSet(getNodeId(), blockBlinger, authorizeBlinger);
     }
 
     public void initializeSettings()
     {
         logger.info("Initializing Settings...");
         
-        CPDSettings settings = new CPDSettings(this.getTid());
+        CPDSettings settings = new CPDSettings(this.getNodeId());
         /* Create a set of default capture rules */
         List<CaptureRule> rules = new LinkedList<CaptureRule>();
         rules.add(new CaptureRule(false, true,
@@ -477,7 +477,7 @@ public class CPDImpl extends AbstractNode implements CPD {
             public boolean doWork(Session s) {
                 Query q = s
                         .createQuery("from CPDSettings cs where cs.tid = :tid");
-                q.setParameter("tid", getTid());
+                q.setParameter("tid", getNodeId());
 
                 CPDImpl.this.settings = (CPDSettings) q.uniqueResult();
                 return true;

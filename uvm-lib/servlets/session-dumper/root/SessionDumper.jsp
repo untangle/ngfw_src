@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.security.Tid, com.untangle.uvm.node.*, com.untangle.uvm.vnet.*, com.untangle.uvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.List, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
+<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.security.NodeId, com.untangle.uvm.node.*, com.untangle.uvm.vnet.*, com.untangle.uvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.List, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
 <%--
  * $HeadURL$
  * Copyright (c) 2003-2007 Untangle, Inc.

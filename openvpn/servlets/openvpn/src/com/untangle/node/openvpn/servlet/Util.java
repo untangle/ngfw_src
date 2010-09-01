@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeException;
@@ -214,7 +214,7 @@ class Util
     VpnNode getNode()  throws NodeException
     {
         LocalUvmContext ctx = LocalUvmContextFactory.context();
-        Tid tid = ctx.nodeManager().nodeInstances( "untangle-node-openvpn" ).get( 0 );
+        NodeId tid = ctx.nodeManager().nodeInstances( "untangle-node-openvpn" ).get( 0 );
         if ( tid == null ) throw new NodeException( "OpenVPN is not loaded." );
         NodeContext tc = ctx.nodeManager().nodeContext( tid );
 

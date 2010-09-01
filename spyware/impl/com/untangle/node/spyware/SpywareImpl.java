@@ -151,7 +151,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     @SuppressWarnings("unchecked")
 	public SpywareImpl()
     {
-        replacementGenerator = new SpywareReplacementGenerator(getTid());
+        replacementGenerator = new SpywareReplacementGenerator(getNodeId());
 
         final LocalUvmContext uvm = LocalUvmContextFactory.context();
 
@@ -219,13 +219,13 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
         LocalMessageManager lmm = LocalUvmContextFactory.context()
             .localMessageManager();
-        Counters c = lmm.getCounters(getTid());
+        Counters c = lmm.getCounters(getNodeId());
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Pages scanned"), null, I18nUtil.marktr("SCAN"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Pages blocked"), null, I18nUtil.marktr("BLOCK"));
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Pages passed"), null, I18nUtil.marktr("PASS"));
         // What was this supposed to be?
         // spyPagesDetectedBlinger = c.addMetric("spydetected", I18nUtil.marktr("Spyware Pages Detected"), null);
-        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger, passBlinger);
+        lmm.setActiveMetricsIfNotSet(getNodeId(), scanBlinger, blockBlinger, passBlinger);
     }
 
     // SpywareNode methods -----------------------------------------------------
@@ -235,7 +235,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
                                             final String... sortColumns)
     {
         return listUtil.getItems("select s.activeXRules from SpywareSettings s where s.tid = :tid ",
-                                 getNodeContext(), getTid(), start, limit,
+                                 getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
 
     }
@@ -251,7 +251,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
                                            String... sortColumns)
     {
         return listUtil.getItems("select s.cookieRules from SpywareSettings s where s.tid = :tid ",
-                                 getNodeContext(), getTid(), start, limit,
+                                 getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
     }
 
@@ -265,7 +265,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     public List<IPMaddrRule> getSubnetRules(int start, int limit, String... sortColumns)
     {
         return listUtil.getItems("select s.subnetRules from SpywareSettings s where s.tid = :tid ",
-                                 getNodeContext(), getTid(), start, limit,
+                                 getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
     }
 
@@ -280,7 +280,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
                                                String... sortColumns)
     {
         return listUtil.getItems("select s.domainWhitelist from SpywareSettings s where s.tid = :tid ",
-                                 getNodeContext(), getTid(), start, limit,
+                                 getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
     }
 
@@ -405,7 +405,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     public void initializeSettings()
     {
-        SpywareSettings settings = new SpywareSettings(getTid());
+        SpywareSettings settings = new SpywareSettings(getNodeId());
 
         updateActiveX(settings);
         updateCookie(settings);
@@ -424,7 +424,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
                 {
                     Query q = s.createQuery
                         ("from SpywareSettings ss where ss.tid = :tid");
-                    q.setParameter("tid", getTid());
+                    q.setParameter("tid", getNodeId());
                     SpywareImpl.this.settings = (SpywareSettings)q.uniqueResult();
 
                     updateActiveX(SpywareImpl.this.settings);

@@ -52,7 +52,7 @@ import org.hibernate.annotations.Cascade;
 
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 /**
  * Settings for the VirusNode.
@@ -67,7 +67,7 @@ public class VirusSettings implements Serializable
 {
 
     private Long id;
-    private Tid tid;
+    private NodeId tid;
 
     private VirusBaseSettings baseSettings = new VirusBaseSettings();
     
@@ -78,7 +78,7 @@ public class VirusSettings implements Serializable
 
     public VirusSettings() { }
 
-    public VirusSettings(Tid tid)
+    public VirusSettings(NodeId tid)
     {
         this.tid = tid;
     }
@@ -107,12 +107,12 @@ public class VirusSettings implements Serializable
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    public Tid getTid()
+    public NodeId getTid()
     {
         return tid;
     }
 
-    public void setTid(Tid tid)
+    public void setTid(NodeId tid)
     {
         this.tid = tid;
     }

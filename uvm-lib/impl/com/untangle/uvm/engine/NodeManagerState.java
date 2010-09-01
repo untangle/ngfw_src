@@ -25,7 +25,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 /**
  * Internal state for NodeManagerImpl.
@@ -38,7 +38,7 @@ import com.untangle.uvm.security.Tid;
 class NodeManagerState
 {
     private Long id;
-    private Long lastTid = 0L;
+    private Long lastNodeId = 0L;
 
     NodeManagerState() { }
 
@@ -63,23 +63,23 @@ class NodeManagerState
      * @return last assigned tid.
      */
     @Column(name="last_tid", nullable=false)
-    Long getLastTid()
+    Long getLastNodeId()
     {
-        return lastTid;
+        return lastNodeId;
     }
 
-    void setLastTid(Long lastTid)
+    void setLastNodeId(Long lastNodeId)
     {
-        this.lastTid = lastTid;
+        this.lastNodeId = lastNodeId;
     }
 
     /**
-     * Get the next Tid.
+     * Get the next NodeId.
      *
      * @return a <code>Long</code> value
      */
-    Tid nextTid(Policy policy, String nodeName)
+    NodeId nextNodeId(Policy policy, String nodeName)
     {
-        return new Tid(++lastTid, policy, nodeName);
+        return new NodeId(++lastNodeId, policy, nodeName);
     }
 }

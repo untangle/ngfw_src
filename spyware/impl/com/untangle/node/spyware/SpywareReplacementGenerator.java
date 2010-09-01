@@ -24,7 +24,7 @@ import java.net.UnknownHostException;
 import com.untangle.node.http.ReplacementGenerator;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 public class SpywareReplacementGenerator extends ReplacementGenerator<SpywareBlockDetails>
 {
@@ -46,7 +46,7 @@ public class SpywareReplacementGenerator extends ReplacementGenerator<SpywareBlo
 
     // constructors -----------------------------------------------------------
 
-    public SpywareReplacementGenerator(Tid tid)
+    public SpywareReplacementGenerator(NodeId tid)
     {
         super(tid);
     }
@@ -60,7 +60,7 @@ public class SpywareReplacementGenerator extends ReplacementGenerator<SpywareBlo
         return String.format(SIMPLE_BLOCK_TEMPLATE, bd.getHost(), bd.getUrl(), contactHtml);
     }
 
-    protected String getRedirectUrl(String nonce, String host, Tid tid)
+    protected String getRedirectUrl(String nonce, String host, NodeId tid)
     {
         return "http://" + host + "/spyware/detect.jsp?nonce=" + nonce
             + "&tid=" + tid;

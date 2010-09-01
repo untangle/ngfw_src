@@ -18,7 +18,7 @@ class Manager(object):
 
     def buildTid(self,tid):
         tid = int( tid )
-        return {'javaClass': 'com.untangle.uvm.security.Tid', 'id': tid, 'name': "%d" % ( tid ) }
+        return {'javaClass': 'com.untangle.uvm.security.NodeId', 'id': tid, 'name': "%d" % ( tid ) }
 
     def buildDate(self,seconds):
         return { 'javaClass' : 'java.util.Date', 'time' : ( seconds * 1000 ) }

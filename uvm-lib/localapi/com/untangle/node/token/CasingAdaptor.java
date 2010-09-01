@@ -95,7 +95,7 @@ public class CasingAdaptor extends AbstractEventHandler
 
         LocalMessageManager lmm = LocalUvmContextFactory.context()
             .localMessageManager();
-        Counters c = lmm.getCounters(node.getTid());
+        Counters c = lmm.getCounters(node.getNodeId());
         s2nBytes = c.getBlingBlinger("s2nBytes");
         c2nBytes = c.getBlingBlinger("c2nBytes");
         n2sBytes = c.getBlingBlinger("n2sBytes");

@@ -62,7 +62,7 @@ import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.toolbox.Application;
 import com.untangle.uvm.toolbox.InstallAndInstantiateComplete;
 import com.untangle.uvm.toolbox.MackageDesc;
@@ -228,9 +228,9 @@ class ToolboxManagerImpl implements ToolboxManager
         NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().localNodeManager();
         List<NodeDesc> instances = nm.visibleNodes(p);
 
-        Map<Tid, StatDescs> statDescs = new HashMap<Tid, StatDescs>(instances.size());
+        Map<NodeId, StatDescs> statDescs = new HashMap<NodeId, StatDescs>(instances.size());
         for (NodeDesc nd : instances) {
-            Tid t = nd.getTid();
+            NodeId t = nd.getTid();
             LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
             Counters c = lmm.getCounters(t);
             StatDescs sd = c.getStatDescs();
@@ -264,7 +264,7 @@ class ToolboxManagerImpl implements ToolboxManager
             String n = nd.getMackageDesc().getName();
             licenseStatus.put(n, lm.getMackageStatus(n));
         }
-        Map<Tid, NodeState> runStates=nm.allNodeStates();
+        Map<NodeId, NodeState> runStates=nm.allNodeStates();
         return new RackView(apps, instances, statDescs, licenseStatus, runStates);
     }
 
@@ -500,9 +500,9 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         // stop intances
         NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().localNodeManager();
-        List<Tid> tids = nm.nodeInstances(name);
+        List<NodeId> tids = nm.nodeInstances(name);
         logger.debug("unloading " + tids.size() + " nodes");
-        for (Tid t : tids) {
+        for (NodeId t : tids) {
             nm.unload(t); 
         }
 
@@ -632,9 +632,9 @@ class ToolboxManagerImpl implements ToolboxManager
 
         // stop mackage intances
         NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().localNodeManager();
-        List<Tid> tids = nm.nodeInstances(pkgName);
+        List<NodeId> tids = nm.nodeInstances(pkgName);
         logger.debug("unloading " + tids.size() + " nodes");
-        for (Tid t : tids) {
+        for (NodeId t : tids) {
             nm.unload(t); 
         }
     }

@@ -40,7 +40,7 @@ import org.hibernate.annotations.Cascade;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 /**
  * WebFilter settings.
@@ -55,7 +55,7 @@ public class WebFilterSettings implements Serializable
 {
 
     private Long id;
-    private Tid tid;
+    private NodeId tid;
 
     private WebFilterBaseSettings baseSettings = new WebFilterBaseSettings();
 
@@ -71,7 +71,7 @@ public class WebFilterSettings implements Serializable
 
     public WebFilterSettings() { }
 
-    public WebFilterSettings(Tid tid)
+    public WebFilterSettings(NodeId tid)
     {
         this.tid = tid;
     }
@@ -119,12 +119,12 @@ public class WebFilterSettings implements Serializable
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    public Tid getTid()
+    public NodeId getTid()
     {
         return tid;
     }
 
-    public void setTid(Tid tid)
+    public void setTid(NodeId tid)
     {
         this.tid = tid;
     }

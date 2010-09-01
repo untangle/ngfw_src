@@ -120,7 +120,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
 
     public void initializeSettings()
     {
-        ShieldSettings settings = new ShieldSettings(this.getTid());
+        ShieldSettings settings = new ShieldSettings(this.getNodeId());
         logger.info("Initializing Settings...");
         setShieldSettings( settings);
     }
@@ -133,7 +133,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
                 {
                     Query q = s.createQuery
                         ("from ShieldSettings ts where ts.tid = :tid");
-                    q.setParameter("tid", getTid());
+                    q.setParameter("tid", getNodeId());
                     ShieldNodeImpl.this.settings = (ShieldSettings)q.uniqueResult();
                     return true;
                 }
@@ -249,7 +249,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
             String... sortColumns) {
         return listUtil.getItems(
                 "select ts.shieldNodeRules from ShieldSettings ts where ts.tid = :tid ",
-                getNodeContext(), getTid(), start, limit, sortColumns);
+                getNodeContext(), getNodeId(), start, limit, sortColumns);
     }
 
     public void updateShieldNodeRules(List<ShieldNodeRule> added,

@@ -23,7 +23,7 @@ import java.net.InetAddress;
 import com.untangle.node.http.ReplacementGenerator;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 /**
  * ReplacementGenerator for WebFilter.
@@ -47,7 +47,7 @@ public class WebFilterReplacementGenerator extends ReplacementGenerator<WebFilte
 
     // constructors -----------------------------------------------------------
 
-    public WebFilterReplacementGenerator(Tid tid)
+    public WebFilterReplacementGenerator(NodeId tid)
     {
         super(tid);
     }
@@ -66,7 +66,7 @@ public class WebFilterReplacementGenerator extends ReplacementGenerator<WebFilte
     }
 
     @Override
-    protected String getRedirectUrl(String nonce, String host, Tid tid)
+    protected String getRedirectUrl(String nonce, String host, NodeId tid)
     {
         return "http://" + host + "/webfilter/blockpage?nonce=" + nonce
             + "&tid=" + tid;
@@ -77,7 +77,7 @@ public class WebFilterReplacementGenerator extends ReplacementGenerator<WebFilte
     {
         try {
             WebFilterBase wf = (WebFilterBase)LocalUvmContextFactory.context().nodeManager().
-                nodeContext(getTid()).node();
+                nodeContext(getNodeId()).node();
 
             return new WebFilterBlockDetails( wf.getWebFilterSettings(),
                                               "test-host.example.com", 

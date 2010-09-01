@@ -33,7 +33,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import  com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.NodeContext;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.util.I18nUtil;
 
 import com.untangle.node.http.BlockPageUtil;  
@@ -55,7 +55,7 @@ public class BlockPageServlet extends HttpServlet
         Map<String,String> i18n_map = LocalUvmContextFactory.context().
             languageManager().getTranslations( "untangle-base-virus" );
         
-        Tid tid = new Tid(Long.parseLong(request.getParameter( "tid" )));
+        NodeId tid = new NodeId(Long.parseLong(request.getParameter( "tid" )));
         
         NodeContext nodeContext = nm.nodeContext( tid );
         if ( nodeContext == null ) {

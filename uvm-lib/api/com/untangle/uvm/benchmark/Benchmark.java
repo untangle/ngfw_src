@@ -2,12 +2,12 @@ package com.untangle.uvm.benchmark;
 
 import java.io.Serializable;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 @SuppressWarnings("serial")
 public class Benchmark implements Serializable {
     
-    private final Tid tid;
+    private final NodeId tid;
     private final String nodeName;
     private final String name;
     private final boolean[] hasMin = new boolean[Event.MAX_EVENT.getKey()];
@@ -16,7 +16,7 @@ public class Benchmark implements Serializable {
     private final long[] total = new long[Event.MAX_EVENT.getKey()]; 
     private final long[] count = new long[Event.MAX_EVENT.getKey()];
     
-    public Benchmark( Tid tid, String nodeName, String name )
+    public Benchmark( NodeId tid, String nodeName, String name )
     {
         this.tid = tid;
         this.nodeName = nodeName;
@@ -45,7 +45,7 @@ public class Benchmark implements Serializable {
         total[key] += value;
     }
     
-    public Tid getTid()
+    public NodeId getNodeId()
     {
         return this.tid;
     }

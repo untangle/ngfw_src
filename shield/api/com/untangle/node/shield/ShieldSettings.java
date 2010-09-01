@@ -33,7 +33,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 /**
  * Settings for the Shield Node.
@@ -48,7 +48,7 @@ public class ShieldSettings implements Serializable
 {
 
     private Long id;
-    private Tid tid;
+    private NodeId tid;
 
     private ShieldBaseSettings baseSettings = new ShieldBaseSettings();
 
@@ -56,7 +56,7 @@ public class ShieldSettings implements Serializable
 
     public ShieldSettings() { }
 
-    public ShieldSettings(Tid tid)
+    public ShieldSettings(NodeId tid)
     {
         this.tid = tid;
     }
@@ -81,12 +81,12 @@ public class ShieldSettings implements Serializable
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    public Tid getTid()
+    public NodeId getTid()
     {
         return tid;
     }
 
-    public void setTid(Tid tid)
+    public void setTid(NodeId tid)
     {
         this.tid = tid;
     }

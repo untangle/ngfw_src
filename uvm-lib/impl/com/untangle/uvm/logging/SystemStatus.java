@@ -30,7 +30,7 @@ import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 public class SystemStatus
 {
@@ -408,7 +408,7 @@ public class SystemStatus
              */
             sb.append(SPACER);
             LocalNodeManager tm = LocalUvmContextFactory.context().localNodeManager();
-            for (Tid t : tm.nodeInstances()) {
+            for (NodeId t : tm.nodeInstances()) {
                 NodeContext tctx = tm.nodeContext(t);
                 if (tctx == null) {
                     sb.append(t + "\tNULL Node Context\n");

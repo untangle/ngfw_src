@@ -53,7 +53,7 @@ import com.untangle.uvm.message.StatInterval;
 import com.untangle.uvm.message.Stats;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.TransactionWork;
 
@@ -76,7 +76,7 @@ class MessageManagerImpl implements LocalMessageManager
     private static final Set<String> MEMINFO_KEEPERS;
     private static final Set<String> VMSTAT_KEEPERS;
 
-    private final Map<Tid, Counters> counters = new HashMap<Tid, Counters>();
+    private final Map<NodeId, Counters> counters = new HashMap<NodeId, Counters>();
 
     private final Random random = new Random();
 
@@ -84,7 +84,7 @@ class MessageManagerImpl implements LocalMessageManager
 
     private final Map<Integer, Long> lastMessageAccess = new HashMap<Integer, Long>();
 
-    private final Map<Tid, List<ActiveStat>> activeMetrics = new HashMap<Tid, List<ActiveStat>>();
+    private final Map<NodeId, List<ActiveStat>> activeMetrics = new HashMap<NodeId, List<ActiveStat>>();
 
     private final Pulse updatePulse = new Pulse("system-stat-collector", true, new SystemStatCollector());
 
@@ -104,7 +104,7 @@ class MessageManagerImpl implements LocalMessageManager
 
     MessageManagerImpl()
     {
-        ensureTid0();
+        ensureNodeId0();
     }
 
     void start()
@@ -127,9 +127,9 @@ class MessageManagerImpl implements LocalMessageManager
     public MessageQueue getMessageQueue(Integer key)
     {
         LocalNodeManager lm = UvmContextImpl.getInstance().localNodeManager();
-        List<Tid> tids = lm.nodeInstances();
-        tids.add(new Tid(0L));
-        Map<Tid, Stats> stats = getStats(lm, tids);
+        List<NodeId> tids = lm.nodeInstances();
+        tids.add(new NodeId(0L));
+        Map<NodeId, Stats> stats = getStats(lm, tids);
         List<Message> messages = getMessages(key);
         return new MessageQueue(messages, stats, systemStats);
     }
@@ -137,16 +137,16 @@ class MessageManagerImpl implements LocalMessageManager
     public MessageQueue getMessageQueue(Integer key, Policy p)
     {
         LocalNodeManager lm = UvmContextImpl.getInstance().localNodeManager();
-        List<Tid> tids = lm.nodeInstances(p);
+        List<NodeId> tids = lm.nodeInstances(p);
         /* Add in the nodes with the null policy */
         tids.addAll( lm.nodeInstances((Policy)null));
-        Map<Tid, Stats> stats = getStats(lm, tids);
+        Map<NodeId, Stats> stats = getStats(lm, tids);
         List<Message> messages = getMessages(key);
 
         return new MessageQueue(messages, stats, systemStats);
     }
 
-    public StatDescs getStatDescs(Tid t)
+    public StatDescs getStatDescs(NodeId t)
     {
         Long id = t.getId();
         if (null != id) {
@@ -162,7 +162,7 @@ class MessageManagerImpl implements LocalMessageManager
         return this.systemStats;
     }
 
-    public List<ActiveStat> getActiveMetrics(final Tid tid)
+    public List<ActiveStat> getActiveMetrics(final NodeId tid)
     {
         List<ActiveStat> l = null;
 
@@ -206,7 +206,7 @@ class MessageManagerImpl implements LocalMessageManager
         return l;
     }
 
-    public void setActiveMetrics(final Tid tid, final List<ActiveStat> activeMetrics)
+    public void setActiveMetrics(final NodeId tid, final List<ActiveStat> activeMetrics)
     {
         synchronized (this.activeMetrics) {
             this.activeMetrics.put(tid, activeMetrics);
@@ -260,10 +260,10 @@ class MessageManagerImpl implements LocalMessageManager
 
     public Counters getUvmCounters()
     {
-        return getCounters(new Tid(0L));
+        return getCounters(new NodeId(0L));
     }
 
-    public Counters getCounters(Tid t)
+    public Counters getCounters(NodeId t)
     {
         Counters c;
         synchronized (counters) {
@@ -308,7 +308,7 @@ class MessageManagerImpl implements LocalMessageManager
         }
     }
 
-    public void setActiveMetricsIfNotSet(final Tid tid, final BlingBlinger... blingers)
+    public void setActiveMetricsIfNotSet(final NodeId tid, final BlingBlinger... blingers)
     {
         TransactionWork<List<ActiveStat>> tw = new TransactionWork<List<ActiveStat>>()
             {
@@ -342,7 +342,7 @@ class MessageManagerImpl implements LocalMessageManager
         UvmContextImpl.getInstance().runTransaction(tw);
     }
 
-    public Stats getStats(Tid t)
+    public Stats getStats(NodeId t)
     {
         List<ActiveStat> as = getActiveMetrics(t);
         Counters c = getCounters(t);
@@ -350,7 +350,7 @@ class MessageManagerImpl implements LocalMessageManager
         return c.getAllStats(as);
     }
 
-    public Stats getAllStats(Tid t)
+    public Stats getAllStats(NodeId t)
     {
         Counters c = getCounters(t);
         return c.getAllStats();
@@ -379,11 +379,11 @@ class MessageManagerImpl implements LocalMessageManager
 
     // private methods --------------------------------------------------------
 
-    private Map<Tid, Stats> getStats(LocalNodeManager lm, List<Tid> tids)
+    private Map<NodeId, Stats> getStats(LocalNodeManager lm, List<NodeId> tids)
     {
-        Map<Tid, Stats> stats = new HashMap<Tid, Stats>(tids.size());
+        Map<NodeId, Stats> stats = new HashMap<NodeId, Stats>(tids.size());
 
-        for (Tid t : tids) {
+        for (NodeId t : tids) {
             List<ActiveStat> as = getActiveMetrics(t);
             Counters c = getCounters(t);
             stats.put(t, c.getAllStats(as));
@@ -392,17 +392,17 @@ class MessageManagerImpl implements LocalMessageManager
         return stats;
     }
 
-    private void ensureTid0()
+    private void ensureNodeId0()
     {
         TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
                 {
                     Query q = s.createQuery
-                        ("from Tid t where t.id = 0");
-                    Tid t = (Tid)q.uniqueResult();
+                        ("from NodeId t where t.id = 0");
+                    NodeId t = (NodeId)q.uniqueResult();
                     if (null == t) {
-                        t = new Tid(0L);
+                        t = new NodeId(0L);
                         s.save(t);
                     }
 

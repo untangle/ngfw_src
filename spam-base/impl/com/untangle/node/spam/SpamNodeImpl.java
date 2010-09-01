@@ -120,14 +120,14 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
         rblEventLogger.addSimpleEventFilter(ef);
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
-        Counters c = lmm.getCounters(getTid());
+        Counters c = lmm.getCounters(getNodeId());
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Messages passed"), null, I18nUtil.marktr("PASS"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Messages dropped"), null, I18nUtil.marktr("DROP"));
         markBlinger = c.addActivity("mark", I18nUtil.marktr("Messages marked"), null, I18nUtil.marktr("MARK"));
         quarantineBlinger = c.addActivity("quarantine", I18nUtil.marktr("Messages quarantined"), null, I18nUtil.marktr("QUARANTINE"));
         spamDetectedBlinger = c.addMetric("spam", I18nUtil.marktr("Spam detected"), null);
         emailReceivedBlinger = c.addMetric("email", I18nUtil.marktr("Messages received"), null);
-        lmm.setActiveMetricsIfNotSet(getTid(), passBlinger, blockBlinger, markBlinger, quarantineBlinger);
+        lmm.setActiveMetricsIfNotSet(getNodeId(), passBlinger, blockBlinger, markBlinger, quarantineBlinger);
     }
 
     // Spam methods -----------------------------------------------------------
@@ -340,7 +340,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     public List<SpamRBL> getSpamRBLList( int start, int limit, String ... sortColumns )
     {
         String query = "select s.spamRBLList from SpamSettings s where s.tid = :tid ";
-        return listUtil.getItems( query, getNodeContext(), getTid(), start, limit, sortColumns );
+        return listUtil.getItems( query, getNodeContext(), getNodeId(), start, limit, sortColumns );
     }
 
     public void updateSpamRBLList( final List<SpamRBL> added, final List<Long> deleted,
@@ -394,7 +394,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     {
         logger.debug("Initializing Settings");
 
-        SpamSettings tmpSpamSettings = new SpamSettings(getTid());
+        SpamSettings tmpSpamSettings = new SpamSettings(getNodeId());
         configureSpamSettings(tmpSpamSettings);
         setSpamSettings(tmpSpamSettings);
     }
@@ -430,7 +430,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
                 public boolean doWork(Session s)
                 {
                     Query q = getSettingsQuery(s);
-                    q.setParameter("tid", getTid());
+                    q.setParameter("tid", getNodeId());
                     spamSettings = (SpamSettings)q.uniqueResult();
 
                     // set lists if not already set
@@ -449,7 +449,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     protected Query getSettingsQuery(Session s)
     {
         Query q = s.createQuery("from SpamSettings ss where ss.tid = :tid");
-        q.setParameter("tid", getTid());
+        q.setParameter("tid", getNodeId());
         return q;
     }
 

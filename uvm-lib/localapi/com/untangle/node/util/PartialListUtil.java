@@ -43,7 +43,7 @@ import org.hibernate.Session;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.Rule;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.util.QueryUtil;
 import com.untangle.uvm.util.TransactionWork;
 
@@ -58,7 +58,7 @@ public class PartialListUtil
 
     /* Just a helper function for the most common case of listing from a node. */
     @SuppressWarnings("unchecked")
-    public List getItems( String queryString, NodeContext nodeContext, Tid tid, int start, int limit, String ... sortColumns)
+    public List getItems( String queryString, NodeContext nodeContext, NodeId tid, int start, int limit, String ... sortColumns)
     {
         return getItems( queryString, nodeContext, tid, null, start, limit, sortColumns );
     }
@@ -77,7 +77,7 @@ public class PartialListUtil
 
     /* Just a helper function for the most common case of listing from a node. */
     @SuppressWarnings("unchecked")
-    public List getItems( String queryString, NodeContext nodeContext, Tid tid, String alias, int start, int limit, String ... sortColumns)
+    public List getItems( String queryString, NodeContext nodeContext, NodeId tid, String alias, int start, int limit, String ... sortColumns)
     {
         return getItems( queryString, nodeContext, new Parameter[] { new Parameter( "tid", tid ) },
                          alias, start, limit, sortColumns );

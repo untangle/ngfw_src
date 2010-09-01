@@ -506,7 +506,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         for (Iterator<MPipeFitting> i = chain.iterator(); i.hasNext();) {
             MPipeFitting mpf = i.next();
 
-            Policy nodePolicy = mpf.mPipe.node().getTid().getPolicy();
+            Policy nodePolicy = mpf.mPipe.node().getNodeId().getPolicy();
 
             if (nodePolicy == null) {
                 continue;
@@ -555,7 +555,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         for (Iterator<MPipeFitting> i = chain.iterator(); i.hasNext();) {
             MPipeFitting mpf = i.next();
 
-            Policy nodePolicy = mpf.mPipe.node().getTid().getPolicy();
+            Policy nodePolicy = mpf.mPipe.node().getNodeId().getPolicy();
 
             /* Keep items in the NULL Racks */
             if (nodePolicy == null) {

@@ -112,11 +112,11 @@ public class FirewallImpl extends AbstractNode implements Firewall
         eventLogger.addSimpleEventFilter(ef);
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
-        Counters c = lmm.getCounters(getTid());
+        Counters c = lmm.getCounters(getNodeId());
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Sessions passed"), null, I18nUtil.marktr("PASS"));
         loggedBlinger = c.addActivity("log", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("LOG"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Sessions blocked"), null, I18nUtil.marktr("BLOCK"));
-        lmm.setActiveMetricsIfNotSet(getTid(), passBlinger, loggedBlinger, blockBlinger);
+        lmm.setActiveMetricsIfNotSet(getNodeId(), passBlinger, loggedBlinger, blockBlinger);
     }
 
     // Firewall methods --------------------------------------------------------
@@ -261,7 +261,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
                 public boolean doWork(Session s)
                 {
                     Query q = s.createQuery("from FirewallSettings hbs where hbs.tid = :tid");
-                    q.setParameter("tid", getTid());
+                    q.setParameter("tid", getNodeId());
                     FirewallImpl.this.settings = (FirewallSettings)q.uniqueResult();
 
                     updateToCurrent(FirewallImpl.this.settings);
@@ -284,7 +284,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
     FirewallSettings getDefaultSettings()
     {
         logger.info("Loading the default settings");
-        FirewallSettings settings = new FirewallSettings(this.getTid());
+        FirewallSettings settings = new FirewallSettings(this.getNodeId());
 
         try {
             IPMatcherFactory ipmf = IPMatcherFactory.getInstance();

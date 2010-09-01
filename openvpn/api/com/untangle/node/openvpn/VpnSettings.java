@@ -44,7 +44,7 @@ import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 /**
  * Settings for the open vpn node.
@@ -77,7 +77,7 @@ public class VpnSettings implements Serializable, Validatable
     public static final int DEFAULT_PUBLIC_PORT = 1194;
 
     private Long id;
-    private Tid tid;
+    private NodeId tid;
 
     private boolean isBridgeMode = false;
     private boolean isUntanglePlatformClient = false;
@@ -121,7 +121,7 @@ public class VpnSettings implements Serializable, Validatable
 
     public VpnSettings() { }
 
-    public VpnSettings( Tid tid )
+    public VpnSettings( NodeId tid )
     {
         this.tid = tid;
     }
@@ -179,12 +179,12 @@ public class VpnSettings implements Serializable, Validatable
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    public Tid getTid()
+    public NodeId getTid()
     {
         return tid;
     }
 
-    public void setTid( Tid tid )
+    public void setTid( NodeId tid )
     {
         this.tid = tid;
     }

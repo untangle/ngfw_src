@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 /**
  * Remote interface for managing node instances.
@@ -49,11 +49,11 @@ import com.untangle.uvm.security.Tid;
 public interface RemoteNodeManager
 {
     /**
-     * Get <code>Tid</code>s of nodes in the pipeline.
+     * Get <code>NodeId</code>s of nodes in the pipeline.
      *
      * @return list of all node ids.
      */
-    List<Tid> nodeInstances();
+    List<NodeId> nodeInstances();
 
     /**
      * Node instances by name.
@@ -61,7 +61,7 @@ public interface RemoteNodeManager
      * @param name name of the node.
      * @return tids of corresponding nodes.
      */
-    List<Tid> nodeInstances(String name);
+    List<NodeId> nodeInstances(String name);
 
     /**
      * Node instances by policy.
@@ -69,7 +69,7 @@ public interface RemoteNodeManager
      * @param policy policy of node.
      * @return tids of corresponding nodes.
      */
-    List<Tid> nodeInstances(Policy policy);
+    List<NodeId> nodeInstances(Policy policy);
 
     /**
      * Node instances by policy, the visible ones only, for the GUI.
@@ -86,7 +86,7 @@ public interface RemoteNodeManager
      * @param policy policy of node.
      * @return tids of corresponding nodes.
      */
-    List<Tid> nodeInstances(String name, Policy policy);
+    List<NodeId> nodeInstances(String name, Policy policy);
 
     /**
      * Create a new node instance under the given policy.  Note
@@ -152,18 +152,18 @@ public interface RemoteNodeManager
     /**
      * Remove node instance from the pipeline.
      *
-     * @param tid <code>Tid</code> of instance to be destroyed.
+     * @param tid <code>NodeId</code> of instance to be destroyed.
      * @exception UndeployException if detruction fails.
      */
-    void destroy(Tid tid) throws UndeployException;
+    void destroy(NodeId tid) throws UndeployException;
 
     /**
      * Get the <code>NodeContext</code> for a node instance.
      *
-     * @param tid <code>Tid</code> of the instance.
+     * @param tid <code>NodeId</code> of the instance.
      * @return the instance's <code>NodeContext</code>.
      */
-    NodeContext nodeContext(Tid tid);
+    NodeContext nodeContext(NodeId tid);
 
     /**
      * Get the <code>Node</code> for a node instance;
@@ -178,9 +178,9 @@ public interface RemoteNodeManager
     /**
      * Get the runtime state for all nodes in one call.
      *
-     * @return a <code>Map</code> from Tid to NodeState for all nodes
+     * @return a <code>Map</code> from NodeId to NodeState for all nodes
      */
-    Map<Tid, NodeState> allNodeStates();
+    Map<NodeId, NodeState> allNodeStates();
     
     /**
      * Get a map of nodes that are enabled for a policy, this takes into account

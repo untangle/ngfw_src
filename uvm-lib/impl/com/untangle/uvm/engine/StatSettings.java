@@ -35,7 +35,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 import com.untangle.uvm.message.ActiveStat;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 @SuppressWarnings("serial")
 @Entity
@@ -43,12 +43,12 @@ import com.untangle.uvm.security.Tid;
 class StatSettings implements Serializable
 {
     private Long id;
-    private Tid tid;
+    private NodeId tid;
     private List<ActiveStat> activeMetrics;
 
     public StatSettings() {}
 
-    public StatSettings(Tid tid, List<ActiveStat> activeMetrics)
+    public StatSettings(NodeId tid, List<ActiveStat> activeMetrics)
     {
         this.tid = tid;
         this.activeMetrics = activeMetrics;
@@ -76,12 +76,12 @@ class StatSettings implements Serializable
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", unique=true)
-    public Tid getTid()
+    public NodeId getTid()
     {
         return tid;
     }
 
-    public void setTid(Tid tid)
+    public void setTid(NodeId tid)
     {
         this.tid = tid;
     }

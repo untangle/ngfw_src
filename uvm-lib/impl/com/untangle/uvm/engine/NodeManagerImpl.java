@@ -68,7 +68,7 @@ import com.untangle.uvm.node.UvmNodeHandler;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.util.Pulse;
@@ -87,7 +87,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
     private final Logger logger = Logger.getLogger(getClass());
 
     private final NodeManagerState nodeManagerState;
-    private final Map<Tid, NodeContextImpl> tids = new ConcurrentHashMap<Tid, NodeContextImpl>();
+    private final Map<NodeId, NodeContextImpl> tids = new ConcurrentHashMap<NodeId, NodeContextImpl>();
     private final ThreadLocal<NodeContext> threadContexts = new InheritableThreadLocal<NodeContext>();
     private final UvmRepositorySelector repositorySelector;
 
@@ -131,14 +131,14 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
     // RemoteNodeManager ------------------------------------------------------
 
-    public List<Tid> nodeInstances()
+    public List<NodeId> nodeInstances()
     {
-        List<Tid> l = new ArrayList<Tid>(tids.keySet());
+        List<NodeId> l = new ArrayList<NodeId>(tids.keySet());
 
         // only reports requires sorting
         // XXX the client should do its own sorting
-        Collections.sort(l, new Comparator<Tid>() {
-            public int compare(Tid t1, Tid t2) {
+        Collections.sort(l, new Comparator<NodeId>() {
+            public int compare(NodeId t1, NodeId t2) {
                 NodeContextImpl tci1 = tids.get(t1);
                 NodeContextImpl tci2 = tids.get(t2);
                 int rpi1 = tci1.getMackageDesc().getViewPosition();
@@ -156,11 +156,11 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         return l;
     }
 
-    public List<Tid> nodeInstances(String mackageName)
+    public List<NodeId> nodeInstances(String mackageName)
     {
-        List<Tid> l = new LinkedList<Tid>();
+        List<NodeId> l = new LinkedList<NodeId>();
 
-        for (Tid tid : tids.keySet()) {
+        for (NodeId tid : tids.keySet()) {
             NodeContext tc = tids.get(tid);
             if (null != tc) {
                 if (tc.getNodeDesc().getName().equals(mackageName)) {
@@ -172,16 +172,16 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         return l;
     }
 
-    public List<Tid> nodeInstances(String name, Policy policy)
+    public List<NodeId> nodeInstances(String name, Policy policy)
     {
         return nodeInstances(name,policy,true);
     }
 
-    public List<Tid> nodeInstances(String name, Policy policy,boolean parents)
+    public List<NodeId> nodeInstances(String name, Policy policy,boolean parents)
     {
-        List<Tid> l = new ArrayList<Tid>(tids.size());
+        List<NodeId> l = new ArrayList<NodeId>(tids.size());
 
-        for (Tid tid : getNodesForPolicy(policy,parents)) {
+        for (NodeId tid : getNodesForPolicy(policy,parents)) {
             NodeContext tc = tids.get(tid);
             if (null != tc) {
                 String n = tc.getNodeDesc().getName();
@@ -195,17 +195,17 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         return l;
     }
 
-    public List<Tid> nodeInstances(Policy policy)
+    public List<NodeId> nodeInstances(Policy policy)
     {
         return getNodesForPolicy(policy);
     }
 
     public List<NodeDesc> visibleNodes(Policy policy)
     {
-        List<Tid> tids = nodeInstances();
+        List<NodeId> tids = nodeInstances();
         List<NodeDesc> l = new ArrayList<NodeDesc>(tids.size());
 
-        for (Tid tid : getNodesForPolicy(policy)) {
+        for (NodeId tid : getNodesForPolicy(policy)) {
             NodeContext nc = nodeContext(tid);
             MackageDesc md = nc.getMackageDesc();
 
@@ -215,7 +215,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
             }
         }
 
-        for (Tid tid : tids) {
+        for (NodeId tid : tids) {
             NodeContext nc = nodeContext(tid);
             MackageDesc md = nc.getMackageDesc();
 
@@ -229,7 +229,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         return l;
     }
 
-    public NodeContextImpl nodeContext(Tid tid)
+    public NodeContextImpl nodeContext(NodeId tid)
     {
         return tids.get(tid);
     }
@@ -237,7 +237,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
     public Node node(String name)
     {
         Node node = null;
-        List<Tid> nodeInstances = nodeInstances(name);
+        List<NodeId> nodeInstances = nodeInstances(name);
         if(nodeInstances.size()>0){
             NodeContext nodeContext = nodeContext(nodeInstances.get(0));
             node = nodeContext.node();
@@ -276,7 +276,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
          * Check if this type of node already exists in this rack
          * If so, throw an exception (more info in Bug #7801)
          */
-        for (Tid tid : getNodesForPolicy(p,false)) {
+        for (NodeId tid : getNodesForPolicy(p,false)) {
             NodeContext nc = nodeContext(tid);
             MackageDesc md = nc.getMackageDesc();
 
@@ -290,12 +290,12 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         NodeDesc tDesc;
         synchronized (this) {
             //test if not duplicated
-            List<Tid> instancesList=this.nodeInstances(nodeName,p,false);
+            List<NodeId> instancesList=this.nodeInstances(nodeName,p,false);
             if(instancesList.size()>0) {
                 logger.warn("A node instance already exists for " + nodeName + " under " + p + " policy; will not instantiate another one.");
                 return null; //return if the node is already installed
             }
-            Tid tid = newTid(p, nodeName);
+            NodeId tid = newNodeId(p, nodeName);
 
             URL[] resUrls = new URL[] { tbm.getResourceDir(mackageDesc) };
 
@@ -320,12 +320,10 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
         Node node = tc.node();
         MackageDesc.Type type = mackageDesc.getType();
-        if (null != node
-                && !mackageDesc.isInvisible()
-                && (MackageDesc.Type.NODE == type || MackageDesc.Type.SERVICE == type)) {
-            LocalMessageManager lmm = LocalUvmContextFactory.context()
-                .localMessageManager();
-            Counters c = lmm.getCounters(node.getTid());
+
+        if (null != node && !mackageDesc.isInvisible() && (MackageDesc.Type.NODE == type || MackageDesc.Type.SERVICE == type)) {
+            LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+            Counters c = lmm.getCounters(node.getNodeId());
             RemoteLicenseManager lm = LocalUvmContextFactory.context().licenseManager();
 
             NodeInstantiated ne = new NodeInstantiated(tDesc, c.getStatDescs(),lm.getMackageStatus(mackageDesc.getName()));
@@ -348,7 +346,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         return nd;
     }
 
-    public void destroy(final Tid tid) throws UndeployException
+    public void destroy(final NodeId tid) throws UndeployException
     {
         final NodeContextImpl tc;
 
@@ -368,11 +366,11 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         clearEnabledNodes();
     }
 
-    public Map<Tid, NodeState> allNodeStates()
+    public Map<NodeId, NodeState> allNodeStates()
     {
-        HashMap<Tid, NodeState> result = new HashMap<Tid, NodeState>();
-        for (Iterator<Tid> iter = tids.keySet().iterator(); iter.hasNext();) {
-            Tid tid = iter.next();
+        HashMap<NodeId, NodeState> result = new HashMap<NodeId, NodeState>();
+        for (Iterator<NodeId> iter = tids.keySet().iterator(); iter.hasNext();) {
+            NodeId tid = iter.next();
             NodeContextImpl tci = tids.get(tid);
             result.put(tid, tci.getRunState());
         }
@@ -405,9 +403,9 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
         if ( policyNodes == null ) {
             policyNodes = new HashSet<String>();
-            List<Tid> policyTids = getNodesForPolicy(policy, true);
+            List<NodeId> policyNodeIds = getNodesForPolicy(policy, true);
 
-            for ( Tid tid : policyTids ) {
+            for ( NodeId tid : policyNodeIds ) {
                 NodeContext nodeContext = tids.get(tid);
                 if ( nodeContext == null ) {
                     logger.warn( "Node context is null for tid: " + tid );
@@ -456,9 +454,9 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         synchronized (this) {
             live = false;
 
-            Set<Tid> s = new HashSet<Tid>(tids.keySet());
+            Set<NodeId> s = new HashSet<NodeId>(tids.keySet());
 
-            for ( Tid tid : s ) {
+            for ( NodeId tid : s ) {
                 if (null != tid) {
                     unload(tid);
                 }
@@ -495,17 +493,17 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
     public UvmLoggingContext get()
     {
-        final NodeContext tctx = threadContexts.get();
-        if (null == tctx) {
+        final NodeContext nodeContext = threadContexts.get();
+        if (null == nodeContext) {
             LogLog.warn("null node context in threadContexts");
         }
 
-        return new NodeManagerLoggingContext(tctx);
+        return new NodeManagerLoggingContext(nodeContext);
     }
 
     // package protected methods ----------------------------------------------
 
-    void unload(Tid tid)
+    void unload(NodeId tid)
     {
         synchronized (this) {
             NodeContextImpl tc = tids.get(tid);
@@ -526,14 +524,14 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         String availVer = tbm.mackageDesc(name).getInstalledVersion();
 
         synchronized (this) {
-            List<Tid> nTids = nodeInstances(name);
-            if (0 < nTids.size()) {
-                Tid t = nTids.get(0);
+            List<NodeId> nNodeIds = nodeInstances(name);
+            if (0 < nNodeIds.size()) {
+                NodeId t = nNodeIds.get(0);
                 NodeContext tc = tids.get(t);
 
                 if (0 < tc.getNodeDesc().getExports().size()) {
                     // exported resources, must restart everything
-                    for (Tid tid : tids.keySet()) {
+                    for (NodeId tid : tids.keySet()) {
                         MackageDesc md = tids.get(tid).getMackageDesc();
                         if (!md.getInstalledVersion().equals(availVer)) {
                             logger.info("new version available: " + name);
@@ -543,7 +541,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
                         }
                     }
                 } else {
-                    for (Tid tid : nTids) {
+                    for (NodeId tid : nNodeIds) {
                         MackageDesc md = tids.get(tid).getMackageDesc();
                         if (!md.getInstalledVersion().equals(availVer)) {
                             logger.info("new version available: " + name);
@@ -576,9 +574,9 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
             mds.add(extraPkg);
         }
         for (MackageDesc md : mds) {
-            List<Tid> l = nodeInstances(md.getName());
+            List<NodeId> l = nodeInstances(md.getName());
 
-            Tid t = null;
+            NodeId t = null;
 
             if (0 == l.size()) {
                 try {
@@ -633,7 +631,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         logger.info("Restarting unloaded nodes...");
 
         List<NodePersistentState> unloaded = getUnloaded();
-        Map<Tid, NodeDesc> tDescs = loadNodeDescs(unloaded);
+        Map<NodeId, NodeDesc> tDescs = loadNodeDescs(unloaded);
         Set<String> loadedParents = new HashSet<String>(unloaded.size());
 
         while (0 < unloaded.size()) {
@@ -663,7 +661,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
     private static int startThreadNum = 0;
 
-    private void startUnloaded(List<NodePersistentState> startQueue, Map<Tid, NodeDesc> tDescs, Set<String> loadedParents)
+    private void startUnloaded(List<NodePersistentState> startQueue, Map<NodeId, NodeDesc> tDescs, Set<String> loadedParents)
     {
         ToolboxManager tbm = LocalUvmContextFactory
             .context().toolboxManager();
@@ -672,7 +670,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
         for (NodePersistentState tps : startQueue) {
             final NodeDesc tDesc = tDescs.get(tps.getTid());
-            final Tid tid = tps.getTid();
+            final NodeId tid = tps.getTid();
             final String name = tps.getName();
             loadedParents.add(name);
             final String[] args = tps.getArgArray();
@@ -742,14 +740,14 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         return result;
     }
 
-    private List<NodePersistentState> getLoadable(List<NodePersistentState> unloaded, Map<Tid, NodeDesc> tDescs, Set<String> loadedParents)
+    private List<NodePersistentState> getLoadable(List<NodePersistentState> unloaded, Map<NodeId, NodeDesc> tDescs, Set<String> loadedParents)
     {
         List<NodePersistentState> l = new ArrayList<NodePersistentState>(unloaded.size());
         Set<String> thisPass = new HashSet<String>(unloaded.size());
 
         for (Iterator<NodePersistentState> i = unloaded.iterator(); i.hasNext(); ) {
             NodePersistentState tps = i.next();
-            Tid tid = tps.getTid();
+            NodeId tid = tps.getTid();
             NodeDesc tDesc = tDescs.get(tid);
             if (null == tDesc) {
                 logger.warn("no NodeDesc for: " + tid);
@@ -782,12 +780,12 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         return l;
     }
 
-    private Map<Tid, NodeDesc> loadNodeDescs(List<NodePersistentState> unloaded)
+    private Map<NodeId, NodeDesc> loadNodeDescs(List<NodePersistentState> unloaded)
     {
         ToolboxManagerImpl tbm = (ToolboxManagerImpl)LocalUvmContextFactory
             .context().toolboxManager();
 
-        Map<Tid, NodeDesc> tDescs = new HashMap<Tid, NodeDesc>(unloaded.size());
+        Map<NodeId, NodeDesc> tDescs = new HashMap<NodeId, NodeDesc>(unloaded.size());
 
         for (NodePersistentState tps : unloaded) {
             String name = tps.getName();
@@ -799,7 +797,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
             }
 
             URL[] urls = new URL[] { tbm.getResourceDir(md) };
-            Tid tid = tps.getTid();
+            NodeId tid = tps.getTid();
             tid.setNodeName(name);
 
             try {
@@ -852,7 +850,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
      * @exception DeployException the descriptor does not parse or
      * parent cannot be loaded.
      */
-    private NodeDesc initNodeDesc(MackageDesc mackageDesc, URL[] urls, Tid tid) throws DeployException
+    private NodeDesc initNodeDesc(MackageDesc mackageDesc, URL[] urls, NodeId tid) throws DeployException
     {
         // XXX assumes no parent cl has this file.
         InputStream is = new URLClassLoader(urls)
@@ -897,11 +895,11 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         }
     }
 
-    private Tid newTid(Policy policy, String nodeName) throws DeployException
+    private NodeId newNodeId(Policy policy, String nodeName) throws DeployException
     {
-        final Tid tid;
+        final NodeId tid;
         synchronized (nodeManagerState) {
-            tid = nodeManagerState.nextTid(policy, nodeName);
+            tid = nodeManagerState.nextNodeId(policy, nodeName);
         }
 
         TransactionWork<Object> tw = new TransactionWork<Object>()
@@ -937,12 +935,12 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
         return l;
     }
 
-    private List<Tid> getNodesForPolicy(Policy policy)
+    private List<NodeId> getNodesForPolicy(Policy policy)
     {
         return getNodesForPolicy(policy,true);
     }
 
-    private List<Tid> getNodesForPolicy(Policy policy,boolean parents)
+    private List<NodeId> getNodesForPolicy(Policy policy,boolean parents)
     {
         List<Policy> policies = null;
 
@@ -968,16 +966,16 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
          * ll[n] == list of tids in policies[n]
          * Policies are ordered ll[0] is the current policy, ll[1] is its parent.
          */
-        List<List<Tid>> ll = new ArrayList<List<Tid>>(policies.size());
+        List<List<NodeId>> ll = new ArrayList<List<NodeId>>(policies.size());
         for (int i = 0; i < policies.size(); i++) {
-            ll.add(new ArrayList<Tid>());
+            ll.add(new ArrayList<NodeId>());
         }
 
         /*
          * Fill in the inner list, at the end each of these is the list of 
          * nodes in the policy.
          */
-        for (Tid tid : tids.keySet()) {
+        for (NodeId tid : tids.keySet()) {
             NodeContext tc = tids.get(tid);
 
             if (null != tc) {
@@ -985,7 +983,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
                 int i = policies.indexOf(p);
                 if (0 <= i) {
-                    List<Tid> tl = ll.get(i);
+                    List<NodeId> tl = ll.get(i);
                     tl.add(tid);
                 }
             }
@@ -995,12 +993,12 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
          * Strip out duplicates.  By iterating the list in order, this
          * will only add the first entry (which will be most specific node.
          */
-        List<Tid> l = new ArrayList<Tid>(tids.size());
+        List<NodeId> l = new ArrayList<NodeId>(tids.size());
         Set<String> names = new HashSet<String>();
 
-        for (List<Tid> tl : ll) {
+        for (List<NodeId> tl : ll) {
             if (null != tl) {
-                for (Tid t : tl) {
+                for (NodeId t : tl) {
                     String n = t.getNodeName();
                     if (!names.contains(n)) {
                         names.add(n);
@@ -1030,13 +1028,13 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
     private static class NodeManagerLoggingContext implements UvmLoggingContext
     {
-        private final NodeContext tctx;
+        private final NodeContext nodeContext;
 
         // constructors -------------------------------------------------------
 
-        NodeManagerLoggingContext(NodeContext tctx)
+        NodeManagerLoggingContext(NodeContext nodeContext)
         {
-            this.tctx = tctx;
+            this.nodeContext = nodeContext;
         }
 
         // UvmLoggingContext methods -----------------------------------------
@@ -1048,19 +1046,19 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
         public String getFileName()
         {
-            if (null == tctx) {
+            if (null == nodeContext) {
                 return "0";
             } else {
-                return tctx.getTid().getName();
+                return nodeContext.getNodeId().getName();
             }
         }
 
         public String getName()
         {
-            if (null == tctx) {
+            if (null == nodeContext) {
                 return "0";
             } else {
-                return tctx.getTid().getName();
+                return nodeContext.getNodeId().getName();
             }
         }
 
@@ -1071,7 +1069,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
             if (o instanceof NodeManagerLoggingContext) {
                 NodeManagerLoggingContext tmc
                     = (NodeManagerLoggingContext)o;
-                return tctx.equals(tmc.tctx);
+                return nodeContext.equals(tmc.nodeContext);
             } else {
                 return false;
             }
@@ -1079,7 +1077,7 @@ class NodeManagerImpl implements LocalNodeManager, RemoteNodeManager, UvmLogging
 
         public int hashCode()
         {
-            return tctx.hashCode();
+            return nodeContext.hashCode();
         }
     }
 

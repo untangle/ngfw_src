@@ -44,7 +44,7 @@ import com.untangle.node.token.Token;
 import com.untangle.node.util.NonceFactory;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.LocalNetworkManager;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.vnet.TCPSession;
 
 /**
@@ -73,11 +73,11 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
                           Pattern.CASE_INSENSITIVE);
 
     private final NonceFactory<T> nonceFactory = new NonceFactory<T>();
-    private final Tid tid;
+    private final NodeId tid;
 
     // constructors -----------------------------------------------------------
 
-    public ReplacementGenerator(Tid tid)
+    public ReplacementGenerator(NodeId tid)
     {
         this.tid = tid;
     }
@@ -156,12 +156,12 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
     // protected methods ------------------------------------------------------
 
     protected abstract String getReplacement(T data);
-    protected abstract String getRedirectUrl(String nonce, String host, Tid tid);
+    protected abstract String getRedirectUrl(String nonce, String host, NodeId tid);
 
     /* This returns a test nonce that can be used to test the blockpage */
     protected abstract T getTestData();
     
-    protected Tid getTid()
+    protected NodeId getNodeId()
     {
         return this.tid;
     }

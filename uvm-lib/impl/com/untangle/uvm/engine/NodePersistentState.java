@@ -37,7 +37,7 @@ import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 /**
  * Internal node state.
@@ -50,7 +50,7 @@ import com.untangle.uvm.security.Tid;
 class NodePersistentState
 {
     private Long id;
-    private Tid tid;
+    private NodeId tid;
     private String name;
     private List<String> args;
     private NodeState targetState;
@@ -60,7 +60,7 @@ class NodePersistentState
 
     NodePersistentState() { }
 
-    NodePersistentState(Tid tid, String name, byte[] publicKey)
+    NodePersistentState(NodeId tid, String name, byte[] publicKey)
     {
         this.tid = tid;
         this.name = name;
@@ -92,12 +92,12 @@ class NodePersistentState
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    Tid getTid()
+    NodeId getTid()
     {
         return tid;
     }
 
-    void setTid(Tid tid)
+    void setTid(NodeId tid)
     {
         this.tid = tid;
     }
@@ -147,7 +147,7 @@ class NodePersistentState
 
     /**
      * Not really used.
-     * XXX move into Tid, or associate with TID?
+     * XXX move into NodeId, or associate with TID?
      * XXX for now length of 16 because not really used anyway
      *
      * @return public key

@@ -51,7 +51,7 @@ public class TemplateImpl extends AbstractNode implements Template
     {
         logger.info("Initializing Settings...");
         
-        TemplateSettings settings = new TemplateSettings(this.getTid());
+        TemplateSettings settings = new TemplateSettings(this.getNodeId());
          
         try {
             setTemplateSettings(settings);
@@ -169,7 +169,7 @@ public class TemplateImpl extends AbstractNode implements Template
             public boolean doWork(Session s) {
                 Query q = s
                         .createQuery("from TemplateSettings cs where cs.tid = :tid");
-                q.setParameter("tid", getTid());
+                q.setParameter("tid", getNodeId());
 
                 TemplateImpl.this.settings = (TemplateSettings) q.uniqueResult();
                 return true;

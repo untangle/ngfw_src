@@ -34,25 +34,25 @@ import java.util.List;
 import java.util.Map;
 
 import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 public interface LocalMessageManager
 {
     MessageQueue getMessageQueue();
     MessageQueue getMessageQueue(Integer key);
     MessageQueue getMessageQueue(Integer key, Policy p);
-    StatDescs getStatDescs(Tid t);
-    Stats getStats(Tid t);
-    Stats getAllStats(Tid t);
+    StatDescs getStatDescs(NodeId t);
+    Stats getStats(NodeId t);
+    Stats getAllStats(NodeId t);
     Map<String, Object> getSystemStats();
-    List<ActiveStat> getActiveMetrics(Tid tid);
-    void setActiveMetrics(Tid tid, List<ActiveStat> activeMetrics);
+    List<ActiveStat> getActiveMetrics(NodeId tid);
+    void setActiveMetrics(NodeId tid, List<ActiveStat> activeMetrics);
     List<Message> getMessages();
     List<Message> getMessages(Integer key);
     Integer getMessageKey();
 
     Counters getUvmCounters();
-    Counters getCounters(Tid t);
+    Counters getCounters(NodeId t);
     void submitMessage(Message m);
-    void setActiveMetricsIfNotSet(Tid tid, BlingBlinger... l);
+    void setActiveMetricsIfNotSet(NodeId tid, BlingBlinger... l);
 }

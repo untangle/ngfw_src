@@ -36,7 +36,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 /**
  * Settings for the Firewall node.
@@ -50,7 +50,7 @@ import com.untangle.uvm.security.Tid;
 public class FirewallSettings implements Serializable
 {
     private Long id;
-    private Tid tid;
+    private NodeId tid;
 
     private FirewallBaseSettings baseSettings = new FirewallBaseSettings();
 
@@ -59,7 +59,7 @@ public class FirewallSettings implements Serializable
     @SuppressWarnings("unused")
     private FirewallSettings() {}
 
-    public FirewallSettings(Tid tid)
+    public FirewallSettings(NodeId tid)
     {
         this.tid = tid;
         this.firewallRuleList = new LinkedList<FirewallRule>();
@@ -87,12 +87,12 @@ public class FirewallSettings implements Serializable
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    public Tid getTid()
+    public NodeId getTid()
     {
         return tid;
     }
 
-    public void setTid( Tid tid )
+    public void setTid( NodeId tid )
     {
         this.tid = tid;
     }

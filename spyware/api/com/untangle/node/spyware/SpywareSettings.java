@@ -35,7 +35,7 @@ import javax.persistence.Table;
 
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.StringRule;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 import org.hibernate.annotations.Cascade;
 
 /**
@@ -51,7 +51,7 @@ public class SpywareSettings implements Serializable
 {
 
     private Long id;
-    private Tid tid;
+    private NodeId tid;
 
     private SpywareBaseSettings baseSettings = new SpywareBaseSettings();
 
@@ -68,7 +68,7 @@ public class SpywareSettings implements Serializable
 
     public SpywareSettings() { }
 
-    public SpywareSettings(Tid tid)
+    public SpywareSettings(NodeId tid)
     {
         this.tid = tid;
     }
@@ -115,12 +115,12 @@ public class SpywareSettings implements Serializable
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    public Tid getTid()
+    public NodeId getTid()
     {
         return tid;
     }
 
-    public void setTid(Tid tid)
+    public void setTid(NodeId tid)
     {
         this.tid = tid;
     }

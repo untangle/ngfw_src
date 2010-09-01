@@ -34,7 +34,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 /**
  * Settings for the ProtoFilter node.
@@ -49,7 +49,7 @@ public class ProtoFilterSettings implements java.io.Serializable
 {
 
     private Long id;
-    private Tid tid;
+    private NodeId tid;
     
     private ProtoFilterBaseSettings baseSettings = new ProtoFilterBaseSettings();
     
@@ -68,7 +68,7 @@ public class ProtoFilterSettings implements java.io.Serializable
     /**
      * Real constructor
      */
-    public ProtoFilterSettings(Tid tid)
+    public ProtoFilterSettings(NodeId tid)
     {
         this.tid = tid;
         this.patterns = new HashSet<ProtoFilterPattern>();
@@ -87,10 +87,10 @@ public class ProtoFilterSettings implements java.io.Serializable
 
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    public Tid getTid()
+    public NodeId getTid()
     { return tid; }
 
-    public void setTid(Tid tid)
+    public void setTid(NodeId tid)
     { this.tid = tid; }
 
     public int getByteLimit()

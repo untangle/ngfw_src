@@ -61,7 +61,7 @@ class TokenStreamerWrapper implements TokenStreamer
         this.tokenStreamer = tokenStreamer;
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
-        Counters c = lmm.getCounters(session.mPipe().node().getTid());
+        Counters c = lmm.getCounters(session.mPipe().node().getNodeId());
         if (s2c) {
             blinger = c.getBlingBlinger("n2cBytes");
         } else {

@@ -37,23 +37,23 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 @SuppressWarnings("serial")
 public class MessageQueue implements Serializable
 {
     private final List<Message> messages;
-    private final Map<Tid, Stats> stats;
+    private final Map<NodeId, Stats> stats;
     private final Map<String, Object> systemStats;
 
-    public MessageQueue(List<Message> messages, Map<Tid, Stats> stats, Map<String, Object> systemStats)
+    public MessageQueue(List<Message> messages, Map<NodeId, Stats> stats, Map<String, Object> systemStats)
     {
         this.messages = messages;
         this.stats = stats;
         this.systemStats = systemStats;
     }
 
-    public Map<Tid, Stats> getStats()
+    public Map<NodeId, Stats> getStats()
     {
         return stats;
     }

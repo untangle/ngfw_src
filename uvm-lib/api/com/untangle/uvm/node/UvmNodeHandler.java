@@ -41,7 +41,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.toolbox.MackageDesc;
 
 /**
@@ -78,7 +78,7 @@ public class UvmNodeHandler extends DefaultHandler
 
     // public methods ---------------------------------------------------------
 
-    public NodeDesc getNodeDesc(Tid tid)
+    public NodeDesc getNodeDesc(NodeId tid)
     {
         return new NodeDesc(tid, mackageDesc, className, reportsClassName,
                             nodeBase, exports, parents, uvmResources,

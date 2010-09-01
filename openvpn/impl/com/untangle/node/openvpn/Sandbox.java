@@ -44,7 +44,7 @@ import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.script.ScriptException;
 import com.untangle.uvm.node.script.ScriptRunner;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.util.I18nUtil;
 
 /* XXX Probably want to make this an abstract class and make this a little more generic */
@@ -340,7 +340,7 @@ class Sandbox
         }
     }
 
-    VpnSettings completeConfig( Tid tid ) throws Exception
+    VpnSettings completeConfig( NodeId tid ) throws Exception
     {
         /* Create new settings */
         VpnSettings settings = new VpnSettings( tid );

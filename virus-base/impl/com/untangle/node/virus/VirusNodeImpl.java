@@ -181,7 +181,7 @@ public abstract class VirusNodeImpl extends AbstractNode
         this.scanner = scanner;
         this.pipeSpecs = initialPipeSpecs();
 
-        this.replacementGenerator = new VirusReplacementGenerator(getTid());
+        this.replacementGenerator = new VirusReplacementGenerator(getNodeId());
 
         eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
@@ -207,7 +207,7 @@ public abstract class VirusNodeImpl extends AbstractNode
 
         LocalMessageManager lmm = LocalUvmContextFactory.context()
             .localMessageManager();
-        Counters c = lmm.getCounters(getTid());
+        Counters c = lmm.getCounters(getNodeId());
         scanBlinger = c.addActivity("scan",
                                     I18nUtil.marktr("Documents scanned"), null,
                                     I18nUtil.marktr("SCAN"));
@@ -223,7 +223,7 @@ public abstract class VirusNodeImpl extends AbstractNode
         passedInfectedMessageBlinger = c.addMetric("infected",
                                                    I18nUtil.marktr("Passed by policy"),
                                                    null);
-        lmm.setActiveMetricsIfNotSet(getTid(), scanBlinger, blockBlinger,
+        lmm.setActiveMetricsIfNotSet(getNodeId(), scanBlinger, blockBlinger,
                                      passBlinger, removeBlinger);
     }
 
@@ -304,7 +304,7 @@ public abstract class VirusNodeImpl extends AbstractNode
     public List<MimeTypeRule> getHttpMimeTypes(final int start, final int limit, final String... sortColumns) {
         return listUtil.getItems("select vs.httpMimeTypes from VirusSettings vs " +
                                  "join vs.httpMimeTypes as httpMimeTypes where vs.tid = :tid ",
-                                 getNodeContext(), getTid(),"httpMimeTypes", start, limit, sortColumns);
+                                 getNodeContext(), getNodeId(),"httpMimeTypes", start, limit, sortColumns);
     }
 
     public void updateHttpMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified) {
@@ -315,7 +315,7 @@ public abstract class VirusNodeImpl extends AbstractNode
     @SuppressWarnings("unchecked") //getItems
     public List<StringRule> getExtensions(final int start, final int limit, final String... sortColumns) {
         return listUtil.getItems("select vs.extensions from VirusSettings vs where vs.tid = :tid ",
-                                 getNodeContext(), getTid(), start, limit, sortColumns);
+                                 getNodeContext(), getNodeId(), start, limit, sortColumns);
     }
 
     public void updateExtensions(List<StringRule> added, List<Long> deleted, List<StringRule> modified) {
@@ -477,7 +477,7 @@ public abstract class VirusNodeImpl extends AbstractNode
 
     public void initializeSettings()
     {
-        VirusSettings vs = new VirusSettings(getTid());
+        VirusSettings vs = new VirusSettings(getNodeId());
         VirusBaseSettings baseSettings = vs.getBaseSettings();
         baseSettings.setHttpConfig(new VirusConfig(true, true, "Scan HTTP files"));
         baseSettings.setFtpConfig(new VirusConfig(true, true, "Scan FTP files" ));
@@ -569,7 +569,7 @@ public abstract class VirusNodeImpl extends AbstractNode
                 {
                     Query q = s.createQuery
                         ("from VirusSettings vs where vs.tid = :tid");
-                    q.setParameter("tid", getTid());
+                    q.setParameter("tid", getNodeId());
                     settings = (VirusSettings)q.uniqueResult();
 
                     boolean changed = false;

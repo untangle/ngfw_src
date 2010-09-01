@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.LocalNodeManager;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.NodeId;
 
 @SuppressWarnings("serial")
 public class UnblockerServlet extends HttpServlet
@@ -47,7 +47,7 @@ public class UnblockerServlet extends HttpServlet
 
         try {
             LocalNodeManager tman = LocalUvmContextFactory.context().localNodeManager();
-            Tid tid = new Tid(Long.parseLong(tidStr));
+            NodeId tid = new NodeId(Long.parseLong(tidStr));
             NodeContext tctx = tman.nodeContext(tid);
             WebFilter tran = (WebFilter)tctx.node();
 
