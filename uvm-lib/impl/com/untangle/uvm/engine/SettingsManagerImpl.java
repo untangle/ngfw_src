@@ -28,31 +28,26 @@ public class SettingsManagerImpl implements SettingsManager
     /**
      * Valid characters for settings file names
      */
-    public static final Pattern VALID_CHARACTERS = Pattern.compile("^[a-zA-Z0-9]+$");
+    public static final Pattern VALID_CHARACTERS = Pattern.compile("^[a-zA-Z0-9_-]+$");
 
-    /**
-     * Hard-coded ID for singleton objects which have no unique ID
-     */
-
-    public static final String SINGLETON_ID = "singleton";
     /**
      * Formatting for the version string (yyyy-mm-dd-hhmm)
      */
     public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd-HHmm");
 
-    private static final EntryComparator ENTRY_COMPARATOR = new EntryComparator();
-
     private String basePath = "/usr/share/untangle/settings";
+
     private JSONSerializer serializer = null;
 
     private final Map<String, Object> pathLocks = new HashMap<String, Object>();
 
-    String getBasePath()
+    
+    protected String getBasePath()
     {
         return this.basePath;
     }
 
-    void setBasePath(String basePath)
+    protected void setBasePath(String basePath)
     {
         this.basePath = basePath;
     }
@@ -61,7 +56,7 @@ public class SettingsManagerImpl implements SettingsManager
      * @param serializer
      *            the serializer to set
      */
-    void setSerializer(JSONSerializer serializer)
+    protected void setSerializer(JSONSerializer serializer)
     {
         this.serializer = serializer;
     }
@@ -69,27 +64,9 @@ public class SettingsManagerImpl implements SettingsManager
     /**
      * @return the serializer
      */
-    JSONSerializer getSerializer()
+    protected JSONSerializer getSerializer()
     {
         return serializer;
-    }
-
-    /**
-     * Load the settings from the store for a singleton.
-     * 
-     * @param <T>
-     *            Type of class to load
-     * @param clz
-     *            Type of class to load.
-     * @param packageName
-     *            Name of the debian package that is making the request.
-     * @return The object that was loaded or null if an object was not loaded.
-     * @throws SettingsException
-     */
-    public <T> T load(Class<T> clz, String packageName)
-        throws SettingsException
-    {
-        return load(clz, packageName, SINGLETON_ID);
     }
 
     /**
@@ -125,68 +102,6 @@ public class SettingsManagerImpl implements SettingsManager
      *            Type of class to load.
      * @param packageName
      *            Name of the debian package that is making the request.
-     * @param k
-     *            Name of the key for v.
-     * @param v
-     *            Value for the key k.
-     * @return The object that was loaded or null if an object was not loaded.
-     * @throws SettingsException
-     */
-    public <T> T load(Class<T> clz, String packageName, String k, String v)
-        throws SettingsException
-    {
-        return loadImpl(clz, packageName, buildQuery(k, v));
-    }
-
-    /**
-     * Load the settings from the store using a unique identifier.
-     * 
-     * @param <T>
-     *            Type of class to load
-     * @param clz
-     *            Type of class to load.
-     * @param packageName
-     *            Name of the debian package that is making the request.
-     * @param criteria
-     *            Map of key value pairs to select on.
-     * @return The object that was loaded or null if an object was not loaded.
-     * @throws SettingsException
-     */
-    public <T> T load(Class<T> clz, String packageName, Map<String, String> criteria)
-        throws SettingsException
-    {
-        return loadImpl(clz, packageName, buildQuery(criteria));
-    }
-
-    /**
-     * Save the settings from the store for a singleton.
-     * 
-     * @param <T>
-     *            Type of class to load
-     * @param clz
-     *            Type of class to load.
-     * @param packageName
-     *            Name of the debian package that is making the request.
-     * @param value
-     *            The value to be saved.
-     * @return The object that was saved.
-     * @throws SettingsException
-     */
-    public <T> T save(Class<T> clz, String packageName, T value)
-        throws SettingsException
-    {
-        return save(clz, packageName, SINGLETON_ID, value);
-    }
-
-    /**
-     * Load the settings from the store using a unique identifier.
-     * 
-     * @param <T>
-     *            Type of class to load
-     * @param clz
-     *            Type of class to load.
-     * @param packageName
-     *            Name of the debian package that is making the request.
      * @param id
      *            Unique identifier to select the object.
      * @param value
@@ -202,51 +117,6 @@ public class SettingsManagerImpl implements SettingsManager
         }
 
         return saveImpl(clz, packageName, id, value);
-    }
-
-    /**
-     * Load the settings from the store using a unique identifier.
-     * 
-     * @param <T>
-     *            Type of class to load
-     * @param clz
-     *            Type of class to load.
-     * @param packageName
-     *            Name of the debian package that is making the request.
-     * @param k
-     *            Name of the key for v.
-     * @param v
-     *            Value for the key k.
-     * @param value
-     *            The value to be saved.
-     * @return The object that was saved.
-     * @throws SettingsException
-     */
-    public <T> T save(Class<T> clz, String packageName, String k, String v, T value)
-        throws SettingsException {
-        return saveImpl(clz, packageName, buildQuery(k, v), value);
-    }
-
-    /**
-     * Load the settings from the store using a unique identifier.
-     * 
-     * @param <T>
-     *            Type of class to load
-     * @param clz
-     *            Type of class to load.
-     * @param packageName
-     *            Name of the debian package that is making the request.
-     * @param criteria
-     *            Map of key value pairs to select on.
-     * @param value
-     *            The value to be saved.
-     * @return The object that was saved.
-     * @throws SettingsException
-     */
-    public <T> T save(Class<T> clz, String packageName, Map<String, String> criteria, T value)
-        throws SettingsException
-    {
-        return saveImpl(clz, packageName, buildQuery(criteria), value);
     }
 
     /**
@@ -394,51 +264,6 @@ public class SettingsManagerImpl implements SettingsManager
         }
     }
 
-    private String buildQuery(String k, String v)
-    {
-        if (!VALID_CHARACTERS.matcher(k).matches()) {
-            throw new IllegalArgumentException("Invalid key value: '" + v + "'");
-        }
-
-        if (!VALID_CHARACTERS.matcher(v).matches()) {
-            throw new IllegalArgumentException("Invalid value: '" + v + "'");
-        }
-
-        return k + "_" + v;
-    }
-
-    private String buildQuery(Map<String, String> criteria)
-    {
-        StringBuilder queryBuilder = new StringBuilder();
-
-        List<Map.Entry<String, String>> criteriaList = new LinkedList<Map.Entry<String, String>>(
-                criteria.entrySet());
-
-        /* Sort the entries alphabetically by the keys */
-        Collections.sort(criteriaList, ENTRY_COMPARATOR);
-
-        for (Map.Entry<String, String> entry : criteriaList) {
-            if (queryBuilder.length() > 0) {
-                queryBuilder.append("-");
-            }
-
-            String k = entry.getKey();
-            String v = entry.getValue();
-
-            if (!VALID_CHARACTERS.matcher(k).matches()) {
-                throw new IllegalArgumentException("Invalid key value: '" + k + "'");
-            }
-
-            if (!VALID_CHARACTERS.matcher(v).matches()) {
-                throw new IllegalArgumentException("Invalid value: '" + v + "'");
-            }
-
-            queryBuilder.append(k + "_" + v);
-        }
-
-        return queryBuilder.toString();
-    }
-
     private File buildHeadPath(Class<?> clz, String packageName, String query)
     {
         String clzName = clz.getCanonicalName();
@@ -488,26 +313,19 @@ public class SettingsManagerImpl implements SettingsManager
         return lock;
     }
 
-    private static class EntryComparator implements Comparator<Map.Entry<String, String>>
-    {
-        public int compare(Map.Entry<String, String> o1,
-                Map.Entry<String, String> o2) {
-            return o1.getKey().compareTo(o2.getKey());
-        }
-    }
-
+    /*
     @SuppressWarnings("unchecked") //JSON
     public static void main(String args[]) throws Exception 
     {
-        SettingsManagerImpl jStore = new SettingsManagerImpl();
+        SettingsManagerImpl settingsManager = new SettingsManagerImpl();
 
         JSONSerializer serializer = new JSONSerializer();
         serializer.registerDefaultSerializers();
 
-        jStore.setBasePath("/tmp/simple");
-        jStore.setSerializer(serializer);
+        settingsManager.setBasePath("/tmp/simple");
+        settingsManager.setSerializer(serializer);
 
-        String v = jStore.save(String.class, "simple-test", "This is a value");
+        String v = settingsManager.save(String.class, "simple-test", "This is a value");
         System.out.printf("Saved and then loaded the string '%s'\n", v);
 
         List<String> list = new LinkedList<String>();
@@ -515,13 +333,14 @@ public class SettingsManagerImpl implements SettingsManager
         list.add("b");
         list.add("c");
 
-        List<String> serializedList = jStore.save(List.class,"simple-test", "key", "value", list);
+        List<String> serializedList = settingsManager.save(List.class,"simple-test", "key", "value", list);
         System.out.printf("Saved and then loaded the string '%s'\n",
                 serializedList.toString());
 
         Map<String, String> m = new HashMap<String, String>();
         m.put("tid", "1");
         m.put("k", "v");
-        jStore.save(List.class, "simple-test", m, list);
+        settingsManager.save(List.class, "simple-test", m, list);
     }
+    */
 }
