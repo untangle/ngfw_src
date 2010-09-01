@@ -313,34 +313,4 @@ public class SettingsManagerImpl implements SettingsManager
         return lock;
     }
 
-    /*
-    @SuppressWarnings("unchecked") //JSON
-    public static void main(String args[]) throws Exception 
-    {
-        SettingsManagerImpl settingsManager = new SettingsManagerImpl();
-
-        JSONSerializer serializer = new JSONSerializer();
-        serializer.registerDefaultSerializers();
-
-        settingsManager.setBasePath("/tmp/simple");
-        settingsManager.setSerializer(serializer);
-
-        String v = settingsManager.save(String.class, "simple-test", "This is a value");
-        System.out.printf("Saved and then loaded the string '%s'\n", v);
-
-        List<String> list = new LinkedList<String>();
-        list.add("a");
-        list.add("b");
-        list.add("c");
-
-        List<String> serializedList = settingsManager.save(List.class,"simple-test", "key", "value", list);
-        System.out.printf("Saved and then loaded the string '%s'\n",
-                serializedList.toString());
-
-        Map<String, String> m = new HashMap<String, String>();
-        m.put("tid", "1");
-        m.put("k", "v");
-        settingsManager.save(List.class, "simple-test", m, list);
-    }
-    */
 }
