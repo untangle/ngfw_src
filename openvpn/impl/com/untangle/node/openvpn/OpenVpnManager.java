@@ -76,6 +76,7 @@ class OpenVpnManager
     private static final String FLAG_MAX_CLI      = "max-clients";
 
     static final String FLAG_REMOTE               = "remote";
+    private static final String SUPPORTED_CIPHER  = "AES-128-CBC";
 
     private static final String FLAG_CERT         = "cert";
     private static final String FLAG_KEY          = "key";
@@ -112,6 +113,7 @@ class OpenVpnManager
         // "ifconfig-pool-persist ipp.txt",
         "client-config-dir ccd",
         "keepalive " + DEFAULT_PING_TIME + " " + DEFAULT_PING_TIMEOUT,
+        "cipher" + SUPPORTED_CIPHER,
         "user nobody",
         "group nogroup",
 
