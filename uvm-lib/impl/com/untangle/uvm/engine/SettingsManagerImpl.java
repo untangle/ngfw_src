@@ -313,7 +313,7 @@ public class SettingsManagerImpl implements SettingsManager
         throws SettingsException
     {
         File link = buildHeadPath(clz, packageName, query);
-        File output = buildVersionPath(clz, packageName);
+        File output = buildVersionPath(clz, packageName, query);
 
         Object lock = this.getLock(output);
 
@@ -343,7 +343,9 @@ public class SettingsManagerImpl implements SettingsManager
                  * Why must SUN/Oracle try everyone's patience; The API for
                  * creating symbolic links is in Java 1.7
                  */
-                String cmdArray[] = new String[] { "ln", "-sf", output.toString(), link.toString() };
+                String[] chops = output.toString().split(File.separator);
+                String filename = chops[chops.length - 1];
+                String cmdArray[] = new String[] { "ln", "-sf", "./"+filename, link.toString() };
 
                 Process process = UvmContextImpl.context().exec(cmdArray);
                 int exitCode = process.waitFor();
@@ -446,10 +448,10 @@ public class SettingsManagerImpl implements SettingsManager
 
         /* First build the file string */
         String s = File.separator;
-        return new File(this.basePath + s + packageName + s + clzName + s + "head-" + query + ".js");
+        return new File(this.basePath + s + packageName + s /* + clzName */ + s + query + ".js");
     }
 
-    private File buildVersionPath(Class<?> clz, String packageName)
+    private File buildVersionPath(Class<?> clz, String packageName, String query)
     {
         String clzName = clz.getCanonicalName();
         if (clzName == null) {
@@ -460,8 +462,9 @@ public class SettingsManagerImpl implements SettingsManager
         /* First build the file string */
         String s = File.separator;
 
-        String versionString = String.valueOf(System.currentTimeMillis()) + "-" + DATE_FORMATTER.format(new Date());
-        return new File(this.basePath + s + packageName + s + clzName + s + "version-" + versionString + ".js");
+        //String versionString = String.valueOf(System.currentTimeMillis()) + "-" + DATE_FORMATTER.format(new Date());
+        String versionString = String.valueOf(DATE_FORMATTER.format(new Date()));
+        return new File(this.basePath + s + packageName + s /* + clzName */ + s + query + "-version-" + versionString + ".js");
     }
 
     /**
