@@ -421,9 +421,9 @@ Ung.Util= {
         
         /* simple Matchers excludes WAN matchers */
         if (simpleMatchers)
-            data = getInterfaceList(false, true);
+            data = this.getInterfaceList(false, true);
         else
-            data = getInterfaceList(true, true);
+            data = this.getInterfaceList(true, true);
         
         var interfaceStore=new Ext.data.SimpleStore({
             fields : ['key', 'name'],
