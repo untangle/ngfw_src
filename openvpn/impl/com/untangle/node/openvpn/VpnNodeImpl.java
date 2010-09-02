@@ -723,10 +723,6 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         }
     }
 
-    // private methods -------------------------------------------------------
-
-    // XXX soon to be deprecated ----------------------------------------------
-
     public Object getSettings()
     {
         return getVpnSettings();
