@@ -3,8 +3,8 @@ if (!Ung.hasResource["Ung.Ips"]) {
     Ung.NodeWin.registerClassName('untangle-node-ips', 'Ung.Ips');
 
     Ung.Ips = Ext.extend(Ung.NodeWin, {
-    	panelStatus: null,
-    	panelRules: null,
+        panelStatus: null,
+        panelRules: null,
         gridRules : null,
         gridVariables : null,
         gridEventLog : null,
@@ -35,12 +35,12 @@ if (!Ung.hasResource["Ung.Ips"]) {
                 },
                 items : [{
                     title : this.i18n._('Statistics'),
-				    layout:'form',
+                    layout:'form',
                     labelWidth: 230,
                     defaults: {
-                    	xtype: "textfield",
-                    	disabled: true
-					},
+                        xtype: "textfield",
+                        disabled: true
+                    },
                     items: [{
                         fieldLabel : this.i18n._('Total Signatures Available'),
                         name: 'Total Signatures Available',
@@ -95,207 +95,207 @@ if (!Ung.hasResource["Ung.Ips"]) {
                 },
                 cls: 'ung-panel',
                 items : [this.gridRules = new Ung.EditorGrid({
-		                name : 'Rules',
-		                settingsCmp : this,
-		                height : 350,
-		                totalRecords : this.getBaseSettings().rulesLength,
-		                emptyRow : {
-		                    "category" : this.i18n._("[no category]"),
-		                    "name" : this.i18n._("[no name]"),
-		                    "text" : this.i18n._("[no signature]"),
-		                    "category" : this.i18n._("[no category]"),
-		                    "sid" : "0",
-		                    "live" : true,
-		                    "log" : true,
-		                    "description" : this.i18n._("[no description]")
-		                },
-		                title : this.i18n._("Rules"),
-		                recordJavaClass : "com.untangle.node.ips.IpsRule",
-		                proxyRpcFn : this.getRpcNode().getRules,
-		                fields : [{
-                    		name : 'id'
-                		}, {
-		                    name : 'text'
-                		}, {
-		                    name : 'sid'
-                		}, {
-		                    name : 'name'
-                		}, {
-		                    name : 'category',
+                        name : 'Rules',
+                        settingsCmp : this,
+                        height : 350,
+                        totalRecords : this.getBaseSettings().rulesLength,
+                        emptyRow : {
+                            "category" : this.i18n._("[no category]"),
+                            "name" : this.i18n._("[no name]"),
+                            "text" : this.i18n._("[no signature]"),
+                            "category" : this.i18n._("[no category]"),
+                            "sid" : "0",
+                            "live" : true,
+                            "log" : true,
+                            "description" : this.i18n._("[no description]")
+                        },
+                        title : this.i18n._("Rules"),
+                        recordJavaClass : "com.untangle.node.ips.IpsRule",
+                        proxyRpcFn : this.getRpcNode().getRules,
+                        fields : [{
+                            name : 'id'
+                        }, {
+                            name : 'text'
+                        }, {
+                            name : 'sid'
+                        }, {
+                            name : 'name'
+                        }, {
+                            name : 'category',
                             type : 'string'
-                		}, {
-		                    name : 'classification'
-                		}, {
-		                    name : 'URL'
-		                }, {
-		                    name : 'live'
-		                }, {
-		                    name : 'log'
-		                }, {
-		                    name : 'description',
+                        }, {
+                            name : 'classification'
+                        }, {
+                            name : 'URL'
+                        }, {
+                            name : 'live'
+                        }, {
+                            name : 'log'
+                        }, {
+                            name : 'description',
                             type : 'string'
-		                }],
-		                columns : [{
-		                    id : 'category',
-		                    header : this.i18n._("category"),
-		                    width : 180,
-		                    dataIndex : 'category',
-		                    editor : new Ext.form.TextField({
-		                        allowBlank : false
-		                    })
-		                }, blockColumn, logColumn, {
-		                    id : 'description',
-		                    header : this.i18n._("description"),
-		                    width : 200,
-		                    dataIndex : 'description',
-		                    editor : null,
-		                    renderer : function(value, metadata, record) {
-		                    	var description = "";
-		                    	if (record.data.classification != null) 
-		                    	{
-		                    		description += record.data.classification + " ";
-		                    	}
-	                    		if (record.data.description != null) {
-		                    		description += "(" + record.data.description + ")";
-	                    		}	
-	                        	return description;
-		                    }
-		                }, {
-		                    id : 'id',
-		                    header : this.i18n._("id"),
-		                    width : 70,
-		                    dataIndex : 'sid',
-		                    editor : null
-		                }, {
-		                    id : 'info',
-		                    header : this.i18n._("info"),
-		                    width : 70,
-		                    dataIndex : 'URL',
-		                    editor : null,
-		                    sortable : false,
-		                    renderer : function(value) {
-		                        return (value == null || value.length == 0) ? "no info" : "<a href='" + value + "' target='_blank'>info</a>";
-		                    }
-		                }],
-		                sortField : 'category',
-		                columnsDefaultSortable : true,
-		                autoExpandColumn : 'description',
-		                plugins : [blockColumn, logColumn],
-		                rowEditorInputLines : [new Ext.form.TextField({
-		                    name : "Category",
-		                    dataIndex: "category",
-		                    fieldLabel : this.i18n._("Category"),
-		                    allowBlank : false,
-		                    width : 300
-		                }), new Ext.form.TextField({
-		                    name : "Signature",
-		                    dataIndex: "text",
-		                    fieldLabel : this.i18n._("Signature"),
-		                    allowBlank : false,
-		                    width : 350
-		                }), new Ext.form.TextField({
-		                    name : "Name",
-		                    dataIndex: "name",
-		                    fieldLabel : this.i18n._("Name"),
-		                    allowBlank : false,
-		                    width : 300
-		                }), new Ext.form.TextField({
-		                    name : "SID",
-		                    dataIndex: "sid",
-		                    fieldLabel : this.i18n._("SID"),
-		                    allowBlank : false,
-		                    width : 50
-		                }), new Ext.form.Checkbox({
-		                    name : "Block",
-		                    dataIndex: "live",
-		                    fieldLabel : this.i18n._("Block")
-		                }), new Ext.form.Checkbox({
-		                    name : "Log",
-		                    dataIndex: "log",
-		                    fieldLabel : this.i18n._("Log")
-		                }), new Ext.form.TextField({
-		                    name : "Description",
-		                    dataIndex: "description",
-		                    fieldLabel : this.i18n._("Description"),
-		                    allowBlank : false,
-		                    width : 400
-		                })]
-					}),  
+                        }],
+                        columns : [{
+                            id : 'category',
+                            header : this.i18n._("category"),
+                            width : 180,
+                            dataIndex : 'category',
+                            editor : new Ext.form.TextField({
+                                allowBlank : false
+                            })
+                        }, blockColumn, logColumn, {
+                            id : 'description',
+                            header : this.i18n._("description"),
+                            width : 200,
+                            dataIndex : 'description',
+                            editor : null,
+                            renderer : function(value, metadata, record) {
+                                var description = "";
+                                if (record.data.classification != null) 
+                                {
+                                    description += record.data.classification + " ";
+                                }
+                                if (record.data.description != null) {
+                                    description += "(" + record.data.description + ")";
+                                }    
+                                return description;
+                            }
+                        }, {
+                            id : 'id',
+                            header : this.i18n._("id"),
+                            width : 70,
+                            dataIndex : 'sid',
+                            editor : null
+                        }, {
+                            id : 'info',
+                            header : this.i18n._("info"),
+                            width : 70,
+                            dataIndex : 'URL',
+                            editor : null,
+                            sortable : false,
+                            renderer : function(value) {
+                                return (value == null || value.length == 0) ? "no info" : "<a href='" + value + "' target='_blank'>info</a>";
+                            }
+                        }],
+                        sortField : 'category',
+                        columnsDefaultSortable : true,
+                        autoExpandColumn : 'description',
+                        plugins : [blockColumn, logColumn],
+                        rowEditorInputLines : [new Ext.form.TextField({
+                            name : "Category",
+                            dataIndex: "category",
+                            fieldLabel : this.i18n._("Category"),
+                            allowBlank : false,
+                            width : 300
+                        }), new Ext.form.TextField({
+                            name : "Signature",
+                            dataIndex: "text",
+                            fieldLabel : this.i18n._("Signature"),
+                            allowBlank : false,
+                            width : 350
+                        }), new Ext.form.TextField({
+                            name : "Name",
+                            dataIndex: "name",
+                            fieldLabel : this.i18n._("Name"),
+                            allowBlank : false,
+                            width : 300
+                        }), new Ext.form.TextField({
+                            name : "SID",
+                            dataIndex: "sid",
+                            fieldLabel : this.i18n._("SID"),
+                            allowBlank : false,
+                            width : 50
+                        }), new Ext.form.Checkbox({
+                            name : "Block",
+                            dataIndex: "live",
+                            fieldLabel : this.i18n._("Block")
+                        }), new Ext.form.Checkbox({
+                            name : "Log",
+                            dataIndex: "log",
+                            fieldLabel : this.i18n._("Log")
+                        }), new Ext.form.TextField({
+                            name : "Description",
+                            dataIndex: "description",
+                            fieldLabel : this.i18n._("Description"),
+                            allowBlank : false,
+                            width : 400
+                        })]
+                    }),  
                     {html : '<br>', border: false}, 
                     this.gridVariables = new Ung.EditorGrid({
-		                name : 'Variables',
-		                settingsCmp : this,
-		                totalRecords : this.getBaseSettings().variablesLength,
-		                height : 350,
-		                emptyRow : {
-		                    "variable" : this.i18n._("[no name]"),
-		                    "definition" : this.i18n._("[no definition]"),
-		                    "description" : this.i18n._("[no description]")
-		                },
-		                title : this.i18n._("Variables"),
-		                autoExpandColumn : 'description',
-		                recordJavaClass : "com.untangle.node.ips.IpsVariable",
-		                proxyRpcFn : this.getRpcNode().getVariables,
-		                fields : [{
-                    		name : 'id'
-                		}, {
-		                    name : 'variable',
+                        name : 'Variables',
+                        settingsCmp : this,
+                        totalRecords : this.getBaseSettings().variablesLength,
+                        height : 350,
+                        emptyRow : {
+                            "variable" : this.i18n._("[no name]"),
+                            "definition" : this.i18n._("[no definition]"),
+                            "description" : this.i18n._("[no description]")
+                        },
+                        title : this.i18n._("Variables"),
+                        autoExpandColumn : 'description',
+                        recordJavaClass : "com.untangle.node.ips.IpsVariable",
+                        proxyRpcFn : this.getRpcNode().getVariables,
+                        fields : [{
+                            name : 'id'
+                        }, {
+                            name : 'variable',
                             type : 'string'
-		                }, {
-		                    name : 'definition',
+                        }, {
+                            name : 'definition',
                             type : 'string'
-		                }, {
-		                    name : 'description',
+                        }, {
+                            name : 'description',
                             type : 'string'
-		                }],
-		                columns : [{
-		                    id : 'variable',
-		                    header : this.i18n._("name"),
-		                    width : 170,
-		                    dataIndex : 'variable',
-		                    editor : new Ext.form.TextField({
-		                        allowBlank : false
-		                    })
-		                }, {
-		                    id : 'definition',
-		                    header : this.i18n._("pass"),
-		                    width : 300,
-		                    dataIndex : 'definition',
-		                    editor : new Ext.form.TextField({
-		                        allowBlank : false
-		                    })
-		                }, {
-		                    id : 'description',
-		                    header : this.i18n._("description"),
-		                    width : 300,
-		                    dataIndex : 'description',
-		                    editor : new Ext.form.TextField({
-		                        allowBlank : false
-		                    })
-		                }],
-		                sortField : 'variable',
-		                columnsDefaultSortable : true,
-		                rowEditorInputLines : [new Ext.form.TextField({
-		                    name : "Name",
-		                    dataIndex: "variable",
-		                    fieldLabel : this.i18n._("Name"),
-		                    allowBlank : false,
-		                    width : 200
-		                }), new Ext.form.TextField({
-		                    name : "Pass",
-		                    dataIndex: "definition",
-		                    fieldLabel : this.i18n._("Pass"),
-		                    allowBlank : false,
-		                    width : 300
-						}), new Ext.form.TextField({
+                        }],
+                        columns : [{
+                            id : 'variable',
+                            header : this.i18n._("name"),
+                            width : 170,
+                            dataIndex : 'variable',
+                            editor : new Ext.form.TextField({
+                                allowBlank : false
+                            })
+                        }, {
+                            id : 'definition',
+                            header : this.i18n._("pass"),
+                            width : 300,
+                            dataIndex : 'definition',
+                            editor : new Ext.form.TextField({
+                                allowBlank : false
+                            })
+                        }, {
+                            id : 'description',
+                            header : this.i18n._("description"),
+                            width : 300,
+                            dataIndex : 'description',
+                            editor : new Ext.form.TextField({
+                                allowBlank : false
+                            })
+                        }],
+                        sortField : 'variable',
+                        columnsDefaultSortable : true,
+                        rowEditorInputLines : [new Ext.form.TextField({
+                            name : "Name",
+                            dataIndex: "variable",
+                            fieldLabel : this.i18n._("Name"),
+                            allowBlank : false,
+                            width : 200
+                        }), new Ext.form.TextField({
+                            name : "Pass",
+                            dataIndex: "definition",
+                            fieldLabel : this.i18n._("Pass"),
+                            allowBlank : false,
+                            width : 300
+                        }), new Ext.form.TextField({
 
-		                    name : "Description",
-		                    dataIndex: "description",
-		                    fieldLabel : this.i18n._("Description"),
-		                    allowBlank : false,
-		                    width : 300
-						})]
-	            	})
+                            name : "Description",
+                            dataIndex: "description",
+                            fieldLabel : this.i18n._("Description"),
+                            allowBlank : false,
+                            width : 300
+                        })]
+                    })
             ]});
         },
         // Event Log
@@ -354,7 +354,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     dataIndex : 'client',
                     renderer : Ung.SortTypes.asClient
                 }, {
-                	id: 'ruleSid',
+                    id: 'ruleSid',
                     header : this.i18n._('reason for action'),
                     width : 150,
                     sortable : true,

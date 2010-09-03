@@ -297,7 +297,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
             }.createDelegate(this), this.gridExceptions.getSaveList());
         },
         isDirty : function() {
-        	return this.gridExceptions.isDirty();
+            return this.gridExceptions.isDirty();
         }
     });
 }

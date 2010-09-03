@@ -13,10 +13,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             this.buildBlockLists();
             this.buildPassLists();
             this.buildEventLog();
-	    this.buildUnblockEventLog();
+        this.buildUnblockEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelBlockLists, this.panelPassLists, 
-				this.gridEventLog, this.gridUnblockEventLog]);
+                this.gridEventLog, this.gridUnblockEventLog]);
             Ung.BaseWebFilter.superclass.initComponent.call(this);
         },
         // Block Lists Panel
@@ -1139,28 +1139,28 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         buildUnblockEventLog : function() {
             this.gridUnblockEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-		eventManagerFn : this.getRpcNode().getUnblockEventManager(),
-		name : "Unblock Log",
-		title : i18n._('Unblock Log'),
+        eventManagerFn : this.getRpcNode().getUnblockEventManager(),
+        name : "Unblock Log",
+        title : i18n._('Unblock Log'),
                 fields : [{
                     name : 'timeStamp',
-		    mapping : 'timeStamp',
+            mapping : 'timeStamp',
                     sortType : Ung.SortTypes.asTimestamp
                 },
                 {
                     name : 'isPermanent',
-		    mapping : 'isPermanent',
+            mapping : 'isPermanent',
                     type : 'string',
                     convert : function(value) {
                         return ( value ) ? this.i18n._("permanent") : this.i18n._("temporary");
                     }.createDelegate(this)
                 }, {
                     name : 'clientAddress',
-		    mapping : 'clientAddress'
+            mapping : 'clientAddress'
                 }, {
                     name : 'request',
-		    mapping : 'requestUri'
-		}],
+            mapping : 'requestUri'
+        }],
                 autoExpandColumn: 'request',
                 columns : [{
                     header : this.i18n._("timestamp"),

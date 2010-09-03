@@ -304,8 +304,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 }.createDelegate(this)
                             }
                         }
-				}
-			]
+                }
+            ]
                 },{
                     title : this.i18n._("Daily Reports"),
                     labelWidth: 150,
@@ -482,7 +482,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             }
                         }
                     }]
-			},
+            },
 {
                     title: this.i18n._("Reports Retention"),
                     labelWidth: 150,

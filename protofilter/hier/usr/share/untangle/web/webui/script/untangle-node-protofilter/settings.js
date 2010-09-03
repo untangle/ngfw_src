@@ -3,7 +3,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
     Ung.NodeWin.registerClassName('untangle-node-protofilter', 'Ung.Protofilter');
 
     Ung.Protofilter = Ext.extend(Ung.NodeWin, {
-    	panelStatus: null,
+        panelStatus: null,
         gridProtocolList : null,
         gridEventLog : null,
         initComponent : function() {
@@ -36,12 +36,12 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     html : String.format(this.i18n._("Protocol Control uses signatures to detect the protocols of network traffic. It is useful for detecting unwanted or interesting protocols in use on the network."))
                 }, {
                     title : this.i18n._(''),
-				    layout:'form',
+                    layout:'form',
                     labelWidth: 230,
                     defaults: {
-                    	xtype: "textfield",
-                    	disabled: true
-					},
+                        xtype: "textfield",
+                        disabled: true
+                    },
                     items: [{
                         fieldLabel : this.i18n._('Total Signatures Available'),
                         name: 'Total Signatures Available',
@@ -190,7 +190,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
         },
         // Event Log
         buildEventLog : function() {
-        	var asAction = function(value) {
+            var asAction = function(value) {
                 return value ? this.i18n._("blocked") : this.i18n._("passed");
             }.createDelegate(this);
             var asReason = function(value) {
@@ -263,7 +263,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
             });
         },
         isDirty : function() {
-        	return this.gridProtocolList.isDirty();
+            return this.gridProtocolList.isDirty();
         },
         //apply function 
         applyAction : function(){

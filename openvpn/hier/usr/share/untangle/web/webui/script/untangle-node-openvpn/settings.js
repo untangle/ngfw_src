@@ -1538,15 +1538,15 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             for(var i=0;i<groupList.length;i++) {
                 var groupName = groupList[i].name.toLowerCase();
 
-		var group = groupList[i];
-		if(group.id>=0 && group.name!=group.originalName) {
+        var group = groupList[i];
+        if(group.id>=0 && group.name!=group.originalName) {
                     Ext.MessageBox.alert(i18n._("Failed"), this.i18n._("Changing name is not allowed. Create a new group."),
-					 function () {
-					     this.tabs.activate(this.panelClients);
-					 }.createDelegate(this)
-					);
+                     function () {
+                         this.tabs.activate(this.panelClients);
+                     }.createDelegate(this)
+                    );
                     return false;
-		}
+        }
 
 
                 if ( groupNames[groupName] != null ) {
@@ -1790,7 +1790,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     || this.gridClients.isDirty()
                     || this.gridSites.isDirty();
             } else {
-            	return false;
+                return false;
             }
         },
         configureVPNClient : function() {

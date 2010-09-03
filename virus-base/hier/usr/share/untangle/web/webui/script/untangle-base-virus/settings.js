@@ -3,9 +3,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
     Ung.NodeWin.registerClassName('untangle-base-virus', 'Ung.Virus');
 
     Ung.Virus = Ext.extend(Ung.NodeWin, {
-    	panelWeb:null,
-    	panelEmail: null,
-    	panelFtp: null,
+        panelWeb:null,
+        panelEmail: null,
+        panelFtp: null,
         gridEventLog : null,
         // override get base settings object to reload the signature information.
         getBaseSettings : function(forceReload) {
@@ -66,10 +66,10 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         }
                     }]
                 }, {
-                	title: this.i18n._('Advanced Settings'),
+                    title: this.i18n._('Advanced Settings'),
                     collapsible: true,
-                	collapsed: true,
-                	labelWidth: 170,
+                    collapsed: true,
+                    labelWidth: 170,
                     items : [{
                         xtype : 'button',
                         name : 'File Extensions',
@@ -113,15 +113,15 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                    	            var tricklePercentFtpCmp = Ext.getCmp('virus_ftp_trickle_percent');
-                    	            tricklePercentFtpCmp.setValue(newValue);
+                                    var tricklePercentFtpCmp = Ext.getCmp('virus_ftp_trickle_percent');
+                                    tricklePercentFtpCmp.setValue(newValue);
                                     this.getBaseSettings().tricklePercent = newValue;
                                 }.createDelegate(this)
                             }
                         }
                     }]
                 }, {
-                	cls: 'description',
+                    cls: 'description',
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
                             + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
                             this.i18n._("Unknown"))
@@ -448,14 +448,14 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             "change" : {
                                 fn : function(elem, newValue) {
                                     var tricklePercentHttpCmp = Ext.getCmp('virus_http_trickle_percent');
-									tricklePercentHttpCmp.setValue(newValue);
-									this.getBaseSettings().tricklePercent = newValue;
+                                    tricklePercentHttpCmp.setValue(newValue);
+                                    this.getBaseSettings().tricklePercent = newValue;
                                 }.createDelegate(this)
                             }
                         }
                     }]
                 }, {
-                	cls: 'description',
+                    cls: 'description',
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
                             + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
                             this.i18n._("Unknown"))
@@ -474,16 +474,16 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 title : this.i18n._('Email'),
                 layout : "anchor",
                 defaults: {
-                	anchor: '98%',
+                    anchor: '98%',
                     xtype : 'fieldset',
                     autoHeight : true,
-                	autoScroll: true,
+                    autoScroll: true,
                     buttonAlign : 'left'
                 },
                 cls: 'ung-panel',
                 autoScroll : true,
                 items : [{
-                	layout:'column',
+                    layout:'column',
                     items:[{
                         columnWidth:.3,
                         layout: 'form',
@@ -605,7 +605,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         }]
                     }]
                 }, {
-                	cls: 'description',
+                    cls: 'description',
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
                             + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
                             this.i18n._("Unknown"))
@@ -725,21 +725,21 @@ if (!Ung.hasResource["Ung.Virus"]) {
             });
         },
         // validation function
-		validateClient : function() {
-			//validate trickle rate
+        validateClient : function() {
+            //validate trickle rate
             var tricklePercentCmp = Ext.getCmp('virus_http_trickle_percent');
             if (tricklePercentCmp.isValid()) {
-				return true;
-			} else {
-				Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("Scan trickle rate should be between 1 and 99!"),
+                return true;
+            } else {
+                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("Scan trickle rate should be between 1 and 99!"),
                     function () {
                         this.tabs.activate(this.panelWeb);
                         tricklePercentCmp.focus(true);
                     }.createDelegate(this) 
-				);
+                );
                 return false;
             }
-		},
+        },
         // save function
         saveAction : function() {
             if (this.validate()) {
