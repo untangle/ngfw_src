@@ -547,20 +547,20 @@ Ung.Reports = Ext.extend(Object,{
                     name : 'untangle-pnode-summary',
                     leaf: true,
                     icon : "./node-icons/untangle-vm.png"
-    			},
+                },
                 {
                     text : i18n._(tableOfContents.platform.title),
                     name : tableOfContents.platform.name,
                     leaf: true,
                     icon : "./node-icons/untangle-system.png"
-    			},
+                },
                 {
-        		    text : i18n._("Server"),
-        			name : "untangle-node-reporting",
-        			leaf: true,
-        			icon : "./node-icons/server.png"
+                    text : i18n._("Server"),
+                    name : "untangle-node-reporting",
+                    leaf: true,
+                    icon : "./node-icons/server.png"
     
-    		    }
+                }
             );
         }
 
@@ -1102,21 +1102,21 @@ Ung.ReportDetails = Ext.extend(Object, {
         
     },
     getHighlightHTML: function(summaryItem,smallIcons) {
-	    var stringTemplate = summaryItem.stringTemplate,
+        var stringTemplate = summaryItem.stringTemplate,
             key,hvm,
             imagePath = smallIcons === true ?  '/reports/node-icons/' : '/reports/image?name=' ,
             imageSuffix = smallIcons === true ? '.png' : '',
             highlightClass = smallIcons === true  ? 'highlight-2'  : 'highlight',
             url;
-	    stringTemplate = stringTemplate.replace(summaryItem.name,'<strong>'+summaryItem.title+'</strong>');
-	    hvm = summaryItem.highlightValues.map;
-	    for (key in hvm) {
-		stringTemplate = stringTemplate.replace('%(' + key + ')s',
-							'<strong>' + hvm[key] + '</strong>');
-	    }
-	    url = imagePath + summaryItem.name + imageSuffix;
-	    return '<div class="'+highlightClass+' first"><p style="background-image:url('+url+')">'+stringTemplate+'</p></div>';
-	},
+        stringTemplate = stringTemplate.replace(summaryItem.name,'<strong>'+summaryItem.title+'</strong>');
+        hvm = summaryItem.highlightValues.map;
+        for (key in hvm) {
+        stringTemplate = stringTemplate.replace('%(' + key + ')s',
+                            '<strong>' + hvm[key] + '</strong>');
+        }
+        url = imagePath + summaryItem.name + imageSuffix;
+        return '<div class="'+highlightClass+' first"><p style="background-image:url('+url+')">'+stringTemplate+'</p></div>';
+    },
 
     buildSummarySection: function (appName, section) {
         var items = [];
@@ -1138,12 +1138,12 @@ Ung.ReportDetails = Ext.extend(Object, {
         for (var i = 0; i < section.summaryItems.list.length; i++) {
             var summaryItem = section.summaryItems.list[i];       
 
-	    if (summaryItem.stringTemplate) {
-    		str = this.getHighlightHTML(summaryItem,false)
-    		columns = [];
-    		items.push({html:str,colspan:2});
-	    } else {
-		
+        if (summaryItem.stringTemplate) {
+            str = this.getHighlightHTML(summaryItem,false)
+            columns = [];
+            items.push({html:str,colspan:2});
+        } else {
+        
             // graph
             items.push({html:'<img src="'+summaryItem.imageUrl+'"/>', bodyStyle:'padding:20px'});
             // key statistics
@@ -1259,7 +1259,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                 enableColumnMove: false
             })
                       );
-	    }
+        }
         }        
         return new Ext.Panel({
             title : section.title,

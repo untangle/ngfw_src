@@ -1030,10 +1030,10 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             return;
         }
         main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName),"buy");
-	// do not check for upgrades before opening more info (bug #7866)
-	//         main.warnOnUpgrades(function() {
-	//             main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName),"buy");
-	//         }.createDelegate(this));
+    // do not check for upgrades before opening more info (bug #7866)
+    //         main.warnOnUpgrades(function() {
+    //             main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName),"buy");
+    //         }.createDelegate(this));
     },
     // open store page in a new frame
     linkToStoreFn : function(e,action) {
@@ -1044,10 +1044,10 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             return;
         }
         main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName),action);
-	// do not check for upgrades before opening more info (bug #7866)
-	//         main.warnOnUpgrades(function() {
-	//             main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName),action);
-	//         }.createDelegate(this));
+    // do not check for upgrades before opening more info (bug #7866)
+    //         main.warnOnUpgrades(function() {
+    //             main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName),action);
+    //         }.createDelegate(this));
     },
     // install node / uninstall App
     installNodeFn : function(e) {

@@ -18,10 +18,10 @@ if (!Ung.hasResource["Ung.System"]) {
             }];
             this.companyName=main.getBrandingManager().getCompanyName();
             this.oemName=main.getOemManager().getOemName();
-	    if (this.oemName == "Untangle") {
-		this.downloadLanguageHTML='<a href="http://pootle.untangle.com">' + i18n._("Download New Language Packs") + '</a>';
-	    } else {
-		this.downloadLanguageHTML='';
+        if (this.oemName == "Untangle") {
+        this.downloadLanguageHTML='<a href="http://pootle.untangle.com">' + i18n._("Download New Language Packs") + '</a>';
+        } else {
+        this.downloadLanguageHTML='';
             }
             this.buildSupport();
             this.buildBackup();
@@ -40,7 +40,7 @@ if (!Ung.hasResource["Ung.System"]) {
         // get languange settings object
         getLanguageSettings : function(forceReload) {
             if (forceReload || this.rpc.languageSettings === undefined) {
-            	try {
+                try {
                     this.rpc.languageSettings = rpc.languageManager.getLanguageSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -51,7 +51,7 @@ if (!Ung.hasResource["Ung.System"]) {
         },
         getAccessSettings : function(forceReload) {
             if (forceReload || this.rpc.accessSettings === undefined) {
-            	try {
+                try {
                     this.rpc.accessSettings = rpc.networkManager.getAccessSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -62,7 +62,7 @@ if (!Ung.hasResource["Ung.System"]) {
         },
         getMiscSettings : function(forceReload) {
             if (forceReload || this.rpc.miscSettings === undefined) {
-            	try {
+                try {
                     this.rpc.miscSettings = rpc.networkManager.getMiscSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -73,7 +73,7 @@ if (!Ung.hasResource["Ung.System"]) {
         },
         getHttpNode : function(forceReload) {
             if (forceReload || this.rpc.httpNode === undefined) {
-            	try {
+                try {
                     this.rpc.httpNode = rpc.nodeManager.node("untangle-casing-http");
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -83,11 +83,11 @@ if (!Ung.hasResource["Ung.System"]) {
             return this.rpc.httpNode;
         },
         isHttpLoaded : function(forceReload) {
-        	return this.getHttpNode(forceReload) != null;
+            return this.getHttpNode(forceReload) != null;
         },
         getHttpSettings : function(forceReload) {
             if (forceReload || this.rpc.httpSettings === undefined) {
-            	try {
+                try {
                     this.rpc.httpSettings = this.getHttpNode(forceReload).getHttpSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -98,7 +98,7 @@ if (!Ung.hasResource["Ung.System"]) {
         },
         getFtpNode : function(forceReload) {
             if (forceReload || this.rpc.ftpNode === undefined) {
-            	try {
+                try {
                     this.rpc.ftpNode = rpc.nodeManager.node("untangle-casing-ftp");
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -112,7 +112,7 @@ if (!Ung.hasResource["Ung.System"]) {
         },
         getFtpSettings : function(forceReload) {
             if (forceReload || this.rpc.ftpSettings === undefined) {
-            	try {
+                try {
                     this.rpc.ftpSettings = this.getFtpNode(forceReload).getFtpSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -123,7 +123,7 @@ if (!Ung.hasResource["Ung.System"]) {
         },
         getMailNode : function(forceReload) {
             if (forceReload || this.rpc.mailNode === undefined) {
-            	try {
+                try {
                     this.rpc.mailNode = rpc.nodeManager.node("untangle-casing-mail");
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -137,7 +137,7 @@ if (!Ung.hasResource["Ung.System"]) {
         },
         getMailNodeSettings : function(forceReload) {
             if (forceReload || this.rpc.mailSettings === undefined) {
-            	try {
+                try {
                     this.rpc.mailSettings = this.getMailNode(forceReload).getMailNodeSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -148,7 +148,7 @@ if (!Ung.hasResource["Ung.System"]) {
         },
         getTimeZone : function(forceReload) {
             if (forceReload || this.rpc.timeZone === undefined) {
-            	try {
+                try {
                     /* Handle the serialization mess of java with ZoneInfo. */
                     var tz = rpc.adminManager.getTimeZone();
                     if ( tz != null && typeof ( tz ) != "string" ) {
@@ -288,8 +288,8 @@ if (!Ung.hasResource["Ung.System"]) {
                 cls: "ung-panel",
                 autoScroll : true,
                 onBackupToFile: function() {
-                	// A two step process: first asks the server for permission to download the file (the outer ajax request) 
-                	// and then if successful opens the iframe which initiates the download.
+                    // A two step process: first asks the server for permission to download the file (the outer ajax request) 
+                    // and then if successful opens the iframe which initiates the download.
                     Ext.Ajax.request({
                         url: "backup",
                         params: {action:"requestBackup"},
@@ -311,7 +311,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         failure: function() {
                             Ext.MessageBox.alert(this.i18n._("Backup Failure Warning"),this.i18n._("Error:  The local file backup procedure failed.  Please try again.")); 
                         }
-                    });                	
+                    });                    
                 }.createDelegate(this),
                 defaults : {
                     xtype : "fieldset",
@@ -322,10 +322,10 @@ if (!Ung.hasResource["Ung.System"]) {
                     title : this.i18n._("Backup to File"),
                     items : [{
                         border : false,
-                    	cls: "description",
-                    	html: this.i18n._("You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".backup\"") +
-                    			"<br> <br> " +
-                    			this.i18n._("After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".")
+                        cls: "description",
+                        html: this.i18n._("You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".backup\"") +
+                                "<br> <br> " +
+                                this.i18n._("After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".")
                     }],
                     buttons : [{
                         text : this.i18n._("Backup to File"),
@@ -349,7 +349,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 cls: "ung-panel",
                 autoScroll : true,
                 onRestoreFromFileFile: function() {
-                	var prova = Ext.getCmp("upload_restore_file_form");
+                    var prova = Ext.getCmp("upload_restore_file_form");
                     var cmp = Ext.getCmp(this.parentId);
                     var fileText = prova.items.get(0);
                     if (fileText.getValue().length == 0) {
@@ -364,8 +364,8 @@ if (!Ung.hasResource["Ung.System"]) {
                             var cmp = Ext.getCmp(action.options.parentId);
                             Ung.MessageManager.stop();
                             Ext.MessageBox.alert(cmp.i18n._("Restore In Progress"),
-						 cmp.i18n._("The restore procedure is running. The server may be unavailable during this time. Once the process is complete you will be able to log in again."), 
-						 Ung.Util.goToStartPage);
+                         cmp.i18n._("The restore procedure is running. The server may be unavailable during this time. Once the process is complete you will be able to log in again."), 
+                         Ung.Util.goToStartPage);
                             },
                         failure : function(form, action) {
                             var cmp = Ext.getCmp(action.options.parentId);
@@ -400,7 +400,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 items : [{
                     title : this.i18n._("From File"),
                     items : [{
-                    	border : false,
+                        border : false,
                         cls: "description",
                         html: this.i18n._("You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \".backup\"")
                     },{
@@ -446,9 +446,9 @@ if (!Ung.hasResource["Ung.System"]) {
             if (this.isHttpLoaded()) {
                 // keep initial http settings
                 this.initialHttpSettings = Ung.Util.clone(this.getHttpSettings());
-            	
-            	protocolSettingsItems.push({
-            		xtype : "fieldset",
+                
+                protocolSettingsItems.push({
+                    xtype : "fieldset",
                     collapsible: true,
                     collapsed: true,
                     title: this.i18n._("HTTP"),
@@ -612,9 +612,9 @@ if (!Ung.hasResource["Ung.System"]) {
                             }
                         }]
                     }]
-            	});
+                });
             }
-        	
+            
             if (this.isFtpLoaded()) {
                 // keep initial ftp settings
                 this.initialFtpSettings = Ung.Util.clone(this.getFtpSettings());
@@ -739,7 +739,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 protocolSettingsItems.push({
                     collapsible: true,
                     collapsed: true,
-                	xtype : "fieldset",
+                    xtype : "fieldset",
                     title: this.i18n._("POP3"),
                     autoHeight : true,
                     labelWidth: 200,                      
@@ -841,7 +841,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         }
                     }]
                 });
-            }            	
+            }                
             
             this.panelProtocolSettings = new Ext.Panel({
                 name : "Protocol Settings",
@@ -991,8 +991,8 @@ if (!Ung.hasResource["Ung.System"]) {
                         }]
                     }
                 }, {
-		    html : this.downloadLanguageHTML
-		}],
+            html : this.downloadLanguageHTML
+        }],
                 onUpload : function() {
                     var prova = Ext.getCmp("upload_language_form");
                     var cmp = Ext.getCmp(this.parentId);
@@ -1007,7 +1007,7 @@ if (!Ung.hasResource["Ung.System"]) {
                             if(action.result.success===true){
                                 Ext.MessageBox.alert(cmp.i18n._("Succeeded"), cmp.i18n._("Upload language pack succeeded"), 
                                     function() {
-                                    	Ext.getCmp("upload_language_file_textfield").reset();
+                                        Ext.getCmp("upload_language_file_textfield").reset();
                                     } 
                                 );
                             }else{
@@ -1040,8 +1040,8 @@ if (!Ung.hasResource["Ung.System"]) {
         // validation function
         validateClient : function() {
             //validate timeout
-        	return  (!this.isHttpLoaded() || this.validateMaxHeaderLength() && this.validateMaxUriLength()) && 
-        	   (!this.isMailLoaded() || this.validateSMTP() && this.validatePOP() && this.validateIMAP()); 
+            return  (!this.isHttpLoaded() || this.validateMaxHeaderLength() && this.validateMaxUriLength()) && 
+               (!this.isMailLoaded() || this.validateSMTP() && this.validatePOP() && this.validateIMAP()); 
         },
         
         //validate Max URI Length
@@ -1176,7 +1176,7 @@ if (!Ung.hasResource["Ung.System"]) {
                         this.afterSave(exception,callback);
                     }.createDelegate(this), this.getHttpSettings());
                 } else {
-                	this.saveSemaphore--;
+                    this.saveSemaphore--;
                 }
                 
                 // save ftp settings

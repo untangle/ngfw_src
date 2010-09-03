@@ -54,7 +54,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             Ext.getCmp('email_smtpUseAuthentication').setValue(useAuthentication);
             Ext.getCmp('email_smtpLogin').setContainerVisible(useAuthentication);
             Ext.getCmp('email_smtpPassword').setContainerVisible(useAuthentication);
-        	
+            
             var useSmtp = Ext.getCmp('email_smtpEnabled').getValue();
             if(useSmtp == false) {
                 Ext.getCmp('email_smtpHost').disable();
@@ -71,19 +71,19 @@ if (!Ung.hasResource["Ung.Email"]) {
                 Ext.getCmp('email_smtpPassword').enable();
             }
 
-	    if ( this.isMailLoaded() ) {
-		var sendDigest = Ext.getCmp('quarantine_sendDailyDigest').getValue();
-		if (sendDigest) {
+        if ( this.isMailLoaded() ) {
+        var sendDigest = Ext.getCmp('quarantine_sendDailyDigest').getValue();
+        if (sendDigest) {
                     Ext.getCmp('quarantine_dailySendingTime').enable();
-		} else {
+        } else {
                     Ext.getCmp('quarantine_dailySendingTime').disable();
-		}
-	    }
+        }
+        }
         },
         
         getMailNode : function(forceReload) {
             if (forceReload || this.rpc.mailNode === undefined) {
-            	try {
+                try {
                     this.rpc.mailNode = rpc.nodeManager.node("untangle-casing-mail");
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -97,7 +97,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         },
         getMailSettings : function(forceReload) {
             if (forceReload || this.rpc.mailSettings === undefined) {
-            	try {
+                try {
                     this.rpc.mailSettings = main.getMailSender().getMailSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -108,7 +108,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         },
         getMailNodeSettings : function(forceReload) {
             if (forceReload || this.rpc.mailNodeSettings === undefined) {
-            	try {
+                try {
                     this.rpc.mailNodeSettings = this.getMailNode().getMailNodeSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -119,7 +119,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         },
         getSafelistAdminView : function(forceReload) {
             if (forceReload || this.rpc.safelistAdminView === undefined) {
-            	try {
+                try {
                     this.rpc.safelistAdminView = this.getMailNode().getSafelistAdminView();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -130,7 +130,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         },
         getQuarantineMaintenenceView : function(forceReload) {
             if (forceReload || this.rpc.quarantineMaintenenceView === undefined) {
-            	try {
+                try {
                     this.rpc.quarantineMaintenenceView = this.getMailNode().getQuarantineMaintenenceView();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -145,9 +145,9 @@ if (!Ung.hasResource["Ung.Email"]) {
             return hh + ":" + mm;
         },
         loadQuarantinesDetails : function() {
-        	var account = this.quarantinesDetailsWin.account;
+            var account = this.quarantinesDetailsWin.account;
             var totalRecords = this.getQuarantineMaintenenceView().getInboxTotalRecords(account);
-        	
+            
             this.userQuarantinesDetailsGrid.store.proxy.rpcFnArgs = [account];
             this.userQuarantinesDetailsGrid.setTotalRecords(totalRecords);
             this.userQuarantinesDetailsGrid.loadPage(0);
@@ -178,13 +178,13 @@ if (!Ung.hasResource["Ung.Email"]) {
                     'activate': {
                         fn : function (){
                             (new Ext.ToolTip({
-                        	html : 'It is recommended to use a valid email address. (example: untangle@mydomain.com)',
-                        	target :Ext.getCmp('email_fromAddress').container.id,
-                        	autoWidth : true,
-                        	autoHeight : true,
-                        	showDelay : 200,
-                        	dismissDelay : 0,
-                        	hideDelay : 0
+                            html : 'It is recommended to use a valid email address. (example: untangle@mydomain.com)',
+                            target :Ext.getCmp('email_fromAddress').container.id,
+                            autoWidth : true,
+                            autoHeight : true,
+                            showDelay : 200,
+                            dismissDelay : 0,
+                            hideDelay : 0
                             }));
                             (new Ext.ToolTip({
                                 html : 'Some servers may require this but other servers may not support it.',
@@ -351,8 +351,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                             listeners : {
                                 "check" : {
                                     fn : function(elem, checked) {
-	                                    Ext.getCmp('email_smtpLogin').setContainerVisible(checked);
-	                                    Ext.getCmp('email_smtpPassword').setContainerVisible(checked);
+                                        Ext.getCmp('email_smtpLogin').setContainerVisible(checked);
+                                        Ext.getCmp('email_smtpPassword').setContainerVisible(checked);
                                     }.createDelegate(this)
                                 }
                             }
@@ -378,7 +378,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     items : [{
                         cls: 'description',
                         border : false,
-                    	html : String.format(this.i18n._("The {0} Server will send email from this address."),
+                        html : String.format(this.i18n._("The {0} Server will send email from this address."),
                                              main.getBrandingManager().getCompanyName())
                     }, {
                         xtype : 'textfield',
@@ -399,7 +399,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         border : false,
                         html : this.i18n._('The Email Test will send an email to a specified address with the current configuration. If the test email is not received your settings may be incorrect.')
                     },{
-                    	xtype : 'button',
+                        xtype : 'button',
                         text : this.i18n._("Email Test"),
                         iconCls : 'test-icon',
                         name: "emailTestButton",
@@ -417,8 +417,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                                    msg: String.format(this.i18n._("Your current settings have not been saved yet.{0}Would you like to save your settings before executing the test?"), '<br>'),
                                    buttons: Ext.Msg.YESNOCANCEL,
                                    fn: function(btnId) {
-                                   	    if (btnId == 'yes') {
-                                   	    	if (this.validateOutgoingServer()) {
+                                           if (btnId == 'yes') {
+                                               if (this.validateOutgoingServer()) {
                                                 Ext.MessageBox.wait(this.i18n._('Saving...'), this.i18n._('Please wait'));
                                                 // save mail settings
                                                 main.getMailSender().setMailSettings(function(result, exception) {
@@ -429,12 +429,12 @@ if (!Ung.hasResource["Ung.Email"]) {
                                                     // send test mail
                                                     this.panelOutgoingServer.onEmailTest();
                                                 }.createDelegate(this), this.getMailSettings());
-                                   	    	}
-                                   	    }
+                                               }
+                                           }
                                    }.createDelegate(this),
                                    animEl: 'elId',
                                    icon: Ext.MessageBox.QUESTION
-                                });                            	
+                                });                                
                             } else {
                                 this.panelOutgoingServer.onEmailTest();
                             }
@@ -443,7 +443,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }]
             });
 
-	    
+        
         },
         buildFromSafeList : function() {
             var smUserSafelist = new Ext.grid.CheckboxSelectionModel({singleSelect:false});
@@ -611,7 +611,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         buildGridSafelistUserDetails : function() {
             var smUserSafelistDetails = new Ext.grid.CheckboxSelectionModel({singleSelect:false});
             this.gridSafelistUserDetails = new Ung.EditorGrid({
-            	anchor: "100% 100%",
+                anchor: "100% 100%",
                 name : 'gridSafelistUserDetails',
                 sm : smUserSafelistDetails,
                 hasEdit : false,
@@ -677,7 +677,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     this.grid.onShowDetail(record);
                 }
             });
-        	
+            
             this.panelQuarantine = new Ext.Panel({
                 name : 'panelQuarantine',
                 helpSource : 'quarantine',
@@ -695,7 +695,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     labelWidth: 230
                 },
                 items : [{
-                	items: [{
+                    items: [{
                         xtype : 'textfield',
                         name : 'Maximum Holding Time (days) (max 36)',
                         fieldLabel : this.i18n._('Maximum Holding Time (days) (max 36)'),
@@ -707,7 +707,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                	var millisecValue = newValue * 1440*60*1000;
+                                    var millisecValue = newValue * 1440*60*1000;
                                     this.getMailNodeSettings().quarantineSettings.maxMailIntern = millisecValue;
                                 }.createDelegate(this)
                             }
@@ -715,7 +715,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }, {
                         xtype : 'checkbox',
                         name : 'Send Daily Quarantine Digest Emails',
-			id : 'quarantine_sendDailyDigest',
+            id : 'quarantine_sendDailyDigest',
                         fieldLabel : this.i18n._('Send Daily Quarantine Digest Emails'),
                         checked : this.getMailNodeSettings().quarantineSettings.sendDailyDigests,
                         width : 70,
@@ -744,16 +744,16 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }, {
                         xtype : 'timefield',
                         name : 'Digest Sending Time',
-			id : 'quarantine_dailySendingTime',
+            id : 'quarantine_dailySendingTime',
                         fieldLabel : this.i18n._('Quarantine Digest Sending Time'),
                         allowBlank : false,
                         format : "H:i",
-			minValue: '00:00',
-			maxValue: '23:59',
-			increment: 1,
+            minValue: '00:00',
+            maxValue: '23:59',
+            increment: 1,
                         width : 70,
                         value : this.getFormattedTime(this.getMailNodeSettings().quarantineSettings.digestHourOfDay,this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay),
-			listeners : {
+            listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
                                     var dt = Date.parseDate(newValue, "H:i");
@@ -766,10 +766,10 @@ if (!Ung.hasResource["Ung.Email"]) {
                         cls: 'description',
                         border : false,
                         html : String.format(this.i18n._('Users can also request Quarantine Digest Emails manually at this link: <b>https://{0}/quarantine/</b>'),
-					     rpc.networkManager.getPublicAddress())
+                         rpc.networkManager.getPublicAddress())
                     }]
                 }, {
-                	title : this.i18n._('User Quarantines'),
+                    title : this.i18n._('User Quarantines'),
                     layout : "anchor",
                     items : [ this.userQuarantinesGrid = new Ung.EditorGrid({
                         anchor : "100% 100%",
@@ -798,7 +798,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 }
                                 var accounts = [];
                                 for(var i=0; i<selectedRecords.length; i++) {
-                                	accounts[i] = selectedRecords[i].data.address;
+                                    accounts[i] = selectedRecords[i].data.address;
                                 }
                                 
                                 Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
@@ -836,10 +836,10 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 
                             }.createDelegate(this)
                         }, {
-                        	xtype: 'tbfill'
+                            xtype: 'tbfill'
                         }, {
-                        	xtype: 'tbtext', 
-                        	text: String.format(this.i18n._('Total Disk Space Used: {0} MB'), i18n.numberFormat((this.getQuarantineMaintenenceView().getInboxesTotalSize()/(1024 * 1024)).toFixed(3)))
+                            xtype: 'tbtext', 
+                            text: String.format(this.i18n._('Total Disk Space Used: {0} MB'), i18n.numberFormat((this.getQuarantineMaintenenceView().getInboxesTotalSize()/(1024 * 1024)).toFixed(3)))
                         }],
                         fields : [{
                             name : 'address'
@@ -897,7 +897,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         
                     })
                 ]}, {
-                	title : this.i18n._('Quarantinable Addresses'),
+                    title : this.i18n._('Quarantinable Addresses'),
                     layout : "anchor",
                     items: [{
                         cls: 'description',
@@ -1044,7 +1044,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         buildUserQuarantinesGrid : function() {
             var smUserQuarantinesDetails = new Ext.grid.CheckboxSelectionModel({singleSelect:false});
             this.userQuarantinesDetailsGrid = new Ung.EditorGrid({
-            	anchor: "100% 100%",
+                anchor: "100% 100%",
                 name : 'userQuarantinesDetailsGrid',
                 sm : smUserQuarantinesDetails,
                 hasEdit : false,
@@ -1182,11 +1182,11 @@ if (!Ung.hasResource["Ung.Email"]) {
                     width : 85,
                     dataIndex : 'quarantineDetail',
                     renderer : function(value) {
-                    	var detail = value.quarantineDetail;
+                        var detail = value.quarantineDetail;
                         if (isNaN(parseFloat(detail))) {
-                        	if (detail == "Message determined to be a fraud attempt") {
-                        		return this.i18n._("Identity Theft");
-                        	}
+                            if (detail == "Message determined to be a fraud attempt") {
+                                return this.i18n._("Identity Theft");
+                            }
                         } else {
                             return i18n.numberFormat(parseFloat(detail).toFixed(3));
                         }
@@ -1273,7 +1273,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                 //set login/password to blank if the 'Use Authentication' is not checked
                 var useAuth = useAuthenticationCmp.getValue();
                 this.getMailSettings().authUser = useAuth == true ? loginCmp.getValue() : '';  
-	            this.getMailSettings().authPass = useAuth == true ? passwordCmp.getValue() : '';  
+                this.getMailSettings().authPass = useAuth == true ? passwordCmp.getValue() : '';  
             }
             this.getMailSettings().fromAddress = fromAddressCmp.getValue();
                 
@@ -1357,27 +1357,27 @@ if (!Ung.hasResource["Ung.Email"]) {
             }
         },
         isDirty : function() {
-        	return !Ung.Util.equals(this.getMailSettings(), this.initialMailSettings)
-        	   || Ext.getCmp('email_fromAddress').getValue() != this.initialMailSettings.fromAddress
+            return !Ung.Util.equals(this.getMailSettings(), this.initialMailSettings)
+               || Ext.getCmp('email_fromAddress').getValue() != this.initialMailSettings.fromAddress
                || !this.getMailSettings().useMxRecords && 
                     (Ext.getCmp('email_smtpHost').getValue() != this.initialMailSettings.smtpHost
                     || Ext.getCmp('email_smtpPort').getValue() != this.initialMailSettings.smtpPort
                     || Ext.getCmp('email_smtpLogin').getValue() != this.initialMailSettings.authUser
                     || Ext.getCmp('email_smtpPassword').getValue() != this.initialMailSettings.authPass
                     )
-        	   || this.isMailLoaded() &&
-        	       (this.getMailNodeSettings().quarantineSettings.maxMailIntern != this.initialMailNodeSettings.quarantineSettings.maxMailIntern
-        	       || this.getMailNodeSettings().quarantineSettings.digestHourOfDay != this.initialMailNodeSettings.quarantineSettings.digestHourOfDay
-        	       || this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay != this.initialMailNodeSettings.quarantineSettings.digestMinuteOfDay
-        	       || this.gridSafelistGlobal.isDirty()
-        	       || this.quarantinableAddressesGrid.isDirty()
-        	       || this.quarantineForwardsGrid.isDirty());
+               || this.isMailLoaded() &&
+                   (this.getMailNodeSettings().quarantineSettings.maxMailIntern != this.initialMailNodeSettings.quarantineSettings.maxMailIntern
+                   || this.getMailNodeSettings().quarantineSettings.digestHourOfDay != this.initialMailNodeSettings.quarantineSettings.digestHourOfDay
+                   || this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay != this.initialMailNodeSettings.quarantineSettings.digestMinuteOfDay
+                   || this.gridSafelistGlobal.isDirty()
+                   || this.quarantinableAddressesGrid.isDirty()
+                   || this.quarantineForwardsGrid.isDirty());
         }
     });
     
     //email address details window for Safe List and Quarantine
     Ung.EmailAddressDetails = Ext.extend(Ung.Window, {
-    	settingsCmp : null,
+        settingsCmp : null,
         // the certPanel
         detailsPanel : null,
         account : null,
@@ -1404,7 +1404,7 @@ if (!Ung.hasResource["Ung.Email"]) {
         showForCurrentAccount : function(emailAddress) {
             this.account = emailAddress;  
             this.show();
-        },        	
+        },            
         // the proceed actions
         // to override
         proceedAction : function() {

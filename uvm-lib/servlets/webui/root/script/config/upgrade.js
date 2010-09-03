@@ -32,7 +32,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
         },
         getUpgradeSettings : function(forceReload) {
             if (forceReload || this.rpc.upgradeSettings === undefined) {
-            	try {
+                try {
                     this.rpc.upgradeSettings = rpc.toolboxManager.getUpgradeSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
@@ -57,53 +57,53 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                             if(!this.isVisible()) return;
                             var upgradeList = result;
                             if (upgradeList.length > 0) {
-                            	Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
+                                Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
                                 Ext.getCmp("config_start_upgrade_button").enable();
                                 var upgradeData = [];
                                 var somethingVisibleAdded = false;
                                 var totalSize=0;
                                 for (var i = 0; i < upgradeList.length; i++) {
                                     var md = upgradeList[i];
-				    var mtype;
-				    var displayName = md.displayNane;
-				    totalSize+=md.size;
-				    // Leave out only libitems
-				    switch (md.type) {
-				    case "LIB_ITEM":
-				    case "TRIAL":
-				      // Skip
-				      continue;
-				    case "LIBRARY":
-				    case "BASE":
-				    case "CASING":
-				      mtype = this.i18n._("System Component");
-				      break;
-				    case "NODE":
-				    case "SERVICE":
-				      mtype = this.i18n._("Product");
-				      break;
-				    case "UNKNOWN":
-				      mtype = this.i18n._("System Component");
-				      break;
-				    }
-				    if (displayName == null) {
-					if (md.shortDescription != null)
-					    displayName = md.shortDescription;
-					else
-					    displayName = md.name;
-				    } 
-				    if (displayName != null) {
-					displayName = displayName.replace("Untangle",main.getOemManager().getOemName());
-				    }
-				    somethingVisibleAdded = true;
-				    upgradeData.push({
-				      image : "image?name=" + md.name,
-				      name : md.name,
-				      displayName : displayName,
-				      availableVersion : md.availableVersion,
-				      type : mtype,
-				      size : Math.round(md.size / 1000)
-				    });
+                    var mtype;
+                    var displayName = md.displayNane;
+                    totalSize+=md.size;
+                    // Leave out only libitems
+                    switch (md.type) {
+                    case "LIB_ITEM":
+                    case "TRIAL":
+                      // Skip
+                      continue;
+                    case "LIBRARY":
+                    case "BASE":
+                    case "CASING":
+                      mtype = this.i18n._("System Component");
+                      break;
+                    case "NODE":
+                    case "SERVICE":
+                      mtype = this.i18n._("Product");
+                      break;
+                    case "UNKNOWN":
+                      mtype = this.i18n._("System Component");
+                      break;
+                    }
+                    if (displayName == null) {
+                    if (md.shortDescription != null)
+                        displayName = md.shortDescription;
+                    else
+                        displayName = md.name;
+                    } 
+                    if (displayName != null) {
+                    displayName = displayName.replace("Untangle",main.getOemManager().getOemName());
+                    }
+                    somethingVisibleAdded = true;
+                    upgradeData.push({
+                      image : "image?name=" + md.name,
+                      name : md.name,
+                      displayName : displayName,
+                      availableVersion : md.availableVersion,
+                      type : mtype,
+                      size : Math.round(md.size / 1000)
+                    });
                                 }
                                 if (!somethingVisibleAdded) {
                                     upgradeData.push({
@@ -172,7 +172,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         return "<img src='" + value + "'/>";
                     }
                 }, {
-                	id: 'displayName',
+                    id: 'displayName',
                     header : this.i18n._("name"),
                     width : 190,
                     sortable : true,
@@ -226,7 +226,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             upgradeTime.setTime(0);
             upgradeTime.setHours(this.getUpgradeSettings().period.hour);
             upgradeTime.setMinutes(this.getUpgradeSettings().period.minute);
-        	
+            
             this.getUpgradeSettings().period.hour + ":" + this.getUpgradeSettings().period.minute
             this.panelSetup = new Ext.Panel({
                 // private fields
