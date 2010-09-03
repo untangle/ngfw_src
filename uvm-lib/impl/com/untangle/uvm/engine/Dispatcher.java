@@ -23,6 +23,7 @@ import gnu.trove.TIntArrayList;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Level;
@@ -630,8 +631,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         return idlist.toNativeArray();
     }
 
-    private static final IPSessionDesc[] SESSION_DESC_ARRAY_PROTO
-        = new IPSessionDesc[0];
+    private static final IPSessionDesc[] SESSION_DESC_ARRAY_PROTO = new IPSessionDesc[0];
 
     IPSessionDesc[] liveSessionDescs()
     {
@@ -644,6 +644,17 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         return l.toArray(SESSION_DESC_ARRAY_PROTO);
     }
 
+    List<IPSession> liveSessions()
+    {
+        LinkedList<IPSession> sessions = new LinkedList<IPSession>();
+        
+        for (Iterator<IPSession> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
+            sessions.add(i.next());
+        }
+
+        return sessions;
+    }
+    
     // This one is used to dump to our own log, including internal
     // session state.
     void dumpSessions()

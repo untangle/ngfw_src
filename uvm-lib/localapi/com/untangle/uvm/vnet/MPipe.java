@@ -33,6 +33,8 @@
 
 package com.untangle.uvm.vnet;
 
+import java.util.List;
+
 import com.untangle.uvm.node.Node;
 
 
@@ -48,8 +50,8 @@ import com.untangle.uvm.node.Node;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public interface MPipe {
-
+public interface MPipe
+{
     /**
      * Deactivates an active MetaPipe and disconnects it from argon.
      * This kills all sessions and threads, and keeps any new sessions
@@ -66,16 +68,12 @@ public interface MPipe {
 
     IPSessionDesc[] liveSessionDescs();
 
+    List<IPSession> liveSessions();
+    
     void dumpSessions();
 
     Node node();
 
-    // disconnect?
-    // void closeClientChannel(TCPSession session);
-    // void closeServerChannel(TCPSession session);
-
-    // void scheduleTimer(IPSessionImpl session, long delay);
-    // void cancelTimer(IPSessionImpl session);
 }
 
 

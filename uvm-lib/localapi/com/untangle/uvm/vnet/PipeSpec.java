@@ -34,6 +34,7 @@
 package com.untangle.uvm.vnet;
 
 import java.util.Set;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import com.untangle.uvm.node.Node;
@@ -108,6 +109,7 @@ public abstract class PipeSpec
     public abstract void connectMPipe();
     public abstract void disconnectMPipe();
     public abstract void dumpSessions();
+    public abstract List<IPSession> liveSessions();
     public abstract IPSessionDesc[] liveSessionDescs();
 
     // accessors --------------------------------------------------------------

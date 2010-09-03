@@ -83,27 +83,6 @@ public abstract class AbstractNode extends NodeBase
 
     // Node methods ------------------------------------------------------
 
-    public Object getSnmpValue(int id)
-    {
-        switch (id) {
-        case 1:
-            return getNodeDesc().getMackageDesc().getName();
-        default:
-            logger.warn("unknown snmp id: " + id);
-            return null;
-        }
-    }
-
-    public Object getSnmpCustomValue(int id)
-    {
-        switch (id) {
-        default:
-            logger.warn("unknown snmp id: " + id);
-            return null;
-        }
-    }
-
-
     public void dumpSessions()
     {
         for (PipeSpec ps : pipeSpecs) {
@@ -127,5 +106,20 @@ public abstract class AbstractNode extends NodeBase
         }
 
         return sds.toArray(new IPSessionDesc[sds.size()]);
+    }
+
+    public List<IPSession> liveSessions()
+    {
+        List<IPSession> sessions = new LinkedList<IPSession>();
+
+        if (null != pipeSpecs) {
+            for (PipeSpec ps : pipeSpecs) {
+                for (IPSession sess : ps.liveSessions()) {
+                    sessions.add(sess);
+                }
+            }
+        }
+
+        return sessions;
     }
 }

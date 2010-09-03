@@ -33,6 +33,8 @@
 
 package com.untangle.uvm.node;
 
+import java.util.List;
+
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.vnet.IPSessionDesc;
 
@@ -98,9 +100,6 @@ public interface Node
     NodeDesc getNodeDesc();
 
     IPSessionDesc[] liveSessionDescs();
-
-    Object getSnmpValue(int id);
-    Object getSnmpCustomValue(int id);
 
     /**
      * <code>dumpSessions</code> dumps the session descriptions in

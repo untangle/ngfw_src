@@ -185,6 +185,16 @@ public class CasingPipeSpec extends PipeSpec
         return l.toArray(new IPSessionDesc[l.size()]);
     }
 
+    @Override
+    public List<IPSession> liveSessions()
+    {
+        if (null != insideMPipe) {
+            return insideMPipe.liveSessions();
+        } else {
+            return null;
+        }
+    }
+    
     // static initialization --------------------------------------------------
 
     static {

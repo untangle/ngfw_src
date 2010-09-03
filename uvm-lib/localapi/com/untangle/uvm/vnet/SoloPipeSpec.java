@@ -34,12 +34,14 @@
 package com.untangle.uvm.vnet;
 
 import java.util.Set;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.Node;
+import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 
 /**
@@ -187,6 +189,16 @@ public class SoloPipeSpec extends PipeSpec
         }
     }
 
+    @Override
+    public List<IPSession> liveSessions()
+    {
+        if (null != mPipe) {
+            return mPipe.liveSessions();
+        } else {
+            return null;
+        }
+    }
+    
     // Object methods ---------------------------------------------------------
 
     @Override
@@ -198,8 +210,7 @@ public class SoloPipeSpec extends PipeSpec
     // static initialization --------------------------------------------------
 
     static {
-        LocalUvmContext mlc = LocalUvmContextFactory.context();
-        MPIPE_MANAGER = mlc.mPipeManager();
-        FOUNDRY = mlc.pipelineFoundry();
+        MPIPE_MANAGER = LocalUvmContextFactory.context().mPipeManager();
+        FOUNDRY = LocalUvmContextFactory.context().pipelineFoundry();
     }
 }

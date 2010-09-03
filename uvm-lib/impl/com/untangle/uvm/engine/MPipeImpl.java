@@ -19,6 +19,7 @@
 package com.untangle.uvm.engine;
 
 import org.apache.log4j.Logger;
+import java.util.List;
 
 import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.argon.ArgonAgentImpl;
@@ -32,6 +33,7 @@ import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.UDPSession;
+import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 
 /**
@@ -46,11 +48,8 @@ class MPipeImpl implements MPipe
 {
     protected ArgonAgent argon;
 
-    // Our owner/manager/factory
-    private final MPipeManagerImpl xm;
+    private final MPipeManagerImpl xm;    // Our owner/manager/factory
     private final PipeSpec pipeSpec;
-
-    // private SessionFactory sessFact;
 
     private boolean lastSessionWriteFailed = false;
     private long lastSessionWriteTime;
@@ -60,9 +59,6 @@ class MPipeImpl implements MPipe
     private final Node node;
     private final SessionEventListener listener;
 
-    // This is the original connection point.  We use it for reconnection.
-    // private InetSocketAddress socketAddress;
-
     private final Logger logger;
     private final Logger sessionLogger;
     private final Logger sessionEventLogger;
@@ -71,19 +67,16 @@ class MPipeImpl implements MPipe
 
     // public construction is the easiest solution to access from
     // MPipeManager for now.
-    public MPipeImpl(MPipeManagerImpl xm, PipeSpec pipeSpec,
-                     SessionEventListener listener)
+    public MPipeImpl(MPipeManagerImpl xm, PipeSpec pipeSpec, SessionEventListener listener)
     {
         this.xm = xm;
         this.node = pipeSpec.getNode();
-
 
         this.listener = listener;
         this.pipeSpec = pipeSpec;
 
         logger = Logger.getLogger(MPipe.class);
         sessionLogger = Logger.getLogger(Session.class);
-        // XXX
         sessionEventLogger = Logger.getLogger("com.untangle.uvm.vnet.SessionEvent");
         sessionLoggerTCP = Logger.getLogger(TCPSession.class);
         sessionLoggerUDP = Logger.getLogger(UDPSession.class);
@@ -96,18 +89,7 @@ class MPipeImpl implements MPipe
             logger.error("Exception plumbing MPipe", x);
             destroy();
         }
-        // sessFact = new SessionFactoryImpl(this);
     }
-
-    /*
-      public void finalize()
-      {
-      if (comwbuf != null) {
-      bufPool.release(comwbuf);
-      comwbuf = null;
-      }
-      }
-    */
 
     public PipeSpec getPipeSpec()
     {
@@ -116,7 +98,6 @@ class MPipeImpl implements MPipe
 
     public Node node()
     {
-        // return argon.node();
         return node;
     }
 
@@ -180,6 +161,14 @@ class MPipeImpl implements MPipe
             disp.dumpSessions();
     }
 
+    public List<IPSession> liveSessions()
+    {
+        if (disp != null)
+            return disp.liveSessions();
+        else
+            return null;
+    }
+    
     public void lastSessionWriteFailed(boolean failed)
     {
         lastSessionWriteFailed = failed;
@@ -197,8 +186,7 @@ class MPipeImpl implements MPipe
         return lastSessionWriteTime;
     }
 
-    private void start()
-        throws MPipeException
+    private void start() throws MPipeException
     {
         if (isRunning())
             throw new MPipeException(this, "Attempt to start a MPipe that is already running");
@@ -208,14 +196,6 @@ class MPipeImpl implements MPipe
             disp.setSessionEventListener(listener);
         /* start event loop */
         disp.start();
-
-        /* send load cmd */
-        /*
-          NodeDesc tDesc = nodeDesc();
-          String name = tDesc.name();
-          String signature = Base64.encodeBytes(tDesc.publicKey());
-          int position = tDesc.position();
-        */
 
         argon = new ArgonAgentImpl(pipeSpec.getName(), disp); // Also sets new session listener to dispatcher
     }
@@ -250,23 +230,6 @@ class MPipeImpl implements MPipe
 
         xm.destroyed(this);
     }
-
-    /*
-      public void scheduleTimer(IPSessionImpl session, long delay)
-      {
-      if (disp == null)
-      throw new IllegalStateException("MPipe has not been started");
-      disp.scheduleTimer(session, delay);
-      }
-
-      public void cancelTimer(IPSessionImpl session)
-      {
-      if (disp != null)
-      disp.cancelTimer(session);
-      }
-    */
-
-    // Object methods ---------------------------------------------------------
 
     public String toString()
     {

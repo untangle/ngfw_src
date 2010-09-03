@@ -139,20 +139,6 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     // WebFilter methods ------------------------------------------------------
 
-    public Object getSnmpCustomValue(int id)
-    {
-        switch (id) {
-        case 7: // scan
-            return scanBlinger.getCount();
-        case 8: // block
-            return blockBlinger.getCount();
-        case 9: // pass
-            return passBlinger.getCount();
-        default:
-            return super.getSnmpCustomValue(id);
-        }
-    }
-
     public WebFilterSettings getWebFilterSettings()
     {
         if (settings == null)
