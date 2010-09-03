@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import org.apache.log4j.Logger;
 
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.MarshallException;
@@ -24,6 +25,7 @@ import com.untangle.uvm.SettingsManager;
 
 public class SettingsManagerImpl implements SettingsManager
 {
+    private final Logger logger = Logger.getLogger(getClass());
 
     /**
      * Valid characters for settings file names
@@ -160,6 +162,8 @@ public class SettingsManagerImpl implements SettingsManager
                     jsonString.append(buffer);
                 }
 
+                logger.debug("Loading Settings: \n" + jsonString);
+
                 return (T) serializer.fromJSON(jsonString.toString());
 
             } catch (IOException e) {
@@ -205,6 +209,8 @@ public class SettingsManagerImpl implements SettingsManager
 
                 fileWriter = new FileWriter(output);
                 String json = this.serializer.toJSON(value);
+                logger.debug("Saving Settings: \n" + json);
+
                 fileWriter.write(json);
                 fileWriter.close();
                 fileWriter = null;

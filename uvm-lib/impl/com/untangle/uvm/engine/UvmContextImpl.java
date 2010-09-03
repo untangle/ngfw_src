@@ -727,6 +727,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         this.benchmarkManager = new LocalBenchmarkManagerImpl();
         
         JSONSerializer serializer = new JSONSerializer();
+        serializer.setFixupDuplicates(false);
         try {
             ServletUtils.getInstance().registerSerializers(serializer);
             settingsManager.setSerializer(serializer);
