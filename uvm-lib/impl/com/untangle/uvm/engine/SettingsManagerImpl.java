@@ -295,7 +295,7 @@ public class SettingsManagerImpl implements SettingsManager
 
         //String versionString = String.valueOf(System.currentTimeMillis()) + "-" + DATE_FORMATTER.format(new Date());
         String versionString = String.valueOf(DATE_FORMATTER.format(new Date()));
-        return new File(this.basePath + s + packageName + s /* + clzName */ + s + query + "-version-" + versionString + ".js");
+        return new File(this.basePath + s + packageName + s /* + clzName */ + s + query + ".js" + "-version-" + versionString + ".js");
     }
 
     /**

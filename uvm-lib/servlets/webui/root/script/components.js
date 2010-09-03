@@ -4133,6 +4133,14 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         var records = this.store.getRange();
         for (var i = 0; i < records.length; i++) {
             var record = records[i].data;
+            var id = records[i].get("id");
+            if (id != null && id >= 0) {
+                var d = this.changedData[id];
+                if (d && d.op == "deleted") {
+                    continue;
+                }
+            }
+
             record["javaClass"] = this.recordJavaClass;
             datar.push(records[i].data);
         }
