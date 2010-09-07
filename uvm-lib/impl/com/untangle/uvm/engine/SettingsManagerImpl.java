@@ -196,9 +196,15 @@ public class SettingsManagerImpl implements SettingsManager
          * modify the same file at the same time
          */
         synchronized (lock) {
-            if (output.exists()) {
-                throw new SettingsException("Output file '" + output.toString() + "'already exists!");
-            }
+            /**
+             * If the file exists just overwrite it.
+             * The old settings won't be saved but they were around for less than 60 seconds anyway
+             */
+            /**
+             *  if (output.exists()) {
+             *  throw new SettingsException("Output file '" + output.toString() + "'already exists!");
+             * }
+             */
 
             FileWriter fileWriter = null;
             try {
@@ -226,13 +232,14 @@ public class SettingsManagerImpl implements SettingsManager
                 Process process = UvmContextImpl.context().exec(cmdArray);
                 int exitCode = process.waitFor();
                 String line = null;
-                BufferedReader tmp = new BufferedReader(new InputStreamReader(
-                        process.getInputStream()));
+                BufferedReader tmp = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                
                 while ((line = tmp.readLine()) != null) {
                     System.out.println("out: " + line);
                 }
-                tmp = new BufferedReader(new InputStreamReader(process
-                        .getInputStream()));
+
+                tmp = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                
                 while ((line = tmp.readLine()) != null) {
                     System.out.println("err: " + line);
                 }
