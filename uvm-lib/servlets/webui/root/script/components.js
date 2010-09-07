@@ -235,14 +235,14 @@ Ung.Util= {
                 }
 
                 /* build better message for specific errors */
-                if (exception.name == "com.untangle.uvm.toolbox.MackageInstallException" && (exception.message.indexOf("ut-apt exited with") >= 0)) {
+                if (exception.name == "com.untangle.uvm.toolbox.MackageInstallException" && (exception.message.indexOf("exited with") >= 0)) {
                     message =  i18n._("Unable to contact app store") + ":<br/>";
                     message += i18n._("An error has occured: ") + exception.message + "<br/>";
                     message += i18n._("<br/>");
                     message += i18n._("Check internet connectivity and network settings.");
                     message += i18n._("Check that the server is fully up to date.");
                 }
-                if (exception.name == "com.untangle.uvm.toolbox.MackageException" && (exception.message.indexOf("ut-apt timed out") >= 0)) {
+                if (exception.name == "com.untangle.uvm.toolbox.MackageException" && (exception.message.indexOf("timed out") >= 0)) {
                     message =  i18n._("Unable to contact app store") + ":<br/>";
                     message += i18n._("Connection timed out") + "<br/>";
                     message += i18n._("<br/>");
