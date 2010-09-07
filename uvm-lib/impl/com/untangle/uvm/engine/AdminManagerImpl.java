@@ -388,23 +388,29 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
         }
     }
     
-    public static String getFullVersionAndRevision()
+    public String getFullVersionAndRevision()
     {
-	try {
-	    SimpleExec.SimpleExecResult result = SimpleExec.exec(
-								 "/usr/share/untangle/bin/version_newest.sh",
-								 null,
-								 null,
-								 null,
-								 true,
-								 true,
-								 1000*20);
+        try {
+            SimpleExec.SimpleExecResult result = SimpleExec.exec("/usr/share/untangle/bin/version_newest.sh",
+                                                                 null,
+                                                                 null,
+                                                                 null,
+                                                                 true,
+                                                                 true,
+                                                                 1000*20);
 	    
-	    if(result.exitCode==0) {
-		return new String(result.stdOut);
-	    }
-	} catch (Exception e) { }
-	return "";
+            if(result.exitCode==0) {
+                return new String(result.stdOut);
+            }
+        } catch (Exception e) {
+            logger.warn("Unable to fetch version",e);
+        }
+
+        /**
+         * that method probably timed out
+         * fall back to this method
+         */
+        return uvmContext.getFullVersion();
     }
 
     public SystemInfo getSystemInfo()

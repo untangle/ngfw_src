@@ -44,7 +44,8 @@ import java.io.InputStreamReader;
  * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
  * @version 1.0
  */
-public class Version {
+public class Version
+{
     /**
      * Get the public version number.
      *

@@ -65,27 +65,33 @@ public class SystemInfo implements Serializable
         this.javaVersion = javaVersion;
     }
 
-    public String getActivationKey() {
+    public String getActivationKey()
+    {
         return activationKey;
     }
 
-    public void setActivationKey(String activationKey) {
+    public void setActivationKey(String activationKey)
+    {
         this.activationKey = activationKey;
     }
 
-    public String getFullVersion() {
+    public String getFullVersion()
+    {
         return fullVersion;
     }
 
-    public void setFullVersion(String fullVersion) {
+    public void setFullVersion(String fullVersion)
+    {
         this.fullVersion = fullVersion;
     }
 
-    public String getJavaVersion() {
+    public String getJavaVersion()
+    {
         return javaVersion;
     }
 
-    public void setJavaVersion(String javaVersion) {
+    public void setJavaVersion(String javaVersion)
+    {
         this.javaVersion = javaVersion;
     }
 }
