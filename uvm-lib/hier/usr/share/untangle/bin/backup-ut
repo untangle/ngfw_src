@@ -8,15 +8,12 @@ tar_files()
 
     [ -x  /usr/share/untangle-net-alpaca/scripts/backup ] && /usr/share/untangle-net-alpaca/scripts/backup /usr/share/untangle/conf/alpaca-backup.uab "UVM Backup"
 
-    # FIXME XXX
-    [ -x  /usr/share/untangle-nas/scripts/backup ] && /usr/share/untangle-nas/scripts/backup /usr/share/untangle/conf/nas-backup.uab "UVM Backup"
-
     tar zcf $tarfile --ignore-failed-read -C / \
         etc/hostname \
         etc/network/interfaces \
         etc/openvpn \
         etc/resolv.conf \
-	etc/apache2/ssl \
+        etc/apache2/ssl \
         usr/share/untangle/conf/argon.properties \
         usr/share/untangle/conf/keystore \
         usr/share/untangle/conf/uvm.networking.properties \
@@ -25,7 +22,7 @@ tar_files()
         usr/share/untangle/conf/openvpn/pki \
         usr/share/untangle/conf/dirbackup.ldif \
         usr/share/untangle/conf/alpaca-backup.uab \
-        usr/share/untangle/conf/nas-backup.uab \
+        usr/share/untangle/settings \
 
     # Tar exits with non-zero when some files don't exist, which can happen.
     return 0

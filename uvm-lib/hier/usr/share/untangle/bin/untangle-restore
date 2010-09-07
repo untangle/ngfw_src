@@ -139,9 +139,6 @@ EOF
 # Restore the network settings
 [ -x /usr/share/untangle-net-alpaca/scripts/restore -a -f /usr/share/untangle/conf/alpaca-backup.uab ] && /usr/share/untangle-net-alpaca/scripts/restore /usr/share/untangle/conf/alpaca-backup.uab
 
-# Restore the NAS settings
-[ -x /usr/share/untangle-nas/scripts/restore -a -f /usr/share/untangle/conf/nas-backup.uab ] && /usr/share/untangle-nas/scripts/restore /usr/share/untangle/conf/nas-backup.uab
-
 # try again just in case these network settings are "better" than the previous
 restore_packages $instfile
 

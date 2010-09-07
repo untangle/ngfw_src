@@ -19,9 +19,6 @@ pg_dump -U postgres -n settings uvm | gzip > $outdir/uvmdb-$datestamp.gz
 ## Run the script to backup the alpaca
 [ -x  /usr/share/untangle-net-alpaca/scripts/backup ] && /usr/share/untangle-net-alpaca/scripts/backup @PREFIX@/usr/share/untangle/conf/alpaca-backup.uab "UVM Backup"
 
-# FIXME XXX
-[ -x  /usr/share/untangle-nas/scripts/backup ] && /usr/share/untangle-nas/scripts/backup @PREFIX@/usr/share/untangle/conf/nas-backup.uab "UVM Backup"
-
 tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
     etc/hostname \
     etc/network/interfaces \
