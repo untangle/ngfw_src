@@ -178,12 +178,10 @@ public abstract class Blacklist
     {
         URI uri = null;
         try {
-            uri = new URI(requestLine.getRequestUri().normalize().toString().replaceAll("/+", "/"));
+            uri = new URI(requestLine.getRequestUri().normalize().toString().replaceAll("(?<!:)/+", "/"));
         } catch (URISyntaxException e) {
             logger.fatal("Could not parse URI '" + uri + "'");
         }
-
-        String description;
 
         String path = uri.getPath();
         path = null == path ? "" : uri.getPath().toLowerCase();
@@ -197,10 +195,18 @@ public abstract class Blacklist
         }
         host = normalizeHostname(host);
 
+        // depending on the context, the uri can be either a full hierarchical
+        // one, or just the path relative to the host.
+        try {
+            uri = new URI(uri.getPath());
+        } catch(Exception e) {
+            logger.fatal("Couldn't parse URI for " + uri.getPath());
+        }
+
         logger.debug("checkRequest: " + host + uri);
 
         // check client IP address pass list
-        description = isClientPassListed(clientIp);
+        String description = isClientPassListed(clientIp);
         if (null != description) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Action.PASS, Reason.PASS_CLIENT,description, node.getVendor());
             logger.info(hbe);
