@@ -239,6 +239,7 @@ Ung.Util= {
                     message =  i18n._("Unable to contact app store") + ":<br/>";
                     message += i18n._("An error has occured: ") + exception.message + "<br/>";
                     message += i18n._("<br/>");
+                    message += i18n._("The server is unable to properly communicate with the app store.");
                     message += i18n._("Check internet connectivity and network settings.");
                     message += i18n._("Check that the server is fully up to date.");
                 }
@@ -4127,7 +4128,12 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             }.createDelegate(this), this, cd);
         }
     },
+    // Get the save list from the changed data
+    getSaveList : function() {
+        return Ung.Util.getSaveList(this.changedData, this.recordJavaClass);
+    },
     // Get the full list of all data
+    // XXX is this the same as getFullSaveList?
     getList : function() {
         var datar = [];
         var records = this.store.getRange();
@@ -4147,10 +4153,6 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
         return datar;
     },
-    // Get the save list from the changed data
-    getSaveList : function() {
-        return Ung.Util.getSaveList(this.changedData, this.recordJavaClass);
-    },
     // Get the entire list
     // for the unpaginated grids, that send all the records on save
     getFullSaveList : function() {
@@ -4162,7 +4164,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 var d = this.changedData[id];
                 if (d) {
                     if (d.op == "deleted") {
-                        continue
+                        continue;
                     }
                 }
             }
@@ -4171,9 +4173,9 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             }
             var recData=Ext.decode(Ext.encode(records[i].data));
             if(recData.id<0) {
-                delete recData.id
+                delete recData.id;
             }
-            list.push(recData)
+            list.push(recData);
         }
 
         return list;
