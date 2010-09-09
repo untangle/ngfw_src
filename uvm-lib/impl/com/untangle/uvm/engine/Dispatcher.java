@@ -632,9 +632,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         return idlist.toNativeArray();
     }
 
-    private static final IPSessionDesc[] SESSION_DESC_ARRAY_PROTO = new IPSessionDesc[0];
-
-    IPSessionDesc[] liveSessionDescs()
+    List<IPSessionDesc> liveSessionDescs()
     {
         List<IPSessionDesc> l = new ArrayList<IPSessionDesc>(liveSessions.size());
         for (Iterator<IPSession> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
@@ -642,7 +640,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             l.add(sess.makeDesc());
         }
 
-        return l.toArray(SESSION_DESC_ARRAY_PROTO);
+        return l;
     }
 
     List<IPSession> liveSessions()

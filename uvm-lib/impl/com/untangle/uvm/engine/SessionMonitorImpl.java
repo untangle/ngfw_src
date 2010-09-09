@@ -51,8 +51,7 @@ class SessionMonitorImpl
 
         NodeContext nodeContext = nodeManager.nodeContext(id);
 
-        return Arrays.asList(nodeContext.liveSessionDescs());
-        //for (NodeId tid : tm.nodeInstances()) {
+        return nodeContext.liveSessionDescs();
     }
 
 

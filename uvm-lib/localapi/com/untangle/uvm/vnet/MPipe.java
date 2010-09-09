@@ -66,7 +66,7 @@ public interface MPipe
 
     int[] liveSessionIds();
 
-    IPSessionDesc[] liveSessionDescs();
+    List<IPSessionDesc> liveSessionDescs();
 
     List<IPSession> liveSessions();
     

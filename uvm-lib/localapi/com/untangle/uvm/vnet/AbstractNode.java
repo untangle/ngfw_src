@@ -90,22 +90,19 @@ public abstract class AbstractNode extends NodeBase
         }
     }
 
-    public IPSessionDesc[] liveSessionDescs()
+    public List<IPSessionDesc> liveSessionDescs()
     {
-        // XXX Might want to merge these together to get one
-        // list. (merge since byte count incorrect on inside of
-        // casing)
-        List<IPSessionDesc> sds = new LinkedList<IPSessionDesc>();
+        List<IPSessionDesc> sessList = new LinkedList<IPSessionDesc>();
 
         if (null != pipeSpecs) {
             for (PipeSpec ps : pipeSpecs) {
                 for (IPSessionDesc isd : ps.liveSessionDescs()) {
-                    sds.add(isd);
+                    sessList.add(isd);
                 }
             }
         }
 
-        return sds.toArray(new IPSessionDesc[sds.size()]);
+        return sessList;
     }
 
     public List<IPSession> liveSessions()

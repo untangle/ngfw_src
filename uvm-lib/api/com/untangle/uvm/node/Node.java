@@ -99,7 +99,7 @@ public interface Node
 
     NodeDesc getNodeDesc();
 
-    IPSessionDesc[] liveSessionDescs();
+    List<IPSessionDesc> liveSessionDescs();
 
     /**
      * <code>dumpSessions</code> dumps the session descriptions in

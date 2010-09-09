@@ -167,7 +167,7 @@ public class CasingPipeSpec extends PipeSpec
     }
 
     @Override
-    public IPSessionDesc[] liveSessionDescs()
+    public List<IPSessionDesc> liveSessionDescs()
     {
         List<IPSessionDesc> l = new ArrayList<IPSessionDesc>();
         if (null != insideMPipe) {
@@ -182,7 +182,7 @@ public class CasingPipeSpec extends PipeSpec
             }
         }
 
-        return l.toArray(new IPSessionDesc[l.size()]);
+        return l;
     }
 
     @Override

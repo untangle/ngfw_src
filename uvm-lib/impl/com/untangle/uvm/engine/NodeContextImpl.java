@@ -259,7 +259,7 @@ class NodeContextImpl implements NodeContext
 
     // node call-through methods -----------------------------------------
 
-    public IPSessionDesc[] liveSessionDescs()
+    public List<IPSessionDesc> liveSessionDescs()
     {
         return node.liveSessionDescs();
     }

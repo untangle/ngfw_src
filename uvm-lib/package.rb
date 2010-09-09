@@ -95,9 +95,6 @@ deps = FileList["#{BuildEnv::downloads}/Ajax/jars/*jar"].exclude(/.*servlet-api.
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.blockpage.jsp',
                    "./uvm-lib/servlets/blockpage", deps, [], [])
 
-# ServletBuilder.new(uvm_lib, 'com.untangle.uvm.sessiondumper.jsp',
-#                    "./uvm-lib/servlets/session-dumper")
-
 BuildEnv::SRC.installTarget.install_jars(jts, "#{uvm_lib.distDirectory}/usr/share/untangle/lib",
                                         nil, false, true)
 

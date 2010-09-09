@@ -35,6 +35,7 @@ package com.untangle.uvm.vnet;
 
 import java.util.Set;
 import java.util.List;
+import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
@@ -180,12 +181,12 @@ public class SoloPipeSpec extends PipeSpec
     }
 
     @Override
-    public IPSessionDesc[] liveSessionDescs()
+    public List<IPSessionDesc> liveSessionDescs()
     {
         if (null != mPipe) {
             return mPipe.liveSessionDescs();
         } else {
-            return new IPSessionDesc[0];
+            return new LinkedList<IPSessionDesc>;
         }
     }
 

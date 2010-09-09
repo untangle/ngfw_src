@@ -34,6 +34,7 @@
 package com.untangle.uvm.node;
 
 import java.io.InputStream;
+import java.util.List;
 
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.toolbox.MackageDesc;
@@ -102,7 +103,7 @@ public interface NodeContext
 
     // call-through methods ---------------------------------------------------
 
-    IPSessionDesc[] liveSessionDescs();
+    List<IPSessionDesc> liveSessionDescs();
 
     NodeState getRunState();
 }

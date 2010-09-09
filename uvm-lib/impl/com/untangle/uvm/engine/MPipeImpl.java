@@ -20,6 +20,7 @@ package com.untangle.uvm.engine;
 
 import org.apache.log4j.Logger;
 import java.util.List;
+import java.util.LinkedList;
 
 import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.argon.ArgonAgentImpl;
@@ -148,10 +149,10 @@ class MPipeImpl implements MPipe
         return disp.liveSessionIds();
     }
 
-    public IPSessionDesc[] liveSessionDescs()
+    public List<IPSessionDesc> liveSessionDescs()
     {
         if (disp == null)
-            return new IPSessionDesc[0];
+            return new LinkedList<IPSessionDesc>();
         return disp.liveSessionDescs();
     }
 

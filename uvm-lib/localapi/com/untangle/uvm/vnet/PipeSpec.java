@@ -110,7 +110,7 @@ public abstract class PipeSpec
     public abstract void disconnectMPipe();
     public abstract void dumpSessions();
     public abstract List<IPSession> liveSessions();
-    public abstract IPSessionDesc[] liveSessionDescs();
+    public abstract List<IPSessionDesc> liveSessionDescs();
 
     // accessors --------------------------------------------------------------
 
