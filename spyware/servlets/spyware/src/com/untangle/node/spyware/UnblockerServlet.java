@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.security.NodeId;
-import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
 
 @SuppressWarnings("serial")
@@ -45,7 +45,7 @@ public class UnblockerServlet extends HttpServlet
         boolean global = Boolean.parseBoolean(req.getParameter("global"));
 
         try {
-            LocalNodeManager tman = LocalUvmContextFactory.context().localNodeManager();
+            NodeManager tman = LocalUvmContextFactory.context().nodeManager();
             NodeId tid = new NodeId(Long.parseLong(tidStr));
             NodeContext tctx = tman.nodeContext(tid);
             Spyware tran = (Spyware)tctx.node();

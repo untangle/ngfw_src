@@ -1,5 +1,5 @@
 /*
- * $HeadURL$
+ * $HeadURL: svn://chef/work/src/uvm-lib/localapi/com/untangle/uvm/node/NodeManager.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@ import com.untangle.uvm.security.NodeId;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface LocalNodeManager
+public interface NodeManager
 {
     /**
      * Get <code>NodeId</code>s of nodes in the pipeline.
@@ -121,8 +121,7 @@ public interface LocalNodeManager
      * @return the <code>tid</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
-    NodeDesc instantiate(String name, Policy policy, String[] args)
-        throws DeployException;
+    NodeDesc instantiate(String name, Policy policy, String[] args) throws DeployException;
 
     /**
      * Create a new node instance under the default policy, or in

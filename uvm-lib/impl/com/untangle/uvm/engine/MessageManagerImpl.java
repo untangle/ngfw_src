@@ -51,7 +51,7 @@ import com.untangle.uvm.message.MessageQueue;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.message.StatInterval;
 import com.untangle.uvm.message.Stats;
-import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.util.Pulse;
@@ -126,7 +126,7 @@ class MessageManagerImpl implements LocalMessageManager
 
     public MessageQueue getMessageQueue(Integer key)
     {
-        LocalNodeManager lm = UvmContextImpl.getInstance().localNodeManager();
+        NodeManager lm = UvmContextImpl.getInstance().nodeManager();
         List<NodeId> tids = lm.nodeInstances();
         tids.add(new NodeId(0L));
         Map<NodeId, Stats> stats = getStats(lm, tids);
@@ -136,7 +136,7 @@ class MessageManagerImpl implements LocalMessageManager
 
     public MessageQueue getMessageQueue(Integer key, Policy p)
     {
-        LocalNodeManager lm = UvmContextImpl.getInstance().localNodeManager();
+        NodeManager lm = UvmContextImpl.getInstance().nodeManager();
         List<NodeId> tids = lm.nodeInstances(p);
         /* Add in the nodes with the null policy */
         tids.addAll( lm.nodeInstances((Policy)null));
@@ -379,7 +379,7 @@ class MessageManagerImpl implements LocalMessageManager
 
     // private methods --------------------------------------------------------
 
-    private Map<NodeId, Stats> getStats(LocalNodeManager lm, List<NodeId> tids)
+    private Map<NodeId, Stats> getStats(NodeManager lm, List<NodeId> tids)
     {
         Map<NodeId, Stats> stats = new HashMap<NodeId, Stats>(tids.size());
 

@@ -154,7 +154,7 @@ abstract class ArgonHook implements Runnable
             serverSide = clientSide;
 
             /* lookup the user information */
-            LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().localNodeManager().node("untangle-node-adconnector");
+            LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
             if (adconnector != null) {
                 String username = adconnector.getPhoneBook().tryLookupUser( clientSide.clientAddr() );
                 if (username != null && username.length() > 0 ) { 

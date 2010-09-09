@@ -50,6 +50,7 @@ import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.util.SessionUtil;
@@ -108,7 +109,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     private final MPipeImpl mPipe;
     private final Node node;
     private final NodeContext nodeContext;
-    private final NodeManagerImpl nodeManager;
+    private final NodeManager nodeManager;
 
     private final LoadCounter udpLiveSessionCounter;
     private final LoadCounter tcpLiveSessionCounter;
@@ -190,7 +191,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         this.mPipe = mPipe;
         this.node = mPipe.node();
         this.nodeContext = mPipe.node().getNodeContext();
-        this.nodeManager = UvmContextImpl.getInstance().localNodeManager();
+        this.nodeManager = UvmContextImpl.getInstance().nodeManager();
         sessionEventListener = null;
         NodeDesc td = node.getNodeDesc();
         String tidn = td.getTid().getName();

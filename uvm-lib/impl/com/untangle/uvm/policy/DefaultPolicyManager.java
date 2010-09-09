@@ -32,7 +32,7 @@ import com.untangle.uvm.UvmException;
 import com.untangle.uvm.license.LicenseStatus;
 import com.untangle.uvm.license.ProductIdentifier;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
-import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.security.NodeId;
@@ -186,7 +186,7 @@ class DefaultPolicyManager implements LocalPolicyManager
         PolicyConfiguration result = new PolicyConfiguration(pl, cUserRules);
         result.setHasRackManagement(false);
         
-        LocalNodeManager nodeManager = LocalUvmContextFactory.context().localNodeManager();
+        NodeManager nodeManager = LocalUvmContextFactory.context().nodeManager();
         List<NodeId> l = nodeManager.nodeInstances( "untangle-node-adconnector" );
         result.setHasUserManagement(false);
         
@@ -373,7 +373,7 @@ class DefaultPolicyManager implements LocalPolicyManager
     void updateEngines()
     {
         /* At startup, these can be null */
-        LocalNodeManager nodeManager = LocalUvmContextFactory.context().localNodeManager();
+        NodeManager nodeManager = LocalUvmContextFactory.context().nodeManager();
         if ( nodeManager != null ) {
             nodeManager.flushNodeStateCache();
         }

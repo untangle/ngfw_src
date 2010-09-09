@@ -49,7 +49,7 @@ import com.untangle.uvm.license.RemoteLicenseManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.node.RemoteIntfManager;
-import com.untangle.uvm.node.RemoteNodeManager;
+import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.reports.RemoteReportingManager;
 import com.untangle.uvm.security.RemoteAdminManager;
@@ -77,7 +77,7 @@ public interface RemoteUvmContext
      *
      * @return the NodeManager.
      */
-    RemoteNodeManager nodeManager();
+    NodeManager nodeManager();
 
     /**
      * Get the <code>RemoteLoggingManager</code> singleton.

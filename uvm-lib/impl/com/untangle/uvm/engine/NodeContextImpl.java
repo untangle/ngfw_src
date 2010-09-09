@@ -45,6 +45,7 @@ import com.untangle.uvm.node.NodePreferences;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.TooManyInstancesException;
 import com.untangle.uvm.node.UndeployException;
+import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.toolbox.MackageDesc;
@@ -74,7 +75,7 @@ class NodeContextImpl implements NodeContext
     private NodeBase node;
     private String mackageName;
 
-    private final NodeManagerImpl nodeManager;
+    private final NodeManager nodeManager;
     private final ToolboxManagerImpl toolboxManager;
 
     NodeContextImpl(URLClassLoader classLoader, NodeDesc tDesc, String mackageName, boolean isNew) throws DeployException
@@ -86,7 +87,7 @@ class NodeContextImpl implements NodeContext
         }
         mctx.schemaUtil().initSchema("settings", tDesc.getName());
 
-        nodeManager = mctx.localNodeManager();
+        nodeManager = mctx.nodeManager();
         toolboxManager = mctx.toolboxManager();
 
         RemoteLoggingManagerImpl lm = mctx.loggingManager();

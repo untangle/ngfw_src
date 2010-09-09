@@ -105,7 +105,7 @@ class BrandingManagerImpl implements RemoteBrandingManager
     
     private RemoteBrandingManager getBrandingManager()
     {
-        RemoteBrandingManager bnode = (RemoteBrandingManager)LocalUvmContextFactory.context().localNodeManager().node("untangle-node-branding");
+        RemoteBrandingManager bnode = (RemoteBrandingManager)LocalUvmContextFactory.context().nodeManager().node("untangle-node-branding");
         if (bnode != null && (((AbstractNode)bnode).getRunState() == NodeState.RUNNING)) {
             return bnode;
         }

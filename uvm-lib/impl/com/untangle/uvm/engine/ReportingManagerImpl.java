@@ -52,7 +52,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.reports.Application;
 import com.untangle.uvm.reports.ApplicationData;
@@ -701,7 +701,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 
     public boolean isReportingEnabled() {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        LocalNodeManager nodeManager = uvm.localNodeManager();
+        NodeManager nodeManager = uvm.nodeManager();
         List<NodeId> tids = nodeManager.nodeInstances("untangle-node-reporting");
         if(tids == null || tids.size() == 0)
             return false;

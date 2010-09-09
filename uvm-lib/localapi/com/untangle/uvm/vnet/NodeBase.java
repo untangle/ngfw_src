@@ -48,7 +48,7 @@ import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
-import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
@@ -76,7 +76,7 @@ public abstract class NodeBase implements Node
     private final NodeId tid;
     private final Set<NodeBase> parents = new HashSet<NodeBase>();
     private final Set<Node> children = new HashSet<Node>();
-    private final LocalNodeManager nodeManager;
+    private final NodeManager nodeManager;
     private final List<NodeListener> nodeListeners = new LinkedList<NodeListener>();
 
     private final Object stateChangeLock = new Object();
@@ -87,7 +87,7 @@ public abstract class NodeBase implements Node
     protected NodeBase()
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        nodeManager = uvm.localNodeManager();
+        nodeManager = uvm.nodeManager();
         nodeContext = nodeManager.threadContext();
         tid = nodeContext.getNodeId();
 
@@ -416,7 +416,7 @@ public abstract class NodeBase implements Node
                 }
             }
             
-            LocalUvmContextFactory.context().localNodeManager().flushNodeStateCache();
+            LocalUvmContextFactory.context().nodeManager().flushNodeStateCache();
             LocalUvmContextFactory.context().pipelineFoundry().clearChains();
         }
     }

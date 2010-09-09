@@ -46,6 +46,7 @@ import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.event.IPStreamer;
+import com.untangle.uvm.node.NodeManager;
 
 /**
  * Abstract base class for all IP live sessions
@@ -77,7 +78,7 @@ abstract class IPSessionImpl
 
     private final Logger timesLogger;
 
-    private final NodeManagerImpl nodeManager;
+    private final NodeManager nodeManager;
 
     protected IPSessionImpl(Dispatcher disp,
                             ArgonIPSession argonSession,
@@ -92,7 +93,7 @@ abstract class IPSessionImpl
         } else {
             timesLogger = null;
         }
-        nodeManager = UvmContextImpl.getInstance().localNodeManager();
+        nodeManager = UvmContextImpl.getInstance().nodeManager();
         logger = disp.mPipe().sessionLogger();
     }
 

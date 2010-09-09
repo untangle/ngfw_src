@@ -68,7 +68,7 @@ import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.RemoteIntfManager;
-import com.untangle.uvm.node.RemoteNodeManager;
+import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.policy.PolicyManagerFactory;
 import com.untangle.uvm.policy.RemotePolicyManager;
@@ -148,6 +148,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private SettingsManagerImpl settingsManager;
     private LocalBenchmarkManagerImpl benchmarkManager;
     private OemManagerImpl oemManager;
+    private SessionMonitorImpl sessionMonitor;
     
     private Environment bdbEnvironment;
 
@@ -238,12 +239,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return upstreamManager;
     }
 
-    public NodeManagerImpl localNodeManager()
-    {
-        return nodeManager;
-    }
-
-    public RemoteNodeManager nodeManager()
+    public NodeManager nodeManager()
     {
         return nodeManager;
     }
@@ -390,9 +386,12 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     }
 
     /* For autonumbering anonymous threads. */
-    private static class ThreadNumber {
+    private static class ThreadNumber
+    {
         private static int threadInitNumber = 1;
-        public static synchronized int nextThreadNum() {
+
+        public static synchronized int nextThreadNum()
+        {
             return threadInitNumber++;
         }
     }
@@ -725,6 +724,8 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         this.settingsManager = new SettingsManagerImpl();
         
         this.benchmarkManager = new LocalBenchmarkManagerImpl();
+
+        this.sessionMonitor = new SessionMonitorImpl();
         
         JSONSerializer serializer = new JSONSerializer();
         serializer.setFixupDuplicates(false);

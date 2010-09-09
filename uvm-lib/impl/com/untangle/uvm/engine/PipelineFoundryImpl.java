@@ -40,7 +40,7 @@ import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.InterfaceComparator;
-import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.node.PipelineStats;
 import com.untangle.uvm.policy.LocalPolicyManager;
@@ -496,7 +496,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     private void removeDuplicates(Policy policy, List<MPipeFitting> chain)
     {
         LocalPolicyManager pmi = LocalUvmContextFactory.context().localPolicyManager();
-        LocalNodeManager nodeManager = LocalUvmContextFactory.context().localNodeManager();
+        NodeManager nodeManager = LocalUvmContextFactory.context().nodeManager();
 
         Set<String> enabledNodes = nodeManager.getEnabledNodes(policy);
 

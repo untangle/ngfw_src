@@ -31,7 +31,7 @@ import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.util.I18nUtil;
@@ -44,7 +44,7 @@ public class BlockPageServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        LocalNodeManager nm = uvm.localNodeManager();
+        NodeManager nm = uvm.nodeManager();
 
         Map<String,String> i18n_map = LocalUvmContextFactory.context().
             languageManager().getTranslations( "untangle-node-phish" );

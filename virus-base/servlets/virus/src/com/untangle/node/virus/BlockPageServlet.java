@@ -30,7 +30,7 @@ import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 
-import  com.untangle.uvm.node.LocalNodeManager;
+import  com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
 
 import com.untangle.uvm.security.NodeId;
@@ -50,7 +50,7 @@ public class BlockPageServlet extends HttpServlet
         throws ServletException, IOException
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        LocalNodeManager nm = uvm.localNodeManager();
+        NodeManager nm = uvm.nodeManager();
 
         Map<String,String> i18n_map = LocalUvmContextFactory.context().
             languageManager().getTranslations( "untangle-base-virus" );

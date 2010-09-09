@@ -56,7 +56,7 @@ import com.untangle.uvm.client.RemoteUvmContextFactory;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeDesc;
-import com.untangle.uvm.node.RemoteNodeManager;
+import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.DeletingDataSaver;
 import com.untangle.uvm.util.JsonClient;
@@ -372,7 +372,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 
         // get translation for base node, if any
         RemoteUvmContext uvm = RemoteUvmContextFactory.context();
-        RemoteNodeManager nm = uvm.nodeManager();
+        NodeManager nm = uvm.nodeManager();
         Node node = nm.node(module);
         if (node != null) {
             NodeDesc nodeDesc = node.getNodeDesc();

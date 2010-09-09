@@ -50,7 +50,7 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.networking.LocalNetworkManager;
-import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.LocalPolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.reports.RemoteReportingManager;
@@ -88,13 +88,6 @@ public interface LocalUvmContext extends RemoteUvmContext
     ToolboxManager toolboxManager();
 
     /**
-     * Get the <code>NodeManager</code> singleton.
-     *
-     * @return a <code>NodeManager</code> value
-     */
-    LocalNodeManager localNodeManager();
-
-    /**
      * Get the <code>RemoteLoggingManager</code> singleton.
      *
      * @return a <code>RemoteLoggingManager</code> value
@@ -102,7 +95,6 @@ public interface LocalUvmContext extends RemoteUvmContext
     RemoteLoggingManager loggingManager();
 
     SyslogManager syslogManager();
-
 
     /**
      * Get the <code>UpstreamManager</code> singleton.

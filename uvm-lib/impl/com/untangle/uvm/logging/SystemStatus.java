@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.security.NodeId;
@@ -407,7 +407,7 @@ public class SystemStatus
              * Node Config
              */
             sb.append(SPACER);
-            LocalNodeManager tm = LocalUvmContextFactory.context().localNodeManager();
+            NodeManager tm = LocalUvmContextFactory.context().nodeManager();
             for (NodeId t : tm.nodeInstances()) {
                 NodeContext tctx = tm.nodeContext(t);
                 if (tctx == null) {
