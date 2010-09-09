@@ -239,9 +239,9 @@ Ung.Util= {
                     message =  i18n._("Unable to contact app store") + ":<br/>";
                     message += i18n._("An error has occured: ") + exception.message + "<br/>";
                     message += i18n._("<br/>");
-                    message += i18n._("The server is unable to properly communicate with the app store.");
-                    message += i18n._("Check internet connectivity and network settings.");
-                    message += i18n._("Check that the server is fully up to date.");
+                    message += i18n._("The server is unable to properly communicate with the app store.") + "<br/>";
+                    message += i18n._("Check internet connectivity and network settings.") + "<br/>";
+                    message += i18n._("Check that the server is fully up to date.") + "<br/>";
                 }
                 if (exception.name == "com.untangle.uvm.toolbox.MackageException" && (exception.message.indexOf("timed out") >= 0)) {
                     message =  i18n._("Unable to contact app store") + ":<br/>";
@@ -286,7 +286,7 @@ Ung.Util= {
         var msg="";
         var val=null;
         for(var key in obj) {
-            val=obj[key]
+            val=obj[key];
             if(val!=null) {
               msg+=" | "+key+" - "+val;
             }
@@ -514,7 +514,7 @@ Ung.Util= {
             count--;
         }
         if (count != 0) {
-            return false
+            return false;
         }
         return true;
     },
@@ -1318,7 +1318,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     stop : function () {
         if(this.state=="attention") {
-            return
+            return;
         }
         this.loadNodeContext(function() {
             this.setPowerOn(false);
@@ -3569,7 +3569,7 @@ Ext.grid.IconColumn = Ext.extend(Object, {
             e.stopEvent();
             var index = this.grid.getView().findRowIndex(t);
             var record = this.grid.store.getAt(index);
-            this.handle(record, index)
+            this.handle(record, index);
         }
     },
 
@@ -3749,7 +3749,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 convert : function(val, rec) {
                     return this.generatedId++;
                 }.createDelegate(this)
-            })
+            });
         }
         if (this.proxyRpcFn) {
             this.store = new Ext.data.Store({
@@ -3808,7 +3808,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 }
             });
             this.getStore().loadData(this.data);
-            this.totalRecords=this.data.length
+            this.totalRecords=this.data.length;
         }
         if(this.paginated) {
             this.bbar = new Ext.PagingToolbar({
@@ -3884,7 +3884,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     },
     getPageStart : function() {
         if (this.store.lastOptions && this.store.lastOptions.params) {
-            return this.store.lastOptions.params.start
+            return this.store.lastOptions.params.start;
         } else {
             return 0;
         }
@@ -3895,7 +3895,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     },
     // is grid paginated
     isPaginated : function() {
-        return  this.paginated && (this.totalRecords != null && this.totalRecords >= this.minPaginateCount)
+        return  this.paginated && (this.totalRecords != null && this.totalRecords >= this.minPaginateCount);
     },
     clearChangedData : function () {
         this.changedData = {};
@@ -3957,7 +3957,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 }
             }
             return "";
-        }
+        };
+        
         if ( undefined !== this.header ) {
             var target = this.header.dom;
             var qt = this.tooltip;
@@ -4109,7 +4110,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     // focus the first changed row matching a field value
     // used by validation functions
     focusFirstChangedDataByFieldValue : function(field, value) {
-        var cd = this.findFirstChangedDataByFieldValue(field, value)
+        var cd = this.findFirstChangedDataByFieldValue(field, value);
         if (cd != null) {
             this.loadPage(cd.pageStart, function(r, options, success) {
                 if (success) {
@@ -4119,7 +4120,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         }
     },
     editRowChangedDataByFieldValue : function(field, value) {
-        var cd = this.findFirstChangedDataByFieldValue(field, value)
+        var cd = this.findFirstChangedDataByFieldValue(field, value);
         if (cd != null) {
             this.loadPage(cd.pageStart, function(r, options, success) {
                 if (success) {
@@ -4217,8 +4218,8 @@ Ung.JsonListReader = Ext.extend(Ext.data.JsonReader, {
             var n = root[i];
             var values = {};
             var id = ((sid || sid === 0) && n[sid] !== undefined && n[sid] !== "" ? n[sid] : null);
-            var fName = (fields && fields.length > 0) ? fields.items[0].name : "name"
-            values[fName] = n
+            var fName = (fields && fields.length > 0) ? fields.items[0].name : "name";
+            values[fName] = n;
             if(this.autoGenerateId) {
                 values['id'] = this.generatedId++;
             }
@@ -4254,7 +4255,7 @@ Ung.Breadcrumbs = Ext.extend(Ext.Component, {
                     this.getEl().appendChild(crumbEl);
 
                 } else {
-                    this.getEl().insertHtml('beforeEnd', '<span class="breadcrumb-text" >' + crumb.title + '</span>')
+                    this.getEl().insertHtml('beforeEnd', '<span class="breadcrumb-text" >' + crumb.title + '</span>');
                 }
 
             }
@@ -4299,7 +4300,7 @@ Ext.grid.ButtonColumn.prototype = {
             e.stopEvent();
             var index = this.grid.getView().findRowIndex(t);
             var record = this.grid.store.getAt(index);
-            this.handle(record)
+            this.handle(record);
         }
     },
     // to override
@@ -4540,7 +4541,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                             Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
                             Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.LocalDirectory",Ung.Util.getScriptSrc("script/config/localDirectory.js"), function() {
                                 main.localDirectoryWin=new Ung.LocalDirectory({"name":"localDirectory",fnCallback: function() {
-                                    this.populate(this.record,this.fnCallback)
+                                    this.populate(this.record,this.fnCallback);
                                 }.createDelegate(this)});
                                 main.localDirectoryWin.show();
                                 Ext.MessageBox.hide();
@@ -4558,7 +4559,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                                 var nodeCmp = Ung.Node.getCmp(node.tid);
                                 if (nodeCmp != null) {
                                     nodeCmp.onSettingsAction(function() {
-                                        this.populate(this.record,this.fnCallback)
+                                        this.populate(this.record,this.fnCallback);
                                     }.createDelegate(this));
                                 }
                             }
@@ -4603,7 +4604,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 }.createDelegate(this),"noAlert")) return;
                 this.userEntries=this.userEntries.concat(result.list);
                 this.populateCallback();
-            }.createDelegate(this),"MS_ACTIVE_DIRECTORY")
+            }.createDelegate(this),"MS_ACTIVE_DIRECTORY");
         } else {
             this.populateSemaphore--;
         }
@@ -4618,7 +4619,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 
                 this.userEntries=this.userEntries.concat(result.list);
                 this.populateCallback();
-            }.createDelegate(this),"MS_ACTIVE_DIRECTORY")
+            }.createDelegate(this),"MS_ACTIVE_DIRECTORY");
         } else {
             this.populateSemaphore--;
         }
@@ -4632,7 +4633,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 }.createDelegate(this),"noAlert")) return;
                 this.userEntries=this.userEntries.concat(result.list);
                 this.populateCallback();
-            }.createDelegate(this),"LOCAL_DIRECTORY")
+            }.createDelegate(this),"LOCAL_DIRECTORY");
         } else {
             this.populateCallback();
         }
@@ -4642,7 +4643,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         if (this.populateSemaphore == 0) {
             if (this.settingsCmp !== null) {
                 var sm=this.usersGrid.getSelectionModel();
-                sm.clearSelections()
+                sm.clearSelections();
                 var store=this.usersGrid.getStore();
                 store.proxy.data = {list:this.userEntries};
                 store.load({
@@ -4741,7 +4742,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 }
                 
                 if(this.fnCallback) {
-                    this.fnCallback.call()
+                    this.fnCallback.call();
                 }
             }
             return true;
