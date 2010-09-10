@@ -428,9 +428,8 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     int                ret;
     /**
      * mark packet with:  MARK_ANTISUB + whatever packet marks are specified 
-     * MARK_NOTRACK is commented out because it appears to not be needed and it interferes with proper QoS tracking
      */
-    u_int              nfmark = ( MARK_ANTISUB | /* MARK_NOTRACK | */ ( pkt->is_marked ? pkt->nfmark : 0 )); 
+    u_int              nfmark = ( MARK_ANTISUB | MARK_NOTRACK | ( pkt->is_marked ? pkt->nfmark : 0 )); 
     
     /* if the caller uses the force flag, then override the default bits of the mark */
     if ( pkt->is_marked == IS_MARKED_FORCE_FLAG ) nfmark = pkt->nfmark;
