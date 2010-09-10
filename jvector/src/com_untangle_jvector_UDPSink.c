@@ -216,11 +216,11 @@ static int _accept_packet( char* data, int data_len, netcap_pkt_t* pkt )
         udp_header->dest = (u_int16_t)htons( pkt->dst.port );
         udp_header->len = htons( udp_len );
         udp_header->check = 0;
-        udp_header->check = unet_udp_sum_calc( udp_len, (u_int8_t*)&ip_header->saddr,
-                                               (u_int8_t*)&ip_header->daddr, (u_int8_t*)udp_header );
         /* Copy in the data */
         memcpy( udp_header + 1, data, data_len );
 
+        udp_header->check = unet_udp_sum_calc( udp_len, (u_int8_t*)&ip_header->saddr, (u_int8_t*)&ip_header->daddr, (u_int8_t*)udp_header );
+        
         debug( 10, "UDPSink: Sending packet using queue\n" );
         
         if ( netcap_set_verdict( packet_id, NF_ACCEPT, (u_char*)ip_header, ip_len )) {
