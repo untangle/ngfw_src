@@ -53,7 +53,6 @@ import com.untangle.uvm.node.Node;
  */
 public class CasingPipeSpec extends PipeSpec
 {
-    private static final MPipeManager MPIPE_MANAGER;
     private static final PipelineFoundry FOUNDRY;
 
     private final Fitting input;
@@ -133,8 +132,8 @@ public class CasingPipeSpec extends PipeSpec
     public void connectMPipe()
     {
         if (null == insideMPipe && null == outsideMPipe) {
-            insideMPipe = MPIPE_MANAGER.plumbLocal(this, insideAdaptor);
-            outsideMPipe = MPIPE_MANAGER.plumbLocal(this, outsideAdaptor);
+            insideMPipe = FOUNDRY.createMPipe(this, insideAdaptor);
+            outsideMPipe = FOUNDRY.createMPipe(this, insideAdaptor);
             FOUNDRY.registerCasing(insideMPipe, outsideMPipe);
         } else {
             logger.warn("casing MPipes already connected");
@@ -198,8 +197,6 @@ public class CasingPipeSpec extends PipeSpec
     // static initialization --------------------------------------------------
 
     static {
-        LocalUvmContext mlc = LocalUvmContextFactory.context();
-        MPIPE_MANAGER = mlc.mPipeManager();
-        FOUNDRY = mlc.pipelineFoundry();
+        FOUNDRY = LocalUvmContextFactory.context().pipelineFoundry();
     }
 }

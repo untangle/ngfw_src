@@ -37,6 +37,7 @@ import java.net.InetSocketAddress;
 
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.vnet.event.SessionEventListener;
 
 /**
  * Compiles pipes based on subscriptions and interest sets.
@@ -50,6 +51,7 @@ public interface PipelineFoundry
     void registerEndpoints(PipelineEndpoints pe);
     void destroy(IPSessionDesc start, IPSessionDesc end, PipelineEndpoints pe, String uid);
 
+    MPipe createMPipe(PipeSpec spec, SessionEventListener listener);
     void registerMPipe(MPipe mPipe);
     void deregisterMPipe(MPipe mPipe);
 

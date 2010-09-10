@@ -121,7 +121,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private SyslogManagerImpl syslogManager;
     private EventLogger<LogEvent> eventLogger;
     private PolicyManagerFactory policyManagerFactory;
-    private MPipeManagerImpl mPipeManager;
     private MailSenderImpl mailSender;
     private LogMailerImpl logMailer;
     private NetworkManagerImpl networkManager;
@@ -314,11 +313,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     public LocalLicenseManager localLicenseManager() throws UvmException
     {
         return this.licenseManagerFactory.getLocalLicenseManager();
-    }
-
-    public MPipeManagerImpl mPipeManager()
-    {
-        return mPipeManager;
     }
 
     public PipelineFoundryImpl pipelineFoundry()
@@ -785,7 +779,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         // start the cron job
         this.toolboxManager.start();
 
-        this.mPipeManager = MPipeManagerImpl.manager();
         this.pipelineFoundry = PipelineFoundryImpl.foundry();
 
         // Retrieve the network settings manager.  (Kind of busted,
@@ -909,13 +902,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         // - reportingManager
         // - connectivityTester (Doesn't really need one)
         // - argonManager
-
-        try {
-            mPipeManager.destroy();
-        } catch (Exception exn) {
-            logger.warn("could not destroy MPipeManager", exn);
-        }
-        mPipeManager = null;
 
         // stop services:
         try {

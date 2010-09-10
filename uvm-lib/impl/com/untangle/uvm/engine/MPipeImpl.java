@@ -49,7 +49,6 @@ class MPipeImpl implements MPipe
 {
     protected ArgonAgent argon;
 
-    private final MPipeManagerImpl xm;    // Our owner/manager/factory
     private final PipeSpec pipeSpec;
 
     private boolean lastSessionWriteFailed = false;
@@ -68,9 +67,8 @@ class MPipeImpl implements MPipe
 
     // public construction is the easiest solution to access from
     // MPipeManager for now.
-    public MPipeImpl(MPipeManagerImpl xm, PipeSpec pipeSpec, SessionEventListener listener)
+    public MPipeImpl(PipeSpec pipeSpec, SessionEventListener listener)
     {
-        this.xm = xm;
         this.node = pipeSpec.getNode();
 
         this.listener = listener;
@@ -228,12 +226,16 @@ class MPipeImpl implements MPipe
             argon = null;
             disp = null;
         }
-
-        xm.destroyed(this);
     }
 
     public String toString()
     {
         return null == listener ? "no listener" : listener.toString();
     }
+
+    public static MPipe create(PipeSpec pipeSpec, SessionEventListener listener)
+    {
+        return new MPipeImpl(pipeSpec, listener);
+    }
+
 }

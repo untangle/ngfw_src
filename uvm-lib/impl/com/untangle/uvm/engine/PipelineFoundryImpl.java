@@ -54,6 +54,7 @@ import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.vnet.event.SessionEventListener;
 
 /**
  * Implements PipelineFoundry.
@@ -216,6 +217,11 @@ public class PipelineFoundryImpl implements PipelineFoundry
             eventLogger.log(new PipelineStats(start, end, pe, uid));
 
         pipeline.destroy();
+    }
+
+    public MPipe createMPipe(PipeSpec spec, SessionEventListener listener)
+    {
+        return new MPipeImpl(spec,listener);
     }
 
     public void registerMPipe(MPipe mPipe)

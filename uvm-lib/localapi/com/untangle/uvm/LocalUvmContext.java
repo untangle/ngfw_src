@@ -60,7 +60,6 @@ import com.untangle.uvm.servlet.UploadManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.toolbox.UpstreamManager;
 import com.untangle.uvm.util.TransactionWork;
-import com.untangle.uvm.vnet.MPipeManager;
 import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.LocalTomcatManager;
 
@@ -229,13 +228,6 @@ public interface LocalUvmContext extends RemoteUvmContext
     String version();
 
     String getFullVersion();
-
-    /**
-     * Get the <code>MPipeManager</code> singleton.
-     *
-     * @return a <code>MPipeManager</code> value
-     */
-    MPipeManager mPipeManager();
 
     /**
      * The pipeline compiler.

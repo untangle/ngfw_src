@@ -53,7 +53,6 @@ import com.untangle.uvm.vnet.event.SessionEventListener;
  */
 public class SoloPipeSpec extends PipeSpec
 {
-    private static final MPipeManager MPIPE_MANAGER;
     private static final PipelineFoundry FOUNDRY;
 
     public static final int MIN_STRENGTH = 0;
@@ -153,7 +152,7 @@ public class SoloPipeSpec extends PipeSpec
     public void connectMPipe()
     {
         if (null == mPipe) {
-            mPipe = MPIPE_MANAGER.plumbLocal(this, listener);
+            mPipe = FOUNDRY.createMPipe(this, listener);
             FOUNDRY.registerMPipe(mPipe);
         } else {
             logger.warn("mPipes already connected");
@@ -211,7 +210,6 @@ public class SoloPipeSpec extends PipeSpec
     // static initialization --------------------------------------------------
 
     static {
-        MPIPE_MANAGER = LocalUvmContextFactory.context().mPipeManager();
         FOUNDRY = LocalUvmContextFactory.context().pipelineFoundry();
     }
 }
