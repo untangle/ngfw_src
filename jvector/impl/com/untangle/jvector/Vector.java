@@ -110,7 +110,6 @@ public class Vector
         list_ptr = 0;
     }
 
-
     public void shutdown()
     {
         if ( vec_ptr == 0 ) return;

@@ -117,9 +117,10 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_write
     if ( tos != com_untangle_jvector_UDPSink_DISABLED) pkt->tos = tos;
     
     if ( pkt->packet_id != 0 ) {
-        if (( number_bytes = _accept_packet( (char*)data, data_len, pkt )) < 0 ) {
+        if ( _accept_packet( (char*)data, data_len, pkt ) < 0 ) {
             errlog( ERR_CRITICAL, "_accept_packet" );
         }
+        number_bytes = size; /* assume the whole packet was written */
     } else {
         if (( number_bytes = netcap_udp_send( (char*)data, data_len, pkt )) < 0 ) {
             perrlog( "netcap_udp_send" );
@@ -207,7 +208,7 @@ static int _accept_packet( char* data, int data_len, netcap_pkt_t* pkt )
         if ( netcap_set_verdict( packet_id, NF_ACCEPT, (u_char*)ip_header, ip_len )) {
             return errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
         }
-
+        
         return 0;
     }
 
