@@ -94,9 +94,9 @@ class RouterEventHandler extends AbstractEventHandler
         int newServerPort  = request.getNatToPort();
 
         if ( logger.isDebugEnabled()) {
-            logger.debug( "pre-translation: " + origClientAddr + ":" + origClientPort +  " -> "
+            logger.debug( "pre-translation : " + origClientAddr + ":" + origClientPort +  " -> "
                           + origServerAddr + ":" + origServerPort );
-            logger.debug( "pre-translation: " + newClientAddr + ":" + newClientPort +  " -> "
+            logger.debug( "post-translation: " + newClientAddr + ":" + newClientPort +  " -> "
                           + newServerAddr + ":" + newServerPort );
         }
 
