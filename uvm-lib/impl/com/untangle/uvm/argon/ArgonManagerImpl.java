@@ -47,6 +47,11 @@ public class ArgonManagerImpl implements ArgonManager
     {
         return ArgonSessionTable.getInstance().count();
     }
+
+    public int getSessionCount(short protocol)
+    {
+        return ArgonSessionTable.getInstance().count(protocol);
+    }
     
     /** Shutdown all of the sessions that match <code>matcher</code> */
     public void shutdownMatches( SessionMatcher matcher )

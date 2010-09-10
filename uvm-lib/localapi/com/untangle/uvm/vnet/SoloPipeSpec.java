@@ -186,7 +186,7 @@ public class SoloPipeSpec extends PipeSpec
         if (null != mPipe) {
             return mPipe.liveSessionDescs();
         } else {
-            return new LinkedList<IPSessionDesc>;
+            return new LinkedList<IPSessionDesc>();
         }
     }
 

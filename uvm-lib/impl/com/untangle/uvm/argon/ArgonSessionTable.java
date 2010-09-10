@@ -43,33 +43,45 @@ class ArgonSessionTable
     private ArgonSessionTable() {}
 
     /**
-     * Add a vectron to the hash set.
-     * @param  vectron - The vectron to add.
+     * Add a vector to the hash set.
+     * @param  vector - The vector to add.
      * @return - True if the item did not already exist
      */
-    synchronized boolean put( Vector vectron, SessionGlobalState session )
+    synchronized boolean put( Vector vector, SessionGlobalState session )
     {
-        return ( activeSessions.put( vectron, session ) == null ) ? true : false;
+        return ( activeSessions.put( vector, session ) == null ) ? true : false;
     }
 
     /**
-     * Remove a vectron from the hash set.
-     * @param  vectron - The vectron to remove.
+     * Remove a vector from the hash set.
+     * @param  vector - The vector to remove.
      * @return - True if the item was removed, false if it wasn't in the set.
      */
-    synchronized boolean remove( Vector vectron )
+    synchronized boolean remove( Vector vector )
     {
-        return ( activeSessions.remove( vectron ) == null ) ? false : true;
+        return ( activeSessions.remove( vector ) == null ) ? false : true;
     }
 
     /**
-     * Get the number of vectrons remaining
+     * Get the number of vectors remaining
      */
     synchronized int count()
     {
         return activeSessions.size();
     }
 
+    synchronized int count(short protocol)
+    {
+        int count = 0;
+        
+        for ( SessionGlobalState state : activeSessions.values() ) {
+            if (state.protocol() == protocol)
+                count++;
+        }
+
+        return count;
+    }
+    
     /**
      * This kills all active vectors, since this is synchronized, it pauses the creation
      * of new vectoring machines, but it doesn't prevent the creating of new vectoring
@@ -81,8 +93,8 @@ class ArgonSessionTable
 
         for ( Iterator<Vector> iter = activeSessions.keySet().iterator();
               iter.hasNext() ; ) {
-            Vector vectron = iter.next();
-            vectron.shutdown();
+            Vector vector = iter.next();
+            vector.shutdown();
             /* Don't actually remove the item, it is removed when the session exits */
         }
 
@@ -107,8 +119,8 @@ class ArgonSessionTable
             /* Just clear all, without checking for matches */
             for ( Iterator<Vector> iter = activeSessions.keySet().iterator() ;
                   iter.hasNext() ; ) {
-                Vector vectron = iter.next();
-                vectron.shutdown();
+                Vector vector = iter.next();
+                vector.shutdown();
             }
             return;
         }
@@ -119,7 +131,7 @@ class ArgonSessionTable
             boolean isMatch;
 
             SessionGlobalState session = e.getValue();
-            Vector vectron  = e.getKey();
+            Vector vector  = e.getKey();
 
             ArgonHook argonHook = session.argonHook();
 
@@ -130,7 +142,7 @@ class ArgonSessionTable
                               " matched: " + isMatch );
 
             if ( isMatch )
-                vectron.shutdown();
+                vector.shutdown();
         }
     }
 

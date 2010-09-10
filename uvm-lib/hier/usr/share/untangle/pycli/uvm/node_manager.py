@@ -60,7 +60,7 @@ class NodeManager(Manager):
     def __print_sessions( self, tid ):
         nodeContext, node = self.__get_node( tid )
         if ( nodeContext == None or node == None ): return
-        sessions = node.liveSessionDescs()
+        sessions = node.liveSessionDescs()["list"]
         if ( sessions == None ):
             print "NULL Session Desc (tid:%s)" % ( tid["id"] )
             return

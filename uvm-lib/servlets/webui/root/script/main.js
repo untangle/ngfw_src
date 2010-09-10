@@ -767,7 +767,15 @@ Ung.Main=Ext.extend(Object, {
             if(Ung.Util.handleException(exception)) return;
             rpc.rackView=result;
             var parentRackName = this.getParentName( rpc.currentPolicy.parentId );
-            Ext.get('parent-rack-container').dom.innerHTML = i18n._("Parent Rack")+" : " + parentRackName;
+            var parentRackDisplay = Ext.get('parent-rack-container');
+
+            if (parentRackName === "None") {
+                parentRackDisplay.hide();
+            } else {
+                parentRackDisplay.show();
+                parentRackDisplay.dom.innerHTML = i18n._("Parent Rack")+" : " + parentRackName;
+            }
+            
             main.buildApps();
             main.buildNodes();
         }.createDelegate(this);

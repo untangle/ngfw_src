@@ -52,6 +52,7 @@ import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.message.StatInterval;
 import com.untangle.uvm.message.Stats;
 import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.util.Pulse;
@@ -706,7 +707,11 @@ class MessageManagerImpl implements LocalMessageManager
 
             ArgonManager am = UvmContextImpl.getInstance().argonManager();
             String external = am.getIntfManager().getExternal().getPhysicalName();
-	    
+
+            m.put("uvmSessions",am.getSessionCount());
+            m.put("uvmTCPSessions",am.getSessionCount(SessionEndpoints.PROTO_TCP));
+            m.put("uvmUDPSessions",am.getSessionCount(SessionEndpoints.PROTO_UDP));
+            
             long currentTime = System.currentTimeMillis();
 
             BufferedReader br = null;

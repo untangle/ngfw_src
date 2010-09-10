@@ -1886,10 +1886,12 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
         this.getEl().addClass("system-stats");
         var contentSystemStatsArr=[
             '<div class="label" style="width:100px;left:0px;">'+i18n._("Network")+'</div>',
-            '<div class="label" style="width:70px;left:103px;">'+i18n._("CPU Load")+'</div>',
-            '<div class="label" style="width:75px;left:180px;">'+i18n._("Memory")+'</div>',
+            '<div class="label" style="width:70px;left:103px;">'+i18n._("Sessions")+'</div>',
+            '<div class="label" style="width:70px;left:173px;">'+i18n._("CPU Load")+'</div>',
+            '<div class="label" style="width:75px;left:250px;">'+i18n._("Memory")+'</div>',
             '<div class="label" style="width:40px;right:-5px;">'+i18n._("Disk")+'</div>',
             '<div class="network"><div class="tx">'+i18n._("Tx:")+'<div class="tx-value"></div></div><div class="rx">'+i18n._("Rx:")+'<div class="rx-value"></div></div></div>',
+            '<div class="sessions"></div>',
             '<div class="cpu"></div>',
             '<div class="memory"><div class="free">'+i18n._("F:")+'<div class="free-value"></div></div><div class="used">'+i18n._("U:")+'<div class="used-value"></div></div></div>',
             '<div class="disk"><div name="disk_value"></div></div>'
@@ -1915,6 +1917,28 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             }
         });
         this.networkToolTip.render(Ext.getBody());
+
+        // sessions tooltip
+        var sessionsArr=[
+            '<div class="title">'+i18n._("Total Scanned Sessions:")+'</div>',
+            '<div class="values"><span name="uvmSessions"></span></div>',
+            '<div class="title">'+i18n._("TCP Scanned Sessions:")+'</div>',
+            '<div class="values"><span name="uvmTCPSessions"></span></div>',
+            '<div class="title">'+i18n._("UDP Scanned Sessions:")+'</div>',
+            '<div class="values"><span name="uvmUDPSessions"></span></div>'
+        ];
+        this.sessionsToolTip= new Ext.ToolTip({
+            target: this.getEl().child("div[class=sessions]"),
+            dismissDelay:0,
+            hideDelay :400,
+            width: 330,
+            cls: 'extended-stats',
+            html: sessionsArr.join(''),
+            show : function(){
+                this.showBy("system_stats","tl-bl?");
+            }
+        });
+        this.sessionsToolTip.render(Ext.getBody());
 
         // cpu tooltip
         var cpuArr=[
@@ -2000,7 +2024,8 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
 
     },
     update : function(stats) {
-            //this.getEl().child("div[class=cpu]").dom.innerHTML=Math.round((stats.map.userCpuUtilization+stats.map.systemCpuUtilization)*100.0/stats.map.numCpus)+"%";
+        this.getEl().child("div[class=sessions]").dom.innerHTML=stats.map.uvmSessions;
+        //this.getEl().child("div[class=cpu]").dom.innerHTML=Math.round((stats.map.userCpuUtilization+stats.map.systemCpuUtilization)*100.0/stats.map.numCpus)+"%";
         this.getEl().child("div[class=cpu]").dom.innerHTML=stats.map.oneMinuteLoadAvg;
         var txSpeed=Math.round(stats.map.txBps/10)/100;
         var rxSpeed=Math.round(stats.map.rxBps/10)/100;
@@ -2021,6 +2046,12 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
              * toolTipEl.child("span[name=data_sent]").dom.innerHTML="TODO";
              * toolTipEl.child("span[name=total_throughput]").dom.innerHTML="TODO";
              */
+        }
+        if(this.sessionsToolTip.rendered) {
+            var toolTipEl=this.sessionsToolTip.getEl();
+            toolTipEl.child("span[name=uvmSessions]").dom.innerHTML=stats.map.uvmSessions;
+            toolTipEl.child("span[name=uvmTCPSessions]").dom.innerHTML=stats.map.uvmTCPSessions;
+            toolTipEl.child("span[name=uvmUDPSessions]").dom.innerHTML=stats.map.uvmUDPSessions;
         }
         if(this.cpuToolTip.rendered) {
             var toolTipEl=this.cpuToolTip.getEl();
