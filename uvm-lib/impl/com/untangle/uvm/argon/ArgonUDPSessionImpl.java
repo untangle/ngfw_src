@@ -23,8 +23,6 @@ public class ArgonUDPSessionImpl extends ArgonIPSessionImpl implements ArgonUDPS
     protected final byte ttl;
     protected final byte tos;
     protected final byte options[];
-    protected final int  icmpId;
-    protected final boolean isPing;
 
     public ArgonUDPSessionImpl( ArgonUDPNewSessionRequest request )
     {
@@ -33,8 +31,6 @@ public class ArgonUDPSessionImpl extends ArgonIPSessionImpl implements ArgonUDPS
         ttl     = request.ttl();
         tos     = request.tos();
         options = request.options();
-        icmpId  = request.icmpId();
-        isPing  = request.isPing();
     }
 
     /**
@@ -63,19 +59,4 @@ public class ArgonUDPSessionImpl extends ArgonIPSessionImpl implements ArgonUDPS
         return options;
     }
 
-    /**
-     * Returns true if this is a Ping session
-     */
-    public boolean isPing()
-    {
-        return this.isPing;
-    }
-
-    /**
-     * Retrieve the ICMP associated with the session
-     */
-    public int icmpId()
-    {
-        return icmpId;
-    }
 }

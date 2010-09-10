@@ -31,9 +31,6 @@ public class NetcapUDPSession extends NetcapSession
     /** These cannot conflict with the flags inside of NetcapTCPSession and NetcapSession */
     private final static int FLAG_TTL            = 64;
     private final static int FLAG_TOS            = 65;
-    private final static int FLAG_ICMP_CLIENT_ID = 66;
-    private final static int FLAG_ICMP_SERVER_ID = 67;
-    private final static int FLAG_IS_ICMP        = 68;
     
     private final PacketMailbox clientMailbox;
     private final PacketMailbox serverMailbox;
@@ -62,24 +59,6 @@ public class NetcapUDPSession extends NetcapSession
         return (byte) getIntValue( FLAG_TOS, pointer.value());
     }
 
-    /* XXX ICMP Hack */
-    public boolean isIcmpSession()
-    {
-        return (( getIntValue( FLAG_IS_ICMP, pointer.value()) == 1 ) ? true : false );
-    }
-
-    /* XXX ICMP Hack */
-    public int icmpClientId()
-    { 
-        return  getIntValue( FLAG_ICMP_CLIENT_ID, pointer.value());
-    }
-    
-    /* XXX ICMP Hack */
-    public int icmpServerId()
-    {
-        return  getIntValue( FLAG_ICMP_SERVER_ID, pointer.value());
-    }
-    
     protected Endpoints makeEndpoints( boolean ifClient ) 
     {
         return new SessionEndpoints( ifClient );
@@ -98,31 +77,6 @@ public class NetcapUDPSession extends NetcapSession
                           Inet4AddressConverter.toLong( traffic.dst().host()), traffic.dst().port(),
                           Inet4AddressConverter.toLong( traffic.src().host()), traffic.src().port(),
                           intf );
-        
-        if ( ret == MERGED_DEAD ) {
-            return false;
-        } else if ( ret == 0 ) {
-            return true;
-        } else {
-            Netcap.error( "Invalid merge" );
-        }
-        
-        return false;
-    }
-
-    /**
-     * Merge this session with any other ICMP (treated as UDP for now) sessions started at the same time.</p>
-     * @param traffic - Description of the traffic going to the server (dst should refer
-     *                  to the server endpoint).
-     * @return Returns whether or not the session was merged, or merged out.  True If this session
-     *         should continue, false if this session was merged out.
-     */
-    public boolean icmpMerge( IPTraffic traffic, int id, byte intf )
-    {
-        int ret  = icmpMerge( pointer.value(), id,
-                              Inet4AddressConverter.toLong( traffic.dst().host()),
-                              Inet4AddressConverter.toLong( traffic.src().host()),
-                              intf );
         
         if ( ret == MERGED_DEAD ) {
             return false;
@@ -202,20 +156,7 @@ public class NetcapUDPSession extends NetcapSession
      * @param dstAddr - Destination address(server side, client address)
      * @param dstPort - Destination port(server side, client port)
      */
-    private static native int    merge( long sessionPointer,
-                                        long srcAddr, int srcPort, long dstAddr, int dstPort, byte intf );
-
-    /**
-     * Merge this session with any other ICMP/UDP session that may have started in the reverse
-     * direction.</p>
-     *
-     * @param sessionPointer - Pointer to the udp session.
-     * @param id - Session identifier in the ICMP message.
-     * @param srcAddr - Source address(server side, server address)
-     * @param dstAddr - Destination address(server side, client address)
-     */
-    private static native int    icmpMerge( long sessionPointer, int id, long srcAddr, long dstAddr, 
-                                            byte intf );
+    private static native int    merge( long sessionPointer, long srcAddr, int srcPort, long dstAddr, int dstPort, byte intf );
 
     private static native long    mailboxPointer( long sessionPointer, boolean ifClient );
     
@@ -245,19 +186,15 @@ public class NetcapUDPSession extends NetcapSession
             
             IPTraffic ipTraffic = new IPTraffic( packetPointer );
             
-            /* XXX ICMP Hack */
-            switch ( ipTraffic.protocol()) {
-            case Netcap.IPPROTO_UDP:
-                return new PacketMailboxUDPPacket( packetPointer );
-            case Netcap.IPPROTO_ICMP:
-                return new PacketMailboxICMPPacket( packetPointer );
-            default:
+            if (ipTraffic.protocol() != Netcap.IPPROTO_UDP) {
                 int tmp = ipTraffic.protocol();
-
                 /* Must free the packet */
                 ipTraffic.raze();
-                throw new IllegalStateException( "Packet is neither ICMP or UDP: " +  tmp );
+
+                throw new IllegalStateException( "Packet is not UDP: " +  tmp );
             }
+                
+            return new PacketMailboxUDPPacket( packetPointer );
         }
 
         public Packet read() 
@@ -323,41 +260,6 @@ public class NetcapUDPSession extends NetcapSession
             {
                 return new IPTraffic( pointer );
             }
-        }
-        
-        class PacketMailboxICMPPacket extends PacketMailboxPacket implements ICMPPacket
-        {
-            final byte icmpType;
-            final byte icmpCode;
-            
-            PacketMailboxICMPPacket( CPointer pointer )
-            {
-                super( pointer );
-                
-                icmpType = ((ICMPTraffic)traffic).icmpType();
-                icmpCode = ((ICMPTraffic)traffic).icmpCode();
-            }
-            
-            public byte icmpType()
-            {
-                return icmpType;
-            }
-            
-            public byte icmpCode()
-            {
-                return icmpCode;
-            }
-
-            public InetAddress icmpSource( byte data[], int limit )
-            {
-                return ((ICMPTraffic)traffic).icmpSource( data, limit );
-            }
-            
-            protected IPTraffic makeTraffic( CPointer pointer )
-            {
-                return new ICMPTraffic( pointer );
-            }
-
         }
 
     }

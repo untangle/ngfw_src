@@ -26,8 +26,6 @@ class ArgonUDPNewSessionRequestImpl extends ArgonIPNewSessionRequestImpl impleme
     protected byte ttl;
     protected byte tos;
     protected byte[] options;
-    protected int icmpId;
-    private final boolean isPing;
 
     public ArgonUDPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent, PipelineEndpoints pe )
     {
@@ -35,13 +33,9 @@ class ArgonUDPNewSessionRequestImpl extends ArgonIPNewSessionRequestImpl impleme
 
         NetcapUDPSession netcapUDPSession = sessionGlobalState.netcapUDPSession();
 
-        /* Grab the TTL, TOS, isPing and ICMP Identifier from the udp session. */
+        /* Grab the TTL, TOS from the udp session. */
         this.ttl    = netcapUDPSession.ttl();
         this.tos    = netcapUDPSession.tos();
-        this.icmpId = ( netcapUDPSession.isIcmpSession()) ? netcapUDPSession.icmpClientId() : 0;
-
-        /* XXX ICMP Hack, PING is presently the only ICMP session. */
-        this.isPing = netcapUDPSession.isIcmpSession();
     }
     
     public ArgonUDPNewSessionRequestImpl( ArgonUDPSession session, ArgonAgent agent, PipelineEndpoints pe, SessionGlobalState sessionGlobalState)
@@ -51,10 +45,7 @@ class ArgonUDPNewSessionRequestImpl extends ArgonIPNewSessionRequestImpl impleme
         /* Grab the TTL and TOS from the last request */
         this.ttl    = session.ttl();
         this.tos    = session.tos();
-        this.icmpId = session.icmpId();
-        this.isPing = session.isPing();
     }
-
 
     /**
      * Retrieve the TTL for a session, this only has an impact for the last session in the chain
@@ -83,22 +74,6 @@ class ArgonUDPNewSessionRequestImpl extends ArgonIPNewSessionRequestImpl impleme
     }
     
     /**
-     * Returns true if this is a Ping session
-     */
-    public boolean isPing()
-    {
-        return this.isPing;
-    }
-
-    /**
-     * Retrieve the ICMP associated with the session
-     */
-    public int icmpId()
-    {
-        return icmpId;
-    }
-
-    /**
      * Set the TTL for a session.</p>
      * @param value - new TTL value.
      */
@@ -125,12 +100,4 @@ class ArgonUDPNewSessionRequestImpl extends ArgonIPNewSessionRequestImpl impleme
         options = value;
     }
     
-    /**
-     * Set the ICMP id for this session.</p>
-     * @param value - new icmp id value, -1 to not modify.
-     */
-    public void icmpId( int value )
-    {
-        this.icmpId = value;
-    }
 }

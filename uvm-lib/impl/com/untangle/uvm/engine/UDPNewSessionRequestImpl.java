@@ -35,29 +35,4 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
         super(disp, argonRequest);
     }
 
-    /**
-     * Returns true if this is a Ping session
-     */
-    public boolean isPing()
-    {
-        return ((ArgonUDPNewSessionRequest)argonRequest).isPing();
-    }
-
-    /**
-     * Retrieve the ICMP associated with the session
-     */
-    public int icmpId()
-    {
-        return ((ArgonUDPNewSessionRequest)argonRequest).icmpId();
-    }
-
-    /**
-     * Set the ICMP id for this session.</p>
-     * @param value - new icmp id value, -1 to not modify.
-     */
-    public void icmpId(int value)
-    {
-        ((ArgonUDPNewSessionRequest)argonRequest).icmpId(value);
-    }
-
 }

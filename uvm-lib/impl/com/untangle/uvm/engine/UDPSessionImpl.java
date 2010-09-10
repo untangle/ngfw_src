@@ -123,19 +123,6 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         maxPacketSize[CLIENT] = numBytes;
     }
 
-    /**
-     * Returns true if this is a Ping session
-     */
-    public boolean isPing()
-    {
-        return ((ArgonUDPSession)argonSession).isPing();
-    }
-
-    public int icmpId()
-    {
-        return ((ArgonUDPSession)argonSession).icmpId();
-    }
-
     public IPSessionDesc makeDesc()
      {
         return new UDPSessionDescImpl(id(), new SessionStats(stats),
@@ -266,8 +253,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             icmpData.position(offset);
             offset = 0;
         }
-        ICMPPacketCrumb crumb = new ICMPPacketCrumb(header.ttl(), header.tos(), header.options(),
-                                                    icmpType, icmpCode, icmpSource, array, offset, limit);
+        ICMPPacketCrumb crumb = new ICMPPacketCrumb(header.ttl(), header.tos(), header.options(), icmpType, icmpCode, icmpSource, array, offset, limit);
         addCrumb(side, crumb);
     }
 

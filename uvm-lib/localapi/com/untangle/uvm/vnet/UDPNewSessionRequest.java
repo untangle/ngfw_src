@@ -39,15 +39,6 @@ package com.untangle.uvm.vnet;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public interface UDPNewSessionRequest extends IPNewSessionRequest {
-    /**
-     * Retrieve the ICMP associated with the session
-     */
-    int icmpId();
-
-    /**
-     * Set the ICMP id for the session.
-     * @param value - The value to set the icmp id to, set to -1 to not modify
-     */
-    void icmpId( int value );
+public interface UDPNewSessionRequest extends IPNewSessionRequest
+{
 }

@@ -39,8 +39,6 @@ public class UDPHook implements NetcapHook
     private static UDPHook INSTANCE;
     private final Logger logger = Logger.getLogger(getClass());
 
-    private int icmpServerId = -1;
-
     public static UDPHook getInstance() {
         if ( INSTANCE == null )
             init();
@@ -79,8 +77,6 @@ public class UDPHook implements NetcapHook
         protected final UDPSideListener clientSideListener = new UDPSideListener();
         protected final UDPSideListener serverSideListener = new UDPSideListener();
 
-        protected boolean isIcmpSession;
-
         protected IPTraffic serverTraffic = null;
         protected IPTraffic clientTraffic = null;
 
@@ -89,7 +85,6 @@ public class UDPHook implements NetcapHook
         protected UDPArgonHook( int id )
         {
             netcapUDPSession = new NetcapUDPSession( id );
-            isIcmpSession = netcapUDPSession.isIcmpSession();
         }
 
         protected int timeout()
@@ -140,10 +135,6 @@ public class UDPHook implements NetcapHook
 
                 serverTraffic.ttl( session.ttl());
                 serverTraffic.tos( session.tos());
-                /** XXX Setup the options */
-
-                /* Update the ICMP id */
-                icmpServerId = session.icmpId();
             }
 
             /* Packets cannot go back out on the client interface */
@@ -158,19 +149,10 @@ public class UDPHook implements NetcapHook
 
             byte intf = lim.toNetcap( serverSide.serverIntf());
 
-            /* XXXX ICMP HACK */
-            if ( isIcmpSession ) {
-                if ( !netcapUDPSession.icmpMerge( serverTraffic, icmpServerId, intf )) {
-                    /* Merged out and indicate that the session was rejected */
-                    state = ArgonIPNewSessionRequest.REJECTED;
-                    return false;
-                }
-            } else {
-                if ( !netcapUDPSession.merge( serverTraffic, intf )) {
-                    /* Merged out and indicate that the session was rejected */
-                    state = ArgonIPNewSessionRequest.REJECTED;
-                    return false;
-                }
+            if ( !netcapUDPSession.merge( serverTraffic, intf )) {
+                /* Merged out and indicate that the session was rejected */
+                state = ArgonIPNewSessionRequest.REJECTED;
+                return false;
             }
 
             netcapUDPSession.serverComplete( serverTraffic );
@@ -214,16 +196,12 @@ public class UDPHook implements NetcapHook
 
         protected Sink makeClientSink()
         {
-            /* XXX ICMP Hack */
-            int icmpClientId = 0;
-            if ( netcapUDPSession.isIcmpSession()) icmpClientId = netcapUDPSession.icmpClientId();
-
-            return new UDPSink( clientTraffic, clientSideListener, netcapUDPSession.icmpClientMailbox(), icmpClientId );
+            return new UDPSink( clientTraffic, clientSideListener);
         }
 
         protected Sink makeServerSink()
         {
-            return new UDPSink( serverTraffic, serverSideListener, netcapUDPSession.icmpServerMailbox(), icmpServerId );
+            return new UDPSink( serverTraffic, serverSideListener);
         }
 
         protected Source makeClientSource()

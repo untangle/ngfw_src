@@ -40,16 +40,15 @@
 #include "jsession.h"
 
 #include JH_IPTraffic
-#include JH_ICMPTraffic
 #include JH_UDPSession
 
-#define VERIFY_PKT_SESSION(session) if ((session)->protocol != IPPROTO_UDP && (session)->protocol != IPPROTO_ICMP ) \
+#define VERIFY_PKT_SESSION(session) if ((session)->protocol != IPPROTO_UDP) \
    return jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, \
-                         "JPKT: Expecting a PKT session: %d\n", (session)->protocol )
+                         "JPKT: Expecting a UDP session: %d\n", (session)->protocol )
 
-#define VERIFY_PKT_SESSION_VOID(session) if ((session)->protocol != IPPROTO_UDP && (session)->protocol != IPPROTO_ICMP ) \
+#define VERIFY_PKT_SESSION_VOID(session) if ((session)->protocol != IPPROTO_UDP ) \
    return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, \
-                              "JPKT: Expecting a PKT Session: %d\n", (session)->protocol )
+                              "JPKT: Expecting a UDP Session: %d\n", (session)->protocol )
 
 #define JLONG_TO_PACKET( packet, packet_ptr )   do { \
     if (( packet_ptr ) == 0 ) return errlogargs(); \
@@ -76,14 +75,6 @@ static netcap_endpoint_t* _get_pkt_endpoint( netcap_pkt_t* pkt, int req_id )
     return &pkt->dst;
 }
 
-
-#define ICMP_GET_INFO_TYPE 1
-#define ICMP_GET_INFO_CODE 0
-
-/**
- * Retrieve the type or code from an ICMP packet 
- */
-static int _icmp_get_info( netcap_pkt_t* pkt, int is_type );
 
 /*
  * Class:     com_untangle_jnetcap_IPTraffic
@@ -203,8 +194,6 @@ JNIEXPORT jint JNICALL JF_IPTraffic( getIntValue )
         return pkt->dst_intf;
 
     case JN_IPTraffic( FLAG_PROTOCOL ): return pkt->proto;
-    case JN_ICMPTraffic( FLAG_TYPE ): return _icmp_get_info( pkt, ICMP_GET_INFO_TYPE );
-    case JN_ICMPTraffic( FLAG_CODE ): return _icmp_get_info( pkt, ICMP_GET_INFO_CODE );
     }
 
     return errlogargs();
@@ -592,76 +581,6 @@ JNIEXPORT void JNICALL JF_UDPSession( serverComplete )
 {
     _udp_callback( session_ptr, SRV_COMPLETE, flags );
 }
-
-/*
- * Class:     com_untangle_jnetcap_ICMPTraffic
- * Method:    icmpSource
- * Signature: (J[BI)J
- */
-JNIEXPORT jlong JNICALL JF_ICMPTraffic( icmpSource )
-   ( JNIEnv *env, jobject _this, jlong pointer, jbyteArray _data, jint limit )
-{
-    jbyte* data;
-    int data_len;
-    struct in_addr source;
-    int ret;
-    
-    netcap_pkt_t* pkt = (netcap_pkt_t*)JLONG_TO_ULONG( pointer );
-    if ( pkt == NULL ) {
-        return (jlong)jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL pkt\n" );
-    }
-
-    if (( data_len = (*env)->GetArrayLength( env, _data )) < 0 ) {
-        errlog( ERR_WARNING, "ICMP: Negative data array length\n" );
-        return JN_ICMPTraffic( SAME_SOURCE );
-    }
-    
-    if ( data_len < limit ) {
-        errlog( ERR_WARNING, "Limit is larger than array, using array size %d < %d\n", data_len, limit );
-        limit = data_len;
-    }
-
-    if (( data = (*env)->GetByteArrayElements( env, _data, NULL )) == NULL ) {
-        return (jlong)jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "GetByteArrayElements\n" );
-    }
-    
-    do {
-        if (( ret = netcap_icmp_get_source( (char*)data, limit, pkt, &source )) < 0 ) {
-            jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "netcap_icmp_get_source\n" );
-            break;
-        }
-    } while ( 0 );
-
-    (*env)->ReleaseByteArrayElements( env, _data, data, 0 );
-
-    if ( ret < 0 ) {
-        return (jlong)ret;
-    } else if ( ret ) {
-        return UINT_TO_JLONG( source.s_addr );
-    }
-    
-    return JN_ICMPTraffic( SAME_SOURCE );
-}
-
-/**
- * Retrieve the type from an ICMP packet 
- */
-static int _icmp_get_info( netcap_pkt_t* pkt, int is_type )
-{
-    struct icmp* icmp;
-
-    if ( pkt->proto != IPPROTO_ICMP ) {
-        return errlog( ERR_CRITICAL, "Attempt to retrieve ICMP type on non-icmp (%d) packet\n", pkt->proto );
-    }
-    
-    /* Type cast the data as an ICMP packet */
-    if (( icmp = (struct icmp*)pkt->data ) == NULL ) {
-        return errlog( ERR_CRITICAL, "Unable to get type, NULL data\n" );
-    }
-
-    return ( is_type == ICMP_GET_INFO_TYPE ) ? icmp->icmp_type : icmp->icmp_code;
-}
-
 
 static void _udp_callback( jlong session_ptr, netcap_callback_action_t action, jint _flags )
 {

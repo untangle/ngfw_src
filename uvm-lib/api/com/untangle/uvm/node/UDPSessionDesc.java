@@ -55,13 +55,4 @@ public interface UDPSessionDesc extends IPSessionDesc
      */
     byte[] options();
 
-    /**
-     * Returns true if this is a Ping session.
-     */
-    boolean isPing();
-
-    /**
-     * Retrieve the ICMP associated with the session.
-     */
-    int icmpId();
 }

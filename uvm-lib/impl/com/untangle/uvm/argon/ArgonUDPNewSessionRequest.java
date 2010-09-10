@@ -39,11 +39,6 @@ public interface ArgonUDPNewSessionRequest extends ArgonIPNewSessionRequest, Arg
     byte[] options();
 
     /**
-     * Retrieve the ICMP associated with the session
-     */
-    int icmpId();
-
-    /**
      * Set the TTL for a session.</p>
      * @param value - new TTL value.
      */
@@ -61,14 +56,4 @@ public interface ArgonUDPNewSessionRequest extends ArgonIPNewSessionRequest, Arg
      */
     void options( byte[] value );
 
-    /**
-     * Returns true if this is an Ping session
-     */
-    boolean isPing();
-
-    /**
-     * Set the ICMP id for the session.
-     * @param value - The value to set the icmp id to, set to -1 to not modify
-     */
-    void icmpId( int value );
 }

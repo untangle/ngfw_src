@@ -64,9 +64,5 @@ int jnetcap_initialized( void );
 #define JN_IPTraffic(VAL)  JN_BUILD_NAME( IPTraffic, VAL )
 #define JF_IPTraffic(FUNC) JF_BUILD_NAME( IPTraffic, FUNC )
 
-#define JH_ICMPTraffic       "com_untangle_jnetcap_ICMPTraffic.h"
-#define JN_ICMPTraffic(VAL)  JN_BUILD_NAME( ICMPTraffic, VAL )
-#define JF_ICMPTraffic(FUNC) JF_BUILD_NAME( ICMPTraffic, FUNC )
- 
 #endif  // __JNETCAP_H_
 

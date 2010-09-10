@@ -26,7 +26,6 @@ BuildEnv::SRC.installTarget.install_jars(j, "#{uvm_lib.distDirectory}/usr/share/
 
 headerClasses = [ 'com.untangle.jnetcap.Netcap',
   'com.untangle.jnetcap.IPTraffic',
-  'com.untangle.jnetcap.ICMPTraffic',
   'com.untangle.jnetcap.NetcapUDPSession',
   'com.untangle.jnetcap.NetcapSession',
   'com.untangle.jnetcap.NetcapTCPSession' ]

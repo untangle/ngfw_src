@@ -88,7 +88,7 @@ JNIEXPORT jlong JNICALL Java_com_untangle_jvector_UDPSink_create
 
 JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_write
     ( JNIEnv *env, jobject _this, jlong pointer, jbyteArray _data, jint offset, jint size,
-      jint ttl, jint tos, jbyteArray options, jboolean is_udp, jlong src_address )
+      jint ttl, jint tos, jbyteArray options, jlong src_address )
 {
     jbyte* data;
     int number_bytes = 0;
@@ -99,10 +99,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_write
     int prev_ttl = pkt->ttl;
     int prev_tos = pkt->tos;
 
-    /* XXX options */
-    
-    
-    /* Convert the byte array */
+     /* Convert the byte array */
     if (( data = (*env)->GetByteArrayElements( env, _data, NULL )) == NULL ) return errlogmalloc();
     
     data_len = (*env)->GetArrayLength( env, _data );
@@ -119,30 +116,14 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_write
     if ( ttl != com_untangle_jvector_UDPSink_DISABLED) pkt->ttl = ttl;
     if ( tos != com_untangle_jvector_UDPSink_DISABLED) pkt->tos = tos;
     
-    /* XXX options */
-    if  ( is_udp == JNI_TRUE ) {
-        if ( pkt->packet_id != 0 ) {
-            if (( number_bytes = _accept_packet( (char*)data, data_len, pkt )) < 0 ) {
-                errlog( ERR_CRITICAL, "_accept_packet" );
-            }
-        } else {
-            if (( number_bytes = netcap_udp_send( (char*)data, data_len, pkt )) < 0 ) {
-                perrlog( "netcap_udp_send" );
-            }
+    if ( pkt->packet_id != 0 ) {
+        if (( number_bytes = _accept_packet( (char*)data, data_len, pkt )) < 0 ) {
+            errlog( ERR_CRITICAL, "_accept_packet" );
         }
     } else {
-        in_addr_t prev_addr = pkt->src.host.s_addr;
-        if ( src_address != 0 ) {
-            /* Some ICMP packets may come from a different source, eg timeout expired */
-            pkt->src.host.s_addr = (in_addr_t)( src_address & 0xFFFFFFFF );
+        if (( number_bytes = netcap_udp_send( (char*)data, data_len, pkt )) < 0 ) {
+            perrlog( "netcap_udp_send" );
         }
-        
-        if (( number_bytes = netcap_icmp_send( (char*)data, data_len, pkt )) < 0 ) {
-            perrlog( "netcap_icmp_send" );
-        }
-        
-        /* Return to the original address */
-        pkt->src.host.s_addr = prev_addr;
     }
 
     (*env)->ReleaseByteArrayElements( env, _data, data, 0 );
