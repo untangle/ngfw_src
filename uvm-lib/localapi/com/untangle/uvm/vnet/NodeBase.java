@@ -106,8 +106,8 @@ public abstract class NodeBase implements Node
 
     // abstract methods --------------------------------------------------------
 
-    protected abstract void connectMPipe();
-    protected abstract void disconnectMPipe();
+    protected abstract void connectArgonConnector();
+    protected abstract void disconnectArgonConnector();
 
     // Node methods ------------------------------------------------------------
 
@@ -336,28 +336,28 @@ public abstract class NodeBase implements Node
     { }
 
     /**
-     * Called just after connecting to MPipe, but before starting.
+     * Called just after connecting to ArgonConnector, but before starting.
      *
      */
     protected void preStart() throws NodeStartException
     { }
 
     /**
-     * Called just after starting MPipe and making subscriptions.
+     * Called just after starting ArgonConnector and making subscriptions.
      *
      */
     protected void postStart() throws NodeStartException
     { }
 
     /**
-     * Called just before stopping MPipe and disconnecting.
+     * Called just before stopping ArgonConnector and disconnecting.
      *
      */
     protected void preStop() throws NodeStopException
     { }
 
     /**
-     * Called after stopping MPipe and disconnecting.
+     * Called after stopping ArgonConnector and disconnecting.
      *
      */
     protected void postStop() throws NodeStopException
@@ -462,7 +462,7 @@ public abstract class NodeBase implements Node
             nodeManager.registerThreadContext(nodeContext);
             preStart();
 
-            connectMPipe();
+            connectArgonConnector();
 
             changeState(NodeState.RUNNING, syncState);
             postStart(); // XXX if exception, state == ?
@@ -482,7 +482,7 @@ public abstract class NodeBase implements Node
         try {
             nodeManager.registerThreadContext(nodeContext);
             preStop();
-            disconnectMPipe();
+            disconnectArgonConnector();
             changeState(NodeState.INITIALIZED, syncState);
         } finally {
             nodeManager.deregisterThreadContext();

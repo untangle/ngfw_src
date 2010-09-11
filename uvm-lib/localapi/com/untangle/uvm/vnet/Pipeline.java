@@ -38,7 +38,7 @@ import java.io.IOException;
 
 
 /**
- * A Pipeline is a chain of <code>MPipe</code>s for one
+ * A Pipeline is a chain of <code>ArgonConnector</code>s for one
  * <code>Session</code>.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
@@ -49,8 +49,8 @@ public interface Pipeline
     Long attach(Object o);
     Object getAttachment(Long key);
     Object detach(Long key);
-    Fitting getClientFitting(MPipe mPipe);
-    Fitting getServerFitting(MPipe mPipe);
+    Fitting getClientFitting(ArgonConnector argonConnector);
+    Fitting getServerFitting(ArgonConnector argonConnector);
 
     /**
      * Makes a temporary file that will be destroyed on Session

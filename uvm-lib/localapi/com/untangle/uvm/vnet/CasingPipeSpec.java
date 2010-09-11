@@ -63,8 +63,8 @@ public class CasingPipeSpec extends PipeSpec
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private MPipe insideMPipe;
-    private MPipe outsideMPipe;
+    private ArgonConnector insideArgonConnector;
+    private ArgonConnector outsideArgonConnector;
 
     private boolean releaseParseExceptions = true;
 
@@ -129,39 +129,39 @@ public class CasingPipeSpec extends PipeSpec
     // PipeSpec methods -------------------------------------------------------
 
     @Override
-    public void connectMPipe()
+    public void connectArgonConnector()
     {
-        if (null == insideMPipe && null == outsideMPipe) {
-            insideMPipe = FOUNDRY.createMPipe(this, insideAdaptor);
-            outsideMPipe = FOUNDRY.createMPipe(this, insideAdaptor);
-            FOUNDRY.registerCasing(insideMPipe, outsideMPipe);
+        if (null == insideArgonConnector && null == outsideArgonConnector) {
+            insideArgonConnector = FOUNDRY.createArgonConnector(this, insideAdaptor);
+            outsideArgonConnector = FOUNDRY.createArgonConnector(this, insideAdaptor);
+            FOUNDRY.registerCasing(insideArgonConnector, outsideArgonConnector);
         } else {
-            logger.warn("casing MPipes already connected");
+            logger.warn("casing ArgonConnectors already connected");
         }
     }
 
     @Override
-    public void disconnectMPipe()
+    public void disconnectArgonConnector()
     {
-        if (null != insideMPipe && null != outsideMPipe) {
-            FOUNDRY.deregisterCasing(insideMPipe);
-            insideMPipe.destroy();
-            outsideMPipe.destroy();
-            insideMPipe = outsideMPipe = null;
+        if (null != insideArgonConnector && null != outsideArgonConnector) {
+            FOUNDRY.deregisterCasing(insideArgonConnector);
+            insideArgonConnector.destroy();
+            outsideArgonConnector.destroy();
+            insideArgonConnector = outsideArgonConnector = null;
         } else {
-            logger.warn("casing MPipes not connected");
+            logger.warn("casing ArgonConnectors not connected");
         }
     }
 
     @Override
     public void dumpSessions()
     {
-        if (null != insideMPipe) {
-            insideMPipe.dumpSessions();
+        if (null != insideArgonConnector) {
+            insideArgonConnector.dumpSessions();
         }
 
-        if (null != outsideMPipe) {
-            outsideMPipe.dumpSessions();
+        if (null != outsideArgonConnector) {
+            outsideArgonConnector.dumpSessions();
         }
     }
 
@@ -169,14 +169,14 @@ public class CasingPipeSpec extends PipeSpec
     public List<IPSessionDesc> liveSessionDescs()
     {
         List<IPSessionDesc> l = new ArrayList<IPSessionDesc>();
-        if (null != insideMPipe) {
-            for (IPSessionDesc isd : insideMPipe.liveSessionDescs()) {
+        if (null != insideArgonConnector) {
+            for (IPSessionDesc isd : insideArgonConnector.liveSessionDescs()) {
                 l.add(isd);
             }
         }
 
-        if (null != outsideMPipe) {
-            for (IPSessionDesc isd : outsideMPipe.liveSessionDescs()) {
+        if (null != outsideArgonConnector) {
+            for (IPSessionDesc isd : outsideArgonConnector.liveSessionDescs()) {
                 l.add(isd);
             }
         }
@@ -187,8 +187,8 @@ public class CasingPipeSpec extends PipeSpec
     @Override
     public List<IPSession> liveSessions()
     {
-        if (null != insideMPipe) {
-            return insideMPipe.liveSessions();
+        if (null != insideArgonConnector) {
+            return insideArgonConnector.liveSessions();
         } else {
             return null;
         }

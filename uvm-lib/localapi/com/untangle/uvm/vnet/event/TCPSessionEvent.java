@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.TCPSession;
 
 /**
@@ -46,9 +46,9 @@ import com.untangle.uvm.vnet.TCPSession;
 public class TCPSessionEvent extends IPSessionEvent
 {
 
-    public TCPSessionEvent(MPipe mPipe, TCPSession session)
+    public TCPSessionEvent(ArgonConnector argonConnector, TCPSession session)
     {
-        super(mPipe, session);
+        super(argonConnector, session);
     }
 
     public TCPSession session()

@@ -37,7 +37,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import com.untangle.uvm.vnet.IPPacketHeader;
-import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.UDPSession;
 
 /**
@@ -54,9 +54,9 @@ public class UDPErrorEvent extends UDPPacketEvent {
     private byte icmpCode;
     private InetAddress icmpSource;
     
-    public UDPErrorEvent(MPipe mPipe, UDPSession src, ByteBuffer icmpData, IPPacketHeader header, byte icmpType, byte icmpCode, InetAddress icmpSource)
+    public UDPErrorEvent(ArgonConnector argonConnector, UDPSession src, ByteBuffer icmpData, IPPacketHeader header, byte icmpType, byte icmpCode, InetAddress icmpSource)
     {
-        super(mPipe, src, icmpData, header);
+        super(argonConnector, src, icmpData, header);
         this.icmpType   = icmpType;
         this.icmpCode   = icmpCode;
         this.icmpSource = icmpSource;

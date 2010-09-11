@@ -18,7 +18,7 @@
 
 package com.untangle.uvm.engine;
 
-import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.argon.ArgonSession;
 
@@ -38,7 +38,7 @@ abstract class SessionImpl implements Session
     protected static final int CLIENT = 0;
     protected static final int SERVER = 1;
 
-    protected MPipeImpl mPipe;
+    protected ArgonConnectorImpl argonConnector;
 
     /**
      * The argon session that corresponds to this (node) Session.
@@ -47,15 +47,15 @@ abstract class SessionImpl implements Session
 
     protected volatile Object attachment = null;
 
-    protected SessionImpl(MPipeImpl mPipe, ArgonSession argonSession)
+    protected SessionImpl(ArgonConnectorImpl argonConnector, ArgonSession argonSession)
     {
-        this.mPipe = mPipe;
+        this.argonConnector = argonConnector;
         this.argonSession = argonSession;
     }
 
-    public MPipe mPipe()
+    public ArgonConnector argonConnector()
     {
-        return mPipe;
+        return argonConnector;
     }
 
     public int id()

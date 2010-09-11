@@ -19,30 +19,30 @@
 package com.untangle.uvm.engine;
 
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.ArgonConnector;
 
 /**
- * Binds a <code>Fitting</code> to a <code>MPipe</code>.
+ * Binds a <code>Fitting</code> to a <code>ArgonConnector</code>.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class MPipeFitting
+class ArgonConnectorFitting
 {
-    final MPipe mPipe;
+    final ArgonConnector argonConnector;
     final Fitting fitting;
-    final MPipe end;
+    final ArgonConnector end;
 
-    MPipeFitting(MPipe mPipe, Fitting fitting)
+    ArgonConnectorFitting(ArgonConnector argonConnector, Fitting fitting)
     {
-        this.mPipe = mPipe;
+        this.argonConnector = argonConnector;
         this.fitting = fitting;
         this.end = null;
     }
 
-    MPipeFitting(MPipe mPipe, Fitting fitting, MPipe end)
+    ArgonConnectorFitting(ArgonConnector argonConnector, Fitting fitting, ArgonConnector end)
     {
-        this.mPipe = mPipe;
+        this.argonConnector = argonConnector;
         this.fitting = fitting;
         this.end = end;
     }
@@ -52,6 +52,6 @@ class MPipeFitting
     @Override
     public String toString()
     {
-        return mPipe.toString();
+        return argonConnector.toString();
     }
 }

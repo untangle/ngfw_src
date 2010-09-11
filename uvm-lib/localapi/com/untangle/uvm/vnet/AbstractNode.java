@@ -56,28 +56,28 @@ public abstract class AbstractNode extends NodeBase
 
     // NodeBase methods --------------------------------------------------
 
-    protected void connectMPipe()
+    protected void connectArgonConnector()
     {
         if (null == pipeSpecs) {
             PipeSpec[] pss = getPipeSpecs();
             pipeSpecs = null == pss ? new PipeSpec[0] : pss;
             for (PipeSpec ps : pipeSpecs) {
-                ps.connectMPipe();
+                ps.connectArgonConnector();
             }
         } else {
-            logger.warn("MPipes already connected");
+            logger.warn("ArgonConnectors already connected");
         }
     }
 
-    protected void disconnectMPipe()
+    protected void disconnectArgonConnector()
     {
         if (null != pipeSpecs) {
             for (PipeSpec ps : pipeSpecs) {
-                ps.disconnectMPipe();
+                ps.disconnectArgonConnector();
             }
             pipeSpecs = null;
         } else {
-            logger.warn("MPipes not connected");
+            logger.warn("ArgonConnectors not connected");
         }
     }
 

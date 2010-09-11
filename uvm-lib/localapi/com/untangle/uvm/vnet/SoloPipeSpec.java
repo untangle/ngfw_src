@@ -65,7 +65,7 @@ public class SoloPipeSpec extends PipeSpec
     private final Logger logger = Logger.getLogger(getClass());
 
     private final SessionEventListener listener;
-    private MPipe mPipe;
+    private ArgonConnector argonConnector;
 
     // constructors -----------------------------------------------------------
 
@@ -141,49 +141,49 @@ public class SoloPipeSpec extends PipeSpec
         return strength;
     }
 
-    public MPipe getMPipe()
+    public ArgonConnector getArgonConnector()
     {
-        return mPipe;
+        return argonConnector;
     }
 
     // PipeSpec methods -------------------------------------------------------
 
     @Override
-    public void connectMPipe()
+    public void connectArgonConnector()
     {
-        if (null == mPipe) {
-            mPipe = FOUNDRY.createMPipe(this, listener);
-            FOUNDRY.registerMPipe(mPipe);
+        if (null == argonConnector) {
+            argonConnector = FOUNDRY.createArgonConnector(this, listener);
+            FOUNDRY.registerArgonConnector(argonConnector);
         } else {
-            logger.warn("mPipes already connected");
+            logger.warn("argonConnectors already connected");
         }
     }
 
     @Override
-    public void disconnectMPipe()
+    public void disconnectArgonConnector()
     {
-        if (null != mPipe) {
-            FOUNDRY.deregisterMPipe(mPipe);
-            mPipe.destroy();
-            mPipe = null;
+        if (null != argonConnector) {
+            FOUNDRY.deregisterArgonConnector(argonConnector);
+            argonConnector.destroy();
+            argonConnector = null;
         } else {
-            logger.warn("mPipes not connected");
+            logger.warn("argonConnectors not connected");
         }
     }
 
     @Override
     public void dumpSessions()
     {
-        if (null != mPipe) {
-            mPipe.dumpSessions();
+        if (null != argonConnector) {
+            argonConnector.dumpSessions();
         }
     }
 
     @Override
     public List<IPSessionDesc> liveSessionDescs()
     {
-        if (null != mPipe) {
-            return mPipe.liveSessionDescs();
+        if (null != argonConnector) {
+            return argonConnector.liveSessionDescs();
         } else {
             return new LinkedList<IPSessionDesc>();
         }
@@ -192,8 +192,8 @@ public class SoloPipeSpec extends PipeSpec
     @Override
     public List<IPSession> liveSessions()
     {
-        if (null != mPipe) {
-            return mPipe.liveSessions();
+        if (null != argonConnector) {
+            return argonConnector.liveSessions();
         } else {
             return null;
         }

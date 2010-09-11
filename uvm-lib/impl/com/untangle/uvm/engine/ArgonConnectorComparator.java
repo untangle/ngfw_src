@@ -21,22 +21,22 @@ package com.untangle.uvm.engine;
 import java.util.Comparator;
 
 import com.untangle.uvm.vnet.Affinity;
-import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 
 /**
- * Compares MPipes with SoloPipeSpecs.
+ * Compares ArgonConnectors with SoloPipeSpecs.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class MPipeComparator implements Comparator<MPipe>
+class ArgonConnectorComparator implements Comparator<ArgonConnector>
 {
-    static final MPipeComparator COMPARATOR = new MPipeComparator();
+    static final ArgonConnectorComparator COMPARATOR = new ArgonConnectorComparator();
 
-    private MPipeComparator() { }
+    private ArgonConnectorComparator() { }
 
-    public int compare(MPipe mp1, MPipe mp2)
+    public int compare(ArgonConnector mp1, ArgonConnector mp2)
     {
         SoloPipeSpec ps1 = null == mp1 ? null : (SoloPipeSpec)mp1.getPipeSpec();
         SoloPipeSpec ps2 = null == mp2 ? null : (SoloPipeSpec)mp2.getPipeSpec();

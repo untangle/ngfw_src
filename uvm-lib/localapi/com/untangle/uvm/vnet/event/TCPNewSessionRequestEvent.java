@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
 /**
@@ -43,12 +43,12 @@ import com.untangle.uvm.vnet.TCPNewSessionRequest;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class TCPNewSessionRequestEvent extends MPipeEvent
+public class TCPNewSessionRequestEvent extends ArgonConnectorEvent
 {
     
-    public TCPNewSessionRequestEvent(MPipe mPipe, TCPNewSessionRequest sessionRequest)
+    public TCPNewSessionRequestEvent(ArgonConnector argonConnector, TCPNewSessionRequest sessionRequest)
     {
-        super(mPipe, sessionRequest);
+        super(argonConnector, sessionRequest);
     }
 
     public TCPNewSessionRequest sessionRequest()

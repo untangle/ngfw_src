@@ -34,7 +34,7 @@
 package com.untangle.uvm.vnet.event;
 
 import com.untangle.uvm.vnet.IPSession;
-import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.ArgonConnector;
 
 /**
  * Base class for all IP live session events
@@ -46,9 +46,9 @@ import com.untangle.uvm.vnet.MPipe;
 public class IPSessionEvent extends SessionEvent
 {
 
-    public IPSessionEvent(MPipe mPipe, IPSession session)
+    public IPSessionEvent(ArgonConnector argonConnector, IPSession session)
     {
-        super(mPipe, session);
+        super(argonConnector, session);
     }
 
     public IPSession ipsession()

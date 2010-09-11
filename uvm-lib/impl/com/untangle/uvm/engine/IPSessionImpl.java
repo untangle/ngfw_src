@@ -83,7 +83,7 @@ abstract class IPSessionImpl
                             ArgonIPSession argonSession,
                             PipelineEndpoints pe)
     {
-        super(disp.mPipe(), argonSession);
+        super(disp.argonConnector(), argonSession);
         this.dispatcher = disp;
         this.stats = new RWSessionStats();
         this.pipelineEndpoints = pe;
@@ -93,7 +93,7 @@ abstract class IPSessionImpl
             timesLogger = null;
         }
         nodeManager = UvmContextImpl.getInstance().nodeManager();
-        logger = disp.mPipe().sessionLogger();
+        logger = disp.argonConnector().sessionLogger();
     }
 
     public short protocol()
@@ -235,7 +235,7 @@ abstract class IPSessionImpl
 
     public void complete()
     {
-        Node xform = mPipe().node();
+        Node xform = argonConnector().node();
         if (xform.getRunState() != NodeState.RUNNING) {
             String message = "killing: complete(in) for node in state " + xform.getRunState();
             warn(message);
@@ -263,7 +263,7 @@ abstract class IPSessionImpl
 
     public void raze()
     {
-        Node xform = mPipe().node();
+        Node xform = argonConnector().node();
         if (xform.getRunState() != NodeState.RUNNING) {
             String message = "killing: raze for node in state " + xform.getRunState();
             warn(message);
@@ -304,7 +304,7 @@ abstract class IPSessionImpl
 
     public void clientEvent(IncomingSocketQueue in)
     {
-        Node xform = mPipe().node();
+        Node xform = argonConnector().node();
         if (xform.getRunState() != NodeState.RUNNING) {
             String message = "killing: clientEvent(in) for node in state " + xform.getRunState();
             warn(message);
@@ -323,7 +323,7 @@ abstract class IPSessionImpl
 
     public void serverEvent(IncomingSocketQueue in)
     {
-        Node xform = mPipe().node();
+        Node xform = argonConnector().node();
         if (xform.getRunState() != NodeState.RUNNING) {
             String message = "killing: serverEvent(in) for node in state " + xform.getRunState();
             warn(message);
@@ -342,7 +342,7 @@ abstract class IPSessionImpl
 
     public void clientEvent(OutgoingSocketQueue out)
     {
-        Node xform = mPipe().node();
+        Node xform = argonConnector().node();
         if (xform.getRunState() != NodeState.RUNNING) {
             String message = "killing: clientEvent(out) for node in state " + xform.getRunState();
             warn(message);
@@ -361,7 +361,7 @@ abstract class IPSessionImpl
 
     public void serverEvent(OutgoingSocketQueue out)
     {
-        Node xform = mPipe().node();
+        Node xform = argonConnector().node();
         if (xform.getRunState() != NodeState.RUNNING) {
             String message = "killing: serverEvent(out) for node in state " + xform.getRunState();
             warn(message);
@@ -383,7 +383,7 @@ abstract class IPSessionImpl
      * as an event */
     public void clientOutputResetEvent(OutgoingSocketQueue out)
     {
-        Node xform = mPipe().node();
+        Node xform = argonConnector().node();
         if (xform.getRunState() != NodeState.RUNNING) {
             String message = "killing: output reset(client) for node in state " + xform.getRunState();
             warn(message);
@@ -417,7 +417,7 @@ abstract class IPSessionImpl
      * as an event */
     public void serverOutputResetEvent(OutgoingSocketQueue out)
     {
-        Node xform = mPipe().node();
+        Node xform = argonConnector().node();
         if (xform.getRunState() != NodeState.RUNNING) {
             String message = "killing: output reset(server) for node in state " + xform.getRunState();
             warn(message);

@@ -61,7 +61,7 @@ public class FtpServerParser extends AbstractParser
 
         Pipeline p = LocalUvmContextFactory.context().pipelineFoundry()
             .getPipeline(session.id());
-        fitting = p.getServerFitting(session.mPipe());
+        fitting = p.getServerFitting(session.argonConnector());
     }
 
     public ParseResult parse(ByteBuffer buf) throws ParseException

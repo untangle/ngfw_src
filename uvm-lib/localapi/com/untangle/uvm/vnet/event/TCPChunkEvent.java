@@ -35,7 +35,7 @@ package com.untangle.uvm.vnet.event;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.TCPSession;
 
 /**
@@ -50,10 +50,10 @@ public class TCPChunkEvent extends TCPSessionEvent
 {
     private ByteBuffer readBuffer;
 
-    public TCPChunkEvent(MPipe mPipe, TCPSession session,
+    public TCPChunkEvent(ArgonConnector argonConnector, TCPSession session,
                          ByteBuffer readBuffer)
     {
-        super(mPipe, session);
+        super(argonConnector, session);
         this.readBuffer = readBuffer;
     }
 

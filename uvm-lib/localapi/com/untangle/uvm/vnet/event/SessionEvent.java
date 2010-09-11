@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.Session;
 
 /**
@@ -45,12 +45,12 @@ import com.untangle.uvm.vnet.Session;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public abstract class SessionEvent extends MPipeEvent
+public abstract class SessionEvent extends ArgonConnectorEvent
 {
     
-    protected SessionEvent(MPipe mPipe, Session session)
+    protected SessionEvent(ArgonConnector argonConnector, Session session)
     {
-        super(mPipe, session);
+        super(argonConnector, session);
     }
 
     // We could define getSession here, but it's more convenient to define it

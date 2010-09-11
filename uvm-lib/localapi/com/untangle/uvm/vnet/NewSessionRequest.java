@@ -52,11 +52,11 @@ public interface NewSessionRequest
     int id();
 
     /**
-     * <code>mPipe</code> returns the Meta Pipe <code>MPipe</code> that this session lives on.
+     * <code>argonConnector</code> returns the Meta Pipe <code>ArgonConnector</code> that this session lives on.
      *
-     * @return the <code>MPipe</code> that this session is for
+     * @return the <code>ArgonConnector</code> that this session is for
      */
-    MPipe mPipe();
+    ArgonConnector argonConnector();
 
     /**
      * Attaches the given object to this session request.

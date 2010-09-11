@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.Pipeline;
 
 /**
@@ -41,7 +41,7 @@ class PipelineImpl implements Pipeline
     private static final File UVM_TMP = new File(System.getProperty("uvm.tmp.dir"));
 
     //unused// private final int sessionId;
-    private final List<MPipeFitting> mPipeFittings;
+    private final List<ArgonConnectorFitting> argonConnectorFittings;
     private final String sessionPrefix;
 
     // This does not need to be concurrent since there is only one thread per pipeline.
@@ -52,10 +52,10 @@ class PipelineImpl implements Pipeline
 
     // constructors -----------------------------------------------------------
 
-    PipelineImpl(int sessionId, List<MPipeFitting> mPipeFittings)
+    PipelineImpl(int sessionId, List<ArgonConnectorFitting> argonConnectorFittings)
     {
         //unuserd// this.sessionId = sessionId;
-        this.mPipeFittings = mPipeFittings;
+        this.argonConnectorFittings = argonConnectorFittings;
         this.sessionPrefix = "sess-" + sessionId + "-";
     }
 
@@ -100,31 +100,31 @@ class PipelineImpl implements Pipeline
         return objects.remove(key);
     }
 
-    public Fitting getClientFitting(MPipe mPipe)
+    public Fitting getClientFitting(ArgonConnector argonConnector)
     {
-        for (MPipeFitting mpf : mPipeFittings) {
-            if (mpf.mPipe == mPipe) {
+        for (ArgonConnectorFitting mpf : argonConnectorFittings) {
+            if (mpf.argonConnector == argonConnector) {
                 return mpf.fitting;
             }
         }
-        throw new IllegalArgumentException("mPipe not in pipeline: " + mPipe);
+        throw new IllegalArgumentException("argonConnector not in pipeline: " + argonConnector);
     }
 
-    public Fitting getServerFitting(MPipe mPipe)
+    public Fitting getServerFitting(ArgonConnector argonConnector)
     {
-        for (Iterator<MPipeFitting> i = mPipeFittings.iterator(); i.hasNext(); ) {
-            MPipeFitting mpf = i.next();
-            if (mpf.mPipe == mPipe) {
+        for (Iterator<ArgonConnectorFitting> i = argonConnectorFittings.iterator(); i.hasNext(); ) {
+            ArgonConnectorFitting mpf = i.next();
+            if (mpf.argonConnector == argonConnector) {
                 if (i.hasNext()) {
                     mpf = i.next();
                     return mpf.fitting;
                 } else {
                     /* pipelines end as they begin */
-                    return mPipeFittings.get(0).fitting;
+                    return argonConnectorFittings.get(0).fitting;
                 }
             }
         }
-        throw new IllegalArgumentException("mPipe not in pipeline: " + mPipe);
+        throw new IllegalArgumentException("argonConnector not in pipeline: " + argonConnector);
     }
 
     public File mktemp() throws IOException

@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.UDPSession;
 
 /**
@@ -45,9 +45,9 @@ import com.untangle.uvm.vnet.UDPSession;
 @SuppressWarnings("serial")
 public class UDPSessionEvent extends IPSessionEvent {
     
-    public UDPSessionEvent(MPipe mPipe, UDPSession session)
+    public UDPSessionEvent(ArgonConnector argonConnector, UDPSession session)
     {
-        super(mPipe, session);
+        super(argonConnector, session);
     }
 
     public UDPSession session()

@@ -28,7 +28,7 @@ package com.untangle.uvm.argon;
  * and accessors to get the live sessions for the pipe.
  *
  * This class is wrapped inside the view as seen
- * by the node and node API, which is now MPipe.
+ * by the node and node API, which is now ArgonConnector.
  *
  * @author <a href="mailto:jdi@untangle.com"></a>
  * @version 1.0
@@ -40,7 +40,7 @@ public interface ArgonAgent
     public static final int DEAD_ARGON = 0;
 
     /**
-     * Returns the pipeline <code>state</code> for this MetaPipe.  Either LIVE or DEAD.
+     * Returns the pipeline <code>state</code> for this ArgonConnector.  Either LIVE or DEAD.
      * Death may come from <code>destroy</code> or from below.
      *
      * @return an <code>int</code> either LIVE_ARGON or DEAD_ARGON.
@@ -48,7 +48,7 @@ public interface ArgonAgent
     int state();
 
     /**
-     * Deactivates an active MetaPipe and disconnects it from argon.  This kills
+     * Deactivates an active ArgonConnector and disconnects it from argon.  This kills
      * all sessions and threads, and keeps any new sessions or further commands
      * from being issued.
      *

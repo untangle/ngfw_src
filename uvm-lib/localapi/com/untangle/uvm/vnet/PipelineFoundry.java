@@ -51,12 +51,12 @@ public interface PipelineFoundry
     void registerEndpoints(PipelineEndpoints pe);
     void destroy(IPSessionDesc start, IPSessionDesc end, PipelineEndpoints pe, String uid);
 
-    MPipe createMPipe(PipeSpec spec, SessionEventListener listener);
-    void registerMPipe(MPipe mPipe);
-    void deregisterMPipe(MPipe mPipe);
+    ArgonConnector createArgonConnector(PipeSpec spec, SessionEventListener listener);
+    void registerArgonConnector(ArgonConnector argonConnector);
+    void deregisterArgonConnector(ArgonConnector argonConnector);
 
-    void registerCasing(MPipe insideMPipe, MPipe outsideMPipe);
-    void deregisterCasing(MPipe insideMPipe);
+    void registerCasing(ArgonConnector insideArgonConnector, ArgonConnector outsideArgonConnector);
+    void deregisterCasing(ArgonConnector insideArgonConnector);
 
     /* Remove all of the cached chains */
     void clearChains();

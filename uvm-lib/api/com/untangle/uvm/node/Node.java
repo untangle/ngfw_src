@@ -70,7 +70,7 @@ public interface Node
     boolean neverStarted();
 
     /**
-     * Connects to MetaPipe and starts. The node instance reads its
+     * Connects to ArgonConnector and starts. The node instance reads its
      * configuration each time this method is called. A call to this method
      * is only valid when the instance is in the
      * {@link NodeState#INITIALIZED} state. After successful return,
@@ -83,7 +83,7 @@ public interface Node
     void start() throws NodeStartException, IllegalStateException;
 
     /**
-     * Stops node and disconnects from the MetaPipe. A call to
+     * Stops node and disconnects from the ArgonConnector. A call to
      * this method is only valid when the instance is in the {@link
      * NodeState#RUNNING} state. After successful return, the
      * instance will be in the {@link NodeState#INITIALIZED}

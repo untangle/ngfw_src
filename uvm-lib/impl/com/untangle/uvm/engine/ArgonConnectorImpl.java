@@ -28,7 +28,7 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPSessionDesc;
-import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.vnet.TCPSession;
@@ -37,14 +37,14 @@ import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.event.SessionEventListener;
 
 /**
- * MPipeImpl is the implementation of a single MetaPipe.
+ * ArgonConnectorImpl is the implementation of a single ArgonConnector.
  * Status and control of a pipe happen here.
  * Events are handled in Dispatcher instead.
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-class MPipeImpl implements MPipe
+class ArgonConnectorImpl implements ArgonConnector
 {
     protected ArgonAgent argon;
 
@@ -65,15 +65,15 @@ class MPipeImpl implements MPipe
     private final Logger sessionLoggerUDP;
 
     // public construction is the easiest solution to access from
-    // MPipeManager for now.
-    public MPipeImpl(PipeSpec pipeSpec, SessionEventListener listener)
+    // ArgonConnectorManager for now.
+    public ArgonConnectorImpl(PipeSpec pipeSpec, SessionEventListener listener)
     {
         this.node = pipeSpec.getNode();
 
         this.listener = listener;
         this.pipeSpec = pipeSpec;
 
-        logger = Logger.getLogger(MPipe.class);
+        logger = Logger.getLogger(ArgonConnector.class);
         sessionLogger = Logger.getLogger(Session.class);
         sessionEventLogger = Logger.getLogger("com.untangle.uvm.vnet.SessionEvent");
         sessionLoggerTCP = Logger.getLogger(TCPSession.class);
@@ -84,7 +84,7 @@ class MPipeImpl implements MPipe
         try {
             start();
         } catch (Exception x) {
-            logger.error("Exception plumbing MPipe", x);
+            logger.error("Exception plumbing ArgonConnector", x);
             destroy();
         }
     }
@@ -207,7 +207,7 @@ class MPipeImpl implements MPipe
 
     /**
      * This is called by the Node (or NodeManager?) to disconnect
-     * from a live MPipe. Since it is live we must be sure to shut down the
+     * from a live ArgonConnector. Since it is live we must be sure to shut down the
      * Dispatcher nicely (in comparison to shutdown, below).
      *
      */
@@ -222,7 +222,7 @@ class MPipeImpl implements MPipe
                 Thread.currentThread().interrupt();
             } catch (Exception x) {
                 // Not expected, just log
-                logger.info("Exception destroying MPipe", x);
+                logger.info("Exception destroying ArgonConnector", x);
             }
             argon = null;
             disp = null;
@@ -234,9 +234,9 @@ class MPipeImpl implements MPipe
         return null == listener ? "no listener" : listener.toString();
     }
 
-    public static MPipe create(PipeSpec pipeSpec, SessionEventListener listener)
+    public static ArgonConnector create(PipeSpec pipeSpec, SessionEventListener listener)
     {
-        return new MPipeImpl(pipeSpec, listener);
+        return new ArgonConnectorImpl(pipeSpec, listener);
     }
 
 }

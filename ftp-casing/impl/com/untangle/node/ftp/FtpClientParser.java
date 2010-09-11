@@ -61,7 +61,7 @@ public class FtpClientParser extends AbstractParser
 
         Pipeline p = LocalUvmContextFactory.context().pipelineFoundry()
             .getPipeline(session.id());
-        fitting = p.getClientFitting(session.mPipe());
+        fitting = p.getClientFitting(session.argonConnector());
     }
 
     // Parser methods ---------------------------------------------------------

@@ -71,7 +71,7 @@ import com.untangle.uvm.vnet.event.UDPPacketEvent;
 import com.untangle.uvm.vnet.event.UDPSessionEvent;
 
 /**
- * One dispatcher per MPipe.  This where all the new session logic
+ * One dispatcher per ArgonConnector.  This where all the new session logic
  * lives, and the event dispatching.
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
@@ -83,7 +83,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     /**
      * 
      * Note we only send a heartbeat once we haven't communicated with
-     * mPipe in that long.  any command or new session (incoming
+     * argonConnector in that long.  any command or new session (incoming
      * command) resets the timer.
      */
     public static final int DEFAULT_HEARTBEAT_INTERVAL = 30000;
@@ -91,7 +91,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
     /**
      * 8 seconds is the longest interval we wait between each attempt
-     * to try to connect to MPipe.
+     * to try to connect to ArgonConnector.
      */
     public static final int MAX_CONNECT_BACKOFF_TIME = 8000;
 
@@ -105,7 +105,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
     private Logger logger;
 
-    private final MPipeImpl mPipe;
+    private final ArgonConnectorImpl argonConnector;
     private final Node node;
     private final NodeContext nodeContext;
     private final NodeManager nodeManager;
@@ -121,8 +121,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
     /**
      * <code>mainThread</code> is the master thread started by
-     * <code>start</code>.  It handles connecting to mPipe, monitoring
-     * of the command/session master threads for mPipe death, and
+     * <code>start</code>.  It handles connecting to argonConnector, monitoring
+     * of the command/session master threads for argonConnector death, and
      * reconnection.
      */
     private volatile Thread mainThread;
@@ -178,24 +178,24 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     private boolean lastCommandReadFailed = false;
 
     /**
-     * dispatcher is created MPipe.start() when user decides this
-     * dispatcher should begin handling a newly connected MPipe.
+     * dispatcher is created ArgonConnector.start() when user decides this
+     * dispatcher should begin handling a newly connected ArgonConnector.
      *
      * Note that order of initialization is important in here, since
      * the "inner" classes access stuff from us.
      */
-    public Dispatcher(MPipeImpl mPipe) 
+    public Dispatcher(ArgonConnectorImpl argonConnector) 
     {
         logger = Logger.getLogger(Dispatcher.class.getName());
-        this.mPipe = mPipe;
-        this.node = mPipe.node();
-        this.nodeContext = mPipe.node().getNodeContext();
+        this.argonConnector = argonConnector;
+        this.node = argonConnector.node();
+        this.nodeContext = argonConnector.node().getNodeContext();
         this.nodeManager = UvmContextImpl.getInstance().nodeManager();
         sessionEventListener = null;
         NodeDesc td = node.getNodeDesc();
         String tidn = td.getTid().getName();
 
-        sessionEventLogger = mPipe.sessionEventLogger();
+        sessionEventLogger = argonConnector.sessionEventLogger();
         releasedHandler = new ReleasedEventHandler(node);
 
         liveSessions = new ConcurrentHashMap<IPSession,IPSession>();
@@ -244,7 +244,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     void removeSession(IPSessionImpl sess)
     {
         liveSessions.remove(sess);
-        ArgonAgent agent = (mPipe).getArgonAgent();
+        ArgonAgent agent = (argonConnector).getArgonAgent();
         if (agent == null) {
             logger.warn("attempt to remove session " + sess.id() + " when already destroyed");
         } else {
@@ -306,7 +306,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             // Give the request event to the user, to give them a
             // chance to reject the session.
             logger.debug("sending TCP new session request event");
-            TCPNewSessionRequestEvent revent = new TCPNewSessionRequestEvent(mPipe, treq);
+            TCPNewSessionRequestEvent revent = new TCPNewSessionRequestEvent(argonConnector, treq);
             dispatchTCPNewSessionRequest(revent);
 
             if (RWSessionStats.DoDetailedTimes)
@@ -370,7 +370,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             if (treq.state() == ArgonIPNewSessionRequest.RELEASED) {
                 session.release(treq.needsFinalization());
             } else {
-                TCPSessionEvent tevent = new TCPSessionEvent(mPipe, session);
+                TCPSessionEvent tevent = new TCPSessionEvent(argonConnector, session);
                 dispatchTCPNewSession(tevent);
             }
             if (RWSessionStats.DoDetailedTimes)
@@ -421,7 +421,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
             // Give the request event to the user, to give them a chance to reject the session.
             logger.debug("sending UDP new session request event");
-            UDPNewSessionRequestEvent revent = new UDPNewSessionRequestEvent(mPipe, ureq);
+            UDPNewSessionRequestEvent revent = new UDPNewSessionRequestEvent(argonConnector, ureq);
             dispatchUDPNewSessionRequest(revent);
 
             if (RWSessionStats.DoDetailedTimes)
@@ -487,7 +487,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             if (ureq.state() == ArgonIPNewSessionRequest.RELEASED) {
                 session.release(ureq.needsFinalization());
             } else {
-                UDPSessionEvent tevent = new UDPSessionEvent(mPipe, session);
+                UDPSessionEvent tevent = new UDPSessionEvent(argonConnector, session);
                 dispatchUDPNewSession(tevent);
             }
             if (RWSessionStats.DoDetailedTimes)
@@ -534,14 +534,14 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     /**
-     * Called from MPipeImpl.  Stop is only called to disconnect us
-     * from a live MPipe.  Once stopped we cannot be restarted.  This
+     * Called from ArgonConnectorImpl.  Stop is only called to disconnect us
+     * from a live ArgonConnector.  Once stopped we cannot be restarted.  This
      * function is idempotent for safety.
      *
      * When used in drain mode, this function will not return until
      * all sessions have naturally finished.  When not in drain mode,
      * all existing sessions are forcibly terminated (by closing
-     * connection to MPipe == close server & client sockets outside of
+     * connection to ArgonConnector == close server & client sockets outside of
      * VP).  In both modes, when this function returns we guarantee:
      * No sessions are alive.  No DEM threads are alive.  No session
      * threads, new session threads, or any of the three main threads
@@ -577,9 +577,9 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         }
     }
 
-    MPipeImpl mPipe()
+    ArgonConnectorImpl argonConnector()
     {
-        return mPipe;
+        return argonConnector;
     }
 
     boolean lastReadFailed()
@@ -1153,7 +1153,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         if ( !bm.isEnabled()) {
             this.benchmark = null;
         } else if ( this.benchmark == null ) {
-            benchmark = bm.getBenchmark(mPipe.node().getNodeId(), mPipe.getPipeSpec().getName(), true);
+            benchmark = bm.getBenchmark(argonConnector.node().getNodeId(), argonConnector.getPipeSpec().getName(), true);
         }
     }
 }

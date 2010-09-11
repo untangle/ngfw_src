@@ -82,12 +82,12 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             throw new IllegalArgumentException("Illegal maximum server packet bufferSize: " + serverMaxPacketSize);
         this.maxPacketSize = new int[] { clientMaxPacketSize, serverMaxPacketSize };
 
-        MPipeImpl mPipe = disp.mPipe();
+        ArgonConnectorImpl argonConnector = disp.argonConnector();
 
-        logger = mPipe.sessionLoggerUDP();
+        logger = argonConnector.sessionLoggerUDP();
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
-        Counters c = lmm.getCounters(mPipe.node().getNodeId());
+        Counters c = lmm.getCounters(argonConnector.node().getNodeId());
         s2nChunks = c.getBlingBlinger("s2nChunks");
         c2nChunks = c.getBlingBlinger("c2nChunks");
         n2sChunks = c.getBlingBlinger("n2sChunks");
@@ -276,7 +276,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
                 if (times[SessionStats.FIRST_BYTE_WROTE_TO_CLIENT + side] == 0)
                     times[SessionStats.FIRST_BYTE_WROTE_TO_CLIENT + side] = MetaEnv.currentTimeMillis();
             }
-            mPipe.lastSessionWriteFailed(false);
+            argonConnector.lastSessionWriteFailed(false);
 
             stats.wroteData(side, numWritten);
 
@@ -321,7 +321,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     protected void sendWritableEvent(int side)
         
     {
-        UDPSessionEvent wevent = new UDPSessionEvent(mPipe, this);
+        UDPSessionEvent wevent = new UDPSessionEvent(argonConnector, this);
         if (side == CLIENT)
             dispatcher.dispatchUDPClientWritable(wevent);
         else
@@ -331,14 +331,14 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     protected void sendCompleteEvent()
         
     {
-        UDPSessionEvent wevent = new UDPSessionEvent(mPipe, this);
+        UDPSessionEvent wevent = new UDPSessionEvent(argonConnector, this);
         dispatcher.dispatchUDPComplete(wevent);
     }
 
     protected void sendExpiredEvent(int side)
         
     {
-        UDPSessionEvent wevent = new UDPSessionEvent(mPipe, this);
+        UDPSessionEvent wevent = new UDPSessionEvent(argonConnector, this);
         if (side == CLIENT)
             dispatcher.dispatchUDPClientExpired(wevent);
         else
@@ -430,13 +430,13 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             byte icmpType = icrumb.icmpType();
             byte icmpCode = icrumb.icmpCode();
             InetAddress source = icrumb.source();
-            UDPErrorEvent event = new UDPErrorEvent(mPipe, this, pbuf, pheader, icmpType, icmpCode, source);
+            UDPErrorEvent event = new UDPErrorEvent(argonConnector, this, pbuf, pheader, icmpType, icmpCode, source);
             if (side == CLIENT)
                 dispatcher.dispatchUDPClientError(event);
             else
                 dispatcher.dispatchUDPServerError(event);
         } else {
-            UDPPacketEvent event = new UDPPacketEvent(mPipe, this, pbuf, pheader);
+            UDPPacketEvent event = new UDPPacketEvent(argonConnector, this, pbuf, pheader);
             if (side == CLIENT)
                 dispatcher.dispatchUDPClientPacket(event);
             else
@@ -456,7 +456,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     protected void closeFinal()
     {
         try {
-            UDPSessionEvent wevent = new UDPSessionEvent(mPipe, this);
+            UDPSessionEvent wevent = new UDPSessionEvent(argonConnector, this);
             dispatcher.dispatchUDPFinalized(wevent);
         } catch (Exception x) {
             warn("Exception in Finalized", x);

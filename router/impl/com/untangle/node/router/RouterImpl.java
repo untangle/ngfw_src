@@ -37,7 +37,7 @@ import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import org.apache.log4j.Logger;
@@ -104,14 +104,14 @@ public class RouterImpl extends AbstractNode implements Router
         return handler;
     }
 
-    MPipe getRouterMPipe()
+    ArgonConnector getRouterArgonConnector()
     {
-        return natPipeSpec.getMPipe();
+        return natPipeSpec.getArgonConnector();
     }
 
-    MPipe getRouterFtpPipeSpec()
+    ArgonConnector getRouterFtpPipeSpec()
     {
-        return natFtpPipeSpec.getMPipe();
+        return natFtpPipeSpec.getArgonConnector();
     }
 
     // AbstractNode methods ----------------------------------------------

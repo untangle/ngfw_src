@@ -22,7 +22,7 @@ import java.net.InetAddress;
 
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
 
 /**
@@ -34,7 +34,7 @@ import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
 abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
 {
 
-    protected final MPipeImpl mPipe;
+    protected final ArgonConnectorImpl argonConnector;
 
     protected volatile Object attachment = null;
 
@@ -49,13 +49,13 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
 
     protected IPNewSessionRequestImpl(Dispatcher disp, ArgonIPNewSessionRequest argonRequest)
     {
-        this.mPipe = disp.mPipe();
+        this.argonConnector = disp.argonConnector();
         this.argonRequest = argonRequest;
     }
 
-    public MPipe mPipe()
+    public ArgonConnector argonConnector()
     {
-        return mPipe;
+        return argonConnector;
     }
 
     public int id()

@@ -90,12 +90,12 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         this.readBufferSize = new int[] { clientReadBufferSize, serverReadBufferSize };
         this.readLimit = new int[] { clientReadBufferSize, serverReadBufferSize };
 
-        MPipeImpl mPipe = disp.mPipe();
+        ArgonConnectorImpl argonConnector = disp.argonConnector();
 
-        logger = mPipe.sessionLoggerTCP();
+        logger = argonConnector.sessionLoggerTCP();
 
         LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
-        Counters c = lmm.getCounters(mPipe.node().getNodeId());
+        Counters c = lmm.getCounters(argonConnector.node().getNodeId());
         s2nChunks = c.getBlingBlinger("s2nChunks");
         c2nChunks = c.getBlingBlinger("c2nChunks");
         n2sChunks = c.getBlingBlinger("n2sChunks");
@@ -365,7 +365,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
                 if (times[SessionStats.FIRST_BYTE_WROTE_TO_CLIENT + side] == 0)
                     times[SessionStats.FIRST_BYTE_WROTE_TO_CLIENT + side] = MetaEnv.currentTimeMillis();
             }
-            mPipe.lastSessionWriteFailed(false);
+            argonConnector.lastSessionWriteFailed(false);
             stats.wroteData(side, numWritten);
 
             if (SERVER == side) {
@@ -439,7 +439,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     protected void sendWritableEvent(int side)
         
     {
-        TCPSessionEvent wevent = new TCPSessionEvent(mPipe, this);
+        TCPSessionEvent wevent = new TCPSessionEvent(argonConnector, this);
 
         IPDataResult result = side == CLIENT ? dispatcher.dispatchTCPClientWritable(wevent)
             : dispatcher.dispatchTCPServerWritable(wevent);
@@ -457,7 +457,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     protected void sendCompleteEvent()
         
     {
-        TCPSessionEvent wevent = new TCPSessionEvent(mPipe, this);
+        TCPSessionEvent wevent = new TCPSessionEvent(argonConnector, this);
         dispatcher.dispatchTCPComplete(wevent);
     }
 
@@ -467,7 +467,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         // First give the node a chance to do something...
         IPDataResult result;
         ByteBuffer dataBuf = existingReadBuf != null ? existingReadBuf : EMPTY_BUF;
-        TCPChunkEvent cevent = new TCPChunkEvent(mPipe, this, dataBuf);
+        TCPChunkEvent cevent = new TCPChunkEvent(argonConnector, this, dataBuf);
         if (side == CLIENT)
             result = dispatcher.dispatchTCPClientDataEnd(cevent);
         else
@@ -482,7 +482,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         }
 
         // Then run the FIN handler.  This will send the FIN along to the other side by default.
-        TCPSessionEvent wevent = new TCPSessionEvent(mPipe, this);
+        TCPSessionEvent wevent = new TCPSessionEvent(argonConnector, this);
         if (side == CLIENT)
             dispatcher.dispatchTCPClientFIN(wevent);
         else
@@ -492,7 +492,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     protected void sendRSTEvent(int side)
         
     {
-        TCPSessionEvent wevent = new TCPSessionEvent(mPipe, this);
+        TCPSessionEvent wevent = new TCPSessionEvent(argonConnector, this);
         if (side == CLIENT)
             dispatcher.dispatchTCPClientRST(wevent);
         else
@@ -660,7 +660,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         userBuf = readBuf[side].duplicate();
         userBuf.flip();
         IPDataResult result;
-        TCPChunkEvent event = new TCPChunkEvent(mPipe, this, userBuf);
+        TCPChunkEvent event = new TCPChunkEvent(argonConnector, this, userBuf);
 
         if (side == CLIENT)
             result = dispatcher.dispatchTCPClientChunk(event);
@@ -695,7 +695,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     protected void closeFinal()
     {
         try {
-            TCPSessionEvent wevent = new TCPSessionEvent(mPipe, this);
+            TCPSessionEvent wevent = new TCPSessionEvent(argonConnector, this);
             dispatcher.dispatchTCPFinalized(wevent);
         } catch (Exception x) {
             warn("Exception in Finalized", x);

@@ -36,7 +36,7 @@ package com.untangle.uvm.vnet.event;
 import java.nio.ByteBuffer;
 
 import com.untangle.uvm.vnet.IPPacketHeader;
-import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.UDPSession;
 
 /**
@@ -52,11 +52,11 @@ public class UDPPacketEvent extends UDPSessionEvent
     private ByteBuffer packetBuffer;
     private IPPacketHeader header;
 
-    public UDPPacketEvent(MPipe mPipe, UDPSession session,
+    public UDPPacketEvent(ArgonConnector argonConnector, UDPSession session,
                           ByteBuffer packetBuffer,
                           IPPacketHeader header)
     {
-        super(mPipe, session);
+        super(argonConnector, session);
         this.header = header;
         this.packetBuffer = packetBuffer;
     }

@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.vnet.MPipe;
+import com.untangle.uvm.vnet.ArgonConnector;
 
 /**
  * Top level abstract class for all VNet events
@@ -42,18 +42,18 @@ import com.untangle.uvm.vnet.MPipe;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public abstract class MPipeEvent extends java.util.EventObject
+public abstract class ArgonConnectorEvent extends java.util.EventObject
 {
-    private MPipe mPipe;
+    private ArgonConnector argonConnector;
 
-    protected MPipeEvent(MPipe mPipe, Object source)
+    protected ArgonConnectorEvent(ArgonConnector argonConnector, Object source)
     {
         super(source);
-        this.mPipe = mPipe;
+        this.argonConnector = argonConnector;
     }
 
-    public MPipe mPipe()
+    public ArgonConnector argonConnector()
     {
-        return mPipe;
+        return argonConnector;
     }
 }
