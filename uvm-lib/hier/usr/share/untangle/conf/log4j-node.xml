@@ -66,7 +66,7 @@
   <!-- #      DEBUG           new session debugging -->
   <!-- #      INFO            each new session -->
   <!-- #      WARN            exceptions -->
-  <category name="com.untangle.uvm.vnet.MPipe">
+  <category name="com.untangle.uvm.vnet.ArgonConnector">
     <priority value="WARN"/>
   </category>
 

@@ -82,8 +82,12 @@ static int _cache_packet( u_char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb
  */
 static int _insert_first_pkt( netcap_session_t* session, netcap_pkt_t* pkt );
 
-
 struct cmsghdr * my__cmsg_nxthdr(struct msghdr *msg, struct cmsghdr *cmsg, int size);
+
+int _global_first_packet_flag = 1;
+
+
+
 
 int  netcap_udp_init ()
 {
@@ -682,8 +686,22 @@ static int _parse_udp_ip_header( netcap_pkt_t* pkt, char* header, int header_len
 static int _insert_first_pkt( netcap_session_t* session, netcap_pkt_t* pkt )
 {
     /* Copy the packet id into the first_pkt structure */
-    if (( session->first_pkt_id = pkt->packet_id ) == 0 ) {
-        return errlog( ERR_WARNING, "UDP SESSION: First packet already dropped.\n" );
+    session->first_pkt_id = pkt->packet_id;
+
+    if ( session->first_pkt_id == 0 ) {
+        if (_global_first_packet_flag) {
+            /**
+             * This is the first ever packet, which means its packet_id will actually be zero
+             * Unfortunately we use packet_id == 0 to mean there is no packet
+             * As such the easiest thing is to just drop this packet
+             */
+            _global_first_packet_flag = 0;
+            errlog( ERR_WARNING, "UDP: Dropping first packet\n" );
+            return -1;
+        } else {
+            errlog( ERR_WARNING, "UDP: Unexpected packet_id == 0, dropping\n" );
+        }
+        return 0;
     }
 
     pkt->packet_id = 0;
@@ -691,7 +709,9 @@ static int _insert_first_pkt( netcap_session_t* session, netcap_pkt_t* pkt )
     return 0;
 }
 
-/* this gets rid of the mess in libc (in bits/socket.h) */
+/**
+ * this gets rid of the mess in libc (in bits/socket.h)
+ */
 struct cmsghdr * my__cmsg_nxthdr(struct msghdr *msg, struct cmsghdr *cmsg, int size)
 {
 	struct cmsghdr * ptr;
