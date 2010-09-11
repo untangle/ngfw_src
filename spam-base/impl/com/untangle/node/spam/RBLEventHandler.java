@@ -21,7 +21,6 @@ package com.untangle.node.spam;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
@@ -42,7 +41,7 @@ class RBLEventHandler extends AbstractEventHandler
 
     @Override
     public void handleTCPComplete(TCPSessionEvent event)
-        throws MPipeException
+        
     {
         Session s = event.session();
         SpamSmtpRblEvent rblEvent = (SpamSmtpRblEvent)s.attachment();
@@ -53,7 +52,7 @@ class RBLEventHandler extends AbstractEventHandler
 
     @Override
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
-        throws MPipeException
+        
     {
         TCPNewSessionRequest tsr = event.sessionRequest();
         SpamSettings spamSettings = m_spamImpl.getSpamSettings();

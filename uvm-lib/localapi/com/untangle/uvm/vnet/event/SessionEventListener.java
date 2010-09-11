@@ -33,12 +33,10 @@
 
 package com.untangle.uvm.vnet.event;
 
-import com.untangle.uvm.vnet.MPipeException;
-
 /**
  * The listener interface for receiving Vnet events.
  *
- * Note that each handler method is free to rethrow a MPipeException received from
+ * Note that each handler method is free to rethrow an Exception received from
  * sending a request, modifying a session, etc.
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
@@ -65,7 +63,7 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>TCPNewSessionRequestEvent</code> value
      */
-    void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event) throws MPipeException;
+    void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event) ;
 
     /**
      * Called after the session is established (after the three way handshake
@@ -75,10 +73,10 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>TCPSessionEvent</code> value
      */
-    void handleTCPNewSession(TCPSessionEvent event) throws MPipeException;
+    void handleTCPNewSession(TCPSessionEvent event) ;
 
-    IPDataResult handleTCPClientChunk(TCPChunkEvent event) throws MPipeException;
-    IPDataResult handleTCPServerChunk(TCPChunkEvent event) throws MPipeException;
+    IPDataResult handleTCPClientChunk(TCPChunkEvent event) ;
+    IPDataResult handleTCPServerChunk(TCPChunkEvent event) ;
 
 
     /**
@@ -88,9 +86,9 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>TCPSessionEvent</code> value
      * @return an <code>IPDataResult</code> value
-     * @exception MPipeException if an error occurs
+     * @exception Exception if an error occurs
      */
-    IPDataResult handleTCPServerWritable(TCPSessionEvent event) throws MPipeException;
+    IPDataResult handleTCPServerWritable(TCPSessionEvent event) ;
 
     /**
      * <code>handleTCPClientWritable</code> is called when the write queue to the client has
@@ -99,9 +97,9 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>TCPSessionEvent</code> value
      * @return an <code>IPDataResult</code> value
-     * @exception MPipeException if an error occurs
+     * @exception Exception if an error occurs
      */
-    IPDataResult handleTCPClientWritable(TCPSessionEvent event) throws MPipeException;
+    IPDataResult handleTCPClientWritable(TCPSessionEvent event) ;
 
     /**
      * <code>handleTCPClientDataEnd</code> is called just as the first EOF (Shutdown) is read from
@@ -114,7 +112,7 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * handleTCPClientFIN is called just after this.
      */
-    IPDataResult handleTCPClientDataEnd(TCPChunkEvent event) throws MPipeException;
+    IPDataResult handleTCPClientDataEnd(TCPChunkEvent event) ;
 
     /**
      * <code>handleTCPClientFIN</code> is called when the first EOF (Shutdown) is read from
@@ -127,9 +125,9 @@ public interface SessionEventListener extends java.util.EventListener {
      * This is called just after handleTcpClientDataEnd.
      *
      * @param event a <code>TCPSessionEvent</code> value
-     * @exception MPipeException if an error occurs
+     * @exception Exception if an error occurs
      */
-    void handleTCPClientFIN(TCPSessionEvent event) throws MPipeException;
+    void handleTCPClientFIN(TCPSessionEvent event) ;
 
     /**
      * <code>handleTCPServerDataEnd</code> is called just as the first EOF (Shutdown) is read from
@@ -142,7 +140,7 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * handleTCPServerFIN is called just after this.
      */
-    IPDataResult handleTCPServerDataEnd(TCPChunkEvent event) throws MPipeException;
+    IPDataResult handleTCPServerDataEnd(TCPChunkEvent event) ;
 
     /**
      * <code>handleTCPServerFIN</code> is called when the first EOF (Shutdown) is read from
@@ -155,9 +153,9 @@ public interface SessionEventListener extends java.util.EventListener {
      * This is called just after handleTcpServerDataEnd.
      *
      * @param event a <code>TCPSessionEvent</code> value
-     * @exception MPipeException if an error occurs
+     * @exception Exception if an error occurs
      */
-    void handleTCPServerFIN(TCPSessionEvent event) throws MPipeException;
+    void handleTCPServerFIN(TCPSessionEvent event) ;
 
 
 
@@ -173,7 +171,7 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>TCPSessionEvent</code> giving the session
      */
-    void handleTCPClientRST(TCPSessionEvent event) throws MPipeException;
+    void handleTCPClientRST(TCPSessionEvent event) ;
 
     /**
      * <code>handleTCPServerReset</code> is called when the first RST (Reset) is read from
@@ -187,7 +185,7 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>TCPSessionEvent</code> giving the session
      */
-    void handleTCPServerRST(TCPSessionEvent event) throws MPipeException;
+    void handleTCPServerRST(TCPSessionEvent event) ;
 
     /**
      * As a convenience, <code>handleTCPFinalized</code> is called once both
@@ -204,7 +202,7 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>TCPSessionEvent</code> giving the session
      */
-    void handleTCPFinalized(TCPSessionEvent event)  throws MPipeException;
+    void handleTCPFinalized(TCPSessionEvent event)  ;
 
     /**
      * <code>handleTCPComplete</code> is delivered when a session is:
@@ -216,9 +214,9 @@ public interface SessionEventListener extends java.util.EventListener {
      * but before vectoring has begun.
      *
      * @param event a <code>TCPSessionEvent</code> value
-     * @exception MPipeException if an error occurs
+     * @exception Exception if an error occurs
      */
-    void handleTCPComplete(TCPSessionEvent event) throws MPipeException;
+    void handleTCPComplete(TCPSessionEvent event) ;
 
 
     //////////////////////////////////////////////////////////////////////
@@ -227,8 +225,8 @@ public interface SessionEventListener extends java.util.EventListener {
 
     // Note that the Packet handlers are not, in general, free to mess with the event's packet
     // position/limit, as these will be used by the default handler when sending out the packet. XX
-    void handleUDPClientPacket(UDPPacketEvent event) throws MPipeException;
-    void handleUDPServerPacket(UDPPacketEvent event) throws MPipeException;
+    void handleUDPClientPacket(UDPPacketEvent event) ;
+    void handleUDPServerPacket(UDPPacketEvent event) ;
 
     /**
      * Called after the session is established (after the new session request
@@ -238,7 +236,7 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>UDPSessionEvent</code> value
      */
-    void handleUDPNewSession(UDPSessionEvent event) throws MPipeException;
+    void handleUDPNewSession(UDPSessionEvent event) ;
 
     /**
      * Called before the session is established (when we get the initial packet).
@@ -247,15 +245,15 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>TCPNewSessionRequestEvent</code> value
      */
-    void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event) throws MPipeException;
+    void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event) ;
 
-    void handleUDPClientExpired(UDPSessionEvent event)  throws MPipeException;
+    void handleUDPClientExpired(UDPSessionEvent event)  ;
 
-    void handleUDPServerExpired(UDPSessionEvent event)  throws MPipeException;
+    void handleUDPServerExpired(UDPSessionEvent event)  ;
 
-    void handleUDPClientError(UDPErrorEvent event)  throws MPipeException;
+    void handleUDPClientError(UDPErrorEvent event)  ;
 
-    void handleUDPServerError(UDPErrorEvent event)  throws MPipeException;
+    void handleUDPServerError(UDPErrorEvent event)  ;
 
     /**
      * <code>handleUDPServerWritable</code> is called when the write queue to the server has
@@ -264,9 +262,9 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>UDPSessionEvent</code> value
      * @return an <code>IPDataResult</code> value
-     * @exception MPipeException if an error occurs
+     * @exception Exception if an error occurs
      */
-    void handleUDPServerWritable(UDPSessionEvent event) throws MPipeException;
+    void handleUDPServerWritable(UDPSessionEvent event) ;
 
     /**
      * <code>handleUDPClientWritable</code> is called when the write queue to the client has
@@ -275,9 +273,9 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>UDPSessionEvent</code> value
      * @return an <code>IPDataResult</code> value
-     * @exception MPipeException if an error occurs
+     * @exception Exception if an error occurs
      */
-    void handleUDPClientWritable(UDPSessionEvent event) throws MPipeException;
+    void handleUDPClientWritable(UDPSessionEvent event) ;
 
     /**
      * <code>handleUDPFinalized</code> is called once both the client and server have
@@ -294,7 +292,7 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>UDPSessionEvent</code> giving the session
      */
-    void handleUDPFinalized(UDPSessionEvent event)  throws MPipeException;
+    void handleUDPFinalized(UDPSessionEvent event)  ;
 
     /**
      * <code>handleUDPComplete</code> is delivered when a session is:
@@ -306,8 +304,8 @@ public interface SessionEventListener extends java.util.EventListener {
      * but before vectoring has begun.
      *
      * @param event a <code>UDPSessionEvent</code> value
-     * @exception MPipeException if an error occurs
+     * @exception Exception if an error occurs
      */
-    void handleUDPComplete(UDPSessionEvent event) throws MPipeException;
+    void handleUDPComplete(UDPSessionEvent event) ;
 }
 

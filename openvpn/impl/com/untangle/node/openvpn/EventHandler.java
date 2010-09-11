@@ -28,7 +28,6 @@ import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.UDPNewSessionRequestEvent;
 import org.apache.log4j.Logger;
@@ -55,13 +54,13 @@ class EventHandler extends AbstractEventHandler
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
-        throws MPipeException
+        
     {
         handleNewSessionRequest( event.sessionRequest());
     }
 
     public void handleUDPNewSessionRequest( UDPNewSessionRequestEvent event )
-        throws MPipeException
+        
     {
         handleNewSessionRequest( event.sessionRequest());
     }

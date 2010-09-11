@@ -37,7 +37,6 @@ import com.untangle.uvm.argon.ArgonUDPSession;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.IPSessionDesc;
-import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.UDPSession;
 import com.untangle.uvm.vnet.client.UDPSessionDescImpl;
@@ -191,7 +190,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     }
 
     protected void sideDieing(int side)
-        throws MPipeException
+        
     {
         sendExpiredEvent(side);
     }
@@ -258,7 +257,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     }
 
     protected void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)
-        throws MPipeException
+        
     {
         assert out != null;
         if (out.isFull()) {
@@ -296,7 +295,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     }
 
     protected void addStreamBuf(int side, IPStreamer ipStreamer)
-        throws MPipeException
+        
     {
 
         /* Not Yet supported
@@ -320,7 +319,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     }
 
     protected void sendWritableEvent(int side)
-        throws MPipeException
+        
     {
         UDPSessionEvent wevent = new UDPSessionEvent(mPipe, this);
         if (side == CLIENT)
@@ -330,14 +329,14 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     }
 
     protected void sendCompleteEvent()
-        throws MPipeException
+        
     {
         UDPSessionEvent wevent = new UDPSessionEvent(mPipe, this);
         dispatcher.dispatchUDPComplete(wevent);
     }
 
     protected void sendExpiredEvent(int side)
-        throws MPipeException
+        
     {
         UDPSessionEvent wevent = new UDPSessionEvent(mPipe, this);
         if (side == CLIENT)
@@ -348,7 +347,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
     // Handles the actual reading from the client
     protected void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable)
-        throws MPipeException
+        
     {
         int numRead = 0;
 
@@ -459,8 +458,6 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         try {
             UDPSessionEvent wevent = new UDPSessionEvent(mPipe, this);
             dispatcher.dispatchUDPFinalized(wevent);
-        } catch (MPipeException x) {
-            warn("MPipeException in Finalized", x);
         } catch (Exception x) {
             warn("Exception in Finalized", x);
         }

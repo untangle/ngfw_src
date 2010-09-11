@@ -46,7 +46,6 @@ import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.Session;
@@ -249,7 +248,7 @@ public class CasingAdaptor extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPFinalized(TCPSessionEvent e) throws MPipeException
+    public void handleTCPFinalized(TCPSessionEvent e) 
     {
         if (logger.isDebugEnabled()) {
             logger.debug("finalizing " + e.session().id());

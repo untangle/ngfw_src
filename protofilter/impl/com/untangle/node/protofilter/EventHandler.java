@@ -27,7 +27,6 @@ import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.vnet.IPSession;
-import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.UDPSession;
 import com.untangle.uvm.vnet.event.IPDataEvent;
@@ -104,7 +103,7 @@ public class EventHandler extends AbstractEventHandler
         return IPDataResult.PASS_THROUGH;
     }
 
-    public void handleUDPClientPacket (UDPPacketEvent e) throws MPipeException
+    public void handleUDPClientPacket (UDPPacketEvent e) 
     {
         UDPSession sess = e.session();
         ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
@@ -112,7 +111,7 @@ public class EventHandler extends AbstractEventHandler
         sess.sendServerPacket(packet, e.header());
     }
 
-    public void handleUDPServerPacket (UDPPacketEvent e) throws MPipeException
+    public void handleUDPServerPacket (UDPPacketEvent e) 
     {
         UDPSession sess = e.session();
         ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.

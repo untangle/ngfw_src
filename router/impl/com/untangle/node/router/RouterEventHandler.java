@@ -23,7 +23,6 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.IPSession;
-import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
@@ -70,19 +69,19 @@ class RouterEventHandler extends AbstractEventHandler
     }
 
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
-        throws MPipeException
+        
     {
         handleNewSessionRequest(event.sessionRequest(), Protocol.TCP);
     }
 
     public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
-        throws MPipeException
+        
     {
         handleNewSessionRequest(event.sessionRequest(), Protocol.UDP);
     }
 
     private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol)
-        throws MPipeException
+        
     {
         InetAddress origClientAddr = request.clientAddr();
         InetAddress newClientAddr = request.getNatFromHost();
@@ -164,7 +163,7 @@ class RouterEventHandler extends AbstractEventHandler
 
     @Override
     public void handleTCPComplete(TCPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSession s = event.session();
         RouterAttachment na = (RouterAttachment)s.attachment();
@@ -179,7 +178,7 @@ class RouterEventHandler extends AbstractEventHandler
 
     @Override
     public void handleUDPComplete(UDPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSession s = event.session();
         RouterAttachment na = (RouterAttachment)s.attachment();
@@ -193,13 +192,13 @@ class RouterEventHandler extends AbstractEventHandler
     }
 
     public void handleTCPFinalized(TCPSessionEvent event)
-        throws MPipeException
+        
     {
         cleanupSession(Protocol.TCP, event.ipsession());
     }
 
     public void handleUDPFinalized(UDPSessionEvent event)
-        throws MPipeException
+        
     {
         cleanupSession(Protocol.UDP, event.ipsession());
     }

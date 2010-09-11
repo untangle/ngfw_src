@@ -34,7 +34,6 @@ import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.argon.ArgonTCPSession;
 import com.untangle.uvm.vnet.IPSessionDesc;
-import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.TCPSessionDesc;
@@ -337,13 +336,13 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     }
 
     protected void sideDieing(int side)
-        throws MPipeException
+        
     {
         sendRSTEvent(side);
     }
 
     protected void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)
-        throws MPipeException
+        
     {
         String sideName = (side == CLIENT ? "client" : "server");
         assert out != null;
@@ -383,7 +382,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     }
 
     protected void addStreamBuf(int side, IPStreamer ipStreamer)
-        throws MPipeException
+        
     {
         TCPStreamer streamer = (TCPStreamer)ipStreamer;
 
@@ -438,7 +437,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     }
 
     protected void sendWritableEvent(int side)
-        throws MPipeException
+        
     {
         TCPSessionEvent wevent = new TCPSessionEvent(mPipe, this);
 
@@ -456,14 +455,14 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     }
 
     protected void sendCompleteEvent()
-        throws MPipeException
+        
     {
         TCPSessionEvent wevent = new TCPSessionEvent(mPipe, this);
         dispatcher.dispatchTCPComplete(wevent);
     }
 
     protected void sendFINEvent(int side, ByteBuffer existingReadBuf)
-        throws MPipeException
+        
     {
         // First give the node a chance to do something...
         IPDataResult result;
@@ -491,7 +490,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     }
 
     protected void sendRSTEvent(int side)
-        throws MPipeException
+        
     {
         TCPSessionEvent wevent = new TCPSessionEvent(mPipe, this);
         if (side == CLIENT)
@@ -501,14 +500,14 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     }
 
     protected void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable)
-        throws MPipeException
+        
     {
         tryReadInt(side, in, warnIfUnable);
     }
 
     // Handles the actual reading from the client
     protected int tryReadInt(int side, IncomingSocketQueue in, boolean warnIfUnable)
-        throws MPipeException
+        
     {
         int numRead = 0;
         boolean gotLine = false;
@@ -698,8 +697,6 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         try {
             TCPSessionEvent wevent = new TCPSessionEvent(mPipe, this);
             dispatcher.dispatchTCPFinalized(wevent);
-        } catch (MPipeException x) {
-            warn("MPipeException in Finalized", x);
         } catch (Exception x) {
             warn("Exception in Finalized", x);
         }

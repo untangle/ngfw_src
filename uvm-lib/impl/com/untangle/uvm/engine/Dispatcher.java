@@ -56,7 +56,6 @@ import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.util.SessionUtil;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.IPSessionDesc;
-import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.UDPSession;
@@ -393,11 +392,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
                 times[SessionStats.FINISH_NEW] = finishNewTime;
             }
             return argonSession;
-        } catch (MPipeException x) {
-            String message = "MPipeException building TCP session  " + sessionId;
-            logger.error(message,  x);
-            // This "kills" the session:
-            return null;
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " building TCP session " + sessionId;
             logger.error(message, x);
@@ -515,11 +509,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
                 times[SessionStats.FINISH_NEW] = finishNewTime;
             }
             return argonSession;
-        } catch (MPipeException x) {
-            String message = "MPipeException building UDP session  " + sessionId;
-            logger.error(message, x);
-            // This "kills" the session:
-            return null;
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " building UDP session " + sessionId;
             logger.error(message, x);
@@ -538,12 +527,10 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
      *
      * By the time we're called, the load request has been sent, but the response has not been read.
      *
-     * @exception MPipeException if an error occurs
+     * @exception Exception if an error occurs
      */
-    void start() throws MPipeException
+    void start() 
     {
-        // if (mainThread != null && !mainThread.isAlive())
-        // mainThread.start();
     }
 
     /**
@@ -731,7 +718,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     //////////////////////////////////////////////////////////////////
 
     void dispatchTCPNewSessionRequest(TCPNewSessionRequestEvent event)
-        throws MPipeException
+        
     {
         elog(Level.DEBUG, "TCPNewSessionRequest", event.sessionRequest().id());
         if (sessionEventListener == null) {
@@ -754,7 +741,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPNewSessionRequest(UDPNewSessionRequestEvent event)
-        throws MPipeException
+        
     {
         elog(Level.DEBUG, "UDPNewSessionRequest", event.sessionRequest().id());
         if (sessionEventListener == null) {
@@ -776,7 +763,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchTCPNewSession(TCPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPNewSession", session.id());
@@ -787,7 +774,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPNewSession(UDPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPNewSession", session.id());
@@ -798,7 +785,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     IPDataResult dispatchTCPClientChunk(TCPChunkEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientChunk", session.id(), event.chunk().remaining());
@@ -824,7 +811,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     IPDataResult dispatchTCPServerChunk(TCPChunkEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerChunk", session.id(), event.chunk().remaining());
@@ -850,7 +837,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     IPDataResult dispatchTCPClientWritable(TCPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientWritable", session.id());
@@ -874,7 +861,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     IPDataResult dispatchTCPServerWritable(TCPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerWritable", session.id());
@@ -897,7 +884,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPClientPacket(UDPPacketEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPClientPacket", session.id(), event.packet().remaining());
@@ -919,7 +906,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPServerPacket(UDPPacketEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPServerPacket", session.id(), event.packet().remaining());
@@ -943,7 +930,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPClientError(UDPErrorEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPClientError", session.id(), event.packet().remaining());
@@ -954,7 +941,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPServerError(UDPErrorEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPServerError", session.id(), event.packet().remaining());
@@ -965,7 +952,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     IPDataResult dispatchTCPClientDataEnd(TCPChunkEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientDataEnd", session.id());
@@ -976,7 +963,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchTCPClientFIN(TCPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientFIN", session.id());
@@ -987,7 +974,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     IPDataResult dispatchTCPServerDataEnd(TCPChunkEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerDataEnd", session.id());
@@ -998,7 +985,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchTCPServerFIN(TCPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerFIN", session.id());
@@ -1009,7 +996,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchTCPClientRST(TCPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPClientRST", session.id());
@@ -1020,7 +1007,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchTCPServerRST(TCPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPServerRST", session.id());
@@ -1031,7 +1018,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchTCPFinalized(TCPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPFinalized", session.id());
@@ -1042,7 +1029,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchTCPComplete(TCPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "TCPComplete", session.id());
@@ -1053,7 +1040,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPClientExpired(UDPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPClientExpired", session.id());
@@ -1064,7 +1051,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPServerExpired(UDPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPServerExpired", session.id());
@@ -1075,7 +1062,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPClientWritable(UDPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPClientWritable", session.id());
@@ -1086,7 +1073,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPServerWritable(UDPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPServerWritable", session.id());
@@ -1097,7 +1084,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPFinalized(UDPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPFinalized", session.id());
@@ -1108,7 +1095,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     }
 
     void dispatchUDPComplete(UDPSessionEvent event)
-        throws MPipeException
+        
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPComplete", session.id());

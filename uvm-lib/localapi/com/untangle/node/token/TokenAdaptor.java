@@ -47,7 +47,6 @@ import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.vnet.Session;
@@ -102,14 +101,14 @@ public class TokenAdaptor extends AbstractEventHandler
 
     @Override
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent e)
-        throws MPipeException
+        
     {
         handlerFactory.handleNewSessionRequest(e.sessionRequest());
     }
 
     @Override
     public void handleTCPNewSession(TCPSessionEvent e)
-        throws MPipeException
+        
     {
         TCPSession s = e.session();
         TokenHandler h = handlerFactory.tokenHandler(s);
@@ -126,7 +125,7 @@ public class TokenAdaptor extends AbstractEventHandler
 
     @Override
     public IPDataResult handleTCPServerChunk(TCPChunkEvent e)
-        throws MPipeException
+        
     {
         HandlerDesc handlerDesc = getHandlerDesc(e.session());
         return handleToken(handlerDesc, e, true);
@@ -134,7 +133,7 @@ public class TokenAdaptor extends AbstractEventHandler
 
     @Override
     public IPDataResult handleTCPClientChunk(TCPChunkEvent e)
-        throws MPipeException
+        
     {
         HandlerDesc handlerDesc = getHandlerDesc(e.session());
         return handleToken(handlerDesc, e, false);
@@ -142,7 +141,7 @@ public class TokenAdaptor extends AbstractEventHandler
 
     @Override
     public void handleTCPClientFIN(TCPSessionEvent e)
-        throws MPipeException
+        
     {
         TCPSession session = e.session();
         HandlerDesc handlerDesc = getHandlerDesc(session);
@@ -158,7 +157,7 @@ public class TokenAdaptor extends AbstractEventHandler
 
     @Override
     public void handleTCPServerFIN(TCPSessionEvent e)
-        throws MPipeException
+        
     {
         TCPSession session = e.session();
         HandlerDesc handlerDesc = getHandlerDesc(session);
@@ -173,7 +172,7 @@ public class TokenAdaptor extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPFinalized(TCPSessionEvent e) throws MPipeException
+    public void handleTCPFinalized(TCPSessionEvent e) 
     {
         TCPSession session = e.session();
         HandlerDesc handlerDesc = getHandlerDesc(session);
@@ -194,45 +193,45 @@ public class TokenAdaptor extends AbstractEventHandler
 
     @Override
     public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent e)
-        throws MPipeException
+        
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
     @Override
-    public void handleUDPNewSession(UDPSessionEvent e) throws MPipeException
+    public void handleUDPNewSession(UDPSessionEvent e) 
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
     @Override
     public void handleUDPClientPacket(UDPPacketEvent e)
-        throws MPipeException
+        
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
     @Override
     public void handleUDPServerPacket(UDPPacketEvent e)
-        throws MPipeException
+        
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
     @Override
-    public void handleUDPClientExpired(UDPSessionEvent e) throws MPipeException
+    public void handleUDPClientExpired(UDPSessionEvent e) 
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
     @Override
-    public void handleUDPServerExpired(UDPSessionEvent e) throws MPipeException
+    public void handleUDPServerExpired(UDPSessionEvent e) 
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
     @Override
-    public void handleUDPFinalized(UDPSessionEvent e) throws MPipeException
+    public void handleUDPFinalized(UDPSessionEvent e) 
     {
         throw new UnsupportedOperationException("UDP not supported");
     }

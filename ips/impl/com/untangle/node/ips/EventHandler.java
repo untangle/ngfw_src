@@ -21,7 +21,6 @@ package com.untangle.node.ips;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.IPSession;
-import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
@@ -40,74 +39,73 @@ public class EventHandler extends AbstractEventHandler {
         ipsEngine = node.getEngine();
     }
 
-    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event) throws MPipeException {
+    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
+    {
         handleNewSessionRequest(event.sessionRequest(), Protocol.TCP);
     }
 
-    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event) throws MPipeException {
+    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
+    {
         handleNewSessionRequest(event.sessionRequest(), Protocol.UDP);
     }
 
-    private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol) {
+    private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol)
+    {
         ipsEngine.processNewSessionRequest(request, protocol);
     }
 
-    public void handleTCPNewSession(TCPSessionEvent event) throws MPipeException {
+    public void handleTCPNewSession(TCPSessionEvent event)
+    {
         handleNewSession(event.session(), Protocol.TCP);
     }
 
-    public void handleUDPNewSession(UDPSessionEvent event) throws MPipeException {
+    public void handleUDPNewSession(UDPSessionEvent event)
+    {
         handleNewSession(event.session(), Protocol.UDP);
     }
 
-    private void handleNewSession(IPSession session, Protocol protocol) {
+    private void handleNewSession(IPSession session, Protocol protocol)
+    {
         ipsEngine.processNewSession(session, protocol);
     }
 
-    public void handleTCPFinalized(TCPSessionEvent event) throws MPipeException {
+    public void handleTCPFinalized(TCPSessionEvent event)
+    {
         handleFinalized(event.session(), Protocol.TCP);
     }
 
-    public void handleUDPFinalized(UDPSessionEvent event) throws MPipeException {
+    public void handleUDPFinalized(UDPSessionEvent event)
+    {
         handleFinalized(event.session(), Protocol.UDP);
     }
 
-    private void handleFinalized(IPSession session, Protocol protocol) {
+    private void handleFinalized(IPSession session, Protocol protocol)
+    {
         ipsEngine.processFinalized(session, protocol);
     }
 
-    /*  public void handleTCPNewSession(TCPSessionEvent event) {
-
-    }
-
-    public void handleUDPNewSession(UDPSessionEvent event) {
-    //UDPSession sess = event.session();
-    }*/
-
-    public IPDataResult handleTCPClientChunk(TCPChunkEvent event) 
+    public IPDataResult handleTCPClientChunk(TCPChunkEvent event)
     {
         ipsEngine.handleChunk(event, event.session(), false);
         return IPDataResult.PASS_THROUGH;
     }
 
-    public IPDataResult handleTCPServerChunk(TCPChunkEvent event) 
+    public IPDataResult handleTCPServerChunk(TCPChunkEvent event)
     {
         ipsEngine.handleChunk(event, event.session(), true);
         return IPDataResult.PASS_THROUGH;
     }
 
-    public void handleUDPClientPacket(UDPPacketEvent event) throws MPipeException 
+    public void handleUDPClientPacket(UDPPacketEvent event)
     {
         ipsEngine.handleChunk(event, event.session(),false);
         super.handleUDPClientPacket(event);
     }
 
-    public void handleUDPServerPacket(UDPPacketEvent event) throws MPipeException 
+    public void handleUDPServerPacket(UDPPacketEvent event)
     {
         ipsEngine.handleChunk(event, event.session(),true);
         super.handleUDPServerPacket(event);
     }
-    /*
-      public void handleTCPFinalized(TCPChunkEvent event) {}
-    */
+
 }

@@ -29,7 +29,6 @@ import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.MPipe;
-import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.vnet.TCPSession;
@@ -84,7 +83,7 @@ class MPipeImpl implements MPipe
 
         try {
             start();
-        } catch (MPipeException x) {
+        } catch (Exception x) {
             logger.error("Exception plumbing MPipe", x);
             destroy();
         }
@@ -185,10 +184,12 @@ class MPipeImpl implements MPipe
         return lastSessionWriteTime;
     }
 
-    private void start() throws MPipeException
+    private void start() 
     {
-        if (isRunning())
-            throw new MPipeException(this, "Attempt to start a MPipe that is already running");
+        if (isRunning()) {
+            logger.warn("Already running... ignoring start command");
+            return;
+        }
 
         disp = new Dispatcher(this);
         if (listener != null)

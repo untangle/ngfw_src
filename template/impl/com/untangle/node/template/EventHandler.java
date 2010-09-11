@@ -59,14 +59,14 @@ public class EventHandler extends AbstractEventHandler
     }
 
     public void handleUDPClientPacket (UDPPacketEvent e)
-        throws MPipeException
+        
     {
         UDPSession sess = e.session();
         sess.sendClientPacket(e.packet(), e.header());
     }
 
     public void handleUDPServerPacket (UDPPacketEvent e)
-        throws MPipeException
+        
     {
         UDPSession sess = e.session();
         sess.sendClientPacket(e.packet(), e.header());

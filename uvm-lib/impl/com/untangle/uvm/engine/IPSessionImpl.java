@@ -43,7 +43,6 @@ import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.IPSessionDesc;
-import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.event.IPStreamer;
 import com.untangle.uvm.node.NodeManager;
@@ -144,23 +143,8 @@ abstract class IPSessionImpl
     {
         cancelTimer();
 
-        // We could theoretically detach the attachment here (maybe
-        // only when !needsFinalization) XXX
-
-        /** Someday...
-            try {
-            Mnp req = RequestUtil.createReleaseNewSession();
-            ReleaseNewSessionType rl = req.getReleaseNewSession();
-            rl.setSessId(id);
-            mpipe.requestNoReply(req);
-            } catch (MPipeException x) {
-            // Not expected, just log
-            mpipe.sessionLogger().warn("Exception releasing new session", x);
-            }
-        */
         released = true;
         this.needsFinalization = needsFinalization;
-        // Do more eventually (closing sockets.) XX
     }
 
     public byte clientIntf()
@@ -265,10 +249,6 @@ abstract class IPSessionImpl
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             sendCompleteEvent();
-        } catch (MPipeException x) {
-            String message = "MPipeException while completing";
-            error(message, x);
-            // killSession(message);
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while completing";
             // error(message, x);
@@ -420,10 +400,6 @@ abstract class IPSessionImpl
             if (in != null)
                 in.reset();
             sideDieing(CLIENT);
-        } catch (MPipeException x) {
-            String message = "MPipeException while output resetting";
-            error(message, x);
-            // killSession(message);
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while output resetting";
             // error(message, x);
@@ -458,10 +434,6 @@ abstract class IPSessionImpl
             if (in != null)
                 in.reset();
             sideDieing(SERVER);
-        } catch (MPipeException x) {
-            String message = "MPipeException while output resetting";
-            error(message, x);
-            // killSession(message);
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while output resetting";
             // error(message, x);
@@ -603,10 +575,6 @@ abstract class IPSessionImpl
             }
             if (streamer == null)
                 setupForNormal();
-        } catch (MPipeException x) {
-            String message = "MPipeException while writing to " + sideName;
-            error(message, x);
-            killSession(message);
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while writing to " + sideName;
             error(message, x);
@@ -678,10 +646,6 @@ abstract class IPSessionImpl
                       (ourout == null ? null : ourout.numEvents()));
             }
             setupForNormal();
-        } catch (MPipeException x) {
-            String message = "MPipeException while reading from " + sideName;
-            error(message, x);
-            killSession(message);
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while reading from " + sideName;
             error(message, x);
@@ -829,7 +793,7 @@ abstract class IPSessionImpl
      * @return a <code>boolean</code> value
      */
     private boolean doWrite(int side, OutgoingSocketQueue out)
-        throws MPipeException
+        
     {
         boolean didSomething = false;
         if (out != null && out.isEmpty()) {
@@ -888,22 +852,22 @@ abstract class IPSessionImpl
      */
     abstract protected boolean isSideDieing(int side, IncomingSocketQueue in);
 
-    abstract protected void sideDieing(int side) throws MPipeException;
+    abstract protected void sideDieing(int side) ;
 
     abstract protected void killSession(String message);
 
-    abstract protected void sendWritableEvent(int side) throws MPipeException;
+    abstract protected void sendWritableEvent(int side) ;
 
-    abstract protected void sendCompleteEvent() throws MPipeException;
+    abstract protected void sendCompleteEvent() ;
 
     abstract protected void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)
-        throws MPipeException;
+        ;
 
     abstract protected void addStreamBuf(int side, IPStreamer streamer)
-        throws MPipeException;
+        ;
 
     abstract protected void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable)
-        throws MPipeException;
+        ;
 
     abstract protected String idForMDC();
 

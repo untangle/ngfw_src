@@ -26,7 +26,6 @@ import com.untangle.uvm.node.IPMaddr;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.MPipeException;
 import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
@@ -88,7 +87,6 @@ public class SpywareEventHandler extends AbstractEventHandler
 
     @Override
     public void handleTCPComplete(TCPSessionEvent event)
-        throws MPipeException
     {
         Session s = event.session();
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
@@ -102,7 +100,6 @@ public class SpywareEventHandler extends AbstractEventHandler
 
     @Override
     public void handleUDPComplete(UDPSessionEvent event)
-        throws MPipeException
     {
         Session s = event.session();
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
