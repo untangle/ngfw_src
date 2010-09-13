@@ -133,7 +133,7 @@ public class CasingPipeSpec extends PipeSpec
     {
         if (null == insideArgonConnector && null == outsideArgonConnector) {
             insideArgonConnector = FOUNDRY.createArgonConnector(this, insideAdaptor);
-            outsideArgonConnector = FOUNDRY.createArgonConnector(this, insideAdaptor);
+            outsideArgonConnector = FOUNDRY.createArgonConnector(this, outsideAdaptor);
             FOUNDRY.registerCasing(insideArgonConnector, outsideArgonConnector);
         } else {
             logger.warn("casing ArgonConnectors already connected");
