@@ -64,7 +64,6 @@ public class UDPSink extends Sink
         this.listener = listener;
     }
     
-    @SuppressWarnings("fallthrough")
     protected int send_event( Crumb o )
     {
         switch ( o.type() ) {
@@ -75,8 +74,8 @@ public class UDPSink extends Sink
         case Crumb.TYPE_RESET:
             /* XXX Do whatever is necessary for a reset */
             Vector.logDebug( "Received a reset event" );
+            return Vector.ACTION_SHUTDOWN;
 
-            /*  FALL THROUGH */
         case Crumb.TYPE_SHUTDOWN:
             return Vector.ACTION_SHUTDOWN;
             
@@ -87,7 +86,6 @@ public class UDPSink extends Sink
         }
     }
 
-    @SuppressWarnings("fallthrough")
     protected int write( DataCrumb crumb )
     {
         int numWritten;
@@ -98,14 +96,13 @@ public class UDPSink extends Sink
 
         int size = crumb.limit() - crumb.offset();
 
-        switch ( crumb.type()) {
-        case Crumb.TYPE_UDP_PACKET:
+        if (crumb.type() != Crumb.TYPE_UDP_PACKET) {
+            logger.warn("Unknown Crumb type: " + crumb.type());
+        }
+        else {
             PacketCrumb packetCrumb = (PacketCrumb)crumb;
             ttl = packetCrumb.ttl();
             tos = packetCrumb.tos();
-            /* Assume that it is a valid type */
-        default:
-            logger.warn("Unknown Crumb type: " + crumb.type());
         }
 
         numWritten = write(traffic.pointer(), crumb.data(), crumb.offset(), size, ttl, tos, options, sourceAddress );
