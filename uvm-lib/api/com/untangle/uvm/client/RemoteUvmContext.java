@@ -43,6 +43,7 @@ import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.RemoteNetworkManager;
 import com.untangle.uvm.RemoteSkinManager;
 import com.untangle.uvm.RemoteOemManager;
+import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.benchmark.RemoteBenchmarkManager;
 import com.untangle.uvm.license.RemoteLicenseManager;
@@ -193,6 +194,14 @@ public interface RemoteUvmContext
      * @return the RemoteLicenseManager
      */
     RemoteLicenseManager licenseManager();
+
+    /**
+     * The session monitor
+     * This can be used for getting information about current sessions
+     *
+     * @return the SessionMonitor
+     */
+    SessionMonitor sessionMonitor();
 
     /**
      * Get the <code>RemoteOemManager</code> singleton.

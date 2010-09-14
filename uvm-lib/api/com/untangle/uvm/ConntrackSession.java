@@ -14,47 +14,47 @@ public class ConntrackSession
 
     private InetAddress preNatSrc;
     private InetAddress preNatDst;
-    private short preNatSrcPort;
-    private short preNatDstPort;
+    private int preNatSrcPort;
+    private int preNatDstPort;
 
     private InetAddress postNatSrc;
     private InetAddress postNatDst;
-    private short postNatSrcPort;
-    private short postNatDstPort;
+    private int postNatSrcPort;
+    private int postNatDstPort;
 
     private int qosPriority;
     private boolean bypassed;
 
-    private String getProtocol() {return protocol;}
-    private void   setProtocol( String protocol ) {this.protocol = protocol;}
+    public String getProtocol() {return protocol;}
+    public void   setProtocol( String protocol ) {this.protocol = protocol;}
 
-    private String getState() {return state;}
-    private void   setState( String state ) {this.state = state;}
+    public String getState() {return state;}
+    public void   setState( String state ) {this.state = state;}
 
-    private InetAddress getPreNatSrc() {return preNatSrc;}
-    private void        setPreNatSrc( InetAddress preNatSrc ) {this.preNatSrc = preNatSrc;}
-    private InetAddress getPreNatDst() {return preNatDst;}
-    private void        setPreNatDst( InetAddress preNatDst ) {this.preNatDst = preNatDst;}
+    public InetAddress getPreNatSrc() {return preNatSrc;}
+    public void        setPreNatSrc( InetAddress preNatSrc ) {this.preNatSrc = preNatSrc;}
+    public InetAddress getPreNatDst() {return preNatDst;}
+    public void        setPreNatDst( InetAddress preNatDst ) {this.preNatDst = preNatDst;}
 
-    private Short  getPreNatSrcPort() {return new Short(preNatSrcPort);}
-    private void   setPreNatSrcPort( Short preNatSrcPort ) {this.preNatSrcPort = preNatSrcPort.shortValue();}
-    private Short  getPreNatDstPort() {return new Short(preNatDstPort);}
-    private void   setPreNatDstPort( Short preNatDstPort ) {this.preNatDstPort = preNatDstPort.shortValue();}
+    public Integer  getPreNatSrcPort() {return new Integer(preNatSrcPort);}
+    public void   setPreNatSrcPort( Integer preNatSrcPort ) {this.preNatSrcPort = preNatSrcPort.intValue();}
+    public Integer  getPreNatDstPort() {return new Integer(preNatDstPort);}
+    public void   setPreNatDstPort( Integer preNatDstPort ) {this.preNatDstPort = preNatDstPort.intValue();}
 
-    private InetAddress getPostNatSrc() {return postNatSrc;}
-    private void        setPostNatSrc( InetAddress postNatSrc ) {this.postNatSrc = postNatSrc;}
-    private InetAddress getPostNatDst() {return postNatDst;}
-    private void        setPostNatDst( InetAddress postNatDst ) {this.postNatDst = postNatDst;}
+    public InetAddress getPostNatSrc() {return postNatSrc;}
+    public void        setPostNatSrc( InetAddress postNatSrc ) {this.postNatSrc = postNatSrc;}
+    public InetAddress getPostNatDst() {return postNatDst;}
+    public void        setPostNatDst( InetAddress postNatDst ) {this.postNatDst = postNatDst;}
 
-    private Short  getPostNatSrcPort() {return new Short(postNatSrcPort);}
-    private void   setPostNatSrcPort( Short postNatSrcPort ) {this.postNatSrcPort = postNatSrcPort.shortValue();}
-    private Short  getPostNatDstPort() {return new Short(postNatDstPort);}
-    private void   setPostNatDstPort( Short postNatDstPort ) {this.postNatDstPort = postNatDstPort.shortValue();}
+    public Integer  getPostNatSrcPort() {return new Integer(postNatSrcPort);}
+    public void   setPostNatSrcPort( Integer postNatSrcPort ) {this.postNatSrcPort = postNatSrcPort.intValue();}
+    public Integer  getPostNatDstPort() {return new Integer(postNatDstPort);}
+    public void   setPostNatDstPort( Integer postNatDstPort ) {this.postNatDstPort = postNatDstPort.intValue();}
 
-    private Integer getQosPriority() {return new Integer(qosPriority);}
-    private void   setQosPriority( Integer qosPriority ) {this.qosPriority = qosPriority.intValue();}
+    public Integer getQosPriority() {return new Integer(qosPriority);}
+    public void   setQosPriority( Integer qosPriority ) {this.qosPriority = qosPriority.intValue();}
 
-    private Boolean getBypassed() {return new Boolean(bypassed);}
-    private void   setBypassed( Boolean bypassed ) {this.bypassed = bypassed.booleanValue();}
+    public Boolean getBypassed() {return new Boolean(bypassed);}
+    public void   setBypassed( Boolean bypassed ) {this.bypassed = bypassed.booleanValue();}
     
 }

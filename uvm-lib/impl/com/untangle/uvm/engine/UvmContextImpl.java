@@ -48,6 +48,7 @@ import com.untangle.uvm.RemoteAppServerManager;
 import com.untangle.uvm.RemoteNetworkManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
+import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
@@ -180,12 +181,12 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     public RemoteAddressBook appAddressBook()
     {
-        return addressBookFactory.getAddressBook();
+        return this.addressBookFactory.getAddressBook();
     }
 
     public RemoteAddressBook appRemoteAddressBook()
     {
-        return addressBookFactory.getRemoteAddressBook();
+        return this.addressBookFactory.getRemoteAddressBook();
     }
 
     public RemoteBrandingManager brandingManager()
@@ -195,114 +196,114 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     public RemoteSkinManagerImpl skinManager()
     {
-        return skinManager;
+        return this.skinManager;
     }
 
     public RemoteMessageManager messageManager()
     {
-        return messageManager;
+        return this.messageManager;
     }
 
     public LocalMessageManager localMessageManager()
     {
-        return localMessageManager;
+        return this.localMessageManager;
     }
 
     public RemoteLanguageManagerImpl languageManager()
     {
-        return languageManager;
+        return this.languageManager;
     }
 
     public BasePortalManager portalManager()
     {
-        return portalManager;
+        return this.portalManager;
     }
 
     public AppServerManagerImpl localAppServerManager()
     {
-        return appServerManager;
+        return this.appServerManager;
     }
 
     public RemoteAppServerManager appServerManager()
     {
-        return remoteAppServerManager;
+        return this.remoteAppServerManager;
     }
     
     public ToolboxManagerImpl toolboxManager()
     {
-        return toolboxManager;
+        return this.toolboxManager;
     }
 
     public UpstreamManagerImpl upstreamManager()
     {
-        return upstreamManager;
+        return this.upstreamManager;
     }
 
     public NodeManager nodeManager()
     {
-        return nodeManager;
+        return this.nodeManager;
     }
 
     public RemoteLoggingManagerImpl loggingManager()
     {
-        return loggingManager;
+        return this.loggingManager;
     }
 
     public SyslogManagerImpl syslogManager()
     {
-        return syslogManager;
+        return this.syslogManager;
     }
 
     public LocalPolicyManager localPolicyManager()
     {
-        return policyManagerFactory.policyManager();
+        return this.policyManagerFactory.policyManager();
     }
 
     public RemotePolicyManager policyManager()
     {
-        return policyManagerFactory.remotePolicyManager();
+        return this.policyManagerFactory.remotePolicyManager();
     }
 
     public MailSenderImpl mailSender()
     {
-        return mailSender;
+        return this.mailSender;
     }
 
     public RemoteAdminManagerImpl adminManager()
     {
-        return adminManager;
+        return this.adminManager;
     }
 
     @Override
     public LocalNetworkManager localNetworkManager()
     {
-        return networkManager;
+        return this.networkManager;
     }
 
     @Override
     public RemoteNetworkManager networkManager()
     {
-        return networkManager;
+        return this.networkManager;
     }
 
     public RemoteReportingManagerImpl reportingManager()
     {
-        return reportingManager;
+        return this.reportingManager;
     }
 
     public RemoteConnectivityTesterImpl getRemoteConnectivityTester()
     {
-        return connectivityTester;
+        return this.connectivityTester;
     }
 
     public ArgonManagerImpl argonManager()
     {
-        return argonManager;
+        return this.argonManager;
     }
 
     public LocalIntfManager localIntfManager()
     {
-        return argonManager.getIntfManager();
+        return this.argonManager.getIntfManager();
     }
 
     public RemoteLicenseManager licenseManager()
@@ -317,7 +318,12 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     public PipelineFoundryImpl pipelineFoundry()
     {
-        return pipelineFoundry;
+        return this.pipelineFoundry;
+    }
+
+    public SessionMonitor sessionMonitor()
+    {
+        return this.sessionMonitor;
     }
 
     public void waitForStartup()
@@ -726,6 +732,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         try {
             ServletUtils.getInstance().registerSerializers(serializer);
             settingsManager.setSerializer(serializer);
+            sessionMonitor.setSerializer(serializer);
         } catch (Exception e) {
             throw new IllegalStateException("register serializers should never fail!", e);
         }

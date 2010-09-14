@@ -21,13 +21,20 @@ package com.untangle.uvm.engine;
 import java.util.List;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import org.apache.log4j.Logger;
+import org.jabsorb.JSONSerializer;
 
+import com.untangle.uvm.SessionMonitor;
+import com.untangle.uvm.UvmState;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.vnet.IPSessionDesc;
-
+import com.untangle.uvm.ConntrackSession;
 import com.untangle.uvm.security.NodeId;
 
 /**
@@ -36,8 +43,12 @@ import com.untangle.uvm.security.NodeId;
  *
  * This is used by the UI to display state
  */
-class SessionMonitorImpl
+class SessionMonitorImpl implements SessionMonitor
 {
+    private final Logger logger = Logger.getLogger(getClass());
+
+    private static JSONSerializer serializer = null;
+
     LocalUvmContext uvmContext;
     
     public SessionMonitorImpl ()
@@ -54,6 +65,48 @@ class SessionMonitorImpl
         return nodeContext.liveSessionDescs();
     }
 
+    @SuppressWarnings("unchecked") //JSON
+    public List<ConntrackSession> getConntrackSessions()
+    {
+        String execStr = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-conntrack");
 
+        try {
+            StringBuilder jsonString = new StringBuilder();
+            Process p = uvmContext.exec(execStr);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                    jsonString.append(line);
+            }
+            
+            return (List<ConntrackSession>) serializer.fromJSON(jsonString.toString());
+            
+        } catch (java.io.IOException exc) {
+            logger.error("Unable to read conntrack - error reading input",exc);
+            return null;
+        } catch (org.jabsorb.serializer.UnmarshallException exc) {
+            logger.error("Unable to read conntrack - invalid JSON",exc);
+            return null;
+        }
+    }
+
+    /**
+     * @param serializer
+     *            the serializer to set
+     */
+    protected void setSerializer(JSONSerializer serializer)
+    {
+        this.serializer = serializer;
+    }
+
+    /**
+     * @return the serializer
+     */
+    protected JSONSerializer getSerializer()
+    {
+        return serializer;
+    }
+    
 
 }

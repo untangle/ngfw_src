@@ -37,7 +37,7 @@ public class SettingsManagerImpl implements SettingsManager
      */
     public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd-HHmm");
 
-    private String basePath = "/usr/share/untangle/settings";
+    private String basePath = System.getProperty("uvm.settings.dir");
 
     private JSONSerializer serializer = null;
 
@@ -150,8 +150,7 @@ public class SettingsManagerImpl implements SettingsManager
             BufferedReader reader = null;
             try {
                 StringBuilder jsonString = new StringBuilder();
-                reader = new BufferedReader(new InputStreamReader(
-                        new FileInputStream(f)));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
 
                 char buffer[] = new char[1024];
                 while (true) {

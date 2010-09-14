@@ -18,9 +18,17 @@
 
 package com.untangle.uvm;
 
+import java.util.List;
+
+import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.ConntrackSession;
+import com.untangle.uvm.security.NodeId;
+
 public interface SessionMonitor
 {
 
-    
+    public List<IPSessionDesc> getNodeSessions(NodeId id);
+
+    public List<ConntrackSession> getConntrackSessions();
 
 }
