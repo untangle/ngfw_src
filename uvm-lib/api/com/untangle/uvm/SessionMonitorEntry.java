@@ -67,7 +67,9 @@ public class SessionMonitorEntry
     private String policy;
     private Integer clientIntf;
     private Integer serverIntf;
-    
+    private Boolean portForwarded;
+    private Boolean natted;
+
     public String getPolicy() {return policy;}
     public void   setPolicy( String policy ) {this.policy = policy;}
 
@@ -75,8 +77,14 @@ public class SessionMonitorEntry
     public void    setClientIntf( Integer clientIntf ) {this.clientIntf = clientIntf;}
     public Integer getServerIntf() {return serverIntf;}
     public void    setServerIntf( Integer serverIntf ) {this.serverIntf = serverIntf;}
-    
 
+    public Boolean getPortForwarded() {return portForwarded;}
+    public void    setPortForwarded( Boolean portForwarded ) {this.portForwarded = portForwarded;}
+
+    public Boolean getNatted() {return natted;}
+    public void    setNatted( Boolean natted ) {this.natted = natted;}
+   
+    
     
     
 }

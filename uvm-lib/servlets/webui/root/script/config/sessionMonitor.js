@@ -87,6 +87,10 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     name : "clientIntf"
                 },{
                     name : "serverIntf"
+                },{
+                    name : "natted"
+                },{
+                    name : "portForwarded"
                 }],
                 columns : [{
                     id : "protocol",
@@ -121,24 +125,24 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     }
                 },{
                     id : "preNatClient",
-                    header : this.i18n._("Pre-NAT Client"),
+                    header : this.i18n._("Client (Pre-NAT)"),
                     dataIndex: "preNatClient",
                     width : 100
                 },{
                     id : "preNatServer",
-                    header : this.i18n._("Pre-NAT Server"),
+                    header : this.i18n._("Server (Pre-NAT)"),
                     dataIndex: "preNatServer",
                     width : 100
                 },{
                     id : "preNatClientPort",
-                    header : this.i18n._("Pre-NAT Client Port"),
+                    header : this.i18n._("Client Port (Pre-NAT)"),
                     dataIndex: "preNatClientPort",
-                    width : 100
+                    width : 80
                 },{
                     id : "preNatServerPort",
-                    header : this.i18n._("Pre-NAT Server Port"),
+                    header : this.i18n._("Server Port (Pre-NAT)"),
                     dataIndex: "preNatServerPort",
-                    width : 100
+                    width : 80
                 },{
                     id : "serverIntf",
                     header : this.i18n._("Server Interface"),
@@ -157,29 +161,39 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     }
                 },{
                     id : "postNatClient",
-                    header : this.i18n._("Post-NAT Client"),
+                    header : this.i18n._("Client (Post-NAT)"),
                     dataIndex: "postNatClient",
                     width : 100
                 },{
                     id : "postNatServer",
-                    header : this.i18n._("Post-NAT Server"),
+                    header : this.i18n._("Server (Post-NAT)"),
                     dataIndex: "postNatServer",
                     width : 100
                 },{
                     id : "postNatClientPort",
-                    header : this.i18n._("Post-NAT Client Port"),
+                    header : this.i18n._("Client Port (Post-NAT)"),
                     dataIndex: "postNatClientPort",
-                    width : 100
+                    width : 80
                 },{
                     id : "postNatServerPort",
-                    header : this.i18n._("Post-NAT Server Port"),
+                    header : this.i18n._("Server Port (Post-NAT)"),
                     dataIndex: "postNatServerPort",
-                    width : 100
+                    width : 80
                 },{
                     id : "localTraffic",
                     header : this.i18n._("Local"),
                     dataIndex: "localTraffic",
-                    width : 70
+                    width : 50
+                },{
+                    id : "natted",
+                    header : this.i18n._("NATd"),
+                    dataIndex: "natted",
+                    width : 50
+                },{
+                    id : "portForwarded",
+                    header : this.i18n._("Port Forwarded"),
+                    dataIndex: "portForwarded",
+                    width : 50
                 }]
             });
         }

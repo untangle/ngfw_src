@@ -89,7 +89,8 @@ class SessionMonitorImpl implements SessionMonitor
                     jsonString.append(line);
             }
             
-            return (List<SessionMonitorEntry>) serializer.fromJSON(jsonString.toString());
+            List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) serializer.fromJSON(jsonString.toString());
+            return entryList;
             
         } catch (java.io.IOException exc) {
             logger.error("Unable to read conntrack - error reading input",exc);
@@ -148,6 +149,23 @@ class SessionMonitorImpl implements SessionMonitor
                 }
             }
                         
+        }
+
+        /**
+         * Update some additional fields
+         */
+        for (SessionMonitorEntry entry : sessions) {
+            entry.setNatted(Boolean.FALSE);
+            entry.setPortForwarded(Boolean.FALSE);
+
+            if (! entry.getPreNatClient().equals(entry.getPostNatClient())) {
+                logger.warn(entry.getPreNatClient() + " != " + entry.getPostNatClient() + " so setting NAT flag");
+                entry.setNatted(Boolean.TRUE);
+            }
+            if (! entry.getPreNatServer().equals(entry.getPostNatServer())) {
+                logger.warn(entry.getPreNatServer() + " != " + entry.getPostNatServer() + " so setting forward flag");
+                entry.setPortForwarded(Boolean.TRUE);
+            }
         }
 
         return sessions;
