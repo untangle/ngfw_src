@@ -159,11 +159,9 @@ class SessionMonitorImpl implements SessionMonitor
             entry.setPortForwarded(Boolean.FALSE);
 
             if (! entry.getPreNatClient().equals(entry.getPostNatClient())) {
-                logger.warn(entry.getPreNatClient() + " != " + entry.getPostNatClient() + " so setting NAT flag");
                 entry.setNatted(Boolean.TRUE);
             }
             if (! entry.getPreNatServer().equals(entry.getPostNatServer())) {
-                logger.warn(entry.getPreNatServer() + " != " + entry.getPostNatServer() + " so setting forward flag");
                 entry.setPortForwarded(Boolean.TRUE);
             }
         }
