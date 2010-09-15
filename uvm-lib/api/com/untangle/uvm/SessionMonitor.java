@@ -27,10 +27,23 @@ import com.untangle.uvm.security.NodeId;
 public interface SessionMonitor
 {
 
+    /**
+     * This returns a list of descriptors for a certain node
+     */
     public List<IPSessionDesc> getNodeSessions(NodeId id);
 
-    public List<SessionMonitorEntry> getSessionMonitorEntrys();
+    /**
+     * This returns a list of descriptors for all sessions in the conntrack table
+     * It also pulls the list of current "pipelines" from the foundry and adds the UVM informations
+     * such as policy
+     */
+    public List<SessionMonitorEntry> getMergedSessions();
 
-    public List<SessionMonitorEntry> getMergedSessionMonitorEntrys();
+    /**
+     * This returns a list of sessions and the bandwidth usage over the last 5 seconds
+     * It calls the Jnettop list and merges it with the conntrack and argon lists
+     */
+    public List<SessionMonitorEntry> getMergedBandwidthSessions();
+
     
 }

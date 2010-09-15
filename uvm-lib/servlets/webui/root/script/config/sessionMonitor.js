@@ -56,7 +56,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     ]
                 }),
                 recordJavaClass : "com.untangle.uvm.SessionMonitorEntry",
-                proxyRpcFn : rpc.jsonrpc.RemoteUvmContext.sessionMonitor().getMergedSessionMonitorEntrys,
+                proxyRpcFn : rpc.jsonrpc.RemoteUvmContext.sessionMonitor().getMergedSessions,
                 fields : [{
                     name : "id"
                 },{

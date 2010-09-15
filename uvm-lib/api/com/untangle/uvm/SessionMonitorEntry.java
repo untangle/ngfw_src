@@ -83,7 +83,20 @@ public class SessionMonitorEntry
 
     public Boolean getNatted() {return natted;}
     public void    setNatted( Boolean natted ) {this.natted = natted;}
-   
+
+    /**
+     * The following properties come from jnettop
+     */
+    private Float clientKBps;
+    private Float serverKBps;
+    private Float totalKBps;
+
+    public Float getClientKBps() {return clientKBps;}
+    public void  setClientKBps( Float clientKBps ) {this.clientKBps = clientKBps;}
+    public Float getServerKBps() {return serverKBps;}
+    public void  setServerKBps( Float serverKBps ) {this.serverKBps = serverKBps;}
+    public Float getTotalKBps() {return totalKBps;}
+    public void  setTotalKBps( Float totalKBps ) {this.totalKBps = totalKBps;}
     
     
     

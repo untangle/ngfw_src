@@ -21,6 +21,7 @@ package com.untangle.uvm.engine;
 import java.util.List;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.net.InetAddress;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
@@ -72,45 +73,60 @@ class SessionMonitorImpl implements SessionMonitor
     }
 
     /**
-     * This returns a list of descriptors for all sessions in the conntrack table
+     * documented in SessionMonitor.java
      */
-    @SuppressWarnings("unchecked") //JSON
-    public List<SessionMonitorEntry> getSessionMonitorEntrys()
+    public List<SessionMonitorEntry> getMergedBandwidthSessions()
     {
-        String execStr = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-conntrack");
+        List<SessionMonitorEntry> jnettopSessions = getJnettopSessionMonitorEntrys();
+        List<SessionMonitorEntry> sessions = this.getMergedSessions();
 
-        try {
-            StringBuilder jsonString = new StringBuilder();
-            Process p = uvmContext.exec(execStr);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        for (SessionMonitorEntry session : sessions) {
 
-            String line;
-            while ((line = reader.readLine()) != null) {
-                    jsonString.append(line);
+            session.setClientKBps(Float.valueOf(0.0f));
+            session.setServerKBps(Float.valueOf(0.0f));
+            session.setTotalKBps(Float.valueOf(0.0f));
+
+            for (SessionMonitorEntry jnettopSession : jnettopSessions) {
+
+                /* could be pre or post nat */
+                boolean match = false;
+                
+                if (matches(jnettopSession.getProtocol(),
+                            jnettopSession.getPreNatClient(),jnettopSession.getPreNatServer(),
+                            jnettopSession.getPreNatClientPort(),jnettopSession.getPreNatServerPort(),
+                            session.getProtocol(),
+                            session.getPreNatClient(),session.getPreNatServer(),
+                            session.getPreNatClientPort(),session.getPreNatServerPort()))
+                    match = true;
+
+                if (match || matches(jnettopSession.getProtocol(),
+                                     jnettopSession.getPreNatClient(),jnettopSession.getPreNatServer(),
+                                     jnettopSession.getPreNatClientPort(),jnettopSession.getPreNatServerPort(),
+                                     session.getProtocol(),
+                                     session.getPostNatClient(),session.getPostNatServer(),
+                                     session.getPostNatClientPort(),session.getPostNatServerPort()))
+                    match = true;
+                
+
+                if ( match ) {
+                    session.setClientKBps(jnettopSession.getClientKBps());
+                    session.setServerKBps(jnettopSession.getServerKBps());
+                    session.setTotalKBps(jnettopSession.getTotalKBps());
+                    break; /* break to outer loop */
+                }
             }
-            
-            List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) serializer.fromJSON(jsonString.toString());
-            return entryList;
-            
-        } catch (java.io.IOException exc) {
-            logger.error("Unable to read conntrack - error reading input",exc);
-            return null;
-        } catch (org.jabsorb.serializer.UnmarshallException exc) {
-            logger.error("Unable to read conntrack - invalid JSON",exc);
-            return null;
         }
+
+        return sessions;
     }
 
     /**
-     * This returns a list of descriptors for all sessions in the conntrack table
-     * It also pulls the list of current "pipelines" from the foundry and adds the UVM informations
-     * such as policy
+     * documented in SessionMonitor.java
      */
-    @SuppressWarnings("unchecked") //JSON
-    public List<SessionMonitorEntry> getMergedSessionMonitorEntrys()
+    public List<SessionMonitorEntry> getMergedSessions()
     {
+        List<SessionMonitorEntry> sessions = this.getConntrackSessionMonitorEntrys();
         List<SessionGlobalState> argonSessions = ArgonSessionTable.getInstance().getSessions();
-        List<SessionMonitorEntry> sessions = this.getSessionMonitorEntrys();
 
         for (SessionMonitorEntry session : sessions) {
             //assume bypassed until we find a match in the UVM
@@ -186,6 +202,66 @@ class SessionMonitorImpl implements SessionMonitor
         return serializer;
     }
 
+    /**
+     * This returns a list of sessions and bandwidth usages reported by jnettop over 5 seconds
+     */
+    @SuppressWarnings("unchecked") //JSON
+    private List<SessionMonitorEntry> getJnettopSessionMonitorEntrys()
+    {
+        String execStr = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-jnettop");
+
+        try {
+            StringBuilder jsonString = new StringBuilder();
+            Process p = uvmContext.exec(execStr);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                    jsonString.append(line);
+            }
+            
+            List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) serializer.fromJSON(jsonString.toString());
+            return entryList;
+            
+        } catch (java.io.IOException exc) {
+            logger.error("Unable to read jnettop - error reading input",exc);
+            return null;
+        } catch (org.jabsorb.serializer.UnmarshallException exc) {
+            logger.error("Unable to read jnettop - invalid JSON",exc);
+            return null;
+        }
+    }
+    
+    /**
+     * This returns a list of descriptors for all sessions in the conntrack table
+     */
+    @SuppressWarnings("unchecked") //JSON
+    private List<SessionMonitorEntry> getConntrackSessionMonitorEntrys()
+    {
+        String execStr = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-conntrack");
+
+        try {
+            StringBuilder jsonString = new StringBuilder();
+            Process p = uvmContext.exec(execStr);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                    jsonString.append(line);
+            }
+            
+            List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) serializer.fromJSON(jsonString.toString());
+            return entryList;
+            
+        } catch (java.io.IOException exc) {
+            logger.error("Unable to read conntrack - error reading input",exc);
+            return null;
+        } catch (org.jabsorb.serializer.UnmarshallException exc) {
+            logger.error("Unable to read conntrack - invalid JSON",exc);
+            return null;
+        }
+    }
+
     private boolean matches(com.untangle.uvm.node.IPSessionDesc sessionDesc, SessionMonitorEntry session)
     {
         switch (sessionDesc.protocol()) {
@@ -218,4 +294,23 @@ class SessionMonitorImpl implements SessionMonitor
         return true;
     }
 
+    private boolean matches(String protocol1, InetAddress client1, InetAddress server1, int clientPort1, int serverPort1,
+                            String protocol2, InetAddress client2, InetAddress server2, int clientPort2, int serverPort2)
+
+    {
+        if (! protocol1.equals(protocol2))
+            return false;
+        if (! client1.equals(client2))
+            return false;
+        if (! server1.equals(server2))
+            return false;
+        if (clientPort1 != clientPort2)
+            return false;
+        if (serverPort1 != serverPort2)
+            return false;
+
+        return true;
+    }
+                            
+                            
 }
