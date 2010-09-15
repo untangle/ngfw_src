@@ -473,7 +473,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         allowDecimals: false,
                         allowNegative: false,
                         minValue: 1,
-                        maxValue: 30,
+                        maxValue: 120,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
