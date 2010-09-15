@@ -112,14 +112,11 @@ class EventHandler extends AbstractEventHandler
             /* Increment the block counter */
             node.incrementBlockCount(); 
 
-            /* If necessary log the event */
-            if (log) {
-                FirewallEvent fwe = new FirewallEvent(request.pipelineEndpoints(), reject, ruleIndex);
-                fwe.setRuleId(rule.getId());
-                request.attach(fwe);
-                node.incrementLogCount(); 
-            }
-
+            /* We just blocked, so we have to log too, regardless of what the rule actually says */
+            FirewallEvent fwe = new FirewallEvent(request.pipelineEndpoints(), reject, ruleIndex);
+            fwe.setRuleId(rule.getId());
+            request.attach(fwe);
+            node.incrementLogCount(); 
         } else { /* not rejected */
             if (logger.isDebugEnabled()) {
                 logger.debug("Releasing session: " + request);
