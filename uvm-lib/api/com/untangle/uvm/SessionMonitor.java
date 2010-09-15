@@ -31,4 +31,6 @@ public interface SessionMonitor
 
     public List<ConntrackSession> getConntrackSessions();
 
+    public List<ConntrackSession> getMergedConntrackSessions();
+    
 }

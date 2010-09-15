@@ -1920,12 +1920,14 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
 
         // sessions tooltip
         var sessionsArr=[
-            '<div class="title">'+i18n._("Total Scanned Sessions:")+'</div>',
-            '<div class="values"><span name="uvmSessions"></span></div>',
-            '<div class="title">'+i18n._("TCP Scanned Sessions:")+'</div>',
+            '<div class="title">'+i18n._("Total Sessions:")+'</div>',
+            '<div class="values"><span name="totalSessions"></span></div>',
+            '<div class="title">'+i18n._("TCP Sessions:")+'</div>',
             '<div class="values"><span name="uvmTCPSessions"></span></div>',
-            '<div class="title">'+i18n._("UDP Scanned Sessions:")+'</div>',
-            '<div class="values"><span name="uvmUDPSessions"></span></div>'
+            '<div class="title">'+i18n._("UDP Sessions:")+'</div>',
+            '<div class="values"><span name="uvmUDPSessions"></span></div>',
+            '<div class="title">'+i18n._("Bypassed Sessions:")+'</div>',
+            '<div class="values"><span name="bypassedSessions"></span></div>'
         ];
         this.sessionsToolTip= new Ext.ToolTip({
             target: this.getEl().child("div[class=sessions]"),
@@ -2049,7 +2051,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
         }
         if(this.sessionsToolTip.rendered) {
             var toolTipEl=this.sessionsToolTip.getEl();
-            toolTipEl.child("span[name=uvmSessions]").dom.innerHTML=stats.map.uvmSessions;
+            toolTipEl.child("span[name=totalSessions]").dom.innerHTML=stats.map.uvmSessions /* XXX plus bypassed sessions */ ; 
             toolTipEl.child("span[name=uvmTCPSessions]").dom.innerHTML=stats.map.uvmTCPSessions;
             toolTipEl.child("span[name=uvmUDPSessions]").dom.innerHTML=stats.map.uvmUDPSessions;
         }

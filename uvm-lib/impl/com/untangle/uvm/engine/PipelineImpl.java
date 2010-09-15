@@ -26,6 +26,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.Pipeline;
@@ -50,13 +52,17 @@ class PipelineImpl implements Pipeline
 
     private int id = 0;
 
+    private Policy policy;
+    private IPSessionDesc sessionDesc;
+        
     // constructors -----------------------------------------------------------
 
-    PipelineImpl(int sessionId, List<ArgonConnectorFitting> argonConnectorFittings)
+    PipelineImpl(IPSessionDesc sessionDesc, List<ArgonConnectorFitting> argonConnectorFittings, Policy policy)
     {
-        //unuserd// this.sessionId = sessionId;
+        this.sessionDesc = sessionDesc;
+        this.policy = policy;
         this.argonConnectorFittings = argonConnectorFittings;
-        this.sessionPrefix = "sess-" + sessionId + "-";
+        this.sessionPrefix = "sess-" + sessionDesc.id() + "-";
     }
 
     // object registry methods ------------------------------------------------
@@ -152,10 +158,21 @@ class PipelineImpl implements Pipeline
 
     // package protected methods ----------------------------------------------
 
-    void destroy()
+    protected void destroy()
     {
         for (File f : files) {
             f.delete();
         }
     }
+
+    protected Policy getPolicy()
+    {
+        return this.policy;
+    }
+
+    protected IPSessionDesc getSessionDesc()
+    {
+        return this.sessionDesc;
+    }
+    
 }

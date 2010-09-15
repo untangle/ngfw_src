@@ -43,7 +43,6 @@ import java.net.InetAddress;
  */
 public interface SessionEndpoints
 {
-    public static final short PROTO_ICMP = 1; // Only used for ping sessions
     public static final short PROTO_TCP = 6;
     public static final short PROTO_UDP = 17;
 

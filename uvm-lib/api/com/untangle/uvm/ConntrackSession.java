@@ -56,5 +56,16 @@ public class ConntrackSession
 
     public Boolean getBypassed() {return new Boolean(bypassed);}
     public void   setBypassed( Boolean bypassed ) {this.bypassed = bypassed.booleanValue();}
+
+    /**
+     * The following properties are UVM properties and are only set if you call MergedConntrackSessions
+     */
+    private String policy;
+    
+    public String getPolicy() {return policy;}
+    public void   setPolicy( String policy ) {this.policy = policy;}
+    
+
+    
     
 }

@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -67,6 +68,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     private static final PipelineFoundryImpl PIPELINE_FOUNDRY_IMPL = new PipelineFoundryImpl();
 
     private static final EventLogger<LogEvent> eventLogger = UvmContextImpl.context().eventLogger();
+
     private final Logger logger = Logger.getLogger(getClass());
 
     private final Map<Fitting, List<ArgonConnector>> argonConnectors = new HashMap<Fitting, List<ArgonConnector>>();
@@ -88,24 +90,23 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return PIPELINE_FOUNDRY_IMPL;
     }
 
-    public PipelineDesc weld(IPSessionDesc sd)
+    public PipelineDesc weld(IPSessionDesc sessionDesc)
     {
         Long t0 = System.nanoTime();
 
-        PolicyRule pr = selectPolicy(sd);
+        PolicyRule pr = selectPolicy(sessionDesc);
         if (pr == null) {
-            logger.error("No policy rule found for session " + sd);
+            logger.error("No policy rule found for session " + sessionDesc);
         }
         Policy policy = null == pr ? null : pr.getPolicy();
 
-
-        InetAddress sAddr = sd.serverAddr();
-        int sPort = sd.serverPort();
+        InetAddress sAddr = sessionDesc.serverAddr();
+        int sPort = sessionDesc.serverPort();
 
         InetSocketAddress socketAddress = new InetSocketAddress(sAddr, sPort);
         Fitting start = connectionFittings.remove(socketAddress);
 
-        if (SessionEndpoints.PROTO_TCP == sd.protocol()) {
+        if (SessionEndpoints.PROTO_TCP == sessionDesc.protocol()) {
             if (null == start) {
                 switch (sPort) {
                 case 21:
@@ -139,58 +140,58 @@ public class PipelineFoundryImpl implements PipelineFoundry
         }
 
         long ct0 = System.nanoTime();
-        List<ArgonConnectorFitting> chain = makeChain(sd, policy, start);
+        List<ArgonConnectorFitting> chain = makeChain(sessionDesc, policy, start);
         long ct1 = System.nanoTime();
 
         // filter list
         long ft0 = System.nanoTime();
 
-        List<ArgonAgent> al = new ArrayList<ArgonAgent>(chain.size());
-        List<ArgonConnectorFitting> ml = new ArrayList<ArgonConnectorFitting>(chain.size());
+        List<ArgonAgent> argonAgentList = new ArrayList<ArgonAgent>(chain.size());
+        List<ArgonConnectorFitting> acFittingList = new ArrayList<ArgonConnectorFitting>(chain.size());
 
         ArgonConnector end = null;
                        
         for (Iterator<ArgonConnectorFitting> i = chain.iterator(); i.hasNext();) {
-            ArgonConnectorFitting mpf = i.next();
+            ArgonConnectorFitting acFitting = i.next();
 
             if (null != end) {
-                if (mpf.argonConnector == end) {
+                if (acFitting.argonConnector == end) {
                     end = null;
                 }
             } else {
-                ArgonConnector argonConnector = mpf.argonConnector;
+                ArgonConnector argonConnector = acFitting.argonConnector;
                 PipeSpec pipeSpec = argonConnector.getPipeSpec();
 
                 // We want the node if its policy matches (this policy or one of
                 // is parents), or the node has no
                 // policy (is a service).
-                if (pipeSpec.matches(sd)) {
-                    ml.add(mpf);
-                    al.add(((ArgonConnectorImpl) argonConnector).getArgonAgent());
+                if (pipeSpec.matches(sessionDesc)) {
+                    acFittingList.add(acFitting);
+                    argonAgentList.add(((ArgonConnectorImpl) argonConnector).getArgonAgent());
                 } else {
-                    end = mpf.end;
+                    end = acFitting.end;
                 }
             }
         }
 
         long ft1 = System.nanoTime();
 
-        PipelineImpl pipeline = new PipelineImpl(sd.id(), ml);
-        pipelines.put(sd.id(), pipeline);
+        PipelineImpl pipeline = new PipelineImpl(sessionDesc, acFittingList, policy);
+        pipelines.put(sessionDesc.id(), pipeline);
 
         Long t1 = System.nanoTime();
         if (logger.isDebugEnabled()) {
-            logger.debug("sid: " + sd.id() +
+            logger.debug("sid: " + sessionDesc.id() +
                          " policy " + policy +
                          " policyManager " + UvmContextImpl.getInstance().localPolicyManager().getClass().getName());
-            logger.debug("sid: " + sd.id() +
+            logger.debug("sid: " + sessionDesc.id() +
                          " pipe in " + (t1 - t0) +
                          " made: " + (ct1 - ct0) +
                          " filtered: " + (ft1 - ft0) +
-                         " chain: " + ml);
+                         " chain: " + acFittingList);
         }
 
-        return new PipelineDesc(pr, al);
+        return new PipelineDesc(pr, argonAgentList);
     }
 
     public PipelineEndpoints createInitialEndpoints(IPSessionDesc start)
@@ -301,7 +302,12 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     // package protected methods ----------------------------------------------
 
-    PolicyRule selectPolicy(IPSessionDesc sd)
+    protected List<PipelineImpl> getCurrentPipelines()
+    {
+        return new LinkedList<PipelineImpl>(this.pipelines.values());
+    }
+    
+    protected PolicyRule selectPolicy(IPSessionDesc sd)
     {
         UvmContextImpl upi = UvmContextImpl.getInstance();
         LocalPolicyManager pmi = upi.localPolicyManager();
@@ -425,8 +431,8 @@ public class PipelineFoundryImpl implements PipelineFoundry
                             }
                         } else if (pmi.matchesPolicy(argonConnector.getPipeSpec()
                                 .getNode(), p)) {
-                            ArgonConnectorFitting mpf = new ArgonConnectorFitting(argonConnector, start);
-                            boolean w = argonConnectorFittings.add(mpf);
+                            ArgonConnectorFitting acFitting = new ArgonConnectorFitting(argonConnector, start);
+                            boolean w = argonConnectorFittings.add(acFitting);
                             if (w) {
                                 welded = true;
                             }
@@ -510,15 +516,15 @@ public class PipelineFoundryImpl implements PipelineFoundry
         Map<ArgonConnectorFitting, Integer> fittingDistance = new HashMap<ArgonConnectorFitting, Integer>();
 
         for (Iterator<ArgonConnectorFitting> i = chain.iterator(); i.hasNext();) {
-            ArgonConnectorFitting mpf = i.next();
+            ArgonConnectorFitting acFitting = i.next();
 
-            Policy nodePolicy = mpf.argonConnector.node().getNodeId().getPolicy();
+            Policy nodePolicy = acFitting.argonConnector.node().getNodeId().getPolicy();
 
             if (nodePolicy == null) {
                 continue;
             }
 
-            String nodeName = mpf.argonConnector.node().getNodeDesc().getName();
+            String nodeName = acFitting.argonConnector.node().getNodeDesc().getName();
             /* Remove the items that are not enabled in this policy */
             if (!enabledNodes.contains(nodeName)) {
                 i.remove();
@@ -536,7 +542,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 continue;
             }
 
-            fittingDistance.put(mpf, distance);
+            fittingDistance.put(acFitting, distance);
 
             /* If an existing node is closer then this node, remove this node. */
             if (n == null) {
@@ -559,16 +565,16 @@ public class PipelineFoundryImpl implements PipelineFoundry
         }
 
         for (Iterator<ArgonConnectorFitting> i = chain.iterator(); i.hasNext();) {
-            ArgonConnectorFitting mpf = i.next();
+            ArgonConnectorFitting acFitting = i.next();
 
-            Policy nodePolicy = mpf.argonConnector.node().getNodeId().getPolicy();
+            Policy nodePolicy = acFitting.argonConnector.node().getNodeId().getPolicy();
 
             /* Keep items in the NULL Racks */
             if (nodePolicy == null) {
                 continue;
             }
 
-            String nodeName = mpf.argonConnector.node().getNodeDesc().getName();
+            String nodeName = acFitting.argonConnector.node().getNodeDesc().getName();
 
             Integer n = numParents.get(nodeName);
 
@@ -578,7 +584,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 continue;
             }
 
-            Integer distance = fittingDistance.get(mpf);
+            Integer distance = fittingDistance.get(acFitting);
 
             if (distance == null) {
                 logger

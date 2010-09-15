@@ -33,7 +33,7 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.ConntrackSession;
 import com.untangle.uvm.security.NodeId;
 
@@ -56,7 +56,10 @@ class SessionMonitorImpl implements SessionMonitor
         uvmContext = LocalUvmContextFactory.context();
     }
 
-    public List<IPSessionDesc> getNodeSessions(NodeId id)
+    /**
+     * This returns a list of descriptors for a certain node
+     */
+    public List<com.untangle.uvm.vnet.IPSessionDesc> getNodeSessions(NodeId id)
     {
         NodeManager nodeManager = uvmContext.nodeManager();
 
@@ -65,6 +68,9 @@ class SessionMonitorImpl implements SessionMonitor
         return nodeContext.liveSessionDescs();
     }
 
+    /**
+     * This returns a list of descriptors for all sessions in the conntrack table
+     */
     @SuppressWarnings("unchecked") //JSON
     public List<ConntrackSession> getConntrackSessions()
     {
@@ -92,6 +98,48 @@ class SessionMonitorImpl implements SessionMonitor
     }
 
     /**
+     * This returns a list of descriptors for all sessions in the conntrack table
+     * It also pulls the list of current "pipelines" from the foundry and adds the UVM informations
+     * such as policy
+     */
+    @SuppressWarnings("unchecked") //JSON
+    public List<ConntrackSession> getMergedConntrackSessions()
+    {
+        List<PipelineImpl> pipelines = ((PipelineFoundryImpl) uvmContext.pipelineFoundry()).getCurrentPipelines();
+        List<ConntrackSession> sessions = this.getConntrackSessions();
+
+        logger.warn("Checking Pipelines");
+        
+
+        for (ConntrackSession session : sessions) {
+
+            logger.warn("Checking " + session.getProtocol() + " " + 
+                        session.getPreNatSrc() + ":" + session.getPreNatSrcPort() + " -> " +
+                        session.getPreNatDst() + ":" + session.getPreNatDstPort());
+
+            session.setBypassed(Boolean.TRUE); //assume bypassed until we find a match in the UVM
+
+            for (PipelineImpl pipeline : pipelines) {
+                com.untangle.uvm.node.IPSessionDesc sessionDesc = pipeline.getSessionDesc();
+
+                logger.warn("Against " + sessionDesc.protocol() + " " +
+                            sessionDesc.clientAddr() + ":" + sessionDesc.clientPort() + " -> " +
+                            sessionDesc.serverAddr() + ":" + sessionDesc.serverPort());
+                
+                if (matches(sessionDesc,session)) {
+                    logger.warn("MATCH!");
+                    session.setPolicy(pipeline.getPolicy().getName());
+                    session.setBypassed(Boolean.FALSE);
+                    break;
+                }
+            }
+                        
+        }
+        
+        return sessions;
+    }
+    
+    /**
      * @param serializer
      *            the serializer to set
      */
@@ -107,6 +155,37 @@ class SessionMonitorImpl implements SessionMonitor
     {
         return serializer;
     }
-    
+
+    private boolean matches(com.untangle.uvm.node.IPSessionDesc sessionDesc, ConntrackSession session)
+    {
+        switch (sessionDesc.protocol()) {
+        case SessionEndpoints.PROTO_TCP:
+            if (! "TCP".equals(session.getProtocol())) {
+                return false;
+            }
+            break;
+        case SessionEndpoints.PROTO_UDP:
+            if (! "UDP".equals(session.getProtocol())) {
+                return false;
+            }
+            break;
+        }
+
+        if (! sessionDesc.clientAddr().equals(session.getPreNatSrc())) {
+            return false;
+        }
+        if (! sessionDesc.serverAddr().equals(session.getPreNatDst())) {
+            return false;
+        }
+
+        if (sessionDesc.clientPort() != session.getPreNatSrcPort()) {
+            return false;
+        }
+        if (sessionDesc.serverPort() != session.getPreNatDstPort()) {
+            return false;
+        }
+
+        return true;
+    }
 
 }

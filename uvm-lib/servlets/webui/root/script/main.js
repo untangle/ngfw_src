@@ -1123,6 +1123,8 @@ Ung.Main=Ext.extend(Object, {
         }
         items.push('-');
         items.push({text:i18n._('Show Policy Manager'),value:'SHOW_POLICY_MANAGER',handler:main.changePolicy, hideDelay :0});
+        items.push('-');
+        items.push({text:i18n._('Show Sessions'),value:'SHOW_SESSIONS',handler:main.changePolicy, hideDelay :0});
         main.rackSelect = new Ext.SplitButton({
             renderTo: 'rack-select-container', // the container id
             text: items[selVirtualRackIndex].text,
@@ -1143,13 +1145,20 @@ Ung.Main=Ext.extend(Object, {
     // change current policy
     changePolicy: function () {
         if(this.value=='SHOW_POLICY_MANAGER'){
-            Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
+            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
             Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.PolicyManager",Ung.Util.getScriptSrc("script/config/policyManager.js"), function() {
                 main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager", "helpSource":"policy_manager"});
                 main.policyManagerWin.show();
                 Ext.MessageBox.hide();
             }]);
-        }else{
+        } else if(this.value=='SHOW_SESSIONS'){
+            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+            Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.SessionViewer",Ung.Util.getScriptSrc("script/config/sessionViewer.js"), function() {
+                main.sessionViewerWin=new Ung.SessionViewer({"name":"sessionViewer", "helpSource":"session_viewer"});
+                main.sessionViewerWin.show();
+                Ext.MessageBox.hide();
+            }]);
+        } else {
             Ext.getCmp('rack-select').setText(this.text);
             rpc.currentPolicy=rpc.policies[this.index];
             main.loadRackView();
