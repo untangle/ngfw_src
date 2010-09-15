@@ -108,8 +108,6 @@ class SessionMonitorImpl implements SessionMonitor
         List<PipelineImpl> pipelines = ((PipelineFoundryImpl) uvmContext.pipelineFoundry()).getCurrentPipelines();
         List<SessionMonitorEntry> sessions = this.getSessionMonitorEntrys();
 
-        logger.warn("Checking Pipelines");
-        
         for (SessionMonitorEntry session : sessions) {
             //assume bypassed until we find a match in the UVM
             session.setBypassed(Boolean.TRUE); 
