@@ -9,9 +9,9 @@ cat /proc/net/ip_conntrack | grep -v '127.0.0.1' | sed 's/\[.*\]//g' | sed 's/[a
     if [ $first -eq 0 ] ; then first=1 ; else echo -n "," ; fi
 
     if [ "`echo $i | grep tcp`" ] ; then
-        echo $i | awk '{printf "{ protocol:\"%s\", state:\"%s\", preNatSrc:\"%s\", preNatDst:\"%s\", preNatSrcPort:\"%s\", preNatDstPort:\"%s\", packets:\"%s\", bytes:\"%s\", postNatSrc:\"%s\", postNatDst:\"%s\", postNatSrcPort:\"%s\", postNatDstPort:\"%s\", qosPriority:\"%x\", bypassed:\"%i\", javaClass:\"com.untangle.uvm.SessionMonitorEntry\" }\n", toupper($1), $4, $5, $6, $7, $8, $9, $10, $12, $11, $14, $13, rshift(and($18,0x00700000),20), rshift(and($16,0x01000000),24)}'
+        echo $i | awk '{printf "{ protocol:\"%s\", state:\"%s\", preNatClient:\"%s\", preNatServer:\"%s\", preNatClientPort:\"%s\", preNatServerPort:\"%s\", packets:\"%s\", bytes:\"%s\", postNatClient:\"%s\", postNatServer:\"%s\", postNatClientPort:\"%s\", postNatServerPort:\"%s\", qosPriority:\"%x\", bypassed:\"%i\", javaClass:\"com.untangle.uvm.SessionMonitorEntry\" }\n", toupper($1), $4, $5, $6, $7, $8, $9, $10, $12, $11, $14, $13, rshift(and($18,0x00700000),20), rshift(and($16,0x01000000),24)}'
     elif [ "`echo $i | grep udp`" ] ; then
-        echo $i | awk '{printf "{ protocol:\"%s\", preNatSrc:\"%s\", preNatDst:\"%s\", preNatSrcPort:\"%s\",preNatDstPort:\"%s\", packets:\"%s\", bytes:\"%s\", postNatSrc:\"%s\", postNatDst:\"%s\", postNatSrcPort:\"%s\", postNatDstPort:\"%s\", qosPriority:\"%x\", bypassed:\"%i\", javaClass:\"com.untangle.uvm.SessionMonitorEntry\" }\n", toupper($1), $4, $5, $6, $7, $8, $9, $11, $10, $13, $12, rshift(and($16,0x00700000),20), rshift(and($16,0x01000000),24)}'
+        echo $i | awk '{printf "{ protocol:\"%s\", preNatClient:\"%s\", preNatServer:\"%s\", preNatClientPort:\"%s\",preNatServerPort:\"%s\", packets:\"%s\", bytes:\"%s\", postNatClient:\"%s\", postNatServer:\"%s\", postNatClientPort:\"%s\", postNatServerPort:\"%s\", qosPriority:\"%x\", bypassed:\"%i\", javaClass:\"com.untangle.uvm.SessionMonitorEntry\" }\n", toupper($1), $4, $5, $6, $7, $8, $9, $11, $10, $13, $12, rshift(and($16,0x00700000),20), rshift(and($16,0x01000000),24)}'
     else
         #don't print it
         first=0

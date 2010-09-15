@@ -54,7 +54,7 @@ getVirtualMemUsage() {
 
 reapChild() {
     echo "$NAME: shutting down untangle-vm " >> $UVM_WRAPPER_LOG
-    kill -3 $pid
+    kill $pid
     @PREFIX@/usr/bin/mcli -t 20000 shutdown &> /dev/null
     sleep 1
     kill -INT $pid

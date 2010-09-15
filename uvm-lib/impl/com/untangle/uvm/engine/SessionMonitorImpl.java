@@ -110,28 +110,21 @@ class SessionMonitorImpl implements SessionMonitor
 
         logger.warn("Checking Pipelines");
         
-
         for (SessionMonitorEntry session : sessions) {
-
-            logger.warn("Checking " + session.getProtocol() + " " + 
-                        session.getPreNatSrc() + ":" + session.getPreNatSrcPort() + " -> " +
-                        session.getPreNatDst() + ":" + session.getPreNatDstPort());
-
             //assume bypassed until we find a match in the UVM
             session.setBypassed(Boolean.TRUE); 
             session.setPolicy("");             
+            session.setClientIntf(Integer.valueOf(-1));
+            session.setServerIntf(Integer.valueOf(-1));
 
             for (PipelineImpl pipeline : pipelines) {
                 com.untangle.uvm.node.IPSessionDesc sessionDesc = pipeline.getSessionDesc();
 
-                logger.warn("Against " + sessionDesc.protocol() + " " +
-                            sessionDesc.clientAddr() + ":" + sessionDesc.clientPort() + " -> " +
-                            sessionDesc.serverAddr() + ":" + sessionDesc.serverPort());
-                
                 if (matches(sessionDesc,session)) {
-                    logger.warn("MATCH!");
                     session.setPolicy(pipeline.getPolicy().getName());
                     session.setBypassed(Boolean.FALSE);
+                    session.setClientIntf(new Integer(sessionDesc.clientIntf()));
+                    session.setServerIntf(new Integer(sessionDesc.serverIntf()));
                     break;
                 }
             }
@@ -173,17 +166,17 @@ class SessionMonitorImpl implements SessionMonitor
             break;
         }
 
-        if (! sessionDesc.clientAddr().equals(session.getPreNatSrc())) {
+        if (! sessionDesc.clientAddr().equals(session.getPreNatClient())) {
             return false;
         }
-        if (! sessionDesc.serverAddr().equals(session.getPreNatDst())) {
+        if (! sessionDesc.serverAddr().equals(session.getPreNatServer())) {
             return false;
         }
 
-        if (sessionDesc.clientPort() != session.getPreNatSrcPort()) {
+        if (sessionDesc.clientPort() != session.getPreNatClientPort()) {
             return false;
         }
-        if (sessionDesc.serverPort() != session.getPreNatDstPort()) {
+        if (sessionDesc.serverPort() != session.getPreNatServerPort()) {
             return false;
         }
 
