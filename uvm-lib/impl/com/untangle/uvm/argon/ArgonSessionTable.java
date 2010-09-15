@@ -21,6 +21,8 @@ package com.untangle.uvm.argon;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.List;
+import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
@@ -31,7 +33,7 @@ import com.untangle.uvm.localapi.SessionMatcherFactory;
 /**
  * This table stores a global list of all currently active sessions being vectored
  */
-class ArgonSessionTable
+public class ArgonSessionTable
 {
     /* Debugging */
     private final Logger logger = Logger.getLogger(getClass());
@@ -101,6 +103,11 @@ class ArgonSessionTable
         return true;
     }
 
+    public synchronized List<SessionGlobalState> getSessions()
+    {
+        return new LinkedList<SessionGlobalState>(this.activeSessions.values());
+    }
+    
     synchronized void shutdownMatches( SessionMatcher matcher )
     {
         boolean isDebugEnabled = logger.isDebugEnabled();
@@ -146,7 +153,7 @@ class ArgonSessionTable
         }
     }
 
-    static ArgonSessionTable getInstance()
+    public static ArgonSessionTable getInstance()
     {
         return INSTANCE;
     }

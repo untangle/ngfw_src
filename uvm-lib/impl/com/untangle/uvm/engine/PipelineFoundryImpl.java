@@ -176,7 +176,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
         long ft1 = System.nanoTime();
 
-        PipelineImpl pipeline = new PipelineImpl(sessionDesc, acFittingList, policy);
+        PipelineImpl pipeline = new PipelineImpl(sessionDesc.id(), acFittingList);
         pipelines.put(sessionDesc.id(), pipeline);
 
         Long t1 = System.nanoTime();

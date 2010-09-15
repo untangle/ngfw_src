@@ -26,8 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.node.IPSessionDesc;
-import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.Pipeline;
@@ -42,27 +40,21 @@ class PipelineImpl implements Pipeline
 {
     private static final File UVM_TMP = new File(System.getProperty("uvm.tmp.dir"));
 
-    //unused// private final int sessionId;
     private final List<ArgonConnectorFitting> argonConnectorFittings;
     private final String sessionPrefix;
 
     // This does not need to be concurrent since there is only one thread per pipeline.
-    private final Map<Long,Object> objects = new HashMap<Long,Object>();
+    private final Map<Long,Object> attachments = new HashMap<Long,Object>();
     private final List<File> files = new LinkedList<File>();
 
-    private int id = 0;
-
-    private Policy policy;
-    private IPSessionDesc sessionDesc;
+    private int attachId = 0;
         
     // constructors -----------------------------------------------------------
 
-    PipelineImpl(IPSessionDesc sessionDesc, List<ArgonConnectorFitting> argonConnectorFittings, Policy policy)
+    PipelineImpl(int sessionId, List<ArgonConnectorFitting> argonConnectorFittings)
     {
-        this.sessionDesc = sessionDesc;
-        this.policy = policy;
         this.argonConnectorFittings = argonConnectorFittings;
-        this.sessionPrefix = "sess-" + sessionDesc.id() + "-";
+        this.sessionPrefix = "sess-" + sessionId + "-";
     }
 
     // object registry methods ------------------------------------------------
@@ -77,10 +69,10 @@ class PipelineImpl implements Pipeline
     public Long attach(Object o)
     {
         Long key;
-        synchronized (objects) {
-            key = new Long(++id);
+        synchronized (attachments) {
+            key = new Long(++attachId);
         }
-        objects.put(key, o);
+        attachments.put(key, o);
         return key;
     }
 
@@ -92,7 +84,7 @@ class PipelineImpl implements Pipeline
      */
     public Object getAttachment(Long key)
     {
-        return objects.get(key);
+        return attachments.get(key);
     }
 
     /**
@@ -103,7 +95,7 @@ class PipelineImpl implements Pipeline
      */
     public Object detach(Long key)
     {
-        return objects.remove(key);
+        return attachments.remove(key);
     }
 
     public Fitting getClientFitting(ArgonConnector argonConnector)
@@ -165,14 +157,4 @@ class PipelineImpl implements Pipeline
         }
     }
 
-    protected Policy getPolicy()
-    {
-        return this.policy;
-    }
-
-    protected IPSessionDesc getSessionDesc()
-    {
-        return this.sessionDesc;
-    }
-    
 }

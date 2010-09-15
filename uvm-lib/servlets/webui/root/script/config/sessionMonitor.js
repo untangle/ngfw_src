@@ -64,6 +64,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 },{
                     name : "bypassed"
                 },{
+                    name : "localTraffic"
+                },{
                     name : "policy"
                 },{
                     name : "preNatClient"
@@ -102,6 +104,22 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     dataIndex: "policy",
                     width : 100
                 },{
+                    id : "clientIntf",
+                    header : this.i18n._("Client Interface"),
+                    dataIndex: "clientIntf",
+                    width : 100,
+                    renderer : function(value) {
+                        var result = "";
+                        var store = Ung.Util.getInterfaceStore();
+                        if (store) {
+                            var index = store.find("key", value);
+                            if (index >= 0) {
+                                result = store.getAt(index).get("name");
+                            }
+                        }
+                        return result;
+                    }
+                },{
                     id : "preNatClient",
                     header : this.i18n._("Pre-NAT Client"),
                     dataIndex: "preNatClient",
@@ -121,6 +139,22 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     header : this.i18n._("Pre-NAT Server Port"),
                     dataIndex: "preNatServerPort",
                     width : 100
+                },{
+                    id : "serverIntf",
+                    header : this.i18n._("Server Interface"),
+                    dataIndex: "serverIntf",
+                    width : 100,
+                    renderer : function(value) {
+                        var result = "";
+                        var store = Ung.Util.getInterfaceStore();
+                        if (store) {
+                            var index = store.find("key", value);
+                            if (index >= 0) {
+                                result = store.getAt(index).get("name");
+                            }
+                        }
+                        return result;
+                    }
                 },{
                     id : "postNatClient",
                     header : this.i18n._("Post-NAT Client"),
@@ -142,37 +176,10 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     dataIndex: "postNatServerPort",
                     width : 100
                 },{
-                    id : "clientIntf",
-                    header : this.i18n._("Client Interface"),
-                    dataIndex: "clientIntf",
-                    width : 100,
-                    renderer : function(value) {
-                        var result = "";
-                        var store = Ung.Util.getInterfaceStore();
-                        if (store) {
-                            var index = store.find("key", value);
-                            if (index >= 0) {
-                                result = store.getAt(index).get("name");
-                            }
-                        }
-                        return result;
-                    }
-                },{
-                    id : "serverIntf",
-                    header : this.i18n._("Server Interface"),
-                    dataIndex: "serverIntf",
-                    width : 100,
-                    renderer : function(value) {
-                        var result = "";
-                        var store = Ung.Util.getInterfaceStore();
-                        if (store) {
-                            var index = store.find("key", value);
-                            if (index >= 0) {
-                                result = store.getAt(index).get("name");
-                            }
-                        }
-                        return result;
-                    }
+                    id : "localTraffic",
+                    header : this.i18n._("Local"),
+                    dataIndex: "localTraffic",
+                    width : 70
                 }]
             });
         }

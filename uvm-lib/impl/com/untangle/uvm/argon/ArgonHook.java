@@ -52,7 +52,7 @@ import com.untangle.uvm.security.NodeId;
 /**
  * Helper class for the IP session hooks.
  */
-abstract class ArgonHook implements Runnable
+public abstract class ArgonHook implements Runnable
 {
     private final Logger logger = Logger.getLogger(getClass());
     private static final ArgonSessionTable activeSessions = ArgonSessionTable.getInstance();
@@ -308,6 +308,21 @@ abstract class ArgonHook implements Runnable
         }
     }
 
+    public Policy getPolicy()
+    {
+        return this.policy;
+    }
+
+    public ArgonIPSessionDesc getClientSide()
+    {
+        return this.clientSide;
+    }
+
+    public ArgonIPSessionDesc getServerSide()
+    {
+        return this.serverSide;
+    }
+    
     /**
      * Initialize each of the nodes for the new session. </p>
      */

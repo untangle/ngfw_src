@@ -34,6 +34,9 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.SessionEndpoints;
+import com.untangle.uvm.argon.SessionGlobalState;
+import com.untangle.uvm.argon.ArgonHook;
+import com.untangle.uvm.argon.ArgonSessionTable;
 import com.untangle.uvm.SessionMonitorEntry;
 import com.untangle.uvm.security.NodeId;
 
@@ -105,7 +108,7 @@ class SessionMonitorImpl implements SessionMonitor
     @SuppressWarnings("unchecked") //JSON
     public List<SessionMonitorEntry> getMergedSessionMonitorEntrys()
     {
-        List<PipelineImpl> pipelines = ((PipelineFoundryImpl) uvmContext.pipelineFoundry()).getCurrentPipelines();
+        List<SessionGlobalState> argonSessions = ArgonSessionTable.getInstance().getSessions();
         List<SessionMonitorEntry> sessions = this.getSessionMonitorEntrys();
 
         for (SessionMonitorEntry session : sessions) {
@@ -115,20 +118,38 @@ class SessionMonitorImpl implements SessionMonitor
             session.setClientIntf(Integer.valueOf(-1));
             session.setServerIntf(Integer.valueOf(-1));
 
-            for (PipelineImpl pipeline : pipelines) {
-                com.untangle.uvm.node.IPSessionDesc sessionDesc = pipeline.getSessionDesc();
+            for (SessionGlobalState argonSession : argonSessions) {
+                com.untangle.uvm.node.IPSessionDesc clientSide = argonSession.argonHook().getClientSide();
+                com.untangle.uvm.node.IPSessionDesc serverSide = argonSession.argonHook().getServerSide();
+                com.untangle.uvm.node.IPSessionDesc match = null;
+                
+                if (matches(clientSide,session))
+                    match = clientSide;
+                else if (matches(serverSide,session))
+                    match = serverSide;
 
-                if (matches(sessionDesc,session)) {
-                    session.setPolicy(pipeline.getPolicy().getName());
+                if ( match != null ) {
+                    session.setPolicy(argonSession.argonHook().getPolicy().getName());
                     session.setBypassed(Boolean.FALSE);
-                    session.setClientIntf(new Integer(sessionDesc.clientIntf()));
-                    session.setServerIntf(new Integer(sessionDesc.serverIntf()));
+                    session.setLocalTraffic(Boolean.FALSE);
+                    session.setClientIntf(new Integer(clientSide.clientIntf()));
+                    session.setServerIntf(new Integer(serverSide.serverIntf()));
+
+                    /**
+                     * The conntrack entry shows that this session has been redirect to the local host
+                     * We need to overwrite that with the correct info
+                     */
+                    session.setPostNatClient(serverSide.clientAddr());
+                    session.setPostNatServer(serverSide.serverAddr());
+                    session.setPostNatClientPort(serverSide.clientPort());
+                    session.setPostNatServerPort(serverSide.serverPort());
+                    
                     break;
                 }
             }
                         
         }
-        
+
         return sessions;
     }
     
