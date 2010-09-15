@@ -1,7 +1,9 @@
 echo "Warning: this file needs to be *sourced*"
 
-DEFAULT_RUP=../../hades/src
-[ ! -d "$DEFAULT_RUP" ] && DEFAULT_RUP=../hades/src
+DIR=$(dirname "$0")
+
+DEFAULT_RUP=${DIR}/../../hades/src
+[ ! -d "$DEFAULT_RUP" ] && DEFAULT_RUP=${DIR}/../hades/src
 
 while getopts "u" flag ; do
   if [ "$flag" = "u" ] ; then
@@ -12,16 +14,17 @@ shift $((${OPTIND}-1))
  
 rup=${1:-$DEFAULT_RUP}
 
-export GTAGSLIBPATH=.:${rup}
+export GTAGSLIBPATH=${DIR}:${rup}
 
 updateTags() {
-  pushd $1
-  /usr/bin/find . -name *.java -a ! -path "*/dist/*" -a ! -path '*/downloads/*' | gtags -i -f -
-  popd
+  cd $1
+  /usr/bin/find . -name "*.java" -a ! -path "*/dist/*" -a ! -path '*/downloads/*' -a ! -path '*/staging/*' | gtags -i -f -
+  cd $DIR
 }
 
 if [ -n "$UPDATE" ] ; then
-  echo $GTAGSLIBPATH | perl -pe 's/:/\n/g' | while read path ; do
-    updateTags "$path"
+  echo $GTAGSLIBPATH | perl -pe 's/:/\n/g' | while read gpath ; do
+    echo "Updating tags in $gpath"
+    updateTags "$gpath"
   done
 fi
