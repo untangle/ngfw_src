@@ -1153,9 +1153,9 @@ Ung.Main=Ext.extend(Object, {
             }]);
         } else if(this.value=='SHOW_SESSIONS'){
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-            Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.SessionViewer",Ung.Util.getScriptSrc("script/config/sessionViewer.js"), function() {
-                main.sessionViewerWin=new Ung.SessionViewer({"name":"sessionViewer", "helpSource":"session_viewer"});
-                main.sessionViewerWin.show();
+            Ung.Util.loadResourceAndExecute.defer(1,this,["Ung.SessionMonitor",Ung.Util.getScriptSrc("script/config/sessionMonitor.js"), function() {
+                main.sessionMonitorWin=new Ung.SessionMonitor({"name":"sessionMonitor", "helpSource":"session_viewer"});
+                main.sessionMonitorWin.show();
                 Ext.MessageBox.hide();
             }]);
         } else {

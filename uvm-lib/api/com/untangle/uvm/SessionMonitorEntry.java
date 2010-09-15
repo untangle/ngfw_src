@@ -7,7 +7,7 @@ import java.net.InetAddress;
  * This class is an object that represents a conntrack session
  * It is used for JSON serialization of the ut-conntrack script
  */
-public class ConntrackSession
+public class SessionMonitorEntry
 {
     private String protocol;
     private String state;
@@ -58,7 +58,7 @@ public class ConntrackSession
     public void   setBypassed( Boolean bypassed ) {this.bypassed = bypassed.booleanValue();}
 
     /**
-     * The following properties are UVM properties and are only set if you call MergedConntrackSessions
+     * The following properties are UVM properties and are only set if you call MergedSessionMonitorEntrys
      */
     private String policy;
     

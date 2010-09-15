@@ -34,7 +34,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.SessionEndpoints;
-import com.untangle.uvm.ConntrackSession;
+import com.untangle.uvm.SessionMonitorEntry;
 import com.untangle.uvm.security.NodeId;
 
 /**
@@ -72,7 +72,7 @@ class SessionMonitorImpl implements SessionMonitor
      * This returns a list of descriptors for all sessions in the conntrack table
      */
     @SuppressWarnings("unchecked") //JSON
-    public List<ConntrackSession> getConntrackSessions()
+    public List<SessionMonitorEntry> getSessionMonitorEntrys()
     {
         String execStr = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-conntrack");
 
@@ -86,7 +86,7 @@ class SessionMonitorImpl implements SessionMonitor
                     jsonString.append(line);
             }
             
-            return (List<ConntrackSession>) serializer.fromJSON(jsonString.toString());
+            return (List<SessionMonitorEntry>) serializer.fromJSON(jsonString.toString());
             
         } catch (java.io.IOException exc) {
             logger.error("Unable to read conntrack - error reading input",exc);
@@ -103,21 +103,23 @@ class SessionMonitorImpl implements SessionMonitor
      * such as policy
      */
     @SuppressWarnings("unchecked") //JSON
-    public List<ConntrackSession> getMergedConntrackSessions()
+    public List<SessionMonitorEntry> getMergedSessionMonitorEntrys()
     {
         List<PipelineImpl> pipelines = ((PipelineFoundryImpl) uvmContext.pipelineFoundry()).getCurrentPipelines();
-        List<ConntrackSession> sessions = this.getConntrackSessions();
+        List<SessionMonitorEntry> sessions = this.getSessionMonitorEntrys();
 
         logger.warn("Checking Pipelines");
         
 
-        for (ConntrackSession session : sessions) {
+        for (SessionMonitorEntry session : sessions) {
 
             logger.warn("Checking " + session.getProtocol() + " " + 
                         session.getPreNatSrc() + ":" + session.getPreNatSrcPort() + " -> " +
                         session.getPreNatDst() + ":" + session.getPreNatDstPort());
 
-            session.setBypassed(Boolean.TRUE); //assume bypassed until we find a match in the UVM
+            //assume bypassed until we find a match in the UVM
+            session.setBypassed(Boolean.TRUE); 
+            session.setPolicy("");             
 
             for (PipelineImpl pipeline : pipelines) {
                 com.untangle.uvm.node.IPSessionDesc sessionDesc = pipeline.getSessionDesc();
@@ -156,7 +158,7 @@ class SessionMonitorImpl implements SessionMonitor
         return serializer;
     }
 
-    private boolean matches(com.untangle.uvm.node.IPSessionDesc sessionDesc, ConntrackSession session)
+    private boolean matches(com.untangle.uvm.node.IPSessionDesc sessionDesc, SessionMonitorEntry session)
     {
         switch (sessionDesc.protocol()) {
         case SessionEndpoints.PROTO_TCP:

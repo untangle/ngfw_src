@@ -1,7 +1,7 @@
-if (!Ung.hasResource["Ung.SessionViewer"]) {
-    Ung.hasResource["Ung.SessionViewer"] = true;
+if (!Ung.hasResource["Ung.SessionMonitor"]) {
+    Ung.hasResource["Ung.SessionMonitor"] = true;
 
-    Ung.SessionViewer = Ext.extend(Ung.ConfigWin, {
+    Ung.SessionMonitor = Ext.extend(Ung.ConfigWin, {
         fnCallback : null,
         panelPolicyManagement : null,
         gridRacks : null,
@@ -19,7 +19,7 @@ if (!Ung.hasResource["Ung.SessionViewer"]) {
 
             this.buildTabPanel([this.gridCurrentSessions]);
 
-            Ung.SessionViewer.superclass.initComponent.call(this);
+            Ung.SessionMonitor.superclass.initComponent.call(this);
         },
         // Current Sessions Grid
         buildGridCurrentSessions : function() {
@@ -34,7 +34,7 @@ if (!Ung.hasResource["Ung.SessionViewer"]) {
                 configEdit : null,
                 hasDelete : false,
                 configDelete : null,
-                sortField : 'protocol',
+                sortField : 'bypassed',
                 columnsDefaultSortable : true,
                 title : this.i18n._("Current Sessions"),
                 qtip : this.i18n._("This shows all current sessions."),
@@ -55,8 +55,8 @@ if (!Ung.hasResource["Ung.SessionViewer"]) {
                         }
                     ]
                 }),
-                recordJavaClass : "com.untangle.uvm.ConntrackSession",
-                proxyRpcFn : rpc.jsonrpc.RemoteUvmContext.sessionMonitor().getMergedConntrackSessions,
+                recordJavaClass : "com.untangle.uvm.SessionMonitorEntry",
+                proxyRpcFn : rpc.jsonrpc.RemoteUvmContext.sessionMonitor().getMergedSessionMonitorEntrys,
                 fields : [{
                     name : "id"
                 },{
@@ -108,12 +108,12 @@ if (!Ung.hasResource["Ung.SessionViewer"]) {
                     dataIndex: "preNatDst",
                     width : 100
                 },{
-                    id : "preNatSrc",
+                    id : "preNatSrcPort",
                     header : this.i18n._("Pre-NAT Src Port"),
                     dataIndex: "preNatSrcPort",
                     width : 100
                 },{
-                    id : "preNatSrc",
+                    id : "preNatDstPort",
                     header : this.i18n._("Pre-NAT Dst Port"),
                     dataIndex: "preNatDstPort",
                     width : 100
@@ -128,12 +128,12 @@ if (!Ung.hasResource["Ung.SessionViewer"]) {
                     dataIndex: "postNatDst",
                     width : 100
                 },{
-                    id : "postNatSrc",
+                    id : "postNatSrcPort",
                     header : this.i18n._("Post-NAT Src Port"),
                     dataIndex: "postNatSrcPort",
                     width : 100
                 },{
-                    id : "postNatSrc",
+                    id : "postNatDstPort",
                     header : this.i18n._("Post-NAT Dst Port"),
                     dataIndex: "postNatDstPort",
                     width : 100
