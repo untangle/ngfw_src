@@ -3,6 +3,12 @@
 first=0
 count=0
 
+if [ $# -gt 0 ] ; then
+    ARG="-i $1"
+else
+    ARG="-i eth0"
+fi
+
 # #define CSV_FORMATSTRING "\"$src$\",\"$dst$\",\"$proto$\",\"$srcport$\",\"$dstport$\",\"$srcname$\",\"$dstname$\",\"$srcbytes$\",\"$dstbytes$\",\"$totalbytes$\",\"$srcpackets$\",\"$dstpackets$\",\"$totalpackets$\",\"$srcbps$\",\"$dstbps$\",\"$totalbps$\",\"$srcpps$\",\"$dstpps$\",\"$totalpps$\",\"$filterdata$\",\"$uid\""
 
 # "10.0.0.58","10.0.0.138","TCP","443","58249","","","1406","1017","2423","2","2","4","703","508","1211","1","1","2",""
@@ -10,7 +16,7 @@ count=0
 echo -n "{ javaClass: java.util.LinkedList, list : ["
 
 # ignore stderr (errors about /home/blah/.jnettop/)
-jnettop -n --display text -t 5 --format CSV 2>/dev/null | grep -v '127.0.0.1' | egrep 'TCP|UDP' | sed 's/\"//g' | while read i ; do
+jnettop $ARG -n --display text -t 5 --format CSV 2>/dev/null | grep -v '127.0.0.1' | egrep 'TCP|UDP' | sed 's/\"//g' | while read i ; do
     if [ $first -eq 0 ] ; then first=1 ; else echo -n "," ; fi
 
     echo $i | awk -F, '{printf "{ protocol:\"%s\", preNatClient:\"%s\", preNatServer:\"%s\", preNatClientPort:\"%s\", preNatServerPort:\"%s\", clientKBps:\"%s\", serverKBps:\"%s\", totalKBps:\"%s\", javaClass:\"com.untangle.uvm.SessionMonitorEntry\" }\n",$3,$1,$2,$4,$5,$14/1000,$15/1000,$16/1000}'

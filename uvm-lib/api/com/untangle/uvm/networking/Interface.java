@@ -91,8 +91,7 @@ public class Interface extends Rule
         this.isPhysicalInterface = isPhysicalInterface;
     }
 
-    public Interface( byte argonIntf, EthernetMedia ethernetMedia, boolean isPingable, 
-                      boolean isPhysicalInterface )
+    public Interface( byte argonIntf, EthernetMedia ethernetMedia, boolean isPingable, boolean isPhysicalInterface )
     {
         this.argonIntf     = argonIntf;
         this.ethernetMedia = ethernetMedia;

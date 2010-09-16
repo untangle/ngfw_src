@@ -142,8 +142,7 @@ public class InterfaceInternal
      */
     public Interface toInterface()
     {
-        Interface i = new Interface( this.argonIntf.getArgon(), this.ethernetMedia, this.isPingable, 
-                                     this.isPhysicalInterface );
+        Interface i = new Interface( this.argonIntf.getArgon(), this.ethernetMedia, this.isPingable, this.isPhysicalInterface );
         i.setName( getName());
         i.setSystemName( getSystemName());
         i.setConnectionState( getConnectionState());
@@ -166,8 +165,7 @@ public class InterfaceInternal
         return sb.toString();
     }
     
-    public static InterfaceInternal 
-        makeInterfaceInternal( Interface intf, NetworkSpaceInternal networkSpace )
+    public static InterfaceInternal makeInterfaceInternal( Interface intf, NetworkSpaceInternal networkSpace )
         throws ValidateException
     {
         ArgonInterface argonIntf = null;

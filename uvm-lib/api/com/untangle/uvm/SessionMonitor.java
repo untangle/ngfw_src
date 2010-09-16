@@ -44,6 +44,7 @@ public interface SessionMonitor
      * It calls the Jnettop list and merges it with the conntrack and argon lists
      */
     public List<SessionMonitorEntry> getMergedBandwidthSessions();
+    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceId);
 
     
 }

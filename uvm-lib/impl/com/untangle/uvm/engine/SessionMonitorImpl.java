@@ -38,6 +38,7 @@ import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.argon.SessionGlobalState;
 import com.untangle.uvm.argon.ArgonHook;
 import com.untangle.uvm.argon.ArgonSessionTable;
+import com.untangle.uvm.networking.Interface;
 import com.untangle.uvm.SessionMonitorEntry;
 import com.untangle.uvm.security.NodeId;
 
@@ -75,49 +76,39 @@ class SessionMonitorImpl implements SessionMonitor
     /**
      * documented in SessionMonitor.java
      */
-    public List<SessionMonitorEntry> getMergedBandwidthSessions()
+    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceIdStr)
     {
-        List<SessionMonitorEntry> jnettopSessions = getJnettopSessionMonitorEntrys();
-        List<SessionMonitorEntry> sessions = this.getMergedSessions();
+        /**
+         * Find the the system interface name that matches this ID
+         * XXX this should be in a utility somewhere
+         */
+        List<Interface> intfs = uvmContext.networkManager().getInterfaceList(false);
+        try {
+            int interfaceId = Integer.parseInt(interfaceIdStr);
+        
+            for (Interface intf : intfs) {
 
-        for (SessionMonitorEntry session : sessions) {
+                if (((int)intf.getArgonIntf()) == interfaceId) {
+                    String systemName = intf.getSystemName();
 
-            session.setClientKBps(Float.valueOf(0.0f));
-            session.setServerKBps(Float.valueOf(0.0f));
-            session.setTotalKBps(Float.valueOf(0.0f));
-
-            for (SessionMonitorEntry jnettopSession : jnettopSessions) {
-
-                /* could be pre or post nat */
-                boolean match = false;
-                
-                if (matches(jnettopSession.getProtocol(),
-                            jnettopSession.getPreNatClient(),jnettopSession.getPreNatServer(),
-                            jnettopSession.getPreNatClientPort(),jnettopSession.getPreNatServerPort(),
-                            session.getProtocol(),
-                            session.getPreNatClient(),session.getPreNatServer(),
-                            session.getPreNatClientPort(),session.getPreNatServerPort()))
-                    match = true;
-
-                if (match || matches(jnettopSession.getProtocol(),
-                                     jnettopSession.getPreNatClient(),jnettopSession.getPreNatServer(),
-                                     jnettopSession.getPreNatClientPort(),jnettopSession.getPreNatServerPort(),
-                                     session.getProtocol(),
-                                     session.getPostNatClient(),session.getPostNatServer(),
-                                     session.getPostNatClientPort(),session.getPostNatServerPort()))
-                    match = true;
-                
-
-                if ( match ) {
-                    session.setClientKBps(jnettopSession.getClientKBps());
-                    session.setServerKBps(jnettopSession.getServerKBps());
-                    session.setTotalKBps(jnettopSession.getTotalKBps());
-                    break; /* break to outer loop */
+                    return _getMergedBandwidthSessions(systemName);
                 }
             }
+        } catch (Exception e) {
+            logger.warn("Unable to retrieve sessions",e);
+            return null;
         }
 
-        return sessions;
+        logger.warn("Unable to find match for interface " + interfaceIdStr);
+        return null;
+    }
+
+    /**
+     * documented in SessionMonitor.java
+     */
+    public List<SessionMonitorEntry> getMergedBandwidthSessions()
+    {
+        return getMergedBandwidthSessions("0");
     }
 
     /**
@@ -125,7 +116,7 @@ class SessionMonitorImpl implements SessionMonitor
      */
     public List<SessionMonitorEntry> getMergedSessions()
     {
-        List<SessionMonitorEntry> sessions = this.getConntrackSessionMonitorEntrys();
+        List<SessionMonitorEntry> sessions = this._getConntrackSessionMonitorEntrys();
         List<SessionGlobalState> argonSessions = ArgonSessionTable.getInstance().getSessions();
 
         for (SessionMonitorEntry session : sessions) {
@@ -140,9 +131,9 @@ class SessionMonitorImpl implements SessionMonitor
                 com.untangle.uvm.node.IPSessionDesc serverSide = argonSession.argonHook().getServerSide();
                 com.untangle.uvm.node.IPSessionDesc match = null;
                 
-                if (matches(clientSide,session))
+                if (_matches(clientSide,session))
                     match = clientSide;
-                else if (matches(serverSide,session))
+                else if (_matches(serverSide,session))
                     match = serverSide;
 
                 if ( match != null ) {
@@ -203,12 +194,63 @@ class SessionMonitorImpl implements SessionMonitor
     }
 
     /**
+     * Returns a fully merged list for the given interface
+     * systemIntfName is the system interface (example: "eth0")
+     * This takes 5 seconds to gather data before it returns
+     */
+    private List<SessionMonitorEntry> _getMergedBandwidthSessions(String systemIntfName)
+    {
+        List<SessionMonitorEntry> jnettopSessions = _getJnettopSessionMonitorEntrys(systemIntfName);
+        List<SessionMonitorEntry> sessions = this.getMergedSessions();
+
+        for (SessionMonitorEntry session : sessions) {
+
+            session.setClientKBps(Float.valueOf(0.0f));
+            session.setServerKBps(Float.valueOf(0.0f));
+            session.setTotalKBps(Float.valueOf(0.0f));
+
+            for (SessionMonitorEntry jnettopSession : jnettopSessions) {
+
+                /* could be pre or post nat */
+                boolean match = false;
+                
+                if (_matches(jnettopSession.getProtocol(),
+                            jnettopSession.getPreNatClient(),jnettopSession.getPreNatServer(),
+                            jnettopSession.getPreNatClientPort(),jnettopSession.getPreNatServerPort(),
+                            session.getProtocol(),
+                            session.getPreNatClient(),session.getPreNatServer(),
+                            session.getPreNatClientPort(),session.getPreNatServerPort()))
+                    match = true;
+
+                if (match || _matches(jnettopSession.getProtocol(),
+                                     jnettopSession.getPreNatClient(),jnettopSession.getPreNatServer(),
+                                     jnettopSession.getPreNatClientPort(),jnettopSession.getPreNatServerPort(),
+                                     session.getProtocol(),
+                                     session.getPostNatClient(),session.getPostNatServer(),
+                                     session.getPostNatClientPort(),session.getPostNatServerPort()))
+                    match = true;
+                
+
+                if ( match ) {
+                    session.setClientKBps(jnettopSession.getClientKBps());
+                    session.setServerKBps(jnettopSession.getServerKBps());
+                    session.setTotalKBps(jnettopSession.getTotalKBps());
+                    break; /* break to outer loop */
+                }
+            }
+        }
+
+        return sessions;
+    }
+
+    /**
      * This returns a list of sessions and bandwidth usages reported by jnettop over 5 seconds
+     * This takes 5 seconds to gather data before it returns
      */
     @SuppressWarnings("unchecked") //JSON
-    private List<SessionMonitorEntry> getJnettopSessionMonitorEntrys()
+    private List<SessionMonitorEntry> _getJnettopSessionMonitorEntrys(String systemIntfName)
     {
-        String execStr = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-jnettop");
+        String execStr = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-jnettop" + " " + systemIntfName);
 
         try {
             StringBuilder jsonString = new StringBuilder();
@@ -236,7 +278,7 @@ class SessionMonitorImpl implements SessionMonitor
      * This returns a list of descriptors for all sessions in the conntrack table
      */
     @SuppressWarnings("unchecked") //JSON
-    private List<SessionMonitorEntry> getConntrackSessionMonitorEntrys()
+    private List<SessionMonitorEntry> _getConntrackSessionMonitorEntrys()
     {
         String execStr = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-conntrack");
 
@@ -262,7 +304,7 @@ class SessionMonitorImpl implements SessionMonitor
         }
     }
 
-    private boolean matches(com.untangle.uvm.node.IPSessionDesc sessionDesc, SessionMonitorEntry session)
+    private boolean _matches(com.untangle.uvm.node.IPSessionDesc sessionDesc, SessionMonitorEntry session)
     {
         switch (sessionDesc.protocol()) {
         case SessionEndpoints.PROTO_TCP:
@@ -294,8 +336,8 @@ class SessionMonitorImpl implements SessionMonitor
         return true;
     }
 
-    private boolean matches(String protocol1, InetAddress client1, InetAddress server1, int clientPort1, int serverPort1,
-                            String protocol2, InetAddress client2, InetAddress server2, int clientPort2, int serverPort2)
+    private boolean _matches(String protocol1, InetAddress client1, InetAddress server1, int clientPort1, int serverPort1,
+                             String protocol2, InetAddress client2, InetAddress server2, int clientPort2, int serverPort2)
 
     {
         if (! protocol1.equals(protocol2))
