@@ -154,18 +154,6 @@ public class CasingPipeSpec extends PipeSpec
     }
 
     @Override
-    public void dumpSessions()
-    {
-        if (null != insideArgonConnector) {
-            insideArgonConnector.dumpSessions();
-        }
-
-        if (null != outsideArgonConnector) {
-            outsideArgonConnector.dumpSessions();
-        }
-    }
-
-    @Override
     public List<IPSessionDesc> liveSessionDescs()
     {
         List<IPSessionDesc> l = new ArrayList<IPSessionDesc>();

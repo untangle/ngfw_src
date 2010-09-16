@@ -37,7 +37,7 @@ import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.TCPSessionDesc;
-import com.untangle.uvm.vnet.client.TCPSessionDescImpl;
+import com.untangle.uvm.vnet.TCPSessionDescImpl;
 import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.IPStreamer;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;

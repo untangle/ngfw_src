@@ -70,10 +70,7 @@ public interface ArgonConnector
 
     List<IPSession> liveSessions();
     
-    void dumpSessions();
-
     Node node();
-
 }
 
 

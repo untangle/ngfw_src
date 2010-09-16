@@ -44,23 +44,11 @@ import com.untangle.uvm.node.SessionEndpoints;
 public interface IPSessionDesc
     extends com.untangle.uvm.node.IPSessionDesc, SessionDesc, SessionEndpoints
 {
-    /**
-     * IP clients and servers have a state of <code>CLOSED</code> when
-     * both the input and output sides are dead.
-     *
-     */
     static final byte CLOSED = 0;
     static final byte EXPIRED = 0;
-
-    /**
-     * IP client and servers have a state of <code>OPEN</code> when
-     * both the input and output sides are alive.
-     */
     static final byte OPEN = 4;
 
     byte clientState();
     byte serverState();
 
-    // boolean isClientClosed();
-    // boolean isServerClosed();
 }

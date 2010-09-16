@@ -83,13 +83,6 @@ public abstract class AbstractNode extends NodeBase
 
     // Node methods ------------------------------------------------------
 
-    public void dumpSessions()
-    {
-        for (PipeSpec ps : pipeSpecs) {
-            ps.dumpSessions();
-        }
-    }
-
     public List<IPSessionDesc> liveSessionDescs()
     {
         List<IPSessionDesc> sessList = new LinkedList<IPSessionDesc>();

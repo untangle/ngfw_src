@@ -53,7 +53,6 @@ import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.MetaEnv;
-import com.untangle.uvm.util.SessionUtil;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.SessionStats;
@@ -639,80 +638,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         }
 
         return sessions;
-    }
-    
-    // This one is used to dump to our own log, including internal
-    // session state.
-    void dumpSessions()
-    {
-        System.out.println("Live session dump for " + node.getNodeDesc().getName());
-        System.out.println("ID\t\tDir\tC State\tC Addr\tC Port\tS State\tS Addr\tS Port\t" +
-                           "Created\tLast Activity\tC->T Bs\tT->S Bs\tS->T Bs\tT->C Bs\t" +
-                           "c2sDir\ts2cDir\tcio\tsio\tcro\tsro\tcreq\tsreq");
-        for (Iterator<IPSession> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
-            IPSessionImpl sd = (IPSessionImpl)i.next();
-            SessionStats stats = sd.stats();
-            if (sd instanceof UDPSession)
-                System.out.print("U");
-            else if (sd instanceof TCPSession)
-                System.out.print("T");
-            System.out.print(sd.id());
-            System.out.print("\t");
-            System.out.print(SessionUtil.prettyState(sd.clientState()));
-            System.out.print("\t");
-            System.out.print(sd.clientAddr());
-            System.out.print("\t");
-            System.out.print(sd.clientPort());
-            System.out.print("\t");
-            System.out.print(SessionUtil.prettyState(sd.serverState()));
-            System.out.print("\t");
-            System.out.print(sd.serverAddr());
-            System.out.print("\t");
-            System.out.print(sd.serverPort());
-            System.out.print("\t");
-            System.out.print(stats.creationDate());
-            System.out.print("\t");
-            System.out.print(stats.lastActivityDate());
-            System.out.print("\t");
-            System.out.print(stats.c2tBytes());
-            System.out.print("\t");
-            System.out.print(stats.t2sBytes());
-            System.out.print("\t");
-            System.out.print(stats.s2tBytes());
-            System.out.print("\t");
-            System.out.print(stats.t2cBytes());
-            System.out.print("\t");
-            /*
-              if (ss instanceof IPSessionState) {
-              IPSessionState iss = (IPSessionState)ss;
-              System.out.print(iss.c2sWriting() ? "write" : "read");
-              System.out.print("\t");
-              System.out.print(iss.s2cWriting() ? "write" : "read");
-              System.out.print("\t");
-              System.out.print(iss.clientKey == null ? "unreg" : Integer.toString(iss.clientKey.interestOps()));
-              System.out.print("\t");
-              System.out.print(iss.serverKey == null ? "unreg" : Integer.toString(iss.serverKey.interestOps()));
-              System.out.print("\t");
-              System.out.print(iss.clientKey == null ? "unreg" : Integer.toString(iss.clientKey.readyOps()));
-              System.out.print("\t");
-              System.out.print(iss.serverKey == null ? "unreg" : Integer.toString(iss.serverKey.readyOps()));
-              System.out.print("\t");
-              String creq = " ";
-              if (iss.clientCloseRequested)
-              creq = "close";
-              else if (iss.s2cShutdownRequested)
-              creq = "shut";
-              System.out.print(creq);
-              System.out.print("\t");
-              String sreq = " ";
-              if (iss.serverCloseRequested)
-              sreq = "close";
-              else if (iss.c2sShutdownRequested)
-              sreq = "shut";
-              System.out.println(sreq);
-              }
-            */
-        }
     }
 
     //////////////////////////////////////////////////////////////////

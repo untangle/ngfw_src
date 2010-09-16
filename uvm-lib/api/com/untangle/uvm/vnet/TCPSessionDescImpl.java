@@ -31,7 +31,7 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.vnet.client;
+package com.untangle.uvm.vnet;
 
 import java.net.InetAddress;
 

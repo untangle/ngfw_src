@@ -172,14 +172,6 @@ public class SoloPipeSpec extends PipeSpec
     }
 
     @Override
-    public void dumpSessions()
-    {
-        if (null != argonConnector) {
-            argonConnector.dumpSessions();
-        }
-    }
-
-    @Override
     public List<IPSessionDesc> liveSessionDescs()
     {
         if (null != argonConnector) {

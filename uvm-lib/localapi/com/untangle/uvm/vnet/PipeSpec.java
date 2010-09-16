@@ -92,8 +92,7 @@ public abstract class PipeSpec
      * @param name display name of the PipeSpec.
      * @param subscription the Subscription.
      */
-    protected PipeSpec(String name, Node node,
-                       Subscription subscription)
+    protected PipeSpec(String name, Node node, Subscription subscription)
     {
         this.name = name;
         this.node = node;
@@ -108,7 +107,6 @@ public abstract class PipeSpec
 
     public abstract void connectArgonConnector();
     public abstract void disconnectArgonConnector();
-    public abstract void dumpSessions();
     public abstract List<IPSession> liveSessions();
     public abstract List<IPSessionDesc> liveSessionDescs();
 

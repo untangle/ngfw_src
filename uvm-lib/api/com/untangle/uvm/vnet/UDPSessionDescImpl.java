@@ -31,7 +31,7 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.vnet.client;
+package com.untangle.uvm.vnet;
 
 import java.net.InetAddress;
 
@@ -61,14 +61,4 @@ public class UDPSessionDescImpl
               serverPort);
     }
 
-    public boolean isPing()
-    {
-        return (clientPort == 0 && serverPort == 0);
-    }
-
-    /* XXX Not sure what this is XXX This should be implemented for sure */
-    public int icmpId()
-    {
-        return 0;
-    }
 }

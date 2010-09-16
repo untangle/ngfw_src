@@ -101,9 +101,4 @@ public interface Node
 
     List<IPSessionDesc> liveSessionDescs();
 
-    /**
-     * <code>dumpSessions</code> dumps the session descriptions in
-     * gory detail to the node log.  This is for debugging only.
-     */
-    void dumpSessions();
 }

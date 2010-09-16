@@ -39,7 +39,7 @@ import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.IPSessionDesc;
 import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.UDPSession;
-import com.untangle.uvm.vnet.client.UDPSessionDescImpl;
+import com.untangle.uvm.vnet.UDPSessionDescImpl;
 import com.untangle.uvm.vnet.event.IPStreamer;
 import com.untangle.uvm.vnet.event.UDPErrorEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;

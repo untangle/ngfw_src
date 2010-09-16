@@ -153,12 +153,6 @@ class ArgonConnectorImpl implements ArgonConnector
         return disp.liveSessionDescs();
     }
 
-    public void dumpSessions()
-    {
-        if (disp != null)
-            disp.dumpSessions();
-    }
-
     public List<IPSession> liveSessions()
     {
         if (disp != null)
