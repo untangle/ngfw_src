@@ -2453,7 +2453,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             }),
             sortInfo : this.sortField ? {
                 field : this.sortField,
-                direction : "ASC"
+                direction : this.sortOrder ? this.sortOrder : "ASC"
             } : null,
             remoteSort : true,
             reader : new Ext.data.JsonReader({
@@ -3710,6 +3710,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     rowEditorLabelWidth: null,
     // the default sort field
     sortField : null,
+    // the default sort order
+    sortOrder : null,
     // the columns are sortable by default, if sortable is not specified
     columnsDefaultSortable : null,
     // paginate the grid by default
@@ -3789,7 +3791,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 proxy : new Ung.RpcProxy(this.proxyRpcFn, this.proxyRpcFnArgs, this.paginated),
                 sortInfo : this.sortField ? {
                     field : this.sortField,
-                    direction : "ASC"
+                    direction : this.sortOrder ? this.sortOrder : "ASC"
                 } : null,
                 reader : new Ext.data.JsonReader({
                     totalProperty : "totalRecords",
@@ -3819,7 +3821,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 }),
                 sortInfo : this.sortField ? {
                     field : this.sortField,
-                    direction : "ASC"
+                    direction : this.sortOrder ? this.sortOrder : "ASC"
                 } : null,
                 remoteSort : false,
                 reader : new Ext.data.JsonReader({
@@ -4419,7 +4421,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
 
                 sortInfo : this.sortField ? {
                     field: this.sortField,
-                    direction : "ASC"
+                    direction : this.sortOrder ? this.sortOrder : "ASC"
                 }: null,
                 remoteSort : false,
                 reader : new Ext.data.JsonReader({
