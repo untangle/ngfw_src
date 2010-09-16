@@ -7,8 +7,8 @@ echo "  Customizing HW-related settings for untangle-vm"
 ARCH=`uname -m`
 MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
 if [ $MEM -gt 4900000 ] ; then
-    MAX_HEAP_SIZE=`echo $MEM | awk '{printf $1 * .7 / 1000 "m"}'`
-    MAX_VIRTUAL_SIZE=`echo $MEM | awk '{printf $1 * 1  / 1000 "m"}'`
+    MAX_HEAP_SIZE=`echo $MEM | awk '{printf int($1 * .7 / 1000) "m"}'`
+    MAX_VIRTUAL_SIZE=`echo $MEM | awk '{printf int($1 * 1  / 1000) "m"}'`
     MAX_BERKDB_MEG=180
 elif [ $MEM -gt 3900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
