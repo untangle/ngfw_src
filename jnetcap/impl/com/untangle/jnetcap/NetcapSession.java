@@ -91,14 +91,43 @@ public abstract class NetcapSession
         return getClientMark( pointer.value() );
     }
     
+    public int  clientQosMark()
+    {
+        //QoSMask = 0x00700000 (20 bits to the left)
+        return ((clientMark() & 0x00700000) >> 20);
+    }
+
     public void clientMark(int newmark)
     {
         setClientMark( pointer.value(), newmark );
     }
 
+    public void orClientMark(int bitmask)
+    {
+        int orig_client_mark = this.clientMark();
+        int client_mark = orig_client_mark | bitmask;
+
+        if (client_mark == orig_client_mark)
+            return;
+        
+        this.clientMark(client_mark);
+    }
+    
+    public void clientQosMark(int priority)
+    {
+        //QoSMask = 0x00700000 (20 bits to the left)
+        this.orClientMark(priority << 20);
+    }
+
     public int  serverMark()
     {
         return getServerMark( pointer.value() );
+    }
+
+    public int  serverQosMark()
+    {
+        //QoSMask = 0x00700000 (20 bits to the left)
+        return ((serverMark() & 0x00700000) >> 20);
     }
     
     public void serverMark(int newmark)
@@ -106,6 +135,23 @@ public abstract class NetcapSession
         setServerMark( pointer.value(), newmark );
     }
 
+    public void orServerMark(int bitmask)
+    {
+        int orig_server_mark = this.serverMark();
+        int server_mark = orig_server_mark | bitmask;
+
+        if (server_mark == orig_server_mark)
+            return;
+        
+        this.serverMark(server_mark);
+    }
+    
+    public void serverQosMark(int priority)
+    {
+        //QoSMask = 0x00700000 (20 bits to the left)
+        this.orServerMark(priority << 20);
+    }
+    
     public void determineServerIntf( boolean isSingleNicMode )
     {
         determineServerIntf( pointer.value(), isSingleNicMode );

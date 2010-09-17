@@ -39,7 +39,7 @@ package com.untangle.uvm.vnet;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public interface Session extends SessionDesc
+public interface Session
 {
 
     /**

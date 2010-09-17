@@ -69,6 +69,7 @@ public class SessionMonitorEntry
     private Integer serverIntf;
     private Boolean portForwarded;
     private Boolean natted;
+    private Integer priority;
 
     public String getPolicy() {return policy;}
     public void   setPolicy( String policy ) {this.policy = policy;}
@@ -84,6 +85,9 @@ public class SessionMonitorEntry
     public Boolean getNatted() {return natted;}
     public void    setNatted( Boolean natted ) {this.natted = natted;}
 
+    public Integer getPriority() {return priority;}
+    public void    setPriority( Integer priority ) {this.priority = priority;}
+
     /**
      * The following properties come from jnettop
      */
@@ -97,7 +101,5 @@ public class SessionMonitorEntry
     public void  setServerKBps( Float serverKBps ) {this.serverKBps = serverKBps;}
     public Float getTotalKBps() {return totalKBps;}
     public void  setTotalKBps( Float totalKBps ) {this.totalKBps = totalKBps;}
-    
-    
     
 }

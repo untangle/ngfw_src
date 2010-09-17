@@ -125,18 +125,15 @@ class SessionMonitorImpl implements SessionMonitor
             session.setPolicy("");             
             session.setClientIntf(Integer.valueOf(-1));
             session.setServerIntf(Integer.valueOf(-1));
+            session.setPriority(session.getQosPriority()); 
 
+            
             for (SessionGlobalState argonSession : argonSessions) {
                 com.untangle.uvm.node.IPSessionDesc clientSide = argonSession.argonHook().getClientSide();
                 com.untangle.uvm.node.IPSessionDesc serverSide = argonSession.argonHook().getServerSide();
-                com.untangle.uvm.node.IPSessionDesc match = null;
-                
-                if (_matches(clientSide,session))
-                    match = clientSide;
-                else if (_matches(serverSide,session))
-                    match = serverSide;
+                int priority = argonSession.netcapSession().clientQosMark();
 
-                if ( match != null ) {
+                if ( _matches(clientSide,session) || _matches(serverSide,session) ) {
                     session.setPolicy(argonSession.argonHook().getPolicy().getName());
                     session.setBypassed(Boolean.FALSE);
                     session.setLocalTraffic(Boolean.FALSE);
@@ -151,7 +148,12 @@ class SessionMonitorImpl implements SessionMonitor
                     session.setPostNatServer(serverSide.serverAddr());
                     session.setPostNatClientPort(serverSide.clientPort());
                     session.setPostNatServerPort(serverSide.serverPort());
-                    
+
+                    /**
+                     * Only have one priority per session
+                     * Assume both client and server are the same
+                     */
+                    session.setPriority(priority); 
                     break;
                 }
             }

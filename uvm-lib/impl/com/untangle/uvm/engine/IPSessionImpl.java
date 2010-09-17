@@ -467,17 +467,11 @@ abstract class IPSessionImpl
      */
     public void orClientMark(int bitmask)
     {
-        int orig_client_mark = this.clientMark();
-        int client_mark = orig_client_mark | bitmask;
+        //java.lang.StringBuilder sb = new java.lang.StringBuilder();
+        //java.util.Formatter formatter = new java.util.Formatter(sb, java.util.Locale.US);
+        //logger.debug(formatter.format("Set ClientMark to 0x%08x",client_mark).toString()); sb.setLength(0);
 
-        java.lang.StringBuilder sb = new java.lang.StringBuilder();
-        java.util.Formatter formatter = new java.util.Formatter(sb, java.util.Locale.US);
-        logger.debug(formatter.format("Set ClientMark to 0x%08x",client_mark).toString()); sb.setLength(0);
-
-        if (client_mark == orig_client_mark)
-            return;
-        
-        this.clientMark(client_mark);
+        this.argonSession.sessionGlobalState().netcapSession().orClientMark(bitmask);
     }
 
     /**
@@ -485,9 +479,8 @@ abstract class IPSessionImpl
      */
     public void setClientQosMark(int priority)
     {
-        //QoSMask = 0x00700000 (20 bits to the left)
         logger.debug("Set Client QosMark to " + priority);
-        this.orClientMark(priority << 20);
+        this.argonSession.sessionGlobalState().netcapSession().clientQosMark(priority);
     }
     
     /**
@@ -511,17 +504,11 @@ abstract class IPSessionImpl
      */
     public void orServerMark(int bitmask)
     {
-        int orig_server_mark = this.serverMark();
-        int server_mark = bitmask | orig_server_mark;
+        //java.lang.StringBuilder sb = new java.lang.StringBuilder();
+        //java.util.Formatter formatter = new java.util.Formatter(sb, java.util.Locale.US);
+        //logger.debug(formatter.format("Set ServerMark to 0x%08x",server_mark).toString()); sb.setLength(0);
 
-        java.lang.StringBuilder sb = new java.lang.StringBuilder();
-        java.util.Formatter formatter = new java.util.Formatter(sb, java.util.Locale.US);
-        logger.debug(formatter.format("Set ServerMark to 0x%08x",server_mark).toString()); sb.setLength(0);
-
-        if (server_mark == orig_server_mark)
-            return;
-        
-        this.serverMark(server_mark);
+        this.argonSession.sessionGlobalState().netcapSession().orServerMark(bitmask);
     }
 
     /**
@@ -529,9 +516,8 @@ abstract class IPSessionImpl
      */
     public void setServerQosMark(int priority)
     {
-        //QoSMask = 0x00700000 (20 bits to the left)
         logger.debug("Set Server QosMark to " + priority);
-        this.orServerMark(priority << 20);
+        this.argonSession.sessionGlobalState().netcapSession().serverQosMark(priority);
     }
     
     
@@ -839,7 +825,6 @@ abstract class IPSessionImpl
         timesLogger.info(result.toString());
     }
 
-    
     abstract public VnetSessionDesc makeDesc();
 
     /**
@@ -860,18 +845,12 @@ abstract class IPSessionImpl
 
     abstract protected void sendCompleteEvent() ;
 
-    abstract protected void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)
-        ;
+    abstract protected void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable);
 
-    abstract protected void addStreamBuf(int side, IPStreamer streamer)
-        ;
+    abstract protected void addStreamBuf(int side, IPStreamer streamer);
 
-    abstract protected void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable)
-        ;
+    abstract protected void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable);
 
     abstract protected String idForMDC();
 
-    // Don't need equal or hashcode since we can only have one of
-    // these objects per session (so the memory address is ok for
-    // equals/hashcode).
 }
