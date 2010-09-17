@@ -49,7 +49,7 @@ public interface PipelineFoundry
 {
     PipelineEndpoints createInitialEndpoints(IPSessionDesc start);
     void registerEndpoints(PipelineEndpoints pe);
-    void destroy(IPSessionDesc start, IPSessionDesc end, PipelineEndpoints pe, String uid);
+//     void destroy(IPSessionDesc start, IPSessionDesc end, PipelineEndpoints pe, String uid);
 
     ArgonConnector createArgonConnector(PipeSpec spec, SessionEventListener listener);
     void registerArgonConnector(ArgonConnector argonConnector);

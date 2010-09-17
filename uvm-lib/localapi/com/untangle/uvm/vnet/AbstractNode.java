@@ -83,13 +83,13 @@ public abstract class AbstractNode extends NodeBase
 
     // Node methods ------------------------------------------------------
 
-    public List<IPSessionDesc> liveSessionDescs()
+    public List<VnetSessionDesc> liveSessionDescs()
     {
-        List<IPSessionDesc> sessList = new LinkedList<IPSessionDesc>();
+        List<VnetSessionDesc> sessList = new LinkedList<VnetSessionDesc>();
 
         if (null != pipeSpecs) {
             for (PipeSpec ps : pipeSpecs) {
-                for (IPSessionDesc isd : ps.liveSessionDescs()) {
+                for (VnetSessionDesc isd : ps.liveSessionDescs()) {
                     sessList.add(isd);
                 }
             }

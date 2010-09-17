@@ -36,10 +36,11 @@ import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.argon.ArgonUDPSession;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPPacketHeader;
-import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.UDPSession;
-import com.untangle.uvm.vnet.UDPSessionDescImpl;
+import com.untangle.uvm.node.SessionEndpoints;
+import com.untangle.uvm.vnet.VnetSessionDescImpl;
 import com.untangle.uvm.vnet.event.IPStreamer;
 import com.untangle.uvm.vnet.event.UDPErrorEvent;
 import com.untangle.uvm.vnet.event.UDPPacketEvent;
@@ -122,22 +123,22 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         maxPacketSize[CLIENT] = numBytes;
     }
 
-    public IPSessionDesc makeDesc()
+    public VnetSessionDesc makeDesc()
      {
-        return new UDPSessionDescImpl(id(), new SessionStats(stats),
-                                      clientState(), serverState(),
-                                      clientIntf(), serverIntf(), clientAddr(),
-                                      serverAddr(), clientPort(), serverPort());
+         return new VnetSessionDescImpl(id(), SessionEndpoints.PROTO_UDP, new SessionStats(stats),
+                                        clientState(), serverState(),
+                                        clientIntf(), serverIntf(), clientAddr(),
+                                        serverAddr(), clientPort(), serverPort());
     }
 
     public byte clientState()
     {
         if ((argonSession).clientIncomingSocketQueue() == null) {
             assert (argonSession).clientOutgoingSocketQueue() == null;
-            return IPSessionDesc.EXPIRED;
+            return VnetSessionDesc.EXPIRED;
         } else {
             assert (argonSession).clientOutgoingSocketQueue() != null;
-            return IPSessionDesc.OPEN;
+            return VnetSessionDesc.OPEN;
         }
     }
 
@@ -145,10 +146,10 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     {
         if ((argonSession).serverIncomingSocketQueue() == null) {
             assert (argonSession).serverOutgoingSocketQueue() == null;
-            return IPSessionDesc.EXPIRED;
+            return VnetSessionDesc.EXPIRED;
         } else {
             assert (argonSession).serverOutgoingSocketQueue() != null;
-            return IPSessionDesc.OPEN;
+            return VnetSessionDesc.OPEN;
         }
     }
 

@@ -222,8 +222,9 @@ public class UserPolicyRule extends PolicyRule
 
         boolean durationTest = invertEntireDuration ? reject : !reject;
 
-        return durationTest
-            && user.isMatch(sd.user());
+        boolean userMatch = user.isMatch(sd.user());
+
+        return durationTest && userMatch;
     }
 
     // accessors --------------------------------------------------------------

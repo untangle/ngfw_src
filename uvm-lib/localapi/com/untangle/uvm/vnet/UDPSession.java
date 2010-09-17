@@ -42,7 +42,7 @@ import java.nio.ByteBuffer;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public interface UDPSession extends UDPSessionDesc, IPSession
+public interface UDPSession extends IPSession
 {
     static final int UDP_MAX_MESG_SIZE = 65536;
 

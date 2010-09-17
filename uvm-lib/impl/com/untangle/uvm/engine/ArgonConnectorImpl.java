@@ -27,7 +27,7 @@ import com.untangle.uvm.argon.ArgonAgentImpl;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.util.MetaEnv;
-import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.Session;
@@ -146,10 +146,10 @@ class ArgonConnectorImpl implements ArgonConnector
         return disp.liveSessionIds();
     }
 
-    public List<IPSessionDesc> liveSessionDescs()
+    public List<VnetSessionDesc> liveSessionDescs()
     {
         if (disp == null)
-            return new LinkedList<IPSessionDesc>();
+            return new LinkedList<VnetSessionDesc>();
         return disp.liveSessionDescs();
     }
 

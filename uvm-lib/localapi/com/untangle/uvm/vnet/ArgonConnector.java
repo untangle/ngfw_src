@@ -66,7 +66,7 @@ public interface ArgonConnector
 
     int[] liveSessionIds();
 
-    List<IPSessionDesc> liveSessionDescs();
+    List<VnetSessionDesc> liveSessionDescs();
 
     List<IPSession> liveSessions();
     

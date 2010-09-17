@@ -172,12 +172,12 @@ public class SoloPipeSpec extends PipeSpec
     }
 
     @Override
-    public List<IPSessionDesc> liveSessionDescs()
+    public List<VnetSessionDesc> liveSessionDescs()
     {
         if (null != argonConnector) {
             return argonConnector.liveSessionDescs();
         } else {
-            return new LinkedList<IPSessionDesc>();
+            return new LinkedList<VnetSessionDesc>();
         }
     }
 

@@ -41,7 +41,8 @@ import com.untangle.uvm.node.PipelineEndpoints;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public interface IPSession extends IPSessionDesc, Session  {
+public interface IPSession extends VnetSessionDesc, Session
+{
     
     // Closes both sides
     // void close();

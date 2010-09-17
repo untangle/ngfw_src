@@ -108,7 +108,7 @@ public abstract class PipeSpec
     public abstract void connectArgonConnector();
     public abstract void disconnectArgonConnector();
     public abstract List<IPSession> liveSessions();
-    public abstract List<IPSessionDesc> liveSessionDescs();
+    public abstract List<VnetSessionDesc> liveSessionDescs();
 
     // accessors --------------------------------------------------------------
 

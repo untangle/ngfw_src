@@ -50,7 +50,7 @@ import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.util.TransactionWork;
-import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.NodeListener;
 import com.untangle.uvm.vnet.NodeStateChangeEvent;
@@ -259,7 +259,7 @@ class NodeContextImpl implements NodeContext
 
     // node call-through methods -----------------------------------------
 
-    public List<IPSessionDesc> liveSessionDescs()
+    public List<VnetSessionDesc> liveSessionDescs()
     {
         return node.liveSessionDescs();
     }

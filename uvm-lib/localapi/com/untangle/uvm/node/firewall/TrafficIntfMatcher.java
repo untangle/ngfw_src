@@ -41,7 +41,7 @@ import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.vnet.Protocol;
 
 
@@ -67,7 +67,7 @@ public abstract class TrafficIntfMatcher extends TrafficMatcher
         this.dstIntf = rule.getDstIntf();
     }
 
-    public boolean isMatch(IPSessionDesc session, Protocol protocol,
+    public boolean isMatch(VnetSessionDesc session, Protocol protocol,
                            InterfaceComparator c)
     {
         return (isMatchIntf(session.clientIntf(), session.serverIntf(), c) &&

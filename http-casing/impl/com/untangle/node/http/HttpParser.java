@@ -36,7 +36,7 @@ import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.vnet.TCPSessionDesc;
+import com.untangle.uvm.vnet.VnetSessionDesc;
 
 /**
  * An HTTP <code>Parser</code>.
@@ -583,8 +583,8 @@ public class HttpParser extends AbstractParser
             logger.debug(sessStr + "handling timer cs=" + cs + " ss=" + ss);
         }
 
-        if (cs == TCPSessionDesc.HALF_OPEN_OUTPUT
-            && ss == TCPSessionDesc.HALF_OPEN_INPUT) {
+        if (cs == VnetSessionDesc.HALF_OPEN_OUTPUT
+            && ss == VnetSessionDesc.HALF_OPEN_INPUT) {
             if (logger.isDebugEnabled()) {
                 logger.debug(sessStr + "closing session in halfstate");
             }

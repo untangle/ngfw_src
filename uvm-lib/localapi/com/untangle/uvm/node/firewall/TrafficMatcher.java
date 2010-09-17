@@ -41,7 +41,7 @@ import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.vnet.Protocol;
 
 /**
@@ -106,7 +106,7 @@ abstract class TrafficMatcher
 
     }
 
-    protected boolean isMatch( IPSessionDesc session, Protocol protocol )
+    protected boolean isMatch( VnetSessionDesc session, Protocol protocol )
     {
         return ( isEnabled &&
                  isMatchProtocol( protocol, session.clientPort(), session.serverPort()) &&

@@ -39,7 +39,7 @@ import java.util.List;
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.toolbox.MackageDesc;
 import com.untangle.uvm.util.TransactionWork;
-import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.VnetSessionDesc;
 
 /**
  * Holds the context for a Node instance.
@@ -103,7 +103,7 @@ public interface NodeContext
 
     // call-through methods ---------------------------------------------------
 
-    List<IPSessionDesc> liveSessionDescs();
+    List<VnetSessionDesc> liveSessionDescs();
 
     NodeState getRunState();
 }

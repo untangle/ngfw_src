@@ -36,7 +36,7 @@ package com.untangle.uvm.node;
 import java.util.List;
 
 import com.untangle.uvm.security.NodeId;
-import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.VnetSessionDesc;
 
 /**
  * Interface for a node instance, provides public runtime control
@@ -99,6 +99,6 @@ public interface Node
 
     NodeDesc getNodeDesc();
 
-    List<IPSessionDesc> liveSessionDescs();
+    List<VnetSessionDesc> liveSessionDescs();
 
 }

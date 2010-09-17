@@ -36,7 +36,8 @@ public class RWSessionStats extends SessionStats
 {
     public static boolean DoDetailedTimes = false;
 
-    public RWSessionStats() {
+    public RWSessionStats()
+    {
         super();
         long now = MetaEnv.currentTimeMillis();
         creationDate = new Date(now);
@@ -45,7 +46,8 @@ public class RWSessionStats extends SessionStats
             times = new long[MAX_TIME_INDEX];
     }
 
-    protected void readData(int side, long bytes) {
+    protected void readData(int side, long bytes)
+    {
         if (side == SessionImpl.CLIENT) {
             c2tChunks++;
             c2tBytes += bytes;
@@ -56,7 +58,8 @@ public class RWSessionStats extends SessionStats
         lastActivityDate.setTime(MetaEnv.currentTimeMillis());
     }
 
-    protected void wroteData(int side, long bytes) {
+    protected void wroteData(int side, long bytes)
+    {
         if (side == SessionImpl.SERVER) {
             t2sChunks++;
             t2sBytes += bytes;

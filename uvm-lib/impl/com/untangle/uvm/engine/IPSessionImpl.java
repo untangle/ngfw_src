@@ -42,7 +42,7 @@ import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPSession;
-import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.event.IPStreamer;
 import com.untangle.uvm.node.NodeManager;
@@ -840,7 +840,7 @@ abstract class IPSessionImpl
     }
 
     
-    abstract public IPSessionDesc makeDesc();
+    abstract public VnetSessionDesc makeDesc();
 
     /**
      * <code>isSideDieing</code> returns true if the incoming socket queue

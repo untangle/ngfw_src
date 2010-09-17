@@ -20,7 +20,7 @@ package com.untangle.uvm;
 
 import java.util.List;
 
-import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.SessionMonitorEntry;
 import com.untangle.uvm.security.NodeId;
 
@@ -30,7 +30,7 @@ public interface SessionMonitor
     /**
      * This returns a list of descriptors for a certain node
      */
-    public List<IPSessionDesc> getNodeSessions(NodeId id);
+    public List<VnetSessionDesc> getNodeSessions(NodeId id);
 
     /**
      * This returns a list of descriptors for all sessions in the conntrack table
@@ -42,9 +42,16 @@ public interface SessionMonitor
     /**
      * This returns a list of sessions and the bandwidth usage over the last 5 seconds
      * It calls the Jnettop list and merges it with the conntrack and argon lists
+     * This takes 5 seconds to return
      */
     public List<SessionMonitorEntry> getMergedBandwidthSessions();
-    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceId);
 
+    /**
+     * This returns a list of sessions and the bandwidth usage over the last 5 seconds
+     * It calls the Jnettop list and merges it with the conntrack and argon lists
+     * It calls jnettop on the specified interface Id (example: "0")
+     * This takes 5 seconds to return
+     */
+    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceId);
     
 }

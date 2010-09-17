@@ -64,7 +64,7 @@ class SessionMonitorImpl implements SessionMonitor
     /**
      * This returns a list of descriptors for a certain node
      */
-    public List<com.untangle.uvm.vnet.IPSessionDesc> getNodeSessions(NodeId id)
+    public List<com.untangle.uvm.vnet.VnetSessionDesc> getNodeSessions(NodeId id)
     {
         NodeManager nodeManager = uvmContext.nodeManager();
 
@@ -304,6 +304,10 @@ class SessionMonitorImpl implements SessionMonitor
         }
     }
 
+    /**
+     * Check if the entry matches the sessionDesc
+     * This checks the 5-tuple (protocol, src, dst, src_port, dst_port)
+     */
     private boolean _matches(com.untangle.uvm.node.IPSessionDesc sessionDesc, SessionMonitorEntry session)
     {
         switch (sessionDesc.protocol()) {
@@ -336,6 +340,10 @@ class SessionMonitorImpl implements SessionMonitor
         return true;
     }
 
+    /**
+     * This checks first 5-tuple (protocol, src, dst, src_port, dst_port)
+     * against the second, returns true if match
+     */
     private boolean _matches(String protocol1, InetAddress client1, InetAddress server1, int clientPort1, int serverPort1,
                              String protocol2, InetAddress client2, InetAddress server2, int clientPort2, int serverPort2)
 

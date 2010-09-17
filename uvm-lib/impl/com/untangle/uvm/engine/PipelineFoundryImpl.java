@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.argon.ArgonAgent;
+import com.untangle.uvm.argon.ArgonIPSessionDesc;
 import com.untangle.uvm.argon.PipelineDesc;
 import com.untangle.uvm.argon.SessionEndpoints;
 import com.untangle.uvm.localapi.LocalIntfManager;
@@ -204,7 +205,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         eventLogger.log(pe);
     }
 
-    public void destroy(IPSessionDesc start, IPSessionDesc end, PipelineEndpoints pe, String uid)
+    public void destroy(ArgonIPSessionDesc start, ArgonIPSessionDesc end, PipelineEndpoints pe, String uid)
     {
         PipelineImpl pipeline = pipelines.remove(start.id());
 

@@ -146,7 +146,7 @@ public abstract class AbstractEventHandler implements SessionEventListener {
         TCPSession session = event.session();
         byte serverState = session.serverState();
         // Default just sends the bytes onwards if the output is open.
-        if (serverState == IPSessionDesc.OPEN || serverState == TCPSessionDesc.HALF_OPEN_OUTPUT)
+        if (serverState == VnetSessionDesc.OPEN || serverState == VnetSessionDesc.HALF_OPEN_OUTPUT)
             return IPDataResult.PASS_THROUGH;
         else
             return IPDataResult.DO_NOT_PASS;
@@ -158,7 +158,7 @@ public abstract class AbstractEventHandler implements SessionEventListener {
         TCPSession session = event.session();
         byte clientState = session.clientState();
         // Default just sends the bytes onwards if the output is open.
-        if (clientState == IPSessionDesc.OPEN || clientState == TCPSessionDesc.HALF_OPEN_OUTPUT)
+        if (clientState == VnetSessionDesc.OPEN || clientState == VnetSessionDesc.HALF_OPEN_OUTPUT)
             return IPDataResult.PASS_THROUGH;
         else
             return IPDataResult.DO_NOT_PASS;
@@ -248,7 +248,7 @@ public abstract class AbstractEventHandler implements SessionEventListener {
         UDPSession session = event.session();
         byte serverState = session.serverState();
         // Default just sends the bytes onwards if the output is open.
-        if (serverState == IPSessionDesc.OPEN)
+        if (serverState == VnetSessionDesc.OPEN)
             session.sendServerPacket(event.packet(), event.header());
     }
 
@@ -258,7 +258,7 @@ public abstract class AbstractEventHandler implements SessionEventListener {
         UDPSession session = event.session();
         byte clientState = session.clientState();
         // Default just sends the bytes onwards if the output is open.
-        if (clientState == IPSessionDesc.OPEN)
+        if (clientState == VnetSessionDesc.OPEN)
             session.sendClientPacket(event.packet(), event.header());
     }
 

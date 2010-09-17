@@ -33,17 +33,17 @@ import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.argon.ArgonTCPSession;
-import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.TCPSession;
-import com.untangle.uvm.vnet.TCPSessionDesc;
-import com.untangle.uvm.vnet.TCPSessionDescImpl;
+import com.untangle.uvm.vnet.VnetSessionDescImpl;
 import com.untangle.uvm.vnet.event.IPDataResult;
 import com.untangle.uvm.vnet.event.IPStreamer;
 import com.untangle.uvm.vnet.event.TCPChunkEvent;
 import com.untangle.uvm.vnet.event.TCPChunkResult;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
 import com.untangle.uvm.vnet.event.TCPStreamer;
+import com.untangle.uvm.node.SessionEndpoints;
 
 /**
  * This is the primary implementation class for TCP live sessions.
@@ -184,9 +184,9 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         super.release();
     }
 
-    public IPSessionDesc makeDesc()
+    public VnetSessionDesc makeDesc()
     {
-        return new TCPSessionDescImpl(id(), new SessionStats(stats),
+        return new VnetSessionDescImpl(id(), SessionEndpoints.PROTO_TCP, new SessionStats(stats),
                                       clientState(), serverState(), clientIntf(), serverIntf(),
                                       clientAddr(), serverAddr(), clientPort(), serverPort());
     }
@@ -195,28 +195,28 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     {
         if ((argonSession).clientIncomingSocketQueue() == null)
             if ((argonSession).clientOutgoingSocketQueue() == null)
-                return IPSessionDesc.CLOSED;
+                return VnetSessionDesc.CLOSED;
             else
-                return TCPSessionDesc.HALF_OPEN_OUTPUT;
+                return VnetSessionDesc.HALF_OPEN_OUTPUT;
         else
             if ((argonSession).clientOutgoingSocketQueue() == null)
-                return TCPSessionDesc.HALF_OPEN_INPUT;
+                return VnetSessionDesc.HALF_OPEN_INPUT;
             else
-                return IPSessionDesc.OPEN;
+                return VnetSessionDesc.OPEN;
     }
 
     public byte serverState()
     {
         if ((argonSession).serverIncomingSocketQueue() == null)
             if ((argonSession).serverOutgoingSocketQueue() == null)
-                return IPSessionDesc.CLOSED;
+                return VnetSessionDesc.CLOSED;
             else
-                return TCPSessionDesc.HALF_OPEN_OUTPUT;
+                return VnetSessionDesc.HALF_OPEN_OUTPUT;
         else
             if ((argonSession).serverOutgoingSocketQueue() == null)
-                return TCPSessionDesc.HALF_OPEN_INPUT;
+                return VnetSessionDesc.HALF_OPEN_INPUT;
             else
-                return IPSessionDesc.OPEN;
+                return VnetSessionDesc.OPEN;
     }
 
     public void shutdownServer()

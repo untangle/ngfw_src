@@ -24,4 +24,5 @@ public interface ArgonIPSessionDesc extends com.untangle.uvm.node.IPSessionDesc,
 {
     public final short IPPROTO_TCP = Netcap.IPPROTO_TCP;
     public final short IPPROTO_UDP = Netcap.IPPROTO_UDP;
+
 }

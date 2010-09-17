@@ -54,7 +54,7 @@ import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPSession;
-import com.untangle.uvm.vnet.IPSessionDesc;
+import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.UDPSession;
@@ -618,9 +618,9 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         return idlist.toNativeArray();
     }
 
-    List<IPSessionDesc> liveSessionDescs()
+    List<VnetSessionDesc> liveSessionDescs()
     {
-        List<IPSessionDesc> l = new ArrayList<IPSessionDesc>(liveSessions.size());
+        List<VnetSessionDesc> l = new ArrayList<VnetSessionDesc>(liveSessions.size());
         for (Iterator<IPSession> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
             IPSessionImpl sess = (IPSessionImpl)i.next();
             l.add(sess.makeDesc());

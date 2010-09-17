@@ -72,8 +72,7 @@ import com.untangle.uvm.logging.SyslogBuilder;
 
         public PipelineStats() { }
 
-        public PipelineStats(IPSessionDesc begin, IPSessionDesc end,
-                             PipelineEndpoints pe, String uid)
+        public PipelineStats(SessionStats begin, SessionStats end, PipelineEndpoints pe, String uid)
         {
             super(pe);
 
