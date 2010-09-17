@@ -73,13 +73,11 @@ public interface CPD extends Node
     
     public enum BlingerType { BLOCK, AUTHORIZE };
 
-
     /** 
      * Increment a blinger.
      * @param blingerType The type of blinger.
      * @param delta Amount to increment it by.  Agreggate events and then send this periodically.
      */
     public void incrementCount(BlingerType blingerType, long delta);
-    
 
 }

@@ -67,7 +67,8 @@ import com.untangle.uvm.util.JsonClient.ConnectionException;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
 
-public class CPDImpl extends AbstractNode implements CPD {
+public class CPDImpl extends AbstractNode implements CPD
+{
     private static int deployCount = 0;
     
     private final CustomUploadHandler uploadHandler = new CustomUploadHandler(); 
