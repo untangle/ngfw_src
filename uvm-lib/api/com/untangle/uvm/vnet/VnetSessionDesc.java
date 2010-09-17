@@ -1,6 +1,6 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL: svn://chef/work/src/uvm-lib/api/com/untangle/uvm/vnet/IPSessionDesc.java $
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,13 +33,24 @@
 
 package com.untangle.uvm.vnet;
 
+import com.untangle.uvm.node.SessionEndpoints;
+
 /**
- * The <code>SessionDesc</code> interface defines the basest VNet session interface.
+ * IP Session description interface
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public interface SessionDesc {
+public interface VnetSessionDesc extends com.untangle.uvm.node.IPSessionDesc
+{
+    static final byte CLOSED = 0;
+    static final byte EXPIRED = 0;
+    static final byte OPEN = 4;
+    static final byte HALF_OPEN_INPUT = 5; /* for TCP */
+    static final byte HALF_OPEN_OUTPUT = 6; /* for TCP */
+
+    byte clientState();
+    byte serverState();
 
     /**
      * <code>id</code> returns the session's unique identifier, a positive integer >= 1.
@@ -49,7 +60,7 @@ public interface SessionDesc {
      *
      * @return an <code>int</code> giving the unique ID of the session.
      */
-    int id();
+    //int id();
 
     /**
      * The <code>stats</code> method returns statistics for this session.
@@ -57,4 +68,5 @@ public interface SessionDesc {
      * @return a <code>SessionStats</code> giving the current statistics for this session
      */
     SessionStats stats();
+    
 }

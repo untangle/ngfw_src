@@ -1,6 +1,6 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
+ * $HeadURL: svn://chef/work/src/uvm-lib/api/com/untangle/uvm/node/SessionDesc.java $
+ * Copyright (c) 2003-2007 Untangle, Inc. 
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -31,24 +31,50 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.vnet;
+package com.untangle.uvm.node;
 
-import com.untangle.uvm.node.SessionEndpoints;
-
-/**
- * IP Session description interface
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
- */
-public interface IPSessionDesc
-    extends com.untangle.uvm.node.IPSessionDesc, SessionDesc, SessionEndpoints
+public interface SessionStats
 {
-    static final byte CLOSED = 0;
-    static final byte EXPIRED = 0;
-    static final byte OPEN = 4;
 
-    byte clientState();
-    byte serverState();
+    /**
+     * Number of bytes received from the client.
+     */
+    long c2tBytes();
+
+    /**
+     * Number of bytes transmitted to the server.
+     */
+    long t2sBytes();
+
+    /**
+     * Number of bytes received from the server.
+     */
+    long s2tBytes();
+
+    /**
+     * Number of bytes transmitted to the client.
+     */
+    long t2cBytes();
+
+    /**
+     * Number of chunks received from the client.
+     */
+    long c2tChunks();
+
+    /**
+     * Number of chunks transmitted to the server.
+     */
+    long t2sChunks();
+
+    /**
+     * Number of chunks received from the server.
+     */
+    long s2tChunks();
+
+    /**
+     * Number of chunks transmitted to the client.
+     */
+    long t2cChunks();
 
 }
+

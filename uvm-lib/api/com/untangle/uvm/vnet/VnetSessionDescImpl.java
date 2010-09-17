@@ -1,6 +1,6 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * $HeadURL: svn://chef/work/src/uvm-lib/api/com/untangle/uvm/vnet/IPSessionDescImpl.java $
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,32 +33,59 @@
 
 package com.untangle.uvm.vnet;
 
-import java.io.Serializable;
+import java.net.InetAddress;
 
 import org.json.JSONBean;
 
-import com.untangle.uvm.vnet.SessionDesc;
-import com.untangle.uvm.vnet.SessionStats;
+import com.untangle.uvm.vnet.VnetSessionDesc;
 
 /**
- * Client side Session Description.
+ * Client side Vnet Session Description.
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
+@JSONBean.Marker
 @SuppressWarnings("serial")
-public abstract class SessionDescImpl implements SessionDesc, Serializable {
-
+public class VnetSessionDescImpl implements VnetSessionDesc
+{
     protected int id;
 
     protected String user;
 
     protected SessionStats stats;
 
-    protected SessionDescImpl(int id, SessionStats stats)
+    protected final byte clientState;
+    protected final byte serverState;
+
+    protected final short protocol;
+
+    protected final byte clientIntf;
+    protected final byte serverIntf;
+
+    protected final InetAddress clientAddr;
+    protected final InetAddress serverAddr;
+
+    protected final int clientPort;
+    protected final int serverPort;
+
+    public VnetSessionDescImpl(int id, short protocol, SessionStats stats,
+                               byte clientState, byte serverState,
+                               byte clientIntf, byte serverIntf,
+                               InetAddress clientAddr, InetAddress serverAddr,
+                               int clientPort, int serverPort)
     {
         this.id = id;
         this.stats = stats;
+        this.protocol = protocol;
+        this.clientState = clientState;
+        this.serverState = serverState;
+        this.clientIntf = clientIntf;
+        this.serverIntf = serverIntf;
+        this.clientAddr = clientAddr;
+        this.serverAddr = serverAddr;
+        this.clientPort = clientPort;
+        this.serverPort = serverPort;
     }
 
     @JSONBean.Getter
@@ -151,4 +178,58 @@ public abstract class SessionDescImpl implements SessionDesc, Serializable {
         return this.stats.t2cChunks();
     }
 
+
+    @JSONBean.Getter()
+    public short protocol()
+    {
+        return protocol;
+    }
+
+    @JSONBean.Getter()
+    public byte clientIntf()
+    {
+        return clientIntf;
+    }
+
+    @JSONBean.Getter()
+    public byte serverIntf()
+    {
+        return serverIntf;
+    }
+
+    @JSONBean.Getter()
+    public byte clientState()
+    {
+        return clientState;
+    }
+
+    @JSONBean.Getter()
+    public byte serverState()
+    {
+        return serverState;
+    }
+
+    @JSONBean.Getter()
+    public InetAddress clientAddr()
+    {
+        return clientAddr;
+    }
+
+    @JSONBean.Getter()
+    public InetAddress serverAddr()
+    {
+        return serverAddr;
+    }
+
+    @JSONBean.Getter()
+    public int clientPort()
+    {
+        return clientPort;
+    }
+
+    @JSONBean.Getter()
+    public int serverPort()
+    {
+        return serverPort;
+    }
 }
