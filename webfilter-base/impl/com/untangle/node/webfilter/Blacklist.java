@@ -447,7 +447,7 @@ public abstract class Blacklist
     {
         URI reqUri = requestLine.getRequestUri();
 
-        String uri;
+        String uri = "";
         if (reqUri.isAbsolute()) {
             host = reqUri.getHost();
             uri = reqUri.normalize().getRawPath();
