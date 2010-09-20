@@ -91,8 +91,10 @@ public class NonceFactory<T>
         synchronized (this) {
             data = nonces.remove(nonce);
             if (0 == nonces.size()) {
-                timer.cancel();
-                timer = null;
+                if (null != timer) {
+                    timer.cancel();
+                    timer = null;
+                }
             }
         }
 
