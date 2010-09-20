@@ -126,7 +126,10 @@ class UnicodeWriter:
     def writerow(self, row):
         row2 = []
         for s in row:
-            s = unicode(s).encode("utf-8")
+            try:
+                s = unicode(s).encode("utf-8")
+            except:
+                pass
             s = s.replace(',', ';')
             s = s.replace('\n', '  ')
             row2.append(s)
