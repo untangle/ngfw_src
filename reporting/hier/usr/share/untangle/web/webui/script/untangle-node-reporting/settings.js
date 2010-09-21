@@ -63,6 +63,10 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     xtype: 'fieldset',
                     autoHeight: true,
                     items: [{
+                        html: this.i18n._('Reports are automatically generated each night.') + "<br/>",
+                        cls: 'description',
+                        border: false
+                    }, {
                         buttonAlign: 'center',
                         footer: false,
                         border: false,
@@ -89,19 +93,28 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 }];
                                 window.open(viewReportsUrl);
                             }.createDelegate(this)
-                                        },
-            {
+                        }]
+                    }, {
+                        html: this.i18n._('Report generation for the current day can be forced with the ') + "<b>" + this.i18n._('Generate Today\'s Reports') + "</b>" + this.i18n._(" button.") + "<br/>" +
+                            "<b>" + this.i18n._("Caution") + ":  </b>" + this.i18n._("Report generation may cause network slowness on servers with fewer resources."),
+                        cls: 'description',
+                        border: false
+                    }, {
+                        buttonAlign: 'center',
+                        footer: false,
+                        border: false,
+                        buttons: [{
                             xtype: 'button',
                             text: this.i18n._('Generate Today\'s Reports'),
                             name: 'Generate Reports',
                             iconCls: 'action-icon',
                             handler: function(callback) {
-                              Ext.MessageBox.wait(i18n._("Running today's reports..."), i18n._("Please wait"));
-                              this.getRpcNode().runDailyReport(function(result, exception) {
+                                Ext.MessageBox.wait(i18n._("Running today's reports..."), i18n._("Please wait"));
+                                this.getRpcNode().runDailyReport(function(result, exception) {
                                     this.afterRun(exception, callback);
-                                  }.createDelegate(this));
-                }.createDelegate(this)
-            }]
+                                }.createDelegate(this));
+                            }.createDelegate(this)
+                        }]
                     }]
                 }]
             });
