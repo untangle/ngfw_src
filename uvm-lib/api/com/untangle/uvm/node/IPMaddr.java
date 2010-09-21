@@ -39,6 +39,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
+
 /**
  * The class <code>IPMAddr</code> represents an (optionally) masked IP address.
  *
@@ -53,6 +55,7 @@ import java.util.LinkedList;
 @SuppressWarnings("serial")
 public class IPMaddr implements Serializable, Comparable<IPMaddr>
 {
+    private static final Logger logger = Logger.getLogger(IPMaddr.class);
 
     // This is the canonical printed representation of the ANY_ADDRESS
     public static final String ANY = "any";
@@ -346,6 +349,8 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
 
         addrString = addrString.trim();
 
+        logger.debug("got addr '" + addrString + "'");
+
         int sl = addrString.indexOf('/');
         if (sl > 0) {
             // Looks like ipaddr/maskbits
@@ -390,6 +395,20 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
                 addr = canonicalizeHostAddress(ipaddr);
                 return new IPMaddr(addr, mask);
             }
+        }
+
+        int ra = addrString.indexOf("-");
+        if (ra > 0) {
+            String ipArray[] = addrString.split("\\s*-\\s*");
+            if ( ipArray.length != 2 )
+                throw new IllegalArgumentException( "IPMaddr.parse(): illegal range does not contain two components: " + addrString );
+
+            IPMaddr ip1 = new IPMaddr(canonicalizeHostAddress(ipArray[0]));
+            IPMaddr ip2 = new IPMaddr(canonicalizeHostAddress(ipArray[1]));
+            long hosts = ip2.toLong() - ip1.toLong();
+            int mask = 32 - (int)(Math.floor(Math.log(hosts) / Math.log(2)));
+            logger.debug(ip1 + " -> " + ip2 + " (" + hosts + " hosts -> mask=" + mask + ")");
+            return parse(ipArray[0] + "/" + mask); // re-use code above handling '/' notation
         } else {
             // Just an address, no netmask.
             addr = canonicalizeHostAddress(addrString);
