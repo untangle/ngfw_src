@@ -89,7 +89,19 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 }];
                                 window.open(viewReportsUrl);
                             }.createDelegate(this)
-                        }]
+                                        },
+            {
+                            xtype: 'button',
+                            text: this.i18n._('Generate Today\'s Reports'),
+                            name: 'Generate Reports',
+                            iconCls: 'action-icon',
+                            handler: function(callback) {
+                              Ext.MessageBox.wait(i18n._("Running today's reports..."), i18n._("Please wait"));
+                              this.getRpcNode().runDailyReport(function(result, exception) {
+                                    this.afterRun(exception, callback);
+                                  }.createDelegate(this));
+                }.createDelegate(this)
+            }]
                     }]
                 }]
             });
@@ -802,6 +814,13 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     this.afterSave(exception, callback);
                 }.createDelegate(this), this.getAdminSettings());
             }
+        },
+        afterRun: function(exception, callback)
+        {
+            if(Ung.Util.handleException(exception)) {
+                return;
+            }
+            Ext.MessageBox.hide();
         },
         afterSave: function(exception, callback)
         {

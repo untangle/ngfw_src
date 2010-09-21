@@ -17,14 +17,20 @@
  */
 package com.untangle.node.reporting;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+import com.untangle.node.util.SimpleExec;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.security.RemoteAdminManager;
 import com.untangle.uvm.security.User;
@@ -35,6 +41,8 @@ import com.untangle.uvm.vnet.PipeSpec;
 public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 {
     private ReportingSettings settings;
+
+    private String REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/generate-reports.py";
 
     public ReportingNodeImpl() {}
 
@@ -59,6 +67,30 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
     public ReportingSettings getReportingSettings()
     {
         return settings;
+    }
+
+    public void runDailyReport() throws IOException, NodeException
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date()); // now
+        cal.add(Calendar.DATE, 1); // tomorrow
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String ts = df.format(cal.getTime());
+        boolean failed = false;
+        SimpleExec.SimpleExecResult result =
+            SimpleExec.exec(REPORTS_SCRIPT, new String[] {"-m", "-d", ts},
+                            null,//env
+                            null,//rootDir
+                            true,//stdout
+                            true,//stderr
+                            1000*20);
+
+        if (result.exitCode != 0) {
+            throw new NodeException("Unable to run daily reports: \nReturn code: " +
+                              result.exitCode + ", stdout \"" +
+                              new String(result.stdOut) + "\", stderr \"" +
+                              new String(result.stdErr) + "\"");
+        }
     }
 
     @Override
