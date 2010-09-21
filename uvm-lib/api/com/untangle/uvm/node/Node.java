@@ -37,6 +37,7 @@ import java.util.List;
 
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.vnet.VnetSessionDesc;
+import com.untangle.uvm.policy.Policy;
 
 /**
  * Interface for a node instance, provides public runtime control
@@ -101,4 +102,6 @@ public interface Node
 
     List<VnetSessionDesc> liveSessionDescs();
 
+    public Policy getPolicy();
+    
 }

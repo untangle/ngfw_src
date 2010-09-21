@@ -25,6 +25,7 @@ import java.util.Map;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.apache.log4j.Logger;
 
 import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.logging.LogEvent;
@@ -42,6 +43,8 @@ class SimpleEventFilterAdaptor<E extends LogEvent>
 {
     private SimpleEventFilter<E> simpleEventFilter;
 
+    private final Logger logger = Logger.getLogger(getClass());
+    
     SimpleEventFilterAdaptor(SimpleEventFilter<E> simpleEventFilter)
     {
         this.simpleEventFilter = simpleEventFilter;
@@ -60,8 +63,7 @@ class SimpleEventFilterAdaptor<E extends LogEvent>
     }
 
 
-    public void warm(Session s, List<E> l, int limit,
-                     Map<String, Object> params)
+    public void warm(Session s, List<E> l, int limit, Map<String, Object> params)
     {
         for (String q : simpleEventFilter.getQueries()) {
             runQuery(q, s, l, limit, params);
