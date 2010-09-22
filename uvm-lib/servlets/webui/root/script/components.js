@@ -3693,6 +3693,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     fields : null,
     // has Add button
     hasAdd : true,
+    // has Import Export buttons
+    hasImportExport: true,    
     // has Edit buton on each record
     hasEdit : true,
     configEdit: null,
@@ -3722,6 +3724,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     // the map of changed data in the grid
     // used by rendering functions and by save
     dataRoot: null,
+    importSettingsWindow: null,    
     changedData : null,
     stripeRows : true,
     clicksToEdit : 1,
@@ -3872,15 +3875,36 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             this.rowEditor.render();
             this.subCmps.push(this.rowEditor);
         }
+        this.tbar=[];
+        //TODO remove this
+        //This is just for testing in dev phase
+        this.hasImportExport=this.hasAdd;
         if (this.hasAdd) {
-            this.tbar = [{
+            this.tbar.push({
                 text : i18n._('Add'),
                 tooltip : i18n._('Add New Row'),
                 iconCls : 'icon-add-row',
                 name : 'Add',
                 parentId : this.getId(),
                 handler : this.addHandler.createDelegate(this)
-            }];
+            });
+        }
+        if (this.hasImportExport) {
+        	this.tbar.push('->', {
+                text : i18n._('Import'),
+                tooltip : i18n._('Import From File'),
+                iconCls : 'icon-import',
+                name : 'Import',
+                parentId : this.getId(),
+                handler : this.importHandler.createDelegate(this)
+            }, {
+                text : i18n._('Export'),
+                tooltip : i18n._('Export From File'),
+                iconCls : 'icon-export',
+                name : 'export',
+                parentId : this.getId(),
+                handler : this.exportHandler.createDelegate(this)
+            },'-');    	
         }
         Ung.EditorGrid.superclass.initComponent.call(this);
         var columnModel=this.getColumnModel();
@@ -3916,6 +3940,17 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     deleteHandler : function(record) {
         this.stopEditing();
         this.updateChangedData(record, "deleted");
+    },
+    importHandler : function() {
+        if(this.importSettingsWindow == null) {
+            this.importSettingsWindow = new Ung.ImportSettingsWindow({
+        	    grid : this
+        	});
+        }
+        this.importSettingsWindow.show();
+    },
+    exportHandler : function() {
+    	alert("TODO: implement export");
     },
     getPageStart : function() {
         if (this.store.lastOptions && this.store.lastOptions.params) {
@@ -4806,5 +4841,171 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
             selectionModel.deselectRow(0);
             selectionModel.resumeEvents();
         }
+    }
+});
+
+
+
+//Import Settings window
+Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
+    // the editor grid
+    grid : null,
+    height:230,
+    width: 450,
+    sizeToRack : false,
+    // size to grid on show
+    sizeToGrid : false,
+    //importMode
+    // 'replace' = 'Replace current settings'
+    // 'prepend' = 'Prepend to current settings'
+    // 'append' = 'Append to current settings'
+    importMode: 'replace',     
+    initComponent : function() {
+        if (!this.height && !this.width) {
+            this.sizeToGrid = true;
+        }
+        if (this.title == null) {
+            this.title = i18n._('Import Settings');
+        }
+        if(this.bbar == null){
+            this.bbar  = [
+                        '->',
+                        {
+                            name : "Cancel",
+                            id : this.getId() + "_cancelBtn",
+                            iconCls : 'cancel-icon',
+                            text : i18n._('Cancel'),
+                            handler : function() {
+                                this.cancelAction();
+                            }.createDelegate(this)
+                        },'-',{
+                            name : "Done",
+                            id : this.getId() + "_doneBtn",
+                            iconCls : 'apply-icon',
+                            text : i18n._('Done'),
+                            handler : function() {
+                                Ext.getCmp('import_settings_form').getForm().submit({
+                                    waitMsg : i18n._('Please wait while the settings are uploaded...'),
+                                    success : this.importSettingsSuccess.createDelegate( this ),
+                                    failure : this.importSettingsFailure.createDelegate( this )
+                                });
+                            }.createDelegate(this)
+            },'-'];         
+        }        
+        this.items = new Ext.Panel({
+            anchor: "100% 100%",
+            layout:"form",
+            buttonAlign : 'right',
+            border : false,
+            bodyStyle : 'padding:10px 10px 0px 10px;',
+            autoScroll: true,
+            defaults : {
+                selectOnFocus : true,
+                msgTarget : 'side'
+            },
+            items : [{
+                xtype : 'radio',
+                boxLabel : i18n._('Replace current settings'),
+                hideLabel : true,
+                name : 'importMode',
+                checked : (this.importMode=='replace'),
+                listeners : {
+                    "check" : {
+                        fn : function(elem, checked) {
+                            this.importMode = 'replace';
+                        }.createDelegate(this)
+                    }
+                }
+            }, {
+                xtype : 'radio',
+                boxLabel : i18n._('Prepend to current settings'),
+                hideLabel : true,
+                name : 'importMode',
+                checked : (this.importMode=='prepend'),
+                listeners : {
+                    "check" : {
+                        fn : function(elem, checked) {
+                            this.importMode = 'prepend';
+                        }.createDelegate(this)
+                    }
+                }
+            }, {
+                xtype : 'radio',
+                boxLabel : i18n._('Append to current settings'),
+                hideLabel : true,
+                name : 'importMode',
+                checked : (this.importMode=='append'),
+                listeners : {
+                    "check" : {
+                        fn : function(elem, checked) {
+                            this.importMode = 'append';
+                        }.createDelegate(this)
+                    }
+                }
+            }, {
+                cls: 'description',
+                border : false,
+                bodyStyle : 'padding:5px 0px 5px 30px;',
+                html : "<i>" + i18n._("with settings from")+ "</i>"
+            }, {
+                fileUpload : true,
+                xtype : 'form',
+                id : 'import_settings_form',
+                url : 'upload',
+                border : false,
+                items : [{
+                    fieldLabel : i18n._('File'),
+                    name : 'import_settings_textfield',
+                    inputType : 'file',
+                    xtype : 'textfield',
+                    allowBlank : false
+                },{
+                    xtype : 'hidden',
+                    name : 'type',
+                    value : 'import_settings'
+                }]
+            }]
+        });
+        Ung.ImportSettingsWindow.superclass.initComponent.call(this);
+    },
+    show : function() {
+        Ung.UpdateWindow.superclass.show.call(this);
+        var objPosition = this.grid.getPosition();
+        if (this.sizeToGrid) {
+            var objSize = this.grid.getSize();
+            this.setSize(objSize);
+            if (objPosition[1] + objSize.height > main.viewport.getSize().height) {
+                objPosition[1] = Math.max(main.viewport.getSize().height - objSize.height,0);
+            }
+        }
+        this.setPosition(objPosition);
+        if(Ext.isIE) {
+            var cancelButton=Ext.getCmp("cancel_"+this.getId());
+            if(cancelButton) {
+                cancelButton.hide();
+                cancelButton.show();
+            }
+        }
+    },
+    onUpload : function () {
+        Ext.getCmp('import_settings_form').getForm().submit({
+            waitMsg : i18n._('Please wait while the settings are uploaded...'),
+            success : this.importSettingsSuccess.createDelegate( this ),
+            failure : this.importSettingsFailure.createDelegate( this )
+        });
+        
+    },
+    importSettingsSuccess : function () {
+        alert("TODO: import settings Success");
+        this.closeWindow();
+    },
+    importSettingsFailure : function () {
+        alert("TODO: import settings Failure");
+    },
+    isDirty : function() {
+        return false;  
+    },
+    closeWindow : function() {
+        this.hide();
     }
 });
