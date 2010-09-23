@@ -3946,11 +3946,99 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             this.importSettingsWindow = new Ung.ImportSettingsWindow({
         	    grid : this
         	});
+            this.subCmps.push(this.importSettingsWindow);
         }
+        this.stopEditing();
         this.importSettingsWindow.show();
     },
+    onImport : function (importMode, importedRows) {
+        this.stopEditing();
+        if(importedRows == null) {
+            importedRows=[];
+        }
+        var records=[];
+        for (var i = 0; i < importedRows.length; i++) {
+            var record= new Ext.data.Record(importedRows[i]);
+            record.set("id", this.genAddedId());
+            records.push(record);
+        }
+        if(importMode=='replace' ) {
+            this.deleteAllRecords(function() {
+                this.getStore().insert(0, records.reverse());
+                this.updateChangedDataOnImport(records);
+            }.createDelegate(this));
+        } else {
+            if(importMode=='append') {
+                this.getStore().add(records);
+            } else if(importMode=='prepend'){ //replace or prepend mode
+                this.getStore().insert(0, records.reverse());
+            }
+            this.updateChangedDataOnImport(records);
+        }
+    },
+    deleteAllRecords : function (handler) {
+        this.removePagination(function() {
+            var records=this.getStore().getRange();
+            for(var i=0;i<records.length; i++) {
+                this.updateChangedData(records[i], "deleted");
+            }
+            if(handler) {
+                handler.call(this);
+            }
+        }.createDelegate(this));
+    },
     exportHandler : function() {
-    	alert("TODO: implement export");
+        Ext.MessageBox.wait(i18n._("Exporting Settings..."), i18n._("Please wait"));
+        
+    	this.removePagination(function() {
+    	    if(this.exportSettingsForm == null) {
+                this.exportSettingsForm = new Ext.form.FormPanel({
+                    renderTo:'container',
+                    items: {
+                        xtype : 'form',
+                        id: 'export_settings_form'+this.getId(),
+                        url : 'exportGridSettings',
+                        border : false,
+                        items:[{
+                            xtype : 'hidden',
+                            name : 'gridName',
+                            value: this.recordJavaClass
+                        }]
+                    }
+                });
+                this.subCmps.push(this.exportSettingsForm);
+            }
+    	    Ext.getCmp('export_settings_form'+this.getId()).getForm().submit({
+        	    params: {
+        	        gridData: this.getSaveList()
+        	    },
+                success : function(form, action) {
+        	        Ext.MessageBox.hide();
+    	        }.createDelegate( this ),
+                failure : function(form, action) {
+    	            Ext.MessageBox.hide();
+                }.createDelegate( this )
+            });
+	    }.createDelegate( this ));
+    },
+    removePagination : function (handler) {
+        if(this.isPaginated()) {
+            //to remove bottom pagination bar
+            this.paginated = false;
+            this.setTotalRecords(this.totalRecords);
+    
+            //make all cahnged data apear in first page
+            for (id in this.changedData) {
+                var cd = this.changedData[id];
+                cd.pageStart=0;
+            }
+            //reload grid
+            this.loadPage(0, handler, this);
+        } else {
+            if(handler) {
+                handler.call(this);
+            }
+        }
     },
     getPageStart : function() {
         if (this.store.lastOptions && this.store.lastOptions.params) {
@@ -4095,14 +4183,28 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         // Test if there are changed data
         return Ung.Util.hasData(this.changedData);
     },
-    // Update Changed data after an operation (modifyed, deleted, added)
-    updateChangedData : function(record, currentOp) {
+    disableSorting : function () {
         if (!this.isDirty()) {
             var cmConfig = this.getColumnModel().config;
             for (i in cmConfig) {
                 cmConfig[i].sortable = false;
             }
         }
+    },
+    // Update Changed data after an import
+    updateChangedDataOnImport : function(records) {
+        this.disableSorting();
+        for (var i = 0; i < records.length; i++) {
+            this.changedData[records[i].get("id")] = {
+                op : "added",
+                recData : records[i].data,
+                pageStart : this.getPageStart()
+            };
+        }
+    },
+    // Update Changed data after an operation (modifyed, deleted, added)
+    updateChangedData : function(record, currentOp) {
+        this.disableSorting();
         var id = record.get("id");
         var cd = this.changedData[id];
         if (cd == null) {
@@ -4202,27 +4304,6 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     // Get the save list from the changed data
     getSaveList : function() {
         return Ung.Util.getSaveList(this.changedData, this.recordJavaClass);
-    },
-    // Get the full list of all data
-    // XXX is this the same as getFullSaveList?
-    getList : function() {
-        var datar = [];
-        var records = this.store.getRange();
-        for (var i = 0; i < records.length; i++) {
-            var record = records[i].data;
-            var id = records[i].get("id");
-            if (id != null && id >= 0) {
-                var d = this.changedData[id];
-                if (d && d.op == "deleted") {
-                    continue;
-                }
-            }
-
-            record["javaClass"] = this.recordJavaClass;
-            datar.push(records[i].data);
-        }
-
-        return datar;
     },
     // Get the entire list
     // for the unpaginated grids, that send all the records on save
@@ -4869,29 +4950,29 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
         }
         if(this.bbar == null){
             this.bbar  = [
-                        '->',
-                        {
-                            name : "Cancel",
-                            id : this.getId() + "_cancelBtn",
-                            iconCls : 'cancel-icon',
-                            text : i18n._('Cancel'),
-                            handler : function() {
-                                this.cancelAction();
-                            }.createDelegate(this)
-                        },'-',{
-                            name : "Done",
-                            id : this.getId() + "_doneBtn",
-                            iconCls : 'apply-icon',
-                            text : i18n._('Done'),
-                            handler : function() {
-                                Ext.getCmp('import_settings_form').getForm().submit({
-                                    waitMsg : i18n._('Please wait while the settings are uploaded...'),
-                                    success : this.importSettingsSuccess.createDelegate( this ),
-                                    failure : this.importSettingsFailure.createDelegate( this )
-                                });
-                            }.createDelegate(this)
+                '->',
+                {
+                    name : "Cancel",
+                    id : this.getId() + "_cancelBtn",
+                    iconCls : 'cancel-icon',
+                    text : i18n._('Cancel'),
+                    handler : function() {
+                        this.cancelAction();
+                    }.createDelegate(this)
+                },'-',{
+                    name : "Done",
+                    id : this.getId() + "_doneBtn",
+                    iconCls : 'apply-icon',
+                    text : i18n._('Done'),
+                    handler : function() {
+                        Ext.getCmp('import_settings_form'+this.getId()).getForm().submit({
+                            waitMsg : i18n._('Please wait while the settings are uploaded...'),
+                            success : this.importSettingsSuccess.createDelegate( this ),
+                            failure : this.importSettingsFailure.createDelegate( this )
+                        });
+                    }.createDelegate(this)
             },'-'];         
-        }        
+        }
         this.items = new Ext.Panel({
             anchor: "100% 100%",
             layout:"form",
@@ -4912,7 +4993,9 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
                 listeners : {
                     "check" : {
                         fn : function(elem, checked) {
-                            this.importMode = 'replace';
+                            if(checked) {
+                                this.importMode = 'replace';
+                            }
                         }.createDelegate(this)
                     }
                 }
@@ -4925,7 +5008,9 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
                 listeners : {
                     "check" : {
                         fn : function(elem, checked) {
-                            this.importMode = 'prepend';
+                            if(checked) {
+                                this.importMode = 'prepend';
+                            }
                         }.createDelegate(this)
                     }
                 }
@@ -4938,7 +5023,9 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
                 listeners : {
                     "check" : {
                         fn : function(elem, checked) {
-                            this.importMode = 'append';
+                            if(checked) {
+                                this.importMode = 'append';
+                            }
                         }.createDelegate(this)
                     }
                 }
@@ -4950,7 +5037,7 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
             }, {
                 fileUpload : true,
                 xtype : 'form',
-                id : 'import_settings_form',
+                id : 'import_settings_form'+this.getId(),
                 url : 'upload',
                 border : false,
                 items : [{
@@ -4987,20 +5074,17 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
             }
         }
     },
-    onUpload : function () {
-        Ext.getCmp('import_settings_form').getForm().submit({
-            waitMsg : i18n._('Please wait while the settings are uploaded...'),
-            success : this.importSettingsSuccess.createDelegate( this ),
-            failure : this.importSettingsFailure.createDelegate( this )
-        });
-        
-    },
-    importSettingsSuccess : function () {
-        alert("TODO: import settings Success");
+    importSettingsSuccess : function (form, action) {
+        Ext.MessageBox.wait(i18n._("Importing Settings..."), i18n._("Please wait"));
+        rpc.importGridSettingsManager.getGridSettings(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            this.grid.onImport(this.importMode, result);
+            Ext.MessageBox.hide();
+        }.createDelegate(this));
         this.closeWindow();
     },
-    importSettingsFailure : function () {
-        alert("TODO: import settings Failure");
+    importSettingsFailure : function (form, action) {
+        Ext.MessageBox.alert(i18n._("Warning"), i18n._(action.result.msg));
     },
     isDirty : function() {
         return false;  

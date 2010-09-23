@@ -86,6 +86,16 @@
     <url-pattern>/backup</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>ExportGridSettingsServlet</servlet-name>
+    <servlet-class>com.untangle.uvm.webui.servlet.ExportGridSettingsServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>ExportGridSettingsServlet</servlet-name>
+    <url-pattern>/exportGridSettings</url-pattern>
+  </servlet-mapping>
+
   <welcome-file-list>
     <welcome-file>
       index.jsp

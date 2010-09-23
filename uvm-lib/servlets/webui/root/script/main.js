@@ -43,7 +43,7 @@ Ung.Main=Ext.extend(Object, {
         this.appsLastState={};
         this.nodePreviews={};
         JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
-        this.initSemaphore=11;
+        this.initSemaphore=12;
         rpc = {};
         // get JSONRpcClient
         rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
@@ -153,6 +153,12 @@ Ung.Main=Ext.extend(Object, {
                 document.title=result;
                 this.postinit();// 11
             }.createDelegate(this));
+        }.createDelegate(this));
+        // get grid settings manager
+        rpc.jsonrpc.RemoteUvmContext.importGridSettingsManager(function (result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            rpc.importGridSettingsManager=result;
+            this.postinit();// 12
         }.createDelegate(this));
 
     },

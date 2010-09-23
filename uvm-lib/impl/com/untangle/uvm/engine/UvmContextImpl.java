@@ -38,6 +38,7 @@ import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.untangle.uvm.CronJob;
+import com.untangle.uvm.RemoteImportGridSettingsManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalTomcatManager;
@@ -148,6 +149,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private SettingsManagerImpl settingsManager;
     private LocalBenchmarkManagerImpl benchmarkManager;
     private OemManagerImpl oemManager;
+    private RemoteImportGridSettingsManagerImpl importGridSettingsManager;
     private SessionMonitorImpl sessionMonitor;
     
     private Environment bdbEnvironment;
@@ -801,6 +803,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         //Skins and Language managers
         this.skinManager = new RemoteSkinManagerImpl(this);
         this.languageManager = new RemoteLanguageManagerImpl(this);
+        this.importGridSettingsManager = new RemoteImportGridSettingsManagerImpl(this);
 
         loadPortalManager();
 
@@ -1075,6 +1078,11 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.oemManager;
     }
 
+    @Override
+    public RemoteImportGridSettingsManager importGridSettingsManager()
+    {
+        return this.importGridSettingsManager;
+    }
     // private methods --------------------------------------------------------
 
     private boolean loadRup(boolean refreshManagers)
