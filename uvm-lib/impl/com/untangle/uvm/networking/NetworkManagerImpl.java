@@ -195,7 +195,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
     @Override
     public AccessSettings getAccessSettings()
     {
-        logger.warn("getAccessSettings()");
         return this.accessManager.getSettings();
     }
 
@@ -207,7 +206,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
     @Override
     public void setAccessSettings( AccessSettings access )
     {
-        logger.warn("setAccessSettings()");
         this.accessManager.setSettings( access );
 
         updateAddress();
@@ -466,8 +464,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
             if ( externalAddress == null ) { 
                 boolean snic = this.singleNicManager.getIsEnabled();
 
-                BasicNetworkSettings basic = NetworkUtilPriv.getPrivInstance().
-                    toBasic( this.networkSettings, snic );
+                BasicNetworkSettings basic = NetworkUtilPriv.getPrivInstance().toBasic( this.networkSettings, snic );
                 externalAddress = basic.getHost();
             }
 
@@ -561,6 +558,29 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.singleNicManager.registerAddress( address );
     }
 
+    public Boolean isQosEnabled()
+    {
+        try {
+            JSONObject jsonObject = JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "get_qos_settings", null );
+
+            logger.warn("QoS Settings: " + jsonObject);
+            JSONObject result = jsonObject.getJSONObject("result");
+            if (result == null)
+                return Boolean.FALSE;
+
+            Boolean enabled = result.getBoolean("enabled");
+            if (!enabled) {
+                logger.warn("Unable to retrieve QoS settings: null");
+            }
+            return enabled;
+            
+        } catch (Exception e) {
+            logger.error("Unable to retrieve QoS settings:",e);
+            return null;
+        }
+    }
+    
+    
     public void updateAddress()
     {
         synchronized( this ) {

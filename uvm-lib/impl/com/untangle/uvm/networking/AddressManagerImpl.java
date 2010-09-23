@@ -103,8 +103,7 @@ class AddressManagerImpl implements LocalAddressManager
         synchronized ( this ) {
             /* Need to save the settings to the database, then update the
              * local value, everything is executed later */
-            DataSaver<AddressSettings> saver = 
-                new DeletingDataSaver<AddressSettings>( LocalUvmContextFactory.context(), "AddressSettings" );
+            DataSaver<AddressSettings> saver = new DeletingDataSaver<AddressSettings>( LocalUvmContextFactory.context(), "AddressSettings" );
 
             AddressSettingsInternal newSettings = calculatePublicAddress( settings );
             

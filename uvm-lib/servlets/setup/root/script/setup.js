@@ -53,8 +53,7 @@ Ung.SetupWizard.NumberField = Ext.extend( Ext.form.NumberField, {
     }
 });
 
-Ung.SetupWizard.EmailTester = Ext.extend( Object,
-{
+Ung.SetupWizard.EmailTester = Ext.extend( Object, {
     constructor : function( config )
     {
         if ( config == null ) {
@@ -168,8 +167,7 @@ Ext.apply( Ext.form.VTypes, {
     hostnameText : "Please enter a valid hostname"
 });
 
-Ung.SetupWizard.Welcome = Ext.extend(Object,
-{
+Ung.SetupWizard.Welcome = Ext.extend(Object, {
     constructor : function( config )
     {
         var panel = new Ext.FormPanel({
@@ -353,7 +351,6 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
         }
     }
 });
-
 
 Ung.SetupWizard.Registration = Ext.extend( Object, {
     constructor : function( config )

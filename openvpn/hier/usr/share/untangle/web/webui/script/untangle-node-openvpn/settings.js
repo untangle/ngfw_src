@@ -1,6 +1,3 @@
-/* XXXX This logic should be moved outside of this file and into the
- * loading code, having a conditional around an entire file is a
- * little ridiculous. Especially a 2000 line file. XXX */
 if (!Ung.hasResource["Ung.OpenVPN"]) {
     Ung.hasResource["Ung.OpenVPN"] = true;
     Ung.NodeWin.registerClassName('untangle-node-openvpn', "Ung.OpenVPN");
@@ -179,7 +176,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     cls: 'description warning',
                     border : false
                 }]
-            })
+            });
         }
     });
 

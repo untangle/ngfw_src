@@ -221,8 +221,7 @@ class NetworkUtilPriv extends NetworkUtil
 
         settings.setIsEnabled( true );
 
-        Map<NetworkSpaceInternal,NetworkSpace> networkSpaceMap =
-            new HashMap<NetworkSpaceInternal,NetworkSpace>();
+        Map<NetworkSpaceInternal,NetworkSpace> networkSpaceMap = new HashMap<NetworkSpaceInternal,NetworkSpace>();
 
         NetworkSpace primary = null;
 

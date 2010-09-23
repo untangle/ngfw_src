@@ -150,4 +150,7 @@ public interface RemoteNetworkManager
     /* Forces the link status to be re-examined, since it is likely to
      * have changed */
     void updateLinkStatus();
+
+    public Boolean isQosEnabled();
+
 }
