@@ -401,7 +401,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
                     allowBlank : false,
                     boxLabel : i18n._("(approximate; include Windows, Linux and Mac)")
                 }),{
-                    fieldLabel : String.format(i18n._("Where will you be using {0}?"),oemName),
+                    fieldLabel : '<span class="required-star">*</span>'+String.format(i18n._("Where will you be using {0}?"),oemName),
                     name : "environment",
                     xtype : 'radio',
                     inputValue : "my-business",
@@ -493,19 +493,15 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
     afterReauthenticate : function( handler )
     {
         var info = Ung.SetupWizard.CurrentValues.registrationInfo;
-        var misc = {};
         this.setRegistrationValue( "firstName", info, false );
         this.setRegistrationValue( "lastName", info, false );
         this.setRegistrationValue( "companyName", info, false );
         this.setRegistrationValue( "email", info, true, "emailAddr" );
         this.setRegistrationValue( "numSeats", info, true );
-
-        this.setRegistrationValue( "environment", misc, false );
-        if ( misc["environment"] == "other" ) {
-            this.setRegistrationValue( "environment-other", misc, false, "environment" );
+        this.setRegistrationValue( "environment", info, true );
+        if ( info["environment"] == "other" ) {
+            this.setRegistrationValue( "environment-other", info, false, "environment" );
         }
-
-        info.misc.map = misc;
 
         rpc.adminManager.activate( this.errorHandler.createDelegate( this, [ handler ], true ), info );
     },

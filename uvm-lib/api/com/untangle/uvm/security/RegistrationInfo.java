@@ -65,6 +65,7 @@ public class RegistrationInfo implements Serializable
     private String zipcode;
     private String emailAddr;
     private String phone;
+    private String environment;
     private int numSeats;
     private Map<String,String> misc;
 
@@ -293,16 +294,22 @@ public class RegistrationInfo implements Serializable
         this.numSeats = numSeats;
     }
 
-    public Map<String,String> getMisc()
+    /**
+     * The environment of the customer
+     * ie School, Home, etc
+     *
+     * @return the env
+     */
+    public String getEnvironment()
     {
-        return misc;
+        return environment;
     }
 
-    public void setMisc(Map<String,String> newValue)
+    public void setEnvironment(String environment)
     {
-        this.misc = newValue;
+        this.environment = environment;
     }
-
+    
 
     @Transient
     public String toForm()

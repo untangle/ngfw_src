@@ -69,7 +69,6 @@ public class SetupSettingsServlet extends HttpServlet
         }
 
         RegistrationInfo ri = new RegistrationInfo();
-        ri.setMisc( new java.util.Hashtable<String,String>());
 
         // pick a random time.
         UpgradeSettings upgrade = context.toolboxManager().getUpgradeSettings();
