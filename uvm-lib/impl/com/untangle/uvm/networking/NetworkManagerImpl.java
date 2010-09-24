@@ -569,7 +569,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
                 return Boolean.FALSE;
 
             Boolean enabled = result.getBoolean("enabled");
-            if (!enabled) {
+            if (enabled == null) {
                 logger.warn("Unable to retrieve QoS settings: null");
             }
             return enabled;
@@ -580,6 +580,59 @@ public class NetworkManagerImpl implements LocalNetworkManager
         }
     }
     
+    public JSONArray getWANSettings()
+    {
+        try {
+            JSONObject jsonObject = JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "get_wan_interfaces", null );
+            JSONArray result = jsonObject.getJSONArray("result");
+            logger.warn("WAN settings: " + result);
+            return result;
+            
+        } catch (Exception e) {
+            logger.error("Unable to retrieve WAN settings:",e);
+            return null;
+        }
+    }
+
+    public void enableQos()
+    {
+        logger.warn("ENABLE QOS");
+
+        try {
+            JSONObject jsonObject = JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "enable_qos", null );
+            logger.warn("Enable QoS result: " + jsonObject);
+            return;
+        } catch (Exception e) {
+            logger.error("Unable to enable Qos:",e);
+            return;
+        }
+    }
+
+    private void _setWANSpeed(String name, String property, int speed)
+    {
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("name",name);
+            jsonObject.put(property,speed);
+
+            jsonObject = JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "set_wan_speed", jsonObject );
+            logger.warn("Set WAN settings result: " + jsonObject);
+            return;
+        } catch (Exception e) {
+            logger.error("Unable to set WAN settings:",e);
+            return;
+        }
+    }
+    
+    public void setWANDownloadBandwidth(String name, int speed)
+    {
+        this._setWANSpeed(name,"download_bandwidth",speed);
+    }
+
+    public void setWANUploadBandwidth(String name, int speed)
+    {
+        this._setWANSpeed(name,"upload_bandwidth",speed);
+    }
     
     public void updateAddress()
     {

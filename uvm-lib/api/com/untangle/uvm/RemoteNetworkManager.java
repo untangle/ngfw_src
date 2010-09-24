@@ -34,6 +34,7 @@
 package com.untangle.uvm;
 
 import java.util.List;
+import org.json.JSONArray;
 
 import com.untangle.uvm.networking.AccessSettings;
 import com.untangle.uvm.networking.AddressSettings;
@@ -152,5 +153,13 @@ public interface RemoteNetworkManager
     void updateLinkStatus();
 
     public Boolean isQosEnabled();
+
+    public JSONArray getWANSettings();
+
+    public void setWANDownloadBandwidth(String name, int speed);
+
+    public void setWANUploadBandwidth(String name, int speed);
+    
+    public void enableQos();
 
 }
