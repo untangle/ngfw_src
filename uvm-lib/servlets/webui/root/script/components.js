@@ -608,7 +608,8 @@ Ung.Util= {
             top.window.outerWidth = top.screen.availWidth-30;
 
         }
-    }
+    },
+    maxRowCount : 2147483647
 };
 
 Ung.Util.RetryHandler = {
@@ -3435,12 +3436,12 @@ Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
             if (this.rpcFnArgs == null) {
                 this.rpcFn(this.errorHandler.createDelegate(obj), params.start ? params.start : 0, params.limit
                         ? params.limit
-                        : this.totalRecords != null ? this.totalRecords : 2147483647, sortColumns);
+                        : this.totalRecords != null ? this.totalRecords : Ung.Util.maxRowCount, sortColumns);
             } else {
                 var args = [this.errorHandler.createDelegate(obj)].
                             concat(this.rpcFnArgs).
                                 concat([params.start ? params.start : 0,
-                                    params.limit ? params.limit : this.totalRecords != null ? this.totalRecords : 2147483647,
+                                    params.limit ? params.limit : this.totalRecords != null ? this.totalRecords : Ung.Util.maxRowCount,
                                     sortColumns]);
                 this.rpcFn.apply(this, args);
             }
@@ -3989,42 +3990,21 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     },
     exportHandler : function() {
         Ext.MessageBox.wait(i18n._("Exporting Settings..."), i18n._("Please wait"));
-        
     	this.removePagination(function() {
-    	    if(this.exportSettingsForm == null) {
-                this.exportSettingsForm = new Ext.form.FormPanel({
-                    renderTo:'container',
-                    items: {
-                        xtype : 'form',
-                        id: 'export_settings_form'+this.getId(),
-                        url : 'exportGridSettings',
-                        border : false,
-                        items:[{
-                            xtype : 'hidden',
-                            name : 'gridName',
-                            value: this.recordJavaClass
-                        }]
-                    }
-                });
-                this.subCmps.push(this.exportSettingsForm);
-            }
-    	    Ext.getCmp('export_settings_form'+this.getId()).getForm().submit({
-        	    params: {
-        	        gridData: this.getSaveList()
-        	    },
-                success : function(form, action) {
-        	        Ext.MessageBox.hide();
-    	        }.createDelegate( this ),
-                failure : function(form, action) {
-    	            Ext.MessageBox.hide();
-                }.createDelegate( this )
-            });
+    	    var gridName=(this.name!=null)?this.name:this.recordJavaClass;
+            gridName=gridName.trim().replace(/ /g,"_");
+            var exportForm = document.getElementById('exportGridSettings');
+            exportForm["gridName"].value=gridName;
+            exportForm["gridData"].value="";
+            exportForm["gridData"].value=Ext.encode(this.getFullSaveList(true));
+            exportForm.submit();
+            Ext.MessageBox.hide();
 	    }.createDelegate( this ));
     },
     removePagination : function (handler) {
         if(this.isPaginated()) {
             //to remove bottom pagination bar
-            this.paginated = false;
+            this.minPaginateCount = Ung.Util.maxRowCount;
             this.setTotalRecords(this.totalRecords);
     
             //make all cahnged data apear in first page
@@ -4307,7 +4287,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     },
     // Get the entire list
     // for the unpaginated grids, that send all the records on save
-    getFullSaveList : function() {
+    getFullSaveList : function(forExport) {
         var list=[];
         var records=this.store.getRange();
         for(var i=0; i<records.length;i++) {
@@ -4324,7 +4304,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 records[i].data["javaClass"] = this.recordJavaClass;
             }
             var recData=Ext.decode(Ext.encode(records[i].data));
-            if(recData.id<0) {
+            if(recData.id<0 || forExport) {
                 delete recData.id;
             }
             list.push(recData);
@@ -5038,7 +5018,7 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
                 fileUpload : true,
                 xtype : 'form',
                 id : 'import_settings_form'+this.getId(),
-                url : 'upload',
+                url : 'gridSettings',
                 border : false,
                 items : [{
                     fieldLabel : i18n._('File'),
@@ -5049,7 +5029,7 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
                 },{
                     xtype : 'hidden',
                     name : 'type',
-                    value : 'import_settings'
+                    value : 'import'
                 }]
             }]
         });
@@ -5076,12 +5056,13 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
     },
     importSettingsSuccess : function (form, action) {
         Ext.MessageBox.wait(i18n._("Importing Settings..."), i18n._("Please wait"));
-        rpc.importGridSettingsManager.getGridSettings(function(result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            this.grid.onImport(this.importMode, result);
+        if(!action.result.success) {
+            Ext.MessageBox.alert(i18n._("Warning"), i18n._(action.result.msg));
+        } else {
+            this.grid.onImport(this.importMode, action.result.msg);
             Ext.MessageBox.hide();
-        }.createDelegate(this));
-        this.closeWindow();
+            this.closeWindow();
+        }
     },
     importSettingsFailure : function (form, action) {
         Ext.MessageBox.alert(i18n._("Warning"), i18n._(action.result.msg));

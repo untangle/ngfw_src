@@ -86,7 +86,13 @@
     </script>
  </head>
 <body>
-<div id="container" style="margin:0px 0px 0px 0px;"></div>
+<div id="container" style="margin:0px 0px 0px 0px;">
+<form name="exportGridSettings" id="exportGridSettings" method="post" action="gridSettings" style="display:none;">
+<input type="hidden" name="gridName" value=""/>
+<input type="hidden" name="gridData" value=""/>
+<input type="hidden" name="type" value="export"/>
+</form>
+</div>
 <div id="extra-div-1" style="display:none;"><span></span></div>
 </body>
 </html>

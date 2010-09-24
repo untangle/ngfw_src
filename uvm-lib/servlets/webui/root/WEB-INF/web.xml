@@ -87,13 +87,13 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>ExportGridSettingsServlet</servlet-name>
-    <servlet-class>com.untangle.uvm.webui.servlet.ExportGridSettingsServlet</servlet-class>
+    <servlet-name>GridSettingsServlet</servlet-name>
+    <servlet-class>com.untangle.uvm.webui.servlet.GridSettingsServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>ExportGridSettingsServlet</servlet-name>
-    <url-pattern>/exportGridSettings</url-pattern>
+    <servlet-name>GridSettingsServlet</servlet-name>
+    <url-pattern>/gridSettings</url-pattern>
   </servlet-mapping>
 
   <welcome-file-list>

@@ -192,12 +192,6 @@ public interface LocalUvmContext extends RemoteUvmContext
     LocalLicenseManager localLicenseManager() throws UvmException;
 
     /**
-     * Get the <code>RemoteGridSettingsManager</code> singleton.
-     *
-     * @return the RemoteGridSettingsManager.
-     */
-    RemoteImportGridSettingsManager importGridSettingsManager();
-    /**
      * Once settings have been restored, and the UVM has been booted, call
      * into here to get the corresponding OS files rewritten.  This calls through
      * into callbacks in each manager, as appropriate.  All managers that write
