@@ -123,23 +123,23 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         text : this.i18n._( "Send Email" ),
                         name : 'sendEmail',
                         handler : this.sendEmail.createDelegate( this )
-                }]}, download
-                ]
+                    }]}, download
+                        ]
             });
 
             this.window = new Ung.Window({
                 title : this.i18n._('Distribute VPN Client'),
                 bbar : [
                     '->',
-                {
-                    name : 'close',
-                    iconCls : 'cancel-icon',
-                    text : this.i18n._('Close'),
-                    handler : this.hide.createDelegate( this )
-                }],
+                    {
+                        name : 'close',
+                        iconCls : 'cancel-icon',
+                        text : this.i18n._('Close'),
+                        handler : this.hide.createDelegate( this )
+                    }],
                 items : [
                     this.panel
-               ]
+                ]
             });
 
             Ext.MessageBox.hide();
@@ -278,11 +278,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var rv = true;
 
             switch ( method ) {
-            case "upload":
+              case "upload":
                 if ( !_validate( this.panel.find( 'name', 'siteConfiguration' ))) rv = false;
                 break;
 
-            case "server":
+              case "server":
                 if ( !_validate( this.panel.find( 'name', 'serverAddress' ))) rv = false;
                 if ( !_validate( this.panel.find( 'name', 'password' ))) rv = false;
                 break;
@@ -307,8 +307,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var method = this.panel.find( "name", "downloadClientConfiguration" )[0].getGroupValue();
 
             switch ( method ) {
-            case "upload": return this.uploadClient( handler );
-            case "server": return this.fetchClient( handler );
+              case "upload": return this.uploadClient( handler );
+              case "server": return this.fetchClient( handler );
             default:
                 Ext.MessageBox.alert(this.i18n._( "Select a value" ), this.i18n._( "Please choose 'Download from Server' or 'Upload Configuration'." ));
                 return;
@@ -418,13 +418,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.title = this.i18n._( "Finished!" );
             this.panel = new Ext.FormPanel({
                 items : [{
-                        xtype : 'label',
-                        html : '<h2 class="wizard-title">'+this.i18n._("Finished!")+'</h2>'
-                    }, {
-                        cls: 'description',
-                        border : false,
-                        html : this.i18n._('Congratulations! OpenVPN is configured as a VPN Client.')
-                    }]
+                    xtype : 'label',
+                    html : '<h2 class="wizard-title">'+this.i18n._("Finished!")+'</h2>'
+                }, {
+                    cls: 'description',
+                    border : false,
+                    html : this.i18n._('Congratulations! OpenVPN is configured as a VPN Client.')
+                }]
             });
 
             this.onNext = this.completeWizard.createDelegate( this );
@@ -456,9 +456,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             /* Register the VTypes, need i18n to be initialized for the text */
             if(Ext.form.VTypes["openvpnClientNameVal"]==null) {
                 Ext.form.VTypes["openvpnClientNameVal"] = /^[A-Za-z0-9]([-_.0-9A-Za-z]*[0-9A-Za-z])?$/;
-                Ext.form.VTypes["openvpnClientName"] = function(v){
+                Ext.form.VTypes["openvpnClientName"] = function(v) {
                     return Ext.form.VTypes["openvpnClientNameVal"].test(v);
-                }
+                };
                 Ext.form.VTypes["openvpnClientNameMask"] = /[-_.0-9A-Za-z]*/;
                 Ext.form.VTypes["openvpnClientNameText"] = this.i18n._( "A client name should only contains numbers, letters, dashes and periods.  Spaces are not allowed." );
             }
@@ -589,12 +589,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             this.getRpcNode().startConfig(function(result, exception) {
                                 if(Ung.Util.handleException(exception)) return;
                                 this.configureVPNServer();
-                            }.createDelegate(this), "SERVER_ROUTE")
+                            }.createDelegate(this), "SERVER_ROUTE");
 
                         }.createDelegate(this)
                     }, {
                         html : this.i18n
-                                ._("This configures OpenVPN so remote users and networks can connect and access exported hosts and networks."),
+                            ._("This configures OpenVPN so remote users and networks can connect and access exported hosts and networks."),
                         bodyStyle : 'padding:10px 10px 10px 10px;',
                         cls: 'description',
                         border : false
@@ -608,11 +608,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             this.getRpcNode().startConfig(function(result, exception) {
                                 if(Ung.Util.handleException(exception)) return;
                                 this.configureVPNClient();
-                            }.createDelegate(this), "CLIENT")
+                            }.createDelegate(this), "CLIENT");
                         }.createDelegate(this)
                     }, {
                         html : this.i18n
-                                ._("This configures OpenVPN so it connects to a remote OpenVPN Server and can access exported hosts and networks."),
+                            ._("This configures OpenVPN so it connects to a remote OpenVPN Server and can access exported hosts and networks."),
                         bodyStyle : 'padding:10px 10px 10px 10px;',
                         cls: 'description',
                         border : false
@@ -752,7 +752,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small'
                 })
-            }
+            };
         },
         generateGridClients : function() {
             // live is a check column
@@ -876,8 +876,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 fixed : true
             });
             var distributeColumn = this.getDistributeColumn();
-            var groupsColumn=this.getGroupsColumn();
-            var defaultGroup= this.getGroupsStore().getCount()>0?this.getGroupsStore().getAt(0).data:null
+            var groupsColumn = this.getGroupsColumn();
+            var defaultGroup= this.getGroupsStore().getCount()>0 ? this.getGroupsStore().getAt(0).data : null;
 
             var gridSites = new Ung.EditorGrid({
                 initComponent : function() {
@@ -1486,6 +1486,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         },
 
         validateGroups : function() {
+            var i;
             var groupList=this.gridGroups.getFullSaveList();
 
             // verify that there is at least one group
@@ -1501,7 +1502,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             // removed groups should not be referenced
             var removedGroups = this.gridGroups.getDeletedList();
 
-            for(var i=0; i<removedGroups.length;i++) {
+            for( i=0; i<removedGroups.length;i++) {
                 var clientList = this.gridClients.getFullSaveList();
                 for(var j=0; j<clientList.length;j++) {
                     if (removedGroups[i].name == clientList[j].groupName) {
@@ -1532,7 +1533,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             // Group names must all be unique
             var groupNames = {};
 
-            for(var i=0;i<groupList.length;i++) {
+            for( i=0;i<groupList.length;i++) {
                 var groupName = groupList[i].name.toLowerCase();
 
         var group = groupList[i];
@@ -1790,9 +1791,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 return false;
             }
         },
+
         configureVPNClient : function() {
             if (this.clientSetup) {
-                Ext.destroy(this.clientSetup)
+                Ext.destroy(this.clientSetup);
             }
 
             welcomeCard = new Ung.Node.OpenVPN.ClientWizard.Welcome({
@@ -1836,7 +1838,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     cls : 'window-background',
                     bodyStyle : 'background-color: transparent;'
                 }],
-                    endAction : function() {
+                endAction : function() {
                     this.clientSetup.hide();
                     Ext.destroy(this.clientSetup);
                     if(this.mustRefresh || true) {
@@ -1873,7 +1875,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         //
         configureVPNServer : function() {
             if (this.serverSetup) {
-                Ext.destroy(this.serverSetup)
+                Ext.destroy(this.serverSetup);
             }
 
             var welcomeCard = {
@@ -2011,9 +2013,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         if(Ung.Util.handleException(exception)) return;
                         this.handler();
                     }.createDelegate({
-                            handler : handler,
-                            settingsCmp : this
-                        }), certificateParameters)
+                        handler : handler,
+                        settingsCmp : this
+                    }), certificateParameters);
                 }.createDelegate(this)
             };
             var gridExports = this.generateGridExports(true);
@@ -2053,11 +2055,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             if(Ung.Util.handleException(exception)) return;
                             // go to next step
                             this.handler();
-                        }.createDelegate(this))
+                        }.createDelegate(this));
                     }.createDelegate({
-                            handler : handler,
-                            settingsCmp : this
-                        }), this.getExportedAddressList())
+                        handler : handler,
+                        settingsCmp : this
+                    }), this.getExportedAddressList());
                 }.createDelegate(this)
             };
             var congratulationsCard = {

@@ -45,7 +45,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             Ext.getCmp('spamassassin_imapStrengthValue').setContainerVisible(this.isCustomStrength(this.getBaseSettings().imapConfig.strength));
         },
         isCustomStrength : function(strength) {
-            return !(strength == 50 || strength == 43 || strength == 35 || strength == 33 || strength == 30)
+            return !(strength == 50 || strength == 43 || strength == 35 || strength == 33 || strength == 30);
         },
         getStrengthSelectionValue : function(strength) {
             if (this.isCustomStrength(strength)) {
@@ -54,16 +54,16 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 return strength;
             }
         },
-    onBeforeCollapse : function( panel, animate )
-    {
+        onBeforeCollapse : function( panel, animate )
+        {
             this.isAdvanced = false;
             return true;
-    },
-    onBeforeExpand : function( panel, animate )
-    {
+        },
+        onBeforeExpand : function( panel, animate )
+        {
             this.isAdvanced = true;
             return true;
-    },
+        },
         //enable super spam if quarantine is selected from the drop down
         enableSuperSpam: function(elem){
             var dsfq = Ext.getCmp('drop-super-spam');
@@ -75,9 +75,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             }else if(newValue == 'QUARANTINE' || newValue == 'MARK'){
                 dsfq.enable();
                 if(dsfq.getValue()){
-                   ssv.enable();
+                    ssv.enable();
                 }else{
-                   ssv.enable();                                        
+                    ssv.enable();                                        
                 }            
             }else{
                 dsfq.setValue(0);
@@ -94,10 +94,10 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         // Email Config Panel
         buildEmail : function() {
             this.smtpData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')],
-                    ['BLOCK', this.i18n._('Drop')], ['QUARANTINE', this.i18n._('Quarantine')]];
+                             ['BLOCK', this.i18n._('Drop')], ['QUARANTINE', this.i18n._('Quarantine')]];
             this.spamData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')]];
             this.strengthsData = [[50, this.i18n._('Low (Threshold: 5.0)')], [43, this.i18n._('Medium (Threshold: 4.3)')], [35, this.i18n._('High (Threshold: 3.5)')],
-                    [33, this.i18n._('Very High (Threshold: 3.3)')], [30, this.i18n._('Extreme (Threshold: 3.0)')], [0, this.i18n._('Custom')]];
+                                  [33, this.i18n._('Very High (Threshold: 3.3)')], [30, this.i18n._('Extreme (Threshold: 3.0)')], [0, this.i18n._('Custom')]];
 
             this.emailPanel = new Ext.Panel({
                 title : this.i18n._('Email'),
@@ -137,18 +137,18 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 }.createDelegate(this)
                             },
                             "render":{
-                                    fn : function(elem) {
-                                        if(elem.getValue()){
-                                            Ext.getCmp('spamassassin_smtpStrength').enable();
-                                            Ext.getCmp('spamassassin_smtpAction').enable();
+                                fn : function(elem) {
+                                    if(elem.getValue()){
+                                        Ext.getCmp('spamassassin_smtpStrength').enable();
+                                        Ext.getCmp('spamassassin_smtpAction').enable();
 
-                                        }else{
-                                            Ext.getCmp('spamassassin_smtpStrength').disable();
-                                            Ext.getCmp('spamassassin_smtpAction').disable();
-                                        }
-                                        this.enableSuperSpam(Ext.getCmp('spamassassin_smtpAction'))
-                                        
-                                    }.createDelegate(this)
+                                    }else{
+                                        Ext.getCmp('spamassassin_smtpStrength').disable();
+                                        Ext.getCmp('spamassassin_smtpAction').disable();
+                                    }
+                                    this.enableSuperSpam(Ext.getCmp('spamassassin_smtpAction'));
+                                    
+                                }.createDelegate(this)
                             }                            
                         }
                     }, {
@@ -207,7 +207,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 listeners : {
                                     "change" : {
                                         fn : function(elem, newValue) {
-                                          this.getBaseSettings().smtpConfig.strength = Math.round(newValue * 10);
+                                            this.getBaseSettings().smtpConfig.strength = Math.round(newValue * 10);
                                         }.createDelegate(this)
                                     }
                                 }
@@ -259,7 +259,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         listeners : {
                             "render" : {
                                 fn : function(elem) {
-                                        if(elem.getValue()){
+                                    if(elem.getValue()){
                                         Ext.getCmp('spamassassin_smtpSuperStrengthValue').enable();
                                     }else{
                                         Ext.getCmp('spamassassin_smtpSuperStrengthValue').disable();
@@ -278,163 +278,163 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             }
                         }
                     },
-                    {
-                      xtype : 'numberfield',
-                      labelWidth: 150,                      
-                      fieldLabel : this.i18n._('Super Spam Threshold'),
-                      name : 'Super Spam Level',
-                      id: 'spamassassin_smtpSuperStrengthValue', 
-                      value : this.getBaseSettings().smtpConfig.superSpamStrength / 10.0,                   
-                      allowDecimals: false,
-                      allowNegative: false,
-                      minValue: 0,
-                      itemCls : 'left-indent-4 super-spam-threshold x-item-disabled',
-                      maxValue: 2147483647,
-                      listeners : {
-                        "change" : {
-                          fn : function(elem, newValue) {
-                            this.getBaseSettings().smtpConfig.superSpamStrength = Math.round(newValue * 10);
-                          }.createDelegate(this)
-                        },
-                        "disable" :{
-                            fn : function(elem){
-                                if(this.rendered){
-                                        this.getEl().parent().parent().addClass('x-item-disabled');
-                                }
-                            }
-                        },
-                        "render" :{
-                            fn : function(elem){
-                                this.enableSuperSpam(Ext.getCmp('spamassassin_smtpAction'));
-                            }.createDelegate(this)
-                        },
-                        "enable" : {
-                            fn : function(elem){
-                                if(this.rendered){
-                                        this.getEl().parent().parent().removeClass('x-item-disabled');
-                                }
-                            }                       
-                        }
-                      }
-                    },{
-            name:'advanced',
-            xtype:'fieldset',
-            title:i18n._("Advanced SMTP Configuration"),
-            collapsible : true,
-            collapsed : !this.isAdvanced,
-            autoHeight : true,
-            listeners : {
-                beforecollapse : this.onBeforeCollapse.createDelegate( this ),
-                beforeexpand : this.onBeforeExpand.createDelegate( this )
-            },
-            items : [{
-                            xtype : 'checkbox',
-                            name : 'Enable tarpitting',
-                            boxLabel : this.i18n._('Enable tarpitting'),
-                            hideLabel : true,
-                            checked : this.getBaseSettings().smtpConfig.tarpit,
-                            listeners : {
-                "check" : {
-                    fn : function(elem, checked) {
-                    this.getBaseSettings().smtpConfig.tarpit = checked;
-                    }.createDelegate(this)
-                }
-                            }
-            },{
-                            xtype : 'checkbox',
-                            name : 'SMTP Add Email Headers',
-                            boxLabel : this.i18n._('Add email headers'),
-                            hideLabel : true,
-                            checked : this.getBaseSettings().smtpConfig.addSpamHeaders,
-                            listeners : {
-                "check" : {
-                                    fn : function(elem, newValue) {
-                    this.getBaseSettings().smtpConfig.addSpamHeaders = newValue;
-                                    }.createDelegate(this)
-                }
-                            }
-            },{
-                            xtype : 'checkbox',
-                            name : 'SMTP Fail Closed',
-                            boxLabel : this.i18n._('Close connection on scan failure'),
-                            hideLabel : true,
-                            checked : this.getBaseSettings().smtpConfig.failClosed,
-                            listeners : {
-                "check" : {
-                                    fn : function(elem, newValue) {
-                    this.getBaseSettings().smtpConfig.failClosed = newValue;
-                                    }.createDelegate(this)
-                }
-                            }
-            },{
-                            xtype : 'checkbox',
-                            name : 'Scan outbound (WAN) SMTP',
-                            boxLabel : this.i18n._('Scan outbound (WAN) SMTP'),
-                            hideLabel : true,
-                            checked : this.getBaseSettings().smtpConfig.scanWanMail,
-                            listeners : {
-                "check" : {
-                                    fn : function(elem, newValue) {
-                    this.getBaseSettings().smtpConfig.scanWanMail = newValue;
-                                    }.createDelegate(this)
-                }
-                            }
-            },{
-                            xtype : 'numberfield',
-                            fieldLabel : this.i18n._('CPU Load Limit'),
-                labelStyle : 'width:130px',
-                            name : 'SMTP CPU Load Limit',
-                            value : this.getBaseSettings().smtpConfig.loadLimit,
-                            allowDecimals: true,
-                            allowBlank : false,
-                            blankText : this.i18n._('Value must be a float.'),
-                            minValue : 0,
-                            maxValue : 50,
-                                listeners : {
-                                    "change" : {
-                                        fn : function(elem, newValue) {
-                                          this.getBaseSettings().smtpConfig.loadLimit = newValue;
-                                        }.createDelegate(this)
-                                    }
-                                }
-                        },{
-                            xtype : 'numberfield',
-                            fieldLabel : this.i18n._('Concurrent Scan Limit'),
-                labelStyle : 'width:130px',
-                            name : 'SMTP Concurrent Scan Limit',
-                            value : this.getBaseSettings().smtpConfig.scanLimit,
-                            allowDecimals: false,
-                            allowBlank : false,
-                            blankText : this.i18n._('Value must be a integer.'),
-                            minValue : 0,
-                            maxValue : 100,
-                                listeners : {
-                                    "change" : {
-                                        fn : function(elem, newValue) {
-                                          this.getBaseSettings().smtpConfig.scanLimit = newValue;
-                                        }.createDelegate(this)
-                                    }
-                                }
-                        },{
-                            xtype : 'numberfield',
-                            fieldLabel : this.i18n._('Message Size Limit'),
-                labelStyle : 'width:130px',
-                            name : 'SMTP Message Size Limit',
-                            value : this.getBaseSettings().smtpConfig.msgSizeLimit,
-                            allowDecimals: false,
-                            allowBlank : false,
-                            blankText : this.i18n._('Value must be a integer.'),
-                            minValue : 0,
-                            maxValue : 2147483647,
-                                listeners : {
-                                    "change" : {
-                                        fn : function(elem, newValue) {
-                                          this.getBaseSettings().smtpConfig.msgSizeLimit = newValue;
-                                        }.createDelegate(this)
-                                    }
-                                }
-                        }]
-                    }]
+                             {
+                                 xtype : 'numberfield',
+                                 labelWidth: 150,                      
+                                 fieldLabel : this.i18n._('Super Spam Threshold'),
+                                 name : 'Super Spam Level',
+                                 id: 'spamassassin_smtpSuperStrengthValue', 
+                                 value : this.getBaseSettings().smtpConfig.superSpamStrength / 10.0,                   
+                                 allowDecimals: false,
+                                 allowNegative: false,
+                                 minValue: 0,
+                                 itemCls : 'left-indent-4 super-spam-threshold x-item-disabled',
+                                 maxValue: 2147483647,
+                                 listeners : {
+                                     "change" : {
+                                         fn : function(elem, newValue) {
+                                             this.getBaseSettings().smtpConfig.superSpamStrength = Math.round(newValue * 10);
+                                         }.createDelegate(this)
+                                     },
+                                     "disable" :{
+                                         fn : function(elem){
+                                             if(this.rendered){
+                                                 this.getEl().parent().parent().addClass('x-item-disabled');
+                                             }
+                                         }
+                                     },
+                                     "render" :{
+                                         fn : function(elem){
+                                             this.enableSuperSpam(Ext.getCmp('spamassassin_smtpAction'));
+                                         }.createDelegate(this)
+                                     },
+                                     "enable" : {
+                                         fn : function(elem){
+                                             if(this.rendered){
+                                                 this.getEl().parent().parent().removeClass('x-item-disabled');
+                                             }
+                                         }                       
+                                     }
+                                 }
+                             },{
+                                 name:'advanced',
+                                 xtype:'fieldset',
+                                 title:i18n._("Advanced SMTP Configuration"),
+                                 collapsible : true,
+                                 collapsed : !this.isAdvanced,
+                                 autoHeight : true,
+                                 listeners : {
+                                     beforecollapse : this.onBeforeCollapse.createDelegate( this ),
+                                     beforeexpand : this.onBeforeExpand.createDelegate( this )
+                                 },
+                                 items : [{
+                                     xtype : 'checkbox',
+                                     name : 'Enable tarpitting',
+                                     boxLabel : this.i18n._('Enable tarpitting'),
+                                     hideLabel : true,
+                                     checked : this.getBaseSettings().smtpConfig.tarpit,
+                                     listeners : {
+                                         "check" : {
+                                             fn : function(elem, checked) {
+                                                 this.getBaseSettings().smtpConfig.tarpit = checked;
+                                             }.createDelegate(this)
+                                         }
+                                     }
+                                 },{
+                                     xtype : 'checkbox',
+                                     name : 'SMTP Add Email Headers',
+                                     boxLabel : this.i18n._('Add email headers'),
+                                     hideLabel : true,
+                                     checked : this.getBaseSettings().smtpConfig.addSpamHeaders,
+                                     listeners : {
+                                         "check" : {
+                                             fn : function(elem, newValue) {
+                                                 this.getBaseSettings().smtpConfig.addSpamHeaders = newValue;
+                                             }.createDelegate(this)
+                                         }
+                                     }
+                                 },{
+                                     xtype : 'checkbox',
+                                     name : 'SMTP Fail Closed',
+                                     boxLabel : this.i18n._('Close connection on scan failure'),
+                                     hideLabel : true,
+                                     checked : this.getBaseSettings().smtpConfig.failClosed,
+                                     listeners : {
+                                         "check" : {
+                                             fn : function(elem, newValue) {
+                                                 this.getBaseSettings().smtpConfig.failClosed = newValue;
+                                             }.createDelegate(this)
+                                         }
+                                     }
+                                 },{
+                                     xtype : 'checkbox',
+                                     name : 'Scan outbound (WAN) SMTP',
+                                     boxLabel : this.i18n._('Scan outbound (WAN) SMTP'),
+                                     hideLabel : true,
+                                     checked : this.getBaseSettings().smtpConfig.scanWanMail,
+                                     listeners : {
+                                         "check" : {
+                                             fn : function(elem, newValue) {
+                                                 this.getBaseSettings().smtpConfig.scanWanMail = newValue;
+                                             }.createDelegate(this)
+                                         }
+                                     }
+                                 },{
+                                     xtype : 'numberfield',
+                                     fieldLabel : this.i18n._('CPU Load Limit'),
+                                     labelStyle : 'width:130px',
+                                     name : 'SMTP CPU Load Limit',
+                                     value : this.getBaseSettings().smtpConfig.loadLimit,
+                                     allowDecimals: true,
+                                     allowBlank : false,
+                                     blankText : this.i18n._('Value must be a float.'),
+                                     minValue : 0,
+                                     maxValue : 50,
+                                     listeners : {
+                                         "change" : {
+                                             fn : function(elem, newValue) {
+                                                 this.getBaseSettings().smtpConfig.loadLimit = newValue;
+                                             }.createDelegate(this)
+                                         }
+                                     }
+                                 },{
+                                     xtype : 'numberfield',
+                                     fieldLabel : this.i18n._('Concurrent Scan Limit'),
+                                     labelStyle : 'width:130px',
+                                     name : 'SMTP Concurrent Scan Limit',
+                                     value : this.getBaseSettings().smtpConfig.scanLimit,
+                                     allowDecimals: false,
+                                     allowBlank : false,
+                                     blankText : this.i18n._('Value must be a integer.'),
+                                     minValue : 0,
+                                     maxValue : 100,
+                                     listeners : {
+                                         "change" : {
+                                             fn : function(elem, newValue) {
+                                                 this.getBaseSettings().smtpConfig.scanLimit = newValue;
+                                             }.createDelegate(this)
+                                         }
+                                     }
+                                 },{
+                                     xtype : 'numberfield',
+                                     fieldLabel : this.i18n._('Message Size Limit'),
+                                     labelStyle : 'width:130px',
+                                     name : 'SMTP Message Size Limit',
+                                     value : this.getBaseSettings().smtpConfig.msgSizeLimit,
+                                     allowDecimals: false,
+                                     allowBlank : false,
+                                     blankText : this.i18n._('Value must be a integer.'),
+                                     minValue : 0,
+                                     maxValue : 2147483647,
+                                     listeners : {
+                                         "change" : {
+                                             fn : function(elem, newValue) {
+                                                 this.getBaseSettings().smtpConfig.msgSizeLimit = newValue;
+                                             }.createDelegate(this)
+                                         }
+                                     }
+                                 }]
+                             }]
                 }, {
                     xtype : 'fieldset',
                     title : this.i18n._('POP3'),
@@ -449,7 +449,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         listeners : {
                             "render" : {
                                 fn : function(elem) {
-                                        if(elem.getValue()){
+                                    if(elem.getValue()){
                                         Ext.getCmp('spamassassin_pop3Strength').enable();
                                         Ext.getCmp('spamassassin_pop3Action').enable();
 
@@ -531,7 +531,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 listeners : {
                                     "change" : {
                                         fn : function(elem, newValue) {
-                                          this.getBaseSettings().popConfig.strength = Math.round(newValue * 10);
+                                            this.getBaseSettings().popConfig.strength = Math.round(newValue * 10);
                                         }.createDelegate(this)
                                     }
                                 }
@@ -563,33 +563,33 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             }
                         }
                     },{
-            name:'advanced',
-            xtype:'fieldset',
-            title:i18n._("Advanced POP Configuration"),
-            collapsible : true,
-            collapsed : !this.isAdvanced,
-            autoHeight : true,
-            listeners : {
-                beforecollapse : this.onBeforeCollapse.createDelegate( this ),
-                beforeexpand : this.onBeforeExpand.createDelegate( this )
-            },
-            items : [{
+                        name:'advanced',
+                        xtype:'fieldset',
+                        title:i18n._("Advanced POP Configuration"),
+                        collapsible : true,
+                        collapsed : !this.isAdvanced,
+                        autoHeight : true,
+                        listeners : {
+                            beforecollapse : this.onBeforeCollapse.createDelegate( this ),
+                            beforeexpand : this.onBeforeExpand.createDelegate( this )
+                        },
+                        items : [{
                             xtype : 'checkbox',
                             name : 'POP Add Email Headers',
                             boxLabel : this.i18n._('Add email headers'),
                             hideLabel : true,
                             checked : this.getBaseSettings().popConfig.addSpamHeaders,
                             listeners : {
-                "check" : {
+                                "check" : {
                                     fn : function(elem, newValue) {
-                    this.getBaseSettings().popConfig.addSpamHeaders = newValue;
+                                        this.getBaseSettings().popConfig.addSpamHeaders = newValue;
                                     }.createDelegate(this)
-                }
+                                }
                             }
-            },{
+                        },{
                             xtype : 'numberfield',
                             fieldLabel : this.i18n._('Message Size Limit'),
-                labelStyle : 'width:130px',
+                            labelStyle : 'width:130px',
                             name : 'POP Message Size Limit',
                             value : this.getBaseSettings().popConfig.msgSizeLimit,
                             allowDecimals: false,
@@ -597,15 +597,15 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             blankText : this.i18n._('Value must be a integer.'),
                             minValue : 0,
                             maxValue : 2147483647,
-                                listeners : {
-                                    "change" : {
-                                        fn : function(elem, newValue) {
-                                          this.getBaseSettings().popConfig.msgSizeLimit = newValue;
-                                        }.createDelegate(this)
-                                    }
+                            listeners : {
+                                "change" : {
+                                    fn : function(elem, newValue) {
+                                        this.getBaseSettings().popConfig.msgSizeLimit = newValue;
+                                    }.createDelegate(this)
                                 }
+                            }
                         }]
-            }]
+                    }]
                 }, {
                     xtype : 'fieldset',
                     title : this.i18n._('IMAP'),
@@ -621,7 +621,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         listeners : {
                             "render" : {
                                 fn : function(elem) {
-                                        if(elem.getValue()){
+                                    if(elem.getValue()){
                                         Ext.getCmp('spamassassin_imapStrength').enable();
                                         Ext.getCmp('spamassassin_imapAction').enable();
 
@@ -703,7 +703,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 listeners : {
                                     "change" : {
                                         fn : function(elem, newValue) {
-                                          this.getBaseSettings().imapConfig.strength = Math.round(newValue * 10);
+                                            this.getBaseSettings().imapConfig.strength = Math.round(newValue * 10);
                                         }.createDelegate(this)
                                     }
                                 }
@@ -735,33 +735,33 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             }
                         }
                     },{
-            name:'advanced',
-            xtype:'fieldset',
-            title:i18n._("Advanced IMAP Configuration"),
-            collapsible : true,
-            collapsed : !this.isAdvanced,
-            autoHeight : true,
-            listeners : {
-                beforecollapse : this.onBeforeCollapse.createDelegate( this ),
-                beforeexpand : this.onBeforeExpand.createDelegate( this )
-            },
-            items : [{
+                        name:'advanced',
+                        xtype:'fieldset',
+                        title:i18n._("Advanced IMAP Configuration"),
+                        collapsible : true,
+                        collapsed : !this.isAdvanced,
+                        autoHeight : true,
+                        listeners : {
+                            beforecollapse : this.onBeforeCollapse.createDelegate( this ),
+                            beforeexpand : this.onBeforeExpand.createDelegate( this )
+                        },
+                        items : [{
                             xtype : 'checkbox',
                             name : 'IMAP Add Email Headers',
                             boxLabel : this.i18n._('Add email headers'),
                             hideLabel : true,
                             checked : this.getBaseSettings().imapConfig.addSpamHeaders,
                             listeners : {
-                "check" : {
+                                "check" : {
                                     fn : function(elem, newValue) {
-                    this.getBaseSettings().imapConfig.addSpamHeaders = newValue;
+                                        this.getBaseSettings().imapConfig.addSpamHeaders = newValue;
                                     }.createDelegate(this)
-                }
+                                }
                             }
-            },{
+                        },{
                             xtype : 'numberfield',
                             fieldLabel : this.i18n._('Message Size Limit'),
-                labelStyle : 'width:130px',
+                            labelStyle : 'width:130px',
                             name : 'IMAP Message Size Limit',
                             value : this.getBaseSettings().imapConfig.msgSizeLimit,
                             allowDecimals: false,
@@ -769,25 +769,25 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             blankText : this.i18n._('Value must be a integer.'),
                             minValue : 0,
                             maxValue : 2147483647,
-                                listeners : {
-                                    "change" : {
-                                        fn : function(elem, newValue) {
-                                          this.getBaseSettings().imapConfig.msgSizeLimit = newValue;
-                                        }.createDelegate(this)
-                                    }
+                            listeners : {
+                                "change" : {
+                                    fn : function(elem, newValue) {
+                                        this.getBaseSettings().imapConfig.msgSizeLimit = newValue;
+                                    }.createDelegate(this)
                                 }
+                            }
                         }]
-            }]
+                    }]
                 }, {
                     xtype : 'fieldset',
                     title : this.i18n._('Note'),
                     autoHeight : true,
                     cls: 'description',
                     html : this.i18n._('Spam Blocker last checked for updates') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                           + (this.getBaseSettings().lastUpdateCheck != null ? i18n.timestampFormat(this.getBaseSettings().lastUpdateCheck) : i18n._("unknown"))
-                           + '<br\>'
-                           + this.i18n._('Spam Blocker was last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                           + (this.getBaseSettings().lastUpdate != null ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : i18n._("unknown"))
+                        + (this.getBaseSettings().lastUpdateCheck != null ? i18n.timestampFormat(this.getBaseSettings().lastUpdateCheck) : i18n._("unknown"))
+                        + '<br\>'
+                        + this.i18n._('Spam Blocker was last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
+                        + (this.getBaseSettings().lastUpdate != null ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : i18n._("unknown"))
                     //+ '<br\>'
                     //+ this.i18n._('Current Version:') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
                     //+ (this.getBaseSettings().getSignatureVersion != null ? this.getBaseSettings().getSignatureVersion : i18n._("unknown"))
@@ -809,34 +809,34 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     type : 'string',
                     convert : function(value, rec ) {
                         switch (rec.type) {
-                            case 'POP/IMAP' :
-                                switch (value) {
-                                    case 0 : // PASSED
-                                        return this.i18n._("pass message");
-                                    case 1 : // MARKED
-                                        return this.i18n._("mark message");
-                                    default :
-                                        return this.i18n._("unknown action");
-                                }
-                                break;
-                            case 'SMTP' :
-                                switch (value) {
-                                    case 0 : // PASSED
-                                        return this.i18n._("pass message");
-                                    case 1 : // MARKED
-                                        return this.i18n._("mark message");
-                                    case 2 : // DROP
-                                        return this.i18n._("drop message");
-                                    case 3 : // QUARANTINED
-                                        return this.i18n._("quarantine message");
-                                    case 4 : // SAFELISTED
-                                        return this.i18n._("safelist message");
-                                    case 5 : // OVERSIZE
-                                        return this.i18n._("pass oversize message");
-                                    default:
-                                        return this.i18n._("unknown action");
-                                }
-                                break;
+                          case 'POP/IMAP' :
+                            switch (value) {
+                              case 0 : // PASSED
+                                return this.i18n._("pass message");
+                              case 1 : // MARKED
+                                return this.i18n._("mark message");
+                            default :
+                                return this.i18n._("unknown action");
+                            }
+                            break;
+                          case 'SMTP' :
+                            switch (value) {
+                              case 0 : // PASSED
+                                return this.i18n._("pass message");
+                              case 1 : // MARKED
+                                return this.i18n._("mark message");
+                              case 2 : // DROP
+                                return this.i18n._("drop message");
+                              case 3 : // QUARANTINED
+                                return this.i18n._("quarantine message");
+                              case 4 : // SAFELISTED
+                                return this.i18n._("safelist message");
+                              case 5 : // OVERSIZE
+                                return this.i18n._("pass oversize message");
+                            default:
+                                return this.i18n._("unknown action");
+                            }
+                            break;
                         }
                         return "";
                     }.createDelegate(this)
@@ -970,22 +970,22 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             var cmp = null;
             var valid =
                 ((cmp = Ext.getCmp('spamassassin_smtpStrengthValue')).isValid() &&
-                (cmp = Ext.getCmp('spamassassin_pop3StrengthValue')).isValid() &&
-                (cmp = Ext.getCmp('spamassassin_imapStrengthValue')).isValid());
+                 (cmp = Ext.getCmp('spamassassin_pop3StrengthValue')).isValid() &&
+                 (cmp = Ext.getCmp('spamassassin_imapStrengthValue')).isValid());
             if (!valid) {
                 Ext.MessageBox.alert(i18n._("Failed"), this.i18n._('The value of Strength Value field is invalid.'),
-                    function () {
-                        this.tabs.activate(this.emailPanel);
-                        cmp.focus(true);
-                    }.createDelegate(this)
-                );
+                                     function () {
+                                         this.tabs.activate(this.emailPanel);
+                                         cmp.focus(true);
+                                     }.createDelegate(this)
+                                    );
             }
             return valid;
         },
         // save function
         saveAction : function() {
             if (this.validate()) {
-            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 this.getRpcNode().setBaseSettings(function(result, exception) {
                     Ext.MessageBox.hide();
                     if(Ung.Util.handleException(exception)) return;
