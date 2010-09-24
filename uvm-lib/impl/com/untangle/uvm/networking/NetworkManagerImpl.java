@@ -563,7 +563,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         try {
             JSONObject jsonObject = JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "get_qos_settings", null );
 
-            logger.warn("QoS Settings: " + jsonObject);
             JSONObject result = jsonObject.getJSONObject("result");
             if (result == null)
                 return Boolean.FALSE;
@@ -585,7 +584,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         try {
             JSONObject jsonObject = JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "get_wan_interfaces", null );
             JSONArray result = jsonObject.getJSONArray("result");
-            logger.warn("WAN settings: " + result);
             return result;
             
         } catch (Exception e) {
@@ -596,11 +594,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     public void enableQos()
     {
-        logger.warn("ENABLE QOS");
-
         try {
             JSONObject jsonObject = JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "enable_qos", null );
-            logger.warn("Enable QoS result: " + jsonObject);
             return;
         } catch (Exception e) {
             logger.error("Unable to enable Qos:",e);
@@ -616,7 +611,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
             jsonObject.put(property,speed);
 
             jsonObject = JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "set_wan_speed", jsonObject );
-            logger.warn("Set WAN settings result: " + jsonObject);
             return;
         } catch (Exception e) {
             logger.error("Unable to set WAN settings:",e);
