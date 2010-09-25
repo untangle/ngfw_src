@@ -38,6 +38,44 @@ public interface SettingsManager
      */
     public <T> T save(Class<T> clz, String packageName, String key, T value) throws SettingsException;
 
+    /**
+     * Load the settings from the store using a unique identifier.
+     * 
+     * @param <T>
+     *            Type of class to load
+     * @param clz
+     *            Type of class to load.
+     * @param basePath
+     *            The path of the settings file (/usr/share/untangle/settings/)
+     * @param packageName
+     *            Name of the debian package that is making the request.
+     * @param id
+     *            Unique identifier to select the object.
+     * @return The object that was loaded or null if an object was not loaded.
+     * @throws SettingsException
+     */
+    public <T> T loadBasePath(Class<T> clz, String basePath, String packageName, String id) throws SettingsException;
+
+    /**
+     * Save the settings from the store using a unique identifier.
+     * 
+     * @param <T>
+     *            Type of class to save
+     * @param clz
+     *            Type of class to save.
+     * @param basePath
+     *            The path of the settings file (/usr/share/untangle/settings/)
+     * @param packageName
+     *            Name of the debian package that is making the request.
+     * @param id
+     *            Unique identifier to select the object.
+     * @param value
+     *            The value to be saved.
+     * @return The object that was saved.
+     * @throws SettingsException
+     */
+    public <T> T saveBasePath(Class<T> clz, String basePath, String packageName, String id, T value) throws SettingsException;
+               
 @SuppressWarnings("serial")
     public static class SettingsException extends Exception {
 

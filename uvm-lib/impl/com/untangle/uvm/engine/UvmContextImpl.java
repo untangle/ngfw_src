@@ -737,9 +737,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
             throw new IllegalStateException("register serializers should never fail!", e);
         }
         
-        String settingsPath = System.getProperty( "uvm.settings.dir" );
-        settingsManager.setBasePath(settingsPath);
-        
         uploadManager.registerHandler(new RestoreUploadHandler());
 
         this.cronManager = new CronManager();

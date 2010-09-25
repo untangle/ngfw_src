@@ -37,22 +37,14 @@ public class SettingsManagerImpl implements SettingsManager
      */
     public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd-HHmm");
 
-    private String basePath = System.getProperty("uvm.settings.dir");
+    /**
+     * Default base path used when a base path is not specified
+     */
+    private String defaultBasePath = System.getProperty("uvm.settings.dir");
 
     private JSONSerializer serializer = null;
 
     private final Map<String, Object> pathLocks = new HashMap<String, Object>();
-
-    
-    protected String getBasePath()
-    {
-        return this.basePath;
-    }
-
-    protected void setBasePath(String basePath)
-    {
-        this.basePath = basePath;
-    }
 
     /**
      * @param serializer
@@ -92,7 +84,7 @@ public class SettingsManagerImpl implements SettingsManager
             throw new IllegalArgumentException("Invalid id value: '" + id + "'");
         }
 
-        return loadImpl(clz, packageName, id);
+        return loadImpl(clz, this.defaultBasePath, packageName, id);
     }
 
     /**
@@ -118,9 +110,29 @@ public class SettingsManagerImpl implements SettingsManager
             throw new IllegalArgumentException("Invalid id value: '" + id + "'");
         }
 
-        return saveImpl(clz, packageName, id, value);
+        return saveImpl(clz, this.defaultBasePath, packageName, id, value);
     }
 
+    public <T> T loadBasePath(Class<T> clz, String basePath, String packageName, String id)
+        throws SettingsException
+    {
+        if (!VALID_CHARACTERS.matcher(id).matches()) {
+            throw new IllegalArgumentException("Invalid id value: '" + id + "'");
+        }
+
+        return loadImpl(clz, basePath, packageName, id);
+    }
+
+    public <T> T saveBasePath(Class<T> clz, String basePath, String packageName, String id, T value)
+        throws SettingsException
+    {
+        if (!VALID_CHARACTERS.matcher(id).matches()) {
+            throw new IllegalArgumentException("Invalid id value: '" + id + "'");
+        }
+
+        return saveImpl(clz, basePath, packageName, id, value);
+    }
+    
     /**
      * 
      * @param <T>
@@ -136,10 +148,10 @@ public class SettingsManagerImpl implements SettingsManager
      * @throws SettingsException
      */
     @SuppressWarnings("unchecked") //JSON
-    private <T> T loadImpl(Class<T> clz, String packageName, String query)
+    private <T> T loadImpl(Class<T> clz, String basePath, String packageName, String query)
         throws SettingsException
     {
-        File f = buildHeadPath(clz, packageName, query);
+        File f = buildHeadPath(clz, basePath, packageName, query);
         if (!f.exists()) {
             return null;
         }
@@ -182,11 +194,11 @@ public class SettingsManagerImpl implements SettingsManager
         }
     }
 
-    private <T> T saveImpl(Class<T> clz, String packageName, String query, T value)
+    private <T> T saveImpl(Class<T> clz, String basePath, String packageName, String query, T value)
         throws SettingsException
     {
-        File link = buildHeadPath(clz, packageName, query);
-        File output = buildVersionPath(clz, packageName, query);
+        File link = buildHeadPath(clz, basePath, packageName, query);
+        File output = buildVersionPath(clz, basePath, packageName, query);
 
         Object lock = this.getLock(output);
 
@@ -272,11 +284,11 @@ public class SettingsManagerImpl implements SettingsManager
                 } catch (Exception e) {
                 }
             }
-            return loadImpl(clz, packageName, query);
+            return loadImpl(clz, basePath, packageName, query);
         }
     }
 
-    private File buildHeadPath(Class<?> clz, String packageName, String query)
+    private File buildHeadPath(Class<?> clz, String basePath, String packageName, String query)
     {
         String clzName = clz.getCanonicalName();
         if (clzName == null) {
@@ -285,10 +297,10 @@ public class SettingsManagerImpl implements SettingsManager
 
         /* First build the file string */
         String s = File.separator;
-        return new File(this.basePath + s + packageName + s /* + clzName */ + s + query + ".js");
+        return new File(basePath + s + packageName + s /* + clzName */ + s + query + ".js");
     }
 
-    private File buildVersionPath(Class<?> clz, String packageName, String query)
+    private File buildVersionPath(Class<?> clz, String basePath, String packageName, String query)
     {
         String clzName = clz.getCanonicalName();
         if (clzName == null) {
@@ -301,7 +313,7 @@ public class SettingsManagerImpl implements SettingsManager
 
         //String versionString = String.valueOf(System.currentTimeMillis()) + "-" + DATE_FORMATTER.format(new Date());
         String versionString = String.valueOf(DATE_FORMATTER.format(new Date()));
-        return new File(this.basePath + s + packageName + s /* + clzName */ + s + query + ".js" + "-version-" + versionString + ".js");
+        return new File(basePath + s + packageName + s /* + clzName */ + s + query + ".js" + "-version-" + versionString + ".js");
     }
 
     /**
