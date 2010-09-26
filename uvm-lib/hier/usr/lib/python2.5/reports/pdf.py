@@ -362,10 +362,11 @@ def generate_pdf(report_base, end_date, report_days, mail_reports, trial_report_
             logger.info('** %s' % (r.name,))
             s = r.get_flowables(report_base, date_base, end_date, report_days)
             doc.multiBuild([top,]+s)
+            doc.multiBuild([top,]+s)
             story += s
         except Exception, e:
             logger.error("Exception while building PDF report for %s, not including it: " % (r.name,), exc_info = True)
-
+            
     doc.multiBuild(story)
 
     return file
