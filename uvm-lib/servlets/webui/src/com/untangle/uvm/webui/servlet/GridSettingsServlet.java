@@ -21,6 +21,7 @@ package com.untangle.uvm.webui.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,6 +36,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.util.I18nUtil;
+
 /**
  * A servlet for import / export grid settings 
  * 
@@ -42,8 +47,6 @@ import org.json.JSONObject;
  */
 @SuppressWarnings({ "serial", "unchecked" })
 public class GridSettingsServlet extends HttpServlet {
-
-	private final static String IMPORT_FAILED_INVALID_FORMAT = "Import failed. Settings must be formatted as a JSON Array.";
 
 	private final Logger logger = Logger.getLogger(getClass());
 	
@@ -82,16 +85,14 @@ public class GridSettingsServlet extends HttpServlet {
 						createImportRespose(resp, true, gridSettings);
 						return;
 					} else {
-						createImportRespose(resp, false,
-								IMPORT_FAILED_INVALID_FORMAT);
+						createImportRespose(resp, false, importFailedMessage());
 						return;
 					}
 				}
 			}
 		} catch (JSONException e) {
 			logger.debug("Import grid settings failed. Settings must be formatted as a JSON Array.", e);
-			createImportRespose(resp, false,
-					IMPORT_FAILED_INVALID_FORMAT);
+			createImportRespose(resp, false, importFailedMessage());
 			return;
 		} catch (Exception exn) {
 			logger.warn("could not upload", exn);
@@ -119,6 +120,14 @@ public class GridSettingsServlet extends HttpServlet {
 		out.flush();
 		out.close();
 	}
+	
+	private String importFailedMessage()
+    {
+        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
+        return I18nUtil.tr("Import failed. Settings must be formatted as a JSON Array.", i18n_map);
+    }
+	
 	
 	private void processExport(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {

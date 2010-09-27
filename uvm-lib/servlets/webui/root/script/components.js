@@ -3990,9 +3990,9 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             }
             if(validRecords > 0) {
                 if(invalidRecords==0) {
-                    Ext.MessageBox.hide();
+                    Ext.MessageBox.alert(i18n._('Import successful'), String.format(i18n._("Imported file contains {0} valid records."), validRecords));
                 } else {
-                    Ext.MessageBox.alert(i18n._('Warning'), String.format(i18n._("Import successful. Imported file contains {0} valid records and {1} invalid records."), validRecords, invalidRecords));
+                    Ext.MessageBox.alert(i18n._('Import successful'), String.format(i18n._("Imported file contains {0} valid records and {1} invalid records."), validRecords, invalidRecords));
                 }
             } else {
                 if(invalidRecords==0) {
@@ -5078,14 +5078,14 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
     importSettingsSuccess : function (form, action) {
         Ext.MessageBox.wait(i18n._("Importing Settings..."), i18n._("Please wait"));
         if(!action.result.success) {
-            Ext.MessageBox.alert(i18n._("Warning"), i18n._(action.result.msg));
+            Ext.MessageBox.alert(i18n._("Warning"), action.result.msg);
         } else {
             this.grid.onImport(this.importMode, action.result.msg);
             this.closeWindow();
         }
     },
     importSettingsFailure : function (form, action) {
-        Ext.MessageBox.alert(i18n._("Warning"), i18n._(action.result.msg));
+        Ext.MessageBox.alert(i18n._("Warning"), action.result.msg);
     },
     isDirty : function() {
         return false;  
