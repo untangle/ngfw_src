@@ -4208,6 +4208,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             }
         } else if (currentOp == "deleted") {
             for(var i=0;i<recLength; i++) {
+                this.store.suspendEvents();
                 var record=records[i];
                 var id = record.get("id");
                 var cd = this.changedData[id];
@@ -4230,6 +4231,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                         };
                     }                    
                 }
+                this.store.resumeEvents();
             }
             if(records.length > 0) {
                 this.getView().refresh(false);
