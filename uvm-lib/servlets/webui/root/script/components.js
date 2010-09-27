@@ -3955,59 +3955,60 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     onImport : function (importMode, importedRows) {
         this.stopEditing();
         this.removePagination(function() {
-            var invalidRecords=0;
-            if(importedRows == null) {
-                importedRows=[];
-            }
-            var records=[];
-            for (var i = 0; i < importedRows.length; i++) {
-                try {
-                    var record= new Ext.data.Record(importedRows[i]);
-                    if(record.data["javaClass"] == this.recordJavaClass) {
-                        record.set("id", this.genAddedId());
-                        records.push(record);
-                    } else {
-                        invalidRecords++;
-                    }
-                } catch(e) {
+            this.onImportContinue.defer(1,this,[importMode, importedRows]);
+        }.createDelegate(this));
+    },
+    onImportContinue : function (importMode, importedRows) {
+        var invalidRecords=0;
+        if(importedRows == null) {
+            importedRows=[];
+        }
+        var records=[];
+        for (var i = 0; i < importedRows.length; i++) {
+            try {
+                var record= new Ext.data.Record(importedRows[i]);
+                if(record.data["javaClass"] == this.recordJavaClass) {
+                    record.set("id", this.genAddedId());
+                    records.push(record);
+                } else {
                     invalidRecords++;
                 }
+            } catch(e) {
+                invalidRecords++;
             }
-            var validRecords=records.length;
-            if(validRecords > 0) {
-                if(importMode=='replace' ) {
-                    this.deleteAllRecords();
-                    this.getStore().insert(0, records.reverse());
-                    this.updateChangedDataOnImport(records);
-                } else {
-                    if(importMode=='append') {
-                        this.getStore().add(records);
-                    } else if(importMode=='prepend'){ //replace or prepend mode
-                        this.getStore().insert(0, records.reverse());
-                    }
-                    this.updateChangedDataOnImport(records);
-                }
-            }
-            if(validRecords > 0) {
-                if(invalidRecords==0) {
-                    Ext.MessageBox.alert(i18n._('Import successful'), String.format(i18n._("Imported file contains {0} valid records."), validRecords));
-                } else {
-                    Ext.MessageBox.alert(i18n._('Import successful'), String.format(i18n._("Imported file contains {0} valid records and {1} invalid records."), validRecords, invalidRecords));
-                }
+        }
+        var validRecords=records.length;
+        if(validRecords > 0) {
+            if(importMode=='replace' ) {
+                this.deleteAllRecords();
+                this.getStore().insert(0, records.reverse());
+                this.updateChangedDataOnImport(records, "added");
             } else {
-                if(invalidRecords==0) {
-                    Ext.MessageBox.alert(i18n._('Warning'), i18n._("Import failed. Imported file has no records."));
-                } else {
-                    Ext.MessageBox.alert(i18n._('Warning'), String.format(i18n._("Import failed. Imported file contains {0} invalid records and no valid records."), invalidRecords));
+                if(importMode=='append') {
+                    this.getStore().add(records);
+                } else if(importMode=='prepend'){ //replace or prepend mode
+                    this.getStore().insert(0, records.reverse());
                 }
+                this.updateChangedDataOnImport(records, "added");
             }
-        }.createDelegate(this));
+        }
+        if(validRecords > 0) {
+            if(invalidRecords==0) {
+                Ext.MessageBox.alert(i18n._('Import successful'), String.format(i18n._("Imported file contains {0} valid records."), validRecords));
+            } else {
+                Ext.MessageBox.alert(i18n._('Import successful'), String.format(i18n._("Imported file contains {0} valid records and {1} invalid records."), validRecords, invalidRecords));
+            }
+        } else {
+            if(invalidRecords==0) {
+                Ext.MessageBox.alert(i18n._('Warning'), i18n._("Import failed. Imported file has no records."));
+            } else {
+                Ext.MessageBox.alert(i18n._('Warning'), String.format(i18n._("Import failed. Imported file contains {0} invalid records and no valid records."), invalidRecords));
+            }
+        }        
     },
     deleteAllRecords : function () {
         var records=this.getStore().getRange();
-        for(var i=0;i<records.length; i++) {
-            this.updateChangedData(records[i], "deleted");
-        }
+        this.updateChangedDataOnImport(records, "deleted");
     },
     exportHandler : function() {
         Ext.MessageBox.wait(i18n._("Exporting Settings..."), i18n._("Please wait"));
@@ -4193,14 +4194,46 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         }
     },
     // Update Changed data after an import
-    updateChangedDataOnImport : function(records) {
+    updateChangedDataOnImport : function(records, currentOp) {
         this.disableSorting();
-        for (var i = 0; i < records.length; i++) {
-            this.changedData[records[i].get("id")] = {
-                op : "added",
-                recData : records[i].data,
-                pageStart : this.getPageStart()
-            };
+        var recLength=records.length;
+        if(currentOp == "added") {
+            for (var i = 0; i < recLength; i++) {
+                var record=records[i];
+                this.changedData[record.get("id")] = {
+                    op : currentOp,
+                    recData : record.data,
+                    pageStart : 0
+                };
+            }
+        } else if (currentOp == "deleted") {
+            for(var i=0;i<recLength; i++) {
+                var record=records[i];
+                var id = record.get("id");
+                var cd = this.changedData[id];
+                if (cd == null) {
+                    this.changedData[id] = {
+                        op : currentOp,
+                        recData : record.data,
+                        pageStart : 0
+                    };
+                } else {
+                    if ("added" == cd.op) {
+                        this.store.remove(record);
+                        this.changedData[id] = null;
+                        delete this.changedData[id];
+                    } else {
+                        this.changedData[id] = {
+                            op : currentOp,
+                            recData : record.data,
+                            pageStart : 0
+                        };
+                    }                    
+                }
+            }
+            if(records.length > 0) {
+                this.getView().refresh(false);
+            }
         }
     },
     // Update Changed data after an operation (modifyed, deleted, added)
