@@ -43,6 +43,8 @@ import org.json.JSONObject;
 @SuppressWarnings({ "serial", "unchecked" })
 public class GridSettingsServlet extends HttpServlet {
 
+	private final static String IMPORT_FAILED_INVALID_FORMAT = "Import failed. Settings must be formatted as a JSON Array.";
+
 	private final Logger logger = Logger.getLogger(getClass());
 	
     /** character encoding */
@@ -81,15 +83,15 @@ public class GridSettingsServlet extends HttpServlet {
 						return;
 					} else {
 						createImportRespose(resp, false,
-								"Import Grid Settings Failed. Settings must be formatted as a JSON Array.");
+								IMPORT_FAILED_INVALID_FORMAT);
 						return;
 					}
 				}
 			}
 		} catch (JSONException e) {
-			logger.debug("Import grid settings failed. Invalid file format.", e);
+			logger.debug("Import grid settings failed. Settings must be formatted as a JSON Array.", e);
 			createImportRespose(resp, false,
-					"Import Grid Settings Failed. Settings must be formatted as a JSON Array.");
+					IMPORT_FAILED_INVALID_FORMAT);
 			return;
 		} catch (Exception exn) {
 			logger.warn("could not upload", exn);
@@ -131,8 +133,8 @@ public class GridSettingsServlet extends HttpServlet {
             JSONArray json = new JSONArray(gridData);
             json.write(resp.getWriter());
         } catch (JSONException e) {
-			logger.debug("Export grid settings failed. Invalid file format.", e);
-            throw new ServletException("Export Grid Settings Failed. Settings must be formatted as a JSON Array.");
+			logger.debug("Export grid settings failed. Settings must be formatted as a JSON Array.", e);
+            throw new ServletException("Export failed. Settings must be formatted as a JSON Array.");
         }
 	}
 }

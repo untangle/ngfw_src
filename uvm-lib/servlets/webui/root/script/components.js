@@ -3695,7 +3695,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     // has Add button
     hasAdd : true,
     // has Import Export buttons
-    hasImportExport: true,    
+    hasImportExport: null,    
     // has Edit buton on each record
     hasEdit : true,
     configEdit: null,
@@ -3877,9 +3877,9 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             this.subCmps.push(this.rowEditor);
         }
         this.tbar=[];
-        //TODO remove this
-        //This is just for testing in dev phase
-        this.hasImportExport=this.hasAdd;
+        if(this.hasImportExport===null) {
+            this.hasImportExport=this.hasAdd;
+        }
         if (this.hasAdd) {
             this.tbar.push({
                 text : i18n._('Add'),
@@ -3954,39 +3954,60 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     },
     onImport : function (importMode, importedRows) {
         this.stopEditing();
-        if(importedRows == null) {
-            importedRows=[];
-        }
-        var records=[];
-        for (var i = 0; i < importedRows.length; i++) {
-            var record= new Ext.data.Record(importedRows[i]);
-            record.set("id", this.genAddedId());
-            records.push(record);
-        }
-        if(importMode=='replace' ) {
-            this.deleteAllRecords(function() {
-                this.getStore().insert(0, records.reverse());
-                this.updateChangedDataOnImport(records);
-            }.createDelegate(this));
-        } else {
-            if(importMode=='append') {
-                this.getStore().add(records);
-            } else if(importMode=='prepend'){ //replace or prepend mode
-                this.getStore().insert(0, records.reverse());
-            }
-            this.updateChangedDataOnImport(records);
-        }
-    },
-    deleteAllRecords : function (handler) {
         this.removePagination(function() {
-            var records=this.getStore().getRange();
-            for(var i=0;i<records.length; i++) {
-                this.updateChangedData(records[i], "deleted");
+            var invalidRecords=0;
+            if(importedRows == null) {
+                importedRows=[];
             }
-            if(handler) {
-                handler.call(this);
+            var records=[];
+            for (var i = 0; i < importedRows.length; i++) {
+                try {
+                    var record= new Ext.data.Record(importedRows[i]);
+                    if(record.data["javaClass"] == this.recordJavaClass) {
+                        record.set("id", this.genAddedId());
+                        records.push(record);
+                    } else {
+                        invalidRecords++;
+                    }
+                } catch(e) {
+                    invalidRecords++;
+                }
+            }
+            var validRecords=records.length;
+            if(validRecords > 0) {
+                if(importMode=='replace' ) {
+                    this.deleteAllRecords();
+                    this.getStore().insert(0, records.reverse());
+                    this.updateChangedDataOnImport(records);
+                } else {
+                    if(importMode=='append') {
+                        this.getStore().add(records);
+                    } else if(importMode=='prepend'){ //replace or prepend mode
+                        this.getStore().insert(0, records.reverse());
+                    }
+                    this.updateChangedDataOnImport(records);
+                }
+            }
+            if(validRecords > 0) {
+                if(invalidRecords==0) {
+                    Ext.MessageBox.hide();
+                } else {
+                    Ext.MessageBox.alert(i18n._('Warning'), String.format(i18n._("Import successful. Imported file contains {0} valid records and {1} invalid records."), validRecords, invalidRecords));
+                }
+            } else {
+                if(invalidRecords==0) {
+                    Ext.MessageBox.alert(i18n._('Warning'), i18n._("Import failed. Imported file has no records."));
+                } else {
+                    Ext.MessageBox.alert(i18n._('Warning'), String.format(i18n._("Import failed. Imported file contains {0} invalid records and no valid records."), invalidRecords));
+                }
             }
         }.createDelegate(this));
+    },
+    deleteAllRecords : function () {
+        var records=this.getStore().getRange();
+        for(var i=0;i<records.length; i++) {
+            this.updateChangedData(records[i], "deleted");
+        }
     },
     exportHandler : function() {
         Ext.MessageBox.wait(i18n._("Exporting Settings..."), i18n._("Please wait"));
@@ -5060,7 +5081,6 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
             Ext.MessageBox.alert(i18n._("Warning"), i18n._(action.result.msg));
         } else {
             this.grid.onImport(this.importMode, action.result.msg);
-            Ext.MessageBox.hide();
             this.closeWindow();
         }
     },
