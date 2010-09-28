@@ -36,11 +36,10 @@ import com.untangle.uvm.util.I18nUtil;
 /**
  *
  */
-class DigestGenerator {
-
+class DigestGenerator
+{
     //Template name stuff
-    private static final String RESOURCE_ROOT =
-        "com/untangle/node/mail/impl/quarantine/";
+    private static final String RESOURCE_ROOT = "com/untangle/node/mail/impl/quarantine/";
     private static final String HTML_TEMPLATE_NAME = "DigestSimpleEmail_HTML.vm";
 
     //Variables within the Velocity templates.  Note that these must align
@@ -54,8 +53,7 @@ class DigestGenerator {
     //a lot of stupid copies.
     private int m_htmlTemplateLen = 0;
 
-    private final Logger m_logger =
-        Logger.getLogger(DigestGenerator.class);
+    private final Logger m_logger = Logger.getLogger(DigestGenerator.class);
 
     private VelocityEngine m_velocityEngine;
     private Template m_htmlTemplate;
@@ -155,7 +153,8 @@ class DigestGenerator {
         }
     }
 
-    String generateMsgBody(String serverHost, String to, AuthTokenManager atm, I18nUtil i18nUtil) {
+    String generateMsgBody(String serverHost, String to, AuthTokenManager atm, I18nUtil i18nUtil)
+    {
         
         try {
             //Create the auth token
@@ -167,9 +166,7 @@ class DigestGenerator {
             context.put(INBOX_LINK_VV, new LinkGenerator(serverHost, authToken).generateInboxLink());
             context.put(I18N_UTIL_VV, i18nUtil);
 
-            byte[] htmlBytes = mergeTemplate(context,
-                    m_htmlTemplate,
-                    m_htmlTemplateLen);
+            byte[] htmlBytes = mergeTemplate(context, m_htmlTemplate, m_htmlTemplateLen);
             
             return new String(htmlBytes);
         } catch (Exception e) {
@@ -178,9 +175,8 @@ class DigestGenerator {
         }
     }
     
-    private byte[] mergeTemplate(VelocityContext context,
-                                 Template template,
-                                 int estSize) {
+    private byte[] mergeTemplate(VelocityContext context, Template template, int estSize)
+    {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream(estSize);
             OutputStreamWriter writer = new OutputStreamWriter(baos);

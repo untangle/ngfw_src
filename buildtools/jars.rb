@@ -121,7 +121,6 @@ class Jars
   Jcifs      = [ Jars.downloadTarget('jcifs_1.2.9/jcifs-1.2.9.jar') ]
   Dom4j      = [ Jars.downloadTarget('hibernate-3.2/lib/dom4j-1.6.1.jar') ]
   Activation = [ Jars.downloadTarget('jaf-1.0.2/activation.jar') ]
-  Trove      = [ Jars.downloadTarget('trove-1.0.2/lib/trove.jar') ]
   Postgres   = [ Jars.downloadTarget('postgres-jdbc-7.4_215/pg74.215.jdbc3.jar')]
   Velocity   = [ Jars.downloadTarget('velocity-1.4/velocity-1.4.jar') ]
   XStream    = [ Jars.downloadTarget('xstream-distribution-1.3-bin/xstream-1.3/lib/xstream-1.3.jar'),

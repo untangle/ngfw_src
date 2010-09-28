@@ -18,8 +18,6 @@
 
 package com.untangle.uvm.engine;
 
-import gnu.trove.TIntArrayList;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -607,15 +605,19 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
     public int[] liveSessionIds()
     {
-        TIntArrayList idlist = new TIntArrayList(liveSessions.size());
+        int count = 0;
+        int size = liveSessions.size();
+        int[] idlist = new int[size];
+        
         for (Iterator<IPSession> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
-            // WeakReference wr = (WeakReference)i.next();
-            // SessionState s = (SessionState)wr.get();
+            if (count == size) /* just in case */
+                break;
             IPSession sess = i.next();
-            idlist.add(sess.id());
+            idlist[count] = sess.id();
+            count++;
         }
 
-        return idlist.toNativeArray();
+        return idlist;
     }
 
     List<VnetSessionDesc> liveSessionDescs()
