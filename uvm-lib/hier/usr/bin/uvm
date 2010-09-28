@@ -73,6 +73,12 @@ reapChild() {
     flushIptables ; exit
 }
 
+# Flushes the UDP conntrack
+# We need to do this to handle sessions that were initiated before Untangle started
+# This will flush them so they will be recreated with the proper settings using WAN Balancer etc
+flushConntrack() {
+    conntrack -D --proto udp
+}
 
 flushIptables() {
     if [ ! -f /etc/untangle-net-alpaca/nonce ] ; then
@@ -182,7 +188,11 @@ while true; do
 
     getPopId
 
+    flushConntrack
+
     $UVM_LAUNCH $* >>$UVM_CONSOLE_LOG 2>&1 &
+
+    flushConntrack
 
     pid=$!
     echo "Untangle-Vm launched. (pid:$pid) (`date`)" >> $UVM_WRAPPER_LOG
