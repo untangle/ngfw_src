@@ -42,10 +42,10 @@ for f in $(find $t -type f -name '*.po'); do
             d=$work/src/adblocker
             ;;
         untangle-node-adconnector)
-            d=$hades/rup/adconnector
+            d=$hades/src/adconnector
             ;;
         untangle-node-boxbackup)
-            d=$hades/rup/boxbackup
+            d=$hades/src/boxbackup
             ;;
         untangle-node-firewall)
             d=$work/src/firewall
@@ -57,13 +57,13 @@ for f in $(find $t -type f -name '*.po'); do
             d=$work/src/openvpn
             ;;
         untangle-node-pcremote)
-            d=$hades/rup/pcremote
+            d=$hades/src/pcremote
             ;;
         untangle-node-phish)
             d=$work/src/phish
             ;;
         untangle-node-portal)
-            d=$hades/rup/portal
+            d=$hades/src/portal
             ;;
         untangle-node-protofilter)
             d=$work/src/protofilter

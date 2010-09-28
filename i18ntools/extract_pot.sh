@@ -14,7 +14,7 @@ cp ../../../internal/isotools/installer-pkgs-additional/untangle-system-stats/de
 # cp ../../../internal/isotools/wintangle-systray/untangle-systray.pot ./pot/
 # cp ../../../internal/isotools/wintangle-installer/LanguageStrings.nsh ./pot/
 
-for module in ../* ../../../hades/rup/* ; do
+for module in ../* ../../../hades/src/* ; do
     module_suffix=`basename ${module} | sed -e 's|-base||' -e 's|-casing||'`
     module_pot="${module}/po/untangle-*-${module_suffix}.pot"
     [ -f  ${module_pot} ] && {
