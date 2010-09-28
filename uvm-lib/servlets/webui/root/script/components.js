@@ -249,6 +249,10 @@ Ung.Util= {
                     message += i18n._("<br/>");
                     message += i18n._("Check internet connectivity and network settings.");
                 }
+                if (exception.name == "com.untangle.uvm.node.DeployException" && (exception.message.indexOf("already exists in Policy") >= 0)) {
+                    message =  i18n._("This application already exists in this policy/rack.") + ":<br/>";
+                    message += i18n._("Each application can only be installed once in each policy/rack.");
+                }
                 if (exception.name == "java.lang.NoSuchMethodError") {
                     message =  i18n._("Unexpected response from server") + ":<br/>";
                     message += "No Such Method Error:<br/>";
