@@ -35,7 +35,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     cls: 'description',
                     html : String.format(this.i18n._("Protocol Control uses signatures to detect the protocols of network traffic. It is useful for detecting unwanted or interesting protocols in use on the network."))
                 }, {
-                    title : this.i18n._(''),
+                    title : this.i18n._(' '),
                     layout:'form',
                     labelWidth: 230,
                     defaults: {
