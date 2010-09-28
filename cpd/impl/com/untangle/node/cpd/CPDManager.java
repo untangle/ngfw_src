@@ -276,11 +276,13 @@ class CPDManager {
         
         /* Add the passed clients and addresses first, and then add the capture rules */
         for ( PassedClient client : settings.getPassedClients()) {
-            serializePassedAddress(captureRules,client.getAddress(), IPSimpleMatcher.getAllMatcher());
+            if (client.isLive())
+                serializePassedAddress(captureRules,client.getAddress(), IPSimpleMatcher.getAllMatcher());
         }
         
         for ( PassedServer server : settings.getPassedServers()) {
-            serializePassedAddress(captureRules,IPSimpleMatcher.getAllMatcher(), server.getAddress());
+            if (server.isLive())
+                serializePassedAddress(captureRules,IPSimpleMatcher.getAllMatcher(), server.getAddress());
         }
         
         for ( CaptureRule captureRule : settings.getCaptureRules()) {
@@ -383,12 +385,13 @@ class CPDManager {
         return addressList;
     }
     
-    private void serializePassedAddress(JSONArray captureRules,IPDBMatcher client, IPDBMatcher server)
-            throws JSONException {
-        serializeCaptureRule(captureRules,new CaptureRule(true, false,
-                "passed client", IntfSimpleMatcher.getAllMatcher(), client,
-                    server, "00:00", "23:59",
-                "mon,tue,wed,thu,fri,sat,sun"));
+    private void serializePassedAddress(JSONArray captureRules, IPDBMatcher client, IPDBMatcher server)
+            throws JSONException
+    {
+        serializeCaptureRule(captureRules, new CaptureRule(true, false,
+                                                           "passed client", IntfSimpleMatcher.getAllMatcher(), client,
+                                                           server, "00:00", "23:59",
+                                                           "mon,tue,wed,thu,fri,sat,sun"));
     }
     
     private boolean replaceHost( InetAddress clientAddress, String username ) throws JSONException, ConnectionException
