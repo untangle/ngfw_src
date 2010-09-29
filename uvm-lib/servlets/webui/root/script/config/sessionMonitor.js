@@ -8,7 +8,9 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
         gridRules : null,
         policyStore : null,
         node:null,
-        rackKey : 1,
+        rackKey: 1,
+        helpSource: 'session_monitor',
+
         initComponent : function()
         {
             this.breadcrumbs = [{
@@ -21,6 +23,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
 
             Ung.SessionMonitor.superclass.initComponent.call(this);
         },
+
         // Current Sessions Grid
         buildGridCurrentSessions : function() {
             this.gridCurrentSessions = new Ung.EditorGrid({
