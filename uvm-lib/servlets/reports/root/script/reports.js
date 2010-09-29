@@ -360,8 +360,11 @@ Ung.Reports = Ext.extend(Object,{
                     listeners : {
                         'load' : function(node)
                         {
-                            // Select the firs element form the tableOfContent tree to load it's report details
-                            Ext.getCmp('tree-panel').getSelectionModel().select(Ext.getCmp('tree-panel').getRootNode().firstChild);
+                            // Select the first element form the tableOfContent tree to load it's report details
+                            // XXX Ext.getCmp('tree-panel').getRootNode().firstChild is null
+                            // in ext 2.3 this passing null to select causes an exception
+                            // bug #8105
+                            // Ext.getCmp('tree-panel').getSelectionModel().select(Ext.getCmp('tree-panel').getRootNode().firstChild);
                         },
                         'render' : function(tp)
                         {
@@ -497,7 +500,7 @@ Ung.Reports = Ext.extend(Object,{
                     width : 168,
                     dataIndex : "dt",                    
                     renderer : function (value,meta,record){
-                        return this.isDynamicDataAvailable(record.data) === true ? i18n._("Available") : i18n._("Unavailable")                           
+                        return this.isDynamicDataAvailable(record.data) === true ? i18n._("Available") : i18n._("Unavailable");                           
                     }.createDelegate(this)
                 }]               
             });
@@ -749,7 +752,10 @@ Ung.Reports = Ext.extend(Object,{
                  try{
                      reports.reportDetails = new Ung.ReportDetails({reportType: nodeName});
                      reports.progressBar.hide();
-                     if(reports.printView){window.setTimeout(function(){window.print()},1000)} //hack but close enough , could not find a reliable event that would fire after template is displayed.                    
+                     if(reports.printView){
+                         //hack but close enough , could not find a reliable event that would fire after template is displayed.
+                         window.setTimeout(function(){window.print();},1000);
+                     } 
                  }catch(e){
                      alert(e.message);
                  }
