@@ -3159,9 +3159,11 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     sizeToRack : false,
     // size to grid on show
     sizeToGrid : false,
+    //size to a given component
+    sizeToComponent: null,
     addMode: null,       
     initComponent : function() {
-        if (!this.height && !this.width) {
+        if (!this.height && !this.width && !this.sizeToComponent) {
             this.sizeToGrid = true;
         }
         if (this.title == null) {
@@ -3172,23 +3174,23 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
         }
         if(this.bbar == null){
             this.bbar  = [
-                        '->',
-                        {
-                            name : "Cancel",
-                            id : this.getId() + "_cancelBtn",
-                            iconCls : 'cancel-icon',
-                            text : i18n._('Cancel'),
-                            handler : function() {
-                                this.cancelAction();
-                            }.createDelegate(this)
-                        },'-',{
-                            name : "Done",
-                            id : this.getId() + "_doneBtn",
-                            iconCls : 'apply-icon',
-                            text : i18n._('Done'),
-                            handler : function() {
-                                this.updateAction.defer(1, this);
-                            }.createDelegate(this)
+                '->',
+                {
+                    name : "Cancel",
+                    id : this.getId() + "_cancelBtn",
+                    iconCls : 'cancel-icon',
+                    text : i18n._('Cancel'),
+                    handler : function() {
+                        this.cancelAction();
+                    }.createDelegate(this)
+                },'-',{
+                    name : "Done",
+                    id : this.getId() + "_doneBtn",
+                    iconCls : 'apply-icon',
+                    text : i18n._('Done'),
+                    handler : function() {
+                        this.updateAction.defer(1, this);
+                    }.createDelegate(this)
             },'-'];         
         }        
         this.items = new Ext.Panel({
@@ -3210,9 +3212,12 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     },
     show : function() {
         Ung.UpdateWindow.superclass.show.call(this);
-        var objPosition = this.grid.getPosition();
-        if (this.sizeToGrid) {
-            var objSize = this.grid.getSize();
+        if(this.sizeToComponent==null) {
+            this.sizeToComponent=this.grid;
+        }
+        var objPosition = this.sizeToComponent.getPosition();
+        if (this.sizeToGrid || this.height==null || this.width==null) {
+            var objSize = this.sizeToComponent.getSize();
             this.setSize(objSize);
             if (objPosition[1] + objSize.height > main.viewport.getSize().height) {
                 objPosition[1] = Math.max(main.viewport.getSize().height - objSize.height,0);

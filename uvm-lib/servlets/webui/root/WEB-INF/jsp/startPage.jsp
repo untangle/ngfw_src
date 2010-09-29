@@ -60,6 +60,7 @@
     <script type="text/javascript" src="script/untangle-node-adconnector/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-base-virus/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-clam/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-bandwidth/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/administration.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/email.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/system.js?s=${buildStamp}"></script>
