@@ -470,7 +470,23 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
     },
     validateRegistration : function()
     {
-        return _validate(this.card.panel.items.items);
+        
+        var rv = _validate(this.card.panel.items.items);
+        var fieldEnvironment = this.form.find( "name", "environment" )[0];
+        fieldEnvironment.clearInvalid();
+        this.environmentOther.clearInvalid();
+        if(fieldEnvironment.getGroupValue() == null ) {
+            fieldEnvironment.markInvalid();
+            rv=false;
+        } else {
+            if(fieldEnvironment.getGroupValue() == "other") {
+                if(this.environmentOther.getValue() == null || this.environmentOther.getValue()=="") {
+                    this.environmentOther.markInvalid();
+                    rv=false;
+                } 
+            }
+        }
+        return rv;
     },
     onSelectOther: function( checkbox, isChecked )
     {
