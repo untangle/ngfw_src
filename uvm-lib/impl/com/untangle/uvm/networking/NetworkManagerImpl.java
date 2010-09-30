@@ -717,6 +717,15 @@ public class NetworkManagerImpl implements LocalNetworkManager
         }
     }
 
+    public void refreshIptablesRules()
+    {
+        try {
+            this.generateRules();
+        } catch (NetworkException e) {
+            logger.warn("Failed to refresh IPtables: ",e);
+        }
+    }
+    
     /*
      * This returns an address where the host should be able to access
      * HTTP.  if HTTP is not reachable, this returns NULL

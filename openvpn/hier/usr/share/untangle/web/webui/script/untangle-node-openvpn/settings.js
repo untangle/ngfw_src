@@ -71,47 +71,58 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         show : function()
         {
             var download = null;
+            var email = null;
+            var items = null;
+            
             if ( this.config.isVpnSite == true ) {
                 download = new Ext.form.FieldSet({
                     title : this.i18n._('Download Client Config'),
                     autoHeight : true,
                     labelWidth: 150,
                     items: [{
+                        html : this.i18n._('This configuration file can be used to configure the remote VPN Site.'),
+                        border: false,
+                        cls : "description"
+                    }, {
                         html :  "<a href=\"" + this.configurationFiles() + "\" target=\"_blank\">" + this.i18n._('Download VPN Site configuration.') + "</a>",
                         border: false,
                         cls : "description"
                     }]
                 });
+                email = new Ext.form.FieldSet({});
+                items = [download];
             } else {
                 download = new Ext.form.FieldSet({
                     title : this.i18n._('Download Client Config'),
                     autoHeight : true,
                     labelWidth: 150,
                     items: [{
+                        html : this.i18n._('These files can be used to configure your remote VPN Clients.'),
+                        border: false,
+                        cls : "description"
+                    }, {
                         html :  "<a href=\"" + this.windowsInstaller() + "\" target=\"_blank\">" + this.i18n._('Click here to download an installer for Windows clients.') + "</a>",
                         border: false,
                         cls : "description"
                     },{
-                        html : "<a href=\"" + this.configurationFiles() + "\" target=\"_blank\">" + this.i18n._('Click here to download a configuration file for all other OSs.') + "</a>",
-                        bodyStyle : 'paddingTop:10px',
+                        html : "<a href=\"" + this.configurationFiles() + "\" target=\"_blank\">" + this.i18n._('Click here to download a configuration file for all OSs.') + "</a>",
                         border: false,
                         cls : "description"
                     }]
                 });
-            }
-
-            this.panel = new Ext.FormPanel({
-                cls: 'ung-panel',
-                items : [{
-                    cls : 'u-form-panel',
-                    xtype : 'fieldset',
+                email = new Ext.form.FieldSet({
                     title : this.i18n._('or Distribute Client Config via Email'),
                     autoHeight : true,
                     labelWidth: 150,
-                    items: [download, {
+                    items: [{
                         html : this.i18n._('Click "Send Email" to send an email to "Email Address" with information to retrieve the OpenVPN Client.'),
                         border: false,
                         cls : "description"
+                    },{
+                        html : this.i18n._('Note: Clients can only download the client linked in the email if HTTPS remote administration is enabled!'),
+                        border: false,
+                        bodyStyle : 'paddingBottom:10px',
+                        cls: 'description warning'
                     },{
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Email Address'),
@@ -124,6 +135,18 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         name : 'sendEmail',
                         handler : this.sendEmail.createDelegate( this )
                     }]
+                });
+                items = [download, email];
+            }
+
+            this.panel = new Ext.FormPanel({
+                cls: 'ung-panel',
+                items : [{
+                    cls : 'u-form-panel',
+                    xtype : 'fieldset',
+                    autoHeight : true,
+                    labelWidth: 150,
+                    items: items
                 }]
             });
 
@@ -683,7 +706,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 //style: "margin-bottom:10px;",
                 emptyRow : {
                     "live" : true,
-                    "name" : this.i18n._("[no name]"),
+                    "name" : this.i18n._("newClient"),
                     "groupName" : defaultGroup != null ? defaultGroup.name : null,
                     "address" : null
                 },
@@ -793,7 +816,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 height : 250,
                 emptyRow : {
                     "live" : true,
-                    "name" : this.i18n._("[no name]"),
+                    "name" : this.i18n._("newSite"),
                     "groupName" : defaultGroup != null ? defaultGroup.name : null,
                     "network" : "1.2.3.4",
                     "netmask" : "255.255.255.0",

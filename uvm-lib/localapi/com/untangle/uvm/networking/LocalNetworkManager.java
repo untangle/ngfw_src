@@ -78,4 +78,7 @@ public interface LocalNetworkManager extends RemoteNetworkManager
     void unregisterListener( IntfEnumListener intfEnumListener );
 
     void singleNicRegisterAddress( InetAddress address );
+
+    void refreshIptablesRules();
+
 }
