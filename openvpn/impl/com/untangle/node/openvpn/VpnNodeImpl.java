@@ -785,8 +785,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         	logger.warn("Unsupported Encoding:",e);
         }
         
-        return WEB_APP_PATH + "/clientSetup?" +
-            Constants.ADMIN_DOWNLOAD_CLIENT_KEY + "=" + key;
+        return WEB_APP_PATH + "/clientSetup?" + Constants.ADMIN_DOWNLOAD_CLIENT_KEY + "=" + key;
     }
 
     public void completeConfig() throws Exception
@@ -822,11 +821,6 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         this.sandbox.installClientConfig( path );
     }
     
-    public void downloadConfig( HostAddress address, int port, String key ) throws Exception
-    {
-        this.sandbox.downloadConfig( address, port, key );
-    }
-
     public void generateCertificate( CertificateParameters parameters ) throws Exception
     {
         this.sandbox.generateCertificate( parameters );

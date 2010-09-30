@@ -47,9 +47,6 @@ public class Constants
 
     /* Error codes from scripts */
 
-    /* Unable to download the client */
-    static final int DOWNLOAD_ERROR_CODE = 250;
-
     /* Unable to start the openvpn server, may just be the other end is
      * not started */
     static final int START_ERROR         = 251;

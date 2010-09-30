@@ -113,7 +113,7 @@ class OpenVpnManager
         // "ifconfig-pool-persist ipp.txt",
         "client-config-dir ccd",
         "keepalive " + DEFAULT_PING_TIME + " " + DEFAULT_PING_TIMEOUT,
-        "cipher" + SUPPORTED_CIPHER,
+        "cipher " + SUPPORTED_CIPHER,
         "user nobody",
         "group nogroup",
 

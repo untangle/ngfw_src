@@ -18,21 +18,12 @@ fi
 RETRY_ATTEMPTS=15
 TEST_DELAY=1
 TEST_FAILED=-5
-DOWNLOAD_ERROR=-6
 MISSING_FILE_ERROR=-7
 ERROR_INTERNAL=-8
 INVALID_FILE_ERROR=-9
 
-## Amount of time to spend on each download
-DOWNLOAD_TIMEOUT=6
-
-## Number of times to retry ( 5 times at 6 seconds, 30 seconds)
-DOWNLOAD_RETRIES=5
-
-method=${1}
-serverAddress=${2}
-localPath="${2}"
-distributionKey=${3}
+serverAddress=${1}
+localPath="${1}"
 
 mkdir -p ${PACKAGE_DIR}
 mkdir -p ${MISC_DIR}
@@ -57,14 +48,6 @@ copyLocalFile()
 
     echo "[`date`,get-client] cp '${localPath}' '${destination}'"
     cp "${localPath}" "${destination}"
-}
-
-downloadClient()
-{
-    curl -f -v -k --max-time ${DOWNLOAD_TIMEOUT} \
-        --retry ${DOWNLOAD_RETRIES} -o ${destination} \
-        "https://${serverAddress}/openvpn/config.zip?key=${distributionKey}" \
-        || exit ${DOWNLOAD_ERROR}
 }
 
 installClient()
@@ -137,20 +120,10 @@ completeInstall()
         ${OPENVPN_CONF_DIR}/client.conf
 }
 
-case "${method}" in
-    "local")
-        copyLocalFile
-        ;;
-    
-    "email")
-        downloadClient
-        ;;
-    
-    *)
-        echo "[`date`,get-client] Unknown method '${method}'"
-        exit ${ERROR_INTERNAL}
-        ;;
-esac
+
+
+
+copyLocalFile
 
 installClient
 

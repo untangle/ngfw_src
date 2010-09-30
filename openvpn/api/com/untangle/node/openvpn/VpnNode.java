@@ -76,7 +76,6 @@ public interface VpnNode extends Node
      * configuration. */
     public void installClientConfig( String path ) throws Exception;
 
-    public void downloadConfig( HostAddress address, int port, String key ) throws Exception;
     public void generateCertificate( CertificateParameters parameters ) throws Exception;
     public GroupList getAddressGroups() throws Exception;
     public void setAddressGroups( GroupList parameters ) throws Exception;

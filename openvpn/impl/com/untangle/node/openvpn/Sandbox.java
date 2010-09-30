@@ -56,7 +56,7 @@ class Sandbox
     private static final boolean DEFAULT_KEEP_ALIVE  = true;
     private static final boolean DEFAULT_EXPOSE_CLIENTS = true;
 
-    private static final String DOWNLOAD_SCRIPT = Constants.SCRIPT_DIR + "/get-client";
+    private static final String INSTALL_SCRIPT = Constants.SCRIPT_DIR + "/install-client";
 
     private static final String OPENVPN_CLIENT_FILE = OpenVpnManager.OPENVPN_CONF_DIR + "/client.conf";
 
@@ -101,36 +101,15 @@ class Sandbox
 
         logger.debug( "Installing from : " + path );
 
-        execDownloadScript( "local", path, "" );        
+        execInstallScript( path );        
     }
 
-    void downloadConfig( HostAddress address, int port, String key ) throws Exception
-    {
-        /* The key must be a valid hexadecimal number, this is 
-         * an easy check to detect spaces, and anyother weird characters
-         */
-        try {
-            Long.parseLong( key, 16 );
-        } catch ( NumberFormatException e ) { 
-            throw new ValidateException( "A key must only contain numbers and the letters A-F: " + key );
-        }
-        String serverSocketAddress = address.toString();
-        
-        if ( port != 443 && port != 0 ) serverSocketAddress += ":" + port;
-
-        logger.debug( "Downloading key from: " + serverSocketAddress );
-
-        execDownloadScript( "email", serverSocketAddress, key );
-    }
-
-    private void execDownloadScript( String method, String arg1, String arg2 ) throws NodeException
+    private void execInstallScript( String path ) throws NodeException
     {
         try {
-            ScriptRunner.getInstance().exec( DOWNLOAD_SCRIPT, method, arg1, arg2 );
+            ScriptRunner.getInstance().exec( INSTALL_SCRIPT, path );
         } catch ( ScriptException e ) {
             switch ( e.getCode()) {
-            case Constants.DOWNLOAD_ERROR_CODE: 
-                throw new DownloadException( "Unable to download client." );
                 
             case Constants.START_ERROR:
                 throw new StartException( "Test connection with OpenVPN server failed." );

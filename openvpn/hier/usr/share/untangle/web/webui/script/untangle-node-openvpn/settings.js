@@ -73,7 +73,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var download = null;
             if ( this.config.isVpnSite == true ) {
                 download = new Ext.form.FieldSet({
-                    title : this.i18n._('Download Key'),
+                    title : this.i18n._('Download Client Config'),
                     autoHeight : true,
                     labelWidth: 150,
                     items: [{
@@ -84,15 +84,15 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 });
             } else {
                 download = new Ext.form.FieldSet({
-                    title : this.i18n._('Download Key'),
+                    title : this.i18n._('Download Client Config'),
                     autoHeight : true,
                     labelWidth: 150,
                     items: [{
-                        html :  "<a href=\"" + this.windowsInstaller() + "\" target=\"_blank\">" + this.i18n._('Click here to download a key for Windows clients.') + "</a>",
+                        html :  "<a href=\"" + this.windowsInstaller() + "\" target=\"_blank\">" + this.i18n._('Click here to download an installer for Windows clients.') + "</a>",
                         border: false,
                         cls : "description"
                     },{
-                        html : "<a href=\"" + this.configurationFiles() + "\" target=\"_blank\">" + this.i18n._('Click here to download a key for all other clients.') + "</a>",
+                        html : "<a href=\"" + this.configurationFiles() + "\" target=\"_blank\">" + this.i18n._('Click here to download a configuration file for all other OSs.') + "</a>",
                         bodyStyle : 'paddingTop:10px',
                         border: false,
                         cls : "description"
@@ -105,10 +105,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 items : [{
                     cls : 'u-form-panel',
                     xtype : 'fieldset',
-                    title : this.i18n._('Distribute via Email'),
+                    title : this.i18n._('or Distribute Client Config via Email'),
                     autoHeight : true,
                     labelWidth: 150,
-                    items: [{
+                    items: [download, {
                         html : this.i18n._('Click "Send Email" to send an email to "Email Address" with information to retrieve the OpenVPN Client.'),
                         border: false,
                         cls : "description"
@@ -123,8 +123,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         text : this.i18n._( "Send Email" ),
                         name : 'sendEmail',
                         handler : this.sendEmail.createDelegate( this )
-                    }]}, download
-                        ]
+                    }]
+                }]
             });
 
             this.window = new Ung.Window({
@@ -196,8 +196,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 },{
                     cls: 'description',
                     border : false,
-                    html : this.i18n
-                        ._('Please specify where your VPN Client configuration should come from.')
+                    html : this.i18n._('Upload the Client Configuration file downloaded from the VPN Server.')
                 },{
                     xtype : 'fieldset',
                     autoHeight : true,
@@ -205,39 +204,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     labelWidth: 150,
                     labelAlign: 'right',
                     items : [{
-                        xtype : "radio",
-                        boxLabel : this.i18n._('Download from Server'),
-                        hideLabel : true,
-                        name : 'downloadClientConfiguration',
-                        inputValue : "server",
-                        checked : true,
-                        listeners : {
-                            "check" : {
-                                fn : this.onChangeConfigType.createDelegate(this)
-                            }
-                        }
-                    },{
-                        xtype : "textfield",
-                        name : "serverAddress",
-                        fieldLabel : this.i18n._("Server IP Address"),
-                        allowBlank : false,
-                        width : 200,
-                        validator : this.validateServerAddress.createDelegate( this )
-                    },{
-                        xtype : "textfield",
-                        name : "password",
-                        fieldLabel : this.i18n._("Password"),
-                        width : 200,
-                        allowBlank : false,
-                        inputType : 'password'
-                    },{
-                        xtype : "radio",
-                        boxLabel : this.i18n._('Upload Configuration'),
-                        hideLabel : true,
-                        name : 'downloadClientConfiguration',
-                        inputValue : "upload",
-                        checked : false
-                    },{
                         xtype : 'textfield',
                         inputType : 'file',
                         name : 'siteConfiguration',
@@ -250,47 +216,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
             this.onNext = this.retrieveClient.createDelegate( this );
             this.onValidate = this.validateSettings.createDelegate( this );
-
-            this.onChangeConfigType( this.panel.find( "name", "downloadClientConfiguration" )[0], true );
-        },
-
-        onChangeConfigType : function( elem, checked )
-        {
-            /* Checked means that download client is selected */
-            var serverAddress = this.panel.find( 'name', 'serverAddress' )[0];
-            var password = this.panel.find( 'name', 'password' )[0];
-            var siteConfiguration = this.panel.find( 'name', 'siteConfiguration' )[0];
-            serverAddress.setDisabled( !checked );
-            password.setDisabled( !checked );
-            siteConfiguration.setDisabled( checked );
-
-            if ( checked ) {
-                _invalidate( siteConfiguration );
-            } else {
-                _invalidate( [ serverAddress, password ] );
-            }
         },
 
         validateSettings : function()
         {
-            var method = this.panel.find( "name", "downloadClientConfiguration" )[0].getGroupValue();
+            if ( !_validate( this.panel.find( 'name', 'siteConfiguration' ))) return false;
 
-            var rv = true;
-
-            switch ( method ) {
-              case "upload":
-                if ( !_validate( this.panel.find( 'name', 'siteConfiguration' ))) rv = false;
-                break;
-
-              case "server":
-                if ( !_validate( this.panel.find( 'name', 'serverAddress' ))) rv = false;
-                if ( !_validate( this.panel.find( 'name', 'password' ))) rv = false;
-                break;
-            default:
-                rv = false;
-            }
-
-            return rv;
+            return true;
         },
 
         validateServerAddress : function( value )
@@ -304,48 +236,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
         retrieveClient : function( handler )
         {
-            var method = this.panel.find( "name", "downloadClientConfiguration" )[0].getGroupValue();
-
-            switch ( method ) {
-              case "upload": return this.uploadClient( handler );
-              case "server": return this.fetchClient( handler );
-            default:
-                Ext.MessageBox.alert(this.i18n._( "Select a value" ), this.i18n._( "Please choose 'Download from Server' or 'Upload Configuration'." ));
-                return;
-            }
-        },
-
-        fetchClient : function( handler )
-        {
-            Ext.MessageBox.wait(this.i18n._("Downloading Configuration... (This may take up to one minute)"),
-                                this.i18n._("Please wait"));
-
-            var serverAddress = this.panel.find( 'name', 'serverAddress' )[0].getValue();
-            var serverPort = "443";
-            var password = this.panel.find( 'name', 'password' )[0].getValue();
-
-            var sarr = serverAddress.split( ":" );
-            if ( sarr.length == 2 ) serverPort = sarr[1];
-
-            this.node.downloadConfig( this.completeFetchClient.createDelegate( this , [ handler ], true ),
-                                      serverAddress, serverPort, password );
-        },
-
-        completeFetchClient : function( result, exception, foo, handler )
-        {
-            if( Ung.Util.handleException(exception,function() {
-                Ext.MessageBox.alert(this.i18n._("Error downloading configuration from server."),
-                                     this.i18n._("Your VPN Client configuration could not be downloaded from the server.  Please try again."));
-            })) {
-                return;
-            }
-
-            this.node.completeConfig( this.c_completeConfig.createDelegate( this, [ handler ], true ));
+            return this.uploadClient( handler );
         },
 
         uploadClient : function( handler )
         {
-            Ext.MessageBox.wait(this.i18n._("Uploading Configuration... (This may take up to one minute)"),
+            Ext.MessageBox.wait(this.i18n._("Uploading Configuration... (This may take a minute)"),
                                 this.i18n._("Please wait"));
 
             this.node.getAdminClientUploadLink( this.completeGetAdminClientUploadLink.createDelegate( this, [handler], true ));
@@ -723,7 +619,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 i18n : this.i18n,
                 handle : function(record) {
                     Ext.MessageBox.wait(
-                        this.i18n._( "Updating OpenVPN Client..." ),
+                        this.i18n._( "Building OpenVPN Client..." ),
                         this.i18n._( "Please Wait" )
                     );
                     this.grid.distributeWindow.populate(record);
@@ -990,41 +886,47 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     xtype : "textfield",
                     name : "site name",
                     dataIndex : "name",
-                    fieldLabel : this.i18n._("Site name"),
+                    fieldLabel : this.i18n._("Site Name"),
                     allowBlank : false,
                     vtype : 'openvpnClientName',
                     width : 200
                 }, {
                     xtype : "combo",
-                    name : "Address pool",
+                    name : "Address Pool",
                     dataIndex : "groupName",
-                    fieldLabel : this.i18n._("Address pool"),
-                    store : this.getGroupsStore(),
+                    fieldLabel : this.i18n._("Address Pool"),
+                    allowBlank : false,
                     displayField : 'name',
-                    valueField : 'id',
+                    valueField : 'name',
+                    store : this.getGroupsStore(),
                     editable : false,
                     mode : 'local',
                     triggerAction : 'all',
-                    listClass : 'x-combo-list-small',
                     width : 200
+                }, {
+                    cls : "description",
+                    border: false,
+                    html: this.i18n._("Traffic to the below network will be routed over the VPN to the remote site.") + "<br/>" +
+                        this.i18n._("The remote site network IP/netmask must be separate from the local network IP/netmask.") + "<br/>" 
                 }, new Ung.form.TextField({
                     xtype : "textfield",
                     name : "Network address",
                     dataIndex : "network",
                     fieldLabel : this.i18n._("Network address"),
-                    boxLabel : "(Internal address of remote site)",
+                    boxLabel : this.i18n._("Internal address of remote site (eg: 192.168.1.1)"),
                     allowBlank : false,
                     width : 200,
                     vtype : 'ipAddress'
-                }), {
+                }), new Ung.form.TextField({
                     xtype : "textfield",
                     name : "Network mask",
                     dataIndex : "netmask",
                     fieldLabel : this.i18n._("Network mask"),
+                    boxLabel : this.i18n._("Internal netmask of remote site (eg: 255.255.255.0)"),
                     allowBlank : false,
                     width : 200,
                     vtype : 'ipAddress'
-                }]
+                })]
             });
             return gridSites;
         },
