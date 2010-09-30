@@ -86,6 +86,8 @@ public class CPDImpl extends AbstractNode implements CPD
     private final BlingBlinger blockBlinger;
     private final BlingBlinger authorizeBlinger;
 
+    private static final String defaultUser = "captive portal user";
+    
     private CPDSettings settings;
 
     // constructor ------------------------------------------------------------
@@ -367,7 +369,7 @@ public class CPDImpl extends AbstractNode implements CPD
         if ( this.getRunState() ==  NodeState.RUNNING ) {
             /* Enforcing this here so the user can't pick another username at login. */
             if ( this.settings.getBaseSettings().getAuthenticationType() == AuthenticationType.NONE) {
-                username = "captive portal user";
+                username = this.defaultUser;
             }
             /* This is split out for debugging */
             isAuthenticated = this.manager.authenticate(address, username, password, credentials);
@@ -375,7 +377,9 @@ public class CPDImpl extends AbstractNode implements CPD
             /* Update the CPD Phone Book cache */
             if (isAuthenticated) {
                 try {
-                    assistant.addCache(InetAddress.getByName(address),username);
+                    /* if no auth is required, don't count the "default user" as a user */
+                    if ( this.settings.getBaseSettings().getAuthenticationType() != AuthenticationType.NONE )
+                        assistant.addCache(InetAddress.getByName(address),username);
                 } catch (UnknownHostException e) {
                     logger.warn("Add Cache failed",e);
                 }
