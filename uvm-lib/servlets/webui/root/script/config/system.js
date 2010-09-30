@@ -290,6 +290,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 onBackupToFile: function() {
                     // A two step process: first asks the server for permission to download the file (the outer ajax request) 
                     // and then if successful opens the iframe which initiates the download.
+                    Ext.MessageBox.wait(this.i18n._("Generating Backup File..."), i18n._("Please wait"));
                     Ext.Ajax.request({
                         url: "backup",
                         params: {action:"requestBackup"},
@@ -307,6 +308,7 @@ if (!Ung.hasResource["Ung.System"]) {
                                 css: "display:none;visibility:hidden;height:0px;",
                                 src: "backup?action=initiateDownload"
                             });
+                            Ext.MessageBox.hide();
                         },
                         failure: function() {
                             Ext.MessageBox.alert(this.i18n._("Backup Failure Warning"),this.i18n._("Error:  The local file backup procedure failed.  Please try again.")); 
