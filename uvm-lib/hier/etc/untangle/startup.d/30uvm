@@ -10,26 +10,20 @@ if [ $MEM -gt 4900000 ] ; then
     MAX_HEAP_SIZE=`echo $MEM | awk '{printf int($1 * .7 / 1000) "m"}'`
     MAX_VIRTUAL_SIZE=`echo $MEM | awk '{printf int($1 * 1  / 1000) "m"}'`
     MAX_BERKDB_MEG=180
+    GC_SAFETY_FACTOR=10
+    GC_MIN_CYCLE=0
 elif [ $MEM -gt 3900000 ] ; then
-    if [ $ARCH = 'x86_64' ]; then
-        MAX_HEAP_SIZE=2200m
-        MAX_VIRTUAL_SIZE=4400m
-        MAX_BERKDB_MEG=180
-    else
-        MAX_HEAP_SIZE=2200m
-        MAX_VIRTUAL_SIZE=4400m
-        MAX_BERKDB_MEG=180
-    fi
+    MAX_HEAP_SIZE=2200m
+    MAX_VIRTUAL_SIZE=4400m
+    MAX_BERKDB_MEG=180
+    GC_SAFETY_FACTOR=10
+    GC_MIN_CYCLE=0
 elif [ $MEM -gt 2900000 ] ; then
-    if [ $ARCH = 'x86_64' ]; then
-        MAX_HEAP_SIZE=1500m
-        MAX_VIRTUAL_SIZE=3000m
-        MAX_BERKDB_MEG=120
-    else
-        MAX_HEAP_SIZE=1500m
-        MAX_VIRTUAL_SIZE=3000m
-        MAX_BERKDB_MEG=120
-    fi
+    MAX_BERKDB_MEG=120
+    MAX_HEAP_SIZE=1500m
+    MAX_VIRTUAL_SIZE=3000m
+    GC_SAFETY_FACTOR=20
+    GC_MIN_CYCLE=5
 elif [ $MEM -gt 1900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=720m
@@ -40,6 +34,8 @@ elif [ $MEM -gt 1900000 ] ; then
         MAX_VIRTUAL_SIZE=1500m
         MAX_BERKDB_MEG=80
     fi
+    GC_SAFETY_FACTOR=50
+    GC_MIN_CYCLE=10
 elif [ $MEM -gt 900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=360m
@@ -50,6 +46,8 @@ elif [ $MEM -gt 900000 ] ; then
         MAX_VIRTUAL_SIZE=1000m
         MAX_BERKDB_MEG=32
     fi
+    GC_SAFETY_FACTOR=90
+    GC_MIN_CYCLE=10
 else
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=260m
@@ -60,16 +58,22 @@ else
         MAX_VIRTUAL_SIZE=1000m
         MAX_BERKDB_MEG=20
     fi
+    GC_SAFETY_FACTOR=90
+    GC_MIN_CYCLE=10
 fi
 
 MAX_VIRTUAL_SIZE=$(( ${MAX_VIRTUAL_SIZE/m} * 1000 ))
 
-echo "    Maximum heap size -> ${MAX_HEAP_SIZE}"
-echo "    Maximum BDB size -> ${MAX_BERKDB_MEG}M"
+echo "    Maximum heap size    -> ${MAX_HEAP_SIZE}"
+echo "    Maximum BDB size     -> ${MAX_BERKDB_MEG}M"
 echo "    Maximum virtual size -> ${MAX_VIRTUAL_SIZE}"
+echo "    GC safety factor     -> ${GC_SAFETY_FACTOR}"
+echo "    GC minimum cycle     -> ${GC_MIN_CYCLE}"
 
 cat >| $FILE <<EOF
 MAX_HEAP_SIZE=$MAX_HEAP_SIZE
 MAX_BERKDB_MEG=$MAX_BERKDB_MEG
 MAX_VIRTUAL_SIZE=$MAX_VIRTUAL_SIZE
+GC_SAFETY_FACTOR=$GC_SAFETY_FACTOR
+GC_MIN_CYCLE=$GC_MIN_CYCLE
 EOF
