@@ -115,8 +115,21 @@ public abstract class NetcapSession
     
     public void clientQosMark(int priority)
     {
-        //QoSMask = 0x00700000 (20 bits to the left)
-        this.orClientMark(priority << 20);
+        if (priority > 7) {
+            System.err.println("ERROR: Invalid priority: " + priority);
+            return;
+        }
+
+        //QoSMask   = 0x00700000 (20 bits to the left)
+        //UnQoSMask = 0xff8fffff 
+            
+        int orig_client_mark = this.clientMark() & 0xff8fffff;
+        int client_mark = orig_client_mark | (priority << 20);
+        
+        if (client_mark == orig_client_mark)
+            return;
+
+        this.clientMark(client_mark);
     }
 
     public int  serverMark()
@@ -148,8 +161,21 @@ public abstract class NetcapSession
     
     public void serverQosMark(int priority)
     {
-        //QoSMask = 0x00700000 (20 bits to the left)
-        this.orServerMark(priority << 20);
+        if (priority > 7) {
+            System.err.println("ERROR: Invalid priority: " + priority);
+            return;
+        }
+
+        //QoSMask   = 0x00700000 (20 bits to the left)
+        //UnQoSMask = 0xff8fffff 
+            
+        int orig_server_mark = this.serverMark() & 0xff8fffff;
+        int server_mark = orig_server_mark | (priority << 20);
+        
+        if (server_mark == orig_server_mark)
+            return;
+
+        this.serverMark(server_mark);
     }
     
     public void determineServerIntf( boolean isSingleNicMode )
