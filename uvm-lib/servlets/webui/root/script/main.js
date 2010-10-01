@@ -864,6 +864,9 @@ Ung.Main=Ext.extend(Object, {
         }
         return this.iframeWin;
     },
+    isIframeWinVisible : function() {
+        return ((this.iframeWin!=null) && (!this.iframeWin.hidden));
+    },
     openInRightFrame : function(title, url) {
         var iframeWin=main.getIframeWin();
         iframeWin.show();

@@ -1711,10 +1711,12 @@ Ung.MessageManager = {
                                 policy = rpc.currentPolicy;
                                 var appItemDisplayName=msg.mackageDesc.type=="TRIAL"?main.findLibItemDisplayName(msg.mackageDesc.fullVersion):msg.mackageDesc.displayName;
                                 Ung.AppItem.updateState(appItemDisplayName, "download");
-                                if ( main.getIframeWin() != null  ) {
+                                if ( main.isIframeWinVisible()) {
                                     main.getIframeWin().closeActionFn();
-                                }else if(main.IEWin != null){
+                                }
+                                if(main.IEWin != null){
                                     main.IEWin.close();
+                                    main.IEWin=null;
                                 }
 
                                 main.warnOnUpgrades(function() {
@@ -1734,7 +1736,7 @@ Ung.MessageManager = {
                                 }.createDelegate(this),msg.mackageDesc.name);
                                 rpc.toolboxManager.uninstall(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
-                                    if ( main.getIframeWin() != null  ) {
+                                    if ( main.isIframeWinVisible()) {
                                         main.getIframeWin().closeActionFn();
                                     }
                                 }.createDelegate(this),msg.mackageDesc.name);
