@@ -130,6 +130,20 @@ Ext.override( Ext.form.Field, {
     }
 });
 
+Ext.override( Ext.form.TextField, {
+    afterRender : Ext.form.TextField.prototype.afterRender.createSequence(function(){
+        var parent = this.el.parent();
+        if( this.boxLabel ) {
+            this.labelEl = parent.createChild({
+                tag: 'label',
+                htmlFor: this.el.id,
+                cls: 'x-form-textfield-detail',
+                html: this.boxLabel
+            });
+        }
+    })
+});
+
 
 Ung.form.TimeField = Ext.extend(Ext.form.TimeField, {
     /* Default the format to 24 hour */
