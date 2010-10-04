@@ -130,7 +130,7 @@ Ext.override( Ext.form.Field, {
     }
 });
 
-Ext.override( Ext.form.TextField, {
+ByExt.override( Ext.form.TextField, {
     afterRender : Ext.form.TextField.prototype.afterRender.createSequence(function(){
         var parent = this.el.parent();
         if( this.boxLabel ) {
@@ -1946,9 +1946,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             '<div class="title">'+i18n._("TCP Sessions:")+'</div>',
             '<div class="values"><span name="uvmTCPSessions"></span></div>',
             '<div class="title">'+i18n._("UDP Sessions:")+'</div>',
-            '<div class="values"><span name="uvmUDPSessions"></span></div>',
-            '<div class="title">'+i18n._("Bypassed Sessions:")+'</div>',
-            '<div class="values"><span name="bypassedSessions"></span></div>'
+            '<div class="values"><span name="uvmUDPSessions"></span></div>'
         ];
         this.sessionsToolTip= new Ext.ToolTip({
             target: this.getEl().child("div[class=sessions]"),
