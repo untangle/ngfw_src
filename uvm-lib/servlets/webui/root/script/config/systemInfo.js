@@ -144,7 +144,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                             }
                         }
                     },{
-                        fieldLabel : '<span class="required-star">*</span>'+this.i18n._('Email'),
+                        fieldLabel : this.i18n._('Email'),
                         name : "emailAddr",
                         width : 200,
                         allowBlank : false,
@@ -168,7 +168,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         minValue : 0,
                         width : 60,
                         allowDecimals : false,
-                        fieldLabel : '<span class="required-star">*</span>'+this.i18n._('Number of PCs on your network'),
+                        fieldLabel : this.i18n._('Number of PCs on your network'),
                         name : 'numSeats',
                         value : info.numSeats,
                         allowBlank : false,
@@ -230,10 +230,6 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         value : other,
                         itemCls : "left-indent-5"
                     })]
-                },{
-                    xtype : 'label',
-                    html : this.i18n._( '<span class="required-star">*</span> Required' ),
-                    cls : 'required-info'
                 }]
             });
         },
