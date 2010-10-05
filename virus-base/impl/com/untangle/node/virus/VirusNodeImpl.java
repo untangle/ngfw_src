@@ -546,8 +546,12 @@ public abstract class VirusNodeImpl extends AbstractNode
         s.add(new StringRule("tar", "archive", "download" , true));
         s.add(new StringRule("tgz", "archive", "download" , true));
         s.add(new StringRule("doc", "document", "document", false));
+        s.add(new StringRule("docx", "document", "document", false));
         s.add(new StringRule("ppt", "presentation", "document", false));
+        s.add(new StringRule("pptx", "presentation", "document", false));
         s.add(new StringRule("xls", "spreadsheet", "document", false));
+        s.add(new StringRule("xlsx", "spreadsheet", "document", false));
+        s.add(new StringRule("pdf", "document", "document" , true));
         s.add(new StringRule("mp3", "audio", "download", false));
         s.add(new StringRule("wav", "audio", "download", false));
         s.add(new StringRule("wmf", "audio", "download", false));
