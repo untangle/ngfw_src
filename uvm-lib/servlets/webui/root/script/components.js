@@ -130,7 +130,7 @@ Ext.override( Ext.form.Field, {
     }
 });
 
-ByExt.override( Ext.form.TextField, {
+Ext.override( Ext.form.TextField, {
     afterRender : Ext.form.TextField.prototype.afterRender.createSequence(function(){
         var parent = this.el.parent();
         if( this.boxLabel ) {
