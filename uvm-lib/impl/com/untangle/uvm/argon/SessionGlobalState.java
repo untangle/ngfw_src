@@ -121,7 +121,7 @@ public class SessionGlobalState
 
     public Object attach(String key, Object attachment)
     {
-        logger.debug("globalAttach( " + key + " , " + attachment + " )");
+        logger.info("globalAttach( " + key + " , " + attachment + " )");
         return this.attachments.put(key,attachment);
     }
 

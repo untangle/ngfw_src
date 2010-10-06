@@ -1544,7 +1544,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                 html : '<h2 class="wizard-title">'+i18n._( "Email Configuration" )+'</h2>'
             },{
                 xtype : 'label',
-                html : String.format(i18n._('The {0} Server sends email for Quarantine Digests, Reports, etc.'),oemName),
+                html : String.format(i18n._('The {0} Server sends email for Quarantine Digests, Reports, etc.'),oemName)
             },{
                 xtype : 'label',
                 cls : 'optional-email-tester noborder',
@@ -1578,7 +1578,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                     items : [{
                         name : 'from-address-label',
                         xtype : 'label',
-                        html : String.format(i18n._( "<b>Please choose a <i>From Address</i> for emails originating from the {0} Server</b>"),oemName),
+                        html : String.format(i18n._( "<b>Please choose a <i>From Address</i> for emails originating from the {0} Server</b>"),oemName)
                     },{
                         xtype : 'textfield',
                         name : 'from-address-textfield',

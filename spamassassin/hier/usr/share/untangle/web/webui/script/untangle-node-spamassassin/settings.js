@@ -36,7 +36,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         onRender : function(container, position) {
             // call superclass renderer first
             Ung.SpamAssassin.superclass.onRender.call(this, container, position);
-            this.initSubCmps.defer(1, this);
+            this.initSubCmps.defer(1, this, true);
             this.enableSuperSpam(Ext.getCmp('spamassassin_smtpAction'));
         },
         initSubCmps : function() {

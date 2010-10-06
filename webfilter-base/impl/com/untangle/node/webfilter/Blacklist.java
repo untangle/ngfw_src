@@ -46,6 +46,8 @@ import com.untangle.uvm.vnet.TCPSession;
 
 /**
  * Does blacklist lookups in the database.
+ * 
+ * XXX This file needs a total rewrite XXX
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
@@ -60,7 +62,7 @@ public abstract class Blacklist
 
     private final Map<InetAddress, Set<String>> hostWhitelists = new HashMap<InetAddress, Set<String>>();
 
-    private volatile WebFilterSettings settings;
+    protected volatile WebFilterSettings settings;
     private volatile String[] blockedUrls = new String[0];
     private volatile String[] passedUrls = new String[0];
 
@@ -329,7 +331,7 @@ public abstract class Blacklist
     }
 
 
-    protected abstract String checkBlacklistDatabase(String dom, int port, String uri);
+    protected abstract String checkBlacklistDatabase(String dom, int port, String uri, TCPSession sess);
 
     protected abstract void updateToCurrentCategories(WebFilterSettings s);
 
@@ -457,16 +459,16 @@ public abstract class Blacklist
 
         uri = uri.replaceAll("/+", "/");
 
-        logger.debug("checkBlacklist: " + host + uri);
+        logger.info("checkBlacklist: " + host + uri);
 
-        BlacklistCategory category = findBestCategory(host, port, uri);
+        BlacklistCategory category = findBestCategory(host, port, uri, sess);
 
+        logger.info("checkBlacklist: " + host + uri + " category: " + category);
+        
         if (category != null && sess != null) {
             /**
              * Tag the session with metadata
-             * Use KEY_SITEFILTER_BEST_CATEGORY or KEY_WEBFILTER_BEST_CATEGORY
              */
-            logger.warn("attaching");
             sess.globalAttach(node.getVendor()+"-best-category-id",category.getId());
             sess.globalAttach(node.getVendor()+"-best-category-name",category.getName());
             sess.globalAttach(node.getVendor()+"-best-category-description",category.getDescription());
@@ -516,16 +518,23 @@ public abstract class Blacklist
         }
     }
 
-    private BlacklistCategory findBestCategory(String host, int port, String uri)
+    /**
+     * XXX this needs a rewrite XXX
+     * The blocking logic should be completely separate from the category logic
+     * It should find a list of categories and return them
+     * Later it should decide if its blocked
+     * The session tagging logic should be elsewhere
+     * Renames needed (Blacklist?)
+     */
+    private BlacklistCategory findBestCategory(String host, int port, String uri, TCPSession sess)
     {
         BlacklistCategory category = null;
         boolean blockFound = false;
-
         boolean checkSubdomains = getLookupSubdomains();
 
         String dom = host;
         while (!blockFound && null != dom) {
-            String sCat = checkBlacklistDatabase(dom, port, uri);
+            String sCat = checkBlacklistDatabase(dom, port, uri, sess);
             BlacklistCategory bc;
             if (null != sCat) {
                 bc = settings.getBlacklistCategory(sCat);

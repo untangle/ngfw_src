@@ -119,6 +119,12 @@
     <priority value="WARN"/>
   </category>
 
+  <!-- temporary @ DEBUG for alpha/beta debugging -->
+  <category name="com.untangle.node.webfilter.BlackList">
+    <priority value="DEBUG"/>
+  </category>
+
+  <!-- temporary @ DEBUG for alpha/beta debugging -->
   <category name="com.untangle.node.bandwidth">
     <priority value="DEBUG"/>
   </category>

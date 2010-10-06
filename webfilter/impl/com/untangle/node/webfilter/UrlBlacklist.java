@@ -36,6 +36,7 @@ import com.untangle.node.util.UrlList;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import org.apache.log4j.Logger;
+import com.untangle.uvm.vnet.TCPSession;
 
 /**
  * Does blacklist lookups in the database.
@@ -197,7 +198,7 @@ class UrlBlacklist extends Blacklist
 
     // protected methods ------------------------------------------------------
 
-    protected String checkBlacklistDatabase(String dom, int port, String uri)
+    protected String checkBlacklistDatabase(String dom, int port, String uri, TCPSession sess)
     {
         // XXX hack attack. should solve the problem with less lookups
         // instead, but no time for that.

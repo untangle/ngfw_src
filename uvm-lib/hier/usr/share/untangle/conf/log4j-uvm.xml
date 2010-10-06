@@ -80,6 +80,11 @@
     <priority value="WARN"/>
   </category>
 
+  <!-- temporary @ DEBUG for alpha/beta debugging -->
+  <category name="com.untangle.uvm.argon.SessionGlobalState">
+    <priority value="DEBUG"/>
+  </category>
+
   <category name="com.untangle.uvm.argon">
     <priority value="WARN"/>
   </category>
@@ -91,7 +96,6 @@
   <category name="com.untangle.jvector">
     <priority value="WARN"/>
   </category>
-
 
   <category name="com.untangle.uvm.logging">
     <priority value="WARN"/>
