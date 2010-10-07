@@ -197,12 +197,13 @@ public abstract class Blacklist
         }
         host = normalizeHostname(host);
 
-        // depending on the context, the uri can be either a full hierarchical
-        // one, or just the path relative to the host.
+        // depending on the context, the uri can be either a full
+        // hierarchical one, or just the path relative to the host; if
+        // we fail here, no biggie, we can totally move on.
         try {
             uri = new URI(uri.getPath());
         } catch(Exception e) {
-            logger.error("Could not parse URI for " + uri.getPath(), e);
+            logger.debug("Could not parse URI for " + uri.getPath(), e);
         }
 
         logger.debug("checkRequest: " + host + uri);
