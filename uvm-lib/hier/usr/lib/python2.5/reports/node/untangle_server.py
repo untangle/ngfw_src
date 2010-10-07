@@ -400,7 +400,7 @@ class DiskUsage(Graph):
                 avg = avgp = None
             else:
                 avg = round(sum(diskFree)/len(diskFree), 2)
-                avgp = round(100 * avg / diskTotal[0], 2)
+                avgp = round(100 * avg / float(diskTotal[0]), 2)
                 
             ks = KeyStatistic(_('Avg Disk Free'), avg,
                               N_('GB'))
