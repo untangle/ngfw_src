@@ -21,6 +21,7 @@ package com.untangle.uvm.engine;
 import java.util.List;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Iterator;
 import java.net.InetAddress;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -119,14 +120,13 @@ class SessionMonitorImpl implements SessionMonitor
         List<SessionMonitorEntry> sessions = this._getConntrackSessionMonitorEntrys();
         List<SessionGlobalState> argonSessions = ArgonSessionTable.getInstance().getSessions();
 
-        for (SessionMonitorEntry session : sessions) {
-            //assume bypassed until we find a match in the UVM
-            session.setBypassed(Boolean.TRUE); 
+        for (Iterator i = sessions.iterator(); i.hasNext(); ) {  
+            SessionMonitorEntry session = (SessionMonitorEntry) i.next();
             session.setPolicy("");             
             session.setClientIntf(Integer.valueOf(-1));
             session.setServerIntf(Integer.valueOf(-1));
             session.setPriority(session.getQosPriority()); 
-
+            boolean foundUvmSession = false;
             
             for (SessionGlobalState argonSession : argonSessions) {
                 com.untangle.uvm.node.IPSessionDesc clientSide = argonSession.argonHook().getClientSide();
@@ -153,11 +153,21 @@ class SessionMonitorImpl implements SessionMonitor
                      * Only have one priority per session
                      * Assume both client and server are the same
                      */
-                    session.setPriority(priority); 
+                    session.setPriority(priority);
+                    foundUvmSession = true;
                     break;
                 }
             }
-                        
+
+            /**
+             * If the session is not bypassed and is not in the UVM
+             * Then it is likely some expired session or some local session (blockpages)
+             * Remove it and dont show it to the user
+             */
+            if ( !session.getBypassed() && !foundUvmSession ) {
+                logger.warn("Removing: " + session);
+                i.remove();
+            }
         }
 
         /**
