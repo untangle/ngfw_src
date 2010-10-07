@@ -456,11 +456,10 @@ class OpenVpnManager
                     sw.appendVariable( "push", "\"dhcp-option DNS " + addr.toString() + "\"");
                 }
 
-                if(sis.getIsEnabled() && sis.getIsDnsEnabled()) {
-                    HostName localDomain = sis.getDnsLocalDomain();
-                    if(localDomain != null) {
-                        sw.appendVariable( "push", "\"dhcp-option DOMAIN " + localDomain.toString() + "\"");
-                    }
+                HostName localDomain = sis.getDnsLocalDomain();
+                //If the domain is set - push it
+                if(localDomain != null) {
+                    sw.appendVariable( "push", "\"dhcp-option DOMAIN " + localDomain.toString() + "\"");
                 }
             }
 
