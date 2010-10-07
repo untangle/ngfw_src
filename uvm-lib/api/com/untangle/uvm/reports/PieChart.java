@@ -49,6 +49,7 @@ import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.io.CSV;
+import org.jfree.util.SortOrder;
 
 public class PieChart extends Plot
 {
@@ -90,14 +91,18 @@ public class PieChart extends Plot
             String columnKey = (String)cd.getColumnKey(i);
 
             for (int j = 0; j < cd.getRowCount(); j++) {
-                if (displayLimit >= 0 && j >= displayLimit) {
-                    break;
+                String rowKey = cd.getRowKey(j).toString();
+                Number n = cd.getValue(rowKey, columnKey);
+                if (displayLimit >= 0 && j >= displayLimit-1) {
+                    Number m = dpd.getIndex("others") == -1 ? 0 : dpd.getValue("others");
+                    dpd.setValue("others", m.intValue() + n.intValue());
                 } else {
-                    String rowKey = cd.getRowKey(j).toString();
-                    dpd.setValue(rowKey, cd.getValue(rowKey, columnKey));
+                    dpd.setValue(rowKey, n);
                 }
             }
         }
+
+        dpd.sortByValues(SortOrder.DESCENDING);
 
         String title = getTitle();
         JFreeChart jfChart

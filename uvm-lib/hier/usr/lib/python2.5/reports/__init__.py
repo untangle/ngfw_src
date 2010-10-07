@@ -768,6 +768,7 @@ class Chart:
         items.sort(cmp=self.__pie_sort, reverse=True)
 
         self.__datasets = {}
+        self.__datasets2 = {}
 
         c = 0
 
@@ -775,6 +776,7 @@ class Chart:
             if not display_limit or c < display_limit-1:
                 k = str(i[0])
                 self.__datasets[k] = i[1]
+                self.__datasets2[k] = i[1]
 
                 if (not self.__colors.has_key(k)
                     and self.__color_num < len(reports.colors.color_palette)):
@@ -785,6 +787,8 @@ class Chart:
                 if not "others" in self.__datasets:
                     self.__datasets["others"] = 0
                 self.__datasets["others"] += i[1]
+
+                self.__datasets2[str(i[0])] = i[1]
                 self.__colors["others"] = reports.colors.color_palette[self.__color_num]
                 
     def generate_csv(self, filename, host=None, user=None, email=None):
@@ -887,7 +891,7 @@ class Chart:
     def __generate_pie_csv(self, filename, host=None, user=None, email=None):
         items = []
 
-        for k, v in self.__datasets.iteritems():
+        for k, v in self.__datasets2.iteritems():
             items.append([k, v])
 
         items.sort(cmp=self.__pie_sort, reverse=True)
