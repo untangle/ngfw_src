@@ -49,8 +49,7 @@ public class BlacklistCategory implements Serializable
 
     public BlacklistCategory() { }
 
-    public BlacklistCategory(String name, String displayName,
-                             String description)
+    public BlacklistCategory(String name, String displayName, String description)
     {
         this.name = name;
         this.displayName = displayName;
