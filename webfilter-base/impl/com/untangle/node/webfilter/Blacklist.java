@@ -182,7 +182,7 @@ public abstract class Blacklist
         try {
             uri = new URI(requestLine.getRequestUri().normalize().toString().replaceAll("(?<!:)/+", "/"));
         } catch (URISyntaxException e) {
-            logger.fatal("Could not parse URI '" + uri + "'");
+            logger.error("Could not parse URI '" + uri + "'", e);
         }
 
         String path = uri.getPath();
@@ -202,7 +202,7 @@ public abstract class Blacklist
         try {
             uri = new URI(uri.getPath());
         } catch(Exception e) {
-            logger.fatal("Couldn't parse URI for " + uri.getPath());
+            logger.error("Could not parse URI for " + uri.getPath(), e);
         }
 
         logger.debug("checkRequest: " + host + uri);
@@ -293,7 +293,7 @@ public abstract class Blacklist
         try {
             uri = new URI(requestLine.getRequestUri().normalize().toString().replaceAll("/+", "/"));
         } catch (URISyntaxException e) {
-            logger.fatal("Could not parse URI '" + uri + "'");
+            logger.error("Could not parse URI '" + uri + "'",e);
         }
         String host = normalizeHostname(requestLine.getRequestLine().getUrl().getHost());
 
