@@ -165,7 +165,7 @@ class SessionMonitorImpl implements SessionMonitor
              * Remove it and dont show it to the user
              */
             if ( !session.getBypassed() && !foundUvmSession ) {
-                logger.warn("Removing: " + session);
+                logger.info("Removing: " + session);
                 i.remove();
             }
         }
