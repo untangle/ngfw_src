@@ -207,10 +207,10 @@ class MemoryUsage(Graph):
             if not cached:
                 cached = [0,]
 
-            ks = KeyStatistic(_('Avg Free Memory'), sum(free)/len(free),
+            ks = KeyStatistic(_('Avg Free Memory'), round(sum(free)/len(free), 2),
                               N_('MB'))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg Cached Memory'), sum(cached)/len(cached),
+            ks = KeyStatistic(_('Avg Cached Memory'), round(sum(cached)/len(cached), 2),
                               N_('MB'))
             lks.append(ks)
         finally:
@@ -242,9 +242,9 @@ class LoadUsage(Graph):
         conn = sql_helper.get_connection()
         try:
 
-            sums = ["COALESCE(AVG(load_1),0)",
-                    "COALESCE(AVG(load_5),0)",
-                    "COALESCE(AVG(load_15),0)"]
+            sums = ["ROUND((COALESCE(AVG(load_1),0))::numeric, 2)",
+                    "ROUND((COALESCE(AVG(load_5),0))::numeric, 2)",
+                    "ROUND((COALESCE(AVG(load_15),0))::numeric, 2)"]
 
             q, h = sql_helper.get_averaged_query(sums, "reports.n_server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
@@ -271,19 +271,19 @@ class LoadUsage(Graph):
             if not load15:
                 load15 = [0,]
 
-            ks = KeyStatistic(_('Avg 1-min Load'), sum(load1)/len(load1),
+            ks = KeyStatistic(_('Avg 1-min Load'), round(sum(load1)/len(load1), 2),
                               N_(''))
             lks.append(ks)
             ks = KeyStatistic(_('Max 1-min Load'), max(load1),
                               N_(''))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg 5-min Load'), sum(load5)/len(load5),
+            ks = KeyStatistic(_('Avg 5-min Load'), round(sum(load5)/len(load5), 2),
                               N_(''))
             lks.append(ks)
             ks = KeyStatistic(_('Max 5-min Load'), max(load5),
                               N_(''))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg 15-min Load'), sum(load15)/len(load15),
+            ks = KeyStatistic(_('Avg 15-min Load'), round(sum(load15)/len(load15), 2),
                               N_(''))
             lks.append(ks)
             ks = KeyStatistic(_('Max 15-min Load'), max(load15),
@@ -318,8 +318,8 @@ class CpuUsage(Graph):
 
         conn = sql_helper.get_connection()
         try:
-            sums = ["COALESCE(AVG(cpu_user),0)*100",
-                    "COALESCE(AVG(cpu_system),0)*100"]
+            sums = ["ROUND((COALESCE(AVG(cpu_user),0)*100)::numeric, 2)",
+                    "ROUND((COALESCE(AVG(cpu_system),0)*100)::numeric, 2)"]
 
             q, h = sql_helper.get_averaged_query(sums, "reports.n_server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
@@ -342,10 +342,10 @@ class CpuUsage(Graph):
             if not cpuSystem:
                 cpuSystem = [0,]
 
-            ks = KeyStatistic(_('Avg Cpu User'), sum(cpuUser)/len(cpuUser),
+            ks = KeyStatistic(_('Avg Cpu User'), round(sum(cpuUser)/len(cpuUser), 2),
                               N_('%'))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg Cpu System'), sum(cpuSystem)/len(cpuSystem),
+            ks = KeyStatistic(_('Avg Cpu System'), round(sum(cpuSystem)/len(cpuSystem), 2),
                               N_('%'))
             lks.append(ks)
         finally:
@@ -377,8 +377,8 @@ class DiskUsage(Graph):
         conn = sql_helper.get_connection()
         try:
             # GB
-            sums = ["round((COALESCE(AVG(disk_free),0) / 1000000000)::numeric, 2)",
-                    "round((COALESCE(AVG(disk_total),0) / 1000000000)::numeric, 2)"]
+            sums = ["ROUND((COALESCE(AVG(disk_free),0) / 1000000000)::numeric, 2)",
+                    "ROUND((COALESCE(AVG(disk_total),0) / 1000000000)::numeric, 2)"]
 
             q, h = sql_helper.get_averaged_query(sums, "reports.n_server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
@@ -399,8 +399,8 @@ class DiskUsage(Graph):
             if not diskFree or not diskTotal:
                 avg = avgp = None
             else:
-                avg = sum(diskFree)/len(diskFree)
-                avgp = 100 * avg / diskTotal[0]
+                avg = round(sum(diskFree)/len(diskFree), 2)
+                avgp = round(100 * avg / diskTotal[0], 2)
                 
             ks = KeyStatistic(_('Avg Disk Free'), avg,
                               N_('GB'))
@@ -439,8 +439,8 @@ class SwapUsage(Graph):
         conn = sql_helper.get_connection()
         try:
             # MB
-            sums = ["COALESCE(AVG(swap_total-swap_free),0) / 1000000",
-                    "COALESCE(AVG(swap_free),0) / 1000000"]
+            sums = ["ROUND((COALESCE(AVG(swap_total-swap_free),0) / 1000000)::numeric, 2)",
+                    "ROUND((COALESCE(AVG(swap_free),0) / 1000000)::numeric, 2)"]
                                                  
             q, h = sql_helper.get_averaged_query(sums, "reports.n_server_totals",
                                                  end_date - mx.DateTime.DateTimeDelta(report_days),
@@ -463,10 +463,10 @@ class SwapUsage(Graph):
             if not swapFree:
                 swapFree = [0,]
 
-            ks = KeyStatistic(_('Avg Swap Free'), sum(swapFree)/len(swapFree),
+            ks = KeyStatistic(_('Avg Swap Free'), round(sum(swapFree)/len(swapFree), 2),
                               N_('MB'))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg Swap Used'), sum(swapUsed)/len(swapUsed),
+            ks = KeyStatistic(_('Avg Swap Used'), round(sum(swapUsed)/len(swapUsed), 2),
                               N_('MB'))
             lks.append(ks)
                 
