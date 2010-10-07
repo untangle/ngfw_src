@@ -88,7 +88,11 @@ public abstract class NetcapSession
 
     public int  clientMark()
     {
-        return getClientMark( pointer.value() );
+        try {
+            return getClientMark( pointer.value() );
+        } catch (NullPointerException e) {
+            return 0; /* pointer is gone, session dead */
+        }
     }
     
     public int  clientQosMark()
@@ -134,7 +138,11 @@ public abstract class NetcapSession
 
     public int  serverMark()
     {
-        return getServerMark( pointer.value() );
+        try {
+            return getServerMark( pointer.value() );
+        } catch (NullPointerException e) {
+            return 0; /* pointer is gone, session dead */
+        }
     }
 
     public int  serverQosMark()

@@ -296,7 +296,6 @@ JNIEXPORT void JNICALL JF_Session( setServerMark )
     return;
 }
 
-
 /*
  * Class:     com_untangle_jnetcap_NetcapSession
  * Method:    raze
