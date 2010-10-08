@@ -80,9 +80,9 @@ if (!Ung.hasResource["Ung.CPD"]) {
                  }]
             });
 
-            if ( this.node.state == "on" ) {
-                this.panelCaptiveStatus.add( this.gridCaptiveStatus );
-            }
+            //if ( this.node.state == "on" ) {
+            this.panelCaptiveStatus.add( this.gridCaptiveStatus );
+            //}
         },
 
         buildGridCaptiveStatus : function()
@@ -182,8 +182,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     width : 180,
                     renderer : function(value) { return i18n.timestampFormat(value); }
                 },logoutColumn]
-            })
-
+            });
         },
 
         // Rules Panel

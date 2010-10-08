@@ -207,8 +207,12 @@ public class CPDImpl extends AbstractNode implements CPD
     @Override
     public List<HostDatabaseEntry> getCaptiveStatus()
     {
-        List<HostDatabaseEntry> captiveStatus = new LinkedList<HostDatabaseEntry>();
-        captiveStatus = assistant.getCaptiveStatus();
+        List<HostDatabaseEntry> captiveStatus = assistant.getCaptiveStatus();
+
+        if (captiveStatus == null) {
+           captiveStatus = new LinkedList<HostDatabaseEntry>();
+        }
+
         return captiveStatus;
     }
 
