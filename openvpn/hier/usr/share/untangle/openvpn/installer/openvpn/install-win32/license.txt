@@ -1,34 +1,27 @@
 OpenVPN (TM) -- An Open Source VPN daemon
 
-Copyright (C) 2002-2005 OpenVPN Solutions LLC <info@openvpn.net>
+Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@openvpn.net>
 
-(plus OpenVPN GUI and My Certificate Wizard)
-
-
-This distribution contains multiple components
-of different authors. Some of the components
-fall under different licenses. By using OpenVPN
-or any of the bundled components enumerated
-below, you agree to be bound by the conditions
-of the license for each respective component.
-
+This distribution contains multiple components, some
+of which fall under different licenses.  By using OpenVPN
+or any of the bundled components enumerated below, you
+agree to be bound by the conditions of the license for
+each respective component.
 
 OpenVPN trademark
 -----------------
 
-  "OpenVPN" is a trademark of OpenVPN Solutions LLC.
+  "OpenVPN" is a trademark of OpenVPN Technologies, Inc.
 
 
 OpenVPN license:
 ----------------
 
-  Copyright (C) 2002-2005 OpenVPN Solutions LLC <info@openvpn.net>
-
   OpenVPN is distributed under the GPL license version 2 (see Below).
 
   Special exception for linking OpenVPN with OpenSSL:
 
-  In addition, as a special exception, OpenVPN Solutions LLC gives
+  In addition, as a special exception, OpenVPN Technologies, Inc. gives
   permission to link the code of this program with the OpenSSL
   library (or with modified versions of OpenSSL that use the same
   license as OpenSSL), and distribute linked combinations including
@@ -37,23 +30,6 @@ OpenVPN license:
   this file, you may extend this exception to your version of the
   file, but you are not obligated to do so.  If you do not wish to
   do so, delete this exception statement from your version.
-
-
-OpenVPN GUI license:
---------------------
-
-  Copyright (C) 2004-2005 by Mathias Sundman <info@openvpn.se>
-
-  Distributed under GPL license (see below).
-
-
-My Certificate Wizard license:
-------------------------------
-
-  Copyright (C) 2004 by Vlada Macek <tuttle@bbs.cvut.cz>
-
-  Distributed under GPL license (see below).
-
 
 LZO license:
 ------------
@@ -64,17 +40,20 @@ LZO license:
   Special exception for linking OpenVPN with both OpenSSL and LZO:
 
   Hereby I grant a special exception to the OpenVPN project 
-  (http://openvpn.sourceforge.net) to link the LZO library with 
+  (http://openvpn.net/) to link the LZO library with 
   the OpenSSL library (http://www.openssl.org).
  
   Markus F.X.J. Oberhumer
 
-TAP-Win32 Driver license:
--------------------------
+TAP-Win32/TAP-Win64 Driver license:
+-----------------------------------
 
-  The TAP-Win32 driver is derived from the CIPE-Win32
-  kernel driver, Copyright (C) Damion K. Wilson,
-  and is licensed under the GPL.
+  This device driver was inspired by the CIPE-Win32 driver by
+  Damion K. Wilson.
+
+  The source and object code of the TAP-Win32/TAP-Win64 driver
+  is Copyright (C) 2002-2010 OpenVPN Technologies, Inc., and is released under
+  the GPL version 2.
 
 Windows DDK Samples:
 --------------------
@@ -231,11 +210,10 @@ GNU Public License (GPL)
 ------------------------
 
   OpenVPN, LZO, and the TAP-Win32 distributions are
-  licensed under the GPL (see COPYRIGHT.GPL).
+  licensed under the GPL version 2 (see COPYRIGHT.GPL).
 
   In the Windows binary distribution of OpenVPN, the
   GPL is reproduced below.
-
 
 		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
@@ -533,9 +511,8 @@ the "copyright" line and a pointer to where the full notice is found.
     Copyright (C) <year>  <name of author>
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+    it under the terms of the GNU General Public License version 2
+    as published by the Free Software Foundation.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of

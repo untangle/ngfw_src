@@ -20,7 +20,7 @@
 !define BIN "${HOME}\bin"
 
 !define PRODUCT_NAME "OpenVPN"
-!define OPENVPN_VERSION "2.1.1"
+!define OPENVPN_VERSION "2.1.3"
 !define GUI_VERSION "1.0.3"
 !define VERSION "${OPENVPN_VERSION}-gui-${GUI_VERSION}"
 
