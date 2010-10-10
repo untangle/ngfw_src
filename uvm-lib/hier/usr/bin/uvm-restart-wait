@@ -25,7 +25,7 @@ while true; do
         sleep 1
     else
         # The upgrade is complete - stop showing the upgrade screen (regardless of mode)
-        /share/untangle/bin/uvm-show-upgrade stop
+        /usr/share/untangle/bin/uvm-show-upgrade stop
 
         # restart will have been scheduled by the time apt-get is gone
         if is_rebooting; then
