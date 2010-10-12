@@ -109,7 +109,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             name: 'Generate Reports',
                             iconCls: 'action-icon',
                             handler: function(callback) {
-                                Ext.MessageBox.wait(i18n._("Running today's reports..."), i18n._("Please wait"));
+                                Ext.MessageBox.wait(i18n._("Generating today's reports..."), i18n._("Please wait"));
                                 this.getRpcNode().runDailyReport(function(result, exception) {
                                     this.afterRun(exception, callback);
                                 }.createDelegate(this));
