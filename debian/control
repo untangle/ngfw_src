@@ -1016,7 +1016,7 @@ Package: untangle-node-cpd
 Architecture: all
 Depends: untangle-vm, untangle-cpd, php5-pgsql, php5-curl
 XB-Display-Name: Captive Portal
-XB-View-Position: 31
+XB-View-Position: 32
 XB-Untangle-Pkg-Type: service
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAMAAADyHTlpAAAAGXRFWHRTb2Z0d2Fy
  ZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAwBQTFRFb4o2ztOop6qV7PTDmKOSbnJy
