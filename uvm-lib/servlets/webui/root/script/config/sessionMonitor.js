@@ -20,10 +20,14 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
             this.buildGridCurrentSessions();
 
             this.buildTabPanel([this.gridCurrentSessions]);
-
             Ung.SessionMonitor.superclass.initComponent.call(this);
         },
-
+        saveAction : function(){
+            this.cancelAction();
+        },
+        applyAction : function(){
+            this.cancelAction();
+        },
         // Current Sessions Grid
         buildGridCurrentSessions : function() {
             this.gridCurrentSessions = new Ung.EditorGrid({
@@ -42,22 +46,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 title : this.i18n._("Current Sessions"),
                 qtip : this.i18n._("This shows all current sessions."),
                 paginated : false,
-                bbar : new Ext.Toolbar({
-                    items : [
-                        '-',
-                        {
-                            xtype : 'tbbutton',
-                            id: "refresh_"+this.getId(),
-                            text : i18n._('Refresh'),
-                            name : "Refresh",
-                            tooltip : i18n._('Refresh'),
-                            iconCls : 'icon-refresh',
-                            handler : function() {
-                                this.gridCurrentSessions.store.reload();
-                            }.createDelegate(this)
-                        }
-                    ]
-                }),
                 recordJavaClass : "com.untangle.uvm.SessionMonitorEntry",
                 proxyRpcFn : rpc.jsonrpc.RemoteUvmContext.sessionMonitor().getMergedSessions,
                 fields : [{
@@ -197,7 +185,72 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     header : this.i18n._("Port Forwarded"),
                     dataIndex: "portForwarded",
                     width : 50
-                }]
+                }],
+                initComponent : function() {
+                    this.bbar = ['-',
+                        {
+                            xtype : 'tbbutton',
+                            id: "refresh_"+this.getId(),
+                            text : i18n._('Refresh'),
+                            name : "Refresh",
+                            tooltip : i18n._('Refresh'),
+                            iconCls : 'icon-refresh',
+                            handler : function() {
+                                Ext.MessageBox.wait(this.settingsCmp.i18n._("Refreshing..."), this.settingsCmp.i18n._("Please wait"));
+                                this.store.reload();
+                            }.createDelegate(this)
+                        },{
+                            xtype : 'tbbutton',
+                            id: "auto_refresh_"+this.getId(),
+                            text : i18n._('Auto Refresh'),
+                            enableToggle: true,
+                            pressed: false,
+                            name : "Auto Refresh",
+                            tooltip : i18n._('Auto Refresh'),
+                            iconCls : 'icon-autorefresh',
+                            handler : function() {
+                                var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
+                                if(autoRefreshButton.pressed) {
+                                    this.startAutoRefresh();
+                                } else {
+                                    this.stopAutoRefresh();
+                                }
+                            }.createDelegate(this)
+                        }
+                    ];
+                    Ung.EditorGrid.prototype.initComponent.call(this);
+                    this.loadMask=null;
+                    this.store.on("load", function() {
+                        Ext.MessageBox.hide();
+                    }, this);
+                },                
+                autoRefreshEnabled:true,
+                startAutoRefresh: function(setButton) {
+                    this.autoRefreshEnabled=true;
+                    if(setButton) {
+                        var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
+                        autoRefreshButton.toggle(true);
+                    }
+                    var refreshButton=Ext.getCmp("refresh_"+this.getId());
+                    refreshButton.disable();
+                    this.autorefreshList();
+
+                },
+                stopAutoRefresh: function(setButton) {
+                    this.autoRefreshEnabled=false;
+                    if(setButton) {
+                        var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
+                        autoRefreshButton.toggle(false);
+                    }
+                    var refreshButton=Ext.getCmp("refresh_"+this.getId());
+                    refreshButton.enable();
+                },
+                autorefreshList : function() {
+                    this.store.reload();
+                    if(this!=null && this.rendered && this.autoRefreshEnabled && !this.hidden) {
+                        this.autorefreshList.defer(5000,this);
+                    }
+                }
             });
         }
 
