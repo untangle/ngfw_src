@@ -473,10 +473,10 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
         
         var rv = _validate(this.card.panel.items.items);
         var fieldEnvironment = this.form.find( "name", "environment" )[0];
-        fieldEnvironment.clearInvalid();
+        this.clearInvalidEnvironement();
         this.environmentOther.clearInvalid();
         if(fieldEnvironment.getGroupValue() == null ) {
-            fieldEnvironment.markInvalid();
+            this.markInvalidEnvironement();
             rv=false;
         } else {
             if(fieldEnvironment.getGroupValue() == "other") {
@@ -487,6 +487,17 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
             }
         }
         return rv;
+    },
+    markInvalidEnvironement : function () {
+        Ext.each(this.form.find( "name", "environment" ), function(item) {
+            item.getEl().parent().addClass("x-form-invalid");
+        });
+    },
+    clearInvalidEnvironement:function() {
+        Ext.each(this.form.find( "name", "environment" ), function(item) {
+            item.getEl().parent().removeClass("x-form-invalid");
+        });
+        
     },
     onSelectOther: function( checkbox, isChecked )
     {
