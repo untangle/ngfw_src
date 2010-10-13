@@ -197,7 +197,11 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                             iconCls : 'icon-refresh',
                             handler : function() {
                                 Ext.MessageBox.wait(this.settingsCmp.i18n._("Refreshing..."), this.settingsCmp.i18n._("Please wait"));
-                                this.store.reload();
+                                this.store.reload({
+                                    callback: function () {
+                                        Ext.MessageBox.hide();
+                                    }.createDelegate(this)
+                                });
                             }.createDelegate(this)
                         },{
                             xtype : 'tbbutton',
@@ -220,9 +224,6 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     ];
                     Ung.EditorGrid.prototype.initComponent.call(this);
                     this.loadMask=null;
-                    this.store.on("load", function() {
-                        Ext.MessageBox.hide();
-                    }, this);
                 },                
                 autoRefreshEnabled:true,
                 startAutoRefresh: function(setButton) {
@@ -246,10 +247,13 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     refreshButton.enable();
                 },
                 autorefreshList : function() {
-                    this.store.reload();
-                    if(this!=null && this.rendered && this.autoRefreshEnabled && !this.hidden) {
-                        this.autorefreshList.defer(5000,this);
-                    }
+                    this.store.reload({
+                        callback: function () {
+                            if(this!=null && this.autoRefreshEnabled && Ext.getCmp(this.id) != null) {
+                                this.autorefreshList.defer(5000,this);
+                            }
+                        }.createDelegate(this)
+                    });
                 }
             });
         }

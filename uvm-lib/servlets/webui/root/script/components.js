@@ -2782,6 +2782,8 @@ Ung.Window = Ext.extend(Ext.Window, {
     // to override
     closeWindow : function() {
         this.hide();
+        alert("Destroy "+this.id);
+        Ext.destroy(this);
     }
 });
 Ung.Window.cancelAction = function(dirty, closeWinFn) {
@@ -4171,7 +4173,6 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 scope : scope,
                 arg : arg
             });
-            this.getStore().load({params:{start:0}}); //load the data
         } else {
             this.getStore().load({
                 params : {
