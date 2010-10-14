@@ -49,4 +49,5 @@ public class ProductIdentifier
     public static final String COMMTOUCH = "untangle-commtouch";
     public static final String SPLITD = "untangle-splitd";
     public static final String FAILD = "untangle-faild";
+    public static final String BANDWIDTH = "untangle-node-bandwidth";
 }
