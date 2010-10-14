@@ -2782,7 +2782,6 @@ Ung.Window = Ext.extend(Ext.Window, {
     // to override
     closeWindow : function() {
         this.hide();
-        alert("Destroy "+this.id);
         Ext.destroy(this);
     }
 });
