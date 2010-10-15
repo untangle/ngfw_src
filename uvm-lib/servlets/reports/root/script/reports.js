@@ -222,7 +222,7 @@ Ung.Reports = Ext.extend(Object,{
             renderTo : 'base',
             cls : "base-container",
             layout : 'fit',
-            id : 'report-details',
+            id : 'report-details-container',
             height : getWinHeight()-80,
             width:740,
             cls:'full-height', 
@@ -359,37 +359,29 @@ Ung.Reports = Ext.extend(Object,{
                     loader : new Ext.tree.TreeLoader(),
                     listeners : {
                         'load' : function(node) {
-                            // Select the first element form the tableOfContent tree to load it's report details
-                            // XXX Ext.getCmp('tree-panel').getRootNode().firstChild is null
-                            // in ext 2.3 this passing null to select causes an exception
-                            // bug #8105
-                            //Ext.getCmp('tree-panel').getSelectionModel().select(Ext.getCmp('tree-panel').getRootNode().firstChild);
-                        //this.selectFirstChild.defer(1,this);
                             if(this.getRootNode().firstChild != null) {
                                 this.getSelectionModel().select(this.getRootNode().firstChild);
                             }
                         },
                         'render' : function(tp)
                         {
-                            tp.getSelectionModel().on('selectionchange',
-                                                      function(tree, node)
-                                                      {
-                                                          if(node!=null) {
-                                                              if (node.attributes.name == 'applications') {
-                                                                  return;
-                                                              }
-
-                                                              reports.selectedNode=node;
-                                                              if (node.attributes.name != 'users' && node.attributes.name != 'hosts'
-                                                                  && node.attributes.name != 'emails') {
-                                                                  reports.selectedApplication = node.attributes.name;
-                                                              }
-                                                              reports.breadcrumbs=[];
-                                                              rpc.drilldownType = null;
-                                                              rpc.drilldownValue = null;
-                                                              reports.getApplicationData(node.attributes.name, reports.numDays);
-                                                          }
-                                                      });
+                            tp.getSelectionModel().on('selectionchange', function(tree, node) {
+                            if(node!=null) {
+                                if (node.attributes.name == 'applications') {
+                                    return;
+                                }
+                                
+                                reports.selectedNode=node;
+                                if (node.attributes.name != 'users' && node.attributes.name != 'hosts'
+                                    && node.attributes.name != 'emails') {
+                                        reports.selectedApplication = node.attributes.name;
+                                    }
+                                    reports.breadcrumbs=[];
+                                    rpc.drilldownType = null;
+                                    rpc.drilldownValue = null;
+                                    reports.getApplicationData(node.attributes.name, reports.numDays);
+                                }
+                            });
 
                             p = Ext.urlDecode(window.location.search.substring(1));
                             qsDate = p.date;
@@ -411,7 +403,7 @@ Ung.Reports = Ext.extend(Object,{
                     title : 'Report Details&nbsp;<span id="breadcrumbs" class="breadcrumbs"></span>',
                     id : 'report-details',
                     layout:"anchor",
-                    autoScroll : true,
+                    autoScroll : false,
                     collapsible : false,
                     split : true,
                     margins : '2 2 0 2',
@@ -769,28 +761,27 @@ Ung.Reports = Ext.extend(Object,{
         rpc.drilldownType = type;
         rpc.drilldownValue = value;
         reports.progressBar.wait(i18n._("Please Wait"));
-        rpc.reportingManager[fnName](function (result, exception)
-                                     {
-                                         if (exception) {
-                                             var message = i18n._('An error occured on the server and reports could not retrieve the data you requested.');
-                                             if(exception.message){
-                                                 if (!handleTimeout(exception)) {
-                                                     Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);
-                                                 }
-                                             }else{
-                                                 Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);
-                                             }
-                                         }
-                                         rpc.applicationData=result;
-                                         reports.breadcrumbs.push({
-                                             text: value +" "+i18n._("Reports"),
-                                            handler: this.getDrilldownTableOfContents.createDelegate(this, [fnName, type, value]),
-                                            drilldownType : rpc.drilldownType,
-                                            drilldownValue : rpc.drilldownValue                                                                                          
-                                         });
-                                         this.reportDetails.buildReportDetails(); // XXX take to correct page
-                                         reports.progressBar.hide();
-                                     }.createDelegate(this), reports.reportsDate, reports.numDays, value);
+        rpc.reportingManager[fnName](function (result, exception) {
+             if (exception) {
+                 var message = i18n._('An error occured on the server and reports could not retrieve the data you requested.');
+                 if(exception.message){
+                     if (!handleTimeout(exception)) {
+                         Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);
+                     }
+                 }else{
+                     Ext.MessageBox.alert(this.i18n._("Failed"),exception.message);
+                 }
+             }
+             rpc.applicationData=result;
+             reports.breadcrumbs.push({
+                 text: value +" "+i18n._("Reports"),
+                handler: this.getDrilldownTableOfContents.createDelegate(this, [fnName, type, value]),
+                drilldownType : rpc.drilldownType,
+                drilldownValue : rpc.drilldownValue                                                                                          
+             });
+             this.reportDetails.buildReportDetails(); // XXX take to correct page
+             reports.progressBar.hide();
+         }.createDelegate(this), reports.reportsDate, reports.numDays, value);
     },
 
     getTableOfContentsForUser: function(user)
@@ -814,27 +805,26 @@ Ung.Reports = Ext.extend(Object,{
         rpc.drilldownValue = value;
         this.selectedApplication = app;
         reports.progressBar.wait(i18n._("Please Wait"));
-        rpc.reportingManager[fnName](function (result, exception)
-                                     {
-                                         if (exception) {
-                                             if (!handleTimeout(exception)) {
-                                                 Ext.MessageBox.alert(i18n._("Failed"),exception.message);
-                                             }
-                                             return;
-                                         }
-                                         if(result==null){
-                                            Ext.MessageBox.alert(i18n._("No Data Available"),i18n._("The report detail you selected does not contain any data. \n This is most likely because its not possible to drill down any further into some reports."));
-                                            return;
-                                         }                                         
-                                         rpc.applicationData=result;
-                                         reports.breadcrumbs.push({ text: i18n.sprintf("%s: %s reports ", value, this.appNames[app]),
-                                                                    handler: this[fnName].createDelegate(this,[app, value]),
-                                                                   drilldownType : rpc.drilldownType,
-                                                                   drilldownValue : rpc.drilldownValue                                                                    
-                                                                  });
-                                         this.reportDetails.buildReportDetails(); // XXX take to correct page
-                                         reports.progressBar.hide();
-                                     }.createDelegate(this), reports.reportsDate, reports.numDays, app, value);
+        rpc.reportingManager[fnName](function (result, exception) {
+            if (exception) {
+                if (!handleTimeout(exception)) {
+                    Ext.MessageBox.alert(i18n._("Failed"),exception.message);
+                }
+                return;
+            }
+            if(result==null){
+               Ext.MessageBox.alert(i18n._("No Data Available"),i18n._("The report detail you selected does not contain any data. \n This is most likely because its not possible to drill down any further into some reports."));
+               return;
+            }                                         
+            rpc.applicationData=result;
+            reports.breadcrumbs.push({ text: i18n.sprintf("%s: %s reports ", value, this.appNames[app]),
+                                       handler: this[fnName].createDelegate(this,[app, value]),
+                                      drilldownType : rpc.drilldownType,
+                                      drilldownValue : rpc.drilldownValue                                                                    
+                                     });
+            this.reportDetails.buildReportDetails(); // XXX take to correct page
+            reports.progressBar.hide();
+        }.createDelegate(this), reports.reportsDate, reports.numDays, app, value);
     },
 
     getApplicationDataForUser: function(app, user)
@@ -1259,11 +1249,11 @@ Ung.ReportDetails = Ext.extend(Object, {
                     iconCls:'export-excel',
                     handler : new Function("window.open('" + summaryItem.csvUrl + "');")
                 }
-                      //                                                                                                                '-',
-                      //                                                                                                                { tooltip:this.i18n._('Export Printer'),
-                      //                                                                                                                  iconCls:'export-printer',
-                      //                                                                                                                  handler : new Function("window.open('" + summaryItem.printerUrl + "');")
-                      //                                                                                                                }
+                //  '-',
+                //  { tooltip:this.i18n._('Export Printer'),
+                //    iconCls:'export-printer',
+                //    handler : new Function("window.open('" + summaryItem.printerUrl + "');")
+                //  }
                      ],
                 title:this.i18n._('Key Statistics'),
                 stripeRows: true,
@@ -1291,7 +1281,6 @@ Ung.ReportDetails = Ext.extend(Object, {
             items : items
 
         });
-       
     },
 
     buildDetailSection: function (appName, section)
@@ -1436,11 +1425,8 @@ Ung.ReportDetails = Ext.extend(Object, {
                             for (var i = 0; i < result.list.length; i++) {
                                 data.push(result.list[i].list);
                             }
-                            //store.reader.readRecords(data);
-                            //store.reader.read({rows:data.length,list:data});
                             store.proxy.data = data;
                             store.load({params:{start:0, limit:40}});
-                            //store.loadData(data);
                             store.initialData.loaded = true;
                             reports.progressBar.hide();
                         }.createDelegate(this), store.initialData.reportsDate, reports.numDays, store.initialData.selectedApplication, store.initialData.name, store.initialData.drilldownType, store.initialData.drilldownValue);
