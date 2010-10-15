@@ -358,13 +358,16 @@ Ung.Reports = Ext.extend(Object,{
                     }),
                     loader : new Ext.tree.TreeLoader(),
                     listeners : {
-                        'load' : function(node)
-                        {
+                        'load' : function(node) {
                             // Select the first element form the tableOfContent tree to load it's report details
                             // XXX Ext.getCmp('tree-panel').getRootNode().firstChild is null
                             // in ext 2.3 this passing null to select causes an exception
                             // bug #8105
-                            // Ext.getCmp('tree-panel').getSelectionModel().select(Ext.getCmp('tree-panel').getRootNode().firstChild);
+                            //Ext.getCmp('tree-panel').getSelectionModel().select(Ext.getCmp('tree-panel').getRootNode().firstChild);
+                        //this.selectFirstChild.defer(1,this);
+                            if(this.getRootNode().firstChild != null) {
+                                this.getSelectionModel().select(this.getRootNode().firstChild);
+                            }
                         },
                         'render' : function(tp)
                         {
@@ -663,23 +666,22 @@ Ung.Reports = Ext.extend(Object,{
         }
         if(found){
             this.numDays =  this.reportDatesItems[i].numDays;   
-            rpc.reportingManager.getTableOfContents(function(result, exception)
-                                                    {
-                                                        if (exception) {
-                                                            if (!handleTimeout(exception)) {
-                                                                Ext.MessageBox.alert("Failed", exception.message);
-                                                            }
-                                                            return;
-                                                        }
-    
-                                                        this.tableOfContents = result;
-                                                        var treeNodes = this.getTreeNodesFromTableOfContent(this.tableOfContents);
-                                                        Ext.getCmp('tree-panel').getSelectionModel().clearSelections();
-                                                        var root= Ext.getCmp('tree-panel').getRootNode();
-                                                        root.collapse(true);
-                                                        root.attributes.children=treeNodes;
-                                                        Ext.getCmp('tree-panel').getLoader().load(root);
-                                                    }.createDelegate(this), this.reportsDate, this.numDays);        
+            rpc.reportingManager.getTableOfContents( function(result, exception) {
+                if (exception) {
+                    if (!handleTimeout(exception)) {
+                        Ext.MessageBox.alert("Failed", exception.message);
+                    }
+                    return;
+                }
+
+                this.tableOfContents = result;
+                var treeNodes = this.getTreeNodesFromTableOfContent(this.tableOfContents);
+                Ext.getCmp('tree-panel').getSelectionModel().clearSelections();
+                var root= Ext.getCmp('tree-panel').getRootNode();
+                root.collapse(true);
+                root.attributes.children=treeNodes;
+                Ext.getCmp('tree-panel').getLoader().load(root);
+            }.createDelegate(this), this.reportsDate, this.numDays);        
         }
     },
     getDateRangeText : function(selectedDate){
@@ -1026,6 +1028,7 @@ Ung.ReportDetails = Ext.extend(Object, {
             this.tabPanel=new Ext.TabPanel({
                 anchor: '100% 100%',
                 autoWidth : true,
+                border: false,
                 defaults: {
                     anchor: '100% 100%',
                     autoWidth : true,
@@ -1208,7 +1211,8 @@ Ung.ReportDetails = Ext.extend(Object, {
                 sortable: false,
                 dataIndex: 'value',
                 renderer: function (value, medata, record) {
-                    var unit = record.data.unit,s;
+                    var unit = record.data.unit;
+                    var s;
                     if (unit && unit.indexOf('bytes') == 0) {
                         if (value < 1000000) {
                             value = Math.round(value/1000);
@@ -1234,7 +1238,10 @@ Ung.ReportDetails = Ext.extend(Object, {
                 }.createDelegate(this)
             });
             items.push(new Ext.grid.GridPanel({
-                style : 'margin-top:45px;',              
+                style : 'margin-top:45px;',
+                autoScroll : true,
+                width: 330,
+                height: 203,
                 store: new Ext.data.SimpleStore({
                     fields: [
                         {name: 'label'},
@@ -1270,6 +1277,9 @@ Ung.ReportDetails = Ext.extend(Object, {
         return new Ext.Panel({
             title : section.title,
             layout:'table',
+            autoWidth : true,
+            //autoScroll: true,
+            border : false,
             defaults: {
                 border: false,
                 columnWidth: 0.5 ,
