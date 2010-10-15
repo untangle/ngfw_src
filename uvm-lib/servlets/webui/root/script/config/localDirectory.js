@@ -29,6 +29,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 name : 'Local Users',
                 helpSource : 'local_directory',
                 title : this.i18n._('Local Users'),
+                hasImportExport: false, /* password not actually in grid - cant export */
                 settingsCmp : this,
                 height : 500,
                 paginated : false,
