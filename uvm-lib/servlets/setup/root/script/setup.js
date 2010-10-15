@@ -513,7 +513,7 @@ Ung.SetupWizard.Registration = Ext.extend( Object, {
     },
     saveRegistrationInfo : function( handler )
     {
-        Ext.MessageBox.wait( i18n._( "Saving Registration Info" ), i18n._( "Please wait" ));
+        Ext.MessageBox.wait( i18n._( "Saving Information" ), i18n._( "Please wait" ));
 
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
     },

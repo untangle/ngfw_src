@@ -79,14 +79,10 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         },
         buildRegistration : function() {
             var info = this.getRegistrationInfo();
-            var misc = null;
             var environment = null;
             var other = "";
-            if ( info.misc != null ) misc = info.misc.map;
 
-            if ( misc == null ) misc = {};
-
-            environment = misc["environment"];
+            environment = info.environment;
             if (( environment != null ) &&
                 ( environment != "" ) &&
                 ( environment != "my-business" ) &&
@@ -281,21 +277,14 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             info.lastName = this.panelRegistration.find( "name", "lastName" )[0].getValue();
             info.emailAddr   = this.panelRegistration.find( "name", "emailAddr" )[0].getValue();
             info.numSeats    = this.panelRegistration.find( "name", "numSeats" )[0].getValue();
-            info.misc.map = this.getMisc();
-            
-            return true;
-        },
-        getMisc : function() {
-            var misc = {};
-            misc.companyName = this.panelRegistration.find( "name", "companyName" )[0].getValue();
-
+            info.companyName = this.panelRegistration.find( "name", "companyName" )[0].getValue();
             var value = this.panelRegistration.find( "name", "environment" )[0].getGroupValue();
             if ( value == "other" ) {
                 value = this.panelRegistration.find( "name", "environment-other" )[0].getValue();
             }
-            if ( value != null ) misc.environment = value;
+            if ( value != null ) info.environment = value;
 
-            return misc;
+            return true;
         },
         applyAction : function()
         {

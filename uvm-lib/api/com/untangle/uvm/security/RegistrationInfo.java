@@ -67,7 +67,6 @@ public class RegistrationInfo implements Serializable
     private String phone;
     private String environment;
     private int numSeats;
-    private Map<String,String> misc;
 
     public RegistrationInfo() { }
 
@@ -87,7 +86,6 @@ public class RegistrationInfo implements Serializable
         this.lastName = lastName;
         this.emailAddr = emailAddr;
         this.numSeats = numSeats;
-        this.misc = new Hashtable<String,String>();
     }
 
     /**
@@ -108,6 +106,7 @@ public class RegistrationInfo implements Serializable
         state = parseEntry(entries,"state",state);
         zipcode = parseEntry(entries,"zipcode",zipcode);
         emailAddr = parseEntry(entries,"emailAddr",emailAddr);
+        environment = parseEntry(entries,"environment",environment);
         phone = parseEntry(entries,"phone",phone);
 
         numSeats = -1;
@@ -119,13 +118,6 @@ public class RegistrationInfo implements Serializable
                 logger.warn( "Invalid number of seats: '" + sa[0].trim() + "'" );
                 numSeats = -1;
             }
-        }
-
-        /* Put any remaining values into misc */
-        misc = new Hashtable<String,String>( entries.size());
-        for(Object key : entries.keySet()) {
-            sa = entries.get( key );
-            if (sa != null && sa.length > 0 && sa[0].length() > 0) misc.put( (String)key, sa[0].trim());
         }
     }
 
@@ -326,10 +318,8 @@ public class RegistrationInfo implements Serializable
             appendToForm(result, "zipcode", zipcode );
             appendToForm(result, "emailAddr", emailAddr );
             appendToForm(result, "phone", phone );
+            appendToForm(result, "environment", environment );
             appendToForm(result, "numSeats", String.valueOf( numSeats));
-            for ( Map.Entry<String,String> entry : misc.entrySet()) {
-                appendToForm(result, entry.getKey(), entry.getValue());
-            }
         } catch (UnsupportedEncodingException x) {
             // Can't happen.
         }
@@ -358,9 +348,8 @@ public class RegistrationInfo implements Serializable
             r.append(", zipcode = ").append(state);
         if (phone != null)
             r.append(", phone = ").append(state);
-        for ( Map.Entry<String,String> entry : misc.entrySet()) {
-            r.append(", " ).append( entry.getKey()).append( " = " ).append( entry.getValue());
-        }
+        if (environment != null)
+            r.append(", environment = ").append(environment);
         r.append(" ]");
         return r.toString();
     }
