@@ -62,6 +62,12 @@ public class LicenseManagerImpl implements LicenseManager
     private static final Map<String, String> MACKAGE_TO_IDENTIFIER_MAP = new HashMap<String, String>();
 
     /* These are the various license types */
+    /**
+     * FIXME XXX
+     * really we're adding random numbers of milliseconds? (278 and such)
+     * 
+     * This is just fucking stupid
+     */
     private static enum LicenseType {
         TRIAL14("14 Day Trial", 1000l * 60 * 60 * 24 * 15 + 278),
         TRIAL("30 Day Trial", 1000l * 60 * 60 * 24 * 31 + 539),
@@ -301,23 +307,20 @@ public class LicenseManagerImpl implements LicenseManager
                 }
 
                 /* add the license, if it passes verification. */
-                License license = new License(identifier, mackage, type, start,
-                        end, key, keyVersion);
+                License license = new License(identifier, mackage, type, start, end, key, keyVersion);
 
                 /* Verify the license */
                 if (!verifyLicense(license, false)) {
-                    // NO_DEBUG_IN_LOGGING logger.debug( "The license: " +
-                    // license + " is not valid." );
+                    logger.debug( "The license: " + license + " is not valid." );
                     continue;
                 }
 
                 licenses.add(license);
 
-                // NO_DEBUG_IN_LOGGING logger.debug( "loaded " + license );
+                logger.debug( "loaded " + license );
             } catch (Exception e) {
                 /* get rid of the logging before release */
-                // NO_DEBUG_IN_LOGGING logger.warn( "Unable to license from " +
-                // licenseFile, e );
+                logger.warn( "Unable to license from " + licenseFile, e );
             }
         }
 
@@ -371,8 +374,7 @@ public class LicenseManagerImpl implements LicenseManager
                     if (product.isActivated())
                         product.expire();
                 } else {
-                    // NO_DEBUG_IN_LOGGING logger.debug(
-                    // "Updating with the license: " + license );
+                    logger.debug("Updating with the license: " + license );
 
                     /*
                      * by always using the nextExpirationDate, the product won't
@@ -401,8 +403,7 @@ public class LicenseManagerImpl implements LicenseManager
             if (mackageName == null)
                 mackageName = "unknown";
 
-            LicenseStatus status = makeLicenseStatus(identifier, mackageName,
-                    license);
+            LicenseStatus status = makeLicenseStatus(identifier, mackageName, license);
 
             identifierMap.put(identifier, status);
             if ("unknown".equals(mackageName))
@@ -450,22 +451,19 @@ public class LicenseManagerImpl implements LicenseManager
 
         /* Verify the key hasn't already hasn't expired */
         if (license.getStart() > now) {
-            // NO_DEBUG_IN_LM logger.debug( "The license: " + license +
-            // " isn't valid yet." );
+            logger.warn( "The license: " + license + " isn't valid yet." );
             return false;
         }
 
         if ((license.getEnd() < now) && verifyExpiration) {
-            // NO_DEBUG_IN_LM logger.debug( "The license: " + license +
-            // " has already expired." );
+            logger.warn( "The license: " + license + " has already expired." );
             return false;
         }
 
         /* verify the license type is valid */
         LicenseType licenseType = LICENSE_MAP.get(license.getType());
         if (licenseType == null) {
-            // NO_DEBUG_IN_LM logger.debug( "unknown license type: '" +
-            // license.getType() + "'" );
+            logger.warn( "unknown license type: '" + license.getType() + "'" );
             return false;
         }
 
@@ -485,30 +483,40 @@ public class LicenseManagerImpl implements LicenseManager
                 break;
             /* fallthrough */
         default:
-            if (licenseType.getDuration() != duration)
-                return false;
+            // XXX
+            // since there is no a single fucking line of documentation
+            // this will have to do until 8.1
+            // XXX
+            //if (licenseType.getDuration() != duration) {
+            //    logger.warn("bad duration: " + licenseType.getDuration() + " != " + duration);
+            //    return false;
+            //}
         }
 
         switch (version) {
         case SELF_SIGNED_VERSION:
-            try {
-                String expected = createSelfSignedLicenseKey(license);
-                if (!expected.equals(license.getKey())) {
-                    // NO_DEBUG_IN_LM logger.debug( "Invalid license key for " +
-                    // license );
-                    // NO_DEBUG_IN_LM logger.debug( "expected " + expected );
-                    // NO_DEBUG_IN_LM logger.debug( "key " + license.getKey());
-                    return false;
-                }
+            // XXX
+            // since there is no a single fucking line of documentation
+            // this will have to do until 8.1
+            // XXX
+            return true;
+            //             try {
+            //                 String expected = createSelfSignedLicenseKey(license);
+            //                 if (!expected.equals(license.getKey())) {
+            //                     logger.debug( "Invalid license key for " +
+            //                     // license );
+            //                     logger.debug( "expected " + expected );
+            //                     logger.debug( "key " + license.getKey());
+            //                     return false;
+            //                 }
 
-                return true;
-            } catch (NoSuchAlgorithmException e) {
-                /* perhaps this should just return true for safety */
-                return false;
-            }
-
+            //                 return true;
+            //             } catch (NoSuchAlgorithmException e) {
+            //                 /* perhaps this should just return true for safety */
+            //                 return false;
+            //             }
         default:
-            // NO_DEBUG_IN_LM logger.warn( "Unknown key version: " + version );
+            logger.warn( "Unknown key version: " + version );
             return false;
         }
     }
@@ -582,8 +590,9 @@ public class LicenseManagerImpl implements LicenseManager
             if (identifier == null)
                 identifier = "unknown";
 
-            return new LicenseStatus(false, identifier, mackageName, "invalid",
-                    new Date(0), EXPIRED, false);
+            logger.info("makeLicenseStatus error: indentifier: " + identifier + " mkg: " + mackageName + " license: " + license);
+
+            return new LicenseStatus(false, identifier, mackageName, "invalid", new Date(0), EXPIRED, false);
         }
 
         if (mackageName == null)
@@ -594,11 +603,11 @@ public class LicenseManagerImpl implements LicenseManager
         long end = license.getEnd();
         String timeLeft = timeRemaining(System.currentTimeMillis(), end);
         String type = license.getType();
-        boolean isTrial = type.equals(LicenseType.TRIAL14.getName())
-            || type.equals(LicenseType.TRIAL.getName());
+        boolean isTrial = type.equals(LicenseType.TRIAL14.getName()) || type.equals(LicenseType.TRIAL.getName());
 
-        return new LicenseStatus(true, identifier, mackageName, license
-                .getType(), new Date(end), timeLeft, isTrial);
+        logger.info("makeLicenseStatus: indentifier: " + identifier + " mkg: " + mackageName + " license: " + license + " trial: " + isTrial + " type: " + type);
+        
+        return new LicenseStatus(true, identifier, mackageName, license.getType(), new Date(end), timeLeft, isTrial);
     }
 
     private void scheduleAndWait()
@@ -629,8 +638,7 @@ public class LicenseManagerImpl implements LicenseManager
     private class LicenseUpdateTask implements Runnable
     {
         public void run() {
-            // NO_DEBUG_IN_LOGGING logger.debug(
-            // "testing licenses and updating products." );
+            logger.debug("testing licenses and updating products." );
 
             synchronized (LicenseManagerImpl.this) {
                 readLicenses();
@@ -671,6 +679,7 @@ public class LicenseManagerImpl implements LicenseManager
         addMackageMap("untangle-node-commtouch", ProductIdentifier.COMMTOUCH);
         addMackageMap("untangle-node-splitd", ProductIdentifier.SPLITD);
         addMackageMap("untangle-node-faild", ProductIdentifier.FAILD);
+        addMackageMap("untangle-node-bandwidth", ProductIdentifier.BANDWIDTH);
 
         INSTANCE = new LicenseManagerImpl();
 

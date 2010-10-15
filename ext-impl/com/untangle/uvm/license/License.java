@@ -34,8 +34,7 @@ class License
     /** the version of the key signing algorithm used */
     private final int keyVersion;
 
-    License( String identifier, String mackage, String type,
-             long start, long end, String key, int keyVersion )
+    License( String identifier, String mackage, String type, long start, long end, String key, int keyVersion )
     {
         this.productIdentifier = identifier;
         this.mackage = mackage;
