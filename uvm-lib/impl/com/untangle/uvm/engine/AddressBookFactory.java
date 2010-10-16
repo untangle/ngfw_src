@@ -37,7 +37,8 @@ class AddressBookFactory
     private PremiumAddressBook premium = null;
 
     /** remote address book */
-    private RemoteAddressBook remote = new RemoteAddressBookAdaptor(limited);
+    //private RemoteAddressBook remote = new RemoteAddressBookAdaptor(limited);
+    private RemoteAddressBook remote = limited;
 
     private AddressBookFactory() { }
 
