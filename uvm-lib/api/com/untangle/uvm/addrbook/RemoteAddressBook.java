@@ -425,7 +425,15 @@ public interface RemoteAddressBook extends LicensedProduct
      * @return True if the user is a member of the group.
      */
     public boolean isMemberOf(String user, String group);
-        
+
+    /**
+     * Returns a list of groups the user is in
+     * XXX this is implemented inefficiently
+     * @param user 
+     * @return The list of groups
+     */
+    public List<String> memberOf(String user);
+    
     /**
      * Refresh the group cache, normally this is done every x minutes.
      */

@@ -71,11 +71,13 @@ class AddressBookFactory
 
             this.premium = constructor.newInstance( this.limited );
             this.premium.init();
-            this.remote = new RemoteAddressBookAdaptor(this.premium);
+            //this.remote = new RemoteAddressBookAdaptor(this.premium);
+            this.remote = this.premium;
         } catch ( Exception e ) {
             logger.debug( "Could not load premium AddressBook: " + className);
             this.premium = null;
-            this.remote = new RemoteAddressBookAdaptor(this.limited);
+            //this.remote = new RemoteAddressBookAdaptor(this.limited);
+            this.remote = this.limited;
         }
     }
 
