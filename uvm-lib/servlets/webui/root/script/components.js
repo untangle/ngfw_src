@@ -3340,6 +3340,8 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
                 }
                 if(this.addMode) {
                     this.grid.getStore().insert(0, [this.record]);
+                    this.grid.startEditing(0,0);
+                    this.grid.stopEditing();
                     this.grid.updateChangedData(this.record, "added");
                 }
             }
@@ -3361,6 +3363,8 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 
             if(this.addMode) {
                 this.grid.getStore().insert(0, [this.record]);
+                this.grid.startEditing(0,0);
+                this.grid.stopEditing();
                 this.grid.updateChangedData(this.record, "added");
             }
         }
@@ -4103,6 +4107,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 ddGroup: "GridDD",
                 // copy:false,
                 notifyDrop : function(dd, e, data){
+                
                     var sm = this.getSelectionModel();
                     var rows = sm.getSelections();
                     var cindex = dd.getDragData(e).rowIndex;    // Here is need

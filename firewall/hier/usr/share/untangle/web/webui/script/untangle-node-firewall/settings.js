@@ -270,6 +270,8 @@ if (!Ung.hasResource["Ung.Firewall"]) {
 
                                             if (this.addMode) {
                                                 this.grid.getStore().insert(0, [this.record]);
+                                                this.grid.startEditing(0,0);
+                                                this.grid.stopEditing();
                                                 this.grid.updateChangedData(this.record, "added");
                                             }
                                         }
