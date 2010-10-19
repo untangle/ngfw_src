@@ -3343,8 +3343,10 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
                 }
                 if(this.addMode) {
                     this.grid.getStore().insert(0, [this.record]);
-                    this.grid.startEditing(0,0);
-                    this.grid.stopEditing();
+                    if(this.grid.hasReorder) {
+                        this.grid.startEditing(0,0);
+                        this.grid.stopEditing();
+                    }
                     this.grid.updateChangedData(this.record, "added");
                 }
             }
@@ -3366,8 +3368,10 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
 
             if(this.addMode) {
                 this.grid.getStore().insert(0, [this.record]);
-                this.grid.startEditing(0,0);
-                this.grid.stopEditing();
+                if(this.grid.hasReorder) {
+                    this.grid.startEditing(0,0);
+                    this.grid.stopEditing();
+                }
                 this.grid.updateChangedData(this.record, "added");
             }
         }
