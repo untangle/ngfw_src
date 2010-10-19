@@ -127,6 +127,9 @@ Ext.override( Ext.form.Field, {
             this.hideContainer();
         }
         return this;
+    },
+    isContainerVisible: function() {
+        return this.getEl().up('.x-form-item').isDisplayed();
     }
 });
 
