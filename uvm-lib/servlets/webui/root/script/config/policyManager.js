@@ -1079,7 +1079,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         
                         //                var isEmptyPolicy = rpc.nodeManager.isEmptyPolicy(rackDeletedList[i]);
                         //                if (!isEmptyPolicy) {
-                        Ext.MessageBox.alert(i18n._("Failed"), String.format(this.i18n._("The rack named {0} cannot be removed because it is not empty.  Please remove all products first."),rackDeletedList[i].name));
+                        Ext.MessageBox.alert(i18n._("Failed"), String.format(this.i18n._("The rack named {0} cannot be removed because it is not empty.  Please remove all applications first."),rackDeletedList[i].name));
                         return false;
                     }
                 } catch (e) {
