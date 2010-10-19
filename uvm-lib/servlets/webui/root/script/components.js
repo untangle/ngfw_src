@@ -3935,7 +3935,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 handler : this.importHandler.createDelegate(this)
             }, {
                 text : i18n._('Export'),
-                tooltip : i18n._('Export From File'),
+                tooltip : i18n._('Export To File'),
                 iconCls : 'icon-export',
                 name : 'export',
                 parentId : this.getId(),
