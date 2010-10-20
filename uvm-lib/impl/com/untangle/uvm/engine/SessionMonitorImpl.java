@@ -133,29 +133,34 @@ class SessionMonitorImpl implements SessionMonitor
                 com.untangle.uvm.node.IPSessionDesc serverSide = argonSession.argonHook().getServerSide();
                 int priority = argonSession.netcapSession().clientQosMark();
 
-                if ( _matches(clientSide,session) || _matches(serverSide,session) ) {
-                    session.setPolicy(argonSession.argonHook().getPolicy().getName());
-                    session.setBypassed(Boolean.FALSE);
-                    session.setLocalTraffic(Boolean.FALSE);
-                    session.setClientIntf(new Integer(clientSide.clientIntf()));
-                    session.setServerIntf(new Integer(serverSide.serverIntf()));
+                try {
+                    if ( _matches(clientSide,session) || _matches(serverSide,session) ) {
+                        session.setPolicy(argonSession.argonHook().getPolicy().getName());
+                        session.setBypassed(Boolean.FALSE);
+                        session.setLocalTraffic(Boolean.FALSE);
+                        session.setClientIntf(new Integer(clientSide.clientIntf()));
+                        session.setServerIntf(new Integer(serverSide.serverIntf()));
 
-                    /**
-                     * The conntrack entry shows that this session has been redirect to the local host
-                     * We need to overwrite that with the correct info
-                     */
-                    session.setPostNatClient(serverSide.clientAddr());
-                    session.setPostNatServer(serverSide.serverAddr());
-                    session.setPostNatClientPort(serverSide.clientPort());
-                    session.setPostNatServerPort(serverSide.serverPort());
+                        /**
+                         * The conntrack entry shows that this session has been redirect to the local host
+                         * We need to overwrite that with the correct info
+                         */
+                        session.setPostNatClient(serverSide.clientAddr());
+                        session.setPostNatServer(serverSide.serverAddr());
+                        session.setPostNatClientPort(serverSide.clientPort());
+                        session.setPostNatServerPort(serverSide.serverPort());
 
-                    /**
-                     * Only have one priority per session
-                     * Assume both client and server are the same
-                     */
-                    session.setPriority(priority);
-                    foundUvmSession = true;
-                    break;
+                        /**
+                         * Only have one priority per session
+                         * Assume both client and server are the same
+                         */
+                        session.setPriority(priority);
+                        foundUvmSession = true;
+                        break;
+                    }
+                } catch (Exception e) {
+                    /* sometimes argonHook or getPolicy return null */
+                    /* if anything weird happens just assume it doesn't match */
                 }
             }
 
