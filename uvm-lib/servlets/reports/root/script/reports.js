@@ -952,6 +952,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                     return '<a href="javascript:reports.getTableOfContentsFor' + upperName + '(\''+ value + '\')">' + value + '</a>';
                 }.createDelegate(this)
             }], title:listTitle,
+            autoHeight: true,
             stripeRows: true,
             hideHeaders: true,
             enableHdMenu : false,
@@ -961,20 +962,17 @@ Ung.ReportDetails = Ext.extend(Object, {
 
     buildUserList: function()
     {
-        return this.buildDrilldownList('user', this.i18n._('User'),
-                                       this.i18n._('User List'));
+        return this.buildDrilldownList('user', this.i18n._('User'), this.i18n._('User List'));
     },
 
     buildHostList: function()
     {
-        return this.buildDrilldownList('host', this.i18n._('Host'),
-                                       this.i18n._('Host List'));
+        return this.buildDrilldownList('host', this.i18n._('Host'), this.i18n._('Host List'));
     },
 
     buildEmailList: function()
     {
-        return this.buildDrilldownList('email', this.i18n._('Email'),
-                                       this.i18n._('Email List'));
+        return this.buildDrilldownList('email', this.i18n._('Email'), this.i18n._('Email List'));
     },
 
     buildReportDetails: function()
@@ -1097,7 +1095,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                 columns: 2
             },
             items : items
-        })        
+        });
         
     },
     getHighlightHTML: function(summaryItem,smallIcons) {
