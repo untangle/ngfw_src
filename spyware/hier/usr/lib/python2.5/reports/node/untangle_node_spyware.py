@@ -375,7 +375,7 @@ class HourlyRates(Graph):
                 sw_accesses = [0,]
 
             ks = KeyStatistic(_('Avg Suspicious Traffic'),
-                              sum(sw_accesses) / len(rp),
+                              "%.2f" % sum(sw_accesses) / len(rp),
                               _('Detected')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Max Suspicious Traffic'),

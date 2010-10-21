@@ -175,7 +175,7 @@ class BandwidthUsage(Graph):
         curs = conn.cursor()
         try:
             # kB
-            sums = ["COALESCE(SUM(rx_bytes + tx_bytes) / 1000, 0)"]
+            sums = ["ROUND((COALESCE(SUM(rx_bytes + tx_bytes) / 1000, 0)::numeric, 2)"]
 
             extra_where = []
             if host:
@@ -200,9 +200,12 @@ class BandwidthUsage(Graph):
             if not throughput:
                 throughput = [0,]
                 
-            ks = KeyStatistic(_('Avg Data Rate'), sum(throughput)/len(throughput), N_('kB/s'))
+            ks = KeyStatistic(_('Avg Data Rate'),
+                              "%.2f" % sum(throughput)/len(throughput),
+                              N_('kB/s'))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Data Rate'), max(throughput), N_('kB/s'))
+            ks = KeyStatistic(_('Max Data Rate'), max(throughput), 
+                              N_('kB/s'))
             lks.append(ks)
 
             plot = Chart(type=TIME_SERIES_CHART,
