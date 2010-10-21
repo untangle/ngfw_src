@@ -195,8 +195,7 @@ int  netcap_set_verdict ( u_int32_t packet_id, int verdict, u_char* buf, int len
     return netcap_set_verdict_mark( packet_id, verdict, buf, len, 0, 0 );
 }
 
-int  netcap_set_verdict_mark( u_int32_t packet_id, int verdict, u_char* buf, int len, int set_mark, 
-                              u_int32_t mark )
+int  netcap_set_verdict_mark( u_int32_t packet_id, int verdict, u_char* buf, int len, int set_mark, u_int32_t mark )
 {
     int nf_verdict = -1;
 
@@ -205,7 +204,7 @@ int  netcap_set_verdict_mark( u_int32_t packet_id, int verdict, u_char* buf, int
         nf_verdict = NF_DROP;
         break;
     case NF_ACCEPT:
-      debug(10, "FLAG: NF_ACCEPTing packet %d with mark %d\n", packet_id, mark);
+        debug(10, "FLAG: NF_ACCEPTing packet %d with mark %d\n", packet_id, mark);
         nf_verdict = NF_ACCEPT;
         break;
     case NF_STOLEN:

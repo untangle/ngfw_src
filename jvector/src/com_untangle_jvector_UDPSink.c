@@ -205,7 +205,7 @@ static int _accept_packet( char* data, int data_len, netcap_pkt_t* pkt )
         
         debug( 10, "UDPSink: Sending packet using queue\n" );
         
-        if ( netcap_set_verdict( packet_id, NF_ACCEPT, (u_char*)ip_header, ip_len )) {
+        if ( netcap_set_verdict_mark( packet_id, NF_ACCEPT, (u_char*)ip_header, ip_len, 1, (u_int32_t)pkt->nfmark )) {
             return errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
         }
         

@@ -610,6 +610,7 @@ char* netcap_session_fd_tuple_print  ( netcap_session_t* sess );
 
 /* Set the verdict on a packet */
 int  netcap_set_verdict      ( u_int32_t packet_id, int verdict, u_char* buffer, int len );
+int  netcap_set_verdict_mark      ( u_int32_t packet_id, int verdict, u_char* buffer, int len, int set_mark, u_int32_t mark );
 
 
 
