@@ -186,53 +186,6 @@ class DailyUsage(Graph):
         Graph.__init__(self, 'usage', _('Usage'))
 
     @print_timing
-    def get_key_statistics(self, end_date, report_days, host=None, user=None,
-                           email=None):
-        if email:
-            return None
-
-        ed = DateFromMx(end_date)
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
-
-        query = """\
-SELECT COALESCE(max(detections), 0)::int,
-       COALESCE(sum(detections), 0)::int / %s
-FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS detections
-      FROM reports.session_totals
-      WHERE trunc_time >= %s AND trunc_time < %s
-      AND pf_protocol != ''"""
-
-        if host:
-            query += " AND hname = %s"
-        elif user:
-            query += " AND uid = %s"
-
-        query += "GROUP BY day) AS foo"
-
-        conn = sql_helper.get_connection()
-        try:
-            lks = []
-
-            curs = conn.cursor()
-
-            if host:
-                curs.execute(query, (report_days, one_week, ed, host))
-            elif user:
-                curs.execute(query, (report_days, one_week, ed, user))
-            else:
-                curs.execute(query, (report_days, one_week, ed))
-
-            r = curs.fetchone()
-            ks = KeyStatistic(_('Avg Detections'), r[1], _('detections/day'))
-            lks.append(ks)
-            ks = KeyStatistic(_('Max Detections'), r[0], _('detections/day'))
-            lks.append(ks)
-        finally:
-            conn.commit()
-
-        return lks
-
-    @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None, email=None):
         if email:
             return None
@@ -281,7 +234,7 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS detections
                                             mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
 
             ks = KeyStatistic(_('Avg Detections'),
-                              sum(detections) / len(rp),
+                              "%.2f" % (sum(detections) / len(rp)),
                               _('Blocks')+'/'+_(unit))
             lks.append(ks)
             ks = KeyStatistic(_('Max Detections'), max(detections),
@@ -291,7 +244,7 @@ FROM (SELECT date_trunc('day', trunc_time) AS day, count(*) AS detections
             plot = Chart(type=STACKED_BAR_CHART,
                          title=self.title, xlabel=_(unit),
                          ylabel=_('Detections'),
-                         major_formatter=HOUR_FORMATTER,
+                         major_formatter=TIMESTAMP_FORMATTER,
                          required_points=rp)
 
             plot.add_dataset(dates, detections, label=_('Detections'))
