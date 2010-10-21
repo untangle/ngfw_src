@@ -201,7 +201,7 @@ class BandwidthUsage(Graph):
                 throughput = [0,]
                 
             ks = KeyStatistic(_('Avg Data Rate'),
-                              "%.2f" % sum(throughput)/len(throughput),
+                              "%.2f" % (sum(throughput)/len(throughput)),
                               N_('kB/s'))
             lks.append(ks)
             ks = KeyStatistic(_('Max Data Rate'), max(throughput), 
