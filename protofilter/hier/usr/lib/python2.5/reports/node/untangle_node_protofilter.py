@@ -62,6 +62,9 @@ class Protofilter(Node):
 
         ft.dimensions.append(Column('pf_protocol', 'text'))
 
+    def parents(self):
+        return ['untangle-vm',]
+
     def get_toc_membership(self):
         return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
 
