@@ -142,7 +142,7 @@ class OpenVpnManager
         "proto udp",
         "resolv-retry 20",
         "keepalive " + DEFAULT_PING_TIME + " " + DEFAULT_PING_TIMEOUT,
-        "cipher" + SUPPORTED_CIPHER,
+        "cipher " + SUPPORTED_CIPHER,
         "nobind",
         "mute-replay-warnings",
         "ns-cert-type server",
