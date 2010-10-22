@@ -86,7 +86,7 @@ public class CPDImpl extends AbstractNode implements CPD
     private final BlingBlinger blockBlinger;
     private final BlingBlinger authorizeBlinger;
 
-    private static final String defaultUser = "captive portal user";
+    public static final String DEFAULT_USERNAME = "captive portal user";
     
     private CPDSettings settings;
 
@@ -373,7 +373,7 @@ public class CPDImpl extends AbstractNode implements CPD
         if ( this.getRunState() ==  NodeState.RUNNING ) {
             /* Enforcing this here so the user can't pick another username at login. */
             if ( this.settings.getBaseSettings().getAuthenticationType() == AuthenticationType.NONE) {
-                username = this.defaultUser;
+                username = this.DEFAULT_USERNAME;
             }
             /* This is split out for debugging */
             isAuthenticated = this.manager.authenticate(address, username, password, credentials);

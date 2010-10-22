@@ -249,7 +249,8 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
                                 MapValue cacheEntry = cache.get(addr);
 
                                 /* if cache miss - add to cache */
-                                if ( cacheEntry == null) { /* cache miss */
+                                /* don't count DEFAULT_USERNAME as a valid user */
+                                if ( cacheEntry == null && ! CPDImpl.DEFAULT_USERNAME.equals(username)) { /* cache miss */
                                     addCache(addr,username);
                                 }
                                 /* if cache hit - update expire time as its still in the database */
