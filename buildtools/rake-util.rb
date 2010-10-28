@@ -100,7 +100,7 @@ class BuildEnv
 
   SERVLET_COMMON = "./servlet/common"
 
-  attr_reader :home, :prefix, :staging, :devel, :deb, :isDevel, :grabbag, :downloads, :servletcommon, :include, :installTarget
+  attr_reader :home, :prefix, :staging, :devel, :deb, :isDevel, :grabbag, :downloads, :servletcommon, :include, :installTarget, :i18nTarget, :hierTarget
   attr_writer :prefix, :target, :isDevel
 
   def initialize(home, name)
@@ -134,6 +134,8 @@ class BuildEnv
     [@devel, @devel, @grabbag].each { |t| ensureDirectory(t) }
 
     @installTarget = InstallTarget.new(self['install'], [], "#{name}-install")
+    @i18nTarget = InstallTarget.new(self['i18n'], [], "#{name}-i18n")
+    @hierTarget = InstallTarget.new(self['hier'], [], "#{name}-hier")
   end
 
   def BuildEnv::downloads

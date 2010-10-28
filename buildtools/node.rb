@@ -91,7 +91,7 @@ class NodeBuilder
       JavaMsgFmtTarget.make_po_targets(node, po_dir,
                                        "#{node.distDirectory}/usr/share/untangle/lang/",
                                        name).each do |t|
-        buildEnv.installTarget.register_dependency(t)
+        buildEnv.i18nTarget.register_dependency(t)
       end
     end
 
@@ -101,7 +101,7 @@ class NodeBuilder
     if (0 < hierFiles.length)
       ms = MoveSpec.new("#{home}/#{dirName}/hier", hierFiles, node.distDirectory)
       cf = CopyFiles.new(node, ms, 'hier', buildEnv.filterset)
-      node.registerTarget('hier', cf)
+      buildEnv.hierTarget.register_dependency(cf)
     end
 
     script_dir = "#{home}/#{dirName}/hier/usr/share/untangle/web/webui/script"
