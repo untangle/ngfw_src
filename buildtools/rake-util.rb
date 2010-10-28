@@ -317,6 +317,9 @@ class JavaCompiler
 end
 
 class MoveSpec
+
+  attr_reader :dir, :pattern, :dest, :name
+  
   def initialize(dir, pattern, dest = nil, name = nil)
     @dir = dir
     @pattern = pattern

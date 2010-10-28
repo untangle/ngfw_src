@@ -248,6 +248,14 @@ class CopyFiles < Target
     @targetName = "copyfiles:#{package.name}-#{taskName}"
     deps = [];
 
+    begin
+      d = moveSpecs.dir
+    rescue
+      d = moveSpecs[-1].dir
+    end
+
+    info "[hier    ] #{d.sub(/.\/(.+)\/hier/, '\1')}" if d =~ /hier/
+    
     [moveSpecs].flatten.each do |moveSpec|
 
       moveSpec.each_move(destBase) do |src, dest|
