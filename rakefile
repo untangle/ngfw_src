@@ -56,10 +56,12 @@ task :hier => BuildEnv::SRC.hierTarget
 
 task :devel => [BuildEnv::SRC['install'], BuildEnv::SRC.installTarget, :hier]
 
+task :jslint => BuildEnv::SRC.jsLintTarget
+  
 task :i18n => BuildEnv::SRC.i18nTarget
 
 # See rake-util.rb, we check the arguments for "pkgs"
-task :install => [BuildEnv::SRC['install'], BuildEnv::SRC.installTarget, :i18n] do
+task :install => [:devel, :i18n, :jslint] do
   # FIXME: hrm, we're taking init scripts from the staging area under
   # debian/packagename/... and put it back under debian/ ????
   FileList["./debian/**/etc/init.d/*"].each do |f|

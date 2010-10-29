@@ -104,8 +104,14 @@ class NodeBuilder
       buildEnv.hierTarget.register_dependency(cf)
     end
 
+    FileList["#{home}/#{dirName}/**/*.js"].each do |f|
+      jsl = JsLintTarget.new(node, f)
+      buildEnv.jsLintTarget.register_dependency(jsl)
+    end
+
     script_dir = "#{home}/#{dirName}/hier/usr/share/untangle/web/webui/script"
     if File.exist? script_dir
+      
       YuiCompressorTarget.make_min_targets(node, script_dir,
                                        "#{node.distDirectory}/usr/share/untangle/web/webui/script",
                                        "js").each do |t|
