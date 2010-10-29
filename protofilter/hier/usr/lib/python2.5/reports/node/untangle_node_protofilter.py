@@ -38,6 +38,7 @@ from reports import Report
 from reports import STACKED_BAR_CHART
 from reports import SummarySection
 from reports import TIME_OF_DAY_FORMATTER
+from reports import TIMESTAMP_FORMATTER
 from reports.engine import Column
 from reports.engine import FactTable
 from reports.engine import HOST_DRILLDOWN

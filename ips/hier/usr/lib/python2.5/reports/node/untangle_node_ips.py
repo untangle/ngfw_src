@@ -37,6 +37,7 @@ from reports import Report
 from reports import STACKED_BAR_CHART
 from reports import SummarySection
 from reports import TIME_OF_DAY_FORMATTER
+from reports import TIMESTAMP_FORMATTER
 from reports.engine import Column
 from reports.engine import FactTable
 from reports.engine import HOST_DRILLDOWN
@@ -309,7 +310,7 @@ class DailyUsage(Graph):
             plot = Chart(type=STACKED_BAR_CHART,
                          title=self.title, xlabel=_(unit),
                          ylabel=_('Attacks'),
-                         major_formatter=HOUR_FORMATTER,
+                         major_formatter=TIMESTAMP_FORMATTER,
                          required_points=rp)
 
             plot.add_dataset(dates, attacks, label=_('Attacks'))
