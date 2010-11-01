@@ -1123,7 +1123,7 @@ Ung.ReportDetails = Ext.extend(Object, {
             var printargs = [
                                 ['rdate',reports.reportsDate.time].join('='),
                                 ['duration',reports.numDays].join('='),
-                                ['aname',appName].join('='),
+                                ['aname',appName].join('=')
                             ].join('&');
             //                            console.log(printargs);
             items.push({
@@ -1137,7 +1137,7 @@ Ung.ReportDetails = Ext.extend(Object, {
             var summaryItem = section.summaryItems.list[i];       
 
         if (summaryItem.stringTemplate) {
-            str = this.getHighlightHTML(summaryItem,false)
+            str = this.getHighlightHTML(summaryItem,false);
             columns = [];
             items.push({html:str,colspan:2});
         } else {
@@ -1158,7 +1158,7 @@ Ung.ReportDetails = Ext.extend(Object, {
             columns = [];
 
             if (summaryItem.plotType == 'pie-chart') {
-                columnTwoWidth = 150;
+                columnTwoWidth = 135;
                 columns.push({
                     id:'color',
                     header: "Color",
