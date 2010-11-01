@@ -899,6 +899,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                 }.createDelegate(this)
             }],
             title:this.i18n._('Application List'),
+            autoHeight: true,
             stripeRows: true,
             hideHeaders: true,
             enableHdMenu : false,
@@ -1247,19 +1248,18 @@ Ung.ReportDetails = Ext.extend(Object, {
                     iconCls:'export-excel',
                     handler : new Function("window.open('" + summaryItem.csvUrl + "');")
                 }
-                //  '-',
-                //  { tooltip:this.i18n._('Export Printer'),
-                //    iconCls:'export-printer',
-                //    handler : new Function("window.open('" + summaryItem.printerUrl + "');")
-                //  }
+                      //  '-',
+                      //  { tooltip:this.i18n._('Export Printer'),
+                      //    iconCls:'export-printer',
+                      //    handler : new Function("window.open('" + summaryItem.printerUrl + "');")
+                      //  }
                      ],
                 title:this.i18n._('Key Statistics'),
                 stripeRows: true,
                 hideHeaders: true,
                 enableHdMenu : false,
                 enableColumnMove: false
-            })
-                      );
+            }));
         }
         }        
         return new Ext.Panel({
