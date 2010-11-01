@@ -354,18 +354,17 @@ public abstract class UrlList
                 }
 
                 String newVersion;
-                boolean update;
+                boolean update = true;
                 Matcher matcher = VERSION_PATTERN.matcher(line);
                 if (matcher.find()) {
                     newVersion = matcher.group(1);
-                    update = null != matcher.group(2);
+                    update = ( null != matcher.group(2) );
                 } else {
                     logger.info("no update");
                     return;
                 }
 
-                logger.info("updating: " + dbName + " from: " + oldVersion
-                            + " to: " + newVersion);
+                logger.info("updating: " + dbName + " from: " + oldVersion + " to: " + newVersion);
 
                 if (!update) {
                     logger.warn("clearing database: " + dbName);
