@@ -241,6 +241,7 @@ JNIEXPORT void JNICALL JF_Session( setClientMark )
 
     if (session->protocol == IPPROTO_TCP) {
         netcap_tcp_set_client_mark( session, mark );
+        netcap_nfconntrack_update_mark( session, mark );
     } else {
         jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "setClientMark unsupported protocol (%i)\n",session->protocol);
     }
@@ -289,6 +290,7 @@ JNIEXPORT void JNICALL JF_Session( setServerMark )
 
     if (session->protocol == IPPROTO_TCP) {
         netcap_tcp_set_server_mark( session, mark );
+        netcap_nfconntrack_update_mark( session, mark );
     } else {
         jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "setServerMark unsupported protocol (%i)\n",session->protocol);
     }

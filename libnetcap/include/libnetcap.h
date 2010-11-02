@@ -612,6 +612,8 @@ char* netcap_session_fd_tuple_print  ( netcap_session_t* sess );
 int  netcap_set_verdict      ( u_int32_t packet_id, int verdict, u_char* buffer, int len );
 int  netcap_set_verdict_mark      ( u_int32_t packet_id, int verdict, u_char* buffer, int len, int set_mark, u_int32_t mark );
 
+/* Conntrack manipulation functions */
+int  netcap_nfconntrack_update_mark( netcap_session_t* session, u_int32_t mark);
 
 
 #endif

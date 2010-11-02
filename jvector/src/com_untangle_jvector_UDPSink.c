@@ -116,6 +116,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_write
     if ( ttl != com_untangle_jvector_UDPSink_DISABLED) pkt->ttl = ttl;
     if ( tos != com_untangle_jvector_UDPSink_DISABLED) pkt->tos = tos;
     
+    /* If first packet hasn't been sent */
     if ( pkt->packet_id != 0 ) {
         if ( _accept_packet( (char*)data, data_len, pkt ) < 0 ) {
             errlog( ERR_CRITICAL, "_accept_packet" );
@@ -204,8 +205,14 @@ static int _accept_packet( char* data, int data_len, netcap_pkt_t* pkt )
         udp_header->check = unet_udp_sum_calc( udp_len, (u_int8_t*)&ip_header->saddr, (u_int8_t*)&ip_header->daddr, (u_int8_t*)udp_header );
         
         debug( 10, "UDPSink: Sending packet using queue\n" );
-        
-        if ( netcap_set_verdict_mark( packet_id, NF_ACCEPT, (u_char*)ip_header, ip_len, 1, (u_int32_t)pkt->nfmark )) {
+
+        /**
+         * accept the packet using NF_REPEAT with a special mark so that we won't get stuck in a loop
+         * an early rule in the tune chain checks for this mark and accepts the packet before it gets queued again
+         * The reason we do this instead of just NF_ACCEPT is so that we can save the correct QoS mark in the tune chain before sending the packet
+         */
+#define MARK_BYPASS 0x01000000
+        if ( netcap_set_verdict_mark( packet_id, NF_REPEAT, (u_char*)ip_header, ip_len, 1, (u_int32_t)pkt->nfmark | MARK_BYPASS )) {
             return errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
         }
         

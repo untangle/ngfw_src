@@ -128,6 +128,10 @@ public class NetcapUDPSession extends NetcapSession
     public void clientMark(int newmark)
     {
         this.clientTraffic.mark(newmark);
+
+        /* ignore the packet specific bits */
+        /* pass in server traffic because it uses it to check for the first_packet_id */
+        setSessionMark(pointer.value(), this.serverTraffic.pointer(), newmark & 0xffffff00);
     }
 
     @Override
@@ -140,6 +144,10 @@ public class NetcapUDPSession extends NetcapSession
     public void serverMark(int newmark)
     {
         this.serverTraffic.mark(newmark);
+
+        /* ignore the packet specific bits */
+        /* pass in server traffic because it uses it to check for the first_packet_id */
+        setSessionMark(pointer.value(), this.serverTraffic.pointer(), newmark & 0xffffff00);
     }
     
     private static native long   read( long sessionPointer, boolean ifClient, int timeout );
@@ -171,6 +179,9 @@ public class NetcapUDPSession extends NetcapSession
 
     /* Move over the first packet ID in the session */
     private static native void transferFirstPacketID( long sessionPointer, long serverTraffic );
+
+    /* Set the Session mark */
+    private static native void setSessionMark( long sessionPointer, long serverTrafficPointer, int mark );
     
     class UDPSessionMailbox implements PacketMailbox
     {
