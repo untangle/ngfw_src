@@ -573,6 +573,30 @@ JNIEXPORT void JNICALL JF_UDPSession( transferFirstPacketID )
 
 /*
  * Class:     com_untangle_jnetcap_NetcapUDPSession
+ * Method:    setSessionMark
+ * Signature: (JJI)I
+ */
+JNIEXPORT void JNICALL JF_UDPSession( setSessionMark )
+    ( JNIEnv *env, jclass _class, jlong session_ptr, jlong server_traffic_ptr, jint mark )
+{
+    netcap_session_t* session = (netcap_session_t*)JLONG_TO_ULONG( session_ptr );
+    netcap_pkt_t* server_traffic = (netcap_pkt_t*)JLONG_TO_ULONG( server_traffic_ptr );
+    int packet_id = 0;
+    
+    if (server_traffic != NULL)
+        packet_id = server_traffic->packet_id;
+    
+    /**
+     * This updates the mark in the conntrack table directly
+     * However if the first packet ID still exists then it hasn't been released
+     * As such the conntrack entry doesn't exist yet so there is nothing to be done
+     */
+    if (session != NULL && session->first_pkt_id == 0 && packet_id == 0) 
+        netcap_nfconntrack_update_mark( session, mark );
+}
+
+/*
+ * Class:     com_untangle_jnetcap_NetcapUDPSession
  * Method:    serverComplete
  * Signature: (JI)I
  */
