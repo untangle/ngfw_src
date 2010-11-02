@@ -154,7 +154,9 @@ class SessionMonitorImpl implements SessionMonitor
                          * Only have one priority per session
                          * Assume both client and server are the same
                          */
-                        session.setPriority(priority);
+                        if (priority != 0)
+                            session.setPriority(priority);
+                        
                         foundUvmSession = true;
                         break;
                     }
