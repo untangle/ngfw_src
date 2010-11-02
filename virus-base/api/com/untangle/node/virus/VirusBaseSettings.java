@@ -52,8 +52,8 @@ import javax.persistence.Transient;
 @Embeddable
 @SuppressWarnings("serial")
 public class VirusBaseSettings implements Serializable {
-    private boolean ftpDisableResume = true;
-    private boolean httpDisableResume = true;
+    private boolean ftpDisableResume = false;
+    private boolean httpDisableResume = false;
     private int tricklePercent = 90;
     private String ftpDisableResumeDetails = "no description";
     private String httpDisableResumeDetails = "no description";
