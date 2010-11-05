@@ -183,11 +183,13 @@ class BandwidthUsage(Graph):
             elif user:
                 extra_where.append(("uid = %(user)s" , { 'user' : user }))
 
+            time_interval = 60
             q, h = sql_helper.get_averaged_query(sums, "reports.n_openvpn_stats",
                                                  start_date,
                                                  end_date,
                                                  extra_where = extra_where,
-                                                 time_field = "time_stamp")
+                                                 time_field = "time_stamp",
+                                                 time_interval = time_interval)
             curs.execute(q, h)
 
             dates = []
@@ -195,7 +197,7 @@ class BandwidthUsage(Graph):
 
             for r in curs.fetchall():
                 dates.append(r[0])
-                throughput.append(r[1])
+                throughput.append(float(r[1]) / time_interval)
 
             if not throughput:
                 throughput = [0,]
@@ -206,6 +208,8 @@ class BandwidthUsage(Graph):
             lks.append(ks)
             ks = KeyStatistic(_('Max Data Rate'), max(throughput), 
                               N_('kB/s'))
+            lks.append(ks)
+            ks = KeyStatistic(_('Data Transferred'), sum(throughput) * time_interval, N_('kB'))
             lks.append(ks)
 
             plot = Chart(type=TIME_SERIES_CHART,
