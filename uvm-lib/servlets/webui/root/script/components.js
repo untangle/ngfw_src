@@ -3911,8 +3911,10 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             this.rowEditor.render();
             this.subCmps.push(this.rowEditor);
         }
-        this.tbar=[];
-        if(this.hasImportExport===null) {
+	if (this.tbar == null) {        
+	    this.tbar=[];
+        }
+	if(this.hasImportExport===null) {
             this.hasImportExport=this.hasAdd;
         }
         if (this.hasAdd) {
