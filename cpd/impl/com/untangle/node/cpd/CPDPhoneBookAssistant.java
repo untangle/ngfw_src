@@ -259,31 +259,43 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
                                 }
                             }
                             
+                            LinkedList<InetAddress> toRemove = new LinkedList<InetAddress>();
+                            
                             synchronized(cache) {
                                 Set<InetAddress> inets = cache.keySet();
 
                                 /**
-                                 * Remove expired entries
+                                 * Mark expired entries for removal
                                  * Also remove entries far in future (this indicateds clock shift)
                                  */
                                 for ( InetAddress inet : inets ) {
                                     MapValue value = cache.get(inet);
+                                    
                                     /**
                                      * expiration time has lapsed
                                      */
                                     if (value.expirationDate.before(now)) {
-                                        removeCache(inet);
+                                        toRemove.add(inet);
                                     }
                                     /**
                                      * too far in future - oldest entries should expire in DATABASE_CACHE_TIME
                                      */
                                     if (value.expirationDate.after(new Date(now.getTime() + (cpd.getCPDSettings().getBaseSettings().getTimeout()*1000)*10))) {
                                         logger.warn("cache entry expires too far in the future - removing");
-                                        removeCache(inet);
+                                        toRemove.add(inet);
                                     }
-
+                                    
                                 }
                             }
+
+                            /**
+                             * Actually remove the entries
+                             * We do this here to avoid concurrent modification issues
+                             */
+                            for ( InetAddress inet : toRemove ) {
+                                removeCache(inet);
+                            }
+
                         }
 
                         return true;
@@ -291,7 +303,6 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
                 };
         
             this.cpd.getNodeContext().runTransaction(tw);
-
         }
     }
    
