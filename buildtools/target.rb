@@ -248,14 +248,9 @@ class CopyFiles < Target
     @targetName = "copyfiles:#{package.name}-#{taskName}"
     deps = [];
 
-    logged = false      
     [moveSpecs].flatten.each do |moveSpec|
-      moveSpec.each_move(destBase) do |src, dest|
-        if not logged then
-          info "[#{taskName.ljust(8)}] #{package.name}"
-          logged = true
-        end
 
+      moveSpec.each_move(destBase) do |src, dest|
         if File.symlink?(src)
           deps << dest
 
@@ -466,30 +461,6 @@ class ServletBuilder < Target
 
   def to_s
     @targetName
-  end
-end
-
-class JsLintTarget
-  JS_LINT_COMMAND = "/usr/bin/jslint"
-  
-  attr_reader :filename
-  
-  def initialize(package, filename)
-    @filename = filename
-    task self do
-      build
-    end
-  end
-
-  def to_s
-    "jslint:#{@filename}"
-  end
-
-  protected
-
-  def build()
-    info "[jslint  ] #{@filename}"
-    Kernel.system(JS_LINT_COMMAND, @filename)
   end
 end
 

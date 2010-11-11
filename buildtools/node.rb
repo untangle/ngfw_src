@@ -91,7 +91,7 @@ class NodeBuilder
       JavaMsgFmtTarget.make_po_targets(node, po_dir,
                                        "#{node.distDirectory}/usr/share/untangle/lang/",
                                        name).each do |t|
-        buildEnv.i18nTarget.register_dependency(t)
+        buildEnv.installTarget.register_dependency(t)
       end
     end
 
@@ -101,17 +101,11 @@ class NodeBuilder
     if (0 < hierFiles.length)
       ms = MoveSpec.new("#{home}/#{dirName}/hier", hierFiles, node.distDirectory)
       cf = CopyFiles.new(node, ms, 'hier', buildEnv.filterset)
-      buildEnv.hierTarget.register_dependency(cf)
-    end
-
-    FileList["#{home}/#{dirName}/**/*.js"].each do |f|
-      jsl = JsLintTarget.new(node, f)
-      buildEnv.jsLintTarget.register_dependency(jsl)
+      node.registerTarget('hier', cf)
     end
 
     script_dir = "#{home}/#{dirName}/hier/usr/share/untangle/web/webui/script"
     if File.exist? script_dir
-      
       YuiCompressorTarget.make_min_targets(node, script_dir,
                                        "#{node.distDirectory}/usr/share/untangle/web/webui/script",
                                        "js").each do |t|
