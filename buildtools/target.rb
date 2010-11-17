@@ -252,7 +252,7 @@ class CopyFiles < Target
     [moveSpecs].flatten.each do |moveSpec|
       moveSpec.each_move(destBase) do |src, dest|
         if not logged then
-          info "[#{taskName.ljust(8)}] #{package.name}"
+          info "[copy    ] #{package.name} #{taskName}"
           logged = true
         end
 
