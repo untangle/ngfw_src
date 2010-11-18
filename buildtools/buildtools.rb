@@ -84,6 +84,6 @@ if SRC_HOME.nil?
       InstalledJar.get(p, "/usr/share/untangle/toolbox/untangle-base-#{c}-#{n}/")
     end
   end
-else
+elsif not $CleanBuild
   require "./buildtools/untangle-core.rb"
 end

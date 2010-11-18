@@ -105,7 +105,7 @@ class NodeBuilder
     end
 
     FileList["#{home}/#{dirName}/**/*.js"].each do |f|
-      jsl = JsLintTarget.new(node, f)
+      jsl = JsLintTarget.new(f)
       buildEnv.jsLintTarget.register_dependency(jsl)
     end
 

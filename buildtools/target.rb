@@ -382,7 +382,7 @@ class ServletBuilder < Target
       JavaMsgFmtTarget.make_po_targets(package, po_dir,
                                        @srcJar.javac_dir,
                                        "#{pkgname}.Messages").each do |t|
-        @srcJar.register_dependency(t)
+        BuildEnv::SRC.i18nTarget.register_dependency(t)
       end
     end
 
@@ -474,7 +474,7 @@ class JsLintTarget
   
   attr_reader :filename
   
-  def initialize(package, filename)
+  def initialize(filename)
     @filename = filename
     task self do
       build
@@ -560,19 +560,24 @@ class JavaCompilerTarget < Target
   attr_reader :isEmpty
 end
 
-class JavaMsgFmtTarget < Target
+class JavaMsgFmtTarget
+  attr_reader :filename
+
   def initialize(src, package, lang, po_file, dest, basename)
     @po_file = po_file
     @dest = dest
     @basename = basename
     @lang = lang
 
-    @filename = "#{dest}/#{@basename.gsub(/-/, '_')}_#{@lang}.class"
+    @filename = "#{@dest}official/#{@lang}/#{@basename}.mo"
 
     @src = src
     @mo_dest = "#{package.distDirectory()}/usr/share/locale"
-    
-    super(package, [@po_file], @filename)
+
+    file @filename => @po_file do
+      build
+    end
+    task self => @filename
   end
 
   def JavaMsgFmtTarget.make_po_targets(package, src, dest, basename)
@@ -585,14 +590,6 @@ class JavaMsgFmtTarget < Target
     end
 
     ts
-  end
-
-  def file?
-    true
-  end
-
-  def filename
-    @filename
   end
 
   def to_s
@@ -615,17 +612,12 @@ class JavaMsgFmtTarget < Target
 
     info "[msgfmt  ] #{@po_file} => #{@dest}official/#{@lang}/#{@basename}.mo"
 
-    raise "msgfmt failed" unless
-      Kernel.system <<CMD
-msgfmt --java2 -d #{@dest} -r "i18n.official.#{@basename.gsub('-', '_')}" -l #{@lang} #{@po_file}
-CMD
+    command = "msgfmt --java2 -d #{@dest} -r \"i18n.official.#{@basename.gsub('-', '_')}\" -l #{@lang} #{@po_file}"
+    raise "msgfmt failed" unless Kernel.system command
 
+    command = "msgfmt -o #{@dest}official/#{@lang}/#{@basename}.mo #{@po_file}"
     ensureDirectory "#{@dest}/official/#{@lang}"
-    raise "msgfmt failed" unless
-      Kernel.system <<CMD
-msgfmt -o #{@dest}official/#{@lang}/#{@basename}.mo #{@po_file}
-CMD
-
+    raise "msgfmt failed" unless Kernel.system command
   end
 end
 
