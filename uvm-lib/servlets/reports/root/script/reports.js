@@ -899,7 +899,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                 }.createDelegate(this)
             }],
             title:this.i18n._('Application List'),
-            autoHeight: true,
+            height: 500,
             stripeRows: true,
             hideHeaders: true,
             enableHdMenu : false,
@@ -953,7 +953,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                     return '<a href="javascript:reports.getTableOfContentsFor' + upperName + '(\''+ value + '\')">' + value + '</a>';
                 }.createDelegate(this)
             }], title:listTitle,
-            autoHeight: true,
+            height: 500,
             stripeRows: true,
             hideHeaders: true,
             enableHdMenu : false,
