@@ -14,7 +14,6 @@ package com.untangle.node.license;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.UvmException;
 import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.vnet.AbstractNode;
@@ -43,8 +42,8 @@ public class LicenseManagerNode extends AbstractNode
 
         /* Reload the licenses */
         try {
-            LocalUvmContextFactory.context().localLicenseManager().reloadLicenses();
-        } catch ( UvmException ex ) {
+            LocalUvmContextFactory.context().licenseManager().reloadLicenses();
+        } catch ( Exception ex ) {
             logger.warn( "Unable to reload the licenses." );
         }
     }

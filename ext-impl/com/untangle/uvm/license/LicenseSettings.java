@@ -18,23 +18,20 @@ import java.util.List;
 
 class LicenseSettings
 {
-    private final List<License> licenses;
+    private List<License> licenses;
     
-    LicenseSettings( Collection<License> licenses )
+    LicenseSettings( List<License> licenses )
     {
-        this.licenses = Collections.unmodifiableList( new ArrayList<License>( licenses ));
+        this.licenses = licenses;
     }
 
-    /**
-     * This is the current set of product licenses.  Perhap, this
-     * should be a map of product names to the license?  Actually, the
-     * same product may have multiple licenses, why delete the trial
-     * license?  that will prevent it from getting trials twice.
-     *
-     * @return The product licenses.
-     */
     public List<License> getLicenses()
     {
         return this.licenses;
+    }
+
+    public void setLicenses(List<License> licenses)
+    {
+        this.licenses = licenses;
     }
 }

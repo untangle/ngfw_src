@@ -14,5 +14,4 @@
   <node-desc classname="com.untangle.node.license.LicenseManagerNode"
              single-instance="true"/>
   <uvm-resource>untangle-node-license-ext-impl</uvm-resource>
-  <uvm-resource>untangle-node-license-ext-localapi</uvm-resource>
 </uvm-node>
