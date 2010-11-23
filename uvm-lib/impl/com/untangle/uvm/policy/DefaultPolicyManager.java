@@ -30,7 +30,7 @@ import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.license.License;
-import com.untangle.uvm.license.ProductIdentifier;
+import com.untangle.uvm.license.License;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
@@ -191,7 +191,7 @@ class DefaultPolicyManager implements PolicyManager
         result.setHasUserManagement(false);
         
         if ( l.size() > 0 ) {
-            License ls = LocalUvmContextFactory.context().licenseManager().getLicense(ProductIdentifier.ADCONNECTOR);
+            License ls = LocalUvmContextFactory.context().licenseManager().getLicense(License.ADCONNECTOR);
             if ( !ls.isValid()) {
                 result.setHasUserManagement(true);
             }
@@ -248,7 +248,7 @@ class DefaultPolicyManager implements PolicyManager
 
     public String productIdentifier()
     {
-        return ProductIdentifier.POLICY;
+        return License.POLICY;
     }
 
     public PolicyRule getDefaultPolicyRule()

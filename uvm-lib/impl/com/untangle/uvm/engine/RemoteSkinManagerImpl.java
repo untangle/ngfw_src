@@ -42,7 +42,7 @@ import com.untangle.uvm.RemoteSkinManager;
 import com.untangle.uvm.SkinInfo;
 import com.untangle.uvm.SkinSettings;
 import com.untangle.uvm.UvmException;
-import com.untangle.uvm.license.ProductIdentifier;
+import com.untangle.uvm.license.License;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.DeletingDataSaver;
 import com.untangle.uvm.util.JsonClient;
@@ -124,7 +124,7 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
         SkinSettings copy = new SkinSettings();
         settings.copy(copy);
 
-        boolean isValid = uvmContext.licenseManager().getLicense( ProductIdentifier.BRANDING ).isValid();
+        boolean isValid = uvmContext.licenseManager().getLicense( License.BRANDING ).isValid();
 
         if ( isValid ) {
             String userSkin = this.settings.getUserPagesSkin();

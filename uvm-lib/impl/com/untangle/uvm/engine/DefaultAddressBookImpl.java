@@ -43,7 +43,7 @@ import com.untangle.uvm.addrbook.RepositorySettings;
 import com.untangle.uvm.addrbook.RepositoryType;
 import com.untangle.uvm.addrbook.UserEntry;
 import com.untangle.uvm.addrbook.RadiusServerSettings.AuthenticationMethod;
-import com.untangle.uvm.license.ProductIdentifier;
+import com.untangle.uvm.license.License;
 import com.untangle.uvm.util.TransactionWork;
 
 
@@ -527,7 +527,7 @@ class DefaultAddressBookImpl implements RemoteAddressBook
 
     public String productIdentifier()
     {
-        return ProductIdentifier.ADCONNECTOR;
+        return License.ADCONNECTOR;
     }
 
     private boolean isNotConfigured()

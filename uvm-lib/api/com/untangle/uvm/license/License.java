@@ -21,6 +21,22 @@ public class License implements Serializable
 {
     private final Logger logger = Logger.getLogger(License.class);
 
+    /**
+     * Various Names
+     */
+    public static final String ADCONNECTOR = "untangle-node-policy";
+    public static final String POLICY = "untangle-node-policy";
+    public static final String PORTAL = "untangle-node-portal";
+    public static final String KAV = "untangle-node-kav";
+    public static final String SITEFILTER = "untangle-node-sitefilter";
+    public static final String PCREMOTE = "untangle-node-pcremote";
+    public static final String BRANDING = "untangle-node-branding";
+    public static final String COMMTOUCH = "untangle-node-commtouch";
+    public static final String SPLITD = "untangle-node-splitd";
+    public static final String FAILD = "untangle-node-faild";
+    public static final String BANDWIDTH = "untangle-node-bandwidth";
+    public static final String BOXBACKUP = "untangle-node-boxbackup";
+    
     /** Identifier for the product this license is for */
     private String name;
 
