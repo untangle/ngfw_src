@@ -35,10 +35,9 @@ package com.untangle.uvm.policy;
 
 import java.util.List;
 
-import com.untangle.uvm.license.LicensedProduct;
 import com.untangle.uvm.node.Validator;
 
-public interface RemotePolicyManager extends LicensedProduct
+public interface RemotePolicyManager 
 {
     /**
      * Returns all policies.  Don't count on the return order, it will

@@ -97,16 +97,16 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             }
             return this.rpc.policyManagerValidator;
         },
-        getPolicyManagerLicenseStatus : function(forceReload) {
-            if (forceReload || this.rpc.policyManagerLicenseStatus === undefined) {
+        getPolicyManagerLicense : function(forceReload) {
+            if (forceReload || this.rpc.policyManagerLicense === undefined) {
                 try {
-                    this.rpc.policyManagerLicenseStatus = main.getLicenseManager().getLicenseStatus("untangle-policy-manager");
+                    this.rpc.policyManagerLicense = main.getLicenseManager().getLicense("untangle-policy-manager");
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
 
             }
-            return this.rpc.policyManagerLicenseStatus;
+            return this.rpc.policyManagerLicense;
         },
         buildPolicyManagement : function() {
             Ung.Util.clearInterfaceStore();
@@ -293,7 +293,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     }
                 },
                 addHandler : function() {
-                    if (this.getPolicyManagerLicenseStatus(true).expired){
+                    if (this.getPolicyManagerLicense(true).valid){
                         this.showPolicyManagerRequired();
                     } else {
                         this.updateParentRackStore( this.editorRackCombo, new Ext.data.Record([]));
@@ -301,7 +301,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     }
                 }.createDelegate(this),
                 editHandler : function(record) {
-                    if (this.getPolicyManagerLicenseStatus(true).expired){
+                    if (this.getPolicyManagerLicense(true).valid){
                         this.showPolicyManagerRequired();
                     } else {
                         this.updateParentRackStore( this.editorRackCombo, record );
@@ -310,7 +310,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     }
                 }.createDelegate(this),
                 deleteHandler : function(record) {
-                    if (this.getPolicyManagerLicenseStatus(true).expired){
+                    if (this.getPolicyManagerLicense(true).valid){
                         this.showPolicyManagerRequired();
                     } else {
                         

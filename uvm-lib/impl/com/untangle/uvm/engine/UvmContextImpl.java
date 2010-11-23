@@ -55,8 +55,7 @@ import com.untangle.uvm.argon.ArgonManagerImpl;
 import com.untangle.uvm.benchmark.RemoteBenchmarkManager;
 import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.license.LicenseManagerFactory;
-import com.untangle.uvm.license.LocalLicenseManager;
-import com.untangle.uvm.license.RemoteLicenseManager;
+import com.untangle.uvm.license.LicenseManager;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
@@ -70,7 +69,7 @@ import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.policy.LocalPolicyManager;
+import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.policy.PolicyManagerFactory;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
@@ -254,7 +253,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.syslogManager;
     }
 
-    public LocalPolicyManager localPolicyManager()
+    public PolicyManager localPolicyManager()
     {
         return this.policyManagerFactory.policyManager();
     }
@@ -306,14 +305,9 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.argonManager.getIntfManager();
     }
 
-    public RemoteLicenseManager licenseManager()
+    public LicenseManager licenseManager()
     {
-        return this.licenseManagerFactory.getRemoteLicenseManager();
-    }
-
-    public LocalLicenseManager localLicenseManager() throws UvmException
-    {
-        return this.licenseManagerFactory.getLocalLicenseManager();
+        return this.licenseManagerFactory.getLicenseManager();
     }
 
     public PipelineFoundryImpl pipelineFoundry()

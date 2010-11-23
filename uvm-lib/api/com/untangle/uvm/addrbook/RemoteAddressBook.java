@@ -39,8 +39,6 @@ import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
 import javax.naming.ServiceUnavailableException;
 
-import com.untangle.uvm.license.LicensedProduct;
-
 /**
  * Interface for an "AddressBook", which acts as both
  * an authentication service and a directory.
@@ -52,7 +50,7 @@ import com.untangle.uvm.license.LicensedProduct;
  * Note that the initial state of the AddressBook is
  * {@link com.untangle.uvm.addrbook.AddressBookConfiguration#NOT_CONFIGURED NOT_CONFIGURED}.
  */
-public interface RemoteAddressBook extends LicensedProduct
+public interface RemoteAddressBook 
 {
     public enum Backend { ACTIVE_DIRECTORY, LOCAL_DIRECTORY, RADIUS };
     /**

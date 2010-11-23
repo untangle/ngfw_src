@@ -23,16 +23,16 @@ import java.util.List;
 import com.untangle.uvm.node.Validator;
 
 /**
- * Adapts LocalPolicyManager to RemotePolicyManager.
+ * Adapts PolicyManager to RemotePolicyManager.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 class RemotePolicyManagerAdaptor implements RemotePolicyManager
 {
-    private final LocalPolicyManager pm;
+    private final PolicyManager pm;
 
-    RemotePolicyManagerAdaptor(LocalPolicyManager pm)
+    RemotePolicyManagerAdaptor(PolicyManager pm)
     {
         this.pm = pm;
     }
@@ -94,11 +94,6 @@ class RemotePolicyManagerAdaptor implements RemotePolicyManager
         throws PolicyException
     {
         pm.setPolicyConfiguration(pc);
-    }
-
-    public String productIdentifier()
-    {
-        return pm.productIdentifier();
     }
 
     public void shutdownSessions(Policy policy)

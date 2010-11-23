@@ -23,7 +23,6 @@ public class CPDBaseSettings implements Serializable {
     private String redirectUrl = "";
     private boolean useHttpsPage= false;
     private boolean isRedirectHttpsEnabled = false;
-    private boolean isDirectoryConnectorEnabled = false;
 
     public CPDBaseSettings()
     {
@@ -165,15 +164,6 @@ public class CPDBaseSettings implements Serializable {
     public void setRedirectHttpsEnabled( boolean newValue)
     {
         this.isRedirectHttpsEnabled = newValue;
-    }
-
-    @Transient
-    public boolean isDirectoryConnectorEnabled() {
-        return isDirectoryConnectorEnabled;
-    }
-
-    public void setDirectoryConnectorEnabled(boolean newValue) {
-        this.isDirectoryConnectorEnabled = newValue;
     }
 
 }

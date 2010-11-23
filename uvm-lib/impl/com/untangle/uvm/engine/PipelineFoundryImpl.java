@@ -45,7 +45,7 @@ import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.node.PipelineStats;
-import com.untangle.uvm.policy.LocalPolicyManager;
+import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
 import com.untangle.uvm.policy.UserPolicyRule;
@@ -311,7 +311,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     protected PolicyRule selectPolicy(IPSessionDesc sd)
     {
         UvmContextImpl upi = UvmContextImpl.getInstance();
-        LocalPolicyManager pmi = upi.localPolicyManager();
+        PolicyManager pmi = upi.localPolicyManager();
         LocalIntfManager im = upi.localIntfManager();
         UserPolicyRule[] userRules = pmi.getUserRules();
         InterfaceComparator c = im.getInterfaceComparator();
@@ -401,7 +401,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
             Map<ArgonConnector, ArgonConnector> availCasings)
     {
         UvmContextImpl upi = UvmContextImpl.getInstance();
-        LocalPolicyManager pmi = upi.localPolicyManager();
+        PolicyManager pmi = upi.localPolicyManager();
 
         boolean welded = false;
 
@@ -453,7 +453,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
             Map<ArgonConnector, ArgonConnector> availCasings)
     {
         UvmContextImpl upi = UvmContextImpl.getInstance();
-        LocalPolicyManager pmi = upi.localPolicyManager();
+        PolicyManager pmi = upi.localPolicyManager();
 
         boolean welded = false;
 
@@ -508,7 +508,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     
     private void removeDuplicates(Policy policy, List<ArgonConnectorFitting> chain)
     {
-        LocalPolicyManager pmi = LocalUvmContextFactory.context().localPolicyManager();
+        PolicyManager pmi = LocalUvmContextFactory.context().localPolicyManager();
         NodeManager nodeManager = LocalUvmContextFactory.context().nodeManager();
 
         Set<String> enabledNodes = nodeManager.getEnabledNodes(policy);

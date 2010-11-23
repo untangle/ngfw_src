@@ -46,7 +46,7 @@ import com.untangle.uvm.RemoteOemManager;
 import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.benchmark.RemoteBenchmarkManager;
-import com.untangle.uvm.license.RemoteLicenseManager;
+import com.untangle.uvm.license.LicenseManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.node.RemoteIntfManager;
@@ -193,7 +193,7 @@ public interface RemoteUvmContext
      *
      * @return the RemoteLicenseManager
      */
-    RemoteLicenseManager licenseManager();
+    LicenseManager licenseManager();
 
     /**
      * The session monitor

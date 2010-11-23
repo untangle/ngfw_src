@@ -35,19 +35,16 @@ package com.untangle.uvm.license;
 
 public class ProductIdentifier
 {
-    public static final String PHONE_BOOK = "untangle-user-directory-integration";
-    public static final String POLICY_MANAGER = "untangle-policy-manager";
-    public static final String ADDRESS_BOOK = "untangle-user-directory-management";
-    public static final String PORTAL = "untangle-remote-access-portal";
-    public static final String CONFIGURATION_BACKUP = "untangle-configuration-backup";
-    public static final String DUAL_VIRUS_BLOCKER = "untangle-dual-virus-blocker";
-    public static final String KASPERSKY_AV = "untangle-dual-virus-blocker-kav";
-    public static final String SITEFILTER = "untangle-sitefilter";
-    public static final String PC_REMOTE = "untangle-pcremote";
-    public static final String NAS = "untangle-nas";
-    public static final String BRANDING_MANAGER = "untangle-branding-manager";
-    public static final String COMMTOUCH = "untangle-commtouch";
-    public static final String SPLITD = "untangle-splitd";
-    public static final String FAILD = "untangle-faild";
+    public static final String ADCONNECTOR = "untangle-node-policy";
+    public static final String POLICY = "untangle-node-policy";
+    public static final String PORTAL = "untangle-node-portal";
+    public static final String KAV = "untangle-node-kav";
+    public static final String SITEFILTER = "untangle-node-sitefilter";
+    public static final String PCREMOTE = "untangle-node-pcremote";
+    public static final String BRANDING = "untangle-node-branding";
+    public static final String COMMTOUCH = "untangle-node-commtouch";
+    public static final String SPLITD = "untangle-node-splitd";
+    public static final String FAILD = "untangle-node-faild";
     public static final String BANDWIDTH = "untangle-node-bandwidth";
+    public static final String BOXBACKUP = "untangle-node-boxbackup";
 }

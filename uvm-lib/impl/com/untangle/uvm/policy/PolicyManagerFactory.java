@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 public class PolicyManagerFactory
 {
     private static final String PROPERTY_POLICY_MANAGER_IMPL = "com.untangle.uvm.policy.premium";
-    private static final String PREMIUM_POLICY_MANAGER_IMPL = "com.untangle.uvm.policy.RupPolicyManager";
+    private static final String PREMIUM_POLICY_MANAGER_IMPL = "com.untangle.uvm.policy.PolicyManagerImpl";
 
     private final Logger logger = Logger.getLogger(this.getClass());
 
@@ -31,7 +31,7 @@ public class PolicyManagerFactory
     private final DefaultPolicyManager limited = new DefaultPolicyManager();
 
     /** The premium address book */
-    private LocalPolicyManager premium = null;
+    private PolicyManager premium = null;
 
     /** remote policy manager */
     private RemotePolicyManager remote = new RemotePolicyManagerAdaptor(limited);
@@ -45,7 +45,7 @@ public class PolicyManagerFactory
         return this.remote;
     }
 
-    public LocalPolicyManager policyManager()
+    public PolicyManager policyManager()
     {
         return ( this.premium == null ) ? this.limited : this.premium;
     }
@@ -63,7 +63,7 @@ public class PolicyManagerFactory
             className = PREMIUM_POLICY_MANAGER_IMPL;
         }
         try {
-            this.premium = (PremiumPolicyManager)Class.forName(className).newInstance();
+            this.premium = (PolicyManager)Class.forName(className).newInstance();
             this.remote = new RemotePolicyManagerAdaptor(this.premium);
         } catch ( Exception e ) {
             logger.debug("Could not load premium PolicyManager: " + className);
@@ -77,13 +77,5 @@ public class PolicyManagerFactory
         PolicyManagerFactory factory = new PolicyManagerFactory();
         factory.refresh();
         return factory;
-    }
-
-    /**
-     * Inner interface used to indicate the additional methods that the
-     * premium offering must implement.
-     */
-    static interface PremiumPolicyManager extends LocalPolicyManager
-    {
     }
 }

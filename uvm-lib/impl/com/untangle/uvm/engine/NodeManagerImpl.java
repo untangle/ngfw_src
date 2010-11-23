@@ -46,7 +46,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.license.RemoteLicenseManager;
+import com.untangle.uvm.license.LicenseManager;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.logging.UvmLoggingContext;
 import com.untangle.uvm.logging.UvmLoggingContextFactory;
@@ -64,7 +64,7 @@ import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.UndeployException;
 import com.untangle.uvm.node.UvmNodeHandler;
-import com.untangle.uvm.policy.LocalPolicyManager;
+import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
 import com.untangle.uvm.security.NodeId;
@@ -323,9 +323,9 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         if (null != node && !mackageDesc.isInvisible() && (MackageDesc.Type.NODE == type || MackageDesc.Type.SERVICE == type)) {
             LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
             Counters c = lmm.getCounters(node.getNodeId());
-            RemoteLicenseManager lm = LocalUvmContextFactory.context().licenseManager();
+            LicenseManager lm = LocalUvmContextFactory.context().licenseManager();
 
-            NodeInstantiated ne = new NodeInstantiated(tDesc, c.getStatDescs(),lm.getMackageStatus(mackageDesc.getName()));
+            NodeInstantiated ne = new NodeInstantiated(tDesc, c.getStatDescs(),lm.getLicense(mackageDesc.getName()));
             LocalMessageManager mm = mctx.localMessageManager();
             mm.submitMessage(ne);
         }
@@ -923,7 +923,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
     private List<Policy> getAllPolicies(Policy p)
     {
-        LocalPolicyManager lpi = LocalUvmContextFactory.context().localPolicyManager();
+        PolicyManager lpi = LocalUvmContextFactory.context().localPolicyManager();
 
         List<Policy> l = new ArrayList<Policy>();
         while (null != p) {

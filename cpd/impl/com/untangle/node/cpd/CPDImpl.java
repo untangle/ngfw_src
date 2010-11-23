@@ -41,7 +41,6 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.RemoteBrandingManager;
-import com.untangle.uvm.license.LicenseStatus;
 import com.untangle.uvm.license.ProductIdentifier;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
@@ -177,8 +176,6 @@ public class CPDImpl extends AbstractNode implements CPD
         if ( baseSettings == null ) {
             baseSettings = new CPDBaseSettings();
         }
-        
-        updateDirectoryConnectorStatus(baseSettings);
         
         return baseSettings;        
     }
@@ -557,31 +554,6 @@ public class CPDImpl extends AbstractNode implements CPD
 
             this.manager.stop();
         }
-    }
-    
-    private void updateDirectoryConnectorStatus(CPDBaseSettings baseSettings) {
-        /* Update the base settings to indicate whether or not Directory Connector is running */
-        boolean isDirectoryConnectorEnabled = false;
-        
-        Node node = LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-        
-        if ( node != null ) {
-            isDirectoryConnectorEnabled = node.getRunState() == NodeState.RUNNING;
-            try {
-                if ( isDirectoryConnectorEnabled ) {
-                LicenseStatus ls = 
-                    LocalUvmContextFactory.context().localLicenseManager().getLicenseStatus(ProductIdentifier.ADDRESS_BOOK);
-                isDirectoryConnectorEnabled = !ls.isExpired();
-                
-                
-                }
-            } catch (UvmException e) {
-                logger.warn( "Unable to determine the license status for ad connector.");
-                e.printStackTrace();
-            }
-
-        }
-        baseSettings.setDirectoryConnectorEnabled(isDirectoryConnectorEnabled);
     }
     
     private String getDefaultPageParameters() {

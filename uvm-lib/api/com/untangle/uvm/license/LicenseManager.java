@@ -30,20 +30,24 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-
 package com.untangle.uvm.license;
 
-/**
- * An empty interface used to indicate that a part is licensed.
- *
- * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
- * @version 1.0
- */
-public interface LicensedProduct
+
+public interface LicenseManager
 {
-    /* This is the unique identifier for the product, this should be
-     * independent from the "marketing" name just so it is easier to
-     * upgrade and licenses always work after upgrade.
+    /**
+     * Reload all of the available licenses.
      */
-     public String productIdentifier();
+    public void reloadLicenses();
+
+    /**
+     * Get the status of a license on a product.
+     */
+    public License getLicense( String productIdentifier );
+
+    /**
+     * Return true if the user has any premium products.
+     */
+    public boolean hasPremiumLicense();
+
 }

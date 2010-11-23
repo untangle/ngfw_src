@@ -35,11 +35,10 @@ package com.untangle.uvm.policy;
 
 import java.util.List;
 
-import com.untangle.uvm.license.LicensedProduct;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.Validator;
 
-public interface LocalPolicyManager extends LicensedProduct
+public interface PolicyManager
 {
     /**
      * @see PolicyManager#getPolicies()

@@ -49,8 +49,8 @@ import org.hibernate.Session;
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.Period;
-import com.untangle.uvm.license.LicenseStatus;
-import com.untangle.uvm.license.RemoteLicenseManager;
+import com.untangle.uvm.license.License;
+import com.untangle.uvm.license.LicenseManager;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.Message;
@@ -259,14 +259,14 @@ class ToolboxManagerImpl implements ToolboxManager
 
         Collections.sort(apps);
 
-        Map<String, LicenseStatus> licenseStatus = new HashMap<String, LicenseStatus>();
-        RemoteLicenseManager lm = LocalUvmContextFactory.context().licenseManager();
+        Map<String, License> licenseMap = new HashMap<String, License>();
+        LicenseManager lm = LocalUvmContextFactory.context().licenseManager();
         for (NodeDesc nd : instances) {
             String n = nd.getMackageDesc().getName();
-            licenseStatus.put(n, lm.getMackageStatus(n));
+            licenseMap.put(n, lm.getLicense(n));
         }
         Map<NodeId, NodeState> runStates=nm.allNodeStates();
-        return new RackView(apps, instances, statDescs, licenseStatus, runStates);
+        return new RackView(apps, instances, statDescs, licenseMap, runStates);
     }
 
     public UpgradeStatus getUpgradeStatus(boolean doUpdate) throws MackageException, InterruptedException

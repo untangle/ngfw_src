@@ -527,7 +527,7 @@ class DefaultAddressBookImpl implements RemoteAddressBook
 
     public String productIdentifier()
     {
-        return ProductIdentifier.ADDRESS_BOOK;
+        return ProductIdentifier.ADCONNECTOR;
     }
 
     private boolean isNotConfigured()

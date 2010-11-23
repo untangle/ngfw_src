@@ -29,7 +29,7 @@ import org.hibernate.Session;
 import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmException;
-import com.untangle.uvm.license.LicenseStatus;
+import com.untangle.uvm.license.License;
 import com.untangle.uvm.license.ProductIdentifier;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
 import com.untangle.uvm.node.NodeManager;
@@ -39,7 +39,7 @@ import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.PipelineFoundry;
 
-class DefaultPolicyManager implements LocalPolicyManager
+class DefaultPolicyManager implements PolicyManager
 {
     private static final String INITIAL_POLICY_NAME = "Default Rack";
     private static final String INITIAL_POLICY_NOTES = "The default rack";
@@ -191,13 +191,9 @@ class DefaultPolicyManager implements LocalPolicyManager
         result.setHasUserManagement(false);
         
         if ( l.size() > 0 ) {
-            try {
-            LicenseStatus ls = LocalUvmContextFactory.context().localLicenseManager().getLicenseStatus(ProductIdentifier.ADDRESS_BOOK);
-            if ( !ls.isExpired()) {
+            License ls = LocalUvmContextFactory.context().licenseManager().getLicense(ProductIdentifier.ADCONNECTOR);
+            if ( !ls.isValid()) {
                 result.setHasUserManagement(true);
-            }
-            } catch ( UvmException e ) {
-                logger.warn( "Unable to update adconnector status.");
             }
         }
 
@@ -244,7 +240,7 @@ class DefaultPolicyManager implements LocalPolicyManager
     argonManager.shutdownMatches(SessionMatcherFactory.makePolicyInstance(policy));
     }
 
-    // LocalPolicyManager methods ---------------------------------------------
+    // PolicyManager methods ---------------------------------------------
     public UserPolicyRule[] getUserRules()
     {
         return userRules;
@@ -252,7 +248,7 @@ class DefaultPolicyManager implements LocalPolicyManager
 
     public String productIdentifier()
     {
-        return ProductIdentifier.POLICY_MANAGER;
+        return ProductIdentifier.POLICY;
     }
 
     public PolicyRule getDefaultPolicyRule()

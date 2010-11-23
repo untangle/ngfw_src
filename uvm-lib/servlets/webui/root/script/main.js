@@ -687,7 +687,7 @@ Ung.Main=Ext.extend(Object, {
         }
         return null;
     },
-    createNode: function (nodeDesc, statDesc, licenseStatus, runState) {
+    createNode: function (nodeDesc, statDesc, license, runState) {
         var node={};
         node.tid=nodeDesc.tid.id;
         node.Tid=nodeDesc.tid;
@@ -695,7 +695,7 @@ Ung.Main=Ext.extend(Object, {
         node.hasPowerButton=nodeDesc.hasPowerButton;
         node.name=nodeDesc.mackageDesc.name;
         node.displayName=nodeDesc.mackageDesc.displayName;
-        node.licenseStatus=licenseStatus;
+        node.license=license;
         node.image='image?name='+node.name;
         node.blingers=statDesc;
         node.runState=runState;
@@ -744,7 +744,7 @@ Ung.Main=Ext.extend(Object, {
             var nodeDesc=rpc.rackView.instances.list[i];
             var node=this.createNode(nodeDesc,
                 rpc.rackView.statDescs.map[nodeDesc.tid.id],
-                rpc.rackView.licenseStatus.map[nodeDesc.mackageDesc.name],
+                rpc.rackView.licenseMap.map[nodeDesc.mackageDesc.name],
                 rpc.rackView.runStates.map[nodeDesc.tid.id]);
             this.nodes.push(node);
         }
@@ -795,21 +795,20 @@ Ung.Main=Ext.extend(Object, {
         Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager,
                                      [ rpc.currentPolicy ], callback, 1500, 10 );
     },
-    loadLicenseStatus: function() {
+    loadLicenses: function() {
         var callback = function(result,exception)
         {
             if(Ung.Util.handleException(exception)) return;
             rpc.rackView=result;
             for (var i = 0; i < main.nodes.length; i++) {
                 var nodeCmp = Ung.Node.getCmp(main.nodes[i].tid);
-                if (nodeCmp && nodeCmp.licenseStatus) {
-                    nodeCmp.updateLicenseStatus(rpc.rackView.licenseStatus.map[nodeCmp.name]);
+                if (nodeCmp && nodeCmp.license) {
+                    nodeCmp.updateLicense(rpc.rackView.licenses.map[nodeCmp.name]);
                 }
             }
         }.createDelegate(this);
 
-        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager,
-                                     [ rpc.currentPolicy ], callback, 1500, 10 );
+        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy ], callback, 1500, 10 );
     },
 
     installNode: function(mackageDesc, appItem) {

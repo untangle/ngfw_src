@@ -41,7 +41,6 @@ import com.sleepycat.je.Environment;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.client.RemoteUvmContext;
-import com.untangle.uvm.license.LocalLicenseManager;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.RemoteLoggingManager;
@@ -51,7 +50,7 @@ import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.policy.LocalPolicyManager;
+import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.reports.RemoteReportingManager;
 import com.untangle.uvm.security.RegistrationInfo;
@@ -109,7 +108,7 @@ public interface LocalUvmContext extends RemoteUvmContext
      *
      * @return a <code>PolicyManager</code> value
      */
-    LocalPolicyManager localPolicyManager();
+    PolicyManager localPolicyManager();
 
     /**
      * Get the <code>RemoteAdminManager</code> singleton.
@@ -183,13 +182,6 @@ public interface LocalUvmContext extends RemoteUvmContext
     RemoteMessageManager messageManager();
 
     LocalMessageManager localMessageManager();
-
-    /**
-     * The license manager.
-     *
-     * @return the LocalLicenseManager
-     */
-    LocalLicenseManager localLicenseManager() throws UvmException;
 
     /**
      * Once settings have been restored, and the UVM has been booted, call

@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.node;
 
-import com.untangle.uvm.license.LicenseStatus;
+import com.untangle.uvm.license.License;
 import com.untangle.uvm.message.Message;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.policy.Policy;
@@ -43,13 +43,13 @@ public class NodeInstantiated extends Message
 {
     private final NodeDesc nodeDesc;
     private final StatDescs statDescs;
-    private final LicenseStatus licenseStatus;
+    private final License license;
 
-    public NodeInstantiated(NodeDesc nodeDesc, StatDescs statDescs, LicenseStatus licenseStatus)
+    public NodeInstantiated(NodeDesc nodeDesc, StatDescs statDescs, License license)
     {
         this.nodeDesc = nodeDesc;
         this.statDescs = statDescs;
-        this.licenseStatus=licenseStatus;
+        this.license = license;
     }
 
     public Policy getPolicy()
@@ -66,8 +66,9 @@ public class NodeInstantiated extends Message
     {
         return statDescs;
     }
-    public LicenseStatus getLicenseStatus()
+
+    public License getLicense()
     {
-        return licenseStatus;
+        return license;
     }
 }

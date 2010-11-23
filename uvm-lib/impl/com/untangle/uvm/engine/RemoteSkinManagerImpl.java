@@ -124,10 +124,10 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
         SkinSettings copy = new SkinSettings();
         settings.copy(copy);
 
-        boolean isExpired = uvmContext.licenseManager().getLicenseStatus( ProductIdentifier.BRANDING_MANAGER ).isExpired();
+        boolean isValid = uvmContext.licenseManager().getLicense( ProductIdentifier.BRANDING ).isValid();
 
-        if ( isExpired ) {
-	    String userSkin = this.settings.getUserPagesSkin();
+        if ( isValid ) {
+            String userSkin = this.settings.getUserPagesSkin();
             if ( userSkin == null || userSkin.length() == 0 ) userSkin = DEFAULT_USER_SKIN;
             settings.setUserPagesSkin( userSkin );
         }

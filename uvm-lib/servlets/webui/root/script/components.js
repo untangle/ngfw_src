@@ -691,7 +691,9 @@ Ung.Util.RetryHandler = {
 
         var message = exception.message;
         if (message == null || message == "Unknown") {
-          message = i18n._("Please Try Again");
+            message = i18n._("Please Try Again");
+            if (exception.javaStack != null)
+                message += "<br/><br/>" + exception.javaStack;
         }
         Ext.MessageBox.alert(i18n._("Warning"), message);
     },
@@ -1211,7 +1213,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             name : "Buy",
             id: 'node-buy-button_'+this.getId(),
             iconCls : 'icon-buy',
-            hidden : !(this.licenseStatus && this.licenseStatus.trial),
+            hidden : !(this.license && this.license.trial),
             ctCls:'buy-button-text',
             text : i18n._('Buy Now'),
             handler : this.onBuyNowAction.createDelegate(this)
@@ -1221,7 +1223,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             'image' : this.image,
             'isNodeEditable' : this.isNodeEditable === true ? "none" : "",
             'displayName' : this.md.displayName,
-            'nodePowerCls': this.hasPowerButton?(this.licenseStatus && this.licenseStatus.trial && this.licenseStatus.expired)?"node-power-expired":"node-power":"",
+            'nodePowerCls': this.hasPowerButton?(this.license && this.license.trial && this.license.valid)?"node-power-expired":"node-power":"",
             'trialInfo' : this.getTrialInfo()
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
@@ -1534,15 +1536,15 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     getTrialInfo : function() {
         var trialInfo = "";
-        if(this.licenseStatus && this.licenseStatus.trial) {
-            if(this.licenseStatus.expired) {
+        if(this.license && this.license.trial) {
+            if(this.license.expired) {
                 trialInfo = i18n._("Free Trial Ended");
             } else {
-                var timeRemaining=this.licenseStatus.timeRemaining;
+                var timeRemaining=this.license.timeRemaining;
                 if(timeRemaining=="expires today") {
                     trialInfo = i18n._("Free Trial Expires Today");
                 } else {
-                   var daysRemain = parseInt(this.licenseStatus.timeRemaining.replace(" days remain", ""));
+                   var daysRemain = parseInt(this.license.timeRemaining.replace(" days remain", ""));
                    if (!isNaN(daysRemain)) {
                      if (daysRemain > 32) {
                        trialInfo = i18n._("Free Limited Trial");
@@ -1555,13 +1557,13 @@ Ung.Node = Ext.extend(Ext.Component, {
         }
         return trialInfo;
     },
-    updateLicenseStatus : function (licenseStatus) {
-        this.licenseStatus=licenseStatus;
+    updateLicense : function (license) {
+        this.license=license;
         this.getEl().child("div[class=node-trial-info]").dom.innerHTML=this.getTrialInfo();
-        document.getElementById("node-power_"+this.getId()).className=this.hasPowerButton?(this.licenseStatus && this.licenseStatus.trial && this.licenseStatus.expired)?"node-power-expired":"node-power":"";
+        document.getElementById("node-power_"+this.getId()).className=this.hasPowerButton?(this.license && this.license.trial && this.license.valid)?"node-power-expired":"node-power":"";
         var nodeBuyButton=Ext.getCmp("node-buy-button_"+this.getId());
         if(nodeBuyButton) {
-            if(this.licenseStatus && this.licenseStatus.trial) {
+            if(this.license && this.license.trial) {
                 nodeBuyButton.show();
             } else {
               nodeBuyButton.hide();
@@ -1763,12 +1765,12 @@ Ung.MessageManager = {
                                 refreshApps=true;
                                 var node=main.getNode(msg.nodeDesc.mackageDesc.name,msg.nodeDesc.tid.policy);
                                 if(!node) {
-                                    node=main.createNode(msg.nodeDesc, msg.statDescs, msg.licenseStatus,"INITIALIZED");
+                                    node=main.createNode(msg.nodeDesc, msg.statDescs, msg.license,"INITIALIZED");
                                     main.nodes.push(node);
                                     main.addNode(node,true);
                                     main.removeParentNode(node,msg.nodeDesc.tid.policy);
                                 } else {
-                                    main.loadLicenseStatus();
+                                    main.loadLicenses();
                                 }
                             } else {
                                 Ung.AppItem.updateState(msg.nodeDesc.displayName, null);
@@ -1779,7 +1781,7 @@ Ung.MessageManager = {
                             var appItemDisplayName=msg.requestingMackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingMackage.fullVersion):msg.requestingMackage.displayName;
                             Ung.AppItem.updateState(appItemDisplayName, null);
                         } else if(msg.javaClass.indexOf("LicenseUpdateMessage") != -1) {
-                            main.loadLicenseStatus();
+                            main.loadLicenses();
                         } else {
                             if(msg.upgrade==false) {
                                 var appItemDisplayName=msg.requestingMackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingMackage.fullVersion):msg.requestingMackage.displayName;

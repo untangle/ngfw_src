@@ -19,33 +19,23 @@ package com.untangle.uvm.license;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmException;
 
 public class LicenseManagerFactory
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private LocalLicenseManager localManager;
-
-    private RemoteLicenseManagerImpl remoteManager = new RemoteLicenseManagerImpl( null );
+    private LicenseManager licenseManager = null;
 
     private LicenseManagerFactory()
     {
     }
 
-    public LocalLicenseManager getLocalLicenseManager() throws UvmException
+    public LicenseManager getLicenseManager()
     {
-        if ( this.localManager == null ) loadLicenseManager();
+        if ( this.licenseManager == null )
+            refresh();
 
-        return localManager;
-    }
-
-    public RemoteLicenseManager getRemoteLicenseManager()
-    {
-        /* Refresh, doesn't matter if there is a failure, it just wants the remote manager */
-        refresh();
-        
-        return this.remoteManager;
+        return licenseManager;
     }
         
     public static LicenseManagerFactory makeInstance()
@@ -59,30 +49,36 @@ public class LicenseManagerFactory
     {
         try {
             loadLicenseManager();
-        } catch ( UvmException e ) {
-            logger.info( "Unable to load the license manager", e );
+        } catch ( Exception e ) {
+            logger.warn( "Unable to load the license manager", e );
         }
     }
 
     @SuppressWarnings("unchecked") //Class.forName
-    private synchronized void loadLicenseManager() throws UvmException
+    private synchronized void loadLicenseManager()
     {
-        /* already loaded, this is why it is synchronized */
-        if ( this.localManager != null ) return;
+        /* if already loaded just return */
+        if ( this.licenseManager != null && this.licenseManager.getClass().equals("com.untangle.uvm.license.LicenseManagerImpl") )
+            return;
 
         String className = "com.untangle.uvm.license.LicenseManagerImpl";
         try {
-            Class<LocalLicenseManager> clz = (Class<LocalLicenseManager>)Class.forName( className );
+            Class<LicenseManager> clz = (Class<LicenseManager>)Class.forName( className );
             
-            this.localManager = (LocalLicenseManager)(clz.getMethod( "getInstance" ).invoke( null ));
+            this.licenseManager = (LicenseManager)(clz.getMethod( "getInstance" ).invoke( null ));
+        } catch ( java.lang.ClassNotFoundException e ) {
+            //this happens if the license node isn't on the server
+            this.licenseManager = null;
         } catch ( Exception e ) {
             logger.info("could not load LicenseManager: " + className, e );
             
-            this.localManager = null;
-            throw new UvmException( "Unable to load the license manager", e );
+            this.licenseManager = null;
+            throw new RuntimeException( "Unable to load the license manager", e );
         }
         
-        /* Create a new remote license manager */
-        this.remoteManager = new RemoteLicenseManagerImpl( this.localManager );
+        if (this.licenseManager == null) {
+            // if we failed to load the real thing, just load the empty nil license manager
+            this.licenseManager = new NilLicenseManagerImpl( );
+        }
     }
 }
