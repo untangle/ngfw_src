@@ -178,18 +178,15 @@ public class SettingsManagerImpl implements SettingsManager
                 return (T) serializer.fromJSON(jsonString.toString());
 
             } catch (IOException e) {
-                throw new SettingsException("Unable to load the file: '" + f
-                        + "'", e);
+                throw new SettingsException("Unable to load the file: '" + f + "'", e);
             } catch (UnmarshallException e) {
-                throw new SettingsException(
-                        "Unable to unmarshal string the file: '" + f + "'", e);
+                throw new SettingsException("Unable to unmarshal the file: '" + f + "'", e);
             } finally {
                 try {
                     if (reader != null) {
                         reader.close();
                     }
-                } catch (Exception e) {
-                }
+                } catch (Exception e) {}
             }
         }
     }

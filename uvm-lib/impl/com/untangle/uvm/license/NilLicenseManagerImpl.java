@@ -23,6 +23,8 @@ import org.apache.log4j.Logger;
 
 public class NilLicenseManagerImpl implements LicenseManager
 {
+    private final Logger logger = Logger.getLogger(getClass());
+
     NilLicenseManagerImpl() {}
 
     /**
@@ -30,6 +32,7 @@ public class NilLicenseManagerImpl implements LicenseManager
      */
     public void reloadLicenses()
     {
+        //no-op
         return;
     }
 
@@ -38,6 +41,7 @@ public class NilLicenseManagerImpl implements LicenseManager
      */
     public License getLicense(String identifier)
     {
+        logger.error("License Manager is not loaded. Failed to return license: " + identifier);
         return new License(identifier, identifier, "Subscription", 0, 0, "invalid", 1, Boolean.FALSE);
     }
 

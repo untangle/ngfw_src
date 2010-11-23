@@ -58,7 +58,20 @@ public class License implements Serializable
     /** the version of the key signing algorithm used */
     private int keyVersion;
 
+    /** This stores the computed validity state of this license */
     private Boolean valid;
+
+    License( License orig )
+    {
+        this.name = orig.name;
+        this.displayName = orig.displayName;
+        this.type = orig.type;
+        this.start = orig.start;
+        this.end = orig.end;
+        this.key = orig.key;
+        this.keyVersion = orig.keyVersion;
+        this.valid = orig.valid;
+    }
     
     License( String name, String displayName, String type, long start, long end, String key, int keyVersion, Boolean valid )
     {
@@ -69,6 +82,7 @@ public class License implements Serializable
         this.end = end;
         this.key = key;
         this.keyVersion = keyVersion;
+        this.valid = valid;
     }
         
     /**
@@ -191,20 +205,9 @@ public class License implements Serializable
     /**
      * XXX
      */
-    public Boolean isExpired()
-    {
-        logger.error("IMPLEMENT ME");
-        return null;
-
-        //return !this.isValid();
-    }
-    
-    /**
-     * XXX
-     */
     public String getTimeRemaining()
     {
-        logger.error("IMPLEMENT ME");
+        logger.error("IMPLEMENT ME: getTimeRemaining() on " + name);
         return null;
     }
 
@@ -213,7 +216,7 @@ public class License implements Serializable
      */
     public Date getExpirationDate()
     {
-        logger.error("IMPLEMENT ME");
+        logger.error("IMPLEMENT ME: getExpirationDate() on " + name);
         return null;
     }
     
@@ -221,4 +224,5 @@ public class License implements Serializable
     {
         return "<" + this.name + "/" + this.type + "/" + ">";
     }
+
 }

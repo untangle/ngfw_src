@@ -24,18 +24,23 @@ public class LicenseManagerFactory
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private LicenseManager licenseManager = null;
+    private LicenseManager realLicenseManager = null;
+    private LicenseManager nilLicenseManager = null;
 
-    private LicenseManagerFactory()
-    {
-    }
+    private final String LICENSE_CLASS_NAME = "com.untangle.uvm.license.LicenseManagerImpl";
+
+    private LicenseManagerFactory() {} //prevent instantiation
 
     public LicenseManager getLicenseManager()
     {
-        if ( this.licenseManager == null )
+        if ( this.nilLicenseManager == null || this.realLicenseManager == null) {
             refresh();
-
-        return licenseManager;
+        }
+        
+        if ( this.realLicenseManager != null )
+            return this.realLicenseManager;
+        else 
+            return this.nilLicenseManager;
     }
         
     public static LicenseManagerFactory makeInstance()
@@ -47,38 +52,41 @@ public class LicenseManagerFactory
 
     private void refresh()
     {
+        // load the Nil Manager
+        if (this.nilLicenseManager == null) 
+            this.nilLicenseManager = new NilLicenseManagerImpl( );
+        
+        // load the Real Manager
         try {
-            loadLicenseManager();
+            loadRealLicenseManager();
         } catch ( Exception e ) {
             logger.warn( "Unable to load the license manager", e );
         }
     }
 
     @SuppressWarnings("unchecked") //Class.forName
-    private synchronized void loadLicenseManager()
+    private synchronized void loadRealLicenseManager()
     {
         /* if already loaded just return */
-        if ( this.licenseManager != null && this.licenseManager.getClass().equals("com.untangle.uvm.license.LicenseManagerImpl") )
+        if ( this.realLicenseManager != null ) 
             return;
 
-        String className = "com.untangle.uvm.license.LicenseManagerImpl";
         try {
-            Class<LicenseManager> clz = (Class<LicenseManager>)Class.forName( className );
-            
-            this.licenseManager = (LicenseManager)(clz.getMethod( "getInstance" ).invoke( null ));
+            logger.warn("Loading License Manager...\n");
+
+            Class<LicenseManager> clz = (Class<LicenseManager>)Class.forName( LICENSE_CLASS_NAME );
+            this.realLicenseManager = (LicenseManager)(clz.getMethod( "getInstance" ).invoke( null ));
+
+            logger.warn("Loading License Manager... done\n");
+
         } catch ( java.lang.ClassNotFoundException e ) {
             //this happens if the license node isn't on the server
-            this.licenseManager = null;
+            this.realLicenseManager = null;
         } catch ( Exception e ) {
-            logger.info("could not load LicenseManager: " + className, e );
-            
-            this.licenseManager = null;
+            this.realLicenseManager = null;
+            logger.info("could not load LicenseManager: " + LICENSE_CLASS_NAME, e );
             throw new RuntimeException( "Unable to load the license manager", e );
         }
-        
-        if (this.licenseManager == null) {
-            // if we failed to load the real thing, just load the empty nil license manager
-            this.licenseManager = new NilLicenseManagerImpl( );
-        }
+
     }
 }
