@@ -194,8 +194,8 @@ public class LicenseManagerImpl implements LicenseManager
             newList.add(license);
         }
 
-        this.licenseMap = Collections.unmodifiableMap(newMap);
-        this.licenseList = Collections.unmodifiableList(newList);
+        this.licenseMap = newMap;
+        this.licenseList = newList;
     }
 
     @SuppressWarnings("fallthrough")
