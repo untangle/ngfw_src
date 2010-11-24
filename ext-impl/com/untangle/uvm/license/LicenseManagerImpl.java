@@ -108,17 +108,23 @@ public class LicenseManagerImpl implements LicenseManager
          */
         if (LocalUvmContextFactory.context().isDevel()) {
             logger.warn("Creating development license: " + identifier);
-            license = new License(identifier, identifier, "Development", 0, 9999999999l, "development", 1, Boolean.TRUE);
+            license = new License(identifier, "0000-0000-0000-0000", identifier, "Development", 0, 9999999999l, "development", 1, Boolean.TRUE, "Developer");
             this.licenseMap.put(identifier,license);
             return license;
         }
 
         logger.warn("No license found for: " + identifier + " - Creating invalid license...");
-        license = new License(identifier, identifier, "Subscription", 0, 0, "invalid", 1, Boolean.FALSE);
+        license = new License(identifier, "0000-0000-0000-0000", identifier, "Subscription", 0, 0, "invalid", 1, Boolean.FALSE, "No License Found");
         this.licenseMap.put(identifier,license);
         return license;
     }
 
+    @Override
+    public final List<License> getLicenses()
+    {
+        return this.licenseList;
+    }
+    
     @Override
     public final boolean hasPremiumLicense()
     {
@@ -179,6 +185,7 @@ public class LicenseManagerImpl implements LicenseManager
              */
             if (isLicenseValid(license)) {
                 license.setValid(Boolean.TRUE);
+                license.setStatus("Valid"); /* XXX i18n */
             } else {
                 license.setValid(Boolean.FALSE);
             }
@@ -190,6 +197,8 @@ public class LicenseManagerImpl implements LicenseManager
             if ((current != null) && (current.getEnd() > license.getEnd()))
                 continue;
 
+            logger.warn("Adding License: " + license.getName() + " valid: " + license.isValid());
+            
             newMap.put(identifier, license);
             newList.add(license);
         }
@@ -203,19 +212,27 @@ public class LicenseManagerImpl implements LicenseManager
     {
         int version = license.getKeyVersion();
 
-        long now = System.currentTimeMillis();
+        long now = (System.currentTimeMillis()/1000);
 
         /* Verify the key hasn't already hasn't expired */
         if (license.getStart() > now) {
-            logger.warn( "The license: " + license + " isn't valid yet." );
+            logger.warn( "The license: " + license + " isn't valid yet (" + license.getStart() + " > " + now + ")");
+            license.setStatus("Invalid (Start Date in Future)"); /* XXX i18n */
             return false;
         }
 
         if ((license.getEnd() < now)) {
-            logger.warn( "The license: " + license + " has already expired." );
+            logger.warn( "The license: " + license + " has expired (" + license.getEnd() + " < " + now + ")");
+            license.setStatus("Invalid (Expired)"); /* XXX i18n */
             return false;
         }
 
+        if (license.getUID() == null || !license.getUID().equals(LocalUvmContextFactory.context().getServerUID())) {
+            logger.warn( "The license: " + license + " does not match this server's UID (" + license.getUID() + " != " + LocalUvmContextFactory.context().getServerUID() + ")");
+            license.setStatus("Invalid (UID Mismatch)"); /* XXX i18n */
+            return false;
+        }
+        
         /* Verify the duration lines up properly */
         long duration = license.getEnd() - license.getStart();
 
