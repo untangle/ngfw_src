@@ -40,6 +40,9 @@ public class License implements Serializable
     /** Identifier for the product this license is for */
     private String name;
 
+    /** The UID for this license */
+    private String uid;
+    
     /** The human readable name */
     private String displayName;
     
@@ -61,9 +64,18 @@ public class License implements Serializable
     /** This stores the computed validity state of this license */
     private Boolean valid;
 
-    License( License orig )
+    /** This stores the human-readable form of the status */
+    private String status;
+    
+    public License()
+    {
+        this.valid = Boolean.FALSE;
+    }
+
+    public License( License orig )
     {
         this.name = orig.name;
+        this.uid = orig.uid;
         this.displayName = orig.displayName;
         this.type = orig.type;
         this.start = orig.start;
@@ -71,11 +83,13 @@ public class License implements Serializable
         this.key = orig.key;
         this.keyVersion = orig.keyVersion;
         this.valid = orig.valid;
+        this.status = orig.status;
     }
     
-    License( String name, String displayName, String type, long start, long end, String key, int keyVersion, Boolean valid )
+    public License( String name, String uid, String displayName, String type, long start, long end, String key, int keyVersion, Boolean valid, String status )
     {
         this.name = name;
+        this.uid = uid;
         this.displayName = displayName;
         this.type = type;
         this.start = start;
@@ -83,6 +97,7 @@ public class License implements Serializable
         this.key = key;
         this.keyVersion = keyVersion;
         this.valid = valid;
+        this.status = status;
     }
         
     /**
@@ -98,6 +113,29 @@ public class License implements Serializable
         this.name = name;
     }
 
+    /**
+     * Returns the unique identifier of the product of this license
+     */
+    public String getUid()
+    {
+        return this.uid;
+    }
+
+    public String getUID()
+    {
+        return getUid();
+    }
+    
+    public void setUid( String uid )
+    {
+        this.uid = uid;
+    }
+
+    public void setUID( String uid )
+    {
+        setUid(uid);
+    }
+    
     /**
      * Returns the human readable name of the product of this license
      */
@@ -200,6 +238,20 @@ public class License implements Serializable
     public void setValid( Boolean valid )
     {
         this.valid = valid;
+    }
+
+    /**
+     * Get the status of license.
+     * Example: "Valid" "Invalid (Expired)" "Invalid (UID Mismatch)" etc
+     */
+    public String getStatus()
+    {
+        return this.status;
+    }
+
+    public void setStatus( String status )
+    {
+        this.status = status;
     }
 
     /**

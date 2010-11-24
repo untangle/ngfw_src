@@ -100,7 +100,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         getPolicyManagerLicense : function(forceReload) {
             if (forceReload || this.rpc.policyManagerLicense === undefined) {
                 try {
-                    this.rpc.policyManagerLicense = main.getLicenseManager().getLicense("untangle-policy-manager");
+                    this.rpc.policyManagerLicense = main.getLicenseManager().getLicense("untangle-node-policy");
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }

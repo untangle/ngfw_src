@@ -18,6 +18,8 @@
 package com.untangle.uvm.license;
 
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -25,6 +27,8 @@ public class NilLicenseManagerImpl implements LicenseManager
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    private final List<License> licenses = new LinkedList<License>();
+    
     NilLicenseManagerImpl() {}
 
     /**
@@ -42,9 +46,14 @@ public class NilLicenseManagerImpl implements LicenseManager
     public License getLicense(String identifier)
     {
         logger.error("License Manager is not loaded. Failed to return license: " + identifier);
-        return new License(identifier, identifier, "Subscription", 0, 0, "invalid", 1, Boolean.FALSE);
+        return new License(identifier, "0000-0000-0000-0000", identifier, "Subscription", 0, 0, "invalid", 1, Boolean.FALSE, "Invalid (No License Manager)");
     }
 
+    public List<License> getLicenses()
+    {
+        return this.licenses;
+    }
+    
     /**
      * Return true if the user has any premium products.
      */

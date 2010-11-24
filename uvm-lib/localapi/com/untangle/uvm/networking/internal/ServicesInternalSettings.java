@@ -235,8 +235,7 @@ public class ServicesInternalSettings
     }
 
     public static ServicesInternalSettings 
-        makeInstance( DhcpServerSettings dhcp, DnsServerSettings dns,
-                      IPaddr defaultRoute, List<IPaddr> dnsServerList )
+        makeInstance( DhcpServerSettings dhcp, DnsServerSettings dns, IPaddr defaultRoute, List<IPaddr> dnsServerList )
     {
         boolean isDhcpEnabled   = dhcp.getDhcpEnabled();
         IPaddr dhcpStartAddress = dhcp.getDhcpStartAddress();

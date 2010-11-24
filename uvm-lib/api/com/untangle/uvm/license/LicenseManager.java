@@ -32,6 +32,7 @@
  */
 package com.untangle.uvm.license;
 
+import java.util.List;
 
 public interface LicenseManager
 {
@@ -44,6 +45,11 @@ public interface LicenseManager
      * Get the status of a license on a product.
      */
     public License getLicense( String productIdentifier );
+
+    /**
+     * Return a list of all licenses for this server
+     */
+    public List<License> getLicenses();
 
     /**
      * Return true if the user has any premium products.

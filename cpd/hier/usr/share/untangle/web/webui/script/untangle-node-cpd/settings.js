@@ -80,9 +80,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                  }]
             });
 
-            //if ( this.node.state == "on" ) {
             this.panelCaptiveStatus.add( this.gridCaptiveStatus );
-            //}
         },
 
         buildGridCaptiveStatus : function()

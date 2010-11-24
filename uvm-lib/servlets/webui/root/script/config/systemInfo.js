@@ -4,6 +4,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
     Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
         panelVersion : null,
         panelRegistration : null,
+        panelLicenses : null,
         panelLicenseAgreement : null,
         dirty : false,
         initComponent : function() {
@@ -17,10 +18,11 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             }];
             this.buildVersion();
             this.buildRegistration();
+            this.buildLicenses();
             this.buildLicenseAgreement();
             
             // builds the tab panel with the tabs
-            var pageTabs = [this.panelVersion, this.panelRegistration, this.panelLicenseAgreement];
+            var pageTabs = [this.panelVersion, this.panelRegistration, this.panelLicenses, this.panelLicenseAgreement];
             this.buildTabPanel(pageTabs);
             this.tabs.activate(this.panelVersion);
             Ung.SystemInfo.superclass.initComponent.call(this);
@@ -245,6 +247,119 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 }]
                 
            });
+        },
+        buildLicenses : function() {
+
+            this.buildGridLicenses();
+
+            this.panelLicenses = new Ext.Panel({
+                name : 'Licenses',
+                helpSource : 'licenses',
+                parentId : this.getId(),
+                title : this.i18n._('Licenses'),
+                cls: 'ung-panel',
+                items: [{
+                    title : this.i18n._('Licenses'),
+                    name : 'Status',
+                    xtype : 'fieldset',
+                    autoHeight : true,
+                    items: [{
+                        html : String.format(this.i18n._('Licenses determine entitlement to paid applications and services. Click Refresh to force reconciliation with the license server.'),'<b>','</b>'),
+                        cls: 'description',
+                        border : false}]
+                 }]
+           });
+
+            this.panelLicenses.add( this.gridLicenses );
+
+        },
+        buildGridLicenses : function()
+        {
+            this.gridLicenses = new Ung.EditorGrid({
+                name : "gridLicenses",
+                settingsCmp : this,
+                height : 350,
+                parentId : this.getId(),
+                hasAdd : false,
+                configAdd : null,
+                hasEdit : false,
+                configEdit : null,
+                hasDelete : false,
+                configDelete : null,
+                columnsDefaultSortable : true,
+                title : this.i18n._("Licenses"),
+                qtip : this.i18n._("The Current list of Licenses available on this Server."),
+                paginated : false,
+                bbar : new Ext.Toolbar({
+                    items : [
+                        '-',
+                        {
+                            xtype : 'tbbutton',
+                            id: "refresh_"+this.getId(),
+                            text : i18n._('Refresh'),
+                            name : "Refresh",
+                            tooltip : i18n._('Refresh'),
+                            iconCls : 'icon-refresh',
+                            handler : function() {
+                                // XXX
+                                // Also call refresh
+                                this.gridLicenses.store.reload();
+                            }.createDelegate(this)
+                        }
+                    ]
+                }),
+                recordJavaClass : "com.untangle.uvm.license.License",
+                proxyRpcFn : main.getLicenseManager().getLicenses,
+                plugins : [],
+                fields : [{
+                    name : "displayName"
+                },{
+                    name : "name"
+                },{
+                    name : "UID"
+                },{
+                    name : "start"
+                },{
+                    name : "end"
+                },{
+                    name : "valid"
+                },{
+                    name : "status"
+                },{
+                    name : "id"
+                }],
+                columns : [{
+                    id : "displayName",
+                    header : this.i18n._("Name"),
+                    width : 150
+                },{
+                    id : "name",
+                    header : this.i18n._("App"),
+                    width : 150
+                },{
+                    id : "UID",
+                    header : this.i18n._("UID"),
+                    width : 150
+                },{
+                    id : "start",
+                    header : this.i18n._("Start Date"),
+                    width : 240,
+                    renderer : function(value) { return new Date(value*1000); }
+                },{
+                    id : "end",
+                    header : this.i18n._("End Date"),
+                    width : 240,
+                    renderer : function(value) { return new Date(value*1000); }
+                },{
+                    id : "valid",
+                    header : this.i18n._("Valid"),
+                    width : 50
+                },{
+                    id : "status",
+                    header : this.i18n._("Status"),
+                    width : 150
+                }]
+            });
         },
         onFieldChange : function() {
             this.dirty = true;

@@ -99,6 +99,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private static final String ACTIVATE_SCRIPT;
     private static final String REGISTRATION_INFO_FILE;
     private static final String UID_FILE;
+    private static String uid;
 
     /* true if running in a development environment */
     private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel";
@@ -1006,16 +1007,19 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     public String getServerUID()
     {
-        try {
-            File keyFile = new File(UID_FILE);
-            if (keyFile.exists()) {
-                BufferedReader reader = new BufferedReader(new FileReader(keyFile));
-                return reader.readLine();
+        if (this.uid == null) {
+            try {
+                File keyFile = new File(UID_FILE);
+                if (keyFile.exists()) {
+                    BufferedReader reader = new BufferedReader(new FileReader(keyFile));
+                    this.uid = reader.readLine();
+                    return this.uid;
+                }
+            } catch (IOException x) {
+                logger.error("Unable to get pop id: ", x);
             }
-        } catch (IOException x) {
-            logger.error("Unable to get pop id: ", x);
         }
-        return null;
+        return this.uid;
     }
     
     @Override
