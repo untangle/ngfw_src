@@ -53,12 +53,15 @@ fi
 
 /usr/share/untangle/bin/update-schema uvm
 
-# remove obsolete file
+# 8.1 - remove obsolete file
 if [ -f /usr/share/untangle/popid ] ; 
     rm -f /usr/share/untangle/popid
 fi
-
-# move files to new locations # done in 8.1
+# 8.1 - transform to consistent UID format
+if [ -f /etc/apt/sources.list.d/untangle.list ] ; then
+    sed -i 's/\([0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}\)-[0-9a-f]\{7\}-[0-9a-f]\{7\}-[0-9a-f]\{7\}-[0-9a-f]\{7\}/\1/g' /etc/apt/sources.list.d/untangle.list
+fi
+# 8.1 - move files to new locations
 if [ -f /usr/share/untangle/activation.key ] ; 
     mv /usr/share/untangle/activation.key /usr/share/untangle/conf/uid
 fi
