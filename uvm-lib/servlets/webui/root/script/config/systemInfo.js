@@ -70,7 +70,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         width : 600,
                         height : 400,
                         value : this.i18n._('Summary')+":\n"+
-                            this.i18n._('UID')+": "+ this.getSystemInfo().activationKey + "\n" + 
+                            this.i18n._('UID')+": "+ this.getSystemInfo().serverUID + "\n" + 
                             this.i18n._('Build') + ": " + this.getSystemInfo().fullVersion + "\n" + 
                             this.i18n._('Java') + ": " + this.getSystemInfo().javaVersion 
                     })]

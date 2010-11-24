@@ -36,7 +36,7 @@ package com.untangle.uvm.security;
 import java.io.Serializable;
 
 /**
- * The system info (activation key, build version, java version) for the Untangle customer
+ * The system info (UID, build version, java version) for the Untangle customer
  *
  * @author <a href="mailto:cdondera@untangle.com">Catalin Dondera</a>
  * @version 1.0
@@ -45,7 +45,7 @@ import java.io.Serializable;
 public class SystemInfo implements Serializable
 {
     
-    private String activationKey;
+    private String uid;
     private String fullVersion;
     private String javaVersion;
 
@@ -54,25 +54,25 @@ public class SystemInfo implements Serializable
     /**
      * Creates a new <code>SystemInfo</code> with all of the required fields set.
      *
-     * @param activationKey a <code>String</code> value
+     * @param uid a <code>String</code> value
      * @param fullVersion a <code>String</code> value
      * @param javaVersion a <code>String</code> value
      */
-    public SystemInfo(String activationKey, String fullVersion, String javaVersion)
+    public SystemInfo(String uid, String fullVersion, String javaVersion)
     {
-        this.activationKey = activationKey;
+        this.uid = uid;
         this.fullVersion = fullVersion;
         this.javaVersion = javaVersion;
     }
 
-    public String getActivationKey()
+    public String getServerUID()
     {
-        return activationKey;
+        return uid;
     }
 
-    public void setActivationKey(String activationKey)
+    public void setUID(String uid)
     {
-        this.activationKey = activationKey;
+        this.uid = uid;
     }
 
     public String getFullVersion()

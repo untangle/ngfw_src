@@ -246,7 +246,7 @@ public class Launcher extends HttpServlet
 
         String query = "";
         try {
-            query = "boxkey=" + URLEncoder.encode( context.getActivationKey(), "UTF-8");
+            query = "boxkey=" + URLEncoder.encode( context.getServerUID(), "UTF-8");
             query += "&untangleFullVersion=" + URLEncoder.encode( Version.getFullVersion(), "UTF-8");
             query += "&host=" + URLEncoder.encode( host, "UTF-8");
             if ( port != null ) query += "&port=" + port;

@@ -53,9 +53,20 @@ fi
 
 /usr/share/untangle/bin/update-schema uvm
 
-# Better to do this now while we have entropy available.
-if [ -f /usr/share/untangle/activation.key -a ! -f /usr/share/untangle/popid -a -x /usr/share/untangle/bin/utactivate ]; then
-    /usr/share/untangle/bin/utactivate
+# remove obsolete file
+if [ -f /usr/share/untangle/popid ] ; 
+    rm -f /usr/share/untangle/popid
+fi
+
+# move files to new locations # done in 8.1
+if [ -f /usr/share/untangle/activation.key ] ; 
+    mv /usr/share/untangle/activation.key /usr/share/untangle/conf/uid
+fi
+if [ -f /usr/share/untangle/.regdone ] ; 
+    mv /usr/share/untangle/.regdone /usr/share/untangle/conf/.regdone-flag
+fi
+if [ -f /usr/share/untangle/registration.info ] ; 
+    mv /usr/share/untangle/registration.info /usr/share/untangle/conf/registration.info
 fi
 
 # set up uvm to start at boot

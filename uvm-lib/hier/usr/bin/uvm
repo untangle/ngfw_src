@@ -95,10 +95,7 @@ flushIptables() {
 # In 5.3, this code is only used to handle the upgrade and factory-defaults cases.
 getPopId() {
   # for new installs from iso, do nothing
-  [[ -f $ACTIVATION_KEY_FILE ]] || return
-
-  # for package installs, do nothing
-  [[ -f $POPID_FILE ]] && return
+  [[ -f $UID_FILE ]] || return
 
   # ensure we have a popid
   @UVM_HOME@/bin/utactivate

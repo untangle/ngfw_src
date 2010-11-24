@@ -83,8 +83,7 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
     private AdminSettings adminSettings;
     private SnmpManagerImpl snmpManager;
 
-    RemoteAdminManagerImpl(UvmContextImpl uvmContext,
-                           InheritableThreadLocal<HttpServletRequest> threadRequest)
+    RemoteAdminManagerImpl(UvmContextImpl uvmContext, InheritableThreadLocal<HttpServletRequest> threadRequest)
     {
         this.uvmContext = uvmContext;
         this.threadRequest = threadRequest;
@@ -415,11 +414,11 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
 
     public SystemInfo getSystemInfo()
     {
-        String activationKey = uvmContext.getActivationKey();
+        String UID = uvmContext.getServerUID();
         String fullVersion = getFullVersionAndRevision();
         String javaVersion = System.getProperty("java.version");
 
-        return new SystemInfo(activationKey, fullVersion, javaVersion);
+        return new SystemInfo(UID, fullVersion, javaVersion);
     }
 
     void setAdminEmail(final RegistrationInfo regInfo) {

@@ -1,11 +1,10 @@
 # activation stuff...
 UNTANGLE_HARDWARE=@UVM_HOME@/.untanglehw
 FAKE_KEY=0000-0000-0000-0000
-ACTIVATION_KEY_FILE=@UVM_HOME@/activation.key
-REGISTRATION_DONE_FILE=@UVM_HOME@/.regdone
-REGISTRATION_INFO_FILE=@UVM_HOME@/registration.info
-POPID_FILE=@UVM_HOME@/popid
-REMOTE_SUPPORT_ENABLE_URL_TEMPLATE="https://activation.untangle.com/cgi-bin/enable-remote-support.rb?license_key=%s&internal_ip=%s"
+UID_FILE=@UVM_HOME@/conf/uid
+REGISTRATION_DONE_FILE=@UVM_HOME@/conf/.regdone-flag
+REGISTRATION_INFO_FILE=@UVM_HOME@/conf/registration.info
+REMOTE_SUPPORT_ENABLE_URL_TEMPLATE="https://supportsys.untangle.com/cgi-bin/enable-remote-support.rb?license_key=%s&internal_ip=%s"
 KEY_VERIFICATION="@PREFIX@/usr/bin/utverifykey"
 KEY_TEMPLATE=XXX_REG_KEY_XXX
 ETC_ISSUE=/etc/issue

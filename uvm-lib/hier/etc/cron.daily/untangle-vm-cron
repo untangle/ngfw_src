@@ -2,10 +2,7 @@
 
 exec > /dev/null 2>&1
 
-REGDONE="@UVM_HOME@/.regdone"
-REGINFO="@UVM_HOME@/registration.info"
-
-if [ -f "@UVM_HOME@/activation.key" ]; then
+if [ -f "@UVM_HOME@/conf/uid" ]; then
     mkdir -p @UVM_HOME@/autodump @UVM_HOME@/tmp
 
     @UVM_HOME@/bin/uvmdb-backup @UVM_HOME@/autodump

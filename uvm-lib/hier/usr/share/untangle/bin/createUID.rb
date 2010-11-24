@@ -3,7 +3,7 @@
 require 'gpgme'
 require 'optparse'
 
-# The format of a popid is:
+# The format of a UID is:
 #   xxxx-xxxx-xxxx-xxPV-xxxxxxx-xxxxxxx-xxxxPVx
 #   P = platform bit
 #   V = version bit
@@ -38,8 +38,7 @@ OLDGPGME = !defined?(GPGME::Ctx)
 # files
 UNTANGLE = "@PREFIX@/usr/share/untangle"
 UNTANGLE_GPG_HOME = File.join(UNTANGLE, "gpg")
-ACTIVATION_FILE = File.join(UNTANGLE, "activation.key")
-POPID_FILE = File.join(UNTANGLE, "popid")
+UID_FILE = File.join(UNTANGLE, "conf/uid")
 ENTROPY_AVAILABLE_FILE = "/proc/sys/kernel/random/entropy_avail"
 
 # minimum entropy needed to generate our key
@@ -131,14 +130,16 @@ def getPlatform
   end
 end
 
-def readExistingActivationKey
-  existingLicenseKey = nil
-  if File.file?(ACTIVATION_FILE) then
-    existingLicenseKey = File.open(ACTIVATION_FILE).read.strip.gsub(/-/, "")
-    existingLicenseKey = nil if existingLicenseKey =~ /^[0\-]+$/
-  end
-  return existingLicenseKey
-end
+# ACTIVATION_FILE = File.join(UNTANGLE, "activation.key")
+
+# def readExistingActivationKey
+#   existingLicenseKey = nil
+#   if File.file?(ACTIVATION_FILE) then
+#     existingLicenseKey = File.open(ACTIVATION_FILE).read.strip.gsub(/-/, "")
+#     existingLicenseKey = nil if existingLicenseKey =~ /^[0\-]+$/
+#   end
+#   return existingLicenseKey
+# end
 
 def getPackageVersion(name)
   line = `dpkg-query --showformat='${Version}' -W #{name} 2> /dev/null`
@@ -169,26 +170,26 @@ def getBits(typeNibble)
   return "#{PLATFORMS[getPlatform]}#{typeNibble}"
 end
 
-def createPopId(fingerprint, bits, existingKey)
+def createUID(fingerprint, bits, existingKey)
   # insert meaningful bit in the left part
   if existingKey.nil? then
-    popId = fingerprint.insert(LEFT_LENGTH-2, bits)
+    uid = fingerprint.insert(LEFT_LENGTH-2, bits)
   else # FIXME
-    popId = existingKey + fingerprint[LEFT_LENGTH-2,fingerprint.length-LEFT_LENGTH+2]
+    uid = existingKey + fingerprint[LEFT_LENGTH-2,fingerprint.length-LEFT_LENGTH+2]
   end
 
   # insert meaningful bit in the right part
-  popId = popId.insert(-2, bits).downcase
+  uid = uid.insert(-2, bits).downcase
 
   # group and join
-  one = popId[0,LEFT_LENGTH].scan(/.{4}/)
-  two = popId[LEFT_LENGTH,popId.length-LEFT_LENGTH].scan(/.{7}/)
+  one = uid[0,LEFT_LENGTH].scan(/.{4}/)
+  two = uid[LEFT_LENGTH,uid.length-LEFT_LENGTH].scan(/.{7}/)
   return [one, one+two].map{ |list| list.join("-") }
 end
 
-def writeToFiles(activationKey, popId)
-  File.open(ACTIVATION_FILE, 'w') { |f| f.puts(activationKey) }
-  File.open(POPID_FILE, 'w') { |f| f.puts(popId) }
+def writeToFiles(shortUID, uid)
+#  File.open(ACTIVATION_FILE, 'w') { |f| f.puts(shortUID) }
+  File.open(UID_FILE, 'w') { |f| f.puts(shortUID) }
 end
 
 #######################
@@ -231,11 +232,12 @@ rescue NoMethodError
   exit 1
 end
 
-bits = getBits(options[:typeNibble]) # what we'll embed in the popid
+bits = getBits(options[:typeNibble]) # what we'll embed in the uid
 
-existingLicenseKey = readExistingActivationKey # re-use that if it's there
+# existingLicenseKey = readExistingActivationKey # re-use that if it's there
 
-activationKey, popId = createPopId(fingerprint, bits, existingLicenseKey)
+# shortUID, uid = createUID(fingerprint, bits, existingLicenseKey)
+shortUID, uid = createUID(fingerprint, bits, nil)
 
-puts activationKey, popId
-writeToFiles(activationKey, popId)
+puts shortUID, uid
+writeToFiles(shortUID, uid)

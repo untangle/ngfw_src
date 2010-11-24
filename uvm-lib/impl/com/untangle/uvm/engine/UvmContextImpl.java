@@ -97,7 +97,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private static final String BDB_HOME = System.getProperty("uvm.db.dir");
 
     private static final String ACTIVATE_SCRIPT;
-    private static final String ACTIVATION_KEY_FILE;
     private static final String REGISTRATION_INFO_FILE;
     private static final String UID_FILE;
 
@@ -589,10 +588,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     public boolean isActivated()
     {
-        // This is ez since we aren't concerned about local box
-        // security -- the key is ultimately checked on the release
-        // webserver, which is what matters.
-        File keyFile = new File(ACTIVATION_KEY_FILE);
+        File keyFile = new File(UID_FILE);
         return keyFile.exists();
     }
 
@@ -1008,20 +1004,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return main.loadUvmResource(name);
     }
 
-    public String getActivationKey()
-    {
-        try {
-            File keyFile = new File(ACTIVATION_KEY_FILE);
-            if (keyFile.exists()) {
-                BufferedReader reader = new BufferedReader(new FileReader(keyFile));
-                return reader.readLine();
-            }
-        } catch (IOException x) {
-            logger.error("Unable to get activation key: ", x);
-        }
-        return null;
-    }
-
     public String getServerUID()
     {
         try {
@@ -1149,8 +1131,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     static {
         ACTIVATE_SCRIPT = System.getProperty("uvm.bin.dir") + "/utactivate";
-        ACTIVATION_KEY_FILE = System.getProperty("uvm.home") + "/activation.key";
-        REGISTRATION_INFO_FILE = System.getProperty("uvm.home") + "/registration.info";
-        UID_FILE = System.getProperty("uvm.home") + "/popid";
+        REGISTRATION_INFO_FILE = System.getProperty("uvm.conf.dir") + "/registration.info";
+        UID_FILE = System.getProperty("uvm.conf.dir") + "/uid";
     }
 }

@@ -162,7 +162,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
                     while (fail) {
                         Map<String,String> m = new HashMap<String,String>();
-                        m.put("key", uvm.getActivationKey());
+                        m.put("key", uvm.getServerUID());
                         m.put("client-version", uvm.getFullVersion());
 
                         try {

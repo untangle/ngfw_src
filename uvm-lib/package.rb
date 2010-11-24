@@ -130,22 +130,22 @@ if BuildEnv::SRC.isDevel
                                            "#{uvm_lib.distDirectory}/tmp",
                                            'pkg-list-main')
 
-  activationKey = "#{uvm_lib.distDirectory}/usr/share/untangle/activation.key"
-  regInfo = "#{uvm_lib.distDirectory}/usr/share/untangle/registration.info"
+  uidFile = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/uid"
+  regFile = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/registration.info"
 
-  ## Create all-zeros activation key to signal non-production install.
+  ## Create all-zeros UID file to signal non-production install.
   ## Done here to not include the file inside of packages.
-  file activationKey do
-    File.open( activationKey, "w" ) { |f| f.puts( "0000-0000-0000-0000" ) }
+  file uidFile do
+    File.open( uidFile, "w" ) { |f| f.puts( "0000-0000-0000-0000" ) }
   end
   ## Create blank registration info to avoid setup wizard in development.
   ## Done here to not include the file inside of packages.
-  file regInfo do
-    File.open( regInfo, "w" ) { |f| f.puts( "" ) }
+  file regFile do
+    File.open( regFile, "w" ) { |f| f.puts( "" ) }
   end
 
-  BuildEnv::SRC.installTarget.register_dependency(activationKey)
-  BuildEnv::SRC.installTarget.register_dependency(regInfo)
+  BuildEnv::SRC.installTarget.register_dependency(uidFile)
+  BuildEnv::SRC.installTarget.register_dependency(regFile)
 end
 
 BuildEnv::SRC.installTarget.register_dependency(uvm_cacerts)

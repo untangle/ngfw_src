@@ -136,9 +136,9 @@ public class SystemStatus
         Process proc;
         BufferedReader input;
         int i = 0;
-        boolean hasActivationKey = false;
+        boolean hasUID = false;
         try {
-            hasActivationKey = appendActivationKey(sb);
+            hasUID = appendUID(sb);
             String version = LocalUvmContextFactory.context().getFullVersion();
             sb.append("full version: " + version + "\n");
             /**
@@ -176,11 +176,11 @@ public class SystemStatus
         }
         catch (Exception e) {
             logger.error("Exception: ", e);
-            hasActivationKey = false;
+            hasUID = false;
         }
 
         staticConf = sb.toString();
-        staticConfFinal = hasActivationKey;
+        staticConfFinal = hasUID;
     }
 
     private String _buildDynamicStat ()
@@ -368,14 +368,14 @@ public class SystemStatus
     }
 
     /**
-     * Append the first half of the activation key
+     * Append the first half of the UID
      */
-    private boolean appendActivationKey(StringBuilder sb)
+    private boolean appendUID(StringBuilder sb)
     {
         boolean result;
 
         sb.append(SPACER);
-        String key = LocalUvmContextFactory.context().getActivationKey();
+        String key = LocalUvmContextFactory.context().getServerUID();
         if ((key==null) || (key.length()==0)) {
             key = "unset";
             result = false;
@@ -384,8 +384,7 @@ public class SystemStatus
             key = key.substring(0,Math.min(key.length()/2,DEFAULT_HALF_KEY_LENGTH));
             result = true;
         }
-
-        sb.append("activation key: " + key + "\n");
+        sb.append("UID: " + key + "\n");
 
         return result;
     }

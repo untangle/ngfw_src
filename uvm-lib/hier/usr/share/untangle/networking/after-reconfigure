@@ -2,8 +2,8 @@
 
 exec >> @UVM_LOG@/iptables.log 2>&1
 
-REGDONE="@UVM_HOME@/.regdone"
-REGINFO="@UVM_HOME@/registration.info"
+REGDONE="@UVM_HOME@/conf/.regdone-flag"
+REGINFO="@UVM_HOME@/conf/registration.info"
 
 restartService() {
     local t_service=$1

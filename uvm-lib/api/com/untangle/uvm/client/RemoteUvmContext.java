@@ -246,13 +246,6 @@ public interface RemoteUvmContext
     String version();
 
     /**
-     * Get the activation key.
-     *
-     * @return the activation key.
-     */
-    String getActivationKey();
-
-    /**
      * Return true if running in a development environment.
      *
      * @return a <code>boolean</code> true if in development.
