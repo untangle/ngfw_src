@@ -209,9 +209,10 @@ class RealApt
     if (r != 0)
       return r
     end
+    cmd_to_stderr("monit -c /etc/untangle/monit.conf unmonitor all")
     r = cmd_to_stderr("apt-get dist-upgrade #{UPGD_OPTS}")
-
     log "done #{@stamp}"
+    cmd_to_stderr("monit -c /etc/untangle/monit.conf monitor all")
 
     r
   end
