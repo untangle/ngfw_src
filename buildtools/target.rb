@@ -622,7 +622,7 @@ class JavaMsgFmtTarget
 end
 
 # Compresses js and css files
-class YuiCompressorTarget < Target
+class YuiCompressorTarget
   def initialize(package, script_file, src, dest, type)
     @script_file = "#{src}/#{script_file}"
     @dest = dest
@@ -630,7 +630,10 @@ class YuiCompressorTarget < Target
 
     @filename = "#{dest}/#{script_file.sub(/\.#{type}/, '-min.'+type)}"
 
-    super(package, [@script_file], @filename)
+    file @filename => @script_file do
+      build
+    end
+    task self => @filename
   end
 
   def YuiCompressorTarget.make_min_targets(package, src, dest, type)
