@@ -102,8 +102,9 @@ class ShieldHighlight(Highlight):
         Highlight.__init__(self, name,
                            _(name) + " " +
                            _("scanned") + " " + "%(sessions)s" + " " +
-                           _("sessions and blocked") +
-                           " " + "%(blocks)s" + " " + _("of them"))
+                           _("sessions, of which it limited") +
+                           " " + "%(limited)s" + " " + _("and dropped") +
+                           " " + "%(dropped)s")
 
     @print_timing
     def get_highlights(self, end_date, report_days,
@@ -116,7 +117,8 @@ class ShieldHighlight(Highlight):
 
         query = """
 SELECT COALESCE(sum(accepted+limited+dropped+rejected), 0) AS sessions,
-       COALESCE(sum(dropped+rejected), 0) AS blocks
+       COALESCE(sum(limited), 0) AS limited,
+       COALESCE(sum(dropped), 0) AS dropped
 FROM reports.n_shield_totals
 WHERE trunc_time >= %s AND trunc_time < %s"""
 
