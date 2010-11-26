@@ -293,9 +293,9 @@ class DailyWebUsage(Graph):
             lks.append(ks)
             ks = KeyStatistic(_('Max Violations'), max(violations), _('Violations')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Avg Blocked Violations'), sum(blocks) / len(rp), _('Blocked Violations')+'/'+_(unit))
+            ks = KeyStatistic(_('Avg Blocks'), sum(blocks) / len(rp), _('Blocks')+'/'+_(unit))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Blocked Violations'), max(blocks), _('Blocked Violations')+'/'+_(unit))
+            ks = KeyStatistic(_('Max Blocks'), max(blocks), _('Blocks')+'/'+_(unit))
             lks.append(ks)
 
         finally:
