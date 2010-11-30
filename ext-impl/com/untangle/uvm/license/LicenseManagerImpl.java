@@ -90,7 +90,9 @@ public class LicenseManagerImpl implements LicenseManager
     @Override
     public final void reloadLicenses()
     {
-        scheduleAndWait();
+        if (!this.pulse.beat(4000)) {
+            logger.debug("unable to wait for the license task to complete.");
+        }
     }
 
     @Override
@@ -144,11 +146,10 @@ public class LicenseManagerImpl implements LicenseManager
     /**
      * Read the licenses and load them into the current settings object
      */
-    @SuppressWarnings("unchecked") //LinkedList<License> <-> LinkedList
+    //@SuppressWarnings("unchecked") //LinkedList<License> <-> LinkedList
     private synchronized void readLicenses()
     {
         SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
-        LinkedList<License> licenses;
         
         try {
             this.settings = settingsManager.loadBasePath(LicenseSettings.class, System.getProperty("uvm.conf.dir"), "licenses", "licenses");
@@ -163,6 +164,37 @@ public class LicenseManagerImpl implements LicenseManager
         return;
     }
 
+    @SuppressWarnings("unchecked") //LinkedList<License> <-> LinkedList
+    private synchronized void downloadLicenses()
+    {
+        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        LinkedList<License> licenses;
+        
+        try {
+            String urlStr = "http://license-test.untangle.com/license.php?action=getLicenses&uid=1b9d-acb9-c832-6672";
+            //            String urlStr = "http://" + "license-test.untangle.com" + "/" + "license.php" + "?" + "action=getLicenses" + "&" + "uid=" + "1b9d-acb6-c832-6672";
+            Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
+            logger.error("Object: " + o);
+            licenses = (LinkedList<License>)o;
+        } catch (SettingsManager.SettingsException e) {
+            logger.error("Unable to read license file: ", e );
+            return;
+        }
+
+//         logger.error("Licenses: " + licenses);
+
+//         for (License lic : licenses) {
+//             logger.error("License: " + lic);
+//         }
+
+        /* FIXME */
+        /* need to parse licenses and then add/sync them with current settings */
+        
+        return;
+
+
+    }
+    
     /**
      * update the license map.
      */
@@ -320,25 +352,6 @@ public class LicenseManagerImpl implements LicenseManager
         }
     }
 
-    private void scheduleAndWait()
-    {
-        /*
-         * update all of the licenses for products, run all of them in the timer
-         * task to avoid synchronization issues.
-         */
-        if (!this.pulse.beat(4000)) {
-            logger.debug("unable to wait for the license task to complete.");
-        }
-    }
-
-    /**
-     * This starts the task beating at a fixed rate
-     */
-    private void scheduleFixedTask()
-    {
-        this.pulse.start(this.TIMER_DELAY);
-    }
-
     /* statics */
     public static LicenseManager getInstance()
     {
@@ -375,6 +388,10 @@ public class LicenseManagerImpl implements LicenseManager
 
             synchronized (LicenseManagerImpl.this) {
                 readLicenses();
+                downloadLicenses();
+
+                // checkRevocations(); FIXME 
+                
                 mapLicenses();
             }
 
@@ -398,7 +415,7 @@ public class LicenseManagerImpl implements LicenseManager
          * This will actually run it twice, but the second call is blocking
          * until the licenses have been loaded
          */
-        INSTANCE.scheduleFixedTask();
+        INSTANCE.pulse.start(TIMER_DELAY);
         INSTANCE.reloadLicenses();
     }
 }
