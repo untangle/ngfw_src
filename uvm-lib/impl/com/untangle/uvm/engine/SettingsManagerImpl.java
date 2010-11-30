@@ -1,11 +1,14 @@
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
+import java.io.Reader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,8 +18,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 import org.apache.log4j.Logger;
-
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.MarshallException;
 import org.jabsorb.serializer.UnmarshallException;
@@ -64,140 +71,200 @@ public class SettingsManagerImpl implements SettingsManager
     }
 
     /**
-     * Load the settings from the store using a unique identifier.
-     * 
-     * @param <T>
-     *            Type of class to load
-     * @param clz
-     *            Type of class to load.
-     * @param packageName
-     *            Name of the debian package that is making the request.
-     * @param id
-     *            Unique identifier to select the object.
-     * @return The object that was loaded or null if an object was not loaded.
-     * @throws SettingsException
+     * Documented in SettingsManager.java
      */
-    public <T> T load(Class<T> clz, String packageName, String id)
+    public <T> T load(Class<T> clz, String dirName, String id)
         throws SettingsException
     {
-        if (!VALID_CHARACTERS.matcher(id).matches()) {
+        if (!_checkLegalName(id)) {
             throw new IllegalArgumentException("Invalid id value: '" + id + "'");
         }
 
-        return loadImpl(clz, this.defaultBasePath, packageName, id);
+        return loadBasePath(clz, this.defaultBasePath, dirName, id);
     }
+
 
     /**
-     * Load the settings from the store using a unique identifier.
-     * 
-     * @param <T>
-     *            Type of class to load
-     * @param clz
-     *            Type of class to load.
-     * @param packageName
-     *            Name of the debian package that is making the request.
-     * @param id
-     *            Unique identifier to select the object.
-     * @param value
-     *            The value to be saved.
-     * @return The object that was saved.
-     * @throws SettingsException
+     * Documented in SettingsManager.java
      */
-    public <T> T save(Class<T> clz, String packageName, String id, T value)
+    public <T> T loadUrl(Class<T> clz, String urlStr)
         throws SettingsException
     {
-        if (!VALID_CHARACTERS.matcher(id).matches()) {
-            throw new IllegalArgumentException("Invalid id value: '" + id + "'");
-        }
+        InputStream is = null;
 
-        return saveImpl(clz, this.defaultBasePath, packageName, id, value);
+        try {
+            URL url = new URL(urlStr);
+            logger.info("Fetching Settings from URL: " + url); 
+
+            HttpClient hc = new HttpClient();
+            HttpMethod get = new GetMethod(url.toString());
+            get.setRequestHeader("Accept-Encoding", "gzip");
+            hc.executeMethod(get);
+
+            Header h = get.getResponseHeader("Content-Encoding");
+
+            /**
+             * Check for gzipped response
+             */
+            if (h != null) {
+                String ce = h.getValue();
+                if (ce != null && ce.equals("gzip")) {
+                    is = new GZIPInputStream(get.getResponseBodyAsStream());
+                }
+            }
+
+            /**
+             * Otherwise just assume its in clear text
+             */
+            if (is == null) {
+                is = get.getResponseBodyAsStream();
+            }
+
+            Object lock = this.getLock(urlStr);
+            synchronized(lock) {
+                return _loadInputStream(clz, is);
+            }
+        }
+        catch (java.net.MalformedURLException e) {
+            throw new IllegalArgumentException("Invalid URL: '" + urlStr + "'", e);
+        }
+        catch (java.io.IOException e) {
+            throw new IllegalArgumentException("Invalid content in URL: '" + urlStr + "'", e);
+        }
     }
 
-    public <T> T loadBasePath(Class<T> clz, String basePath, String packageName, String id)
-        throws SettingsException
+    public String convertStreamToString(InputStream is)
+        throws IOException
     {
-        if (!VALID_CHARACTERS.matcher(id).matches()) {
-            throw new IllegalArgumentException("Invalid id value: '" + id + "'");
+        /*
+         * To convert the InputStream to String we use the
+         * Reader.read(char[] buffer) method. We iterate until the
+         * Reader return -1 which means there's no more data to
+         * read. We use the StringWriter class to produce the string.
+         */
+        if (is != null) {
+            java.io.Writer writer = new java.io.StringWriter();
+ 
+            char[] buffer = new char[1024];
+            try {
+                java.io.Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                int n;
+                while ((n = reader.read(buffer)) != -1) {
+                    writer.write(buffer, 0, n);
+                }
+            } finally {
+                is.close();
+            }
+            return writer.toString();
+        } else {       
+            return "";
         }
-
-        return loadImpl(clz, basePath, packageName, id);
-    }
-
-    public <T> T saveBasePath(Class<T> clz, String basePath, String packageName, String id, T value)
-        throws SettingsException
-    {
-        if (!VALID_CHARACTERS.matcher(id).matches()) {
-            throw new IllegalArgumentException("Invalid id value: '" + id + "'");
-        }
-
-        return saveImpl(clz, basePath, packageName, id, value);
     }
     
     /**
-     * 
-     * @param <T>
-     *            The type of class to return
-     * @param clz
-     *            The type of class to return.
-     * @param packageName
-     *            The name of the package where this setting is stored.
-     * @param query
-     *            The unique query string that was built ahead.
-     * @return null if the object doesn't exist, otherwise it returns a copy of
-     *         the object
-     * @throws SettingsException
+     * Documented in SettingsManager.java
      */
-    @SuppressWarnings("unchecked") //JSON
-    private <T> T loadImpl(Class<T> clz, String basePath, String packageName, String query)
+    public <T> T save(Class<T> clz, String dirName, String id, T value)
         throws SettingsException
     {
-        File f = buildHeadPath(clz, basePath, packageName, query);
+        if (!_checkLegalName(id)) {
+            throw new IllegalArgumentException("Invalid id value: '" + id + "'");
+        }
+
+        return _saveImpl(clz, this.defaultBasePath, dirName, id, value);
+    }
+
+    /**
+     * Documented in SettingsManager.java
+     */
+    public <T> T loadBasePath(Class<T> clz, String basePath, String dirName, String id)
+        throws SettingsException
+    {
+        if (!_checkLegalName(id)) {
+            throw new IllegalArgumentException("Invalid id value: '" + id + "'");
+        }
+
+        return _loadImpl(clz, basePath, dirName, id);
+    }
+
+    /**
+     * Documented in SettingsManager.java
+     */
+    public <T> T saveBasePath(Class<T> clz, String basePath, String dirName, String id, T value)
+        throws SettingsException
+    {
+        if (!_checkLegalName(id)) {
+            throw new IllegalArgumentException("Invalid id value: '" + id + "'");
+        }
+
+        return _saveImpl(clz, basePath, dirName, id, value);
+    }
+    
+    @SuppressWarnings("unchecked") //JSON
+    private <T> T _loadImpl(Class<T> clz, String basePath, String dirName, String query)
+        throws SettingsException
+    {
+        File f = _buildHeadPath(clz, basePath, dirName, query);
         if (!f.exists()) {
             return null;
         }
 
-        Object lock = this.getLock(f);
+        InputStream is = null;
+        try {
+            is = new FileInputStream(f);
+        }
+        catch (java.io.FileNotFoundException e) {
+            throw new SettingsException("File not found: " + f);
+        }
 
-        synchronized (lock) {
-            BufferedReader reader = null;
-            try {
-                StringBuilder jsonString = new StringBuilder();
-                reader = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
-
-                char buffer[] = new char[1024];
-                while (true) {
-                    if (reader.read(buffer) <= 0) {
-                        break;
-                    }
-
-                    jsonString.append(buffer);
-                }
-
-                logger.debug("Loading Settings: \n" + jsonString);
-
-                return (T) serializer.fromJSON(jsonString.toString());
-
-            } catch (IOException e) {
-                throw new SettingsException("Unable to load the file: '" + f + "'", e);
-            } catch (UnmarshallException e) {
-                throw new SettingsException("Unable to unmarshal the file: '" + f + "'", e);
-            } finally {
-                try {
-                    if (reader != null) {
-                        reader.close();
-                    }
-                } catch (Exception e) {}
-            }
+        Object lock = this.getLock(f.getParentFile().getAbsolutePath());
+        synchronized(lock) {
+            return _loadInputStream(clz, is);
         }
     }
 
-    private <T> T saveImpl(Class<T> clz, String basePath, String packageName, String query, T value)
+    @SuppressWarnings("unchecked") //JSON
+    private <T> T _loadInputStream(Class<T> clz, InputStream is)
         throws SettingsException
     {
-        File link = buildHeadPath(clz, basePath, packageName, query);
-        File output = buildVersionPath(clz, basePath, packageName, query);
+        Reader reader = null;
+        try {
+            StringBuilder jsonString = new StringBuilder();
+            reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
-        Object lock = this.getLock(output);
+            char buffer[] = new char[1024];
+            while (true) {
+                if (reader.read(buffer) <= 0) {
+                    break;
+                }
+
+                jsonString.append(buffer);
+            }
+
+            logger.debug("Loading Settings: \n" + jsonString);
+
+            return (T) serializer.fromJSON(jsonString.toString());
+
+        } catch (IOException e) {
+            throw new SettingsException("Unable to the settings: '" + is + "'", e);
+        } catch (UnmarshallException e) {
+            throw new SettingsException("Unable to unmarshal the settings: '" + is + "'", e);
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (Exception e) {}
+        }
+    }
+    
+    private <T> T _saveImpl(Class<T> clz, String basePath, String dirName, String query, T value)
+        throws SettingsException
+    {
+        File link = _buildHeadPath(clz, basePath, dirName, query);
+        File output = _buildVersionPath(clz, basePath, dirName, query);
+
+        Object lock = this.getLock(output.getParentFile().getAbsolutePath());
 
         /*
          * Synchronized on the name of the parent directory, so two files cannot
@@ -260,7 +327,7 @@ public class SettingsManagerImpl implements SettingsManager
 
                 /* Append the history to the end of the history file. */
                 /**
-                 * File history = buildHistoryPath(clz, packageName);
+                 * File history = buildHistoryPath(clz, dirName);
                  *  fileWriter = new FileWriter(history, true);
                  *  fileWriter.append(String.valueOf(System.currentTimeMillis()));
                  *  fileWriter.append(": ").append(link.getName()).append(" ").append(output.getName()).append("\n");
@@ -281,11 +348,11 @@ public class SettingsManagerImpl implements SettingsManager
                 } catch (Exception e) {
                 }
             }
-            return loadImpl(clz, basePath, packageName, query);
+            return _loadImpl(clz, basePath, dirName, query);
         }
     }
 
-    private File buildHeadPath(Class<?> clz, String basePath, String packageName, String query)
+    private File _buildHeadPath(Class<?> clz, String basePath, String dirName, String query)
     {
         String clzName = clz.getCanonicalName();
         if (clzName == null) {
@@ -294,10 +361,10 @@ public class SettingsManagerImpl implements SettingsManager
 
         /* First build the file string */
         String s = File.separator;
-        return new File(basePath + s + packageName + s /* + clzName */ + s + query + ".js");
+        return new File(basePath + s + dirName + s /* + clzName */ + s + query + ".js");
     }
 
-    private File buildVersionPath(Class<?> clz, String basePath, String packageName, String query)
+    private File _buildVersionPath(Class<?> clz, String basePath, String dirName, String query)
     {
         String clzName = clz.getCanonicalName();
         if (clzName == null) {
@@ -310,7 +377,7 @@ public class SettingsManagerImpl implements SettingsManager
 
         //String versionString = String.valueOf(System.currentTimeMillis()) + "-" + DATE_FORMATTER.format(new Date());
         String versionString = String.valueOf(DATE_FORMATTER.format(new Date()));
-        return new File(basePath + s + packageName + s /* + clzName */ + s + query + ".js" + "-version-" + versionString + ".js");
+        return new File(basePath + s + dirName + s /* + clzName */ + s + query + ".js" + "-version-" + versionString + ".js");
     }
 
     /**
@@ -318,20 +385,29 @@ public class SettingsManagerImpl implements SettingsManager
      * guarantee the object is unique.
      * http://www.javalobby.org/java/forums/t96352.html
      * 
-     * @param path
-     *            The path to lock on.
+     * @param lockName
+     *            The name of the lock
      * @return An object that can be used to lock on path.
      */
-    private Object getLock(File file)
+    private Object getLock(String lockName)
     {
-        String path = file.getParentFile().getAbsolutePath();
-        Object lock = this.pathLocks.get(path);
+        Object lock = this.pathLocks.get(lockName);
         if (lock == null) {
             lock = new Object();
-            this.pathLocks.put(path, lock);
+            this.pathLocks.put(lockName, lock);
         }
 
         return lock;
     }
 
+    private boolean _checkLegalName(String name)
+        throws IllegalArgumentException
+    {
+        if (!VALID_CHARACTERS.matcher(name).matches()) {
+            logger.error("Illegal name: " + name);
+            return false;
+        }
+        
+        return true;
+    }
 }

@@ -11,14 +11,14 @@ public interface SettingsManager
      *            Type of class to load
      * @param clz
      *            Type of class to load.
-     * @param packageName
+     * @param dirName
      *            Name of the debian package that is making the request.
      * @param id
      *            Unique identifier to select the object.
      * @return The object that was loaded or null if an object was not loaded.
      * @throws SettingsException
      */
-    public <T> T load(Class<T> clz, String packageName, String key) throws SettingsException;
+    public <T> T load(Class<T> clz, String dirName, String key) throws SettingsException;
 
     /**
      * Save the settings from the store using a unique identifier.
@@ -27,7 +27,7 @@ public interface SettingsManager
      *            Type of class to save
      * @param clz
      *            Type of class to save.
-     * @param packageName
+     * @param dirName
      *            Name of the debian package that is making the request.
      * @param id
      *            Unique identifier to select the object.
@@ -36,7 +36,7 @@ public interface SettingsManager
      * @return The object that was saved.
      * @throws SettingsException
      */
-    public <T> T save(Class<T> clz, String packageName, String key, T value) throws SettingsException;
+    public <T> T save(Class<T> clz, String dirName, String key, T value) throws SettingsException;
 
     /**
      * Load the settings from the store using a unique identifier.
@@ -47,14 +47,14 @@ public interface SettingsManager
      *            Type of class to load.
      * @param basePath
      *            The path of the settings file (/usr/share/untangle/settings/)
-     * @param packageName
+     * @param dirName
      *            Name of the debian package that is making the request.
      * @param id
      *            Unique identifier to select the object.
      * @return The object that was loaded or null if an object was not loaded.
      * @throws SettingsException
      */
-    public <T> T loadBasePath(Class<T> clz, String basePath, String packageName, String id) throws SettingsException;
+    public <T> T loadBasePath(Class<T> clz, String basePath, String dirName, String id) throws SettingsException;
 
     /**
      * Save the settings from the store using a unique identifier.
@@ -64,9 +64,9 @@ public interface SettingsManager
      * @param clz
      *            Type of class to save.
      * @param basePath
-     *            The path of the settings file (/usr/share/untangle/settings/)
-     * @param packageName
-     *            Name of the debian package that is making the request.
+     *            The path of the settings file (example: "/usr/share/untangle/settings/")
+     * @param dirName
+     *            Name of the debian package that is making the request. (example: "untangle-node-foo")
      * @param id
      *            Unique identifier to select the object.
      * @param value
@@ -74,8 +74,22 @@ public interface SettingsManager
      * @return The object that was saved.
      * @throws SettingsException
      */
-    public <T> T saveBasePath(Class<T> clz, String basePath, String packageName, String id, T value) throws SettingsException;
-               
+    public <T> T saveBasePath(Class<T> clz, String basePath, String dirName, String id, T value) throws SettingsException;
+
+    /**
+     * Load the settings from the store using a unique identifier.
+     * 
+     * @param <T>
+     *            Type of class to load
+     * @param clz
+     *            Type of class to load.
+     * @param URL
+     *            The URL to load the settings for
+     * @return The object that was loaded or null if an object was not loaded.
+     * @throws SettingsException
+     */
+    public <T> T loadUrl(Class<T> clz, String urlStr) throws SettingsException;
+    
 @SuppressWarnings("serial")
     public static class SettingsException extends Exception {
 
