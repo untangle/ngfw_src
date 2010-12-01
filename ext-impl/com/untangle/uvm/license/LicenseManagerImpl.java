@@ -33,6 +33,7 @@ import com.untangle.uvm.SettingsManager;
 
 public class LicenseManagerImpl implements LicenseManager
 {
+    private static final String LICENSE_URL_PROPERTY = "uvm.license.url";
     private static final String EXPIRED = "expired";
 
     /* update every 12 hours, leaves an hour window */
@@ -93,8 +94,24 @@ public class LicenseManagerImpl implements LicenseManager
     @Override
     public final License getLicense(String identifier)
     {
-        License license = this.licenseMap.get(identifier);
+        /**
+         * The free apps have no licenses
+         * If they are requestd just return null
+         */
+        if ("untangle-node-adblocker".equals(identifier)) return null;
+        else if ("untangle-node-clam".equals(identifier)) return null;
+        else if ("untangle-node-cpd".equals(identifier)) return null;
+        else if ("untangle-node-firewall".equals(identifier)) return null;
+        else if ("untangle-node-openvpn".equals(identifier)) return null;
+        else if ("untangle-node-phish".equals(identifier)) return null;
+        else if ("untangle-node-protofilter".equals(identifier)) return null;
+        else if ("untangle-node-reporting".equals(identifier)) return null;
+        else if ("untangle-node-shield".equals(identifier)) return null;
+        else if ("untangle-node-spamassassin".equals(identifier)) return null;
+        else if ("untangle-node-spyware".equals(identifier)) return null;
+        else if ("untangle-node-webfilter".equals(identifier)) return null;
 
+        License license = this.licenseMap.get(identifier);
         if (license != null)
             return license;
         
@@ -110,9 +127,15 @@ public class LicenseManagerImpl implements LicenseManager
             return license;
         }
 
-        logger.warn("No license found for: " + identifier + " - Creating invalid license...");
+        logger.warn("No license found for: " + identifier);
+
+        /**
+         * This returns an invalid license for all other requests
+         * Note: this includes the free apps, however they don't actually check the license so it won't effect behavior
+         * The UI will request the license of all app (including free)
+         */
         license = new License(identifier, "0000-0000-0000-0000", identifier, "Subscription", 0, 0, "invalid", 1, Boolean.FALSE, "No License Found");
-        this.licenseMap.put(identifier,license);
+        this.licenseMap.put(identifier,license); /* add it to the map for faster response next time */
         return license;
     }
 
@@ -173,9 +196,7 @@ public class LicenseManagerImpl implements LicenseManager
         logger.info("REFRESH: Downloading new Licenses...");
         
         try {
-            // FIXME license-test
-            String urlStr = "http://" + "license-test.untangle.com" + "/" + "license.php" + "?" + "action=getLicenses" + "&" + "uid=" + LocalUvmContextFactory.context().getServerUID();
-            //String urlStr = "http://license-test.untangle.com/license.php?action=getLicenses&uid=1b9d-acb9-c832-6672";
+            String urlStr = System.getProperty("uvm.license.url") + "?" + "action=getLicenses" + "&" + "uid=" + LocalUvmContextFactory.context().getServerUID();
             logger.info("Downloading: \"" + urlStr + "\"");
 
             Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
@@ -425,10 +446,10 @@ public class LicenseManagerImpl implements LicenseManager
                 /**
                  * Don't fetch license while in the dev environment
                  */
-                 if (!LocalUvmContextFactory.context().isDevel()) {
+                //if (!LocalUvmContextFactory.context().isDevel()) {
                     _downloadLicenses();
                     // checkRevocations(); FIXME 
-                 }
+                    //}
                 
                 _mapLicenses();
             }
