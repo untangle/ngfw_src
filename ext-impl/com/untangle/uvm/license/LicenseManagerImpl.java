@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Iterator;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -35,11 +35,8 @@ public class LicenseManagerImpl implements LicenseManager
 {
     private static final String EXPIRED = "expired";
 
-    /* update every 2 hours, leaves an hour window */
-    private static final long TIMER_DELAY = 1000 * 60 * 60 * 2;
-
-    /* validate the product for three hours. */
-    private static final long VALIDATION_PERIOD = 3 * 60 * 60 * 1000;
+    /* update every 12 hours, leaves an hour window */
+    private static final long TIMER_DELAY = 1000 * 60 * 60 * 12;
 
     /* has to be declared after all static declarations */
     private static final LicenseManagerImpl INSTANCE;
@@ -65,23 +62,21 @@ public class LicenseManagerImpl implements LicenseManager
     private LicenseSettings settings;
 
     /**
-     * Amount of time to update the license for, if the timer task dies, all
-     * license will expire in <code>validationPeriod</code> milliseconds
+     * Sync task
      */
-    private final long validationPeriod = VALIDATION_PERIOD;
+    private final LycenseSyncTask task = new LycenseSyncTask();
 
-    /** Timer task */
-    private final LicenseUpdateTask task = new LicenseUpdateTask();
-
-    /** Pulse that updates the expiration dates, this is a daemon task. */
-    private final Pulse pulse = new Pulse("uvm-lmi", true, task);
+    /**
+     * Pulse that syncs the license, this is a daemon task.
+     */
+    private final Pulse pulse = new Pulse("uvm-license", true, task);
 
     private final Logger logger = Logger.getLogger(getClass());
 
     private LicenseManagerImpl()
     {
-        this.readLicenses();
-        this.mapLicenses();
+        this._readLicenses();
+        this._mapLicenses();
     }
 
     /**
@@ -143,11 +138,16 @@ public class LicenseManagerImpl implements LicenseManager
         this._saveSettings(this.settings);
     }
 
+    public static LicenseManager getInstance()
+    {
+        return INSTANCE;
+    }
+    
     /**
      * Read the licenses and load them into the current settings object
      */
     //@SuppressWarnings("unchecked") //LinkedList<License> <-> LinkedList
-    private synchronized void readLicenses()
+    private synchronized void _readLicenses()
     {
         SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
         
@@ -165,40 +165,116 @@ public class LicenseManagerImpl implements LicenseManager
     }
 
     @SuppressWarnings("unchecked") //LinkedList<License> <-> LinkedList
-    private synchronized void downloadLicenses()
+    private synchronized void _downloadLicenses()
     {
         SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
         LinkedList<License> licenses;
+
+        logger.info("REFRESH: Downloading new Licenses...");
         
         try {
-            String urlStr = "http://license-test.untangle.com/license.php?action=getLicenses&uid=1b9d-acb9-c832-6672";
-            //            String urlStr = "http://" + "license-test.untangle.com" + "/" + "license.php" + "?" + "action=getLicenses" + "&" + "uid=" + "1b9d-acb6-c832-6672";
+            // FIXME license-test
+            String urlStr = "http://" + "license-test.untangle.com" + "/" + "license.php" + "?" + "action=getLicenses" + "&" + "uid=" + LocalUvmContextFactory.context().getServerUID();
+            //String urlStr = "http://license-test.untangle.com/license.php?action=getLicenses&uid=1b9d-acb9-c832-6672";
+            logger.info("Downloading: \"" + urlStr + "\"");
+
             Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
-            logger.error("Object: " + o);
             licenses = (LinkedList<License>)o;
         } catch (SettingsManager.SettingsException e) {
             logger.error("Unable to read license file: ", e );
             return;
         }
 
-//         logger.error("Licenses: " + licenses);
-
-//         for (License lic : licenses) {
-//             logger.error("License: " + lic);
-//         }
-
-        /* FIXME */
-        /* need to parse licenses and then add/sync them with current settings */
         
+        for (License lic : licenses) {
+            _insertOrUpdate(lic);
+        }
+
+        _saveSettings(settings);
+
+        logger.info("REFRESH: Downloading new Licenses... done");
+
         return;
+    }
 
+    /** 
+     * This takes the passed argument and inserts it into the current licenses
+     * If there is currently an existing license for that product it will be removed
+     */
+    private synchronized void _insertOrUpdate(License license)
+    {
+        boolean insertNewLicense = true;
+        
+        if (this.settings == null || this.settings.getLicenses() == null) {
+            logger.error("Invalid settings:" + this.settings);
+            return;
+        }
 
+        /**
+         * See if you find a match in the current licenses
+         * If so, the new one replaces it so remove the existing one
+         */
+        Iterator<License> itr = this.settings.getLicenses().iterator();
+        while ( itr.hasNext() ) {
+            License existingLicense = itr.next();
+            if (existingLicense.getName().equals(license.getName())) {
+
+                /**
+                 * As a measure of safety we only replace an existing license under certain circumstances
+                 * This is so we are careful to only increase entitlements during this phase
+                 */
+                boolean replaceLicense = false;
+                insertNewLicense = false;
+
+                /**
+                 * Check the validity of the current license
+                 * If it isn't valid, we might as well try the new one
+                 * Note: we have to use getLicenses to do this because the settings don't store validity
+                 */
+                if ( (getLicense(existingLicense.getName()) != null) && !(getLicense(existingLicense.getName()).getValid()) ) {
+                    logger.info("REFRESH: Replacing license " + license + " - old one is invalid");
+                    replaceLicense = true;
+                }
+
+                /**
+                 * If the current one is a trial, and the new one is not, use the new one
+                 */
+                if ( !(License.LICENSE_TYPE_TRIAL.equals(license.getType())) && License.LICENSE_TYPE_TRIAL.equals(existingLicense.getType())) {
+                    logger.info("REFRESH: Replacing license " + license + " - old one is trial");
+                    replaceLicense = true;
+                }
+
+                /**
+                 * If the new one has a later end date, use the new one
+                 */
+                if ( license.getEnd() > existingLicense.getEnd() ) {
+                    logger.info("REFRESH: Replacing license " + license + " - new one has later end date");
+                    replaceLicense = true;
+                }
+
+                if (replaceLicense) {
+                    itr.remove();
+                    insertNewLicense = true;
+                } else {
+                    logger.info("REFRESH: Keeping current license: " + license);
+                }
+            }
+        }
+
+        /**
+         * if a match hasnt been found it needs to be added
+         */
+        if (insertNewLicense) {
+            logger.info("REFRESH: Inserting new license   : " + license);
+            List<License> licenses = this.settings.getLicenses();
+            licenses.add(license);
+        }
     }
     
     /**
      * update the license map.
      */
-    private synchronized void mapLicenses()
+    private synchronized void _mapLicenses()
     {
         /* Create a new map of all of the valid licenses */
         Map<String, License> newMap = new HashMap<String, License>();
@@ -215,7 +291,7 @@ public class LicenseManagerImpl implements LicenseManager
             /**
              * Complete Meta-data
              */
-            if (isLicenseValid(license)) {
+            if (_isLicenseValid(license)) {
                 license.setValid(Boolean.TRUE);
                 license.setStatus("Valid"); /* XXX i18n */
             } else {
@@ -229,7 +305,7 @@ public class LicenseManagerImpl implements LicenseManager
             if ((current != null) && (current.getEnd() > license.getEnd()))
                 continue;
 
-            logger.warn("Adding License: " + license.getName() + " valid: " + license.isValid());
+            logger.info("Adding License: " + license.getName() + " to Map. (valid: " + license.getValid() + ")");
             
             newMap.put(identifier, license);
             newList.add(license);
@@ -240,86 +316,69 @@ public class LicenseManagerImpl implements LicenseManager
     }
 
     @SuppressWarnings("fallthrough")
-    private boolean isLicenseValid(License license)
+    private boolean _isLicenseValid(License license)
     {
-        int version = license.getKeyVersion();
-
         long now = (System.currentTimeMillis()/1000);
 
-        /* Verify the key hasn't already hasn't expired */
+        /* check if the license hasn't started yet (start date in future) */
         if (license.getStart() > now) {
             logger.warn( "The license: " + license + " isn't valid yet (" + license.getStart() + " > " + now + ")");
             license.setStatus("Invalid (Start Date in Future)"); /* XXX i18n */
             return false;
         }
 
+        /* check if it is already expired */
         if ((license.getEnd() < now)) {
             logger.warn( "The license: " + license + " has expired (" + license.getEnd() + " < " + now + ")");
             license.setStatus("Invalid (Expired)"); /* XXX i18n */
             return false;
         }
 
+        /* check the UID */
         if (license.getUID() == null || !license.getUID().equals(LocalUvmContextFactory.context().getServerUID())) {
             logger.warn( "The license: " + license + " does not match this server's UID (" + license.getUID() + " != " + LocalUvmContextFactory.context().getServerUID() + ")");
             license.setStatus("Invalid (UID Mismatch)"); /* XXX i18n */
             return false;
         }
         
-        /* Verify the duration lines up properly */
-        long duration = license.getEnd() - license.getStart();
+        /* verify md5 */
+        if (license.getKeyVersion() == 1) {
+            //$string = "".$version.$uid.$name.$type.$start.$end."the meaning of life is 42";
+            String input = license.getKeyVersion() + license.getUID() + license.getName() + license.getType() + license.getStart() + license.getEnd() + "the meaning of life is 42";
+            //logger.info("KEY Input: " + input);
+    
+            MessageDigest md;
+            try {
+                md = MessageDigest.getInstance("MD5");
+            } catch (java.security.NoSuchAlgorithmException e) {
+                logger.warn( "Unknown Algorith MD5", e);
+                license.setStatus("Invalid (Invalid Algorithm)");
+                return false;
+            }
+            
+            byte[] digest = md.digest(input.getBytes());
 
-//         if (LicenseType.SUBSCRIPTION.equals(licenseType)) {
-//             duration -= LICENSE_SUBSCRIPTION_EXTENSION;
-//         }
+            String output = _toHex(digest);
+            //logger.info("KEY Output: " + output);
+            //logger.info("KEY Expect: " + license.getKey());
 
-//         switch (license.getType()) {
-//         case "Trial":
-//             /* fallthrough */
-//         case "Trial14":
-//             /* special case for the old license key duration */
-//             if (duration == OLD_TRIAL_KEY_DURATION)
-//                 break;
-//             /* fallthrough */
-//         default:
-//             // XXX
-//             // since there is no a single fucking line of documentation
-//             // this will have to do until 8.1
-//             // XXX
-//             //if (licenseType.getDuration() != duration) {
-//             //    logger.warn("bad duration: " + licenseType.getDuration() + " != " + duration);
-//             //    return false;
-//             //}
-//         }
-
-        switch (version) {
-        case 1:
-            // XXX
-            // since there is no a single fucking line of documentation
-            // this will have to do until 8.1
-            // XXX
-            return true;
-            //             try {
-            //                 String expected = createSelfSignedLicenseKey(license);
-            //                 if (!expected.equals(license.getKey())) {
-            //                     logger.debug( "Invalid license key for " +
-            //                     // license );
-            //                     logger.debug( "expected " + expected );
-            //                     logger.debug( "key " + license.getKey());
-            //                     return false;
-            //                 }
-
-            //                 return true;
-            //             } catch (NoSuchAlgorithmException e) {
-            //                 /* perhaps this should just return true for safety */
-            //                 return false;
-            //             }
-        default:
-            logger.warn( "Unknown key version: " + version );
+            if (!license.getKey().equals(output)) {
+                logger.warn( "Invalid key: " + output );
+                license.setStatus("Invalid (Invalid Key)");
+                return false;
+            }
+        }
+        else {
+            logger.warn( "Unknown key version: " + license.getKeyVersion() );
+            license.setStatus("Invalid (Invalid Key Version)");
             return false;
         }
+
+        logger.debug("License " + license + " is valid.");
+        return true;
     }
 
-    private String toHex(byte data[])
+    private String _toHex(byte data[])
     {
         String response = "";
         for (byte b : data) {
@@ -330,32 +389,6 @@ public class LicenseManagerImpl implements LicenseManager
         }
 
         return response;
-    }
-
-    private String timeRemaining(long now, long expiration)
-    {
-        if (now > expiration)
-            return EXPIRED;
-
-        /* Calculate the number of days remaining */
-        long days = (expiration - now) / (60 * 60 * 24);
-
-        switch ((int) days) {
-        case 0:
-            return "expires today";
-
-        case 1:
-            return "1 day remains";
-
-        default:
-            return "" + days + " days remain";
-        }
-    }
-
-    /* statics */
-    public static LicenseManager getInstance()
-    {
-        return INSTANCE;
     }
 
     /**
@@ -378,37 +411,33 @@ public class LicenseManagerImpl implements LicenseManager
          * Change current settings
          */
         this.settings = newSettings;
-        try {logger.info("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+        //try {logger.info("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
     }
     
-    private class LicenseUpdateTask implements Runnable
+    private class LycenseSyncTask implements Runnable
     {
         public void run() {
-            logger.debug("testing licenses and updating products." );
+            logger.info("Reloading licenses..." );
 
             synchronized (LicenseManagerImpl.this) {
-                readLicenses();
-                downloadLicenses();
+                _readLicenses();
 
-                // checkRevocations(); FIXME 
+                /**
+                 * Don't fetch license while in the dev environment
+                 */
+                 if (!LocalUvmContextFactory.context().isDevel()) {
+                    _downloadLicenses();
+                    // checkRevocations(); FIXME 
+                 }
                 
-                mapLicenses();
+                _mapLicenses();
             }
 
-            synchronized (this) {
-                /* notify any threads that are waiting on this */
-                notifyAll();
-            }
+            logger.info("Reloading licenses... done" );
         }
     }
 
     static {
-        /* Add the license to the map */
-//         LICENSE_MAP.put(LicenseType.TRIAL.getName(), LicenseType.TRIAL);
-//         LICENSE_MAP.put(LicenseType.TRIAL14.getName(), LicenseType.TRIAL14);
-//         LICENSE_MAP.put(LicenseType.SUBSCRIPTION.getName(), LicenseType.SUBSCRIPTION);
-//         LICENSE_MAP.put(LicenseType.DEVELOPMENT.getName(), LicenseType.DEVELOPMENT);
-
         INSTANCE = new LicenseManagerImpl();
 
         /*
