@@ -129,6 +129,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.uvm.license">
+    <priority value="INFO"/>
+  </category>
+
   <category name="com.untangle.node.util">
     <priority value="INFO"/>
   </category>

@@ -1223,8 +1223,8 @@ Ung.Node = Ext.extend(Ext.Component, {
             'image' : this.image,
             'isNodeEditable' : this.isNodeEditable === true ? "none" : "",
             'displayName' : this.md.displayName,
-            'nodePowerCls': this.hasPowerButton?(this.license && this.license.trial && this.license.valid)?"node-power-expired":"node-power":"",
-            'trialInfo' : this.getTrialInfo()
+            'nodePowerCls': this.hasPowerButton?((this.license && this.license.valid)?"node-power":"node-power-expired"):"",
+            'licenseMessage' : this.getLicenseMessage()
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
 
@@ -1534,32 +1534,32 @@ Ung.Node = Ext.extend(Ext.Component, {
             }
         }
     },
-    getTrialInfo : function() {
-        var trialInfo = "";
-        if(this.license && this.license.trial) {
+    getLicenseMessage : function() {
+        var licenseMessage = "";
+        if (!this.license) {
+            return licenseMessage;
+        }
+        if(this.license.trial) {
             if(this.license.expired) {
-                trialInfo = i18n._("Free Trial Ended");
+                licenseMessage = i18n._("Free Trial Ended");
+            } else if (this.license.daysRemaining < 2) {
+                licenseMessage = i18n._("Free Trial.") + " " + i18n._("Expires today");
+            } else if (this.license.daysRemaining < 32) {
+                licenseMessage = i18n._("Free Trial.") + " " + String.format("{0} ",this.license.daysRemaining) + i18n._("days remain");
             } else {
-                var timeRemaining=this.license.timeRemaining;
-                if(timeRemaining=="expires today") {
-                    trialInfo = i18n._("Free Trial Expires Today");
-                } else {
-                   var daysRemain = parseInt(this.license.timeRemaining.replace(" days remain", ""));
-                   if (!isNaN(daysRemain)) {
-                     if (daysRemain > 32) {
-                       trialInfo = i18n._("Free Limited Trial");
-                     } else {
-                       trialInfo = String.format(i18n._("Free Trial. {0} days remain"), daysRemain);
-                     }
-                   }
-                }
+                licenseMessage = i18n._("Free Trial.");
             }
         }
-        return trialInfo;
+        else { /* not a trial */
+            if (this.license.daysRemaining < 5) {
+                licenseMessage = i18n._("Expires in") + String.format(" {0} ",this.license.daysRemaining) + i18n._("days");
+            }
+        }
+        return licenseMessage;
     },
     updateLicense : function (license) {
         this.license=license;
-        this.getEl().child("div[class=node-trial-info]").dom.innerHTML=this.getTrialInfo();
+        this.getEl().child("div[class=node-faceplate-info]").dom.innerHTML=this.getLicenseMessage();
         document.getElementById("node-power_"+this.getId()).className=this.hasPowerButton?(this.license && this.license.trial && this.license.valid)?"node-power-expired":"node-power":"";
         var nodeBuyButton=Ext.getCmp("node-buy-button_"+this.getId());
         if(nodeBuyButton) {
@@ -1599,7 +1599,7 @@ Ung.Node.getNonEditableNodeTip = function (){
     return i18n._('This node belongs to the parent rack shown above.<br/> To access the settings for this node, select the parent rack.'); 
 };
 Ung.Node.template = new Ext.Template('<div class="node-cap" style="display:{isNodeEditable}"></div><div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>',
-    '<div class="node-trial-info">{trialInfo}</div>',
+    '<div class="node-faceplate-info">{licenseMessage}</div>',
     '<div class="node-blingers" id="node-blingers_{id}"></div>',
     '<div class="node-state" id="node-state_{id}" name="State"></div>',
     '<div class="{nodePowerCls}" id="node-power_{id}" name="Power"></div>',

@@ -192,7 +192,7 @@ class DefaultPolicyManager implements PolicyManager
         
         if ( l.size() > 0 ) {
             License ls = LocalUvmContextFactory.context().licenseManager().getLicense(License.ADCONNECTOR);
-            if ( !ls.isValid()) {
+            if ( !ls.getValid()) {
                 result.setHasUserManagement(true);
             }
         }

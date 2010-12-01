@@ -21,6 +21,9 @@ public class License implements Serializable
 {
     private final Logger logger = Logger.getLogger(License.class);
 
+    public static final String LICENSE_TYPE_TRIAL = "Trial";
+    public static final String LICENSE_TYPE_SUBSCRIPTION = "Subscription";
+    
     /**
      * Various Names
      */
@@ -219,19 +222,14 @@ public class License implements Serializable
     }
         
     /**
-     * Returns the status of this license
-     * Set by license manager
+     * Returns the valid state
+     * This is a transient value - it is set (or reset) on settings load
      */
-    public Boolean isValid()
+    public Boolean getValid()
     {
         if (this.valid == null)
             return Boolean.FALSE;
 
-        return this.valid;
-    }
-
-    public Boolean getValid()
-    {
         return this.valid;
     }
 
@@ -243,6 +241,7 @@ public class License implements Serializable
     /**
      * Get the status of license.
      * Example: "Valid" "Invalid (Expired)" "Invalid (UID Mismatch)" etc
+     * This is a transient value - it is set (or reset) on settings load
      */
     public String getStatus()
     {
@@ -255,21 +254,39 @@ public class License implements Serializable
     }
 
     /**
-     * XXX
+     * Returns true if this is a trial license
+     * This is a transient value
      */
-    public String getTimeRemaining()
+    public Boolean getTrial()
     {
-        logger.error("IMPLEMENT ME: getTimeRemaining() on " + name);
-        return null;
+        if (this.LICENSE_TYPE_TRIAL.equals(this.getType()))
+            return Boolean.TRUE;
+        return Boolean.FALSE;
     }
-
+    
     /**
-     * XXX
+     * Returns true if this license is expired
+     * This is a transient value
      */
-    public Date getExpirationDate()
+    public Boolean getExpired()
     {
-        logger.error("IMPLEMENT ME: getExpirationDate() on " + name);
-        return null;
+        long now = (System.currentTimeMillis()/1000);
+
+        if (now > this.getEnd())
+            return Boolean.TRUE;
+        else
+            return Boolean.FALSE;
+    }
+    
+    /**
+     * Returns the number of days remaining until end-date
+     * This is a transient value
+     */
+    public Integer getDaysRemaining()
+    {
+        long now = (System.currentTimeMillis()/1000);
+        int days = ((int)(getEnd() - now)) / (60*60*24);
+        return new Integer(days);
     }
     
     public String toString()
