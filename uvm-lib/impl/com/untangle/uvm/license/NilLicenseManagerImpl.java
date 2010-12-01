@@ -45,7 +45,25 @@ public class NilLicenseManagerImpl implements LicenseManager
      */
     public License getLicense(String identifier)
     {
-        logger.error("License Manager is not loaded. Failed to return license: " + identifier);
+        if ("untangle-node-adblocker".equals(identifier)) return null;
+        else if ("untangle-node-clam".equals(identifier)) return null;
+        else if ("untangle-node-cpd".equals(identifier)) return null;
+        else if ("untangle-node-firewall".equals(identifier)) return null;
+        else if ("untangle-node-openvpn".equals(identifier)) return null;
+        else if ("untangle-node-phish".equals(identifier)) return null;
+        else if ("untangle-node-protofilter".equals(identifier)) return null;
+        else if ("untangle-node-reporting".equals(identifier)) return null;
+        else if ("untangle-node-shield".equals(identifier)) return null;
+        else if ("untangle-node-spamassassin".equals(identifier)) return null;
+        else if ("untangle-node-spyware".equals(identifier)) return null;
+        else if ("untangle-node-webfilter".equals(identifier)) return null;
+
+        /**
+         * This returns an invalid license for all requests
+         * Note: this includes the free apps, however they don't actually check the license so it won't effect behavior
+         * The UI will request the license of all app (including free)
+         */
+        logger.info("License Manager is not loaded. Returing invalid license for " + identifier + ".");
         return new License(identifier, "0000-0000-0000-0000", identifier, "Subscription", 0, 0, "invalid", 1, Boolean.FALSE, "Invalid (No License Manager)");
     }
 

@@ -1223,7 +1223,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             'image' : this.image,
             'isNodeEditable' : this.isNodeEditable === true ? "none" : "",
             'displayName' : this.md.displayName,
-            'nodePowerCls': this.hasPowerButton?((this.license && this.license.valid)?"node-power":"node-power-expired"):"",
+            'nodePowerCls': this.hasPowerButton?((this.license && !this.license.valid)?"node-power-expired":"node-power"):"",
             'licenseMessage' : this.getLicenseMessage()
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
@@ -1551,8 +1551,14 @@ Ung.Node = Ext.extend(Ext.Component, {
             }
         }
         else { /* not a trial */
-            if (this.license.daysRemaining < 5) {
-                licenseMessage = i18n._("Expires in") + String.format(" {0} ",this.license.daysRemaining) + i18n._("days");
+            if (this.license.valid) { 
+                /* if its valid - say if its close to expiring otherwise say nothing */
+                if (this.license.daysRemaining < 5) {
+                    licenseMessage = i18n._("Expires in") + String.format(" {0} ",this.license.daysRemaining) + i18n._("days");
+                } 
+            } else {
+                /* if its invalid say the reason */
+                licenseMessage = this.license.status;
             }
         }
         return licenseMessage;
@@ -1560,7 +1566,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     updateLicense : function (license) {
         this.license=license;
         this.getEl().child("div[class=node-faceplate-info]").dom.innerHTML=this.getLicenseMessage();
-        document.getElementById("node-power_"+this.getId()).className=this.hasPowerButton?(this.license && this.license.trial && this.license.valid)?"node-power-expired":"node-power":"";
+        document.getElementById("node-power_"+this.getId()).className=this.hasPowerButton?(this.license && !this.license.valid)?"node-power-expired":"node-power":"";
         var nodeBuyButton=Ext.getCmp("node-buy-button_"+this.getId());
         if(nodeBuyButton) {
             if(this.license && this.license.trial) {

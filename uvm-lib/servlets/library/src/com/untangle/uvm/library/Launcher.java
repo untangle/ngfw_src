@@ -51,7 +51,7 @@ public class Launcher extends HttpServlet
     private static final String ACTION_BUY = "buy";
     private static final String ACTION_WIZARD = "wizard";
     private static final String ACTION_HELP = "help";
-    private static final String ACTION_LICENSE = "license";
+    private static final String ACTION_LEGAL = "legal";
     private static final String ACTION_OFFLINE = "offline";
     private static final String ACTION_UPGRADE = "upgrade";
 
@@ -64,8 +64,8 @@ public class Launcher extends HttpServlet
     private static final String PROPERTY_STORE_URL = "uvm.store.url";
     private static final String DEFAULT_STORE_URL = "https://store.untangle.com";
 
-    private static final String PROPERTY_LICENSE_URL = "uvm.license.url";
-    private static final String DEFAULT_LICENSE_URL = "http://www.untangle.com/legal";
+    private static final String PROPERTY_LEGAL_URL = "uvm.legal.url";
+    private static final String DEFAULT_LEGAL_URL = "http://www.untangle.com/legal";
     
     private final Logger logger = Logger.getLogger( this.getClass());
 
@@ -95,8 +95,8 @@ public class Launcher extends HttpServlet
             } else if ( ACTION_HELP.equals( action )) {
                 String source = request.getParameter( FIELD_SOURCE );
                 redirect = getHelpURL( request, source );
-            } else if ( ACTION_LICENSE.equals( action )) {
-                redirect = getLicenseURL( request );
+            } else if ( ACTION_LEGAL.equals( action )) {
+                redirect = getLegalURL( request );
             } else if ( ACTION_WIZARD.equals( action )) {
                 redirect = getWizardURL( request );
             } else if ( ACTION_BUY.equals( action )) {
@@ -197,11 +197,11 @@ public class Launcher extends HttpServlet
                        + "&lang=" + lang);
     }
 
-    private URL getLicenseURL( HttpServletRequest request ) throws MalformedURLException
+    private URL getLegalURL( HttpServletRequest request ) throws MalformedURLException
     {
-        String url = System.getProperty(PROPERTY_LICENSE_URL);
+        String url = System.getProperty(PROPERTY_LEGAL_URL);
         if (url == null)
-            url = DEFAULT_LICENSE_URL;
+            url = DEFAULT_LEGAL_URL;
          
         return new URL(url);
     }

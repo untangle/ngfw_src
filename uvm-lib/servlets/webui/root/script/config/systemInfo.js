@@ -243,7 +243,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     text : this.i18n._("View License"),
                     name : "View License",
                     iconCls : "reboot-icon",
-                    handler : function() {window.open("../library/launcher?action=license");}
+                    handler : function() {window.open("../library/launcher?action=legal");}
                 }]
                 
            });
@@ -301,8 +301,9 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                             tooltip : i18n._('Refresh'),
                             iconCls : 'icon-refresh',
                             handler : function() {
-                                // XXX
-                                // Also call refresh
+                                //force re-sync with server
+                                main.getLicenseManager().reloadLicenses();
+                                //reload grid
                                 this.gridLicenses.store.reload();
                             }.createDelegate(this)
                         }

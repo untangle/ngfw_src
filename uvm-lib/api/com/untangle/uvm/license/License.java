@@ -119,24 +119,14 @@ public class License implements Serializable
     /**
      * Returns the unique identifier of the product of this license
      */
-    public String getUid()
+    public String getUID()
     {
         return this.uid;
     }
-
-    public String getUID()
-    {
-        return getUid();
-    }
     
-    public void setUid( String uid )
-    {
-        this.uid = uid;
-    }
-
     public void setUID( String uid )
     {
-        setUid(uid);
+        this.uid = uid;
     }
     
     /**
@@ -291,7 +281,7 @@ public class License implements Serializable
     
     public String toString()
     {
-        return "<" + this.name + "/" + this.type + "/" + ">";
+        return "<" + this.uid + "/" + this.name + "/" + this.type + "/" + ">";
     }
 
 }
