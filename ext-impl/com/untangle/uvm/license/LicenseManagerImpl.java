@@ -120,12 +120,12 @@ public class LicenseManagerImpl implements LicenseManager
          * Assume all licenses are valid
          * This should be removed if you want to test the licensing in the dev environment
          */
-//         if (LocalUvmContextFactory.context().isDevel()) {
-//             logger.warn("Creating development license: " + identifier);
-//             license = new License(identifier, "0000-0000-0000-0000", identifier, "Development", 0, 9999999999l, "development", 1, Boolean.TRUE, "Developer");
-//             this.licenseMap.put(identifier,license);
-//             return license;
-//         }
+        if (LocalUvmContextFactory.context().isDevel()) {
+            logger.warn("Creating development license: " + identifier);
+            license = new License(identifier, "0000-0000-0000-0000", identifier, "Development", 0, 9999999999l, "development", 1, Boolean.TRUE, "Developer");
+            this.licenseMap.put(identifier,license);
+            return license;
+        }
 
         logger.warn("No license found for: " + identifier);
 
