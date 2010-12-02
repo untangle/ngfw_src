@@ -21,9 +21,12 @@ import getopt
 import logging
 import mx
 import os
+import re
 import sys
 import tempfile
 import shutil
+
+from subprocess import Popen, PIPE
 
 from psycopg2.extensions import DateFromMx
 
@@ -266,6 +269,17 @@ INSERT INTO reports.reports_state (last_cutoff) VALUES (%s)""", (date,))
           conn.rollback()
           logger.warn("could not get db_retention", exc_info=True)
 
+## main
+
+running = False
+for instance in Popen(["ucli", "instances"], stdout=PIPE).communicate()[0].split('\n'):
+     if re.search(r'untangle-node-reporting.+RUNNING', instance):
+          running = True
+          break
+
+if not running:
+     print "Reports node is not installed or not running, exiting."
+     sys.exit(0)
 
 if not report_lengths:
      report_lengths = get_report_lengths(end_date)
