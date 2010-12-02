@@ -70,7 +70,7 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
 
     private static final String SET_TIMEZONE_SCRIPT = System.getProperty("uvm.bin.dir") + "/uttimezone";
     private static final String TIMEZONE_FILE = "/etc/timezone";
-    private static final String REGISTRATION_INFO_FILE = System.getProperty("uvm.home") + "/registration.info";
+    private static final String REGISTRATION_INFO_FILE = System.getProperty("uvm.conf.dir") + "/registration.info";
     private static final String BRAND_INFO_FILE = "/usr/share/untangle/tmp/brand";
     
     private static final String ALPACA_NONCE_FILE = "/etc/untangle-net-alpaca/nonce";

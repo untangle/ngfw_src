@@ -67,7 +67,7 @@ String[] messageArguments = {
       </div>
       <div class="full-width-2 push-05 last">
         <p><%= I18nUtil.tr("Welcome!", i18n_map ) %></p>
-        <p class="red"><%= I18nUtil.tr("You Installation is complete, but it is not yet properly configured for the network.", i18n_map ) %></p>
+        <p class="red"><%= I18nUtil.tr("The installation is complete, but the network settings are not properly configured.", i18n_map ) %></p>
         <p><%= fm.format( messageArguments  ) %></p>
       </div>
       <div class="bottom">
