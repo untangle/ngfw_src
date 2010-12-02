@@ -120,12 +120,12 @@ public class LicenseManagerImpl implements LicenseManager
          * Assume all licenses are valid
          * This should be removed if you want to test the licensing in the dev environment
          */
-        if (LocalUvmContextFactory.context().isDevel()) {
-            logger.warn("Creating development license: " + identifier);
-            license = new License(identifier, "0000-0000-0000-0000", identifier, "Development", 0, 9999999999l, "development", 1, Boolean.TRUE, "Developer");
-            this.licenseMap.put(identifier,license);
-            return license;
-        }
+//         if (LocalUvmContextFactory.context().isDevel()) {
+//             logger.warn("Creating development license: " + identifier);
+//             license = new License(identifier, "0000-0000-0000-0000", identifier, "Development", 0, 9999999999l, "development", 1, Boolean.TRUE, "Developer");
+//             this.licenseMap.put(identifier,license);
+//             return license;
+//         }
 
         logger.warn("No license found for: " + identifier);
 
@@ -187,6 +187,70 @@ public class LicenseManagerImpl implements LicenseManager
         return;
     }
 
+
+    @SuppressWarnings("unchecked") //LinkedList<LicenseRevocation> <-> LinkedList
+    private synchronized void _checkRevocations()
+    {
+        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        LinkedList<LicenseRevocation> revocations;
+
+        logger.info("REFRESH: Checking Revocations...");
+        
+        try {
+            String urlStr = System.getProperty("uvm.license.url") + "?" + "action=getRevocations" + "&" + "uid=" + LocalUvmContextFactory.context().getServerUID();
+            logger.info("Downloading: \"" + urlStr + "\"");
+
+            Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
+            logger.error("Revocations: " + o);
+            revocations = (LinkedList<LicenseRevocation>)o;
+        } catch (SettingsManager.SettingsException e) {
+            logger.error("Unable to read license file: ", e );
+            return;
+        } catch (ClassCastException e) {
+            logger.error("getRevocations returned unexpected response",e);
+            return;
+        }
+            
+        for (LicenseRevocation revoke : revocations) {
+            _revokeLicense(revoke);
+        }
+
+        _saveSettings(settings);
+
+        logger.info("REFRESH: Checking Revocations... done");
+
+        return;
+    }
+
+    /** 
+     * This remove a license from the list of current licenses
+     */
+    private synchronized void _revokeLicense(LicenseRevocation revoke)
+    {
+        if (this.settings == null || this.settings.getLicenses() == null) {
+            logger.error("Invalid settings:" + this.settings);
+            return;
+        }
+        if (revoke == null) {
+            logger.error("Invalid argument:" + revoke);
+            return;
+        }
+
+        /**
+         * See if you find a match in the current licenses
+         * If so, remove it
+         */
+        Iterator<License> itr = this.settings.getLicenses().iterator();
+        while ( itr.hasNext() ) {
+            License existingLicense = itr.next();
+            if (existingLicense.getName().equals(revoke.getName())) {
+                logger.warn("Revoking License: " + revoke.getName());
+                itr.remove();
+                return;
+            }
+        }
+    }
+
     @SuppressWarnings("unchecked") //LinkedList<License> <-> LinkedList
     private synchronized void _downloadLicenses()
     {
@@ -204,8 +268,10 @@ public class LicenseManagerImpl implements LicenseManager
         } catch (SettingsManager.SettingsException e) {
             logger.error("Unable to read license file: ", e );
             return;
+        } catch (ClassCastException e) {
+            logger.error("getRevocations returned unexpected response",e);
+            return;
         }
-
         
         for (License lic : licenses) {
             _insertOrUpdate(lic);
@@ -228,6 +294,10 @@ public class LicenseManagerImpl implements LicenseManager
         
         if (this.settings == null || this.settings.getLicenses() == null) {
             logger.error("Invalid settings:" + this.settings);
+            return;
+        }
+        if (license == null) {
+            logger.error("Invalid argument:" + license);
             return;
         }
 
@@ -432,7 +502,7 @@ public class LicenseManagerImpl implements LicenseManager
          * Change current settings
          */
         this.settings = newSettings;
-        //try {logger.info("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
     }
     
     private class LycenseSyncTask implements Runnable
@@ -447,9 +517,9 @@ public class LicenseManagerImpl implements LicenseManager
                  * Don't fetch license while in the dev environment
                  */
                 //if (!LocalUvmContextFactory.context().isDevel()) {
-                    _downloadLicenses();
-                    // checkRevocations(); FIXME 
-                    //}
+                _downloadLicenses();
+                _checkRevocations(); 
+                //}
                 
                 _mapLicenses();
             }
