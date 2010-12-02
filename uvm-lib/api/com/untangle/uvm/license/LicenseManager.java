@@ -55,5 +55,4 @@ public interface LicenseManager
      * Return true if the user has any premium products.
      */
     public boolean hasPremiumLicense();
-
 }

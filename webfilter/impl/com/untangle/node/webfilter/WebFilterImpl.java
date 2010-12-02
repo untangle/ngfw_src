@@ -34,6 +34,6 @@ public class WebFilterImpl extends WebFilterBase
 
     public String getNodeTitle()
     {
-        return "Web Filter";
+        return "Web Filter Lite";
     }
 }
