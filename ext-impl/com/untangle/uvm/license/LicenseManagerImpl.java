@@ -74,11 +74,13 @@ public class LicenseManagerImpl implements LicenseManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
+    
     private LicenseManagerImpl()
     {
         this._readLicenses();
         this._mapLicenses();
     }
+
 
     /**
      * Reload all of the licenses from the file system.
@@ -151,7 +153,20 @@ public class LicenseManagerImpl implements LicenseManager
         return this.settings.getLicenses().size() > 0;
     }
 
-    public void initializeSettings()
+    /**
+     * Used by the LicenseManagerFactory to fetch the instance
+     */
+    public static LicenseManager getInstance()
+    {
+        return INSTANCE;
+    }
+
+    
+    /**
+     * Initialize the settings
+     * (By default there are no liceneses)
+     */
+    private void _initializeSettings()
     {
         logger.info("Initializing Settings...");
 
@@ -161,15 +176,9 @@ public class LicenseManagerImpl implements LicenseManager
         this._saveSettings(this.settings);
     }
 
-    public static LicenseManager getInstance()
-    {
-        return INSTANCE;
-    }
-    
     /**
      * Read the licenses and load them into the current settings object
      */
-    //@SuppressWarnings("unchecked") //LinkedList<License> <-> LinkedList
     private synchronized void _readLicenses()
     {
         SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
@@ -182,12 +191,15 @@ public class LicenseManagerImpl implements LicenseManager
         }
 
         if (this.settings == null)
-            initializeSettings();
+            _initializeSettings();
 
         return;
     }
 
-
+    /**
+     * This gets all the current revocations from the license server for this UID
+     * and removes any licenses that have been revoked
+     */
     @SuppressWarnings("unchecked") //LinkedList<LicenseRevocation> <-> LinkedList
     private synchronized void _checkRevocations()
     {
@@ -201,7 +213,6 @@ public class LicenseManagerImpl implements LicenseManager
             logger.info("Downloading: \"" + urlStr + "\"");
 
             Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
-            logger.error("Revocations: " + o);
             revocations = (LinkedList<LicenseRevocation>)o;
         } catch (SettingsManager.SettingsException e) {
             logger.error("Unable to read license file: ", e );
@@ -251,6 +262,10 @@ public class LicenseManagerImpl implements LicenseManager
         }
     }
 
+    /**
+     * This downloads a list of current licenese from the license server
+     * Any new licenses are added. Duplicate licenses are updated if the new one grants better privleges
+     */
     @SuppressWarnings("unchecked") //LinkedList<License> <-> LinkedList
     private synchronized void _downloadLicenses()
     {
@@ -284,7 +299,7 @@ public class LicenseManagerImpl implements LicenseManager
         return;
     }
 
-    /** 
+    /**
      * This takes the passed argument and inserts it into the current licenses
      * If there is currently an existing license for that product it will be removed
      */
@@ -363,7 +378,7 @@ public class LicenseManagerImpl implements LicenseManager
     }
     
     /**
-     * update the license map.
+     * update the app to License Map
      */
     private synchronized void _mapLicenses()
     {
@@ -406,7 +421,9 @@ public class LicenseManagerImpl implements LicenseManager
         this.licenseList = newList;
     }
 
-    @SuppressWarnings("fallthrough")
+    /**
+     * Verify the validity of a license
+     */
     private boolean _isLicenseValid(License license)
     {
         long now = (System.currentTimeMillis()/1000);
@@ -469,6 +486,9 @@ public class LicenseManagerImpl implements LicenseManager
         return true;
     }
 
+    /**
+     * Convert the bytes to a hex string
+     */
     private String _toHex(byte data[])
     {
         String response = "";
@@ -505,6 +525,7 @@ public class LicenseManagerImpl implements LicenseManager
 
     }
     
+
     private class LycenseSyncTask implements Runnable
     {
         public void run() {
@@ -527,7 +548,7 @@ public class LicenseManagerImpl implements LicenseManager
             logger.info("Reloading licenses... done" );
         }
     }
-
+    
     static {
         INSTANCE = new LicenseManagerImpl();
 
