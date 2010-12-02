@@ -78,7 +78,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
         String ts = df.format(cal.getTime());
         boolean failed = false;
         SimpleExec.SimpleExecResult result =
-            SimpleExec.exec(REPORTS_SCRIPT, new String[] {"-m", "-d", ts},
+            SimpleExec.exec(REPORTS_SCRIPT, new String[] {"-r", "1", "-m", "-d", ts},
                             null,//env
                             null,//rootDir
                             true,//stdout
