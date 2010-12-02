@@ -209,7 +209,7 @@ for manager in Manager.managers:
 
     calledMethod = True
     try:
-        puts method
+        print method
         remoteManager = manager(remoteContext)
         getattr( remoteManager, "api_" + method )( *script_args )
     except JSONRPCException, e:
