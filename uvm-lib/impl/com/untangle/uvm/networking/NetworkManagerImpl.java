@@ -567,11 +567,18 @@ public class NetworkManagerImpl implements LocalNetworkManager
             if (result == null)
                 return Boolean.FALSE;
 
-            Boolean enabled = result.getBoolean("enabled");
-            if (enabled == null) {
-                logger.warn("Unable to retrieve QoS settings: null");
+            try {
+                Boolean enabled = result.getBoolean("enabled");
+                if (enabled == null) {
+                    logger.warn("Unable to retrieve QoS settings: null");
+                }
+                return enabled;
             }
-            return enabled;
+            catch (org.json.JSONException e) {
+                //org.json.JSONException: JSONObject["enabled"] is not a Boolean.
+                //assume its off
+                return false;
+            }
             
         } catch (Exception e) {
             logger.error("Unable to retrieve QoS settings:",e);

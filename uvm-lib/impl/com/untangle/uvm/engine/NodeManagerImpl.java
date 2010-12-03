@@ -852,16 +852,13 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
     private NodeDesc initNodeDesc(MackageDesc mackageDesc, URL[] urls, NodeId nodeId) throws DeployException
     {
         // XXX assumes no parent cl has this file.
-        InputStream is = new URLClassLoader(urls)
-            .getResourceAsStream(DESC_PATH);
+        InputStream is = new URLClassLoader(urls).getResourceAsStream(DESC_PATH);
         if (null == is) {
             List<URL> ul = new ArrayList<URL>(urls.length);
             for (URL u : urls) {
                 ul.add(u);
             }
-            throw new DeployException(mackageDesc.getName() + " desc "
-                                      + DESC_PATH + " not found in urls: "
-                                      + ul);
+            throw new DeployException(mackageDesc.getName() + " desc " + DESC_PATH + " not found in urls: " + ul);
         }
 
         UvmNodeHandler mth = new UvmNodeHandler(mackageDesc);
