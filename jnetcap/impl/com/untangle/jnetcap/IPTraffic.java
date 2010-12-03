@@ -133,7 +133,15 @@ public class IPTraffic
 
     public int mark()
     {
-        return getIntValue( FLAG_MARK );
+        /**
+         * This is called at odd times creating a race condition
+         * Catch and ignore any failures (bug #8292)
+         */
+        try {
+            return getIntValue( FLAG_MARK );
+        } catch (NullPointerException e) {
+            return 0;
+        }
     }
 
     public void ttl( byte value )
