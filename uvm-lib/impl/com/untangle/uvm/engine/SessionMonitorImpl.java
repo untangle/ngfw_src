@@ -230,25 +230,42 @@ class SessionMonitorImpl implements SessionMonitor
 
             for (SessionMonitorEntry jnettopSession : jnettopSessions) {
 
-                /* could be pre or post nat */
                 boolean match = false;
-                
-                if (_matches(jnettopSession.getProtocol(),
-                            jnettopSession.getPreNatClient(),jnettopSession.getPreNatServer(),
-                            jnettopSession.getPreNatClientPort(),jnettopSession.getPreNatServerPort(),
-                            session.getProtocol(),
-                            session.getPreNatClient(),session.getPreNatServer(),
-                            session.getPreNatClientPort(),session.getPreNatServerPort()))
-                    match = true;
 
+                /**
+                 * Depending on whether the internal and external is source interface jnettop can see either pre or post NAT
+                 * and whether jnettop sees a client or server packet first the order it can reverse client and server
+                 * We have to check for all combinations for matches
+                 * (Bug #8290)
+                 */
                 if (match || _matches(jnettopSession.getProtocol(),
-                                     jnettopSession.getPreNatClient(),jnettopSession.getPreNatServer(),
-                                     jnettopSession.getPreNatClientPort(),jnettopSession.getPreNatServerPort(),
-                                     session.getProtocol(),
-                                     session.getPostNatClient(),session.getPostNatServer(),
-                                     session.getPostNatClientPort(),session.getPostNatServerPort()))
+                                      jnettopSession.getPreNatClient(),jnettopSession.getPreNatServer(),
+                                      jnettopSession.getPreNatClientPort(),jnettopSession.getPreNatServerPort(),
+                                      session.getProtocol(),
+                                      session.getPreNatClient(),session.getPreNatServer(),
+                                      session.getPreNatClientPort(),session.getPreNatServerPort()))
                     match = true;
-                
+                if (match || _matches(jnettopSession.getProtocol(),
+                                      jnettopSession.getPreNatClient(),jnettopSession.getPreNatServer(),
+                                      jnettopSession.getPreNatClientPort(),jnettopSession.getPreNatServerPort(),
+                                      session.getProtocol(),
+                                      session.getPreNatServer(),session.getPreNatClient(),
+                                      session.getPreNatServerPort(),session.getPreNatClientPort()))
+                    match = true;
+                if (match || _matches(jnettopSession.getProtocol(),
+                                      jnettopSession.getPreNatClient(),jnettopSession.getPreNatServer(),
+                                      jnettopSession.getPreNatClientPort(),jnettopSession.getPreNatServerPort(),
+                                      session.getProtocol(),
+                                      session.getPostNatClient(),session.getPostNatServer(),
+                                      session.getPostNatClientPort(),session.getPostNatServerPort()))
+                    match = true;
+                if (match || _matches(jnettopSession.getProtocol(),
+                                      jnettopSession.getPreNatClient(),jnettopSession.getPreNatServer(),
+                                      jnettopSession.getPreNatClientPort(),jnettopSession.getPreNatServerPort(),
+                                      session.getProtocol(),
+                                      session.getPostNatServer(),session.getPostNatClient(),
+                                      session.getPostNatServerPort(),session.getPostNatClientPort()))
+                    match = true;
 
                 if ( match ) {
                     session.setClientKBps(jnettopSession.getClientKBps());
