@@ -49,10 +49,11 @@ public class UnblockEvent extends LogEvent
 {
     // action types
     private String vendorName;
-	private InetAddress clientAddress;
-	private boolean isPermanent;
-	private String requestUri;
-	private Policy policy;
+    private InetAddress clientAddress;
+    private boolean isPermanent;
+    private String uid;       
+    private String requestUri;
+    private Policy policy;
 
     // non-persistent fields -----------------------------------------------
 
@@ -65,13 +66,15 @@ public class UnblockEvent extends LogEvent
                         boolean isPermanent,
                         String requestUri,
                         String vendorName,
-                        Policy policy)
+                        Policy policy,
+                        String uid)
     {
 	    this.clientAddress = clientAddress;
 	    this.isPermanent = isPermanent;
 	    this.requestUri = requestUri;
-        this.vendorName = vendorName;
+            this.vendorName = vendorName;
 	    this.policy = policy;
+	    this.uid = uid;
 	    //	    setTimeStamp(null);
     }
 
@@ -153,6 +156,25 @@ public class UnblockEvent extends LogEvent
 	 */
 	public void setClientAddress(InetAddress newClientAddress) {
 	    this.clientAddress = newClientAddress;
+	}
+
+	/**
+	 * Get the <code>uid</code> value.
+     n	 *
+	 * @return a <code>String</code> value
+	 */
+    @Column(name="uid")
+	public String getUid() {
+	    return uid;
+	}
+
+	/**
+	 * Set the <code>uid</code> value.
+	 *
+	 * @param uid The new String value.
+	 */
+	public void setUid(String newUid) {
+	    this.uid = newUid;
 	}
 
     /**

@@ -84,7 +84,8 @@ public class WebFilterReplacementGenerator extends ReplacementGenerator<WebFilte
                                               "/sample-webfilter", 
                                               "testing",
                                               InetAddress.getByName( "192.168.1.101" ),
-                                              "untangle-base-webfilter" );
+                                              "untangle-base-webfilter",
+                                              "foo" );
         } catch ( Exception e ) {
             return null;
         }

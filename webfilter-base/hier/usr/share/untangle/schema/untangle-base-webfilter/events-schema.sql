@@ -38,6 +38,7 @@ CREATE TABLE events.n_webfilter_evt_unblock (
     time_stamp timestamp,
     vendor_name text,
     client_address inet,
+    uid text,
     is_permanent bool,
     request_uri text,
     PRIMARY KEY (event_id));

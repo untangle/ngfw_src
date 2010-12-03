@@ -231,8 +231,9 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 setWebFilterSettings(settings);
 
         UnblockEvent ue = new UnblockEvent(bd.getClientAddress(), true,
-                           bd.getFormattedUrl(),
-                           getVendor(), getNodeId().getPolicy());
+                                           bd.getFormattedUrl(),
+                                           getVendor(), getNodeId().getPolicy(),
+                                           bd.getUid());
         unblockEventLogger.log(ue);
                 return true;
             }
@@ -249,8 +250,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 getBlacklist().addWhitelistHost(addr, site);
 
                 UnblockEvent ue = new UnblockEvent(addr, false,
-                        bd.getFormattedUrl(),
-                        getVendor(), getNodeId().getPolicy());
+                                                   bd.getFormattedUrl(),
+                                                   getVendor(), getNodeId().getPolicy(), bd.getUid());
                 unblockEventLogger.log(ue);
                 return true;
             }

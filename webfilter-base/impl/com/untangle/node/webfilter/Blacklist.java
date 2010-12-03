@@ -41,8 +41,9 @@ import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
+import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 
 /**
  * Does blacklist lookups in the database.
@@ -244,7 +245,8 @@ public abstract class Blacklist
 
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(settings, host, uri.toString(),
                                                                      I18nUtil.tr("host name is an IP address ({0})", host, i18nMap),
-                                                                     clientIp, node.getNodeTitle());
+                                                                     clientIp, node.getNodeTitle(),
+                                                                     (String) sess.globalAttachment(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME));
                 return node.generateNonce(bd);
             }
         }
@@ -272,7 +274,8 @@ public abstract class Blacklist
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri.toString(),
                      I18nUtil.tr("extension ({0})", exn, i18nMap), clientIp,
-                     node.getNodeTitle());
+                     node.getNodeTitle(),
+                     (String) sess.globalAttachment(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME));
                 return node.generateNonce(bd);
             }
         }
@@ -323,7 +326,7 @@ public abstract class Blacklist
                 WebFilterBlockDetails bd = new WebFilterBlockDetails
                     (settings, host, uri.toString(),
                      I18nUtil.tr("Mime-Type ({0})", contentType, i18nMap),
-                     clientIp, node.getNodeTitle());
+                     clientIp, node.getNodeTitle(), null);
                 return node.generateNonce(bd);
             }
         }
@@ -490,7 +493,7 @@ public abstract class Blacklist
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), a, reason, category.getDisplayName(), node.getVendor());
             node.log(hbe, host, port, event);
 
-            WebFilterBlockDetails bd = new WebFilterBlockDetails(settings, host, uri, category.getDescription(), clientIp, node.getNodeTitle());
+            WebFilterBlockDetails bd = new WebFilterBlockDetails(settings, host, uri, category.getDescription(), clientIp, node.getNodeTitle(), (String) sess.globalAttachment(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME));
             return node.generateNonce(bd);
         } else if (stringRule != null && stringRule.isLive()) {
             Action a = Action.BLOCK;
@@ -498,7 +501,7 @@ public abstract class Blacklist
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), a, reason, stringRule.getDescription(), node.getVendor());
             node.log(hbe, host, port, event);
 
-            WebFilterBlockDetails bd = new WebFilterBlockDetails(settings, host, uri, stringRule.getDescription(), clientIp, node.getNodeTitle());
+            WebFilterBlockDetails bd = new WebFilterBlockDetails(settings, host, uri, stringRule.getDescription(), clientIp, node.getNodeTitle(), (String) sess.globalAttachment(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME));
             return node.generateNonce(bd);
         } else if (category != null) {
             Action a = Action.PASS;
