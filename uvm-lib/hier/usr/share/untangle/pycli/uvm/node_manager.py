@@ -25,12 +25,6 @@ class NodeManager(Manager):
         tid = self.buildTid( tidString )
         self.__nodeManager.destroy( tid )
 
-    def api_neverstarted(self,tidString):
-        tid = self.buildTid( tidString )
-        nodeContext, node = self.__get_node( tid )
-        if ( nodeContext == None or node == None ): return
-        print ('%s' % node.neverStarted()).lower()
-
     def api_instances(self):
         if ( Manager.policy == None ): instances = self.__nodeManager.nodeInstances()
         else: instances = self.__nodeManager.nodeInstances( Manager.policy )
@@ -50,12 +44,6 @@ class NodeManager(Manager):
         else: tids = self.__nodeManager.nodeInstances()["list"]
 
         for tid in tids: self.__print_sessions(tid)
-
-    def api_dumpsessions(self):
-        for tid in self.__nodeManager.nodeInstances()["list"]:
-            nodeContext, node = self.__get_node( tid )
-            if ( nodeContext == None or node == None ): continue
-            node.dumpSessions()
 
     def __print_sessions( self, tid ):
         nodeContext, node = self.__get_node( tid )

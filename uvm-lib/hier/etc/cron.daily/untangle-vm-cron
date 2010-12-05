@@ -5,24 +5,26 @@ exec > /dev/null 2>&1
 if [ -f "@UVM_HOME@/conf/uid" ]; then
     mkdir -p @UVM_HOME@/autodump @UVM_HOME@/tmp
 
-    @UVM_HOME@/bin/uvmdb-backup @UVM_HOME@/autodump
+    @UVM_HOME@/bin/ut-uvmdb-backup @UVM_HOME@/autodump
     /usr/bin/find @UVM_HOME@/autodump -type f -mtime +31 | /usr/bin/xargs -r /bin/rm
 
     /usr/bin/find /tmp -mtime +31 -name "*.tmp" | /usr/bin/xargs -r /bin/rm
     /usr/bin/find @UVM_HOME@/tmp -name velocity -prune -o -type f -mtime +15 -print | /usr/bin/xargs -r /bin/rm
 
-    @UVM_HOME@/bin/generate-reports.py
+    @UVM_HOME@/bin/reporting-generate-reports.py
 
-    yesterday=$(date --date="1 day ago" "+%y-%m-%d")
-    for trial in $(/usr/share/untangle/bin/expiring_packages $yesterday) ; do
-      @UVM_HOME@/bin/generate-reports.py -t $trial
-    done
+    # end-of-trial reports never worked properly 
+    # removing this section for now
+    # yesterday=$(date --date="1 day ago" "+%y-%m-%d")
+    # for trial in $(/usr/share/untangle/bin/ut-expiring_packages $yesterday) ; do
+    #   @UVM_HOME@/bin/reporting-generate-reports.py -t $trial
+    # done
 
-    @UVM_HOME@/bin/utregister
+    @UVM_HOME@/bin/ut-register
 
     ## Ignore errors here.
-    if [ -x "@UVM_HOME@/bin/update_blockpage" ]; then
-        @UVM_HOME@/bin/update_blockpage || true
+    if [ -x "@UVM_HOME@/bin/ut-update_blockpage" ]; then
+        @UVM_HOME@/bin/ut-update_blockpage || true
     fi
 fi
 

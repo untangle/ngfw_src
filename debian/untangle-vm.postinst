@@ -51,7 +51,7 @@ fi
 /bin/chown -R $USER:$GROUP ${UVM_LOGDIR} ${UVM_CACHEDIR}
 /bin/chmod 775 ${UVM_LOGDIR} ${UVM_CACHEDIR}
 
-/usr/share/untangle/bin/update-schema uvm
+/usr/share/untangle/bin/ut-update-schema uvm
 
 # 8.1 - remove obsolete file
 if [ -f /usr/share/untangle/popid ] ; then

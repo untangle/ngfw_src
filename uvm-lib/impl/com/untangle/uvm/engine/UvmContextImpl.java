@@ -103,9 +103,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     /* true if running in a development environment */
     private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel";
-    private static final String PROPERTY_IS_UNTANGLE_APPLIANCE = "com.untangle.isUntangleAppliance";
     private static final String PROPERTY_IS_INSIDE_VM = "com.untangle.isInsideVM";
-    private static final String PROPERTY_INSTALLTION_TYPE = "com.untangle.installationType";
 
     private static final String FACTORY_DEFAULT_FLAG = System.getProperty("uvm.conf.dir") + "/factory-defaults";
     
@@ -604,56 +602,47 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return Boolean.getBoolean(PROPERTY_IS_DEVEL);
     }
 
-    public boolean isUntangleAppliance()
-    {
-        return Boolean.getBoolean(PROPERTY_IS_UNTANGLE_APPLIANCE);
-    }
-
     public boolean isInsideVM()
     {
         return Boolean.getBoolean(PROPERTY_IS_INSIDE_VM);
     }
 
-    public String installationType()
+    public boolean activate(String uid, RegistrationInfo regInfo)
     {
-        return System.getProperty(PROPERTY_INSTALLTION_TYPE, "iso");
-    }
-
-    public boolean activate(String key, RegistrationInfo regInfo) {
-        if (key != null) {
+        if (uid != null) {
             // Be nice to the poor user:
-            if (key.length() == 16)
-                key = key.substring(0, 4) + "-" + key.substring(4, 8) + "-" +
-                key.substring(8, 12) + "-" + key.substring(12,16);
+            if (uid.length() == 16)
+                uid = uid.substring(0, 4) + "-" + uid.substring(4, 8) + "-" +
+                uid.substring(8, 12) + "-" + uid.substring(12,16);
             // Fix for bug 1310: Make sure all the hex chars are lower cased.
-            key = key.toLowerCase();
-            if (key.length() != 19) {
-                // Don't even bother if the key isn't the right length.
+            uid = uid.toLowerCase();
+            if (uid.length() != 19) {
+                // Don't even bother if the uid isn't the right length.
                 // Could do other sanity checking here as well. XX
-                logger.error("Unable to activate with wrong length key: " + key);
+                logger.error("Unable to activate with wrong length uid: " + uid);
                 return false;
             }
         }
         try {
             Process p;
-            if (key == null)
+            if (uid == null)
                 p = exec(new String[] { ACTIVATE_SCRIPT });
             else
-                p = exec(new String[] { ACTIVATE_SCRIPT, key });
+                p = exec(new String[] { ACTIVATE_SCRIPT, uid });
             for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
             int exitValue = p.waitFor();
             if (0 != exitValue) {
                 logger.error("Unable to activate (" + exitValue
-                        + ") with key: " + key);
+                        + ") with uid: " + uid);
                 return false;
             } else {
-                logger.info("Product activated with key: " + key);
+                logger.info("Product activated with uid: " + uid);
             }
         } catch (InterruptedException exn) {
-            logger.error("Interrupted during activation with key: " + key);
+            logger.error("Interrupted during activation with uid: " + uid);
             return false;
         } catch (IOException exn) {
-            logger.error("Exception during activation with key: " + key, exn);
+            logger.error("Exception during activation with uid: " + uid, exn);
             return false;
         }
 
@@ -1134,7 +1123,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     // static initializer -----------------------------------------------------
 
     static {
-        ACTIVATE_SCRIPT = System.getProperty("uvm.bin.dir") + "/utactivate";
+        ACTIVATE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-activate";
         REGISTRATION_INFO_FILE = System.getProperty("uvm.conf.dir") + "/registration.info";
         UID_FILE = System.getProperty("uvm.conf.dir") + "/uid";
     }

@@ -42,7 +42,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 {
     private ReportingSettings settings;
 
-    private String REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/generate-reports.py";
+    private String REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-reports.py";
 
     public ReportingNodeImpl() {}
 

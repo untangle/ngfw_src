@@ -115,7 +115,6 @@ def printUsage():
     ucli start TID
     ucli stop TID
     ucli destroy TID
-    ucli neverStarted
   node manager lists:
     ucli instances
   node live sessions:
@@ -128,17 +127,14 @@ def printUsage():
     ucli shutdown
     ucli serverStats
     ucli gc
-    ucli loadRup
     ucli setProperty key value
   policy manager:
     ucli addPolicy name [notes]
     ucli listPolicies
+    ucli killAllSessions
   reporting manager:
     ucli isReportingEnabled
     ucli areReportsAvailable
-    ucli prepareReports [ args ]
-    ucli startReports
-    ucli stopReports
   logging manager:
     ucli userLogs tid
     ucli resetLogs
@@ -146,9 +142,6 @@ def printUsage():
   apt commands:
     ucli register mackage-name
     ucli unregister mackage-name
-  argon commands:
-  nucli server commands:
-    ucli restartCliServer
   debugging commands:
     ucli aptTail
 """ % sys.argv[0] )
@@ -209,7 +202,6 @@ for manager in Manager.managers:
 
     calledMethod = True
     try:
-        print method
         remoteManager = manager(remoteContext)
         getattr( remoteManager, "api_" + method )( *script_args )
     except JSONRPCException, e:

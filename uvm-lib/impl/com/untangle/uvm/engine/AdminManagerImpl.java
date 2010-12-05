@@ -68,7 +68,7 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
     private static final String INITIAL_USER_LOGIN = "admin";
     private static final String INITIAL_USER_PASSWORD = "passwd";
 
-    private static final String SET_TIMEZONE_SCRIPT = System.getProperty("uvm.bin.dir") + "/uttimezone";
+    private static final String SET_TIMEZONE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-timezone";
     private static final String TIMEZONE_FILE = "/etc/timezone";
     private static final String REGISTRATION_INFO_FILE = System.getProperty("uvm.conf.dir") + "/registration.info";
     private static final String BRAND_INFO_FILE = "/usr/share/untangle/tmp/brand";
@@ -390,13 +390,7 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
     public String getFullVersionAndRevision()
     {
         try {
-            SimpleExec.SimpleExecResult result = SimpleExec.exec("/usr/share/untangle/bin/version_newest.sh",
-                                                                 null,
-                                                                 null,
-                                                                 null,
-                                                                 true,
-                                                                 true,
-                                                                 1000*20);
+            SimpleExec.SimpleExecResult result = SimpleExec.exec("/usr/share/untangle/bin/ut-uvm-version.sh",null,null,null,true,true,1000*20);
 	    
             if(result.exitCode==0) {
                 return new String(result.stdOut);

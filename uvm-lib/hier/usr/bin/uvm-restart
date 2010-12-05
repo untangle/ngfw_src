@@ -23,7 +23,7 @@ if [ -e $pidfile ]; then
 fi
 
 if [ -x /etc/init.d/untangle-vm ]; then
-    /usr/share/untangle/bin/uvm-show-upgrade start
+    /usr/share/untangle/bin/ut-show-upgrade-splash start
     /etc/init.d/untangle-vm stop || true
 fi
 nohup uvm-restart-wait $mode >>/var/log/restart-uvm.log 2>&1 &

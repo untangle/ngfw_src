@@ -10,13 +10,16 @@
 
 # Author: Sebastien Delafond <seb@untangle.com>
 
-. /lib/lsb/init-functions
+source /lib/lsb/init-functions
 
-DESC="Untangle Reports"
+if [ -f @PREFIX@/etc/default/untangle-vm ] ; then
+    source @PREFIX@/etc/default/untangle-vm
+fi
 
+DESC="${OEM_NAME} Reports"
 NAME="reports"
-DAEMON="@PREFIX@/usr/share/untangle/bin/untangle-reports-wrapper.sh"
-PID_FILE="@PREFIX@/var/run/untangle-reports-wrapper.pid"
+DAEMON="@PREFIX@/usr/share/untangle/bin/reporting-wrapper.sh"
+PID_FILE="@PREFIX@/var/run/reporting-wrapper.pid"
 
 start() {
   log_daemon_msg "Starting $DESC"

@@ -26,12 +26,13 @@ import com.untangle.node.virus.VirusScannerClientLauncher;
 import com.untangle.node.virus.VirusScannerResult;
 import org.apache.log4j.Logger;
 
-public class ClamScannerClientLauncher extends VirusScannerClientLauncher {
+public class ClamScannerClientLauncher extends VirusScannerClientLauncher
+{
     protected final Logger clogger = Logger.getLogger(getClass());
 
     /**
      * These are "FOUND" viruses by clamdscan, but are not really viruses
-     * -> copied from the clam source
+     * - copied from the clam source
      */
     private final static String[] invalidVirusNames = {
         "Encrypted.RAR",
@@ -59,11 +60,13 @@ public class ClamScannerClientLauncher extends VirusScannerClientLauncher {
     /**
      * Create a ClientLauncher for the given file
      */
-    public ClamScannerClientLauncher(File msgFile) {
+    public ClamScannerClientLauncher(File msgFile)
+    {
         super(msgFile);
     }
 
-    public VirusScannerResult doScan(long timeout) {
+    public VirusScannerResult doScan(long timeout)
+    {
         ClamClient clientTmp = createClient(); // create scanner
 
         clientTmp.startScan(); // start scanning
@@ -84,7 +87,8 @@ public class ClamScannerClientLauncher extends VirusScannerClientLauncher {
         return result;
     }
 
-    private ClamClient createClient() {
+    private ClamClient createClient()
+    {
         cContext = new VirusClientContext(msgFile, VirusClientSocket.CLAMD_DEFHOST, VirusClientSocket.CLAMD_DEFPORT);
         client = new ClamClient(cContext);
         Thread thread = LocalUvmContextFactory.context().newThread(client);
@@ -92,7 +96,8 @@ public class ClamScannerClientLauncher extends VirusScannerClientLauncher {
         return client;
     }
 
-    private VirusScannerResult getResult() {
+    private VirusScannerResult getResult()
+    {
         VirusScannerResult result = cContext.getResult();
         if (null == result) {
             result = VirusScannerResult.ERROR;

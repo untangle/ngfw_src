@@ -2,7 +2,7 @@
 
 #=============================================================
 # Little script which creates a backup of the system (like
-# "backup-ut") then creates a single tar.gz file of the results.
+# "ut-backup") then creates a single tar.gz file of the results.
 #
 # This script exists so a bunch of places don't releat this logic,
 # as we may want to add some meta information (i.e. some manifest)
@@ -46,7 +46,7 @@ function doHelp() {
 #
 function createBackup() {
   debug "Creating Backup in " $1
-  @UVM_HOME@/bin/backup-ut $1
+  @UVM_HOME@/bin/ut-backup $1
 #  pushd $1 > /dev/null 2>&1
 #  datestamp=$(date '+%Y%m%d%H%M')
 #  echo "FOO" > uvmdb-$datestamp.gz

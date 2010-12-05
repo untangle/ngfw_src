@@ -116,36 +116,6 @@ public abstract class NodeBase implements Node
         return runState;
     }
 
-    public final boolean neverStarted()
-    {
-        if (wasStarted || NodeState.RUNNING == runState) {
-            return false;
-        } else {
-            TransactionWork<Long> tw = new TransactionWork<Long>()
-                {
-                    Long result;
-
-                    // XXX move this shit to NodeContext
-                    public boolean doWork(Session s)
-                    {
-                        Query q = s.createQuery("SELECT count(sc) FROM NodeStateChange sc WHERE sc.tid = :tid AND sc.state = 'running'");
-                        q.setParameter("tid", tid);
-                        result = (Long)q.uniqueResult();
-
-                        return true;
-                    }
-
-                    public Long getResult()
-                    {
-                        return result;
-                    }
-                };
-            LocalUvmContextFactory.context().runTransaction(tw);
-
-            return 0 == tw.getResult();
-        }
-    }
-
     public final void start() throws NodeStartException, IllegalStateException
     {
         synchronized (stateChangeLock) {

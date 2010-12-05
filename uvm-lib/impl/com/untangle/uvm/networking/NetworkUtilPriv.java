@@ -105,7 +105,7 @@ class NetworkUtilPriv extends NetworkUtil
     /* Load the network properties, these are used for some of the settings. */
     Properties loadProperties() throws IOException
     {
-        String cmd = System.getProperty( "uvm.bin.dir" ) + "/net-properties";
+        String cmd = System.getProperty( "uvm.bin.dir" ) + "/ut-net-properties";
         Process process = LocalUvmContextFactory.context().exec( cmd );
         Properties properties = new Properties();
         properties.load( process.getInputStream());
@@ -441,7 +441,7 @@ class NetworkUtilPriv extends NetworkUtil
 
     private void loadDhcpLeaseList( ServicesSettings servicesSettings ) throws IOException
     {
-        String cmd = System.getProperty( "uvm.bin.dir" ) + "/dhcp-lease-list";
+        String cmd = System.getProperty( "uvm.bin.dir" ) + "/ut-dhcp-lease-list";
         Process process = LocalUvmContextFactory.context().exec( cmd );
         
         BufferedReader reader = new BufferedReader( new InputStreamReader( process.getInputStream()));
@@ -476,7 +476,7 @@ class NetworkUtilPriv extends NetworkUtil
 
     private void loadDnsStaticHostList( ServicesSettings servicesSettings ) throws IOException
     {
-        String cmd = System.getProperty( "uvm.bin.dir" ) + "/dns-static-host-list";
+        String cmd = System.getProperty( "uvm.bin.dir" ) + "/ut-dns-static-host-list";
         Process process = LocalUvmContextFactory.context().exec( cmd );
         
         BufferedReader reader = new BufferedReader( new InputStreamReader( process.getInputStream()));

@@ -183,7 +183,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
         String interfaceOrder = null;
         String wanInterfaces = null;
         try {
-            String cmd = System.getProperty( "uvm.bin.dir" ) + "/interface-properties";
+            String cmd = System.getProperty( "uvm.bin.dir" ) + "/ut-interface-properties";
             Process process = LocalUvmContextFactory.context().exec( cmd );
             Properties p = new Properties();
             p.load( process.getInputStream());

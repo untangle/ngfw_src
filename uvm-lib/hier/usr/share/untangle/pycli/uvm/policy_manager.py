@@ -12,6 +12,9 @@ class PolicyManager(Manager):
         for policy in self.__policyManager.getPolicies():
             print self.getPolicyString( policy )
 
+    def api_killallsessions( self ):
+        self.__policyManager.shutdownSessions( nil )
+
     def api_getpolicy( self, policy_name ):
         print self.getPolicyString( self.__policyManager.getPolicy( policy_name ))
                                         

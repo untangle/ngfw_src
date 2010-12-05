@@ -34,7 +34,8 @@ package com.untangle.node.virus;
 
 import org.apache.log4j.Logger;
 
-abstract public class VirusClient implements Runnable {
+abstract public class VirusClient implements Runnable
+{
     protected final Logger logger = Logger.getLogger(getClass());
 
     protected final static int READ_SZ = 1024;
@@ -45,24 +46,28 @@ abstract public class VirusClient implements Runnable {
     protected String dbgName; // thread name and socket host
     protected volatile boolean stop = false;
 
-    public VirusClient(VirusClientContext cContext) {
+    public VirusClient(VirusClientContext cContext)
+    {
         this.cContext = cContext;
     }
 
-    public void setThread(Thread cThread) {
+    public void setThread(Thread cThread)
+    {
         this.cThread = cThread;
         dbgName = new StringBuilder("<").append(cThread.getName()).append(">").append(cContext.getHost()).append(":").append(cContext.getPort()).toString();
         return;
     }
 
-    public void startScan() {
+    public void startScan()
+    {
         //logger.debug("start, thread: " + cThread + ", this: " + this);
         cThread.start(); // execute run() now
         return;
     }
 
     // timeout > 0
-    public void checkProgress(long timeout) {
+    public void checkProgress(long timeout)
+    {
         //logger.debug("check, thread: " + cThread + ", this: " + this);
         if (false == cThread.isAlive()) {
             logger.debug(dbgName + ", is not alive; not waiting");
@@ -95,7 +100,8 @@ abstract public class VirusClient implements Runnable {
         return;
     }
 
-    public void stopScan() {
+    public void stopScan()
+    {
         //logger.debug("stop, thread: " + cThread + ", this: " + this);
         if (false == cThread.isAlive()) {
             logger.debug(dbgName + ", is not alive; no need to stop");
@@ -107,13 +113,15 @@ abstract public class VirusClient implements Runnable {
         return;
     }
 
-    public String toString() {
+    public String toString()
+    {
         return dbgName;
     }
 
     abstract public void run();
 
-    public void cleanExit() {
+    public void cleanExit()
+    {
         synchronized (this) {
             this.notifyAll(); // notify waiting thread and finish run()
             return;

@@ -33,7 +33,8 @@ import com.untangle.node.virus.VirusClientContext;
 import com.untangle.node.virus.VirusClientSocket;
 import org.apache.log4j.Logger;
 
-public class ClamClient extends VirusClient {
+public class ClamClient extends VirusClient
+{
     protected final Logger clogger = Logger.getLogger(getClass());
 
     private final static String CRLF = "\r\n"; // end-of-line
@@ -57,13 +58,16 @@ public class ClamClient extends VirusClient {
     private final static Pattern REPLY_PORTP = Pattern.compile(REPLY_PORT, Pattern.CASE_INSENSITIVE);
     private final static Pattern REP_RESULTP = Pattern.compile(REP_RESULT, Pattern.CASE_INSENSITIVE);
 
-    public ClamClient(VirusClientContext cContext) {
+    public ClamClient( VirusClientContext cContext )
+    {
         super(cContext);
     }
 
-    public void run() {
+    public void run()
+    {
         VirusClientSocket clamcSocket = null;
         VirusClientSocket msgcSocket = null;
+
         try {
             clamcSocket = VirusClientSocket.create(cContext.getHost(), cContext.getPort());
         } catch (Exception e) {
@@ -204,7 +208,8 @@ public class ClamClient extends VirusClient {
         return;
     }
 
-    private void cleanup(VirusClientSocket cSocket, String host, int port) {
+    private void cleanup( VirusClientSocket cSocket, String host, int port )
+    {
         try {
             if (null != cSocket) {
                 // close socket and its open streams
@@ -218,13 +223,15 @@ public class ClamClient extends VirusClient {
         return;
     }
 
-    private void cleanExit(VirusClientSocket cSocket, String host, int port) {
+    private void cleanExit( VirusClientSocket cSocket, String host, int port )
+    {
         cleanup(cSocket, host, port);
         cleanExit();
         return;
     }
 
-    private int parseClamdResponse(String response) throws Exception {
+    private int parseClamdResponse( String response ) throws Exception
+    {
         StringTokenizer sTokenizer = new StringTokenizer(response);
         int msgStreamPort = 0;
         int tIdx = 0;
@@ -255,7 +262,8 @@ public class ClamClient extends VirusClient {
         return msgStreamPort;
     }
 
-    private void parseClamdResult(String result) throws Exception {
+    private void parseClamdResult( String result ) throws Exception
+    {
         StringTokenizer sTokenizer = new StringTokenizer(result);
         StringBuilder virusName = new StringBuilder();
         int tIdx = 0;

@@ -1,5 +1,5 @@
 #!/bin/dash
 
-@UVM_HOME@/bin/get-last-update /var/lib/spamassassin/
+@UVM_HOME@/bin/ut-get-last-update /var/lib/spamassassin/
 
 exit 0

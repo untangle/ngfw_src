@@ -7,9 +7,6 @@ class UvmManager(Manager):
     def api_gc( self ):
         self.__remoteContext.doFullGC()
 
-    def api_loadrup( self ):
-        self.__remoteContext.loadRup()
-
     def api_setproperty( self, key, value ):
         self.__remoteContext.setProperty( key, value )
 

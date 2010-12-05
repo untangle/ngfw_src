@@ -1,7 +1,24 @@
 # UVM server settings -*-sh-*-
 
-source @PREFIX@/etc/default/untangle-activation
+# Set OS stuff
+UID_FILE=@UVM_HOME@/conf/uid
+SOURCES_LIST=@PREFIX@/etc/apt/sources.list.d/untangle.list
 
+# set REPOSITORY 
+grep -q Debian /etc/issue && i=3 || i=2
+case `head -1 /etc/issue | awk "{ print \\$$i }"` in
+  3.1) REPOSITORY=sarge ;;
+  4.0) REPOSITORY=etch ;;
+  5.0) REPOSITORY=lenny ;;
+  lenny/sid) REPOSITORY=sid ;;
+  7.04*) REPOSITORY=feisty ;;
+  7.10*) REPOSITORY=gutsy ;;
+  8.04*|hardy) REPOSITORY=hardy ;;
+  8.10*|intrepid) REPOSITORY=intrepid ;;
+  *) REPOSITORY=etch ;;
+esac
+
+# set hardware parameters
 MAX_HEAP_SIZE=320m #to be overwritten by untangle-hw
 MAX_BERKDB_MEG=32 #to be overwritten by untangle-hw
 MAX_VIRTUAL_SIZE=1100000 #to be overwritten by untangle-hw
@@ -125,6 +142,14 @@ fi
 if [ "x" != "x@PREFIX@" ] ; then
     ## Enable assertions
     JAVA_OPTS="${JAVA_OPTS} -ea"
+    ## Add build path
+    PATH=@PREFIX@/usr/bin:$PATH
+    for f in @THIRDPARTY_UVM_LIB@/*jar ; do
+        CLASSPATH="$CLASSPATH:$f"
+    done
+    for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
+        CLASSPATH="$CLASSPATH:$f"
+    done
 fi
 
 export JAVA_OPTS

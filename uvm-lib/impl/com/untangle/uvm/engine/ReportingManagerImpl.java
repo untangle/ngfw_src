@@ -596,8 +596,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return l;
     }
 
-    private boolean generateReport(Date d, int numDays, String appName,
-                                   String type, String value)
+    private boolean generateReport(Date d, int numDays, String appName, String type, String value)
     {
         String user = "";
         String host = "";
@@ -673,14 +672,6 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         return rv;
     }
 
-//     private long getDayBefore(Date d)
-//     {
-//         Calendar c = Calendar.getInstance();
-//         c.setTime(d);
-//         c.add(Calendar.DATE, -1);
-//         return c.getTimeInMillis();
-//     }
-
     private Date getDaysBefore(Date d, int numDays)
     {
         Calendar c = Calendar.getInstance();
@@ -699,7 +690,8 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 	return c1.before(c2);
     }
 
-    public boolean isReportingEnabled() {
+    public boolean isReportingEnabled()
+    {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         NodeManager nodeManager = uvm.nodeManager();
         List<NodeId> tids = nodeManager.nodeInstances("untangle-node-reporting");

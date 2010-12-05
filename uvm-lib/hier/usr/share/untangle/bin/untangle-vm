@@ -96,15 +96,8 @@ for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
 
-if [ -f "$UNTANGLE_HARDWARE" ] ; then
-    JAVA_OPTS="-Dcom.untangle.isUntangleAppliance=true $JAVA_OPTS"
-fi
 if ( lspci | grep -qi VMWare ) then
     JAVA_OPTS="-Dcom.untangle.isInsideVM=true $JAVA_OPTS"
-fi
-
-if ( dpkg -l untangle-windows-installer > /dev/null 2>&1 ) then
-    JAVA_OPTS="-Dcom.untangle.installationType=u4w $JAVA_OPTS"
 fi
 
 unset DISPLAY

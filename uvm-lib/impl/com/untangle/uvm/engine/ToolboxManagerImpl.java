@@ -165,18 +165,6 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public RackView getRackView(Policy p)
     {
-        return getRackView(p,null);
-    }
-
-    public RackView getRackView(Policy p, String installationType)
-    {
-        if (installationType == null) {
-            installationType = LocalUvmContextFactory.context().installationType();
-        }
-
-        if (installationType == null || installationType.length()==0) {
-            installationType="!nevermatchflag,,!";
-        }
 
         MackageDesc[] available = this.available;
         MackageDesc[] installed = this.installed;
@@ -192,7 +180,7 @@ class ToolboxManagerImpl implements ToolboxManager
             if (type == MackageDesc.Type.LIB_ITEM) {
                 displayNames.add(dn);
                 libitems.put(dn, md);
-                if (md.getHideOn().contains(installationType)) {
+                if (md.getHide().contains("true")) {
                     hiddenApps.add(dn);
                 }
             } else if (type == MackageDesc.Type.TRIAL) {

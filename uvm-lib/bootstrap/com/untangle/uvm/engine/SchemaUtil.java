@@ -78,7 +78,7 @@ public class SchemaUtil
 
         try {
             String bd = System.getProperty("uvm.home") + "/bin/";
-            String us = bd + "update-schema";
+            String us = bd + "ut-update-schema";
             ProcessBuilder pb = new ProcessBuilder(us, type, component);
             Process p = pb.start();
             InputStream is = p.getInputStream();

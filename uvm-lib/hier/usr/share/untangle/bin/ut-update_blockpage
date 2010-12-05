@@ -77,7 +77,7 @@ install_update()
 
 
 ## For testing, just source from another a test script and try out the functions.
-if [ `basename "$0"` = "update_blockpage" ] ; then
+if [ `basename "$0"` = "ut-update_blockpage" ] ; then
     prog=$(basename $0)
     logger="logger -t $prog"
     set -e

@@ -30,7 +30,7 @@ def setup_module(module):
 #    os.system('dropdb -U postgres uvm')
 #    os.system('createdb -U postgres uvm')
 #   os.system('cat %s/usr/share/untangle/tests/untangle-node-reporting/emptydb.sql | psql -U postgres uvm' % PREFIX)
-    os.system('%s/usr/share/untangle/bin/generate-reports.py -m' % PREFIX)
+    os.system('%s/usr/share/untangle/bin/reporting-generate-reports.py -m' % PREFIX)
 
 class TestReports:
 

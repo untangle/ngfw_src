@@ -64,13 +64,6 @@ public interface Node
     NodeState getRunState();
 
     /**
-     * Tests if the node has ever been started.
-     *
-     * @return true when the node has never been started.
-     */
-    boolean neverStarted();
-
-    /**
      * Connects to ArgonConnector and starts. The node instance reads its
      * configuration each time this method is called. A call to this method
      * is only valid when the instance is in the

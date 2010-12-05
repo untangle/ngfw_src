@@ -1,6 +1,6 @@
 #!/bin/dash
 
 ## Ignore errors
-@UVM_HOME@/bin/get-last-update /var/lib/clamav/
+@UVM_HOME@/bin/ut-get-last-update /var/lib/clamav/
 
 exit 0

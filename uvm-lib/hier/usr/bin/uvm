@@ -98,7 +98,7 @@ getPopId() {
   [[ -f $UID_FILE ]] || return
 
   # ensure we have a popid
-  @UVM_HOME@/bin/utactivate
+  @UVM_HOME@/bin/ut-activate
 }
 
 # Return true (0) when we need to reap and restart the uvm.
@@ -167,7 +167,7 @@ trap reapChildHarder 15
 trap reapChild 2
 
 monit -c /etc/untangle/monit.conf unmonitor postgres
-@PREFIX@/usr/share/untangle/bin/migrate-postgres.sh >> $UVM_WRAPPER_LOG
+@PREFIX@/usr/share/untangle/bin/ut-migrate-postgres.sh >> $UVM_WRAPPER_LOG
 monit -c /etc/untangle/monit.conf monitor postgres
 
 while true; do

@@ -2,7 +2,7 @@
 
 #=============================================================
 # Script which takes the output of "ut-backup-bundled" and
-# restores it to a system.  This is a wrapper around "untangle-restore"
+# restores it to a system.  This is a wrapper around "ut-restore"
 # which deals with single .tar.gz files rather than the three
 # files from the "old-style" backups.
 #
@@ -132,9 +132,9 @@ function doIt() {
         exit 3
     fi
 
-# Invoke untangle-restore ("Usage: $0 dumpfile tarfile instfile")
+# Invoke ut-restore ("Usage: $0 dumpfile tarfile instfile")
 
-    @UVM_HOME@/bin/untangle-restore $WORKING_DIR/$DB_FILE $WORKING_DIR/$FILES_FILE $WORKING_DIR/$INSTALLED_FILE
+    @UVM_HOME@/bin/ut-restore $WORKING_DIR/$DB_FILE $WORKING_DIR/$FILES_FILE $WORKING_DIR/$INSTALLED_FILE
 
     EXIT_VAL=$?
 

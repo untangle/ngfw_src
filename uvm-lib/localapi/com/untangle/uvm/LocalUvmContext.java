@@ -250,25 +250,11 @@ public interface LocalUvmContext extends RemoteUvmContext
     boolean isDevel();
 
     /**
-     * Return true if running in an Untangle Appliance (non-cd/iso install).
-     *
-     * @return a <code>boolean</code> true if in an untangle appliance.
-     */
-    boolean isUntangleAppliance();
-
-    /**
      * Return true if running inside a Virtualized Platform (like VMWare)
      *
      * @return a <code>boolean</code> true if platform is running in a virtualized machine
      */
     boolean isInsideVM();
-
-    /**
-     * Returns the Untangle Installation type.  Currently there is
-     * iso and u4w.
-     * @return a <code>string</code> for the Untangle installation type.
-     */
-    String installationType();
 
     /**
      * Activates the Untangle Server using the given key and registration info.
