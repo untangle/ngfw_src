@@ -25,15 +25,21 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Iterator;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.RemoteNetworkManager;
 
 public class LicenseManagerImpl implements LicenseManager
 {
     private static final String LICENSE_URL_PROPERTY = "uvm.license.url";
+    private static final String LICENSE_SCRIPT_NUMUSERS = "license-numdevices.sh";
     private static final String EXPIRED = "expired";
 
     /* update every 12 hours, leaves an hour window */
@@ -272,10 +278,12 @@ public class LicenseManagerImpl implements LicenseManager
         SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
         LinkedList<License> licenses;
 
+        int numDevices = _getEstimatedNumDevices();
+            
         logger.info("REFRESH: Downloading new Licenses...");
         
         try {
-            String urlStr = System.getProperty("uvm.license.url") + "?" + "action=getLicenses" + "&" + "uid=" + LocalUvmContextFactory.context().getServerUID();
+            String urlStr = System.getProperty("uvm.license.url") + "?" + "action=getLicenses" + "&" + "uid=" + LocalUvmContextFactory.context().getServerUID() + "&" + "numDevices=" + numDevices;
             logger.info("Downloading: \"" + urlStr + "\"");
 
             Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
@@ -525,6 +533,37 @@ public class LicenseManagerImpl implements LicenseManager
 
     }
     
+    /**
+     * Returns an estimate of # devices on the network
+     * This is not meant to be very accurate - it is just an estimate
+     */
+    private int _getEstimatedNumDevices()
+    {
+        try {
+            String command = System.getProperty("uvm.bin.dir") + "/" + LICENSE_SCRIPT_NUMUSERS;
+            Process proc = LocalUvmContextFactory.context().exec(command);
+            InputStream is  = proc.getInputStream();
+            OutputStream os = proc.getOutputStream();
+            BufferedReader in = new BufferedReader(new InputStreamReader(is));
+            os.close();
+
+            StringBuilder wholeOutput = new StringBuilder();
+            String s;
+            while ((s = in.readLine()) != null) {
+                wholeOutput.append(s);
+            }
+
+            in.close();
+            is.close();
+
+            Integer result = new Integer(wholeOutput.toString());
+            return result;
+        } catch (Exception e) {
+            logger.warn("Unabled to estimate seats",e);
+        }
+
+        return -1;
+    }
 
     private class LycenseSyncTask implements Runnable
     {
@@ -534,13 +573,8 @@ public class LicenseManagerImpl implements LicenseManager
             synchronized (LicenseManagerImpl.this) {
                 _readLicenses();
 
-                /**
-                 * Don't fetch license while in the dev environment
-                 */
-                //if (!LocalUvmContextFactory.context().isDevel()) {
                 _downloadLicenses();
                 _checkRevocations(); 
-                //}
                 
                 _mapLicenses();
             }
