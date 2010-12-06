@@ -1,5 +1,4 @@
-#! /bin/bash
-# $Id: uvm,v 1.10 2005/03/22 01:51:56 cng Exp $
+#!/bin/bash
 
 ### BEGIN INIT INFO
 # Provides:          untangle-vm
@@ -10,10 +9,10 @@
 # Short-Description: Untangle Virtual Machine
 ### END INIT INFO
 
-source /lib/lsb/init-functions
+. /lib/lsb/init-functions
 
 if [ -f @PREFIX@/etc/default/untangle-vm ] ; then
-    source @PREFIX@/etc/default/untangle-vm
+    . @PREFIX@/etc/default/untangle-vm
 fi
 
 DESC="${OEM_NAME} VM"
