@@ -149,19 +149,6 @@ update_monit()
     }
 }
 
-
-UVM_PRE_UVM_SCRIPT=${UVM_PRE_UVM_SCRIPT:-@PREFIX@/var/lib/untangle-windows-installer/pre_uvm.rb}
-UVM_AUTO_CONFIG=${UVM_AUTO_CONFIG:-@PREFIX@/mnt/hgfs/untangle/config.js}
-
-# auto configuration script
-[ -x ${UVM_PRE_UVM_SCRIPT} ]  && [ -f ${UVM_AUTO_CONFIG} ] && {
-    UVM_STATUS_FILE=${UVM_STATUS_FILE:-@PREFIX@/mnt/hgfs/untangle/status}
-    if [ -d `dirname ${UVM_STATUS_FILE}` ] ; then echo "Installing" > $UVM_STATUS_FILE ; fi
-
-    mkdir -p /var/log/uvm/
-    ${UVM_PRE_UVM_SCRIPT} ${UVM_AUTO_CONFIG} >> /var/log/uvm/auto_config.log 2>&1
-}
-
 trap reapChildHardest 6
 trap reapChildHarder 15
 trap reapChild 2

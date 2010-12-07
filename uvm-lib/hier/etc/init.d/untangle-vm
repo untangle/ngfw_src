@@ -21,7 +21,6 @@ UVM_RUNDIR=${UVM_RUNDIR:-@PREFIX@/var/run}
 UVM_NICENESS=${UVM_NICENESS:-0}
 UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-$UVM_LOGDIR/console.log}
 UVM_WRAPPER_LOG=${UVM_WRAPPER_LOG:-$UVM_LOGDIR/wrapper.log}
-UVM_STATUS_FILE=${UVM_STATUS_FILE:-@PREFIX@/mnt/hgfs/untangle/status}
 UVM_CMD=${UVM_CMD:-@PREFIX@/usr/bin/uvm}
 UVM_USER=${UVM_USER:-$USER}
 UVM_PID="uvm.pid"
@@ -58,11 +57,6 @@ unmonitorAll() {
 
 updateStatus() {
     echo -ne $1
-    
-    if [ -d `dirname $UVM_STATUS_FILE` ] ; then 
-        [ -f "${UVM_STATUS_FILE}" ] && grep -qi Installing ${UVM_STATUS_FILE} && return
-        echo "$2" > $UVM_STATUS_FILE
-    fi
 }
 
 updateStatusExit() {
