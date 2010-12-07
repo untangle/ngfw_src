@@ -293,7 +293,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     }
                 },
                 addHandler : function() {
-                    if (this.getPolicyManagerLicense(true).valid){
+                    if (!this.getPolicyManagerLicense(true).valid){
                         this.showPolicyManagerRequired();
                     } else {
                         this.updateParentRackStore( this.editorRackCombo, new Ext.data.Record([]));
@@ -301,7 +301,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     }
                 }.createDelegate(this),
                 editHandler : function(record) {
-                    if (this.getPolicyManagerLicense(true).valid){
+                    if (!this.getPolicyManagerLicense(true).valid){
                         this.showPolicyManagerRequired();
                     } else {
                         this.updateParentRackStore( this.editorRackCombo, record );
@@ -310,7 +310,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     }
                 }.createDelegate(this),
                 deleteHandler : function(record) {
-                    if (this.getPolicyManagerLicense(true).valid){
+                    if (!this.getPolicyManagerLicense(true).valid){
                         this.showPolicyManagerRequired();
                     } else {
                         
