@@ -39,6 +39,8 @@ import com.untangle.uvm.RemoteNetworkManager;
 public class LicenseManagerImpl implements LicenseManager
 {
     private static final String LICENSE_URL_PROPERTY = "uvm.license.url";
+    private static final String DEFAULT_LICENSE_URL = "https://license.untangle.com/license.php";
+    
     private static final String LICENSE_SCRIPT_NUMUSERS = "license-numdevices.sh";
     private static final String EXPIRED = "expired";
 
@@ -215,7 +217,7 @@ public class LicenseManagerImpl implements LicenseManager
         logger.info("REFRESH: Checking Revocations...");
         
         try {
-            String urlStr = System.getProperty("uvm.license.url") + "?" + "action=getRevocations" + "&" + "uid=" + LocalUvmContextFactory.context().getServerUID();
+            String urlStr = _getLicenseUrl() + "?" + "action=getRevocations" + "&" + "uid=" + LocalUvmContextFactory.context().getServerUID();
             logger.info("Downloading: \"" + urlStr + "\"");
 
             Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
@@ -283,7 +285,7 @@ public class LicenseManagerImpl implements LicenseManager
         logger.info("REFRESH: Downloading new Licenses...");
         
         try {
-            String urlStr = System.getProperty("uvm.license.url") + "?" + "action=getLicenses" + "&" + "uid=" + LocalUvmContextFactory.context().getServerUID() + "&" + "numDevices=" + numDevices;
+            String urlStr = _getLicenseUrl() + "?" + "action=getLicenses" + "&" + "uid=" + LocalUvmContextFactory.context().getServerUID() + "&" + "numDevices=" + numDevices;
             logger.info("Downloading: \"" + urlStr + "\"");
 
             Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
@@ -565,6 +567,16 @@ public class LicenseManagerImpl implements LicenseManager
         return -1;
     }
 
+    private String _getLicenseUrl()
+    {
+        String urlStr = System.getProperty(LICENSE_URL_PROPERTY);
+        
+        if (urlStr == null)
+            urlStr = DEFAULT_LICENSE_URL;
+
+        return urlStr;
+    }
+    
     private class LycenseSyncTask implements Runnable
     {
         public void run() {
