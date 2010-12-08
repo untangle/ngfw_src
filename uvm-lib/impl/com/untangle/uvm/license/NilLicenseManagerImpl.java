@@ -49,6 +49,7 @@ public class NilLicenseManagerImpl implements LicenseManager
         else if ("untangle-node-clam".equals(identifier)) return null;
         else if ("untangle-node-cpd".equals(identifier)) return null;
         else if ("untangle-node-firewall".equals(identifier)) return null;
+        else if ("untangle-node-ips".equals(identifier)) return null;
         else if ("untangle-node-openvpn".equals(identifier)) return null;
         else if ("untangle-node-phish".equals(identifier)) return null;
         else if ("untangle-node-protofilter".equals(identifier)) return null;
