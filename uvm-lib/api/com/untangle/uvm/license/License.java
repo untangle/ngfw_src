@@ -39,6 +39,7 @@ public class License implements Serializable
     public static final String FAILD = "untangle-node-faild";
     public static final String BANDWIDTH = "untangle-node-bandwidth";
     public static final String BOXBACKUP = "untangle-node-boxbackup";
+    public static final String WEBCACHE = "untangle-node-webcache";
     
     /** Identifier for the product this license is for */
     private String name;
