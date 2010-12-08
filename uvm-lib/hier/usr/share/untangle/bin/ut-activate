@@ -46,13 +46,13 @@ if [ ! -f $UID_FILE -o ! -f $UID_FILE ]; then
     fi
 fi
 
-UID=`cat $UID_FILE`
+MYUID=`cat $UID_FILE`
 
 # add untangle sources to sources.list; remove the old ones
 echo "Installing sources list"
 touch $SOURCES_LIST
 perl -i -pe 's/.*untangle\.com.*//' $SOURCES_LIST
-echo -e $DEFAULT_UNTANGLE_SOURCE | sed "s/$UID_TEMPLATE/$UID/" >> $SOURCES_LIST
+echo -e $DEFAULT_UNTANGLE_SOURCE | sed "s/$UID_TEMPLATE/$MYUID/" >> $SOURCES_LIST
 nohup apt-get update >& /dev/null &
 
 @UVM_HOME@/bin/ut-register
