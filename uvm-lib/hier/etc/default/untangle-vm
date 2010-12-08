@@ -89,7 +89,7 @@ UVM_ARGS="${UVM_ARGS} -Dnetworkaddress.cache.ttl=30 -Dsun.net.inetaddr.ttl=30 -D
 #UVM_ARGS="${UVM_ARGS} -Duvm.store.url=https://staging-store.untangle.com"
 
 ## Alternative license server
-UVM_ARGS="${UVM_ARGS} -Duvm.license.url=http://staging-license.untangle.com/license.php"
+#UVM_ARGS="${UVM_ARGS} -Duvm.license.url=http://staging-license.untangle.com/license.php"
 
 ## Default Logging
 UVM_ARGS="${UVM_ARGS}  -Dlog4j.configuration=file:@PREFIX@/usr/share/untangle/conf/log4j-uvm.xml"
