@@ -511,8 +511,9 @@ def __generate_plots(report_base, dir):
 
     logger.debug("About to call GraphGenerator with report_base='%s', dir='%s'" % (report_base, dir))
 
-    os.system("java -Dlog4j.configuration=log4j-reporter.xml -Djava.awt.headless=true -cp %s com.untangle.uvm.reports.GraphGenerator '%s' '%s'"
-              % (string.join(path, ':'), report_base, dir))
+    command = "java -Dlog4j.configuration=file://@PREFIX@/usr/share/untangle/conf/log4j-reporter.xml -Djava.awt.headless=true -cp %s com.untangle.uvm.reports.GraphGenerator '%s' '%s'" % (string.join(path, ':'), report_base, dir)
+
+    os.system(command)
 
 def __get_users(date):
     conn = sql_helper.get_connection()
