@@ -175,7 +175,7 @@ class BandwidthUsage(Graph):
         curs = conn.cursor()
         try:
             # kB
-            sums = ["ROUND((COALESCE(SUM(rx_bytes + tx_bytes) / 1000, 0)::numeric, 2)"]
+            sums = ["ROUND(COALESCE(SUM(rx_bytes + tx_bytes) / 1000, 0)::numeric, 2)"]
 
             extra_where = []
             if host:
