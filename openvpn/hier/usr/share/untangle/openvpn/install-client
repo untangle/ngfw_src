@@ -15,7 +15,7 @@ else
 fi
 
 ## Number of times to wait for the Open vpn server to start
-RETRY_ATTEMPTS=15
+RETRY_ATTEMPTS=35
 TEST_DELAY=1
 TEST_FAILED=-5
 MISSING_FILE_ERROR=-7
