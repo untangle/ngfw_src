@@ -32,8 +32,8 @@ import com.untangle.node.util.SimpleExec;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.Validator;
-import com.untangle.uvm.security.RemoteAdminManager;
-import com.untangle.uvm.security.User;
+import com.untangle.uvm.AdminManager;
+import com.untangle.uvm.User;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
@@ -180,7 +180,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
      * comma-separated string at the very end of this method. */
     private void loadReportingUsers(ReportingSettings s)
     {
-        RemoteAdminManager adminManager = LocalUvmContextFactory.context().adminManager();
+        AdminManager adminManager = LocalUvmContextFactory.context().adminManager();
         String reportEmail = adminManager.getMailSettings().getReportEmail();
         Set<String> res = new HashSet<String>();
         if ((reportEmail != null) && (!reportEmail.isEmpty())) {

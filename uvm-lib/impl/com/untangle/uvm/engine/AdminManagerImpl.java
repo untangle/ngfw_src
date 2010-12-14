@@ -43,12 +43,11 @@ import com.untangle.node.util.SimpleExec;
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.MailSettings;
-import com.untangle.uvm.security.AdminSettings;
-import com.untangle.uvm.security.LoginSession;
-import com.untangle.uvm.security.RegistrationInfo;
-import com.untangle.uvm.security.RemoteAdminManager;
-import com.untangle.uvm.security.SystemInfo;
-import com.untangle.uvm.security.User;
+import com.untangle.uvm.AdminManager;
+import com.untangle.uvm.AdminSettings;
+import com.untangle.uvm.RegistrationInfo;
+import com.untangle.uvm.SystemInfo;
+import com.untangle.uvm.User;
 import com.untangle.uvm.security.UvmPrincipal;
 import com.untangle.uvm.snmp.SnmpManager;
 import com.untangle.uvm.snmp.SnmpManagerImpl;
@@ -62,7 +61,7 @@ import com.untangle.uvm.util.TransactionWork;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
+class AdminManagerImpl implements AdminManager, HasConfigFiles
 {
     private static final String INITIAL_USER_NAME = "System Administrator";
     private static final String INITIAL_USER_LOGIN = "admin";
@@ -78,12 +77,12 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
     private final UvmContextImpl uvmContext;
     private final InheritableThreadLocal<HttpServletRequest> threadRequest;
 
-    private final Logger logger = Logger.getLogger(RemoteAdminManagerImpl.class);
+    private final Logger logger = Logger.getLogger(this.getClass());
 
     private AdminSettings adminSettings;
     private SnmpManagerImpl snmpManager;
 
-    RemoteAdminManagerImpl(UvmContextImpl uvmContext, InheritableThreadLocal<HttpServletRequest> threadRequest)
+    AdminManagerImpl(UvmContextImpl uvmContext, InheritableThreadLocal<HttpServletRequest> threadRequest)
     {
         this.uvmContext = uvmContext;
         this.threadRequest = threadRequest;
@@ -119,7 +118,7 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
                 // Already logged.
             }
 
-        logger.info("Initialized RemoteAdminManager");
+        logger.info("Initialized AdminManager");
     }
 
     public void syncConfigFiles()
@@ -187,25 +186,6 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
         return null;
     }
 
-    public LoginSession whoAmI()
-    {
-        HttpServletRequest req = threadRequest.get();
-        String u = req.getRemoteUser();
-        if (null != req && null != u) {
-            try {
-                // XXX we could add caching if this is called frequently
-                UvmPrincipal p = null == u ? null : new UvmPrincipal(u);
-                String id = req.getSession().getId();
-                InetAddress ca = InetAddress.getByName(req.getRemoteAddr());
-                return new LoginSession(p, id, ca);
-            } catch (UnknownHostException exn) {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-    
     @Override
     public TimeZone getTimeZone()
     {
@@ -250,9 +230,9 @@ class RemoteAdminManagerImpl implements RemoteAdminManager, HasConfigFiles
         }
     }
 
-    public Date getDate()
+    public String getDate()
     {
-        return new Date(System.currentTimeMillis());
+        return (new Date(System.currentTimeMillis())).toString();
     }
 
     /*

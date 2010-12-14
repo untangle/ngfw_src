@@ -53,8 +53,8 @@ import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.reports.RemoteReportingManager;
-import com.untangle.uvm.security.RegistrationInfo;
-import com.untangle.uvm.security.RemoteAdminManager;
+import com.untangle.uvm.AdminManager;
+import com.untangle.uvm.RegistrationInfo;
 import com.untangle.uvm.servlet.UploadManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.toolbox.UpstreamManager;
@@ -111,11 +111,11 @@ public interface LocalUvmContext extends RemoteUvmContext
     PolicyManager localPolicyManager();
 
     /**
-     * Get the <code>RemoteAdminManager</code> singleton.
+     * Get the <code>AdminManager</code> singleton.
      *
-     * @return a <code>RemoteAdminManager</code> value
+     * @return a <code>AdminManager</code> value
      */
-    RemoteAdminManager adminManager();
+    AdminManager adminManager();
 
     /**
      * Get the <code>PortalManager</code> singleton.

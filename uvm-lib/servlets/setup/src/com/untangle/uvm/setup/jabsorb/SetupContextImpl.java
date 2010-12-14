@@ -24,11 +24,11 @@ import javax.transaction.TransactionRolledbackException;
 
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.RemoteLanguageManager;
+import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.client.RemoteUvmContextFactory;
 import com.untangle.uvm.client.RemoteUvmContext;
-import com.untangle.uvm.security.AdminSettings;
-import com.untangle.uvm.security.RemoteAdminManager;
-import com.untangle.uvm.security.User;
+import com.untangle.uvm.AdminSettings;
+import com.untangle.uvm.User;
 
 public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
 {
@@ -53,7 +53,7 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
     
     public void setAdminPassword( String password ) throws TransactionRolledbackException
     {
-        RemoteAdminManager am = this.context.adminManager();
+        AdminManager am = this.context.adminManager();
         AdminSettings as = am.getAdminSettings();
         User admin = null;
 

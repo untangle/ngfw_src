@@ -31,13 +31,14 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.security;
+package com.untangle.uvm;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-public class PasswordUtil {
+public class PasswordUtil
+{
 
     public static final String PASSWORD_HASH_ALGORITHM = "MD5";
 

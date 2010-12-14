@@ -43,6 +43,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     }
                 }
             }
+            return null;
         },
         // Email Config Panel
         buildEmail : function() {

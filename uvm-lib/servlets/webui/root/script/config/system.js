@@ -902,7 +902,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     items : [{
                         html : this.i18n._("time is automatically synced via NTP")
                     }, {
-                        html : this.i18n.timestampFormat(rpc.adminManager.getDate())
+                        html : rpc.adminManager.getDate()
                     }]
                 }, {
                     title : this.i18n._("Timezone"),

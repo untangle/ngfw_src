@@ -73,7 +73,7 @@ import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.policy.PolicyManagerFactory;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.portal.BasePortalManager;
-import com.untangle.uvm.security.RegistrationInfo;
+import com.untangle.uvm.RegistrationInfo;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.UploadManager;
@@ -112,7 +112,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private final BackupManager backupManager;
 
     private UvmState state;
-    private RemoteAdminManagerImpl adminManager;
+    private AdminManagerImpl adminManager;
     private ArgonManagerImpl argonManager;
     private RemoteIntfManagerImpl remoteIntfManager;
     private RemoteLoggingManagerImpl loggingManager;
@@ -266,7 +266,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.mailSender;
     }
 
-    public RemoteAdminManagerImpl adminManager()
+    public AdminManagerImpl adminManager()
     {
         return this.adminManager;
     }
@@ -744,7 +744,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
                                                    System.getProperty("uvm.log.dir"));
 
         // start services:
-        this.adminManager = new RemoteAdminManagerImpl(this, threadRequest);
+        this.adminManager = new AdminManagerImpl(this, threadRequest);
 
         this.mailSender = MailSenderImpl.mailSender();
 

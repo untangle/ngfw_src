@@ -37,7 +37,7 @@ import com.untangle.uvm.networking.BasicNetworkSettings;
 import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.security.RegistrationInfo;
+import com.untangle.uvm.RegistrationInfo;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.toolbox.UpgradeSettings;
 
