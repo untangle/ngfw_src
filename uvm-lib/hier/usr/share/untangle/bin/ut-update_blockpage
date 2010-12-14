@@ -2,8 +2,9 @@
 
 get_available_version()
 {
+    VER="`cat /usr/share/untangle/lib/untangle-libuvm-api/PUBVERSION`"
     ## Use the DNS system to check the current version.
-    host -t txt update-4.untangle.com | awk -v version=unknown '/descriptive text "[0-9]+"$/ { gsub( ".* descriptive text \"", "" ) ; gsub( "\"$", "" ) ; version=$0 } ; END { print version }'
+    host -t txt update-$VER.untangle.com | awk -v version=unknown '/descriptive text "[0-9]+"$/ { gsub( ".* descriptive text \"", "" ) ; gsub( "\"$", "" ) ; version=$0 } ; END { print version }'
 }
 
 get_current_version()
@@ -52,9 +53,11 @@ requires_update()
 
 download_update()
 {
+    VER="`cat /usr/share/untangle/lib/untangle-libuvm-api/PUBVERSION`"
+
     local t_output
     t_output=$1
-    src_url="http://guide.untangle.com/download/patches/v2/blockpage.tar.gz"
+    src_url="http://guide.untangle.com/download/patches/$VER/blockpage.tar.gz"
 
     echo "Downloading from ${src_url} to ${t_output}"
     $logger "Downloading from ${src_url} to ${t_output}"
