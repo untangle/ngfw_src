@@ -82,10 +82,10 @@ public class UploadServlet extends HttpServlet
             }
         } catch (Exception exn) {
             logger.warn("could not upload", exn);
-            createRespose(resp, false, exn.getMessage());
+            createResponse(resp, false, exn.getMessage());
             return;
         }
-        createRespose(resp, true, msg);
+        createResponse(resp, true, msg);
     }
 
     private String getUploadType(List<FileItem> items)
@@ -98,7 +98,7 @@ public class UploadServlet extends HttpServlet
         return null;
     }
 
-    private void createRespose(HttpServletResponse resp, boolean success,
+    private void createResponse(HttpServletResponse resp, boolean success,
                                String msg)
         throws IOException
     {

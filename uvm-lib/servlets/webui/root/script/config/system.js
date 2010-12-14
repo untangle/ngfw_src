@@ -1024,9 +1024,16 @@ if (!Ung.hasResource["Ung.System"]) {
                             var cmp = Ext.getCmp(action.options.parentId);
                             var errorMsg = cmp.i18n._("Upload language pack failed");
                             if (action.result && action.result.msg) {
-                                switch (action.result.msg) {
-                                    case "Invalid Language Pack" : 
+                                msg = action.result.msg;
+                                switch (true) {
+                                    case (msg === "Invalid Language Pack") :
                                         errorMsg = cmp.i18n._("Invalid language pack; not a zip file");
+                                    break;
+                                    case ((/.*MO file.*/).test(msg)) :
+                                        errorMsg = cmp.i18n._("Couldn't compile MO file for entry" + " " + msg.split(" ").pop());
+                                    break;
+                                    case ((/.*bundle file.*/).test(msg)) :
+                                        errorMsg = cmp.i18n._("Couldn't compile resource bundle for entry" + " " + msg.split(" ").pop());
                                     break;
                                     default :
                                         errorMsg = cmp.i18n._("Upload language pack failed");

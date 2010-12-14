@@ -156,13 +156,15 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 
     public boolean uploadLanguagePack(FileItem item) throws UvmException {
         boolean success = true;
+        String msg = "";
         try {
             BufferedOutputStream dest = null;
             ZipEntry entry = null;
 
             // validate language pack
             if (!item.getName().endsWith(".zip")) {
-                throw new UvmException("Invalid Language Pack");
+                success = false;
+                msg = "Invalid Language Pack";
             }
 
             // Open the ZIP file
@@ -171,7 +173,8 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
             while ((entry = zis.getNextEntry()) != null) {
                 if (!isValid(entry)){
                     success = false;
-                    continue;
+                    msg = "Invalid Entry";
+                    break;
                 }
                 if (entry.isDirectory()) {
                     File dir = new File(LANGUAGES_COMMUNITY_DIR + File.separator + entry.getName());
@@ -198,11 +201,23 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
 
                     // compile to .mo file and install it in the
                     // appropriate place (LOCALE_DIR)
-                    success =  compileMoFile(entry) && success;
+                    boolean ret = compileMoFile(entry);
+                    if (!ret) {
+                        success = false;
+                        msg = "Couldn't compile MO file for entry '" + entry + "'";
+                        file.delete();
+                        break;
+                    }
 
                     // compile the java properties version & install
                     // it in the classpath (LANGUAGES_DIR)
-                    success = compileResourceBundle(entry) && success;
+                    ret = compileResourceBundle(entry);
+                    if (!ret) {
+                        success = false;
+                        msg = "Couldn't compile resource bundle for entry '" + entry + "'";
+                        file.delete();
+                        break;
+                    }
                 }
             }
             zis.close();
@@ -211,6 +226,10 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         } catch (IOException e) {
             logger.error("upload failed", e);
             throw new UvmException("Upload Language Pack Failed");
+        }
+
+        if (!success) {
+            throw new UvmException(msg);
         }
         return success;
     }
