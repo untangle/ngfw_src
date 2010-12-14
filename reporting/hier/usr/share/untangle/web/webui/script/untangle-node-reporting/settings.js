@@ -96,9 +96,23 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         }]
                     }, {
                         html: this.i18n._('Report generation for the current day can be forced with the ') + "<b>" + this.i18n._('Generate Today\'s Reports') + "</b>" + this.i18n._(" button.") + "<br/>" +
-                            "<b>" + this.i18n._("Caution") + ":  </b>" + this.i18n._("Report generation may cause network slowness on servers with fewer resources."),
+                            "<b>" + this.i18n._("Caution") + ":  </b>" + this.i18n._("Real-time report generation may cause network slowness."),
                         cls: 'description',
                         border: false
+                    }, {
+                        xtype : 'checkbox',
+                        boxLabel : this.i18n._('I understand the risks.'),
+                        name : 'Understand Checkbox',
+                        id : 'risks',
+                        hideLabel : true,
+                        checked : false,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, newValue) {
+                                    this.getReportingSettings().emailDetail = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
                     }, {
                         buttonAlign: 'center',
                         footer: false,
@@ -109,10 +123,17 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             name: 'Generate Reports',
                             iconCls: 'action-icon',
                             handler: function(callback) {
-                                Ext.MessageBox.wait(i18n._("Generating today's reports..."), i18n._("Please wait"));
-                                this.getRpcNode().runDailyReport(function(result, exception) {
-                                    this.afterRun(exception, callback);
-                                }.createDelegate(this));
+                                var understand = Ext.getCmp('risks').getValue();
+
+                                if (understand == false) {
+                                    Ext.MessageBox.alert(this.i18n._("Error"), this.i18n._("You must check \"I understand the risks\""));
+                                }
+                                else {
+                                    Ext.MessageBox.wait(i18n._("Generating today's reports..."), i18n._("Please wait"));
+                                    this.getRpcNode().runDailyReport(function(result, exception) {
+                                        this.afterRun(exception, callback);
+                                    }.createDelegate(this));
+                                }
                             }.createDelegate(this)
                         }]
                     }]
