@@ -578,29 +578,29 @@ if (!Ung.hasResource["Ung.Email"]) {
                         plugins : [showDetailColumn],
                         
                         onShowDetail : function(record) {
-                            if (!this.safelistDetailsWin) {
-                                this.buildGridSafelistUserDetails();
-                                this.safelistDetailsWin = new Ung.EmailAddressDetails({
-                                    detailsPanel : this.gridSafelistUserDetails,
-                                    settingsCmp : this,
-                                    showForCurrentAccount : function(emailAddress) {
-                                        this.account = emailAddress;  
-                                        var newTitle = this.settingsCmp.i18n._('Email From-SafeList Details for: ') + emailAddress;
-                                        this.setTitle(newTitle);
-                                        this.detailsPanel.setTitle(newTitle);
-                                        
-                                        this.show();
-                                                
-                                        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-                                        this.settingsCmp.getSafelistAdminView().getSafelistContents(
-                                            function(result, exception) {
-                                                Ext.MessageBox.hide();
-                                                if(Ung.Util.handleException(exception)) return;
-                                                this.settingsCmp.gridSafelistUserDetails.store.loadData(result);
-                                            }.createDelegate(this), emailAddress); 
-                                    }          
-                                });
-                            }
+
+                            this.buildGridSafelistUserDetails();
+                            this.safelistDetailsWin = new Ung.EmailAddressDetails({
+                                detailsPanel : this.gridSafelistUserDetails,
+                                settingsCmp : this,
+                                showForCurrentAccount : function(emailAddress) {
+                                    this.account = emailAddress;  
+                                    var newTitle = this.settingsCmp.i18n._('Email From-SafeList Details for: ') + emailAddress;
+                                    this.setTitle(newTitle);
+                                    this.detailsPanel.setTitle(newTitle);
+                                    
+                                    this.show();
+                                    
+                                    Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+                                    this.settingsCmp.getSafelistAdminView().getSafelistContents(
+                                        function(result, exception) {
+                                            Ext.MessageBox.hide();
+                                            if(Ung.Util.handleException(exception)) return;
+                                            this.settingsCmp.gridSafelistUserDetails.store.loadData(result);
+                                        }.createDelegate(this), emailAddress); 
+                                }          
+                            });
+
                             this.safelistDetailsWin.showForCurrentAccount(record.get('emailAddress'));
                         }.createDelegate(this)
                         
@@ -873,25 +873,25 @@ if (!Ung.hasResource["Ung.Email"]) {
                         plugins : [showDetailColumn],
                         
                         onShowDetail : function(record) {
-                            if (!this.quarantinesDetailsWin) {
-                                this.buildUserQuarantinesGrid();
-                                this.quarantinesDetailsWin = new Ung.EmailAddressDetails({
-                                    detailsPanel : this.userQuarantinesDetailsGrid,
-                                    settingsCmp : this,
-                                    showForCurrentAccount : function(emailAddress) {
-                                        this.account = emailAddress;  
-                                        var newTitle = this.settingsCmp.i18n._('Email Quarantine Details for: ') + emailAddress;
-                                        this.setTitle(newTitle);
-                                        this.detailsPanel.setTitle(newTitle);
-                                        
-                                        this.show();
-                                                
-                                        //load Quarantines Details
-                                        this.settingsCmp.loadQuarantinesDetails();
-                                        
-                                    }          
-                                });
-                            }
+
+                            this.buildUserQuarantinesGrid();
+                            this.quarantinesDetailsWin = new Ung.EmailAddressDetails({
+                                detailsPanel : this.userQuarantinesDetailsGrid,
+                                settingsCmp : this,
+                                showForCurrentAccount : function(emailAddress) {
+                                    this.account = emailAddress;  
+                                    var newTitle = this.settingsCmp.i18n._('Email Quarantine Details for: ') + emailAddress;
+                                    this.setTitle(newTitle);
+                                    this.detailsPanel.setTitle(newTitle);
+                                    
+                                    this.show();
+                                    
+                                    //load Quarantines Details
+                                    this.settingsCmp.loadQuarantinesDetails();
+                                    
+                                }          
+                            });
+
                             this.quarantinesDetailsWin.showForCurrentAccount(record.get('address'));
                         }.createDelegate(this)
                         
