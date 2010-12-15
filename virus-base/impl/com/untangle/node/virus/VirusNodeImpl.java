@@ -48,6 +48,7 @@ import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
@@ -597,7 +598,7 @@ public abstract class VirusNodeImpl extends AbstractNode
         getNodeContext().runTransaction(tw);
     }
 
-    protected void preStart()
+    protected void preStart() throws NodeStartException
     {
         reconfigure();
     }
