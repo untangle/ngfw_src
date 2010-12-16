@@ -14,8 +14,6 @@ package com.untangle.node.license;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.node.NodeStartException;
-import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
 
@@ -29,14 +27,14 @@ public class LicenseManagerNode extends AbstractNode
     }
 
     @Override
-    protected void preStop() throws NodeStopException
+    protected void preStop() throws Exception
     {
         super.preStop();
         logger.debug("preStop()");
     }
 
     @Override
-    protected void postStart() throws NodeStartException
+    protected void postStart() throws Exception
     {
         logger.debug("postStart()");
 
