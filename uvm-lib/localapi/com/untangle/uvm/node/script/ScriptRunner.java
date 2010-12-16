@@ -89,12 +89,12 @@ public class ScriptRunner
             code = p.waitFor();
 
             if ( code != 0 )
-                throw new ScriptException( scriptName + "returned: ", code );
+                throw new ScriptException( scriptName + " returned: " + code, code );
 
             return sb.toString();
         } catch( Exception e ) {
             logger.warn( "Error executing script [" + scriptName + "]", e );
-            return null;
+            return "";
         }
     }
 
