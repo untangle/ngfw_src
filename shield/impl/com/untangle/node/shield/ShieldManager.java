@@ -21,7 +21,6 @@ import java.util.Date;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.shield.ShieldRejectionEvent;
 import com.untangle.uvm.shield.ShieldStatisticEvent;
@@ -183,7 +182,7 @@ class ShieldManager
             try {
                 /* Start shield daemon */
                 ScriptRunner.getInstance().exec( START_SCRIPT );
-            } catch ( NodeException e ) {
+            } catch ( Exception e ) {
                 logger.error( "Unable to start the shield.", e );
             }
         }
@@ -193,7 +192,7 @@ class ShieldManager
             try {
                 /* Stop the shield daemon */
                 ScriptRunner.getInstance().exec( STOP_SCRIPT );
-            } catch ( NodeException e ) {
+            } catch ( Exception e ) {
                 logger.error( "Unable to stop the shield.", e );
             }
         }

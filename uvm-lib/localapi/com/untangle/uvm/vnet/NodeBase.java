@@ -52,11 +52,8 @@ import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeStateChange;
-import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.util.I18nUtil;
@@ -116,14 +113,14 @@ public abstract class NodeBase implements Node
         return runState;
     }
 
-    public final void start() throws NodeStartException, IllegalStateException
+    public final void start() throws Exception
     {
         synchronized (stateChangeLock) {
             start(true);
         }
     }
 
-    public final void stop() throws NodeStopException, IllegalStateException
+    public final void stop() throws Exception
     {
         synchronized (stateChangeLock) {
             stop(true);
@@ -188,14 +185,14 @@ public abstract class NodeBase implements Node
      */
     public void destroySettings() { }
 
-    public void init(String[] args) throws NodeException, IllegalStateException
+    public void init(String[] args) throws Exception
     {
         synchronized (stateChangeLock) {
             init(true, args);
         }
     }
 
-    public void disable() throws NodeException, IllegalStateException
+    public void disable() throws Exception
     {
         if (NodeState.LOADED == runState
             || NodeState.DESTROYED == runState) {
@@ -207,7 +204,7 @@ public abstract class NodeBase implements Node
         changeState(NodeState.DISABLED, true);
     }
 
-    public void resumeState(NodeState ts, String[] args) throws NodeException
+    public void resumeState(NodeState ts, String[] args) throws Exception
     {
         if (NodeState.LOADED == ts) {
             logger.debug("leaving node in LOADED state");
@@ -230,7 +227,7 @@ public abstract class NodeBase implements Node
         }
     }
 
-    public void destroy() throws NodeException, IllegalStateException
+    public void destroy() throws Exception
     {
         uninstall();
 
@@ -259,12 +256,12 @@ public abstract class NodeBase implements Node
             } else if (runState == NodeState.DISABLED) {
                 destroy(false);
             }
-        } catch (NodeException exn) {
+        } catch (Exception exn) {
             logger.warn("could not unload", exn);
         }
     }
 
-    public void enable() throws NodeException, IllegalStateException
+    public void enable() throws Exception
     {
         if (NodeState.LOADED == runState
             || NodeState.DESTROYED == runState) {
@@ -293,7 +290,7 @@ public abstract class NodeBase implements Node
      *
      * @param args[] the node-specific arguments.
      */
-    protected void preInit(String args[]) throws NodeException
+    protected void preInit(String args[]) throws Exception
     { }
 
     /**
@@ -302,42 +299,42 @@ public abstract class NodeBase implements Node
      *
      * @param args[] the node-specific arguments.
      */
-    protected void postInit(String args[]) throws NodeException
+    protected void postInit(String args[]) throws Exception
     { }
 
     /**
      * Called just after connecting to ArgonConnector, but before starting.
      *
      */
-    protected void preStart() throws NodeStartException
+    protected void preStart() throws Exception
     { }
 
     /**
      * Called just after starting ArgonConnector and making subscriptions.
      *
      */
-    protected void postStart() throws NodeStartException
+    protected void postStart() throws Exception
     { }
 
     /**
      * Called just before stopping ArgonConnector and disconnecting.
      *
      */
-    protected void preStop() throws NodeStopException
+    protected void preStop() throws Exception
     { }
 
     /**
      * Called after stopping ArgonConnector and disconnecting.
      *
      */
-    protected void postStop() throws NodeStopException
+    protected void postStop() throws Exception
     { }
 
     /**
      * Called just before this instance becomes invalid.
      *
      */
-    protected void preDestroy() throws NodeException
+    protected void preDestroy() throws Exception
     { }
 
     /**
@@ -346,7 +343,7 @@ public abstract class NodeBase implements Node
      *
      * @param args[] a <code>String</code> value
      */
-    protected void postDestroy() throws NodeException
+    protected void postDestroy() throws Exception
     { }
 
     // private methods ---------------------------------------------------------
@@ -391,7 +388,7 @@ public abstract class NodeBase implements Node
         }
     }
 
-    private void init(boolean syncState, String[] args) throws NodeException, IllegalStateException
+    private void init(boolean syncState, String[] args) throws Exception
     {
         if (NodeState.LOADED != runState) {
             logger.warn("Init called in state: " + runState);
@@ -409,7 +406,7 @@ public abstract class NodeBase implements Node
         }
     }
 
-    private void start(boolean syncState) throws NodeStartException
+    private void start(boolean syncState) throws Exception
     {
         if (NodeState.INITIALIZED != getRunState()) {
             logger.warn("Start called in state: " + getRunState());
@@ -442,7 +439,7 @@ public abstract class NodeBase implements Node
         logger.info("started node");
     }
 
-    private void stop(boolean syncState) throws NodeStopException, IllegalStateException
+    private void stop(boolean syncState) throws Exception
     {
         if (NodeState.RUNNING != getRunState()) {
             logger.warn("Stop called in state: " + getRunState());
@@ -479,7 +476,7 @@ public abstract class NodeBase implements Node
         logger.info("stopped node");
     }
 
-    private void destroy(boolean syncState) throws NodeException, IllegalStateException
+    private void destroy(boolean syncState) throws Exception
     {
         if (NodeState.INITIALIZED != runState
             && NodeState.LOADED != runState
@@ -503,14 +500,14 @@ public abstract class NodeBase implements Node
         }
     }
 
-    private void parentStart() throws NodeStartException
+    private void parentStart() throws Exception
     {
         if (NodeState.INITIALIZED == getRunState()) {
             start();
         }
     }
 
-    private void parentStop() throws NodeStopException, IllegalStateException
+    private void parentStop() throws Exception
     {
         boolean childrenStopped = true;
 

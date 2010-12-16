@@ -155,7 +155,7 @@ public interface NodeManager
      * @exception DeployException if the instance cannot be created.
      * @exception NodeStartException if the instance cannot be started.
      */
-    NodeDesc instantiateAndStart(String nodeName, Policy p) throws DeployException, NodeStartException;
+    NodeDesc instantiateAndStart(String nodeName, Policy p) throws DeployException;
 
     /**
      * Remove node instance from the pipeline.
@@ -163,7 +163,7 @@ public interface NodeManager
      * @param tid <code>NodeId</code> of instance to be destroyed.
      * @exception UndeployException if detruction fails.
      */
-    void destroy(NodeId tid) throws UndeployException;
+    void destroy(NodeId tid) throws Exception;
 
     /**
      * Get the <code>NodeContext</code> for a node instance.

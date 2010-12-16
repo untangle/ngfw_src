@@ -29,7 +29,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
 
@@ -86,7 +85,7 @@ class CertificateManager
     {
     }
 
-    void createBase( VpnSettings settings ) throws NodeException
+    void createBase( VpnSettings settings ) throws Exception
     {
         ScriptWriter sw = new ScriptWriter( HEADER );
 
@@ -115,7 +114,7 @@ class CertificateManager
             directory = new File( Constants.MISC_DIR );
             directory.mkdir();
         } catch ( Exception e ) {
-            throw new NodeException( "Unable to create misc directory", e );
+            throw new Exception( "Unable to create misc directory", e );
         }
 
         sw.writeFile( CONFIG_FILE );
@@ -146,7 +145,7 @@ class CertificateManager
                     logger.info( "Revoking the certificate for [" + name + "]" );
                     callRevokeClientScript( name );
                 }
-            } catch ( NodeException e ) {
+            } catch ( Exception e ) {
                 logger.error( "Unable to revoke the certificate for [" + name + "]", e );
             }
         }
@@ -172,7 +171,7 @@ class CertificateManager
                 logger.info( "Creating a certificate for [" + name + "]" );
                 /* Indicate that the client has a valid certificate */
                 client.setCertificateStatusValid();
-            } catch ( NodeException e ) {
+            } catch ( Exception e ) {
                 logger.error( "Unable to create a certificate for '" + name + "'", e );
                 client.setCertificateStatusRevoked();
             }
@@ -234,17 +233,17 @@ class CertificateManager
         }
     }
 
-    void createAllClientCertificates( VpnSettings settings ) throws NodeException
+    void createAllClientCertificates( VpnSettings settings ) throws Exception
     {
         for ( VpnClientBase client : settings.getCompleteClientList()) createClient( client );
     }
 
-    void createClient( VpnClientBase client ) throws NodeException
+    void createClient( VpnClientBase client ) throws Exception
     {
         callCreateClientScript( client.getInternalName());
     }
 
-    void revokeClient( VpnClientBase client ) throws NodeException
+    void revokeClient( VpnClientBase client ) throws Exception
     {
         callRevokeClientScript( client.getInternalName());
     }
@@ -273,18 +272,18 @@ class CertificateManager
     /* These function have been less useful since the functionality in
      * callScript was moved into the script runner
      */
-    private void callCreateClientScript( String commonName ) throws NodeException
+    private void callCreateClientScript( String commonName ) throws Exception
     {
         /* Always set the recreate flag */
         ScriptRunner.getInstance().exec( GENERATE_CLIENT_SCRIPT, commonName, "recreate" );
     }
 
-    private void callRevokeClientScript( String commonName ) throws NodeException
+    private void callRevokeClientScript( String commonName ) throws Exception
     {
         ScriptRunner.getInstance().exec( REVOKE_CLIENT_SCRIPT, commonName );
     }
 
-    private void callScript( String scriptName ) throws NodeException
+    private void callScript( String scriptName ) throws Exception
     {
         ScriptRunner.getInstance().exec( scriptName );
     }

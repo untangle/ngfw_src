@@ -26,9 +26,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.networking.internal.InterfaceInternal;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.script.ScriptRunner;
-
 
 class InterfaceTester
 {
@@ -37,9 +35,7 @@ class InterfaceTester
     private static final String UNKNOWN = "unknown";
 
     /* Script to run whenever the interfaces should be reconfigured */
-    private static final String INTERFACE_STATUS_SCRIPT =
-        NetworkManagerImpl.ALPACA_SCRIPT + "/get-interface-status";
-
+    private static final String INTERFACE_STATUS_SCRIPT = NetworkManagerImpl.ALPACA_SCRIPT + "/get-interface-status";
 
     /* The Flag is the value returned by the script, they are separated so the script
      * doesn't have to change if the value displayed inside of the GUI is going to change
@@ -81,7 +77,7 @@ class InterfaceTester
 
         try {
             statusMap = getStatus( args, settings );
-        } catch ( NodeException e ) {
+        } catch ( Exception e ) {
             logger.warn( "Unable to update status, using unknown", e );
             statusMap = new HashMap<String,String>();
         }
@@ -139,11 +135,16 @@ class InterfaceTester
     }
 
     private Map<String,String> getStatus( String[] args, NetworkSpacesInternalSettings settings )
-        throws NodeException
     {
         Map<String,String> map = new HashMap<String,String>();
 
-        String status = ScriptRunner.getInstance().exec( INTERFACE_STATUS_SCRIPT, args );
+        String status;
+        try {
+            status = ScriptRunner.getInstance().exec( INTERFACE_STATUS_SCRIPT, args );
+        } catch (Exception e) {
+            logger.error("Failed to fetch interface information: ",e);
+            return null;
+        }
 
         logger.debug( "Script returned: \n" + status );
 

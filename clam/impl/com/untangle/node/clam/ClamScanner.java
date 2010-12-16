@@ -24,7 +24,6 @@ import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.StringTokenizer;
 
-import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.script.ScriptRunner;
 
 import com.untangle.node.virus.VirusScanner;
@@ -110,12 +109,9 @@ public class ClamScanner implements VirusScanner
             long timeSeconds = Long.parseLong( result.trim());
 
             return new Date( timeSeconds * 1000l );
-        } catch ( NodeException e ) {
+        } catch ( Exception e ) {
             logger.warn( "Unable to get last update.", e );
             return null;
-        } catch ( NumberFormatException e ) {
-            logger.warn( "Unable to get last update.", e );
-            return null;
-        }
+        } 
     }
 }

@@ -30,7 +30,6 @@ import org.hibernate.Session;
 
 import com.untangle.node.util.SimpleExec;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.User;
@@ -69,7 +68,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
         return settings;
     }
 
-    public void runDailyReport() throws IOException, NodeException
+    public void runDailyReport() throws Exception
     {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date()); // now
@@ -77,19 +76,18 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String ts = df.format(cal.getTime());
         boolean failed = false;
-        SimpleExec.SimpleExecResult result =
-            SimpleExec.exec(REPORTS_SCRIPT, new String[] {"-r", "1", "-m", "-d", ts},
-                            null,//env
-                            null,//rootDir
-                            true,//stdout
-                            true,//stderr
-                            1000*900); // 15 minutes timeout
+        SimpleExec.SimpleExecResult result = SimpleExec.exec(REPORTS_SCRIPT, new String[] {"-r", "1", "-m", "-d", ts},
+                                                             null,//env
+                                                             null,//rootDir
+                                                             true,//stdout
+                                                             true,//stderr
+                                                             1000*900); // 15 minutes timeout
 
         if (result.exitCode != 0) {
-            throw new NodeException("Unable to run daily reports: \nReturn code: " +
-                              result.exitCode + ", stdout \"" +
-                              new String(result.stdOut) + "\", stderr \"" +
-                              new String(result.stdErr) + "\"");
+            throw new Exception("Unable to run daily reports: \nReturn code: " +
+                                result.exitCode + ", stdout \"" +
+                                new String(result.stdOut) + "\", stderr \"" +
+                                new String(result.stdErr) + "\"");
         }
     }
 

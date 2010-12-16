@@ -70,11 +70,10 @@ public interface Node
      * {@link NodeState#INITIALIZED} state. After successful return,
      * the instance will be in the {@link NodeState#RUNNING} state.
      *
-     * @throws NodeStartException if an exception occurs in start.
      * @exception IllegalStateException if not called in the {@link
      * NodeState#INITIALIZED} state.
      */
-    void start() throws NodeStartException, IllegalStateException;
+    void start() throws Exception;
 
     /**
      * Stops node and disconnects from the ArgonConnector. A call to
@@ -83,11 +82,10 @@ public interface Node
      * instance will be in the {@link NodeState#INITIALIZED}
      * state.
      *
-     * @throws NodeStopException if an exception occurs in stop.
      * @exception IllegalStateException if not called in the {@link
      * NodeState#RUNNING} state.
      */
-    void stop() throws NodeStopException, IllegalStateException;
+    void stop() throws Exception;
 
     NodeContext getNodeContext();
 

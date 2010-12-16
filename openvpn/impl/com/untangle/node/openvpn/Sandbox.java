@@ -39,15 +39,12 @@ import com.untangle.uvm.node.AddressRange;
 import com.untangle.uvm.node.AddressValidator;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPaddr;
-import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
-import com.untangle.uvm.node.script.ScriptException;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.util.I18nUtil;
 
-/* XXX Probably want to make this an abstract class and make this a little more generic */
 class Sandbox
 {
     private final Logger logger = Logger.getLogger( getClass());
@@ -96,7 +93,7 @@ class Sandbox
         i18nUtil = new I18nUtil(LocalUvmContextFactory.context().languageManager().getTranslations("untangle-node-openvpn"));
     }
 
-    void installClientConfig( String path ) throws NodeException
+    void installClientConfig( String path ) throws Exception
     {
 
         logger.debug( "Installing from : " + path );
@@ -104,11 +101,11 @@ class Sandbox
         execInstallScript( path );        
     }
 
-    private void execInstallScript( String path ) throws NodeException
+    private void execInstallScript( String path ) throws Exception
     {
         try {
             ScriptRunner.getInstance().exec( INSTALL_SCRIPT, path );
-        } catch ( ScriptException e ) {
+        } catch ( ScriptRunner.ScriptException e ) {
             switch ( e.getCode()) {
                 
             case Constants.START_ERROR:
@@ -119,15 +116,12 @@ class Sandbox
 
             default:
                 logger.warn( "Unable to install client configuration", e );
-                throw new NodeException( "Unable to install client configuration" );
+                throw new Exception( "Unable to install client configuration" );
             }
-        } catch ( NodeException e ) {
-            logger.warn( "Unable to install client configuration", e );
-            throw e;
         } catch ( Exception e ) {
             logger.warn( "Unable to install client configuration", e );
-            throw new NodeException( "Unable to install client configuration." );
-        }
+            throw e;
+        } 
 
         /* Parse out the client configuration address */
         vpnServerAddress = new HostAddress( new IPaddr( null ));

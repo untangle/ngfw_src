@@ -51,11 +51,7 @@ import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.NodeStopException;
-import com.untangle.uvm.node.UnconfiguredException;
 import com.untangle.uvm.node.firewall.intf.IntfSingleMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
 import com.untangle.uvm.servlet.UploadHandler;
@@ -133,7 +129,7 @@ public class CPDImpl extends AbstractNode implements CPD
 
         try {
             setCPDSettings(settings);
-        } catch (NodeException e) {
+        } catch (Exception e) {
             logger.error( "Unable to initialize the settings", e );
             throw new IllegalStateException("Error initializing cpd", e);
         }
@@ -142,7 +138,7 @@ public class CPDImpl extends AbstractNode implements CPD
     // CPDNode methods --------------------------------------------------
 
     @Override
-    public void setCPDSettings(final CPDSettings settings) throws NodeException {
+    public void setCPDSettings(final CPDSettings settings) throws Exception {
         if ( settings == this.settings ) {
             throw new IllegalArgumentException("Unable to update original settings, set this.settings to null first.");
         }
@@ -181,7 +177,7 @@ public class CPDImpl extends AbstractNode implements CPD
     }
     
     @Override
-    public void setBaseSettings(final CPDBaseSettings baseSettings) throws NodeException
+    public void setBaseSettings(final CPDBaseSettings baseSettings) throws Exception
     {
         TransactionWork<Void> tw = new TransactionWork<Void>()
         {
@@ -225,7 +221,7 @@ public class CPDImpl extends AbstractNode implements CPD
     }
     
     @Override
-    public void setCaptureRules( final List<CaptureRule> captureRules ) throws NodeException
+    public void setCaptureRules( final List<CaptureRule> captureRules ) throws Exception
     {
         TransactionWork<Void> tw = new TransactionWork<Void>()
         {
@@ -252,7 +248,7 @@ public class CPDImpl extends AbstractNode implements CPD
     }
     
     @Override
-    public void setPassedClients( final List<PassedClient> newValue ) throws NodeException
+    public void setPassedClients( final List<PassedClient> newValue ) throws Exception
     {
         TransactionWork<Void> tw = new TransactionWork<Void>()
         {
@@ -279,7 +275,7 @@ public class CPDImpl extends AbstractNode implements CPD
     }
 
     @Override
-    public void setPassedServers( final List<PassedServer> newValue ) throws NodeException
+    public void setPassedServers( final List<PassedServer> newValue ) throws Exception
     {
         TransactionWork<Void> tw = new TransactionWork<Void>()
         {
@@ -303,7 +299,7 @@ public class CPDImpl extends AbstractNode implements CPD
     public void setAll( final CPDBaseSettings baseSettings, 
             final List<CaptureRule> captureRules,
             final List<PassedClient> passedClients, 
-            final List<PassedServer> passedServers ) throws NodeException
+            final List<PassedServer> passedServers ) throws Exception
     {
         TransactionWork<Void> tw = new TransactionWork<Void>()
         {
@@ -420,7 +416,7 @@ public class CPDImpl extends AbstractNode implements CPD
     // lifecycle --------------------------------------------------------------
 
     @Override
-    protected void preStart() throws NodeStartException
+    protected void preStart() throws Exception
     {
         /* Check if there is at least one enabled capture rule */
         boolean hasCaptureRule = false;
@@ -434,7 +430,7 @@ public class CPDImpl extends AbstractNode implements CPD
         if ( !hasCaptureRule ) {
             Map<String,String> i18nMap = LocalUvmContextFactory.context().languageManager().getTranslations("untangle-node-cpd");
             I18nUtil i18nUtil = new I18nUtil(i18nMap);
-            throw new UnconfiguredException( i18nUtil.tr( "You must create and enable at least one Capture Rule before turning on the Captive Portal" ));
+            throw new Exception( i18nUtil.tr( "You must create and enable at least one Capture Rule before turning on the Captive Portal" ));
         }
         reconfigure(true);
            
@@ -444,7 +440,7 @@ public class CPDImpl extends AbstractNode implements CPD
      }
 
     @Override
-    protected void preStop() throws NodeStopException
+    protected void preStop() throws Exception
     {
         try {
             /* Only stop if requested by the user (not during shutdown). */
@@ -471,7 +467,7 @@ public class CPDImpl extends AbstractNode implements CPD
     }
     
     @Override
-    protected void postStop() throws NodeStopException
+    protected void postStop() throws Exception
     {
         super.postStop();
 
@@ -502,7 +498,7 @@ public class CPDImpl extends AbstractNode implements CPD
     }
     
     @Override
-    protected void preDestroy() throws NodeException
+    protected void preDestroy() throws Exception
     {
         LocalUvmContextFactory.context().uploadManager().unregisterHandler(this.uploadHandler.getName());
                 
@@ -523,25 +519,26 @@ public class CPDImpl extends AbstractNode implements CPD
 
 
     // private methods -------------------------------------------------------
-    private void reconfigure() throws NodeException
+    private void reconfigure() throws Exception
     {
         reconfigure(false);
     }
     
-    private void reconfigure(boolean force) throws NodeStartException {
+    private void reconfigure(boolean force) throws Exception
+    {
         if ( force || this.getRunState() == NodeState.RUNNING) {
             try {
                 this.manager.setConfig(this.settings, true);
             } catch (JSONException e) {
-                throw new NodeStartException( "Unable to convert the JSON while setting the configuration.", e);
+                throw new Exception( "Unable to convert the JSON while setting the configuration.", e);
             } catch (IOException e) {
-                throw new NodeStartException( "Unable to write settings.", e);
+                throw new Exception( "Unable to write settings.", e);
             }
                         
             try {
                 this.manager.start();
-            } catch ( NodeException e ) {
-                throw new NodeStartException( "Unable to start CPD", e );
+            } catch ( Exception e ) {
+                throw new Exception( "Unable to start CPD", e );
             }
         } else {
             try {

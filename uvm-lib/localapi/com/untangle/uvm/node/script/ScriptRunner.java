@@ -40,7 +40,6 @@ import java.io.InputStreamReader;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.node.NodeException;
 
 public class ScriptRunner
 {
@@ -56,13 +55,13 @@ public class ScriptRunner
     {
     }
 
-    public final String exec( String scriptName ) throws NodeException
+    public final String exec( String scriptName ) throws ScriptException
     {
         return exec( scriptName, EMPTY_ARGS );
     }
 
     /* Done with an array to exec to fix arguments that have spaces. */
-    public final String exec( String scriptName, String ... args ) throws NodeException
+    public final String exec( String scriptName, String ... args ) throws ScriptException
     {
         String input[] = new String[2 + args.length];
         int c = 0;
@@ -89,13 +88,13 @@ public class ScriptRunner
 
             code = p.waitFor();
 
-            if ( code != 0 ) throw new ScriptException( scriptName, code );
+            if ( code != 0 )
+                throw new ScriptException( scriptName + "returned: ", code );
 
             return sb.toString();
-        } catch ( NodeException e ) {
-            throw e;
         } catch( Exception e ) {
-            throw new NodeException( "Error executing script [" + scriptName + "]", e );
+            logger.warn( "Error executing script [" + scriptName + "]", e );
+            return null;
         }
     }
 
@@ -122,5 +121,22 @@ public class ScriptRunner
         }
         /* cap of the error message only if there was any error output */
         if ( !isFirst ) logger.info( "[" + scriptName + "] end of error output from script." );
+    }
+
+    @SuppressWarnings("serial")
+    public class ScriptException extends Exception
+    {
+        int code;
+        
+        public ScriptException(String str, int code)
+        {
+            super(str);
+            this.code = code;
+        }
+
+        public int getCode()
+        {
+            return this.code;
+        }
     }
 }

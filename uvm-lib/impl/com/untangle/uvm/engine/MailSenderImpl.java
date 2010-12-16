@@ -372,7 +372,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
             try {
                 ScriptRunner.getInstance().exec( EXIM_CMD_UPDATE_CONF );
             }
-            catch (com.untangle.uvm.node.NodeException e) {
+            catch (Exception e) {
                 logger.error( "Unable to save Mail Daemon configuration", e );
             }
 

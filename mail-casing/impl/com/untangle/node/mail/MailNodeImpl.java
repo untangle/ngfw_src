@@ -59,7 +59,6 @@ import com.untangle.node.mail.papi.safelist.SafelistSettings;
 import com.untangle.node.mime.EmailAddress;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.portal.Application;
 import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.portal.LocalApplicationManager;
@@ -275,7 +274,8 @@ public class MailNodeImpl extends AbstractNode
     // Node methods -----------------------------------------------------------
 
     @Override
-    protected void preDestroy() throws NodeException {
+    protected void preDestroy() throws Exception
+    {
         super.preDestroy();
         deregisterApps();
         logger.debug("preDestroy()");

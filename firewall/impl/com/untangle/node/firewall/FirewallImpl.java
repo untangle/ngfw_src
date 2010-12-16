@@ -35,8 +35,6 @@ import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
@@ -229,12 +227,12 @@ public class FirewallImpl extends AbstractNode implements Firewall
         return pipeSpecs;
     }
 
-    protected void preStart() throws NodeStartException
+    protected void preStart() throws Exception
     {
         try {
             reconfigure();
         } catch (Exception e) {
-            throw new NodeStartException(e);
+            throw new Exception(e);
         }
 
         statisticManager.start();
@@ -352,12 +350,12 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
     // private methods ---------------------------------------------------------
 
-    private void reconfigure() throws NodeException
+    private void reconfigure() throws Exception
     {
         logger.info("Reconfigure()");
 
         if (settings == null) {
-            throw new NodeException("Failed to get Firewall settings: " + settings);
+            throw new Exception("Failed to get Firewall settings: " + settings);
         }
 
         handler.configure(settings);
@@ -390,7 +388,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
         
         try {
             reconfigure();
-        } catch (NodeException exn) {
+        } catch (Exception exn) {
             logger.error("Could not save Firewall settings", exn);
         }
     }

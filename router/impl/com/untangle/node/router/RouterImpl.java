@@ -31,9 +31,6 @@ import com.untangle.uvm.networking.SetupState;
 import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
 import com.untangle.uvm.networking.internal.ServicesInternalSettings;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.NodeStartException;
-import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -136,7 +133,7 @@ public class RouterImpl extends AbstractNode implements Router
     }
 
     @Override
-    protected void postInit(String[] args) throws NodeException
+    protected void postInit(String[] args) throws Exception
     {
         super.postInit( args );
 
@@ -144,7 +141,7 @@ public class RouterImpl extends AbstractNode implements Router
         LocalUvmContextFactory.context().localNetworkManager().registerListener( this.listener );
     }
 
-    protected void preStart() throws NodeStartException
+    protected void preStart() 
     {
         try {
             networkSettingsEvent();
@@ -161,7 +158,7 @@ public class RouterImpl extends AbstractNode implements Router
         killMatchingSessions(SessionMatcherFactory.getAllInstance());
     }
 
-    protected void postStop() throws NodeStopException
+    protected void postStop() 
     {
         /* Kill all active sessions */
         killMatchingSessions(SessionMatcherFactory.getAllInstance());
@@ -171,13 +168,13 @@ public class RouterImpl extends AbstractNode implements Router
         statisticManager.stop();
     }
 
-    @Override protected void postDestroy() throws NodeException
+    @Override protected void postDestroy() 
     {
         /* Deregister the network settings listener */
         LocalUvmContextFactory.context().localNetworkManager().unregisterListener( this.listener );
     }
 
-    public void networkSettingsEvent() throws NodeException
+    public void networkSettingsEvent() 
     {
         logger.info("networkSettingsEvent");
 
@@ -218,7 +215,7 @@ public class RouterImpl extends AbstractNode implements Router
             if ( logger.isDebugEnabled()) logger.debug( "network settings changed:" + settings );
             try {
                 networkSettingsEvent();
-            } catch( NodeException e ) {
+            } catch( Exception e ) {
                 logger.error( "Unable to reconfigure the NAT node" );
             }
         }

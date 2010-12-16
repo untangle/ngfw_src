@@ -32,9 +32,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.NodeStopException;
 import com.untangle.uvm.shield.ShieldRejectionEvent;
 import com.untangle.uvm.shield.ShieldStatisticEvent;
 import com.untangle.uvm.util.TransactionWork;
@@ -193,7 +191,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
         validateSettings();
     }
 
-    protected void postStart() throws NodeStartException
+    protected void postStart() 
     {
         validateSettings();
         try {
@@ -204,7 +202,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
         }
     }
 
-    protected void postStop() throws NodeStopException
+    protected void postStop() 
     {
         try {
             this.shieldManager.stop();

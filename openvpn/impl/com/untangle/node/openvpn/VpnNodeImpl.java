@@ -42,11 +42,7 @@ import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.NodeStopException;
-import com.untangle.uvm.node.UnconfiguredException;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.script.ScriptRunner;
@@ -164,7 +160,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
             if ( !newSettings.isUntanglePlatformClient() && newSettings.isConfigured()) {
                 addressMapper.assignAddresses( newSettings );
             }
-        } catch ( NodeException exn ) {
+        } catch ( Exception exn ) {
             logger.warn( "Could not assign client addresses, continuing", exn );
         }
 
@@ -224,7 +220,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
                 LocalUvmContextFactory.context().newThread( new GenerateRules( null )).start();
             }
 
-        } catch ( NodeException exn ) {
+        } catch ( Exception exn ) {
             logger.error( "Could not save VPN settings", exn );
         }
     }
@@ -273,7 +269,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     {
         try {
             certificateManager.createClient( client );
-        } catch ( NodeException e ) {
+        } catch ( Exception e ) {
             logger.error( "Unable to create a client certificate", e );
         }
 
@@ -284,14 +280,14 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     {
         try {
             certificateManager.revokeClient( client );
-        } catch ( NodeException e ) {
+        } catch ( Exception e ) {
             logger.error( "Unable to revoke a client certificate", e );
         }
 
         return client;
     }
 
-    private void distributeAllClientFiles( VpnSettings settings ) throws NodeException
+    private void distributeAllClientFiles( VpnSettings settings ) throws Exception
     {
         for ( VpnClientBase client : settings.getCompleteClientList()) {
             if ( !client.getDistributeClient()) continue;
@@ -300,7 +296,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     }
 
     public void distributeClientConfig( VpnClientBase client )
-        throws NodeException
+        throws Exception
     {
         /* Retrieve the client configuration object from the settings */
         boolean foundRealClient = false;
@@ -314,12 +310,12 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         }
 
         if ( foundRealClient ) distributeRealClientConfig( client );
-        else throw new NodeException( "Attempt to distribute an unsaved client" );
+        else throw new Exception( "Attempt to distribute an unsaved client" );
     }
 
     /** The client config is the same client configuration object that is in settings */
     private void distributeRealClientConfig( final VpnClientBase client )
-        throws NodeException
+        throws Exception
     {
         /* this client may already have a key, the key may have
          * already been created. */
@@ -366,7 +362,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     }
 
     private void distributeClientConfigEmail( VpnClientBase client, String email )
-        throws NodeException
+        throws Exception
     {
         try {
             LocalUvmContext uvm = LocalUvmContextFactory.context();
@@ -393,7 +389,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
             mailSender.sendHtmlMessage( recipients, subject, sb.toString());
         } catch ( Exception e ) {
             logger.warn( "Error distributing client key", e );
-            throw new NodeException( e );
+            throw new Exception( e );
         }
     }
 
@@ -434,7 +430,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
     /* Returns a URL to use to download the admin key. */
     public String getAdminDownloadLink( String clientName, ConfigFormat format )
-        throws NodeException
+        throws Exception
     {
         boolean foundClient = false;
         for ( final VpnClientBase client : this.settings.getCompleteClientList()) {
@@ -451,7 +447,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         }
 
         if ( !foundClient ) {
-            throw new NodeException( "Unable to download unsaved clients <" + clientName +">" );
+            throw new Exception( "Unable to download unsaved clients <" + clientName +">" );
         }
 
         generateAdminClientKey();
@@ -573,7 +569,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     }
 
     // lifecycle --------------------------------------------------------------
-    @Override protected void preInit( final String[] args ) throws NodeException
+    @Override protected void preInit( final String[] args ) throws Exception
     {
         super.preInit( args );
 
@@ -588,11 +584,11 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 //         try {
 //             LocalUvmContextFactory.context().localIntfManager().registerIntf( "tun0", IntfConstants.VPN_INTF );
 //         } catch ( ArgonException e ) {
-//             throw new NodeException( "Unable to register VPN interface", e );
+//             throw new Exception( "Unable to register VPN interface", e );
 //         }
     }
 
-    @Override protected void postInit(final String[] args) throws NodeException
+    @Override protected void postInit(final String[] args) throws Exception
     {
         super.postInit( args );
 
@@ -613,7 +609,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         deployWebApp();
     }
 
-    @Override protected void preStart() throws NodeStartException
+    @Override protected void preStart() throws Exception
     {
         super.preStart();
 
@@ -624,9 +620,8 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
             String[] args = {""};
             try {
                 postInit( args );
-            } catch ( NodeException e ) {
-                throw new NodeStartException( i18nUtil.tr( "An Internal Error Occurred, Please try again."), 
-                                              e );
+            } catch ( Exception e ) {
+                throw new Exception( i18nUtil.tr( "An Internal Error Occurred, Please try again."), e );
             }
 
             if ( this.settings == null ) initializeSettings();
@@ -634,7 +629,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
         /* Don't start if openvpn cannot be configured */
         if ( !settings.isConfigured()) {
-            throw new UnconfiguredException( i18nUtil.tr( "You must configure OpenVPN as either a VPN Routing Server or a VPN Client before you can turn it on.  You may do this through its Setup Wizard (in its settings)." ));
+            throw new Exception( i18nUtil.tr( "You must configure OpenVPN as either a VPN Routing Server or a VPN Client before you can turn it on.  You may do this through its Setup Wizard (in its settings)." ));
         }
 
         try {
@@ -650,7 +645,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
             } catch ( Exception stopException ) {
                 logger.error( "Unable to stop the openvpn process", stopException );
             }
-            throw new UnconfiguredException( e );
+            throw new Exception( e );
         }
 
         deployWebApp();
@@ -664,12 +659,13 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         }
     }
 
-    @Override protected void postStop() throws NodeStopException
+    @Override protected void postStop() throws Exception
     {
         super.postStop();
     }
 
-    @Override protected void preStop() throws NodeStopException {
+    @Override protected void preStop() throws Exception
+    {
         super.preStop();
 
         try {
@@ -681,7 +677,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
         try {
             this.openVpnManager.stop();
-        } catch ( NodeException e ) {
+        } catch ( Exception e ) {
             logger.warn( "Error stopping openvpn manager", e );
         }
 
@@ -691,7 +687,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         LocalUvmContextFactory.context().localNetworkManager().refreshIptablesRules();
     }
 
-    @Override protected void postDestroy() throws NodeException
+    @Override protected void postDestroy() throws Exception
     {
         super.postDestroy();
 

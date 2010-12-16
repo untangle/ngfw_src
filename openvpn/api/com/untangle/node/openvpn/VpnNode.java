@@ -22,7 +22,6 @@ import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.Validator;
 
@@ -49,7 +48,7 @@ public interface VpnNode extends Node
 
     /* Returns a URL to use to download the admin key. */
     public String getAdminDownloadLink( String clientName, ConfigFormat format )
-        throws NodeException;
+        throws Exception;
      
     /* Returns true if this is the correct authentication key for
      * downloading keys as the administrator */
@@ -59,7 +58,7 @@ public interface VpnNode extends Node
     public void addClientDistributionEvent( IPaddr clientAddress, String clientName );
 
     /* Send out the client distribution */
-    public void distributeClientConfig( VpnClientBase client ) throws NodeException;
+    public void distributeClientConfig( VpnClientBase client ) throws Exception;
 
     public enum ConfigState { UNCONFIGURED, CLIENT, SERVER_BRIDGE, SERVER_ROUTE }
     public ConfigState getConfigState();

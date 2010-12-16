@@ -34,8 +34,6 @@ import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
@@ -114,7 +112,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         try {
             reconfigure();
         }
-        catch (NodeException exn) {
+        catch (Exception exn) {
             logger.error("Could not save ProtoFilter settings", exn);
         }
     }
@@ -167,7 +165,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         try {
             reconfigure();
         }
-        catch (NodeException exn) {
+        catch (Exception exn) {
             logger.error("Could not update ProtoFilter changes", exn);
         }
     }
@@ -226,23 +224,19 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         updateToCurrent();
     }
 
-    protected void preStart() throws NodeStartException
+    protected void preStart() throws Exception
     {
-        try {
-            reconfigure();
-        } catch (Exception e) {
-            throw new NodeStartException(e);
-        }
+        reconfigure();
     }
 
-    public void reconfigure() throws NodeException
+    public void reconfigure() throws Exception
     {
         Set<ProtoFilterPattern> enabledPatternsSet = new HashSet<ProtoFilterPattern>();
 
         logger.info("Reconfigure()");
 
         if (cachedSettings == null) {
-            throw new NodeException("Failed to get ProtoFilter settings: " + cachedSettings);
+            throw new Exception("Failed to get ProtoFilter settings: " + cachedSettings);
         }
 
         Set<ProtoFilterPattern> curPatterns = cachedSettings.getPatterns();

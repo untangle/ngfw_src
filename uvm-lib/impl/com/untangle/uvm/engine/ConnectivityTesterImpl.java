@@ -29,7 +29,6 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.RemoteConnectivityTester;
 import com.untangle.uvm.networking.BasicNetworkSettings;
 import com.untangle.uvm.networking.ConnectionStatus;
-import com.untangle.uvm.node.script.ScriptException;
 import com.untangle.uvm.node.script.ScriptRunner;
 
 class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
@@ -126,13 +125,10 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
             ScriptRunner.getInstance().exec( DNS_TEST_SCRIPT, primaryServer, secondaryServer );
             
             isWorking = true;
-        } catch ( ScriptException e ) {
-            logger.info( "DNS is not working" );
+        } catch ( Exception e ) {
+            logger.warn( "DNS is not working", e );
             isWorking = false;
-        } catch( Exception e ) {
-            logger.error( "Error testing dns", e );
-            isWorking = false;
-        }
+        } 
 
         /* Now run the dns test just to get the address of updates */
         DnsLookup dnsLookup = new DnsLookup();

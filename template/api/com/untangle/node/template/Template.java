@@ -19,15 +19,14 @@
 package com.untangle.node.template;
 
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeException;
 
 public interface Template extends Node
 {
-    public void setTemplateSettings(TemplateSettings settings) throws NodeException;
+    public void setTemplateSettings(TemplateSettings settings) throws Exception;
     public TemplateSettings getTemplateSettings();
     
     public TemplateBaseSettings getBaseSettings();
-    public void setBaseSettings(TemplateBaseSettings baseSettings) throws NodeException;
+    public void setBaseSettings(TemplateBaseSettings baseSettings) throws Exception;
         
-    public void setAll( TemplateBaseSettings baseSettings ) throws NodeException;
+    public void setAll( TemplateBaseSettings baseSettings ) throws Exception;
 }

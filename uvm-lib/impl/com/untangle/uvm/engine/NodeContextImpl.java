@@ -40,11 +40,8 @@ import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
-import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.NodePreferences;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.TooManyInstancesException;
-import com.untangle.uvm.node.UndeployException;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.NodeId;
@@ -101,7 +98,11 @@ class NodeContextImpl implements NodeContext
         this.mackageName = mackageName;
         this.isNew = isNew;
 
-        checkInstanceCount(nodeDesc);
+        try {
+            checkInstanceCount(nodeDesc);
+        } catch (TooManyInstancesException exn) {
+            throw new DeployException(exn);
+        }
 
         if (isNew) {
             // XXX this isn't supposed to be meaningful:
@@ -209,7 +210,7 @@ class NodeContextImpl implements NodeContext
             throw new DeployException(exn);
         } catch (IllegalAccessException exn) {
             throw new DeployException(exn);
-        } catch (NodeException exn) {
+        } catch (Exception exn) {
             throw new DeployException(exn);
         } finally {
             nodeManager.deregisterThreadContext();
@@ -355,7 +356,7 @@ class NodeContextImpl implements NodeContext
 
     // package private methods ------------------------------------------------
 
-    void destroy() throws UndeployException
+    void destroy() throws Exception
     {
         try {
             nodeManager.registerThreadContext(this);
@@ -364,8 +365,8 @@ class NodeContextImpl implements NodeContext
             }
             node.destroy();
             node.destroySettings();
-        } catch (NodeException exn) {
-            throw new UndeployException(exn);
+        } catch (Exception exn) {
+            throw new Exception(exn);
         } finally {
             nodeManager.deregisterThreadContext();
         }
@@ -453,7 +454,7 @@ class NodeContextImpl implements NodeContext
 
     // private methods --------------------------------------------------------
 
-    private void checkInstanceCount(NodeDesc nodeDesc)
+    private void checkInstanceCount(NodeDesc nodeDesc) 
         throws TooManyInstancesException
     {
         if (nodeDesc.isSingleInstance()) {
@@ -499,7 +500,7 @@ class NodeContextImpl implements NodeContext
             try {
                 NodeId parentNodeId = nodeManager.instantiate(parent, policy).getTid();
                 pctx = nodeManager.nodeContext(parentNodeId);
-            } catch (TooManyInstancesException exn) {
+            } catch (Exception exn) {
                 pctx = getParentContext(parent);
             }
         }
@@ -530,5 +531,14 @@ class NodeContextImpl implements NodeContext
     {
         return "NodeContext tid: " + tid
             + " (" + nodeDesc.getName() + ")";
+    }
+
+    @SuppressWarnings("serial")
+    private class TooManyInstancesException extends Exception
+    {
+        public TooManyInstancesException(String s)
+        {
+            super(s);
+        }
     }
 }

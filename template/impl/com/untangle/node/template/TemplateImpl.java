@@ -21,8 +21,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -55,7 +53,7 @@ public class TemplateImpl extends AbstractNode implements Template
          
         try {
             setTemplateSettings(settings);
-        } catch (NodeException e) {
+        } catch (Exception e) {
             logger.error( "Unable to initialize the settings", e );
             throw new IllegalStateException("Error initializing template", e);
         }
@@ -64,7 +62,7 @@ public class TemplateImpl extends AbstractNode implements Template
     // TemplateNode methods --------------------------------------------------
 
     @Override
-    public void setTemplateSettings(final TemplateSettings settings) throws NodeException
+    public void setTemplateSettings(final TemplateSettings settings) throws Exception
     {
         if ( settings == this.settings ) {
             throw new IllegalArgumentException("Unable to update original settings, set this.settings to null first.");
@@ -105,7 +103,7 @@ public class TemplateImpl extends AbstractNode implements Template
     }
     
     @Override
-    public void setBaseSettings(final TemplateBaseSettings baseSettings) throws NodeException
+    public void setBaseSettings(final TemplateBaseSettings baseSettings) throws Exception
     {
         TransactionWork<Void> tw = new TransactionWork<Void>()
         {
@@ -126,7 +124,7 @@ public class TemplateImpl extends AbstractNode implements Template
     }
     
     @Override
-    public void setAll( final TemplateBaseSettings baseSettings ) throws NodeException
+    public void setAll( final TemplateBaseSettings baseSettings ) throws Exception
     {
         TransactionWork<Void> tw = new TransactionWork<Void>()
         {
@@ -184,7 +182,7 @@ public class TemplateImpl extends AbstractNode implements Template
     }
    
     // private methods -------------------------------------------------------
-    private void reconfigure() throws NodeException
+    private void reconfigure() throws Exception
     {
         reconfigure(false);
     }
@@ -192,9 +190,8 @@ public class TemplateImpl extends AbstractNode implements Template
     /**
      * This contains all of the 
      * @param force
-     * @throws NodeStartException
      */
-    private void reconfigure(boolean force) throws NodeStartException
+    private void reconfigure(boolean force)
     {
     }
 }

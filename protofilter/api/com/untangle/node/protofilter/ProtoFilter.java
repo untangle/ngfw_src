@@ -21,7 +21,6 @@ import java.util.List;
 
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeException;
 
 public interface ProtoFilter extends Node
 {
@@ -41,9 +40,9 @@ public interface ProtoFilter extends Node
      * Reconfigure node. This method should be called after some settings are updated
      * in order to reconfigure the node accordingly.
      *
-     * @throws NodeException if an exception occurs when reconfiguring.
+     * @throws Exception if an exception occurs when reconfiguring.
      */
-	void reconfigure() throws NodeException;
+	void reconfigure() throws Exception;
 
     
     EventManager<ProtoFilterLogEvent> getEventManager();

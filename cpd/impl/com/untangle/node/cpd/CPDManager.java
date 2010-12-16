@@ -19,7 +19,6 @@ import com.untangle.node.cpd.CPD.BlingerType;
 import com.untangle.node.cpd.CPDSettings.AuthenticationType;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.addrbook.RemoteAddressBook.Backend;
-import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.firewall.ParsingConstants;
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfSetMatcher;
@@ -101,7 +100,7 @@ class CPDManager {
         return true;
     }
     
-    void start() throws NodeException
+    void start() throws Exception
     {
         ScriptRunner.getInstance().exec( START_SCRIPT );
     }
@@ -110,12 +109,12 @@ class CPDManager {
     {
         try {
             ScriptRunner.getInstance().exec( STOP_SCRIPT );
-        } catch (NodeException e) {
+        } catch (Exception e) {
             logger.debug( "Unable to stop untangle-cpd.", e);
         }
     }
     
-    void loadCustomPage( String fileName ) throws NodeException
+    void loadCustomPage( String fileName ) throws Exception
     {
         ScriptRunner.getInstance().exec( LOAD_CUSTOM_SCRIPT, fileName );
     }

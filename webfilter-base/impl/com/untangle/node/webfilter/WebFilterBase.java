@@ -62,7 +62,6 @@ import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.uvm.node.NodeStartException;
 
 /**
  * Implementation of the Web Filter.
@@ -663,7 +662,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     }
 
     @Override
-    protected void preStart() throws NodeStartException
+    protected void preStart() throws Exception
     {
         getBlacklist().removeAllUnblockedSites();
         bypassMonitor.start();

@@ -60,9 +60,7 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeInstantiated;
-import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.UndeployException;
 import com.untangle.uvm.node.UvmNodeHandler;
 import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.policy.Policy;
@@ -335,17 +333,22 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         return tDesc;
     }
 
-    public NodeDesc instantiateAndStart(String nodeName, Policy p) throws DeployException, NodeStartException
+    public NodeDesc instantiateAndStart(String nodeName, Policy p) throws DeployException
     {
         NodeDesc nd = instantiate(nodeName, p);
         if (!nd.getNoStart()) {
             NodeContext nc = nodeContext(nd.getTid());
-            nc.node().start();
+            try {
+                nc.node().start();
+            } catch (Exception e) {
+                throw new DeployException(e);
+            }
+                
         }
         return nd;
     }
 
-    public void destroy(final NodeId nodeId) throws UndeployException
+    public void destroy(final NodeId nodeId) throws Exception
     {
         final NodeContextImpl tc;
 
@@ -353,7 +356,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             tc = nodeIds.get(nodeId);
             if (null == tc) {
                 logger.error("Destroy Failed: " + nodeId + " not found");
-                throw new UndeployException("Node " + nodeId + " not found");
+                throw new Exception("Node " + nodeId + " not found");
             }
             tc.destroy();
 
@@ -363,6 +366,8 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         tc.destroyPersistentState();
         
         clearEnabledNodes();
+
+        return;
     }
 
     public Map<NodeId, NodeState> allNodeStates()
@@ -599,7 +604,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
                 case INITIALIZED:
                     try {
                         n.start();
-                    } catch (NodeStartException exn) {
+                    } catch (Exception exn) {
                         logger.warn("could not load: " + md.getName(), exn);
                         continue;
                     }

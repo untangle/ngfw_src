@@ -32,8 +32,6 @@ import com.untangle.uvm.RemoteNetworkManager;
 import com.untangle.uvm.networking.internal.ServicesInternalSettings;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.script.ScriptException;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.util.I18nUtil;
@@ -173,7 +171,7 @@ class OpenVpnManager
     {
     }
 
-    void start( VpnSettings settings ) throws NodeException
+    void start( VpnSettings settings ) throws Exception
     {
         logger.info( "Starting openvpn server" );
 
@@ -192,19 +190,19 @@ class OpenVpnManager
             // }
             LocalUvmContextFactory.context().networkManager().updateAddress();
 //         } catch ( ArgonException e ) {
-//             throw new NodeException( e );
+//             throw new Exception( e );
         } catch ( Exception e ) {
-            throw new NodeException( e );
+            throw new Exception( e );
         }
     }
 
-    void restart( VpnSettings settings ) throws NodeException
+    void restart( VpnSettings settings ) throws Exception
     {
         /* The start script handles the case where it has to be stopped */
         start( settings );
     }
 
-    void stop() throws NodeException
+    void stop() throws Exception
     {
         logger.info( "Stopping openvpn server" );
         ScriptRunner.getInstance().exec( VPN_STOP_SCRIPT );
@@ -214,11 +212,11 @@ class OpenVpnManager
             // am.disableInternalBridgeIntf( LocalUvmContextFactory.context().networkingManager().get());
             LocalUvmContextFactory.context().networkManager().updateAddress();
         } catch ( Exception e ) {
-            throw new NodeException( e );
+            throw new Exception( e );
         }
     }
 
-    void configure( VpnSettings settings ) throws NodeException
+    void configure( VpnSettings settings ) throws Exception
     {
         /* Nothing to start */
         if ( settings.isUntanglePlatformClient()) {
@@ -230,7 +228,7 @@ class OpenVpnManager
         writePacketFilterRules( settings );
     }
 
-    private void writeSettings( VpnSettings settings ) throws NodeException
+    private void writeSettings( VpnSettings settings ) throws Exception
     {
         ScriptWriter sw = new VpnScriptWriter();
 
@@ -323,7 +321,7 @@ class OpenVpnManager
      * Create all of the client configuration files
      */
     void writeClientConfigurationFiles( VpnSettings settings, VpnClientBase client, String method )
-        throws NodeException
+        throws Exception
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         RemoteNetworkManager nm = uvm.networkManager();
@@ -359,7 +357,7 @@ class OpenVpnManager
                                              String.valueOf( client.isUntanglePlatform()),
                                              settings.getInternalSiteName(),
                                              title, msgBody1, msgBody2, msgBody3);
-        } catch ( ScriptException e ) {
+        } catch ( Exception e ) {
             logger.warn( "Unable to execute distribution script", e );
             throw e;
         }

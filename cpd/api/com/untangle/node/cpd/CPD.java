@@ -22,34 +22,33 @@ import java.util.List;
 
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeException;
 
 public interface CPD extends Node
 {
 	/**
 	 * 
 	 * @param settings
-	 * @throws NodeException 
+	 * @throws Exception 
 	 */
-    public void setCPDSettings(CPDSettings settings) throws NodeException;
+    public void setCPDSettings(CPDSettings settings) throws Exception;
     public CPDSettings getCPDSettings();
     
     public CPDBaseSettings getBaseSettings();
-    public void setBaseSettings(CPDBaseSettings baseSettings) throws NodeException;
+    public void setBaseSettings(CPDBaseSettings baseSettings) throws Exception;
     
     public List<HostDatabaseEntry> getCaptiveStatus();
 
     public List<CaptureRule> getCaptureRules();
-    public void setCaptureRules( List<CaptureRule> captureRules ) throws NodeException;
+    public void setCaptureRules( List<CaptureRule> captureRules ) throws Exception;
     
     public List<PassedClient> getPassedClients();
-    public void setPassedClients( List<PassedClient> newValue ) throws NodeException; 
+    public void setPassedClients( List<PassedClient> newValue ) throws Exception; 
        
     public List<PassedServer> getPassedServers();
-    public void setPassedServers( List<PassedServer> newValue ) throws NodeException;
+    public void setPassedServers( List<PassedServer> newValue ) throws Exception;
     
     public void setAll( CPDBaseSettings baseSettings, List<CaptureRule> captureRules,
-            List<PassedClient> passedClients, List<PassedServer> passedServers ) throws NodeException;
+            List<PassedClient> passedClients, List<PassedServer> passedServers ) throws Exception;
     
     
     /**

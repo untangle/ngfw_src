@@ -17,10 +17,9 @@
  */
 package com.untangle.node.openvpn;
 
-import com.untangle.uvm.node.NodeException;
 
 @SuppressWarnings("serial")
-public class DownloadException extends NodeException
+public class DownloadException extends Exception
 {
     DownloadException( String message )
     {

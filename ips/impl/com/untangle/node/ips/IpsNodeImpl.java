@@ -36,8 +36,6 @@ import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
@@ -47,7 +45,8 @@ import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 
 
-public class IpsNodeImpl extends AbstractNode implements IpsNode {
+public class IpsNodeImpl extends AbstractNode implements IpsNode
+{
     private final Logger logger = Logger.getLogger(getClass());
 
     private final EventLogger<IpsLogEvent> eventLogger;
@@ -167,40 +166,33 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
         return rules;
     }
 
-    public void updateRules(List<IpsRule> added, List<Long> deleted,
-                            List<IpsRule> modified)
+    public void updateRules(List<IpsRule> added, List<Long> deleted, List<IpsRule> modified)
     {
         updateRules(settings.getRules(), added, deleted, modified);
     }
 
     @SuppressWarnings("unchecked") //getItems
-    public List<IpsVariable> getVariables(final int start, final int limit,
-                                          final String... sortColumns)
+    public List<IpsVariable> getVariables(final int start, final int limit, final String... sortColumns)
     {
         return listUtil.getItems("select s.variables from IpsSettings s where s.tid = :tid ",
                                  getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
     }
 
-    public void updateVariables(List<IpsVariable> added, List<Long> deleted,
-                                List<IpsVariable> modified)
+    public void updateVariables(List<IpsVariable> added, List<Long> deleted, List<IpsVariable> modified)
     {
 	updateVariables(settings.getVariables(), added, deleted, modified);
     }
 
     @SuppressWarnings("unchecked") //getItems
-    public List<IpsVariable> getImmutableVariables(final int start,
-                                                   final int limit,
-                                                   final String... sortColumns)
+    public List<IpsVariable> getImmutableVariables(final int start, final int limit, final String... sortColumns)
     {
         return listUtil.getItems("select s.immutableVariables from IpsSettings s where s.tid = :tid ",
                                  getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
     }
 
-    public void updateImmutableVariables(List<IpsVariable> added,
-                                         List<Long> deleted,
-                                         List<IpsVariable> modified)
+    public void updateImmutableVariables(List<IpsVariable> added, List<Long> deleted, List<IpsVariable> modified)
     {
 	updateVariables(settings.getImmutableVariables(), added, deleted, modified);
     }
@@ -235,18 +227,21 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
     
     // protected methods -------------------------------------------------------
 
-    protected void postStop() {
+    protected void postStop()
+    {
         statisticManager.stop();
         engine.stop();
     }
 
-    protected void preStart() throws NodeStartException {
+    protected void preStart() throws Exception
+    {
         logger.info("Pre Start");
 
         statisticManager.start();
     }
 
-    protected void postInit(String args[]) throws NodeException {
+    protected void postInit(String args[]) throws Exception
+    {
         logger.info("Post init");
         queryDBForSettings();
 
@@ -334,7 +329,8 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode {
         }
     }
 
-    private void queryDBForSettings() {
+    private void queryDBForSettings()
+    {
         TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)

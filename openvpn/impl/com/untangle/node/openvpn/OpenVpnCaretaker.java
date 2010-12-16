@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.script.ScriptRunner;
 
 class OpenVpnCaretaker implements Runnable
@@ -84,7 +83,7 @@ class OpenVpnCaretaker implements Runnable
             
             try {
                 ScriptRunner.getInstance().exec( KEEP_ALIVE );
-            } catch ( NodeException e ) {
+            } catch ( Exception e ) {
                 logger.warn( "Error executing script: " + KEEP_ALIVE, e );
             }
             

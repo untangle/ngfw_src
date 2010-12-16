@@ -37,7 +37,6 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeException;
 import com.untangle.node.openvpn.Constants;
 import com.untangle.node.openvpn.VpnNode;
 import com.untangle.uvm.util.ServletStreamer;
@@ -94,7 +93,7 @@ class Util
 
         try {
             node = getNode();
-        } catch ( NodeException e ) {
+        } catch ( Exception e ) {
             logger.warn( "Unable to get common name.", e );
             return null;
         }
@@ -211,18 +210,18 @@ class Util
         request.getRequestDispatcher( "/Index.jsp" ).forward( request, response );
     }
 
-    VpnNode getNode()  throws NodeException
+    VpnNode getNode()  throws Exception
     {
         LocalUvmContext ctx = LocalUvmContextFactory.context();
         NodeId tid = ctx.nodeManager().nodeInstances( "untangle-node-openvpn" ).get( 0 );
-        if ( tid == null ) throw new NodeException( "OpenVPN is not loaded." );
+        if ( tid == null ) throw new Exception( "OpenVPN is not loaded." );
         NodeContext tc = ctx.nodeManager().nodeContext( tid );
 
-        if ( tc == null ) throw new NodeException( "OpenVPN is not loaded." );
+        if ( tc == null ) throw new Exception( "OpenVPN is not loaded." );
         return (VpnNode)tc.node();
     }
     
-    boolean isAdmin( HttpServletRequest request ) throws NodeException
+    boolean isAdmin( HttpServletRequest request ) throws Exception
     {
         return isAdmin( request, getNode());
     }

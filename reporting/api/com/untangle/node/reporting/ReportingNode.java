@@ -21,15 +21,15 @@ package com.untangle.node.reporting;
 import java.io.IOException;
 
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.Validator;
 
 public interface ReportingNode extends Node
 {
     public void setReportingSettings(ReportingSettings settings);
+
     public ReportingSettings getReportingSettings();
 
-    public void runDailyReport() throws IOException, NodeException;
+    public void runDailyReport() throws Exception;
     
     Validator getValidator();    
 }

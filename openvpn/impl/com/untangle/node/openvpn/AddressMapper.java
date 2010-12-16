@@ -30,7 +30,6 @@ import java.util.Set;
 
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.HostAddress;
-import com.untangle.uvm.node.NodeException;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import org.apache.log4j.Logger;
@@ -47,9 +46,9 @@ class AddressMapper
     /**
      * Assign addresses to the server and all of the clients.
      * XXXX This function needs some serious whitebox testing
-     * @throws NodeException - A group does not contain enough addresses for its clients.
+     * @throws Exception - A group does not contain enough addresses for its clients.
      */
-    void assignAddresses( VpnSettings settings ) throws NodeException
+    void assignAddresses( VpnSettings settings ) throws Exception
     {
         /* A mapping from a group to its list of clients */
         Map<VpnGroup,List<VpnClientBase>> groupToClientList = new HashMap<VpnGroup,List<VpnClientBase>>();
@@ -58,7 +57,7 @@ class AddressMapper
         List<VpnClientBase> clientList = new LinkedList<VpnClientBase>( settings.getClientList());
         clientList.addAll(settings.getSiteList());
 
-        if ( settings.getGroupList().size() == 0 ) throw new NodeException( "No groups" );
+        if ( settings.getGroupList().size() == 0 ) throw new Exception( "No groups" );
 
         VpnGroup serverGroup = settings.getGroupList().get( 0 );
 
@@ -118,12 +117,12 @@ class AddressMapper
         }
 
         if ( null == settings.getServerAddress()) {
-            throw new NodeException( "Unable to set the server address" );
+            throw new Exception( "Unable to set the server address" );
         }
     }
 
     private Set<IPaddr> createAddressSet( int size, VpnGroup group, IPMatcher matcher, boolean isBridge )
-        throws NodeException
+        throws Exception
     {
         /* Get the base address */
         InetAddress base = IPaddr.and( group.getAddress(), group.getNetmask()).getAddr();
@@ -143,7 +142,7 @@ class AddressMapper
                 /* This is a configuration problem */
                 logger.info( "Unable to configure clients, not enough client addresses for " +
                              group.getName());
-                // throw new NodeException( "Not enough addresses to assign all clients in group " +
+                // throw new Exception( "Not enough addresses to assign all clients in group " +
                 // group.getName());
                 break;
             }

@@ -58,7 +58,6 @@ import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
-import com.untangle.uvm.node.NodeStartException;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.script.ScriptRunner;
@@ -467,13 +466,13 @@ class ToolboxManagerImpl implements ToolboxManager
                         NodeContext nc = nm.nodeContext(nd.getTid());
                         nc.node().start();
                     }
-                } catch (NodeStartException exn) {
-                    logger.warn("could not start", exn);
                 } catch (DeployException exn) {
                     logger.warn("could not deploy", exn);
                 } catch (MackageInstallException e) {
                     logger.warn("could not register", e);
-                }
+                } catch (Exception exn) {
+                    logger.warn("could not instantiate", exn);
+                } 
             }
 
             LocalMessageManager mm = mctx.localMessageManager();

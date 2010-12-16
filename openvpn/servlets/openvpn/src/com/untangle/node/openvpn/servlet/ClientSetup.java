@@ -41,7 +41,6 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.NodeException;
 import com.untangle.node.openvpn.Constants;
 import com.untangle.node.openvpn.DownloadException;
 import com.untangle.node.openvpn.StartException;
@@ -73,7 +72,7 @@ public class ClientSetup extends HttpServlet
 
         try {
             node = util.getNode();
-        } catch ( NodeException e ) {
+        } catch ( Exception e ) {
             logger.warn( "Unable to retrieve the VPN node.", e );
             response.sendError( HttpServletResponse.SC_UNAUTHORIZED, "Please access this through the admin client." );
             return;

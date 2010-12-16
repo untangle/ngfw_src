@@ -27,8 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.IPaddr;
-import com.untangle.uvm.node.NodeException;
-import com.untangle.uvm.node.ParseException;
 
 @SuppressWarnings("serial")
 public class Downloader extends HttpServlet
@@ -84,11 +82,9 @@ public class Downloader extends HttpServlet
             try {
                 IPaddr address = IPaddr.parse( request.getRemoteAddr());
                 util.getNode().addClientDistributionEvent( address, commonName );
-            } catch ( NodeException e ) {
+            } catch ( Exception e ) {
                 logger.warn( "Unable to log distribution event." );
-            } catch ( ParseException e ) {
-                logger.warn( "Unable to log distribution event." );
-            }
+            } 
             util.streamFile( request, response, fileName, download, type );
         }
     }
