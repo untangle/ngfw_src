@@ -2,6 +2,8 @@ com.untangle.uvm.LanguageSettings
 com.untangle.uvm.MailSettings
 com.untangle.uvm.Period
 com.untangle.uvm.SkinSettings
+com.untangle.uvm.AdminSettings
+com.untangle.uvm.User
 com.untangle.uvm.addrbook.AddressBookSettings
 com.untangle.uvm.addrbook.RadiusServerSettings
 com.untangle.uvm.addrbook.RepositorySettings
@@ -30,9 +32,7 @@ com.untangle.uvm.node.StringRule
 com.untangle.uvm.policy.Policy
 com.untangle.uvm.policy.UserPolicyRule
 com.untangle.uvm.policy.UserPolicyRuleSet
-com.untangle.uvm.security.AdminSettings
 com.untangle.uvm.security.NodeId
-com.untangle.uvm.security.User
 com.untangle.uvm.snmp.SnmpSettings
 com.untangle.uvm.toolbox.UpgradeSettings
 
