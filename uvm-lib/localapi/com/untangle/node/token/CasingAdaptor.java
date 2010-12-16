@@ -84,8 +84,7 @@ public class CasingAdaptor extends AbstractEventHandler
 
     private volatile boolean releaseParseExceptions;
 
-    public CasingAdaptor(Node node, CasingFactory casingFactory,
-                         boolean clientSide, boolean releaseParseExceptions)
+    public CasingAdaptor(Node node, CasingFactory casingFactory, boolean clientSide, boolean releaseParseExceptions)
     {
         super(node);
         this.casingFactory = casingFactory;
@@ -451,18 +450,20 @@ public class CasingAdaptor extends AbstractEventHandler
             }
         } catch (Throwable exn) {
             if (releaseParseExceptions) {
-                String sessionEndpoints = "Endpoints ["
-                    + " protocol: " + s.protocol()
-                    + " clientIntf: " + s.clientIntf()
-                    + " clientAddr: " + s.clientAddr()
-                    + " clientPort: " + s.clientPort()
-                    + " serverIntf: " + s.serverIntf()
-                    + " serverAddr: " + s.serverAddr()
-                    + " serverPort: " + s.serverPort() + "]";
+                String sessionEndpoints = "[" +
+                    s.protocol() + " : " + 
+                    s.clientAddr() + ":" + s.clientPort() + " -> " +
+                    s.serverAddr() + ":" + s.serverPort() + "]";
 
-                // XXX make configurable
-                logger.warn("parse exception, releasing session. "
-                            + sessionEndpoints , exn);
+                /**
+                 * Some Special handling for semi-common parse exceptions
+                 * Otherwise just print the full stack trace
+                 */
+                if (exn.getMessage().contains("no digits found")) {
+                    logger.warn("parse exception (no digits found), releasing session: " + sessionEndpoints);
+                } else {
+                    logger.warn("parse exception, releasing session: " + sessionEndpoints, exn);
+                }
                 s.release();
                 pr = new ParseResult(new Release(dup));
             } else {
@@ -473,8 +474,7 @@ public class CasingAdaptor extends AbstractEventHandler
         }
 
         if (pr.isStreamer()) {
-            TokenStreamer tokSt
-                = new TokenStreamerWrapper(pr.getTokenStreamer(), s, s2c);
+            TokenStreamer tokSt = new TokenStreamerWrapper(pr.getTokenStreamer(), s, s2c);
             TCPStreamer ts = new TokenStreamerAdaptor(pipeline, tokSt);
             if (s2c) {
                 s.beginClientStream(ts);
