@@ -35,7 +35,8 @@ import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.JsonClient.ConnectionException;
 import com.untangle.uvm.node.LocalADConnector;
 
-class CPDManager {
+public class CPDManager
+{
     private final Logger logger = Logger.getLogger(CPDManager.class);
 
     public static final long CACHE_DELAY_MS = 10l * 60l * 1000l;
@@ -129,52 +130,67 @@ class CPDManager {
             return false;
         }
         
-        /* Just verify that username is a valid string XXX */
-//         try {
-//             Username.parse(username);
-//         } catch (ParseException e1) {
-//             logger.info( "Invalid username: '" + username + "'");
-//             return false;
-//         }
-            
         boolean isAuthenticated = false;
         CPDBaseSettings baseSettings = this.cpd.getBaseSettings();
-        
         AuthenticationType method = baseSettings.getAuthenticationType(); 
-        
-        switch( method ) {
-        case NONE:
-            isAuthenticated = true;
-            break;
+        /**
+         * bug #7951
+         * Try an alternative username that removes domain
+         * domain*backslash*user -> user
+         * user@domain -> user
+         */
+        String strippedUsername;
+        strippedUsername = username.replaceAll(".*\\","");
+        strippedUsername = username.replaceAll("@.*","");
+
+        /**
+         * try first with normal username
+         * then try with stripped username
+         */
+        for (int i = 0; i< 2 ; i++) {
+            String u;
+            if (i == 0)
+                u = username;
+            else 
+                u = strippedUsername;
+                
+            switch( method ) {
+            case NONE:
+                isAuthenticated = true;
+                break;
             
-        case ACTIVE_DIRECTORY:
-            try {
-                isAuthenticated = LocalUvmContextFactory.context().appAddressBook().authenticate(username, password, Backend.ACTIVE_DIRECTORY);
-            } catch (ServiceUnavailableException e) {
-                logger.warn( "Unable to authenticate users.", e );
-                isAuthenticated = false;
-            }
-            break;
+            case ACTIVE_DIRECTORY:
+                try {
+                    isAuthenticated = LocalUvmContextFactory.context().appAddressBook().authenticate(u, password, Backend.ACTIVE_DIRECTORY);
+                } catch (ServiceUnavailableException e) {
+                    logger.warn( "Unable to authenticate users.", e );
+                    isAuthenticated = false;
+                }
+                break;
             
-        case LOCAL_DIRECTORY:
-            try {
-                isAuthenticated = LocalUvmContextFactory.context().appAddressBook().authenticate(username, password, Backend.LOCAL_DIRECTORY);
-            } catch (ServiceUnavailableException e) {
-                logger.warn( "Unable to authenticate users.", e );
-                isAuthenticated = false;
-            }
-            break;
+            case LOCAL_DIRECTORY:
+                try {
+                    isAuthenticated = LocalUvmContextFactory.context().appAddressBook().authenticate(u, password, Backend.LOCAL_DIRECTORY);
+                } catch (ServiceUnavailableException e) {
+                    logger.warn( "Unable to authenticate users.", e );
+                    isAuthenticated = false;
+                }
+                break;
             
-        case RADIUS:
-            try {
-                isAuthenticated = LocalUvmContextFactory.context().appAddressBook().authenticate(username, password, Backend.RADIUS);
-            } catch (ServiceUnavailableException e) {
-                logger.warn( "Unable to authenticate users.", e );
-                isAuthenticated = false;
+            case RADIUS:
+                try {
+                    isAuthenticated = LocalUvmContextFactory.context().appAddressBook().authenticate(u, password, Backend.RADIUS);
+                } catch (ServiceUnavailableException e) {
+                    logger.warn( "Unable to authenticate users.", e );
+                    isAuthenticated = false;
+                }
+                break;
             }
-            break;
+
+            if (isAuthenticated)
+                break;
         }
-        
+
         if ( !isAuthenticated ) {
             return false;
         }
