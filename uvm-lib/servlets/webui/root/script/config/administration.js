@@ -233,7 +233,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     autoScroll : true,
                     hasEdit : false,
                     name : 'gridAdminAccounts',
-                    recordJavaClass : "com.untangle.uvm.security.User",
+                    recordJavaClass : "com.untangle.uvm.User",
                     emptyRow : {
                         "login" : this.i18n._("[no login]"),
                         "name" : this.i18n._("[no description]"),
@@ -241,7 +241,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         "hasReportsAccess" : true,
                         "email" : this.i18n._("[no email]"),
                         "clearPassword" : "",
-                        "javaClass" : "com.untangle.uvm.security.User"
+                        "javaClass" : "com.untangle.uvm.User"
                     },
                     // the column is autoexpanded if the grid width permits
                     autoExpandColumn : 'name',

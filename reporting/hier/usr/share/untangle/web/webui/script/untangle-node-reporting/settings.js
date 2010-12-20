@@ -804,7 +804,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             "hasReportsAccess" : recipient.onlineReports,
                             "email" : recipient.emailAddress,
                             "clearPassword" : recipient.clearPassword,
-                            "javaClass" : "com.untangle.uvm.security.User",
+                            "javaClass" : "com.untangle.uvm.User",
                             keepUser : true
                         };
 

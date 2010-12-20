@@ -296,7 +296,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     if (!this.getPolicyManagerLicense(true).valid){
                         this.showPolicyManagerRequired();
                     } else {
-                        this.updateParentRackStore( this.editorRackCombo, new Ext.data.Record([]));
+                        //this.updateParentRackStore( this.editorRackCombo, new Ext.data.Record([]));
+                        //this.gridParentRackCombo.setValue(0);
                         Ung.EditorGrid.prototype.addHandler.call(this.gridRacks);
                     }
                 }.createDelegate(this),
@@ -305,6 +306,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         this.showPolicyManagerRequired();
                     } else {
                         this.updateParentRackStore( this.editorRackCombo, record );
+                        this.gridParentRackCombo.setValue(0);
                         Ung.EditorGrid.prototype.editHandler.call(this.gridRacks,record);
                         
                     }
