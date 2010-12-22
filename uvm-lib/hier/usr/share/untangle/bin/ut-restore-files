@@ -27,10 +27,8 @@ restore_db()
     zcat $infile | psql -X -U postgres uvm >/dev/null 2>&1
     
     ## Set the unconfigured flag, so the box will reconfigure the network configuration a restart
-    echo "update u_network_settings set setup_state=67 where setup_state=3" \
-        | psql -X -U postgres uvm >/dev/null 2>&1
-    echo "update u_network_settings set setup_state=68 where setup_state=4" \
-        | psql -X -U postgres uvm >/dev/null 2>&1
+    echo "update u_network_settings set setup_state=67 where setup_state=3" | psql -X -U postgres uvm >/dev/null 2>&1
+    echo "update u_network_settings set setup_state=68 where setup_state=4" | psql -X -U postgres uvm >/dev/null 2>&1
 
     ## Reset the events schema, it is no longer valid.
     psql -U postgres -c "UPDATE settings.split_schema_ver SET events_version = NULL;" uvm  || true
