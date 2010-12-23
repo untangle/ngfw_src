@@ -44,7 +44,7 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
     private static final String TEST_HOSTNAME_DOMAIN  = "untangle.com";
 
     /* Backup IP address to use if DNS fails */
-    private static final String BACKUP_ADDRESS_STRING = "74.123.28.42";
+    private static final String BACKUP_ADDRESS_STRING = "74.123.28.44";
 
     /* Address to use if the DNS lookup fails */
     private static final InetAddress BACKUP_ADDRESS;
