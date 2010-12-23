@@ -140,7 +140,7 @@ public class CPDManager
          * user@domain -> user
          */
         String strippedUsername;
-        strippedUsername = username.replaceAll(".*\\","");
+        strippedUsername = username.replaceAll(".*\\\\","");
         strippedUsername = username.replaceAll("@.*","");
 
         /**
