@@ -121,7 +121,12 @@ class SpamBaseNode(Node):
         return Report(self, sections)
 
     def events_cleanup(self, cutoff):
-        pass
+        sql_helper.run_sql("""
+DELETE FROM events.n_spam_evt WHERE time_stamp < %s""", (cutoff,))
+        sql_helper.run_sql("""
+DELETE FROM events.n_spam_evt_smtp WHERE time_stamp < %s""", (cutoff,))
+        sql_helper.run_sql("""
+DELETE FROM events.n_spam_smtp_rbl_evt WHERE time_stamp < %s""", (cutoff,))
 
     def reports_cleanup(self, cutoff):
         pass
