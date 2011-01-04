@@ -139,9 +139,9 @@ public class CPDManager
          * domain*backslash*user -> user
          * user@domain -> user
          */
-        String strippedUsername;
-        strippedUsername = username.replaceAll(".*\\\\","");
-        strippedUsername = username.replaceAll("@.*","");
+        String strippedUsername = username;
+        strippedUsername = strippedUsername.replaceAll(".*\\\\","");
+        strippedUsername = strippedUsername.replaceAll("@.*","");
 
         /**
          * try first with normal username
