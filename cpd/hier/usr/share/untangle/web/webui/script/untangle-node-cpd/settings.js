@@ -634,7 +634,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         boxLabel : String.format( this.i18n._("RADIUS {0}(requires Directory Connector){1}"),
                                                   "<i>", "</i>" ),
                         hideLabel : true,
-                        disabled : !this.getBaseSettings().directoryConnectorEnabled,
+                        disabled : !main.getLicenseManager().getLicense("untangle-node-adconnector"),
                         name : "authenticationType",
                         inputValue : "RADIUS",
                         listeners : {
@@ -643,7 +643,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         }
                     },{
                         xtype: "button",
-                        disabled : !this.getBaseSettings().directoryConnectorEnabled,
+                        disabled : !main.getLicenseManager().getLicense("untangle-node-adconnector"),
                         name : "configureRadiusServer",
                         text : i18n._("Configure RADIUS"),
                         handler : this.configureRadius.createDelegate( this )
@@ -652,7 +652,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         boxLabel : String.format( this.i18n._("Active Directory {0}(requires Directory Connector){1}"),
                                                   "<i>", "</i>" ),
                         hideLabel : true,
-                        disabled : !this.getBaseSettings().directoryConnectorEnabled,
+                        disabled : !main.getLicenseManager().getLicense("untangle-node-adconnector"),
                         name : "authenticationType",
                         inputValue : "ACTIVE_DIRECTORY",
                         listeners : {
@@ -661,7 +661,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         }
                     },{
                         xtype: "button",
-                        disabled : !this.getBaseSettings().directoryConnectorEnabled,
+                        disabled : !main.getLicenseManager().getLicense("untangle-node-adconnector"),
                         name : "configureActiveDirectory",
                         text : i18n._("Configure Active Directory"),
                         handler : this.configureActiveDirectory.createDelegate( this )
