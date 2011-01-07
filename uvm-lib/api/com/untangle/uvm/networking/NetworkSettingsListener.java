@@ -31,14 +31,12 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.portal;
+package com.untangle.uvm.networking;
 
-/**
- * Base of Portal Logins.
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
- */
-public interface BasePortalLogin
+import com.untangle.uvm.networking.NetworkSettings;
+
+/* Interface for monitoring changes to the Network Settings */
+public interface NetworkSettingsListener
 {
+    public void event( NetworkSettings settings );
 }

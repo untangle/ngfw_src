@@ -12,17 +12,7 @@ com.untangle.uvm.logging.LoggingSettings
 com.untangle.uvm.logging.SystemStatEvent
 com.untangle.uvm.networking.AccessSettings
 com.untangle.uvm.networking.AddressSettings
-com.untangle.uvm.networking.DhcpLeaseRule
-com.untangle.uvm.networking.DnsStaticHostRule
-com.untangle.uvm.networking.DynamicDNSSettings
-com.untangle.uvm.networking.IPNetworkRule
-com.untangle.uvm.networking.Interface
 com.untangle.uvm.networking.MiscSettings
-com.untangle.uvm.networking.NetworkSpace
-com.untangle.uvm.networking.NetworkSpacesSettingsImpl
-com.untangle.uvm.networking.RedirectRule
-com.untangle.uvm.networking.Route
-com.untangle.uvm.networking.ServicesSettingsImpl
 com.untangle.uvm.node.IPMaddrDirectory
 com.untangle.uvm.node.IPMaddrRule
 com.untangle.uvm.node.MimeTypeRule

@@ -543,8 +543,8 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
         /* unregister the service with the UVM */
         /* Make sure to leave this in because it reloads the iptables rules. */
-        //LocalUvmContextFactory.context().localNetworkManager().registerService( SERVICE_NAME );
-        LocalUvmContextFactory.context().localNetworkManager().refreshIptablesRules();
+        //LocalUvmContextFactory.context().networkManager().registerService( SERVICE_NAME );
+        LocalUvmContextFactory.context().networkManager().refreshIptablesRules();
     }
 
     private synchronized void unDeployWebApp()
@@ -558,7 +558,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
         /* unregister the service with the UVM */
         /* Make sure to leave this in because it reloads the iptables rules. */
-        // LocalUvmContextFactory.context().localNetworkManager().unregisterService( SERVICE_NAME );
+        // LocalUvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
     }
 
     // AbstractNode methods ----------------------------------------------
@@ -683,8 +683,8 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
         /* unregister the service with the UVM */
         /* Make sure to leave this in because it reloads the iptables rules. */
-        //LocalUvmContextFactory.context().localNetworkManager().unregisterService( SERVICE_NAME );
-        LocalUvmContextFactory.context().localNetworkManager().refreshIptablesRules();
+        //LocalUvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
+        LocalUvmContextFactory.context().networkManager().refreshIptablesRules();
     }
 
     @Override protected void postDestroy() throws Exception

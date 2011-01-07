@@ -40,7 +40,7 @@ import com.untangle.uvm.RemoteAppServerManager;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.RemoteConnectivityTester;
 import com.untangle.uvm.RemoteLanguageManager;
-import com.untangle.uvm.RemoteNetworkManager;
+import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.RemoteSkinManager;
 import com.untangle.uvm.RemoteOemManager;
 import com.untangle.uvm.SessionMonitor;
@@ -122,7 +122,7 @@ public interface RemoteUvmContext
      *
      * @return the NetworkManager.
      */
-    RemoteNetworkManager networkManager();
+    NetworkManager networkManager();
 
     /**
      * Get the <code>RemoteReportingManager</code> singleton.

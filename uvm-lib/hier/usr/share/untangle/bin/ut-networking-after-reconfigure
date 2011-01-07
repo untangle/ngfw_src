@@ -15,6 +15,7 @@ restartService() {
 
     /etc/init.d/${t_service} restart
 }
+
 afterReconfigure() {
 
     # Gotta wait a little while for the bridge to reconfigure

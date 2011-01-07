@@ -206,7 +206,6 @@ public class IpsDetectionEngine
         PipelineEndpoints pe = request.pipelineEndpoints();
         boolean incoming = intfManager.getInterfaceComparator().isMoreTrusted(pe.getServerIntf(), pe.getClientIntf());
         Set<IpsRuleSignature> c2sSignatures = manager.matchesHeader(request, incoming, IpsRuleManager.TO_SERVER, c2sList);
-
         Set<IpsRuleSignature> s2cSignatures = manager.matchesHeader(request, incoming, IpsRuleManager.TO_CLIENT, s2cList);
 
         if (log.isDebugEnabled())

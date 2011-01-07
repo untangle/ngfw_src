@@ -111,8 +111,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
             baseHost.setErrorReportValveClass("com.untangle.uvm.engine.UvmErrorReportValve");
             OurSingleSignOn ourSsoWorkaroundValve = new OurSingleSignOn();
 
-            SingleSignOn ssoValve = new SpecialSingleSignOn(uvmContext, "",
-                                                            "/reports", "/library" );
+            SingleSignOn ssoValve = new SpecialSingleSignOn(uvmContext, "", "/reports", "/library" );
 
             // ssoValve.setRequireReauthentication(true);
             baseHost.getPipeline().addValve(ourSsoWorkaroundValve);

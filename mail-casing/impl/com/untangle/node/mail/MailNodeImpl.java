@@ -59,9 +59,6 @@ import com.untangle.node.mail.papi.safelist.SafelistSettings;
 import com.untangle.node.mime.EmailAddress;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.portal.Application;
-import com.untangle.uvm.portal.BasePortalManager;
-import com.untangle.uvm.portal.LocalApplicationManager;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.CasingPipeSpec;
@@ -87,8 +84,6 @@ public class MailNodeImpl extends AbstractNode
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
         { SMTP_PIPE_SPEC, POP_PIPE_SPEC, IMAP_PIPE_SPEC };
-
-    private Application quarantineApp;
 
     private MailNodeSettings settings;
     private static Quarantine s_quarantine;//This will never be null for *instances* of
@@ -151,25 +146,6 @@ public class MailNodeImpl extends AbstractNode
             s_unDeployedWebApp = true;
         }
     }
-
-    private void registerApps() {
-        LocalUvmContext mctx = LocalUvmContextFactory.context();
-        BasePortalManager lpm = mctx.portalManager();
-        LocalApplicationManager lam = lpm.applicationManager();
-        quarantineApp = lam.registerApplication("Quarantine",
-                                                "Email Quarantine",
-                                                "Allows you to access to email quarantine.",
-                                                null, null, 0,
-                                                QUARANTINE_JS_URL);
-    }
-
-    private void deregisterApps() {
-        LocalUvmContext mctx = LocalUvmContextFactory.context();
-        BasePortalManager lpm = mctx.portalManager();
-        LocalApplicationManager lam = lpm.applicationManager();
-        lam.deregisterApplication(quarantineApp);
-    }
-
 
     // MailNode methods --------------------------------------------------------
 
@@ -277,7 +253,6 @@ public class MailNodeImpl extends AbstractNode
     protected void preDestroy() throws Exception
     {
         super.preDestroy();
-        deregisterApps();
         logger.debug("preDestroy()");
         unDeployWebAppIfRequired(logger);
         s_quarantine.close();
@@ -358,7 +333,6 @@ public class MailNodeImpl extends AbstractNode
 
         deployWebAppIfRequired(logger);
         s_quarantine.open();
-        registerApps();
     }
 
     // AbstractNode methods ---------------------------------------------------

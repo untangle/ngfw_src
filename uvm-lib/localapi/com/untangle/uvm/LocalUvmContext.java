@@ -48,10 +48,8 @@ import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.RemoteMessageManager;
-import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.PolicyManager;
-import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.reports.RemoteReportingManager;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.RegistrationInfo;
@@ -117,18 +115,9 @@ public interface LocalUvmContext extends RemoteUvmContext
      */
     AdminManager adminManager();
 
-    /**
-     * Get the <code>PortalManager</code> singleton.
-     *
-     * @return a <code>PortalManager</code> value
-     */
-    BasePortalManager portalManager();
-
     ArgonManager argonManager();
 
     LocalIntfManager localIntfManager();
-
-    LocalNetworkManager localNetworkManager();
 
     RemoteReportingManager reportingManager();
 
@@ -322,11 +311,6 @@ public interface LocalUvmContext extends RemoteUvmContext
      * @return true if premium functionality was loaded.
      */
     boolean loadRup();
-
-    /**
-     * Attempts to load the premium portal manager.
-     */
-    void loadPortalManager();
 
     /*
      * Loads a shared library (.so) into the UVM classloader.  This

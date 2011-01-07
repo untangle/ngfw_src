@@ -38,14 +38,8 @@ import org.json.JSONObject;
 import com.untangle.jnetcap.Netcap;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.localapi.ArgonInterface;
-import com.untangle.uvm.networking.internal.AccessSettingsInternal;
-import com.untangle.uvm.networking.internal.AddressSettingsInternal;
-import com.untangle.uvm.networking.internal.InterfaceInternal;
-import com.untangle.uvm.networking.internal.MiscSettingsInternal;
-import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
-import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.uvm.networking.internal.ServicesInternalSettings;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.IPaddr;
@@ -56,9 +50,10 @@ import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
+import com.untangle.uvm.SettingsManager;
 
 /* XXX This shouldn't be public */
-public class NetworkManagerImpl implements LocalNetworkManager
+public class NetworkManagerImpl implements NetworkManager
 {
     private static NetworkManagerImpl INSTANCE = null;
 
@@ -75,10 +70,10 @@ public class NetworkManagerImpl implements LocalNetworkManager
     static final String ALPACA_SCRIPT = "/usr/share/untangle-net-alpaca/scripts/";
 
     /* Script to run after reconfiguration (from NetworkSettings Listener) */
-    private static final String AFTER_RECONFIGURE_SCRIPT = UVM_BASE + "/networking/after-reconfigure";
+    private static final String AFTER_RECONFIGURE_SCRIPT = UVM_BASE + "/bin/ut-networking-after-reconfigure";
 
     /* Script to run to get a list of physical interfaces */
-    private static final String GET_PHYSICAL_INTF_SCRIPT = UVM_BASE + "/networking/get-physical-interfaces";
+    private static final String GET_PHYSICAL_INTF_SCRIPT = UVM_BASE + "/bin/ut-networking-get-physical-interfaces";
 
 
     private static final long ALPACA_RETRY_COUNT = 3;
@@ -103,30 +98,16 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Manager for MiscSettings */
     private final MiscManagerImpl miscManager;
 
-    /* Manager for single nic mode. */
-    private final SingleNicManager singleNicManager;
-
     /* ??? Does the order matter, it shouldn't.  */
     private Set<NetworkSettingsListener> networkListeners = new HashSet<NetworkSettingsListener>();
     private Set<IntfEnumListener> intfEnumListeners = new HashSet<IntfEnumListener>();
 
     /** The nuts and bolts of networking, the real bits of panther.  this my friend
      * should never be null */
-    private NetworkSpacesInternalSettings networkSettings = null;
-
-    /** The current services settings */
-    private ServicesInternalSettings servicesSettings = null;
-
-    /* the address of the internal interface, used for the web address */
-    private InetAddress internalAddress;
-
-    /* True if Dynamic DNS is available */
-    private boolean isDynamicDnsEnabled = false;
+    private NetworkSettings networkSettings = null;
 
     /* Flag to indicate when the UVM has been shutdown */
     private boolean isShutdown = false;
-
-    private HostName domainName = null;
 
     private NetworkManagerImpl()
     {
@@ -134,7 +115,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.accessManager = new AccessManagerImpl();
         this.addressManager = new AddressManagerImpl();
         this.miscManager = new MiscManagerImpl();
-        this.singleNicManager = new SingleNicManager();
     }
 
     /**
@@ -169,24 +149,26 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Return the primary address of the device, this is the primary
      * external address.  which is the first address registered on the
      * first network space */
-    IPaddr getPrimaryAddress()
+    public IPaddr getPrimaryAddress()
     {
-        NetworkSpacesInternalSettings settings = this.networkSettings;
+        NetworkSettings settings = this.networkSettings;
 
-        if ( settings == null ) return null;
+        if ( settings == null )
+            return null;
 
-        NetworkSpaceInternal external = settings.getNetworkSpace( IntfConstants.EXTERNAL_INTF );
+        InterfaceSettings wan = settings.findFirstWAN();
 
-        if ( external == null ) return null;
+        if ( wan == null )
+            return null;
 
-        return external.getPrimaryAddress().getNetwork();
-    }
+        IPNetwork primary = wan.getPrimaryAddress();
 
-    public BasicNetworkSettings getBasicSettings()
-    {
-        boolean snic = this.singleNicManager.getIsEnabled();
-        BasicNetworkSettings basic = NetworkUtilPriv.getPrivInstance().toBasic( this.networkSettings, snic );
-        return basic;
+        if ( primary == null) {
+            logger.warn("Unknown primary address: " + primary + "wan: " + wan);
+            return null;
+        }
+        
+        return primary.getNetwork();
     }
 
     /**
@@ -196,11 +178,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
     public AccessSettings getAccessSettings()
     {
         return this.accessManager.getSettings();
-    }
-
-    public AccessSettingsInternal getAccessSettingsInternal()
-    {
-        return this.accessManager.getInternalSettings();
     }
 
     @Override
@@ -223,13 +200,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     @Override
     public AddressSettings getAddressSettings()
     {
-        logger.warn("getAddressSettings()");
         return this.addressManager.getSettings();
-    }
-
-    public AddressSettingsInternal getAddressSettingsInternal()
-    {
-        return this.addressManager.getInternalSettings();
     }
 
     @Override
@@ -255,11 +226,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         return this.miscManager.getSettings();
     }
 
-    public MiscSettingsInternal getMiscSettingsInternal()
-    {
-        return this.miscManager.getInternalSettings();
-    }
-
     public void setMiscSettings( MiscSettings misc )
     {
         this.miscManager.setSettings( misc );
@@ -280,7 +246,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         try {
             generateRules();
-        } catch ( NetworkException e ) {
+        } catch ( Exception e ) {
             logger.error( "Unable to create rules", e );
         }
     }
@@ -292,32 +258,17 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         try {
             generateRules();
-        } catch ( NetworkException e ) {
+        } catch ( Exception e ) {
             logger.error( "Unable to create rules", e );
         }
     }
 
-    public NetworkSpacesSettingsImpl getNetworkSettings()
-    {
-        return NetworkUtilPriv.getPrivInstance().toSettings( this.networkSettings );
-    }
-
-    public NetworkSpacesInternalSettings getNetworkInternalSettings()
+    public NetworkSettings getNetworkSettings()
     {
         return this.networkSettings;
     }
 
-    public List<Interface> getInterfaceList( boolean updateStatus )
-    {
-        if ( updateStatus ) updateLinkStatus();
-
-        List<InterfaceInternal> internalList = this.networkSettings.getInterfaceList();
-        List<Interface> interfaceList = new ArrayList<Interface>( internalList.size());
-        for ( InterfaceInternal internal : internalList ) interfaceList.add( internal.toInterface());
-        return interfaceList;
-    }
-
-    public void remapInterfaces( String[] osArray, String[] userArray ) throws NetworkException
+    public void remapInterfaces( String[] osArray, String[] userArray ) throws Exception
     {
         JSONObject jsonObject = new JSONObject();
 
@@ -325,19 +276,19 @@ public class NetworkManagerImpl implements LocalNetworkManager
             jsonObject.put( "os_names", new JSONArray( osArray ));
             jsonObject.put( "user_names", new JSONArray( userArray ));
         } catch ( JSONException e ) {
-            throw new NetworkException( "Unable to build JSON Object", e );
+            throw new Exception( "Unable to build JSON Object", e );
         }
 
         try {
             JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "remap_interfaces", jsonObject );
         } catch ( Exception e ) {
-            throw new NetworkException( "Unable to configure the external interface.", e );
+            throw new Exception( "Unable to configure the external interface.", e );
         }
     }
 
     /* Set the access and address settings, used by the Remote Panel */
     public void setSettings( AccessSettings access, AddressSettings address )
-        throws NetworkException, ValidateException
+        throws Exception, ValidateException
     {
         this.accessManager.setSettings( access );
         this.addressManager.setSettings( address );
@@ -350,7 +301,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Set the Access, Misc and Network settings at once.  Used by the
      * support panel */
     public void setSettings( AccessSettings access, MiscSettings misc )
-        throws NetworkException, ValidateException
+        throws Exception, ValidateException
     {
         this.accessManager.setSettings( access );
         this.miscManager.setSettings( misc );
@@ -360,112 +311,84 @@ public class NetworkManagerImpl implements LocalNetworkManager
         generateRules();
     }
 
-    public ServicesInternalSettings getServicesInternalSettings()
-    {
-        return this.servicesSettings;
-    }
-
-    /* Returns true if dynamic dns is enabled */
-    boolean isDynamicDnsEnabled()
-    {
-        return this.isDynamicDnsEnabled;
-    }
-
     /* Get the current hostname */
     public HostName getHostname()
     {
-        return this.addressManager.getInternalSettings().getHostName();
-    }
-
-    /* Get the domain name suffix */
-    public HostName getDomainName()
-    {
-        if ( this.domainName == null ) {
-            return NetworkUtil.LOCAL_DOMAIN_DEFAULT;
-        }
-
-        return this.domainName;
+        return this.addressManager.getSettings().getHostName();
     }
 
     public String getPublicAddress()
     {
-        return this.addressManager.getInternalSettings().getCurrentURL();
+        //return this.addressManager.getSettings().getPublicAddress();
+        return this.addressManager.getSettings().getCurrentURL();
     }
 
     /* Get the external HTTPS port */
     public int getPublicHttpsPort()
     {
-        return this.addressManager.getInternalSettings().getCurrentPublicPort();
+        return this.addressManager.getSettings().getPublicPort();
     }
 
-    /* Save the basic network settings during the wizard */
-    public void setSetupSettings( AddressSettings address, BasicNetworkSettings basic )
-        throws NetworkException, ValidateException
+    /* Save the network settings during the wizard */
+    public void setSetupSettings( AddressSettings address, NetworkSettings settings )
+        throws Exception, ValidateException
     {
         this.addressManager.setWizardSettings( address );
 
-        setSetupSettings( basic );
+        setSetupSettings( settings );
     }
 
-    public BasicNetworkSettings setSetupSettings( BasicNetworkSettings basic )
-        throws NetworkException, ValidateException
+    public NetworkSettings setSetupSettings( NetworkSettings settings )
+        throws Exception, ValidateException
     {
         /* Send the call onto the alpaca */
 
         JSONObject jsonObject = new JSONObject();
         String method = null;
-        boolean isSingleNicEnabled = false;
-        PPPoESettings pppoe = basic.getPPPoESettings();
-
+        InterfaceSettings wan = settings.findFirstWAN();
+        
         try {
-            if ( pppoe.isLive()) {
+            if ( wan.getConfigType().equals(InterfaceSettings.CONFIG_PPPOE) ) {
                 /* PPPoE Setup */
                 method = "wizard_external_interface_pppoe";
-                jsonObject.put( "username", pppoe.getUsername());
-                jsonObject.put( "password", pppoe.getPassword());
-            } else if ( basic.getDhcpEnabled()) {
+                jsonObject.put( "username", wan.getPPPoEUsername());
+                jsonObject.put( "password", wan.getPPPoEPassword());
+            } else if ( settings.getDhcpServerEnabled()) {
                 /* Dynamic address */
                 method = "wizard_external_interface_dynamic";
-                isSingleNicEnabled = basic.isSingleNicEnabled();
             } else {
                 /* Must be a static address */
-                jsonObject.put( "ip", basic.getHost().toString());
-                jsonObject.put( "netmask", basic.getNetmask().toString());
-                jsonObject.put( "default_gateway", basic.getGateway().toString());
-                jsonObject.put( "dns_1", basic.getDns1().toString());
-                
-                IPaddr dns2 = basic.getDns2();
-                if ( !dns2.isEmpty()) jsonObject.put( "dns_2", dns2 );
+                jsonObject.put( "ip", wan.getPrimaryAddress().getNetwork().toString());
+                jsonObject.put( "netmask", wan.getPrimaryAddress().getNetmask().toString());
+                jsonObject.put( "default_gateway", wan.getGateway().toString());
+                jsonObject.put( "dns_1", wan.getDns1().toString());
+                InetAddress dns2 = wan.getDns2();
+                if ( dns2 != null ) jsonObject.put( "dns_2", dns2.toString());
                 method = "wizard_external_interface_static";
-                isSingleNicEnabled = basic.isSingleNicEnabled();
             }
-
-            jsonObject.put( "single_nic_mode", isSingleNicEnabled );
         } catch ( JSONException e ) {
-            throw new NetworkException( "Unable to build JSON Object", e );
+            throw new Exception( "Unable to build JSON Object", e );
         }
 
         /* Make a synchronous request */
         Exception e = retryAlpacaCall( method, jsonObject );
         if ( e != null ) {
             logger.warn( "Unable to configure the external interface.", e );
-            throw new NetworkException( "Unable to configure the external interface.", e );
+            throw new Exception( "Unable to configure the external interface.", e );
         }
 
-        return getBasicSettings();
+        return getNetworkSettings();
     }
 
-    /* returns a recommendation for the internal network. */
-    /* @param externalAddress The external address, if null, this uses
-     * the external address of the box. */
-    public IPNetwork getWizardInternalAddressSuggesstion(IPaddr externalAddress)
+    /**
+     * returns a recommendation for the internal network. 
+     * @param externalAddress The external address, if null, this uses the external address of the box.
+     */
+    public IPNetwork getWizardInternalAddressSuggesstion( IPaddr externalAddress )
     {
         try {
             if ( externalAddress == null ) { 
-                boolean snic = this.singleNicManager.getIsEnabled();
-
-                BasicNetworkSettings basic = NetworkUtilPriv.getPrivInstance().toBasic( this.networkSettings, snic );
-                externalAddress = basic.getHost();
+                externalAddress = getNetworkSettings().findFirstWAN().getPrimaryAddress().getNetwork();
             }
 
             /* rare case. */
@@ -487,7 +410,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     }
 
     public void setWizardNatEnabled( IPaddr address, IPaddr netmask, boolean enableDhcpServer )
-        throws NetworkException
+        throws Exception
     {
         logger.debug( "enabling nat as requested by setup wizard: " + address + "/" + netmask );
         logger.debug( "use-dhcp: " + enableDhcpServer );
@@ -499,17 +422,17 @@ public class NetworkManagerImpl implements LocalNetworkManager
             jsonObject.put( "netmask", netmask.toString());
             jsonObject.put( "is_dhcp_enabled", enableDhcpServer );
         } catch ( JSONException e ) {
-            throw new NetworkException( "Unable to build JSON Object", e );
+            throw new Exception( "Unable to build JSON Object", e );
         }
         Exception e = retryAlpacaCall( "wizard_internal_interface_nat", jsonObject );
 
         if ( e != null ) {
             logger.warn( "unable to setup system for NAT in wizard.", e );
-            throw new NetworkException( "Unable to enable nat settings.", e );
+            throw new Exception( "Unable to enable nat settings.", e );
         }
     }
 
-    public void setWizardNatDisabled() throws NetworkException
+    public void setWizardNatDisabled() throws Exception
     {
         logger.debug( "disabling nat in setup wizard: " );
 
@@ -517,26 +440,12 @@ public class NetworkManagerImpl implements LocalNetworkManager
         Exception e = retryAlpacaCall( "wizard_internal_interface_bridge", null );
         if ( e != null ) {
             logger.warn( "Unable to disable NAT in wizard", e );
-            throw new NetworkException( "Unable to disable NAT.", e );
+            throw new Exception( "Unable to disable NAT.", e );
         }
     }
 
-    /* Returns true if address is local to the edgeguard */
-    public boolean isAddressLocal( IPaddr address )
-    {
-        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-
-        return nup.isAddressLocal( this.networkSettings, address );
-    }
-
-    /* Returns true if single nic mode is enabled */
-    public boolean isSingleNicModeEnabled()
-    {
-        return this.singleNicManager.getIsEnabled();
-    }
-    
     /* Return a list of the physical interfaces on the box */
-    public List<String> getPhysicalInterfaceNames() throws NetworkException
+    public List<String> getPhysicalInterfaceNames() throws Exception
     {
         List<String> names = new LinkedList<String>();
 
@@ -547,15 +456,10 @@ public class NetworkManagerImpl implements LocalNetworkManager
             }
         } catch ( Exception e ) {
             logger.error( "Unable to get list of interfaces.", e );
-            throw new NetworkException( "Unable to get list of interfaces." );
+            throw new Exception( "Unable to get list of interfaces." );
         }
 
         return names;
-    }
-
-    public void singleNicRegisterAddress( InetAddress address )
-    {
-        this.singleNicManager.registerAddress( address );
     }
 
     public Boolean isQosEnabled()
@@ -652,71 +556,32 @@ public class NetworkManagerImpl implements LocalNetworkManager
             }
         }
 
-        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-
-        Properties properties = null;
-
-        try {
-            properties = nup.loadProperties();
-        } catch ( Exception e ) {
-            logger.warn( "Unable to load the network properties, using empty properties.", e );
-            properties = new Properties();
-        }
-
-        this.networkSettings = NetworkUtilPriv.getPrivInstance().loadNetworkSettings( properties );
-
-        /* Load whether or not dynamic DNS is enabled */
-        this.isDynamicDnsEnabled =
-            Boolean.parseBoolean( properties.getProperty( "com.untangle.networking.ddns-en" ));
-        logger.debug( "DynamicDns: " + this.isDynamicDnsEnabled );
-
-        
-        String domainName = properties.getProperty( "com.untangle.networking.domain-suffix" );
-        try {
-
-            if (( domainName != null ) && ( domainName.trim().length() > 0 )) {
-                this.domainName = HostName.parseStrict( domainName.trim());
-            }
-        } catch ( Exception e ) {
-            /* */
-            logger.warn( "Unable to parse the domain name: <" + domainName + ">" );
-        }
-
-        /* Load the internal address (has to happen before the services settings are loaded) */
-        updateInternalAddress( this.networkSettings );
-        logger.debug( "New internal address is: '" + this.internalAddress + "'" );
-        IPaddr serviceAddress = NetworkUtil.BOGUS_DHCP_ADDRESS;
-        if ( this.internalAddress != null ) serviceAddress = new IPaddr( this.internalAddress );
-
-        this.servicesSettings =
-            NetworkUtilPriv.getPrivInstance().loadServicesSettings( properties, serviceAddress );
-
-        this.addressManager.updateAddress( properties );
+        this.networkSettings = loadNetworkSettings( );
 
         if ( logger.isDebugEnabled()) {
             logger.debug( "New network settings: " + this.networkSettings );
-            logger.debug( "New services settings: " + this.servicesSettings );
         }
 
-        /* XXX This should be rethought,but it is important for the firewall
-         * rules for the QA push XXXX */
+        /**
+         * Write networking.sh
+         */
         try {
             ScriptWriter scriptWriter = new ScriptWriter();
-            /* Set whether or not setup has completed */
+            scriptWriter.appendLine("#");
+            scriptWriter.appendLine("# This file is written by the untangle-vm and used by various system scripts");
+            scriptWriter.appendLine("# to quickly fetch some of the system settings");
+            scriptWriter.appendLine("#");
+            scriptWriter.appendLine("");
 
             this.accessManager.commit( scriptWriter );
             this.addressManager.commit( scriptWriter );
-            this.miscManager.commit( scriptWriter );
             this.ruleManager.commit( scriptWriter );
-
             /* Save out the script */
             scriptWriter.writeFile( FILE_RULE_CFG );
         } catch ( Exception e ) {
             logger.warn( "Error committing the networking.sh file", e );
         }
 
-        /* Update single nic mode. */
-        this.singleNicManager.setIsEnabled( properties.getProperty( "com.untangle.networking.single-nic-mode" ));
         try {
             callNetworkListeners();
         } catch ( Exception e ) {
@@ -728,7 +593,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     {
         try {
             this.generateRules();
-        } catch (NetworkException e) {
+        } catch (Exception e) {
             logger.warn("Failed to refresh IPtables: ",e);
         }
     }
@@ -751,19 +616,16 @@ public class NetworkManagerImpl implements LocalNetworkManager
         if ( ai == null ) return null;
         if ( ai.isWanInterface()) return null;
 
-        /* In single nicmode, use the external interface. */
-        if ( this.singleNicManager.getIsEnabled()) argonIntf = IntfConstants.EXTERNAL_INTF;
-        
         /* Retrieve the network settings */
-        NetworkSpacesInternalSettings settings = this.networkSettings;
+        NetworkSettings settings = this.networkSettings;
 
         if ( settings == null ) return null;
 
-        NetworkSpaceInternal local = settings.getNetworkSpace( argonIntf );
+        InterfaceSettings intf = settings.findSystemName( ai.getPhysicalName() );
 
-        if ( local == null ) return null;
+        if ( intf == null ) return null;
 
-        IPNetwork network = local.getPrimaryAddress();
+        IPNetwork network = intf.getPrimaryAddress();
 
         if ( network == null ) return null;
 
@@ -777,14 +639,19 @@ public class NetworkManagerImpl implements LocalNetworkManager
     }
 
     /* Update all of the iptables rules and the inside address database */
-    private void generateRules() throws NetworkException
+    private void generateRules() throws Exception
     {
         if ( this.isShutdown ) return;
 
         ScriptWriter scriptWriter = new ScriptWriter();
+        scriptWriter.appendLine("#");
+        scriptWriter.appendLine("# This file is written by the untangle-vm and used by various system scripts");
+        scriptWriter.appendLine("# to quickly fetch some of the system settings");
+        scriptWriter.appendLine("#");
+        scriptWriter.appendLine("");
+
         this.accessManager.commit( scriptWriter );
         this.addressManager.commit( scriptWriter );
-        this.miscManager.commit( scriptWriter );
         this.ruleManager.commit( scriptWriter );
 
         /* Save out the script */
@@ -797,10 +664,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
     {
         this.isShutdown = true;
         this.ruleManager.isShutdown();
-        this.singleNicManager.stop();
     }
 
-    public void flushIPTables() throws NetworkException
+    public void flushIPTables() throws Exception
     {
         this.ruleManager.destroyIptablesRules();
     }
@@ -831,30 +697,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.networkListeners.remove( networkListener );
     }
 
-    /* Address settings */
-    public void registerListener( AddressSettingsListener addressListener )
-    {
-        this.addressManager.registerListener( addressListener );
-    }
-
-    public void unregisterListener( AddressSettingsListener addressListener )
-    {
-        this.addressManager.unregisterListener( addressListener );
-    }
-
-    // Interface enums listener are presently unsupported
-    public void registerListener( IntfEnumListener intfEnumListener )
-    {
-        logger.error( "interface enum listeners are unsupported.", new Exception());
-        this.intfEnumListeners.add( intfEnumListener );
-    }
-
-    public void unregisterListener( IntfEnumListener intfEnumListener )
-    {
-        logger.error( "interface enum listeners are unsupported.", new Exception());
-        this.intfEnumListeners.remove( intfEnumListener );
-    }
-
     /* ----------------- Package ----------------- */
     boolean getSaveSettings()
     {
@@ -862,7 +704,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     }
 
     /* ----------------- Private ----------------- */
-    private void initPriv() throws NetworkException, ValidateException
+    private void initPriv() throws Exception, ValidateException
     {
         String disableSaveSettings = System.getProperty( "uvm.devel.nonetworking" );
 
@@ -874,14 +716,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
         loadAllSettings();
 
         /* Done before so these get called on the first update */
-        registerListener(new IPMatcherListener());
-        registerListener(new IntfMatcherListener());
-        registerListener(new CifsListener());
-        registerListener(this.singleNicManager.getListener());
+        //registerListener(new Foo());
 
         updateAddress();
-
-        this.singleNicManager.start();
 
         try {
             generateRules();
@@ -907,20 +744,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         /* Load the address/hostname settings */
         this.addressManager.init();
-    }
-
-    /* Method to calculate what the current internal address is */
-    private void updateInternalAddress( NetworkSpacesInternalSettings settings )
-    {
-        this.internalAddress = null;
-        if ( settings == null ) return;
-
-        NetworkSpaceInternal internal = settings.getNetworkSpace( IntfConstants.INTERNAL_INTF );
-
-        if ( internal == null ) return;
-
-        IPaddr address = internal.getPrimaryAddress().getNetwork();
-        this.internalAddress = address.getAddr();
     }
 
     /* Retry a call to the alpaca in case it was restarted. */
@@ -980,13 +803,34 @@ public class NetworkManagerImpl implements LocalNetworkManager
         if ( INSTANCE != null ) return INSTANCE;
 
         INSTANCE = new NetworkManagerImpl();
-
         return INSTANCE;
+    }
+
+    /* Load the network configuration */
+    private NetworkSettings loadNetworkSettings()
+    {
+        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        NetworkSettings settings = null;
+        
+        try {
+            settings = settingsManager.loadBasePath(NetworkSettings.class, "/etc/untangle-net-alpaca/", "", "netConfig");
+        } catch (SettingsManager.SettingsException e) {
+            logger.error("Unable to read license file: ", e );
+            return null;
+        }
+
+        if (settings == null) {
+            logger.error("Failed to read network settings");
+        } else {
+            logger.warn("New Network Settings: " + settings.toJSONString());
+        }
+        
+        return settings;
     }
 
     class AfterReconfigureScriptListener implements NetworkSettingsListener
     {
-        public void event( NetworkSpacesInternalSettings settings )
+        public void event( NetworkSettings settings )
         {
             /* Run the script */
             try {

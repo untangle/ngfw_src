@@ -20,7 +20,7 @@ tarballs_gz=apache-ant-1.6.5.tar.gz commons-beanutils-1.7.0.tar.gz \
 	apache-tomcat-5.5.26.tar.gz jfreechart-1.0.13.tar.gz \
 	logging-log4j-1.2.14.tar.gz xdoclet-lib-1.2.3.tar.gz \
 	bcel-5.2.tar.gz c3p0-0.9.1.2.tar.gz velocity-1.4.tar.gz \
-	jcifs_1.2.9.tar.gz commons-fileupload-1.1.tar.gz commons-io-1.1.tar.gz \
+	commons-fileupload-1.1.tar.gz commons-io-1.1.tar.gz \
 	commons-httpclient-3.0.tar.gz AjaxTK-3.1.1_GA_394-src.tar.gz \
 	commons-codec-1.3.tar.gz tightvnc-1.2.9_javabin.tar.gz \
 	je-4.0.92.tar.gz xmlrpc-current-bin.tar.gz slf4j-1.4.3.tar.gz \
@@ -29,14 +29,12 @@ tarballs_gz=apache-ant-1.6.5.tar.gz commons-beanutils-1.7.0.tar.gz \
 
 tarballs_bz2=jaf-1.0.2.tar.bz2 \
 	junit3.8.1.tar.bz2 junit4.1.tar.bz2  \
-	netbeans-3.5.tar.bz2 postgres-jdbc-7.4_215.tar.bz2 
+	postgres-jdbc-7.4_215.tar.bz2 
 
-zips=javamail-1_3_3_01.zip alloylnf-1_4_4-1.zip \
-	htmlparser1_6_20060319.zip xstream-distribution-1.3-bin.zip \
+zips=javamail-1_3_3_01.zip htmlparser1_6_20060319.zip xstream-distribution-1.3-bin.zip \
 	jabsorb-1.2.2-src.zip yuicompressor-2.4.2.zip 
 
-jars=itext-1.3.jar hibernate-client.jar gettext-commons-0.9.1.jar \
-	properJavaRDP-1.1.jar java-getopt-1.0.12.jar jnlp.jar
+jars=itext-1.3.jar hibernate-client.jar gettext-commons-0.9.1.jar
 
 ###############################################################################
 ###############################################################################
@@ -63,8 +61,7 @@ verification: output.md5 verify
 ## Create a new md5sum, this should also be committed
 md5sum:
 	@echo "==> Generating a new md5sum file"
-	@find ${OUTPUT_DIRECTORY} -type f -exec cat \{\} \; | md5sum | \
-		sed 's/$$/ File contents/' > output.md5
+	@find ${OUTPUT_DIRECTORY} -type f -exec cat \{\} \; | md5sum | sed 's/$$/ File contents/' > output.md5
 	@find $(OUTPUT_DIRECTORY) | sort | md5sum | sed 's/$$/ Directory structure/' >> output.md5
 
 $(OUTPUT_DIRECTORY)/%: %.tar.gz %.excl $(OUTPUT_DIRECTORY).$(dir_target)

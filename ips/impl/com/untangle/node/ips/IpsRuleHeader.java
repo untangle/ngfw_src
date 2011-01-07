@@ -188,35 +188,22 @@ public class IpsRuleHeader
         InetAddress sAddr = forward ? sess.serverAddr() : sess.clientAddr();
         boolean serverIPMatch = false;
         Iterator<IPMatcher> serverIt = serverIpSet.iterator();
-        while(serverIt.hasNext() && !serverIPMatch)
-            {
-                IPMatcher matcher = serverIt.next();
-                if (matcher == externalMatcher)
-                    serverIPMatch = !isInbound;
-                else if (matcher == internalMatcher)
-                    serverIPMatch = isInbound;
-                else
-                    serverIPMatch = matcher.isMatch(sAddr);
-                // logger.debug("server matcher: " + matcher + " sez: " + serverIPMatch);
-            }
+        while(serverIt.hasNext() && !serverIPMatch) {
+            IPMatcher matcher = serverIt.next();
+            if (matcher == externalMatcher)
+                serverIPMatch = !isInbound;
+            else if (matcher == internalMatcher)
+                serverIPMatch = isInbound;
+            else
+                serverIPMatch = matcher.isMatch(sAddr);
+            // logger.debug("server matcher: " + matcher + " sez: " + serverIPMatch);
+        }
         boolean ipMatch = (clientIPMatch ^ clientIPFlag) && (serverIPMatch ^ serverIPFlag);
 
-        // logger.debug("ip match: " + ipMatch);
-
         /**Check Directional flag*/
-        if(!(ipMatch && portMatch) && bidirectional && !swapFlag)
-            {
-                return matches(sess, sessInbound, !forward, true);
-            }
-
-        /*  if(!(ipMatch && portMatch))
-            {
-            System.out.println();
-            System.out.println("Header: " + this);
-            System.out.println("ClientIP: " + clientAddr);
-            System.out.println("ServerIP: " + serverAddr);
-            System.out.println();
-            }*/
+        if(!(ipMatch && portMatch) && bidirectional && !swapFlag) {
+            return matches(sess, sessInbound, !forward, true);
+        }
 
         return ipMatch && portMatch;
     }

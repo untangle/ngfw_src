@@ -25,11 +25,9 @@ import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.networking.LocalNetworkManager;
+import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.networking.NetworkSettingsListener;
-import com.untangle.uvm.networking.SetupState;
-import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.uvm.networking.internal.ServicesInternalSettings;
+import com.untangle.uvm.networking.NetworkSettings;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -82,13 +80,6 @@ public class RouterImpl extends AbstractNode implements Router
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
     }
 
-    public SetupState getSetupState()
-    {
-        logger.warn( "getSetupState: deprecated.", new Exception());
-        
-        return SetupState.BASIC;
-    }
-
     public EventManager<LogEvent> getEventManager()
     {
         return eventLogger;
@@ -138,7 +129,7 @@ public class RouterImpl extends AbstractNode implements Router
         super.postInit( args );
 
         /* Register a listener, this should hang out until the node is removed dies. */
-        LocalUvmContextFactory.context().localNetworkManager().registerListener( this.listener );
+        LocalUvmContextFactory.context().networkManager().registerListener( this.listener );
     }
 
     protected void preStart() 
@@ -171,7 +162,7 @@ public class RouterImpl extends AbstractNode implements Router
     @Override protected void postDestroy() 
     {
         /* Deregister the network settings listener */
-        LocalUvmContextFactory.context().localNetworkManager().unregisterListener( this.listener );
+        LocalUvmContextFactory.context().networkManager().unregisterListener( this.listener );
     }
 
     public void networkSettingsEvent() 
@@ -179,16 +170,16 @@ public class RouterImpl extends AbstractNode implements Router
         logger.info("networkSettingsEvent");
 
         /* Retrieve the new settings from the network manager */
-        LocalNetworkManager nm = LocalUvmContextFactory.context().localNetworkManager();
-        ServicesInternalSettings servicesSettings = nm.getServicesInternalSettings();
+        NetworkManager nm = LocalUvmContextFactory.context().networkManager();
+        NetworkSettings networkSettings = nm.getNetworkSettings();
 
         /* Default to it is disabled */
         boolean isDhcpEnabled = false;
 
-        if ( servicesSettings == null ) {
-            logger.info( "null servicesSettings, defaulting isDhcpEnabled to false." );
+        if ( networkSettings == null ) {
+            logger.warn( "null networkSettings, defaulting isDhcpEnabled to false." );
         } else {
-            isDhcpEnabled = servicesSettings.getIsDhcpEnabled();
+            isDhcpEnabled = networkSettings.getDhcpServerEnabled();
         }
 
         logger.debug( "isDhcpEnabled: " + isDhcpEnabled );
@@ -210,7 +201,7 @@ public class RouterImpl extends AbstractNode implements Router
 
     class SettingsListener implements NetworkSettingsListener
     {
-        public void event( NetworkSpacesInternalSettings settings )
+        public void event( NetworkSettings settings )
         {
             if ( logger.isDebugEnabled()) logger.debug( "network settings changed:" + settings );
             try {

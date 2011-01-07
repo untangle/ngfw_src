@@ -24,8 +24,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.networking.internal.InterfaceInternal;
-import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
 import com.untangle.uvm.node.script.ScriptRunner;
 
 class InterfaceTester
@@ -67,7 +65,7 @@ class InterfaceTester
      * Test the status of the interfaces listed inside of the interface array.
      * The status for each interface is updated.
      */
-    void updateLinkStatus( NetworkSpacesInternalSettings settings )
+    void updateLinkStatus( NetworkSettings settings )
     {
         logger.debug( "Updating link status" );
 
@@ -83,8 +81,8 @@ class InterfaceTester
         }
 
 
-        for ( InterfaceInternal intf : settings.getInterfaceList()) {
-            String intfName = intf.getArgonIntf().getPhysicalName();
+        for ( InterfaceSettings intf : settings.getInterfaceList()) {
+            String intfName = intf.getSystemName();
             String intfStatus = statusMap.get( intfName );
             intf.setConnectionState( UNKNOWN );
             intf.setCurrentMedia( UNKNOWN );
@@ -122,19 +120,20 @@ class InterfaceTester
         }
     }
 
-    private String[] getArgs( NetworkSpacesInternalSettings settings )
+    private String[] getArgs( NetworkSettings settings )
     {
-        List<InterfaceInternal> interfaceList = settings.getInterfaceList();
+        List<InterfaceSettings> interfaceList = settings.getInterfaceList();
 
         String args[] = new String[interfaceList.size()];
 
         int c = 0;
-        for ( InterfaceInternal intf : interfaceList ) args[c++] = intf.getArgonIntf().getPhysicalName();
+        for ( InterfaceSettings intf : interfaceList )
+            args[c++] = intf.getSystemName();
 
         return args;
     }
 
-    private Map<String,String> getStatus( String[] args, NetworkSpacesInternalSettings settings )
+    private Map<String,String> getStatus( String[] args, NetworkSettings settings )
     {
         Map<String,String> map = new HashMap<String,String>();
 

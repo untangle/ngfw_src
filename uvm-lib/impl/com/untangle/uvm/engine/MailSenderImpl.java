@@ -58,9 +58,9 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.MailSettings;
-import com.untangle.uvm.networking.AddressSettingsListener;
 import com.untangle.uvm.networking.NetworkManagerImpl;
-import com.untangle.uvm.networking.internal.AddressSettingsInternal;
+import com.untangle.uvm.networking.NetworkSettingsListener;
+import com.untangle.uvm.networking.NetworkSettings;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.User;
@@ -203,10 +203,11 @@ class MailSenderImpl implements MailSender, HasConfigFiles
 
     // Called from UvmContextImpl at postInit time, after the networking manager
     // is up and runing
-    void postInit() {
-        ((NetworkManagerImpl)LocalUvmContextFactory.context().localNetworkManager()).
-            registerListener(new AddressSettingsListener() {
-                    public void event( AddressSettingsInternal settings )
+    void postInit()
+    {
+        ((NetworkManagerImpl)LocalUvmContextFactory.context().networkManager()).
+            registerListener(new NetworkSettingsListener() {
+                    public void event( NetworkSettings settings )
                     {
                         reconfigure();
                     }
@@ -271,8 +272,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
         File exim_dir = new File(EXIM_CONF_DIR);
         if (exim_dir.isDirectory()) {
 
-            String hostName = LocalUvmContextFactory.context().localNetworkManager().
-                getAddressSettingsInternal().getHostName().toString();
+            String hostName = LocalUvmContextFactory.context().networkManager().getNetworkSettings().getHostname().toString();
             if (hostName == null) {
                 logger.warn("null hostname, using untangle-server");
                 hostName = "untangle-server";

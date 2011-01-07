@@ -31,10 +31,11 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.networking.IPNetwork;
-import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.networking.NetworkUtil;
-import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
+import com.untangle.uvm.networking.NetworkSettings;
+import com.untangle.uvm.networking.InterfaceSettings;
 import com.untangle.uvm.node.AddressRange;
 import com.untangle.uvm.node.AddressValidator;
 import com.untangle.uvm.node.HostAddress;
@@ -45,7 +46,7 @@ import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.util.I18nUtil;
 
-class Sandbox
+public class Sandbox
 {
     private final Logger logger = Logger.getLogger( getClass());
     
@@ -65,8 +66,8 @@ class Sandbox
         "192.168.20.0/24", "192.168.21.0/24", "192.168.22.0/24", "192.168.23.0/24",
         "10.254.16.0/24",  "10.254.17.0/24",  "10.254.18.0/24",  "10.254.19.0/24",
         "10.254.20.0/24",  "10.254.21.0/24",  "10.254.22.0/24",  "10.254.23.0/24"
-
     };
+    
     private static final Map<IPNetwork,AddressRange> AUTO_ADDRESS_POOLS;
 
     private HostAddress vpnServerAddress;
@@ -184,15 +185,22 @@ class Sandbox
      * network settings. */
     void autoDetectAddressPool() throws ValidateException
     {
-        /* Load the list of networks. */
-        LocalNetworkManager lnm = LocalUvmContextFactory.context().localNetworkManager();
+        NetworkSettings networkSettings = LocalUvmContextFactory.context().networkManager().getNetworkSettings();
         
+        /* Load the list of networks. */
         List<AddressRange> currentNetwork = new LinkedList<AddressRange>();
-        for ( NetworkSpaceInternal space : lnm.getNetworkInternalSettings().getNetworkSpaceList()) {
-            for ( IPNetwork network : space.getNetworkList()) {
-                AddressRange range = AddressRange.makeNetwork( network.getNetwork().getAddr(), 
-                                                               network.getNetmask().getAddr());
-                currentNetwork.add( range );
+        for (InterfaceSettings intf : networkSettings.getInterfaceList()) {
+            IPNetwork net;
+            AddressRange range;
+
+            /* add the primary */
+            net = intf.getPrimaryAddress();
+            range = AddressRange.makeNetwork( net.getNetwork().getAddr(), net.getNetmask().getAddr() );
+            currentNetwork.add(range);
+            
+            for ( IPNetwork alias : intf.getAliases() ) {
+                range = AddressRange.makeNetwork( alias.getNetwork().getAddr(), alias.getNetmask().getAddr() );
+                currentNetwork.add(range);
             }
         }
         
@@ -243,44 +251,36 @@ class Sandbox
     void autoDetectExportList() throws ValidateException
     {
         /* Load the list of networks. */
-        LocalNetworkManager lnm = LocalUvmContextFactory.context().localNetworkManager();
-        
-        byte intf = IntfConstants.INTERNAL_INTF;
-        if ( lnm.isSingleNicModeEnabled()) intf = IntfConstants.EXTERNAL_INTF;
-        
-        NetworkSpaceInternal space = lnm.getNetworkInternalSettings().getNetworkSpace( intf );
-
-        if ( space == null ) {
-            logger.warn( "Unable to find the network space for the internal interface." );
-            return;
-        }
+        NetworkSettings networkSettings = LocalUvmContextFactory.context().networkManager().getNetworkSettings();
         
         List<ServerSiteNetwork> networkList = new LinkedList<ServerSiteNetwork>();
         LinkedList<AddressRange> rangeList = new LinkedList<AddressRange>();
         
         AddressValidator av = AddressValidator.getInstance();
         
-        for ( IPNetwork network : space.getNetworkList()) {
-            if ( NetworkUtil.getInstance().isBogus( network.getNetwork())) continue;
-
-            rangeList.addFirst( AddressRange.makeNetwork( network.getNetwork().getAddr(), 
-                                                          network.getNetmask().getAddr()));
+        for (InterfaceSettings intf : networkSettings.getInterfaceList()) {
+            if (! intf.isWAN() ) {
+                IPNetwork network = intf.getPrimaryAddress();
             
-            if ( !av.validate( rangeList ).isValid()) {
-                rangeList.removeFirst();
-                continue;
-            }
+                if ( NetworkUtil.getInstance().isBogus( network.getNetwork()) ) continue;
 
-            ServerSiteNetwork ssn = new ServerSiteNetwork();
-            ssn.setNetwork( network.getNetwork());
-            ssn.setNetmask( network.getNetmask());
-            ssn.setLive( true );
-            ssn.setName( i18nUtil.tr("internal network") );
-            networkList.add( ssn );
-        }
+                rangeList.addFirst( AddressRange.makeNetwork( network.getNetwork().getAddr(), network.getNetmask().getAddr()));
+            
+                if ( !av.validate( rangeList ).isValid()) {
+                    rangeList.removeFirst();
+                    continue;
+                }
 
+                ServerSiteNetwork ssn = new ServerSiteNetwork();
+                ssn.setNetwork( network.getNetwork());
+                ssn.setNetmask( network.getNetmask());
+                ssn.setLive( true );
+                ssn.setName( i18nUtil.tr("internal network") );
+                networkList.add( ssn );
         
-        setExportList( new ExportList( networkList ));
+                setExportList( new ExportList( networkList ));
+            }
+        }
     }
 
     void setClientList( ClientList parameters ) throws ValidateException

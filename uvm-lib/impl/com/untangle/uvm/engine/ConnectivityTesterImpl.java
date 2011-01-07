@@ -27,8 +27,9 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.RemoteConnectivityTester;
-import com.untangle.uvm.networking.BasicNetworkSettings;
+import com.untangle.uvm.networking.NetworkSettings;
 import com.untangle.uvm.networking.ConnectionStatus;
+import com.untangle.uvm.networking.InterfaceSettings;
 import com.untangle.uvm.node.script.ScriptRunner;
 
 class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
@@ -36,8 +37,8 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final String UVM_BASE  = System.getProperty( "uvm.home" );
-    private static final String DNS_TEST_SCRIPT    = UVM_BASE + "/networking/dns-test";
-    private static final String BRIDGE_WAIT_SCRIPT = UVM_BASE + "/networking/bridge-wait";
+    private static final String DNS_TEST_SCRIPT    = UVM_BASE + "/bin/ut-dns-test";
+    private static final String BRIDGE_WAIT_SCRIPT = UVM_BASE + "/bin/ut-bridge-wait";
 
     /* Name of the host to lookup */
     private static final String TEST_HOSTNAME_BASE    = "updates";
@@ -69,17 +70,17 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
      */
     public Status getStatus()
     {
-        BasicNetworkSettings basic = LocalUvmContextFactory.context().localNetworkManager().getBasicSettings();
-
-        InetAddress dnsPrimary   = basic.getDns1().getAddr();
-        InetAddress dnsSecondary = ( basic.getDns2().isEmpty()) ? null : basic.getDns2().getAddr();
+        NetworkSettings networkSettings = LocalUvmContextFactory.context().networkManager().getNetworkSettings();
+        InterfaceSettings wan = networkSettings.findFirstWAN();
+        
+        InetAddress dnsPrimary   = wan.getDns1();
+        InetAddress dnsSecondary = wan.getDns2();
 
         /* Wait for any bridge interfaces to come up */
         waitForBridges();
 
         /* Returns the lookuped address if DNS is working, or null if it is not */
-        return ConnectionStatus.
-            makeConnectionStatus( isDnsWorking( dnsPrimary, dnsSecondary ), isTcpWorking());
+        return ConnectionStatus.makeConnectionStatus( isDnsWorking( dnsPrimary, dnsSecondary ), isTcpWorking());
     }
 
     /**

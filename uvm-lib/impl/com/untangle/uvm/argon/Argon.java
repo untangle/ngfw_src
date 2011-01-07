@@ -24,7 +24,6 @@ import com.untangle.jnetcap.Netcap;
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.localapi.LocalIntfManager;
-import com.untangle.uvm.networking.NetworkException;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
@@ -217,8 +216,8 @@ public class Argon
 
         try {
             networkManager.flushIPTables();
-        } catch ( NetworkException e ) {
-            logger.error( "Unable to flush iptables rules!!!!", e );
+        } catch ( Exception e ) {
+            logger.error( "Unable to flush iptables rules!", e );
         }
     }
 

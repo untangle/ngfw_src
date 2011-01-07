@@ -32,11 +32,10 @@ import org.jabsorb.serializer.MarshallException;
 
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.networking.AddressSettings;
-import com.untangle.uvm.networking.BasicNetworkSettings;
-import com.untangle.uvm.networking.LocalNetworkManager;
+import com.untangle.uvm.networking.NetworkSettings;
 import com.untangle.uvm.networking.NetworkUtil;
-import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.RegistrationInfo;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.toolbox.UpgradeSettings;
@@ -61,26 +60,19 @@ public class SetupSettingsServlet extends HttpServlet
             throw new ServletException( "Unable to load the default serializer", e );
         }
 
-        LocalNetworkManager nm = context.localNetworkManager();
+        NetworkManager nm = context.networkManager();
         AddressSettings addressSettings = nm.getAddressSettings();
-        HostName hostname = addressSettings.getHostName();
-        if ( hostname.isEmpty() || !hostname.isQualified()) {
-            addressSettings.setHostName( NetworkUtil.DEFAULT_HOSTNAME );
-        }
-
+        NetworkSettings networkSettings = nm.getNetworkSettings();
         RegistrationInfo ri = new RegistrationInfo();
-
         // pick a random time.
         UpgradeSettings upgrade = context.toolboxManager().getUpgradeSettings();
 
-        BasicNetworkSettings networkSettings = nm.getBasicSettings();
         try {
             request.setAttribute( "addressSettings", js.toJSON( addressSettings ));
-            request.setAttribute( "interfaceArray", js.toJSON( nm.getInterfaceList( true )));
+            request.setAttribute( "interfaceArray", js.toJSON( networkSettings.getInterfaceList()));
             request.setAttribute( "registrationInfo", js.toJSON( ri ));
             request.setAttribute( "users", js.toJSON( context.adminManager().getAdminSettings()));
             request.setAttribute( "upgradeSettings", js.toJSON( upgrade ));
-
             request.setAttribute( "mailSettings", js.toJSON( context.mailSender().getMailSettings()));
             request.setAttribute( "networkSettings", js.toJSON( networkSettings ));
         } catch ( MarshallException e ) {

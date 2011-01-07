@@ -67,7 +67,6 @@ public class IPNetwork implements Serializable
     /* User/Database representation for this IPNetwork. */
     private final String user;
 
-    /* XXX Perhaps this should be stored in CIDR notation */
     private IPNetwork( IPaddr network, IPaddr netmask, String user )
     {
         this.network = network;

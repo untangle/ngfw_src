@@ -525,14 +525,6 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         final AptLogTail alt;
 
-        /**
-         * As of 8.1 - upgrades for single-nic machines should no longer be supported
-         */
-        if (LocalUvmContextFactory.context().networkManager().isSingleNicModeEnabled()) {
-            logger.warn("Detected Re-Router mode. Re-Router mode not supported in future versions - canceling upgrade.");
-            return;
-        }
-        
         synchronized (tails) {
             long i = ++lastTailKey;
             alt = new AptLogTail(i, null);

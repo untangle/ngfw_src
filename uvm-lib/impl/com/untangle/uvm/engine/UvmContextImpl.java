@@ -45,7 +45,7 @@ import com.untangle.uvm.Period;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.RemoteOemManager;
 import com.untangle.uvm.RemoteAppServerManager;
-import com.untangle.uvm.RemoteNetworkManager;
+import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.SessionMonitor;
@@ -65,14 +65,12 @@ import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.networking.NetworkManagerImpl;
-import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.policy.PolicyManagerFactory;
 import com.untangle.uvm.policy.RemotePolicyManager;
-import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.RegistrationInfo;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.servlet.UploadHandler;
@@ -137,7 +135,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private MessageManagerImpl localMessageManager;
     private RemoteMessageManager messageManager;
     private RemoteLanguageManagerImpl languageManager;
-    private BasePortalManager portalManager;
     private LicenseManagerFactory licenseManagerFactory;
     private TomcatManagerImpl tomcatManager;
     private HeapMonitor heapMonitor;
@@ -211,11 +208,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.languageManager;
     }
 
-    public BasePortalManager portalManager()
-    {
-        return this.portalManager;
-    }
-
     public AppServerManagerImpl localAppServerManager()
     {
         return this.appServerManager;
@@ -272,13 +264,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     }
 
     @Override
-    public LocalNetworkManager localNetworkManager()
-    {
-        return this.networkManager;
-    }
-
-    @Override
-    public RemoteNetworkManager networkManager()
+    public NetworkManager networkManager()
     {
         return this.networkManager;
     }
@@ -567,24 +553,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return loadRup(true);
     }
 
-    public void loadPortalManager()
-    {
-        // Fire up the portal manager.
-        String bpmClass = System.getProperty("uvm.portal.manager");
-        if (null == bpmClass) {
-            bpmClass = "com.untangle.uvm.engine.RupPortalManager";
-        }
-        BasePortalManager bpm = null;
-        try {
-            bpm = (BasePortalManager)Class.forName(bpmClass).newInstance();
-        } catch (Exception exn) {
-            logger.info("could not load PortalManager: " + bpmClass);
-        }
-
-        this.portalManager = null == bpm ? new DefaultPortalManager() : bpm;
-        logger.info("using PortalManager: " + this.portalManager.getClass());
-    }
-
     public boolean isActivated()
     {
         File keyFile = new File(UID_FILE);
@@ -779,12 +747,11 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         this.skinManager = new RemoteSkinManagerImpl(this);
         this.languageManager = new RemoteLanguageManagerImpl(this);
 
-        loadPortalManager();
-
         // start nodes:
         this.nodeManager = new NodeManagerImpl(repositorySelector);
 
         this.localMessageManager = new MessageManagerImpl();
+
         this.messageManager = new RemoteMessageManagerAdaptor(localMessageManager);
 
         // Retrieve the reporting configuration manager
@@ -797,10 +764,11 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         this.argonManager = ArgonManagerImpl.getInstance();
 
         this.appServerManager = new AppServerManagerImpl(this);
+
         this.remoteAppServerManager = new RemoteAppServerManagerAdaptor(appServerManager);
         
         this.licenseManagerFactory = LicenseManagerFactory.makeInstance();
-        
+
         // start vectoring:
         Argon.getInstance().run( networkManager );
 
@@ -868,14 +836,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
             logger.warn("could not destroy NodeManager", exn);
         }
         nodeManager = null;
-
-        // Stop portal
-        try {
-            portalManager.destroy();
-        } catch (Exception exn) {
-            logger.warn("could not destroy PortalManager", exn);
-        }
-        portalManager = null;
 
         // XXX destroy needed
         addressBookFactory = null;

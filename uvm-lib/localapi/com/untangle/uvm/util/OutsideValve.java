@@ -51,8 +51,8 @@ import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.NetworkUtil;
-import com.untangle.uvm.networking.internal.AccessSettingsInternal;
-import com.untangle.uvm.networking.internal.AddressSettingsInternal;
+import com.untangle.uvm.networking.AccessSettings;
+import com.untangle.uvm.networking.AddressSettings;
 
 /* the name outside valve is no longer legit, since this controls access to port 80 on the inside */
 public abstract class OutsideValve extends ValveBase
@@ -89,14 +89,14 @@ public abstract class OutsideValve extends ValveBase
         if ( nextValve != null ) nextValve.invoke( request, response );
     }
 
-    protected AccessSettingsInternal getAccessSettings()
+    protected AccessSettings getAccessSettings()
     {
-        return LocalUvmContextFactory.context().localNetworkManager().getAccessSettingsInternal();
+        return LocalUvmContextFactory.context().networkManager().getAccessSettings();
     }
 
-    protected AddressSettingsInternal getAddressSettings()
+    protected AddressSettings getAddressSettings()
     {
-        return LocalUvmContextFactory.context().localNetworkManager().getAddressSettingsInternal();
+        return LocalUvmContextFactory.context().networkManager().getAddressSettings();
     }
 
 
@@ -147,8 +147,7 @@ public abstract class OutsideValve extends ValveBase
             return isInsecureAccessAllowed;
         }
 
-        int blockPagePort = LocalUvmContextFactory.context().localNetworkManager().
-            getAccessSettingsInternal().getBlockPagePort();
+        int blockPagePort = LocalUvmContextFactory.context().networkManager().getAccessSettings().getBlockPagePort();
         
         if ( port == blockPagePort ) {
             return isInsecureAccessAllowed;

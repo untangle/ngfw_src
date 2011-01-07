@@ -44,8 +44,6 @@ import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 /* Manager for controlling argon -> netcap interface matching */
 class LocalIntfManagerImpl implements LocalIntfManager
 {
-    private static final File INTF_ORDER_FILE = new File("/etc/untangle-net-alpaca/interface.properties");
-
     private static final String DEFAULT_INTERFACE_ORDER = "External:eth0:1,DMZ:eth2:3,VPN:tun0:8,Internal:eth1:2";
 
     private ArgonInterfaceConverter intfConverter = null;
@@ -182,21 +180,21 @@ class LocalIntfManagerImpl implements LocalIntfManager
         FileInputStream fis = null;
         String interfaceOrder = null;
         String wanInterfaces = null;
+        String cmd = System.getProperty( "uvm.bin.dir" ) + "/ut-interface-properties";
         try {
-            String cmd = System.getProperty( "uvm.bin.dir" ) + "/ut-interface-properties";
             Process process = LocalUvmContextFactory.context().exec( cmd );
             Properties p = new Properties();
             p.load( process.getInputStream());
             interfaceOrder = p.getProperty("com.untangle.interface-order");
             wanInterfaces = p.getProperty("com.untangle.wan-interfaces");
         } catch (IOException exn) {
-            logger.warn("could not close: " + INTF_ORDER_FILE, exn);
+            logger.warn("could not run: " + cmd, exn);
         } finally {
             if (null != fis) {
                 try {
                     fis.close();
                 } catch (IOException exn) {
-                    logger.warn("could not close: " + INTF_ORDER_FILE, exn);
+                    logger.warn("could not run: " + cmd, exn);
                 }
             }
         }

@@ -1,21 +1,4 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
+/* $HeadURL$ */
 package com.untangle.uvm.engine;
 
 import java.io.File;
@@ -29,12 +12,13 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.util.OpenSSLWrapper;
 import com.untangle.uvm.LocalAppServerManager;
-import com.untangle.uvm.networking.AddressSettingsListener;
 import com.untangle.uvm.networking.NetworkUtil;
-import com.untangle.uvm.networking.internal.AddressSettingsInternal;
 import com.untangle.uvm.security.CertInfo;
 import com.untangle.uvm.security.RFC2253Name;
 import com.untangle.uvm.util.QuarantineOutsideAccessValve;
+import com.untangle.uvm.networking.NetworkSettingsListener;
+import com.untangle.uvm.networking.NetworkSettings;
+import com.untangle.uvm.LocalUvmContextFactory;
 
 /**
  * TODO A work in progress (currently a disorganized mess of crap taken
@@ -51,51 +35,15 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final UvmContextImpl mctx;
+    private final UvmContextImpl uvmContext;
     private final TomcatManagerImpl tomcatManager;
 
-    AppServerManagerImpl(UvmContextImpl mctx)
+    AppServerManagerImpl(UvmContextImpl uvmContext)
     {
-        this.mctx = mctx;
-        //TODO Clean up stuff ported from "main"
-        this.tomcatManager = (TomcatManagerImpl) mctx.tomcatManager();
+        this.uvmContext = uvmContext;
+        this.tomcatManager = (TomcatManagerImpl) uvmContext.tomcatManager();
 
-        Properties networkingProperties = new Properties();
-
-        File f = new File(System.getProperty("uvm.conf.dir")
-                          + "/uvm.networking.properties");
-        if (f.exists()) {
-            FileInputStream fis = null;
-            try {
-                logger.info("Loading uvm.networking.properties from " + f);
-                fis = new FileInputStream(f);
-                networkingProperties.load(fis);
-            } catch (Exception exn) {
-                logger.error("", exn);
-            } finally {
-                if (null != fis) {
-                    try {
-                        fis.close();
-                    } catch (Exception exn) {
-                        logger.warn("could not close file", exn);
-                    }
-                }
-            }
-        }
-
-        int p = DEFAULT_HTTPS_PORT;
-
-        String t = networkingProperties.getProperty("uvm.https.port");
-        if (null != t) {
-            try {
-                p = Integer.parseInt(t);
-            } catch (NumberFormatException exn) {
-                logger.warn( "Invalid port: " + t);
-                p = DEFAULT_HTTPS_PORT;
-            }
-        } else {
-            p = DEFAULT_HTTPS_PORT;
-        }
+        int p = uvmContext.networkManager().getAddressSettings().getHttpsPort();
 
         /* Illegal range */
         if (p <= 0 || p >= 0xFFFF || p == 80 ) {
@@ -120,11 +68,11 @@ class AppServerManagerImpl implements LocalAppServerManager
             logger.warn("could not start Tomcat", exn);
         }
 
-        mctx.localNetworkManager().registerListener(new AddressSettingsListener() {
-                public void event(AddressSettingsInternal settings)
+        uvmContext.networkManager().registerListener(new NetworkSettingsListener() {
+                public void event(NetworkSettings settings)
                 {
                     String existingAlias = getCurrentServerCertInfo().getSubjectCN();
-                    String currentHostname = settings.getHostName().toString();
+                    String currentHostname = settings.getHostname().toString();
                     if (currentHostname == null || currentHostname.equals("")) { return; }
                     if (null == existingAlias
                         || !(existingAlias.equals(currentHostname))) {
@@ -330,7 +278,7 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     private String getFQDN()
     {
-        String fqdn = mctx.localNetworkManager().getHostname().toString();
+        String fqdn = uvmContext.networkManager().getHostname().toString();
         if (fqdn == null || fqdn.equals("")) {
             return "example.com";
         }

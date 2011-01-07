@@ -34,8 +34,6 @@ import org.apache.catalina.connector.Response;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.portal.BasePortalLogin;
-import com.untangle.uvm.portal.BasePortalManager;
 import com.untangle.uvm.security.UvmPrincipal;
 
 class SpecialSingleSignOn extends SingleSignOn
@@ -69,7 +67,8 @@ class SpecialSingleSignOn extends SingleSignOn
      */
     @Override
     public void invoke(Request request, Response response)
-        throws IOException, ServletException {
+        throws IOException, ServletException
+    {
         String contextPath = request.getContextPath();
         if ( uvmContextSet.contains(contextPath)) {
             /* Ignore single sign on for this context path */
@@ -91,28 +90,13 @@ class SpecialSingleSignOn extends SingleSignOn
 
         if (principal == null ) {
              logger.debug( "No principal registered for this session." );
-        } else if (principal instanceof BasePortalLogin) {
-            if (logger.isDebugEnabled())
-                logger.debug( "Checking liveness for " + principal.getName());
-            BasePortalManager pmgr = uvmContext.portalManager();
-            boolean live = pmgr.isLive(principal);
-            if (!live) {
-                request.setAuthType(null);
-                request.setUserPrincipal(null);
-                String ssoId = (String) request.getNote(Constants.REQ_SSOID_NOTE);
-                if (logger.isDebugEnabled())
-                    logger.debug( "Not live, clearing sso " + ssoId);
-                if (ssoId != null)
-                    deregister(ssoId);
-            }
         } else {
             logger.debug( "non-portal principal registered for this session: " + principal + "." );
         }
     }
 
     @Override
-    protected void register(String ssoId, Principal principal, String authType,
-                            String username, String password)
+    protected void register(String ssoId, Principal principal, String authType, String username, String password)
     {
         /* Never register these sessions, they are bunk */
          if (principal instanceof UvmPrincipal ) {

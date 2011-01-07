@@ -39,9 +39,9 @@ import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.argon.SessionGlobalState;
 import com.untangle.uvm.argon.ArgonHook;
 import com.untangle.uvm.argon.ArgonSessionTable;
-import com.untangle.uvm.networking.Interface;
 import com.untangle.uvm.SessionMonitorEntry;
 import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.networking.InterfaceSettings;
 
 /**
  * SessionMonitor is a utility class that provides some convenient functions
@@ -83,13 +83,13 @@ class SessionMonitorImpl implements SessionMonitor
          * Find the the system interface name that matches this ID
          * XXX this should be in a utility somewhere
          */
-        List<Interface> intfs = uvmContext.networkManager().getInterfaceList(false);
+        List<InterfaceSettings> intfs = uvmContext.networkManager().getNetworkSettings().getInterfaceList();
         try {
             int interfaceId = Integer.parseInt(interfaceIdStr);
         
-            for (Interface intf : intfs) {
+            for (InterfaceSettings intf : intfs) {
 
-                if (((int)intf.getArgonIntf()) == interfaceId) {
+                if (((int)intf.getInterfaceId()) == interfaceId) {
                     String systemName = intf.getSystemName();
 
                     return _getMergedBandwidthSessions(systemName);

@@ -466,7 +466,8 @@ public abstract class Blacklist
         logger.info("checkBlacklist: " + host + uri);
 
         BlacklistCategory category = findBestCategory(host, port, uri, sess);
-
+        String username = null;
+        
         logger.info("checkBlacklist: " + host + uri + " category: " + category);
         
         if (category != null && sess != null) {
@@ -478,6 +479,8 @@ public abstract class Blacklist
             sess.globalAttach(node.getVendor()+"-best-category-description",category.getDescription());
             sess.globalAttach(node.getVendor()+"-best-category-flagged",category.getLog());
             sess.globalAttach(node.getVendor()+"-best-category-blocked",category.getBlock());
+
+            username = (String) sess.globalAttachment(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME);
         }
         
         StringRule stringRule;
@@ -493,7 +496,7 @@ public abstract class Blacklist
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), a, reason, category.getDisplayName(), node.getVendor());
             node.log(hbe, host, port, event);
 
-            WebFilterBlockDetails bd = new WebFilterBlockDetails(settings, host, uri, category.getDescription(), clientIp, node.getNodeTitle(), (String) sess.globalAttachment(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME));
+            WebFilterBlockDetails bd = new WebFilterBlockDetails(settings, host, uri, category.getDescription(), clientIp, node.getNodeTitle(), username);
             return node.generateNonce(bd);
         } else if (stringRule != null && stringRule.isLive()) {
             Action a = Action.BLOCK;
@@ -501,7 +504,7 @@ public abstract class Blacklist
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), a, reason, stringRule.getDescription(), node.getVendor());
             node.log(hbe, host, port, event);
 
-            WebFilterBlockDetails bd = new WebFilterBlockDetails(settings, host, uri, stringRule.getDescription(), clientIp, node.getNodeTitle(), (String) sess.globalAttachment(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME));
+            WebFilterBlockDetails bd = new WebFilterBlockDetails(settings, host, uri, stringRule.getDescription(), clientIp, node.getNodeTitle(), username);
             return node.generateNonce(bd);
         } else if (category != null) {
             Action a = Action.PASS;

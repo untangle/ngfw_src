@@ -1,43 +1,25 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
+/* $HeadURL$*/
 package com.untangle.uvm.networking;
 
-import static com.untangle.uvm.networking.ShellFlags.FLAG_BLOCK_PAGE_PORT;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_OUT;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_RES;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTP_IN;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_OUT_MASK;
-import static com.untangle.uvm.networking.ShellFlags.FLAG_OUT_NET;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_EXTERNAL;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_RESTRICTED;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_RESTRICTED_NET;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_RESTRICTED_MASK;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTP_INTERNAL;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.Query;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.networking.internal.AccessSettingsInternal;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.toolbox.UpstreamManager;
-import com.untangle.uvm.util.DataLoader;
-import com.untangle.uvm.util.DataSaver;
-import com.untangle.uvm.util.DeletingDataSaver;
+import com.untangle.uvm.util.TransactionWork;
 
 class AccessManagerImpl implements LocalAccessManager
 {
@@ -49,7 +31,7 @@ class AccessManagerImpl implements LocalAccessManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private AccessSettingsInternal accessSettings = null;
+    private AccessSettings accessSettings = null;
 
     private final Set<String> servicesSet = new HashSet<String>();
 
@@ -60,34 +42,23 @@ class AccessManagerImpl implements LocalAccessManager
     /* Use this to retrieve just the remote settings */
     public AccessSettings getSettings()
     {
-        return this.accessSettings.toSettings();
-    }
-
-    public AccessSettingsInternal getInternalSettings()
-    {
         return this.accessSettings;
     }
 
     /* Use this to mess with the remote settings without modifying the network settings */
-    public synchronized void setSettings( AccessSettings settings )
+    @SuppressWarnings("unchecked")
+    public synchronized void setSettings( final AccessSettings settings )
     {
-        setSettings( settings, false );
-    }
-
-    /* Use this to mess with the remote settings without modifying the network settings */
-    public synchronized void setSettings( AccessSettings settings, boolean forceSave )
-    {
-        /* should validate settings */
-        if ( !forceSave && settings.isClean()) logger.debug( "settings are clean, leaving alone." );
+        TransactionWork<Void> tw = new TransactionWork<Void>()
+            {
+                public boolean doWork(Session s)
+                {
+                    accessSettings = (AccessSettings)s.merge(settings);
+                    return true;
+                }
+            };
+        LocalUvmContextFactory.context().runTransaction(tw);
         
-        /* Need to save the settings to the database, then update the
-         * local value, everything is executed later */
-        DataSaver<AccessSettings> saver = new DeletingDataSaver<AccessSettings>( LocalUvmContextFactory.context(), "AccessSettings" );
-
-        AccessSettingsInternal newSettings = AccessSettingsInternal.makeInstance( settings );
-        saver.saveData( newSettings.toSettings());
-        this.accessSettings = newSettings;
-
         setSupportAccess( this.accessSettings );
     }
 
@@ -95,19 +66,31 @@ class AccessManagerImpl implements LocalAccessManager
     /* Initialize the settings, load at startup */
     synchronized void init()
     {
-        DataLoader<AccessSettings> loader =
-            new DataLoader<AccessSettings>( "AccessSettings", LocalUvmContextFactory.context());
+        TransactionWork<Object> tw = new TransactionWork<Object>()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery( "from " + "AccessSettings");
+                    accessSettings = (AccessSettings)q.uniqueResult();
+                    
+                    return true;
+                }
+            };
 
-        AccessSettings settings = loader.loadData();
+        LocalUvmContextFactory.context().runTransaction(tw);
         
-        if ( settings == null ) {
+        if ( accessSettings == null ) {
             logger.info( "There are no access settings in the database, must initialize from files." );
+            AccessSettings settings = new AccessSettings();
+
+            /* Load the defaults */
+            settings.setIsInsideInsecureEnabled( true );
+            settings.setIsOutsideAccessEnabled( true );
+            settings.setIsOutsideAdministrationEnabled( true );
+            settings.setIsOutsideQuarantineEnabled( true );
+            settings.setIsOutsideReportingEnabled( false );
             
-            setSettings( NetworkConfigurationLoader.getInstance().loadAccessSettings(), true );
-        } else {
-            // Need to ignore now obsolete db setting of support flag
-            NetworkConfigurationLoader.getInstance().loadSupportFlag(settings);
-            this.accessSettings = AccessSettingsInternal.makeInstance( settings );
+            setSettings( settings );
         }
     }
     
@@ -141,36 +124,38 @@ class AccessManagerImpl implements LocalAccessManager
     }
 
     /* ---------------------- PRIVATE ---------------------- */
-    private void updateShellScript( ScriptWriter scriptWriter, AccessSettingsInternal access )
+    private void updateShellScript( ScriptWriter scriptWriter, AccessSettings access )
     {
         if ( access == null ) {
             logger.warn( "unable to save hostname, access settings are not initialized." );            
             return;
         }
 
-        scriptWriter.appendVariable( FLAG_HTTP_IN, access.getIsInsideInsecureEnabled());
+        scriptWriter.appendLine("# Is HTTP port open on the internal interface");
+        scriptWriter.appendVariable( FLAG_HTTP_INTERNAL, access.getIsInsideInsecureEnabled());
 
-        // access.getIsOutsideAccessEnabled() is no longer used, HTTPs
-        // is automatically opened if there are any services that need
-        // it.
-        scriptWriter.appendVariable( FLAG_HTTPS_OUT, !this.servicesSet.isEmpty());
-        scriptWriter.appendVariable( FLAG_HTTPS_RES, access.getIsOutsideAccessRestricted());
+        // HTTPs is automatically opened if there are any services that need it.
+        scriptWriter.appendLine("# Is HTTPS port open on the external interface?");
+        scriptWriter.appendVariable( FLAG_HTTPS_EXTERNAL, !this.servicesSet.isEmpty());
+
+        scriptWriter.appendLine("# Is HTTPS port open on the external interface restricted (to only some IPs?)");
+        scriptWriter.appendVariable( FLAG_HTTPS_RESTRICTED, access.getIsOutsideAccessRestricted());
 
         IPaddr outsideNetwork = access.getOutsideNetwork();
         IPaddr outsideNetmask = access.getOutsideNetmask();
         
         if (( outsideNetwork != null ) && !outsideNetwork.isEmpty()) {
-            scriptWriter.appendVariable( FLAG_OUT_NET, outsideNetwork.toString());
+            scriptWriter.appendLine("# Is HTTPS port restricted to a certain network on external?");
+            scriptWriter.appendVariable( FLAG_HTTPS_RESTRICTED_NET, outsideNetwork.toString());
             
             if (( outsideNetmask != null ) && !outsideNetmask.isEmpty()) {
-                scriptWriter.appendVariable( FLAG_OUT_MASK, outsideNetmask.toString());
+                scriptWriter.appendLine("# Is HTTPS port restricted to a certain netmask on external?");
+                scriptWriter.appendVariable( FLAG_HTTPS_RESTRICTED_MASK, outsideNetmask.toString());
             }
         }
-
-        scriptWriter.appendVariable( FLAG_BLOCK_PAGE_PORT, access.getBlockPagePort());
     }
 
-    private void setSupportAccess( AccessSettingsInternal access )
+    private void setSupportAccess( AccessSettings access )
     {
         if ( !NetworkManagerImpl.getInstance().getSaveSettings()) {
             logger.warn( "not modifying support access as requested." );

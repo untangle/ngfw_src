@@ -36,11 +36,11 @@ import com.untangle.jvector.Source;
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.benchmark.Benchmark;
 import com.untangle.uvm.benchmark.Event;
 import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
-import com.untangle.uvm.networking.LocalNetworkManager;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.policy.Policy;
@@ -116,11 +116,10 @@ public abstract class ArgonHook implements Runnable
                 logger.debug( "New thread for session id: " + netcapSession.id() + " " + sessionGlobalState );
             }
 
-            LocalNetworkManager lnm = LocalUvmContextFactory.context().localNetworkManager();
-            boolean isSingleNicMode = lnm.isSingleNicModeEnabled();
+            NetworkManager lnm = LocalUvmContextFactory.context().networkManager();
 	    
             /* Update the server interface */
-            netcapSession.determineServerIntf( isSingleNicMode );
+            netcapSession.determineServerIntf( );
 
             /**
              * If the server interface is still unknown, drop the session
@@ -142,11 +141,6 @@ public abstract class ArgonHook implements Runnable
                 liberate();
                 raze();
                 return;
-            }
-
-            if ( isSingleNicMode ) {
-                lnm.singleNicRegisterAddress( netcapSession.clientSide().client().host());
-                lnm.singleNicRegisterAddress( netcapSession.serverSide().server().host());
             }
 
             clientSide = new NetcapIPSessionDescImpl( sessionGlobalState, true );

@@ -22,23 +22,23 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.RemoteNetworkManager;
-import com.untangle.uvm.networking.internal.ServicesInternalSettings;
+import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.networking.NetworkSettings;
+import com.untangle.uvm.networking.InterfaceSettings;
 
-// import static com.untangle.node.openvpn.Constants.*;
-
-class OpenVpnManager
+public class OpenVpnManager
 {
     static final String OPENVPN_CONF_DIR      = "/etc/openvpn";
     private static final String OPENVPN_SERVER_FILE   = OPENVPN_CONF_DIR + "/server.conf";
@@ -324,7 +324,7 @@ class OpenVpnManager
         throws Exception
     {
         LocalUvmContext uvm = LocalUvmContextFactory.context();
-        RemoteNetworkManager nm = uvm.networkManager();
+        NetworkManager nm = uvm.networkManager();
 
         Map<String,String> i18nMap = uvm.languageManager().getTranslations("untangle-node-openvpn");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
@@ -389,7 +389,7 @@ class OpenVpnManager
         sw.appendVariable( FLAG_CA,   CLI_KEY_DIR + "/" + siteName + "-ca.crt" );
 
         /* VPN configuratoins needs information from the networking settings. */
-        RemoteNetworkManager networkManager = LocalUvmContextFactory.context().networkManager();
+        NetworkManager networkManager = LocalUvmContextFactory.context().networkManager();
 
         /* This is kind of janky */
         String publicAddress = networkManager.getPublicAddress();
@@ -423,7 +423,7 @@ class OpenVpnManager
         } catch ( Exception e ) {
             logger.error( "Unable to delete the previous client configuration files." );
         }
-        ServicesInternalSettings sis = LocalUvmContextFactory.context().localNetworkManager().getServicesInternalSettings();
+        NetworkSettings networkSettings = LocalUvmContextFactory.context().networkManager().getNetworkSettings();
         
         Map<String,VpnGroup> groupMap = buildGroupMap(settings);
 
@@ -446,18 +446,30 @@ class OpenVpnManager
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
 
             if(group.getUseDNS()) {
-                List<IPaddr> dnsServers = sis.getDnsServerList();
+                List<IPaddr> dnsServers = null;
 
-                if ( settings.getIsDnsOverrideEnabled()) dnsServers = settings.getDnsServerList();
+                if ( settings.getIsDnsOverrideEnabled()) {
+                    dnsServers = settings.getDnsServerList();
+                } else {
+                    dnsServers = new LinkedList<IPaddr>();
+                    for (InterfaceSettings intf : networkSettings.getInterfaceList()) {
+                        if (intf.isWAN()) {
+                            if (intf.getDns1() != null)
+                                dnsServers.add(new IPaddr(intf.getDns1()));
+                            if (intf.getDns2() != null)
+                                dnsServers.add(new IPaddr(intf.getDns2()));
+                        }
+                    }
+                }
 
                 for(IPaddr addr : dnsServers) {
                     sw.appendVariable( "push", "\"dhcp-option DNS " + addr.toString() + "\"");
                 }
 
-                HostName localDomain = sis.getDnsLocalDomain();
+                String localDomain = networkSettings.getDnsLocalDomain();
                 //If the domain is set - push it
                 if(localDomain != null) {
-                    sw.appendVariable( "push", "\"dhcp-option DOMAIN " + localDomain.toString() + "\"");
+                    sw.appendVariable( "push", "\"dhcp-option DOMAIN " + localDomain + "\"");
                 }
             }
 

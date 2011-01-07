@@ -95,35 +95,8 @@ public class InboxMaintenenceControler extends HttpServlet
 
         String account = null;
         try {
-            //Attempt to decrypt their token
-            if (authTkn.equals("PU")) {
-                Principal pl = req.getUserPrincipal();
-                if (null != pl) {
-                    LocalUvmContext mctx = LocalUvmContextFactory.context();
-                    RemoteAddressBook ab = mctx.appAddressBook();
-                    String user = mctx.portalManager().getUid(pl);
-                    if (user != null) {
-                        UserEntry ue = ab.getEntry(user);
-                        if (null != ue) {
-                            account = ue.getEmail();
-                        }
-                    }
-                }
+            account = quarantine.getAccountFromToken(authTkn);
 
-                if (null == account ||
-                    false == account.contains("@") ||
-                    true == account.equalsIgnoreCase("user@localhost")) {
-                    log("[MaintenenceControlerBase] (quarantine access through portal) email address is invalid: " + account);
-                    req.setAttribute( "requestMessageCode", "INVALID_PORTAL_EMAIL" );
-                    req.getRequestDispatcher(Constants.REQ_DIGEST_VIEW).forward(req, resp);
-                    return;
-                }
-
-                
-                authTkn = QuarantineEnduserServlet.instance().getMailNode().createAuthToken(account);
-            } else {
-                account = quarantine.getAccountFromToken(authTkn);
-            }
             String remappedTo = quarantine.getMappedTo(account);
             IsRemappedTag.setCurrent(req, remappedTo!= null);
             if(remappedTo != null) {

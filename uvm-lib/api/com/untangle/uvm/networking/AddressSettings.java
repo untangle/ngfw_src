@@ -42,6 +42,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.node.HostName;
@@ -49,6 +50,7 @@ import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
+import com.untangle.uvm.node.HostAddress;
 
 /**
  * These are settings related to the hostname and the adddress that is
@@ -62,16 +64,12 @@ import com.untangle.uvm.node.ValidateException;
 @SuppressWarnings("serial")
 public class AddressSettings implements Serializable, Validatable
 {
+    private final Logger logger = Logger.getLogger(getClass());
 
-    private static final String PUBLIC_ADDRESS_EXCEPTION =
-        "A public address is an ip address, optionally followed by a port.  (e.g. 1.2.3.4:445 or 1.2.3.4)";
+    private static final String PUBLIC_ADDRESS_EXCEPTION = "A public address is an ip address, optionally followed by a port.  (e.g. 1.2.3.4:445 or 1.2.3.4)";
 
     private Long id;
     
-    /* boolean which can be used by the untangle to determine if the
-     * object returned by a user interface has been modified. */
-    private boolean isClean = false;
-
     /* An additional HTTPS port that the web server will bind to */
     private int httpsPort;
 
@@ -90,7 +88,8 @@ public class AddressSettings implements Serializable, Validatable
      * another box. */
     private IPaddr publicIPaddr;
     
-    /* This is the port on the external router that is redirect to the
+    /**
+     * This is the port on the external router that is redirect to the
      * untangle's httpsPort. <code>publicPort</code> is used in
      * conjunction with <code>publicIPaddr</code>
      */
@@ -100,6 +99,15 @@ public class AddressSettings implements Serializable, Validatable
     {
     }
 
+    public AddressSettings( AddressSettings settings )
+    {
+        this.httpsPort = settings.httpsPort;
+        this.hostname = settings.hostname;
+        this.isHostnamePublic = settings.isHostnamePublic;
+        this.isPublicAddressEnabled = settings.isPublicAddressEnabled;
+        this.publicIPaddr = settings.publicIPaddr;
+    }
+        
     @Id
     @Column(name="settings_id")
     @GeneratedValue
@@ -125,7 +133,6 @@ public class AddressSettings implements Serializable, Validatable
      * Set the port to run HTTPs on in addition to port 443. */
     public void setHttpsPort( int newValue )
     {
-        if ( this.httpsPort != newValue ) this.isClean = false;
         this.httpsPort = newValue;
     }
 
@@ -143,7 +150,6 @@ public class AddressSettings implements Serializable, Validatable
     {
         if ( newValue == null ) newValue = NetworkUtil.DEFAULT_HOSTNAME;
 
-        if ( !HostName.equals( this.hostname, newValue )) this.isClean = false;
         this.hostname = newValue;
     }
 
@@ -161,7 +167,6 @@ public class AddressSettings implements Serializable, Validatable
      * box */
     public void setIsHostNamePublic( boolean newValue )
     {
-        if ( newValue != this.isHostnamePublic ) this.isClean = false;
         this.isHostnamePublic = newValue;
     }
 
@@ -176,7 +181,6 @@ public class AddressSettings implements Serializable, Validatable
 
     public void setIsPublicAddressEnabled( boolean newValue )
     {
-        if ( newValue != this.isPublicAddressEnabled ) this.isClean = false;
         this.isPublicAddressEnabled = newValue;
     }
 
@@ -253,7 +257,6 @@ public class AddressSettings implements Serializable, Validatable
      */
     public void setPublicIPaddr( IPaddr newValue )
     {
-        if ( IPaddr.equals( this.publicIPaddr, newValue )) this.isClean = false;
         this.publicIPaddr = newValue;
     }
 
@@ -279,7 +282,6 @@ public class AddressSettings implements Serializable, Validatable
     {
         if (( newValue <= 0 ) || ( newValue >= 0xFFFF )) newValue = NetworkUtil.DEF_HTTPS_PORT;
 
-        if ( newValue != this.publicPort ) this.isClean = false;
         this.publicPort = newValue;
     }
 
@@ -293,23 +295,76 @@ public class AddressSettings implements Serializable, Validatable
     }
 
     /**
-     * Return true iff the settings haven't been modified since the
-     * last time <code>isClean( true )</code> was called.
+     * The current hostname (calculated)
      */
     @Transient
-    public boolean isClean()
+    public HostAddress getCurrentPublicAddress()
     {
-        return this.isClean;
+        HostAddress address = null;
+
+        /* if using the public address then, get the address from the settings. */
+        String publicAddress = this.getPublicAddress();
+
+        IPaddr primaryAddress = com.untangle.uvm.client.RemoteUvmContextFactory.context().networkManager().getPrimaryAddress();
+        
+        /* has public address trumps over all other settings */
+        if ( this.getIsPublicAddressEnabled() && ( publicAddress != null ) && ( publicAddress.trim().length() > 0 )) {
+            /* has public address is set and a public address is available */
+            address = new HostAddress( this.getPublicIPaddr());
+            
+        } else if ( this.getIsHostNamePublic() )  {
+            /* no public address, use the primary address, and the hostname */
+            HostName name = this.getHostName();
+            
+            /* If a hostname is available, and qualified, then use the hostname */
+            if (( name != null ) && !name.isEmpty() && name.isQualified()) {
+                address = new HostAddress( primaryAddress, name );
+            }
+        }
+
+        /* If none of the other condititions have been met, just use the primary address */
+        if ( address == null ) {
+            address = new HostAddress( primaryAddress );
+        }
+
+        return address;
     }
 
     /**
-     * Clear or set the isClean flag.
-     *
-     * @param newValue The new value for the isClean flag.
+     * @return the public url for the box, this is the address (may be hostname or ip address)
      */
-    public void isClean( boolean newValue )
+    @Transient
+    public String getCurrentURL()
     {
-        this.isClean = newValue;
+        HostAddress currentPublicAddress = this.getCurrentPublicAddress();
+        int currentPublicPort = this.getCurrentPublicPort();
+        String url = currentPublicAddress.toString();
+        
+        if (( NetworkUtil.DEF_HTTPS_PORT != currentPublicPort ) && ( currentPublicPort > 0 ) && ( currentPublicPort < 0xFFFF )) {
+            url += ":" + currentPublicPort;
+        }
+
+        return url;
+    }
+
+    /**
+     * The current port (calculated)
+     */
+    @Transient
+    public int getCurrentPublicPort()
+    {
+        int port = this.getHttpsPort();
+
+        if ( this.getIsPublicAddressEnabled() ) {
+            port = this.getPublicPort();
+        }
+
+        if ( port <= 0 || port >= 0xFFFF ) {
+            logger.warn( "port is an invalid value, using default: " + port );
+            port = NetworkUtil.DEF_HTTPS_PORT;
+        }
+
+        return port;
     }
 
     /**

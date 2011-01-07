@@ -163,28 +163,12 @@ public class AccessSettings implements Serializable, Validatable
         this.isInsideInsecureEnabled = newValue;
     }
 
-
-    /**
-     * Get the port to render blockpage on.
-     *
-     * @return the port blockpages are rendered on
-     */
+    /* XXX DEPRECATED */
     @Column(name="block_page_port")
-    public int getBlockPagePort()
-    {
-        return this.blockPagePort;
-    }
+    public int getBlockPagePort() {return 80;}
 
-    /**
-     * Set the blockPage port.
-     *
-     * @param newValue the new port to put the blockPage on.
-     */
-    public void setBlockPagePort( int newValue )
-    {
-        if ( newValue != this.blockPagePort ) this.isClean = false;
-        this.blockPagePort = newValue;
-    }
+    /* XXX DEPRECATED */
+    public void setBlockPagePort( int newValue ) {}
 
     /**
      * Get whether or not external remote access is enabled.  This is

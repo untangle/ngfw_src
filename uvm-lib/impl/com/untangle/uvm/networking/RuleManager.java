@@ -1,21 +1,4 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
+/* $HeadURL$ */
 package com.untangle.uvm.networking;
 
 import org.apache.log4j.Logger;
@@ -48,7 +31,7 @@ public class RuleManager
     /* ---------------------- PACKAGE ---------------------- */
 
     /* Call the script to generate all of the iptables rules */
-    synchronized void generateIptablesRules() throws NetworkException
+    synchronized void generateIptablesRules() throws Exception
     {
         if ( isShutdown ) {
             logger.warn( "UVM is already shutting down, no longer able to generate rules" );
@@ -59,7 +42,7 @@ public class RuleManager
         LocalUvmContextFactory.context().newThread( new GenerateRules( null )).start();
     }
 
-    synchronized void destroyIptablesRules() throws NetworkException
+    synchronized void destroyIptablesRules() throws Exception
     {
         if ( isShutdown ) {
             logger.warn( "UVM is already shutting down, no longer able to generate rules" );
@@ -88,20 +71,22 @@ public class RuleManager
             tcp = DEFAULT_TCP_PORT_RANGE;
         }
         
+        scriptWriter.appendLine("# Ports that the Untangle-vm is listening for incoming TCP connections");
         scriptWriter.appendVariable( TCP_REDIRECT_PORT_FLAG, tcp.low() + "-" + tcp.high());
         
         LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
         
         /* Setup all of the values for the interfaces */
         /* XXX When we want to use custom interfaces we should just redefine INTERFACE_ORDER */
-        for ( ArgonInterface intf : lim.getIntfList()) {
-            if ( intf.hasSecondaryName()) {
-                String argonName = IntfConstants.toName( intf.getArgon()).toUpperCase();
-                scriptWriter.appendVariable( "UVM_" + argonName + "_INTF", intf.getSecondaryName());
-            }
-        }
+        //         for ( ArgonInterface intf : lim.getIntfList()) {
+        //             if ( intf.hasSecondaryName()) {
+        //                 String argonName = IntfConstants.toName( intf.getArgon()).toUpperCase();
+        //                 scriptWriter.appendVariable( "UVM_" + argonName + "_INTF", intf.getSecondaryName());
+        //             }
+        //         }
         
         /* Add the flag to redirect traffic from 443, to the special internal open port */
+        scriptWriter.appendLine("# The local HTTPS port");
         scriptWriter.appendVariable( INTERNAL_OPEN_REDIRECT_FLAG, NetworkUtil.INTERNAL_OPEN_HTTPS_PORT );
     }
 

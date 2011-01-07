@@ -186,9 +186,9 @@ public abstract class NetcapSession
         this.serverMark(server_mark);
     }
     
-    public void determineServerIntf( boolean isSingleNicMode )
+    public void determineServerIntf( )
     {
-        determineServerIntf( pointer.value(), isSingleNicMode );
+        determineServerIntf( pointer.value() );
     }
 
     public void raze()
@@ -214,7 +214,7 @@ public abstract class NetcapSession
 
     private static native long getSession( int id, short protocol );
     private static native void raze( long session );
-    private static native void determineServerIntf( long session, boolean isSingleNicMode );
+    private static native void determineServerIntf( long session );
 
     private static native int  getClientMark( long session );
     private static native void setClientMark( long session, int mark );

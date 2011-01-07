@@ -34,35 +34,40 @@
 package com.untangle.uvm;
 
 import java.util.List;
+import java.net.InetAddress;
 import org.json.JSONArray;
 
 import com.untangle.uvm.networking.AccessSettings;
 import com.untangle.uvm.networking.AddressSettings;
-import com.untangle.uvm.networking.BasicNetworkSettings;
+import com.untangle.uvm.networking.NetworkSettings;
 import com.untangle.uvm.networking.IPNetwork;
-import com.untangle.uvm.networking.Interface;
 import com.untangle.uvm.networking.MiscSettings;
-import com.untangle.uvm.networking.NetworkException;
-import com.untangle.uvm.networking.NetworkSpacesSettingsImpl;
+import com.untangle.uvm.networking.NetworkSettingsListener;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ValidateException;
+import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.NetworkManager;
 
-public interface RemoteNetworkManager
+public interface NetworkManager
 {
     /**
-     * Retrieve the basic network settings
+     * Retrieve the network settings
      */
-    BasicNetworkSettings getBasicSettings();
+    NetworkSettings getNetworkSettings();
 
-    /* Save the basic network settings during the wizard */
-    void setSetupSettings(AddressSettings address, BasicNetworkSettings basic)
-        throws NetworkException, ValidateException;
+    /**
+     * Save the network settings during the wizard
+     */
+    void setSetupSettings(AddressSettings address, NetworkSettings settings)
+        throws Exception, ValidateException;
 
-    /* Save the basic network settings during the wizard.
-     * This can double for refresh because it returns the new, populated network settings.*/
-    BasicNetworkSettings setSetupSettings(BasicNetworkSettings basic)
-        throws NetworkException, ValidateException;
+    /**
+     * Save the network settings during the wizard.
+     * This can double for refresh because it returns the new, populated network settings.
+     */
+    NetworkSettings setSetupSettings(NetworkSettings settings)
+        throws Exception, ValidateException;
 
     /**
      * Retrieve the settings related to limiting access to the box.
@@ -88,34 +93,23 @@ public interface RemoteNetworkManager
     void setMiscSettings( MiscSettings misc );
 
     /**
-     * Retrieve the current network configuration
-     */
-    NetworkSpacesSettingsImpl getNetworkSettings();
-
-    /**
-     * Retrieve the list of interfaces
-     * @param updateStatus True if you want to update the interface status.
-     */
-    List<Interface> getInterfaceList( boolean updateStatus );
-
-    /**
      * Remap the interfaces
      * @param osArray Array of os names (eth0, eth1, etc)
      * @param userArray Array of system names (External, Internal, etc);
      */
-    void remapInterfaces( String[] osArray, String[] userArray ) throws NetworkException;
+    void remapInterfaces( String[] osArray, String[] userArray ) throws Exception;
 
     /* Set the access and address settings, used by the Remote Panel */
     void setSettings( AccessSettings access, AddressSettings address )
-        throws NetworkException, ValidateException;
+        throws Exception, ValidateException;
 
     /* Set the Access, Misc and Network settings at once.  Used by the
      * support panel */
     void setSettings( AccessSettings access, MiscSettings misc )
-        throws NetworkException, ValidateException;
+        throws Exception, ValidateException;
 
     /** Update the internal representation of the address */
-    void updateAddress() throws NetworkException;
+    void updateAddress() throws Exception;
 
     /* Get the external HTTPS port */
     int getPublicHttpsPort();
@@ -123,30 +117,23 @@ public interface RemoteNetworkManager
     /* Get the hostname of the box */
     HostName getHostname();
 
-    /* Get the domain name of the box (alpaca domainNameSuffix) */
-    HostName getDomainName();
-
     /* Get the public URL of the box */
     String getPublicAddress();
 
+    IPaddr getPrimaryAddress();
+
     /* Allow the setup wizard to setup NAT properly, or disable it. */
     void setWizardNatEnabled(IPaddr address, IPaddr netmask, boolean enableDhcpServer ) 
-        throws NetworkException;
-    void setWizardNatDisabled() throws NetworkException;
+        throws Exception;
+    void setWizardNatDisabled() throws Exception;
 
     /* returns a recommendation for the internal network. */
     /* @param externalAddress The external address, if null, this uses
      * the external address of the box. */
     IPNetwork getWizardInternalAddressSuggesstion(IPaddr externalAddress);
 
-    /* Returns true if address is local to the edgeguard */
-    boolean isAddressLocal( IPaddr address );
-
-    /* Returns true if single nic mode is enabled */
-    boolean isSingleNicModeEnabled();
-
     /* Returns a list of the physical interfaces on the box. (eth0, eth1, etc). */
-    public List<String> getPhysicalInterfaceNames() throws NetworkException;
+    public List<String> getPhysicalInterfaceNames() throws Exception;
 
     /* Forces the link status to be re-examined, since it is likely to
      * have changed */
@@ -162,4 +149,27 @@ public interface RemoteNetworkManager
     
     public void enableQos();
 
+    /**
+     * Register a service that needs outside access to HTTPs, the name
+     * should be unique
+     */
+    void registerService( String name );
+
+    /**
+     * Remove a service that needs outside access to HTTPs, the name
+     * should be unique
+     */
+    void unregisterService( String name );
+
+    /**
+     * This returns an address where the host should be able to access
+     * HTTP.  if HTTP is not reachable, this returns NULL
+     */
+    InetAddress getInternalHttpAddress( IPSessionDesc session );
+
+    void registerListener( NetworkSettingsListener networkListener );
+
+    void unregisterListener( NetworkSettingsListener networkListener );
+
+    void refreshIptablesRules();
 }

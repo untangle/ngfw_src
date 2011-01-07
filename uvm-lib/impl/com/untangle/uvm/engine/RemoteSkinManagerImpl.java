@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.Iterator;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
@@ -38,13 +39,13 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.thoughtworks.xstream.XStream;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.RemoteSkinManager;
 import com.untangle.uvm.SkinInfo;
 import com.untangle.uvm.SkinSettings;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.license.License;
 import com.untangle.uvm.servlet.UploadHandler;
-import com.untangle.uvm.util.DeletingDataSaver;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.TransactionWork;
 
@@ -65,7 +66,7 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
     private final Logger logger = Logger.getLogger(getClass());
 
     private final UvmContextImpl uvmContext;
-    private SkinSettings settings;
+    private SkinSettings skinSettings;
 
     RemoteSkinManagerImpl(UvmContextImpl uvmContext)
     {
@@ -76,31 +77,31 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
                 public boolean doWork(Session s)
                 {
                     Query q = s.createQuery("from SkinSettings");
-                    settings = (SkinSettings)q.uniqueResult();
+                    skinSettings = (SkinSettings)q.uniqueResult();
 
-                    if (null == settings) {
-                	settings = new SkinSettings();
-                	settings.setAdministrationClientSkin(DEFAULT_ADMIN_SKIN);
-                	settings.setUserPagesSkin(DEFAULT_USER_SKIN);
-                        s.save(settings);
+                    if (skinSettings == null) {
+                        skinSettings = new SkinSettings();
+                        skinSettings.setAdministrationClientSkin(DEFAULT_ADMIN_SKIN);
+                        skinSettings.setUserPagesSkin(DEFAULT_USER_SKIN);
+                        s.save(skinSettings);
                     }
 
-		    // check version of skins and revert to default if it is not compatible
-		    String userSkin = settings.getUserPagesSkin();
-		    File userSkinXML = new File( SKINS_DIR + File.separator + userSkin + File.separator + "skin.xml" );
-		    SkinInfo userSkinInfo = getSkinInfo( userSkinXML, false, true );
-		    if ( userSkinInfo == null || userSkinInfo.isUserFacingSkinOutOfDate() ) {
-			settings.setUserPagesSkin( DEFAULT_USER_SKIN );
-                        settings.setOutOfDate( true );
-		    }
+                    // check version of skins and revert to default if it is not compatible
+                    String userSkin = skinSettings.getUserPagesSkin();
+                    File userSkinXML = new File( SKINS_DIR + File.separator + userSkin + File.separator + "skin.xml" );
+                    SkinInfo userSkinInfo = getSkinInfo( userSkinXML, false, true );
+                    if ( userSkinInfo == null || userSkinInfo.isUserFacingSkinOutOfDate() ) {
+                        skinSettings.setUserPagesSkin( DEFAULT_USER_SKIN );
+                        skinSettings.setOutOfDate( true );
+                    }
 		    
-		    String adminSkin = settings.getAdministrationClientSkin();
-		    File adminSkinXML = new File( SKINS_DIR + File.separator + adminSkin + File.separator + "skin.xml" );
-		    SkinInfo adminSkinInfo = getSkinInfo( adminSkinXML, false, true );
-		    if ( adminSkinInfo == null || adminSkinInfo.isAdminSkinOutOfDate() ) {
-			settings.setAdministrationClientSkin( DEFAULT_ADMIN_SKIN );
-                        settings.setOutOfDate( true );
-		    }
+                    String adminSkin = skinSettings.getAdministrationClientSkin();
+                    File adminSkinXML = new File( SKINS_DIR + File.separator + adminSkin + File.separator + "skin.xml" );
+                    SkinInfo adminSkinInfo = getSkinInfo( adminSkinXML, false, true );
+                    if ( adminSkinInfo == null || adminSkinInfo.isAdminSkinOutOfDate() ) {
+                        skinSettings.setAdministrationClientSkin( DEFAULT_ADMIN_SKIN );
+                        skinSettings.setOutOfDate( true );
+                    }
         
                     return true;
                 }
@@ -115,25 +116,21 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
 
     public SkinSettings getSkinSettings()
     {
-        return settings;
+        return skinSettings;
     }
 
-    public void setSkinSettings(SkinSettings settings)
+    public void setSkinSettings(SkinSettings newSettings)
     {
-        /* delete whatever is in the db, and just make a fresh settings object */
-        SkinSettings copy = new SkinSettings();
-        settings.copy(copy);
-
         boolean isValid = uvmContext.licenseManager().getLicense( License.BRANDING ).getValid();
 
         if ( isValid ) {
-            String userSkin = this.settings.getUserPagesSkin();
+            String userSkin = newSettings.getUserPagesSkin();
             if ( userSkin == null || userSkin.length() == 0 ) userSkin = DEFAULT_USER_SKIN;
-            settings.setUserPagesSkin( userSkin );
+            newSettings.setUserPagesSkin( userSkin );
         }
         
-        saveSettings(copy);
-        this.settings = copy;
+        saveSettings(newSettings);
+        this.skinSettings = newSettings;
 
         try {
             /* This is asynchronous */
@@ -259,10 +256,25 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
     }
     
     // private methods --------------------------------------------------------
-    private void saveSettings(SkinSettings settings) {
-        DeletingDataSaver<SkinSettings> saver = 
-            new DeletingDataSaver<SkinSettings>(uvmContext,"SkinSettings");
-        this.settings = saver.saveData(settings);
+    @SuppressWarnings("unchecked")
+    private void saveSettings(final SkinSettings settings)
+    {
+        TransactionWork<Void> tw = new TransactionWork<Void>()
+            {
+                public boolean doWork(Session s)
+                {
+                    /* delete old settings */
+                    Query q = s.createQuery( "from " + "SkinSettings" );
+                    for ( Iterator<SkinSettings> iter = q.iterate() ; iter.hasNext() ; ) {
+                        SkinSettings oldSettings = iter.next();
+                        s.delete( oldSettings );
+                    }
+
+                    skinSettings = (SkinSettings)s.merge(settings);
+                    return true;
+                }
+            };
+        LocalUvmContextFactory.context().runTransaction(tw);
     }
     
     private void processSkinFolder(File dir, List<File> processedSkinFolders)

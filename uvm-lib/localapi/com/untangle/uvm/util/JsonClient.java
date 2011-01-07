@@ -54,7 +54,6 @@ import org.json.JSONObject;
 
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.networking.NetworkException;
 
 @SuppressWarnings("serial")
 public class JsonClient
@@ -103,14 +102,14 @@ public class JsonClient
     }
 
     public JSONObject callAlpaca( String component, String method, JSONObject object ) 
-        throws ConnectionException, IOException, NetworkException
+        throws ConnectionException, IOException, Exception
     {
         String url = ALPACA_BASE_URL + component + "/" + method + "?argyle=" + getNonce();
         return call( url, null, object );
     }
 
     public void callAlpacaAsync( String component, String method, JSONObject object ) 
-        throws ConnectionException, IOException, NetworkException
+        throws ConnectionException, IOException, Exception
     {
         String url = ALPACA_BASE_URL + component + "/" + method + "?argyle=" + getNonce();
         LocalUvmContextFactory.context().newThread( new AsyncRequestRunner( url, null, object )).start();
@@ -131,7 +130,7 @@ public class JsonClient
             logger.warn( "Unable to build json object" );
         } catch ( IOException e ) {
             logger.warn( "Unable to build json object" );
-        } catch ( NetworkException e ) {
+        } catch ( Exception e ) {
             logger.warn( "Unable to build json object" );
         }
     }
@@ -206,7 +205,7 @@ public class JsonClient
     }
 
     /* --------- private --------- */
-    private String getNonce() throws IOException, NetworkException 
+    private String getNonce() throws IOException, Exception 
     {
         BufferedReader stream = null;
         try {
@@ -214,8 +213,7 @@ public class JsonClient
             
             String nonce = stream.readLine();
             if ( nonce.length() < 3 ) {
-                throw new NetworkException( "Invalid nonce in the file [" + ALPACA_NONCE_FILE + "]: ', " + 
-                                            nonce + "'" );
+                throw new Exception( "Invalid nonce in the file [" + ALPACA_NONCE_FILE + "]: ', " + nonce + "'" );
             }
 
             return nonce;
