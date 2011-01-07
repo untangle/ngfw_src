@@ -867,8 +867,10 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             name=config.node.displayName;
             this.item=config.node;
         } else {
-           Ext.MessageBox.alert(i18n._("Apps Error"), i18n._("Error in Rack View applications list."));
            this.isValid=false;
+            // ignore this error from the esoft web filter rename
+            if (config.trialLibitem != null && config.trialItem.displayName != "eSoft Web Filter")
+                Ext.MessageBox.alert(i18n._("Apps Error"), i18n._("Error in Rack View applications list."));
            // error
         }
         this.id = "app-item_" + name;
