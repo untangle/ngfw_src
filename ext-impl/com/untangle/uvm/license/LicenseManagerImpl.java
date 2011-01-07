@@ -34,7 +34,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.RemoteNetworkManager;
 
 public class LicenseManagerImpl implements LicenseManager
 {
