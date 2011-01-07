@@ -95,9 +95,9 @@ public class LicenseManagerImpl implements LicenseManager
     @Override
     public final void reloadLicenses()
     {
-        if (!this.pulse.beat(4000)) {
-            logger.debug("unable to wait for the license task to complete.");
-        }
+        // we actually want to block here so call reloadLicenses directly instead of
+        // firing the pulse
+        _syncLicensesWithServer();
     }
 
     @Override
@@ -567,6 +567,9 @@ public class LicenseManagerImpl implements LicenseManager
         return -1;
     }
 
+    /**
+     * Returns the url for the license server API
+     */
     private String _getLicenseUrl()
     {
         String urlStr = System.getProperty(LICENSE_URL_PROPERTY);
@@ -576,10 +579,12 @@ public class LicenseManagerImpl implements LicenseManager
 
         return urlStr;
     }
-    
-    private class LycenseSyncTask implements Runnable
+
+    /**
+     * syncs the license server state with local state
+     */
+    private void _syncLicensesWithServer()
     {
-        public void run() {
             logger.info("Reloading licenses..." );
 
             synchronized (LicenseManagerImpl.this) {
@@ -592,6 +597,13 @@ public class LicenseManagerImpl implements LicenseManager
             }
 
             logger.info("Reloading licenses... done" );
+    }
+    
+    private class LycenseSyncTask implements Runnable
+    {
+        public void run()
+        {
+            _syncLicensesWithServer();    
         }
     }
     
