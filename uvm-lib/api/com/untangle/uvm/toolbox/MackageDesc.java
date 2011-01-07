@@ -79,7 +79,6 @@ public class MackageDesc implements Serializable
     private final boolean autoStart;
     private final boolean invisible;
     private final String hide;
-    
 
     public MackageDesc(Map<String, String> m, String installedVersion)
     {
@@ -143,11 +142,12 @@ public class MackageDesc implements Serializable
 
         this.installedVersion = installedVersion;
 
-        // hide on
+        // hide 
         v = m.get("untangle-hide");
+        String hideOn = m.get("untangle-hide-on"); // obsolete old name - this is for backwards compat
         // any non-null value means true
         // we must do this because old packages used varying values like "iso" and "u4w"
-        this.hide = (v == null ? "" : "true");
+        this.hide = (v == null && hideOn == null ? "" : "true");
     }
 
     public String getName()
