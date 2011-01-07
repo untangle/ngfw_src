@@ -145,7 +145,9 @@ public class MackageDesc implements Serializable
 
         // hide on
         v = m.get("untangle-hide");
-        this.hide = null == v ? "" : v;
+        // any non-null value means true
+        // we must do this because old packages used varying values like "iso" and "u4w"
+        this.hide = (v == null ? "" : "true");
     }
 
     public String getName()
