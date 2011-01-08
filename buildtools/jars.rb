@@ -112,13 +112,10 @@ class Jars
                  Jars.downloadTarget('xmlrpc-3.1/lib/ws-commons-util-1.0.2.jar') ]
 
   ## GUIJars
-  Alloy      = [ Jars.downloadTarget('alloylnf-1_4_4-1/alloy.jar') ]
   JFreeChart = [ 'jfreechart-1.0.13.jar', 'jcommon-1.0.16.jar' ].map { |p| Jars.downloadTarget("jfreechart-1.0.13/lib/#{p}") }
-  Netbeans   = [ Jars.downloadTarget('netbeans-3.5/netbeans-3.5.jar') ]
 
   ## Miscellaneous Jars
   JavaMail   = [ Jars.downloadTarget('javamail-1.3.3_01/mail.jar') ]
-  Jcifs      = [ Jars.downloadTarget('jcifs_1.2.9/jcifs-1.2.9.jar') ]
   Dom4j      = [ Jars.downloadTarget('hibernate-3.2/lib/dom4j-1.6.1.jar') ]
   Activation = [ Jars.downloadTarget('jaf-1.0.2/activation.jar') ]
   Postgres   = [ Jars.downloadTarget('postgres-jdbc-7.4_215/pg74.215.jdbc3.jar')]
@@ -160,7 +157,7 @@ class Jars
   ## Groups used for compiling
   # This is available to everything?
   Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres,
-                              Activation, Jcifs, C3p0, Ant, JavaMailApi,
+                              Activation, C3p0, Ant, JavaMailApi,
                               GetText, JavaMail, TomcatEmb, Velocity, 
                               Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc,
                               Jstl, XStream, Json, Jabsorb, Slf4j, DnsJava,
