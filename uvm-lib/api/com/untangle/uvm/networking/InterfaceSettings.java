@@ -44,7 +44,6 @@ public class InterfaceSettings implements java.io.Serializable, JSONString
     private InetAddress dns2 = null;
     private String      dns2Str = null;
     private Integer mtu = null;
-    private String ethernetNegotiation = null; /* "auto" */
     
     /**
      * dynamic unique configuration
@@ -264,16 +263,6 @@ public class InterfaceSettings implements java.io.Serializable, JSONString
     public void setMtu( Integer mtu )
     {
         this.mtu = mtu;
-    }
-
-    public String getEthernetNegotiation()
-    {
-        return this.ethernetNegotiation;
-    }
-
-    public void setEthernetnegotiation( String ethernetNegotiation )
-    {
-        this.ethernetNegotiation = ethernetNegotiation;
     }
 
     public String getPPPoEUsername()
