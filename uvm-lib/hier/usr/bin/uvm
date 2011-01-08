@@ -92,13 +92,11 @@ flushIptables() {
     curl "http://localhost:3000/alpaca/uvm/generate_rules?argyle=${t_nonce}"
 }
 
-# In 5.3, this code is only used to handle the upgrade and factory-defaults cases.
-getPopId() {
-  # for new installs from iso, do nothing
-  [[ -f $UID_FILE ]] || return
-
-  # ensure we have a popid
-  @UVM_HOME@/bin/ut-activate
+# Activate if we haven't already
+activate() {
+  if [ ! -f $UID_FILE ] ; then 
+    @UVM_HOME@/bin/ut-activate
+  fi
 }
 
 # Return true (0) when we need to reap and restart the uvm.
@@ -170,7 +168,7 @@ while true; do
 
     flushIptables
 
-    getPopId
+    activate
 
     flushConntrack
 
