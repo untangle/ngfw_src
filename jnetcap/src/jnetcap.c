@@ -630,10 +630,10 @@ JNIEXPORT jboolean JNICALL JF_Netcap( isMulticast )
 
 /*
  * Class:     com_untangle_jnetcap_Netcap
- * Method:    updateAddress
+ * Method:    refreshNetworkConfig
  * Signature: ()V;
  */
-JNIEXPORT void JNICALL JF_Netcap( updateAddress )
+JNIEXPORT void JNICALL JF_Netcap( refreshNetworkConfig )
     ( JNIEnv* env, jclass _class )
 {
     if ( netcap_update_address() < 0 ) {

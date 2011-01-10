@@ -38,8 +38,8 @@ currentYear=`date +"%y"`
 lastError=`tail -n 100 @UVM_LOG@/console.log | grep 'netcap_intf_db.c:[0-9]*:CRITICAL ERROR: Nothing is known about' | awk  -F '.'  '{ print $1 }' | tail -n 1  | sed "s|^\(..\)-\(..\)|\1/\2/${currentYear}|"`
 
 if [ "${lastError}x" != "x" ] && (( `date -d "${lastError}" +%s` > ( `date +%s` - 60 ))) ; then
-   echo -e "\n[DEBUG:`date`] Running ucli updateAddress to renew interfaces ${lastError}"
-   @USR_BIN@/ucli updateAddress
+   echo -e "\n[DEBUG:`date`] Running ucli refreshNetworkConfig to renew interfaces ${lastError}"
+   @USR_BIN@/ucli refreshNetworkConfig
 fi
 
 true

@@ -109,7 +109,7 @@ public interface NetworkManager
         throws Exception, ValidateException;
 
     /** Update the internal representation of the address */
-    void updateAddress() throws Exception;
+    void refreshNetworkConfig() throws Exception;
 
     /* Get the external HTTPS port */
     int getPublicHttpsPort();

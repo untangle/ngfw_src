@@ -188,7 +188,7 @@ public class OpenVpnManager
             // if ( isBridgeMode ) {
             // am.enableInternalBridgeIntf( LocalUvmContextFactory.context().networkingManager().get(), intf );
             // }
-            LocalUvmContextFactory.context().networkManager().updateAddress();
+            LocalUvmContextFactory.context().networkManager().refreshNetworkConfig();
 //         } catch ( ArgonException e ) {
 //             throw new Exception( e );
         } catch ( Exception e ) {
@@ -210,7 +210,7 @@ public class OpenVpnManager
         try {
             //
             // am.disableInternalBridgeIntf( LocalUvmContextFactory.context().networkingManager().get());
-            LocalUvmContextFactory.context().networkManager().updateAddress();
+            LocalUvmContextFactory.context().networkManager().refreshNetworkConfig();
         } catch ( Exception e ) {
             throw new Exception( e );
         }

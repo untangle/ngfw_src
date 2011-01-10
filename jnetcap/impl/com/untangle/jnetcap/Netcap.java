@@ -387,7 +387,7 @@ public final class Netcap {
     /**
      * Specialty functions for NAT and DHCP events to update the address.
      */
-    public static native void updateAddress();
+    public static native void refreshNetworkConfig();
 
     /**
      * Function to retrieve the TCP redirect ports

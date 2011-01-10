@@ -185,7 +185,7 @@ public class NetworkManagerImpl implements NetworkManager
     {
         this.accessManager.setSettings( access );
 
-        updateAddress();
+        refreshNetworkConfig();
 
         try {
             generateRules();
@@ -209,7 +209,7 @@ public class NetworkManagerImpl implements NetworkManager
         logger.warn("setAddressSettings(" + address.getHttpsPort() + ")" );
         this.addressManager.setSettings( address );
 
-        updateAddress();
+        refreshNetworkConfig();
 
         try {
             generateRules();
@@ -230,7 +230,7 @@ public class NetworkManagerImpl implements NetworkManager
     {
         this.miscManager.setSettings( misc );
 
-        updateAddress();
+        refreshNetworkConfig();
 
         try {
             generateRules();
@@ -293,7 +293,7 @@ public class NetworkManagerImpl implements NetworkManager
         this.accessManager.setSettings( access );
         this.addressManager.setSettings( address );
 
-        updateAddress();
+        refreshNetworkConfig();
 
         generateRules();
     }
@@ -306,7 +306,7 @@ public class NetworkManagerImpl implements NetworkManager
         this.accessManager.setSettings( access );
         this.miscManager.setSettings( misc );
 
-        updateAddress();
+        refreshNetworkConfig();
 
         generateRules();
     }
@@ -539,7 +539,7 @@ public class NetworkManagerImpl implements NetworkManager
         this._setWANSpeed(name,"upload_bandwidth",speed);
     }
     
-    public void updateAddress()
+    public void refreshNetworkConfig()
     {
         synchronized( this ) {
             try {
@@ -550,7 +550,7 @@ public class NetworkManagerImpl implements NetworkManager
 
             try {
                 /* Update the address database in netcap */
-                Netcap.updateAddress();
+                Netcap.refreshNetworkConfig();
             } catch ( Exception e ) {
                 logger.error( "Exception updating address.", e );
             }
@@ -718,7 +718,7 @@ public class NetworkManagerImpl implements NetworkManager
         /* Done before so these get called on the first update */
         //registerListener(new Foo());
 
-        updateAddress();
+        refreshNetworkConfig();
 
         try {
             generateRules();

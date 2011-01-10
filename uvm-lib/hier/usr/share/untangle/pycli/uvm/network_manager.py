@@ -6,6 +6,6 @@ class NetworkManager(Manager):
         self.__networkManager = self.__remoteContext.networkManager()
 
     def api_updateaddress( self ):
-        self.__networkManager.updateAddress()
+        self.__networkManager.refreshNetworkConfig()
 
 Manager.managers.append( NetworkManager )
