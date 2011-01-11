@@ -1,21 +1,3 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
 package com.untangle.uvm.networking;
 
 import static com.untangle.uvm.networking.ShellFlags.FILE_RULE_CFG;
@@ -606,7 +588,8 @@ public class NetworkManagerImpl implements NetworkManager
     {
         byte argonIntf = session.clientIntf();
         ArgonInterface ai = null;
-
+        logger.warn("getInternalHttpAddress()");
+        
         try {
             ai = LocalUvmContextFactory.context().localIntfManager().getIntfByArgon( argonIntf );
         } catch ( Exception e ) {
@@ -614,26 +597,62 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         if ( ai == null ) return null;
-        if ( ai.isWanInterface()) return null;
+
+        logger.warn("getInternalHttpAddress(): isWanInterface(): " + ai.isWanInterface() );
+        
+        /* WAN ports never have HTTP open */
+        if ( ai.isWanInterface() ) {
+            //this is normal no error logged
+            return null;
+        }
 
         /* Retrieve the network settings */
         NetworkSettings settings = this.networkSettings;
 
-        if ( settings == null ) return null;
+        if ( settings == null ) {
+            logger.warn("Failed to fetch network configuration");
+            return null;
+        }
+        
+        InterfaceSettings intf = settings.findBySystemName( ai.getPhysicalName() );
 
-        InterfaceSettings intf = settings.findSystemName( ai.getPhysicalName() );
+            if ( intf == null ) {
+                logger.warn("No interface found for system name: " + ai.getPhysicalName() );
+                return null;
+            }
 
-        if ( intf == null ) return null;
+        /**
+         * If this interface is bridged with another, use the addr from the other
+         */
+        if (InterfaceSettings.CONFIG_BRIDGE.equals(intf.getConfigType())) {
+            String bridgedTo = intf.getBridgedTo();
+            logger.warn("getInternalHttpAddress(): bridged to   : " + bridgedTo );
+            intf = settings.findByName( bridgedTo );
+
+            if ( intf == null ) {
+                logger.warn("No Interface found for name: " + bridgedTo );
+                return null;
+            }
+        }
 
         IPNetwork network = intf.getPrimaryAddress();
 
-        if ( network == null ) return null;
+        if ( network == null ) {
+            logger.warn("No primary address for: " + intf.getName());
+            return null;
+        }
 
         IPAddress address = network.getNetwork();
 
-        if ( address == null ) return null;
+        if ( address == null ) {
+            logger.warn("No address for: " + network);
+            return null;
+        }
 
-        if ( NetworkUtilPriv.getPrivInstance().isBogus( address )) return null;
+        if ( NetworkUtilPriv.getPrivInstance().isBogus( address ) ) {
+            logger.warn("Bogus address: " + address);
+            return null;
+        }
 
         return address.getAddr();
     }

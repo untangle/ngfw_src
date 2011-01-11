@@ -110,7 +110,11 @@ public class NetworkSettings implements java.io.Serializable, JSONString
         return null;
     }
 
-    public InterfaceSettings findSystemName(String systemName)
+    /**
+     * find an interface by its system name
+     * "eth0" etc
+     */
+    public InterfaceSettings findBySystemName(String systemName)
     {
         if (interfaceList == null)
             return null;
@@ -127,6 +131,27 @@ public class NetworkSettings implements java.io.Serializable, JSONString
         return null;
     }
 
+    /**
+     * find an interface by its common name
+     * "External" "Internal" etc
+     */
+    public InterfaceSettings findByName(String commonName)
+    {
+        if (interfaceList == null)
+            return null;
+        if (commonName == null) {
+            logger.error("Invalid systemName: null");
+            return null;
+        }
+        
+        for (InterfaceSettings intf : interfaceList) {
+            if (commonName.equals(intf.getName()))
+                return intf;
+        }
+
+        return null;
+    }
+    
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);

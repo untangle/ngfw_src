@@ -1,21 +1,3 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
 package com.untangle.node.webfilter;
 
 import java.io.IOException;
@@ -46,15 +28,13 @@ public class BlockPageServlet extends HttpServlet
         LocalUvmContext uvm = LocalUvmContextFactory.context();
         NodeManager nm = uvm.nodeManager();
 
-        Map<String,String> i18n_map = LocalUvmContextFactory.context().
-            languageManager().getTranslations( "untangle-base-webfilter" );
+        Map<String,String> i18n_map = LocalUvmContextFactory.context().languageManager().getTranslations( "untangle-base-webfilter" );
 
         NodeId tid = new NodeId(Long.parseLong(request.getParameter( "tid" )));
 
         NodeContext nodeContext = nm.nodeContext( tid );
         if ( nodeContext == null ) {
-            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE,
-                                I18nUtil.tr( "Feature is not installed.", i18n_map ));
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "Feature is not installed.", i18n_map ));
             return;
         }
 
@@ -63,8 +43,7 @@ public class BlockPageServlet extends HttpServlet
 
         Object oNode = nodeContext.node();
         if ( !(oNode instanceof WebFilter) || ( oNode == null )) {
-            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE,
-                                I18nUtil.tr( "Feature is not installed.", i18n_map ));
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "Feature is not installed.", i18n_map ));
             return;
         }
         WebFilter node = (WebFilter)oNode;
@@ -72,8 +51,7 @@ public class BlockPageServlet extends HttpServlet
 
         blockDetails = node.getDetails(nonce);
         if (blockDetails == null) {
-            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE,
-                                I18nUtil.tr( "This request has expired.", i18n_map ));
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "This request has expired.", i18n_map ));
             return;
         }
 
@@ -138,8 +116,7 @@ public class BlockPageServlet extends HttpServlet
         /* Retrieve the description of why this page was blocked. */
         public String getDescription( RemoteBrandingManager bm, Map<String,String> i18n_map )
         {
-            return I18nUtil.tr("{0}This web page was blocked{1} because it is considered inappropriate.", new Object[]{ "<b>","</b>" },
-                    i18n_map );
+            return I18nUtil.tr("{0}This web page was blocked{1} because it is considered inappropriate.", new Object[]{ "<b>","</b>" }, i18n_map );
         }
 
         public WebFilterBlockDetails getBlockDetails()

@@ -1,21 +1,3 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
 package com.untangle.node.webfilter;
 
 import java.net.InetAddress;
@@ -64,10 +46,8 @@ import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 
 /**
- * Implementation of the Web Filter.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
+ * The base implementation of the Web Filter.
+ * The web filter lite and web filter implementation inherit this
  */
 public abstract class WebFilterBase extends AbstractNode implements WebFilter
 {
@@ -77,10 +57,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     protected final WebFilterFactory factory = new WebFilterFactory(this);
 
-    protected final PipeSpec httpPipeSpec = new SoloPipeSpec
-        ("http-blocker", this, new TokenAdaptor(this, factory),
-         Fitting.HTTP_TOKENS,
-         Affinity.CLIENT, 0);
+    protected final PipeSpec httpPipeSpec = new SoloPipeSpec("http-blocker", this, new TokenAdaptor(this, factory), Fitting.HTTP_TOKENS, Affinity.CLIENT, 0);
     protected final PipeSpec[] pipeSpecs = new PipeSpec[] { httpPipeSpec };
 
     protected final WebFilterReplacementGenerator replacementGenerator;
@@ -120,21 +97,15 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         UnblockEventAllFilter ueaf = new UnblockEventAllFilter(this);
         unblockEventLogger.addSimpleEventFilter(ueaf);
 
-        LocalMessageManager lmm = LocalUvmContextFactory.context()
-            .localMessageManager();
+        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
         Counters c = lmm.getCounters(getNodeId());
-        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Pages scanned"),
-                                    null, I18nUtil.marktr("SCAN"));
-        blockBlinger = c.addActivity("block", I18nUtil.marktr("Pages blocked"),
-                                     null, I18nUtil.marktr("BLOCK"));
-        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pages passed"),
-                                    null, I18nUtil.marktr("PASS"));
-        passLogBlinger = c.addMetric("log", I18nUtil.marktr("Passed by policy"),
-                                     null);
-        lmm.setActiveMetricsIfNotSet(getNodeId(), scanBlinger, blockBlinger,
-                                     passBlinger, passLogBlinger);
+        scanBlinger = c.addActivity("scan", I18nUtil.marktr("Pages scanned"), null, I18nUtil.marktr("SCAN"));
+        blockBlinger = c.addActivity("block", I18nUtil.marktr("Pages blocked"), null, I18nUtil.marktr("BLOCK"));
+        passBlinger = c.addActivity("pass", I18nUtil.marktr("Pages passed"), null, I18nUtil.marktr("PASS"));
+        passLogBlinger = c.addMetric("log", I18nUtil.marktr("Passed by policy"), null);
+        lmm.setActiveMetricsIfNotSet(getNodeId(), scanBlinger, blockBlinger, passBlinger, passLogBlinger);
 
-    bypassMonitor = new BypassMonitor(this);
+        bypassMonitor = new BypassMonitor(this);
     }
 
     // WebFilter methods ------------------------------------------------------
@@ -697,18 +668,14 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         return replacementGenerator.generateNonce(details);
     }
 
-    public Token[] generateResponse(String nonce, TCPSession session, String uri,
-                             Header header, boolean persistent)
+    public Token[] generateResponse(String nonce, TCPSession session, String uri, Header header, boolean persistent)
     {
-        return replacementGenerator.generateResponse(nonce, session, uri,
-                                                     header, persistent);
+        return replacementGenerator.generateResponse(nonce, session, uri,header, persistent);
     }
 
-    Token[] generateResponse(String nonce, TCPSession session,
-                             boolean persistent)
+    Token[] generateResponse(String nonce, TCPSession session,boolean persistent)
     {
-        return replacementGenerator.generateResponse(nonce, session,
-                                                     persistent);
+        return replacementGenerator.generateResponse(nonce, session, persistent);
     }
 
     public void incrementScanCount()
@@ -778,8 +745,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         }
     }
 
-    protected <T extends Rule> void updateRules(final Set<T> rules, final List<T> added,
-                             final List<Long> deleted, final List<T> modified) {
+    protected <T extends Rule> void updateRules(final Set<T> rules, final List<T> added, final List<Long> deleted, final List<T> modified)
+    {
         TransactionWork<Void> tw = new TransactionWork<Void>() {
                 public boolean doWork(Session s) {
                     listUtil.updateCachedItems(rules, added, deleted, modified);
@@ -799,8 +766,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         reconfigure();
     }
 
-    protected void updateCategories(final Set<BlacklistCategory> categories, final List<BlacklistCategory> added,
-                                  final List<Long> deleted, final List<BlacklistCategory> modified) {
+    protected void updateCategories(final Set<BlacklistCategory> categories, final List<BlacklistCategory> added, final List<Long> deleted, final List<BlacklistCategory> modified)
+    {
         TransactionWork<Void> tw = new TransactionWork<Void>() {
                 public boolean doWork(Session s) {
                     listUtil.updateCachedItems(categories, categoryHandler, added, deleted, modified);

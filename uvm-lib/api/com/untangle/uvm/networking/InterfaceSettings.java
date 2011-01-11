@@ -265,6 +265,16 @@ public class InterfaceSettings implements java.io.Serializable, JSONString
         this.mtu = mtu;
     }
 
+    public String getBridgedTo()
+    {
+        return this.bridgedTo;
+    }
+
+    public void setBridgedTo( String bridgedTo )
+    {
+        this.bridgedTo = bridgedTo;
+    }
+    
     public String getPPPoEUsername()
     {
         return this.pppoeUsername;

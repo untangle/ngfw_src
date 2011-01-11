@@ -15,7 +15,6 @@
              urlParams.append( "&c=" );
              urlParams.append( URLEncoder.encode( String.valueOf( new Random().nextInt(Integer.MAX_VALUE)), "UTF-8" ));
              request.setAttribute( "urlParams", urlParams.toString());
-             String companyUrl = uvm.brandingManager().getCompanyUrl();
     ]]>
   </jsp:scriptlet>
 
@@ -54,7 +53,7 @@
   <body id="simple" class="blockpage">
     <div id="content" style="width:738px !important;padding:0px 0px 0px !important;margin-bottom:0px !important">
       <div id="header" style="margin:3px !important;">
-        <a href="<%=companyUrl%>"><img src="/images/BrandingLogo.gif" alt=""/></a>
+        <a href=""><img src="/images/BrandingLogo.gif" alt=""/></a>
         <div class="title"><c:out value="${title}" escapeXml="false"/></div>
       </div>
       
