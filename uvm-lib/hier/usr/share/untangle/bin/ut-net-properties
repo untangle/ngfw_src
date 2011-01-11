@@ -3,8 +3,6 @@
 exec 2> /dev/null
 
 DNS_MASQ_CONF="/etc/dnsmasq.conf"
-SINGLE_NIC_FILE="/etc/untangle-net-alpaca/single-nic-mode"
-SINGLE_NIC_FLAG="/usr/share/untangle-arp-eater/flag"
 
 PROPERTY_NET_CONF="com.untangle.networking.net-conf"
 PROPERTY_BRIDGE_CONF="com.untangle.networking.bridge-conf"
@@ -21,7 +19,6 @@ PROPERTY_DHCP_DEFAULT_GW="com.untangle.networking.dhcp-default-gateway"
 PROPERTY_DNS_EN="com.untangle.networking.dns-enabled"
 PROPERTY_DNS_LOCAL_DOMAIN="com.untangle.networking.dns-local-domain"
 PROPERTY_DHCP_DNS_SERVERS="com.untangle.networking.dhcp-dns-servers"
-PROPERTY_SINGLE_NIC_MODE="com.untangle.networking.single-nic-mode"
 
 # This is the interface that has all of the aliases on it for PPPoE.
 # In the bridge case, this is the name of the bridge for the external
@@ -182,24 +179,6 @@ get_is_ddns_running()
     pgrep '(ddclient|no-ip)' > /dev/null 2>&1 && echo "true"
 }
 
-get_single_nic_mode()
-{
-    local t_single_nic_mode
-    if [ -f "${SINGLE_NIC_FILE}" ] && [ -f "${SINGLE_NIC_FLAG}" ]; then
-        t_single_nic_mode=`awk 'BEGIN { single_nic = "false" } ; { if ( $1 == "true" ) single_nic = $1 ; exit } ; END { print single_nic }' ${SINGLE_NIC_FILE} 2>/dev/null`
-
-        if [ "${t_single_nic_mode}x" = "truex" ]; then
-            ## As a secondary precaution, true / false won't do, this
-            ## file must be present and contain a shared value.
-            head -n 1 "${SINGLE_NIC_FLAG}"
-        else
-            echo "false"
-        fi
-    else
-        echo "false"
-    fi
-}
-
 get_domain_suffix()
 {
     awk -v suffix=example.com '/^search/ { suffix=$2 ; exit }; END { print suffix }' /etc/resolv.conf
@@ -226,7 +205,6 @@ get_properties()
     echo "${PROPERTY_DNS_EN}=`get_dns_enabled`"
     echo "${PROPERTY_DNS_LOCAL_DOMAIN}=`get_dns_local_domain`"
     echo "${PROPERTY_DDNS_EN}=`get_is_ddns_running`"
-    echo "${PROPERTY_SINGLE_NIC_MODE}=`get_single_nic_mode`"
 }
  
 get_properties   
