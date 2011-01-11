@@ -44,7 +44,7 @@ import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventRepository;
 import com.untangle.uvm.logging.RepositoryDesc;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.util.I18nUtil;
 
 
@@ -737,7 +737,7 @@ class Stats
         this.isNew        = true;
         this.isActive     = true;
         this.sessionEvent =
-            new ClientConnectEvent( key.start, new IPaddr( this.key.address ),
+            new ClientConnectEvent( key.start, new IPAddress( this.key.address ),
                                     this.key.port, this.key.name );
     }
 

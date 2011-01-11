@@ -29,7 +29,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.Rule;
 
@@ -47,10 +47,10 @@ public class ShieldNodeRule extends Rule
 {
 
     /* ip address this is configuring */
-    private IPaddr address;
+    private IPAddress address;
 
     /* Netmask that this rule applies to */
-    private IPaddr netmask;
+    private IPAddress netmask;
 
     /* divider for this rule (between0 and whatever, not inclusive) */
     private float divider = DIVIDER_VALUES[0];
@@ -65,7 +65,7 @@ public class ShieldNodeRule extends Rule
     /* Hibernate constructor */
     public ShieldNodeRule() { }
 
-    public ShieldNodeRule(boolean isLive, IPaddr address, IPaddr netmask,
+    public ShieldNodeRule(boolean isLive, IPAddress address, IPAddress netmask,
                           float divider, String category, String description)
     {
         setLive(isLive);
@@ -81,13 +81,13 @@ public class ShieldNodeRule extends Rule
      *
      * @return the node to modify
      */
-    @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getAddress()
+    @Type(type="com.untangle.uvm.type.IPAddressUserType")
+    public IPAddress getAddress()
     {
         return this.address;
     }
 
-    public void setAddress(IPaddr address)
+    public void setAddress(IPAddress address)
     {
         this.address = address;
     }
@@ -95,7 +95,7 @@ public class ShieldNodeRule extends Rule
     public void setAddress(String addressString)
         throws UnknownHostException, ParseException
     {
-        setAddress(IPaddr.parse(addressString));
+        setAddress(IPAddress.parse(addressString));
     }
 
     @Transient
@@ -112,13 +112,13 @@ public class ShieldNodeRule extends Rule
      *
      * @return the netmask
      */
-    @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getNetmask()
+    @Type(type="com.untangle.uvm.type.IPAddressUserType")
+    public IPAddress getNetmask()
     {
         return this.netmask;
     }
 
-    public void setNetmask(IPaddr netmask)
+    public void setNetmask(IPAddress netmask)
     {
         this.netmask = netmask;
     }
@@ -126,7 +126,7 @@ public class ShieldNodeRule extends Rule
     public void setNetmask(String netmaskString)
         throws UnknownHostException, ParseException
     {
-        setNetmask(IPaddr.parse(netmaskString));
+        setNetmask(IPAddress.parse(netmaskString));
     }
 
     @Transient

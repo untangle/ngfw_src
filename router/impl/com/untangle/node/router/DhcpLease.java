@@ -21,7 +21,7 @@ package com.untangle.node.router;
 import java.util.Date;
 
 import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.firewall.MACAddress;
 import org.apache.log4j.Logger;
 
@@ -35,7 +35,7 @@ public class DhcpLease
 
     private MACAddress mac        = null;
     private HostName   hostname   = HostName.getEmptyHostName();
-    private IPaddr     ip         = null;
+    private IPAddress     ip         = null;
     private Date       endOfLease = null;
     private int        state      = EXPIRED;
 
@@ -47,7 +47,7 @@ public class DhcpLease
     {
     }
 
-    public DhcpLease( Date endOfLease, MACAddress mac, IPaddr ip, HostName hostname, Date now )
+    public DhcpLease( Date endOfLease, MACAddress mac, IPAddress ip, HostName hostname, Date now )
     {
         this.endOfLease = endOfLease;
         this.mac        = mac;
@@ -59,7 +59,7 @@ public class DhcpLease
     /**
      * @return true if the passed in parameters are different from the current parameters
      */
-    boolean hasChanged( Date endOfLease, MACAddress mac, IPaddr ip, HostName hostname, Date now )
+    boolean hasChanged( Date endOfLease, MACAddress mac, IPAddress ip, HostName hostname, Date now )
     {
         int state = this.state;
         updateState( now );
@@ -97,7 +97,7 @@ public class DhcpLease
         return ( state == ACTIVE ) ? true : false;
     }
 
-    void set( Date endOfLease, MACAddress mac, IPaddr ip, HostName hostname, Date now )
+    void set( Date endOfLease, MACAddress mac, IPAddress ip, HostName hostname, Date now )
     {
         this.endOfLease = endOfLease;
         this.mac        = mac;
@@ -131,12 +131,12 @@ public class DhcpLease
         this.hostname = hostname;
     }
 
-    public IPaddr getIP()
+    public IPAddress getIP()
     {
         return this.ip;
     }
 
-    public void setIP( IPaddr ip )
+    public void setIP( IPAddress ip )
     {
         this.ip = ip;
     }

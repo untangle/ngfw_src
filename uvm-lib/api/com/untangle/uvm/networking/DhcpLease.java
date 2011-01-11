@@ -4,7 +4,7 @@ package com.untangle.uvm.networking;
 import java.util.Date;
 
 import com.untangle.uvm.node.firewall.MACAddress;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 
 public class DhcpLease 
 {
@@ -12,7 +12,7 @@ public class DhcpLease
     private MACAddress macAddress;
 
     /* The address of this lease */
-    private IPaddr address;
+    private IPAddress address;
 
     
     public MACAddress getMacAddress()
@@ -25,12 +25,12 @@ public class DhcpLease
         this.macAddress = macAddress;
     }
 
-    public IPaddr getAddress()
+    public IPAddress getAddress()
     {
         return this.address;
     }
 
-    public void setAddress( IPaddr address )
+    public void setAddress( IPAddress address )
     {
         this.address = address;
     }

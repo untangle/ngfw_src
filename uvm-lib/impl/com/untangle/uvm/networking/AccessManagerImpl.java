@@ -16,7 +16,7 @@ import org.hibernate.Session;
 import org.hibernate.Query;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.toolbox.UpstreamManager;
 import com.untangle.uvm.util.TransactionWork;
@@ -141,8 +141,8 @@ class AccessManagerImpl implements LocalAccessManager
         scriptWriter.appendLine("# Is HTTPS port open on the external interface restricted (to only some IPs?)");
         scriptWriter.appendVariable( FLAG_HTTPS_RESTRICTED, access.getIsOutsideAccessRestricted());
 
-        IPaddr outsideNetwork = access.getOutsideNetwork();
-        IPaddr outsideNetmask = access.getOutsideNetmask();
+        IPAddress outsideNetwork = access.getOutsideNetwork();
+        IPAddress outsideNetmask = access.getOutsideNetmask();
         
         if (( outsideNetwork != null ) && !outsideNetwork.isEmpty()) {
             scriptWriter.appendLine("# Is HTTPS port restricted to a certain network on external?");

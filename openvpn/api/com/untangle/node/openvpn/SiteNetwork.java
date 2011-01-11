@@ -22,7 +22,7 @@ import javax.persistence.MappedSuperclass;
 
 import org.hibernate.annotations.Type;
 
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
@@ -38,8 +38,8 @@ import com.untangle.uvm.node.ValidateException;
 public abstract class SiteNetwork extends Rule implements Validatable
 {
 
-    private IPaddr network;
-    private IPaddr netmask;
+    private IPAddress network;
+    private IPAddress netmask;
 
     // constructors -----------------------------------------------------------
 
@@ -50,13 +50,13 @@ public abstract class SiteNetwork extends Rule implements Validatable
     /**
      * @return network exported by this client or server.
      */
-    @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getNetwork()
+    @Type(type="com.untangle.uvm.type.IPAddressUserType")
+    public IPAddress getNetwork()
     {
         return this.network;
     }
 
-    public void setNetwork( IPaddr network )
+    public void setNetwork( IPAddress network )
     {
         this.network = network;
     }
@@ -66,13 +66,13 @@ public abstract class SiteNetwork extends Rule implements Validatable
      *
      * @return This is the network that is reachable when this client connects.
      */
-    @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getNetmask()
+    @Type(type="com.untangle.uvm.type.IPAddressUserType")
+    public IPAddress getNetmask()
     {
         return this.netmask;
     }
 
-    public void setNetmask( IPaddr netmask )
+    public void setNetmask( IPAddress netmask )
     {
         this.netmask = netmask;
     }

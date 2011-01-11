@@ -29,7 +29,7 @@ import org.json.JSONObject;
 import org.json.JSONException;
 
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 
 import com.untangle.uvm.ArgonException;
@@ -101,7 +101,7 @@ public class LogIteration
         if ( users == null ) users = new String[0];
         for ( String user : users ) {
             try {
-                InetAddress address = IPaddr.parse( user ).getAddr();
+                InetAddress address = IPAddress.parse( user ).getAddr();
                 
                 parseUserData( rejectionEvents, address, user_js.getJSONArray( user ));
             } catch ( ParseException e ) {

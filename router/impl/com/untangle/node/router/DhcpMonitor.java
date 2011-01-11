@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.MACAddress;
 import org.apache.log4j.Logger;
@@ -253,7 +253,7 @@ class DhcpMonitor implements Runnable
         HostName host;
         Date eol;
         MACAddress mac;
-        IPaddr ip;
+        IPAddress ip;
 
         if ( strArray.length != DHCP_LEASE_ENTRY_LENGTH ) {
             logger.error( "Invalid DHCP lease: " + str );
@@ -278,7 +278,7 @@ class DhcpMonitor implements Runnable
 
         tmp  = strArray[DHCP_LEASE_ENTRY_IP];
         try {
-            ip = IPaddr.parse( tmp );
+            ip = IPAddress.parse( tmp );
         } catch ( ParseException e ) {
             logger.error( "Invalid IP address: " + tmp, e );
             return;
@@ -315,7 +315,7 @@ class DhcpMonitor implements Runnable
         deletedSet.remove( ip.getAddr());
     }
 
-    private void logDhcpLease( Date eol, MACAddress mac, IPaddr ip, HostName host, Date now )
+    private void logDhcpLease( Date eol, MACAddress mac, IPAddress ip, HostName host, Date now )
     {
         /* Determine if this lease is already being tracked */
         DhcpLease lease = currentLeaseMap.get( ip.getAddr());

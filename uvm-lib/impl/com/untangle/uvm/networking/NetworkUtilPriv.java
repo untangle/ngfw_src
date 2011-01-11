@@ -21,7 +21,7 @@ import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.HostNameList;
 import com.untangle.uvm.node.IPNullAddr;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.firewall.MACAddress;
@@ -55,9 +55,9 @@ class NetworkUtilPriv extends NetworkUtil
         return properties;
     }
 
-    List<IPaddr> getDnsServers()
+    List<IPAddress> getDnsServers()
     {
-        List<IPaddr> dnsServers = new LinkedList<IPaddr>();
+        List<IPAddress> dnsServers = new LinkedList<IPAddress>();
 
         BufferedReader in = null;
 
@@ -72,7 +72,7 @@ class NetworkUtilPriv extends NetworkUtil
                     
                     /* ignore anything that uses the localhost */
                     if ( "127.0.0.1".equals( server )) continue;
-                    dnsServers.add( IPaddr.parse( server ));
+                    dnsServers.add( IPAddress.parse( server ));
                 }
             }
         } catch ( Exception ex ) {
@@ -127,19 +127,19 @@ class NetworkUtilPriv extends NetworkUtil
         return INSTANCE;
     }
 
-    private IPaddr parseIPaddr( Properties properties, String property )
+    private IPAddress parseIPAddress( Properties properties, String property )
     {
-        return parseIPaddr( properties.getProperty( property ));
+        return parseIPAddress( properties.getProperty( property ));
     }
 
-    private IPaddr parseIPaddr( String value )
+    private IPAddress parseIPAddress( String value )
     {
         if ( value == null ) return null;
         
         value = value.trim();
         if ( value.length() == 0 ) return null;
         try {
-            return IPaddr.parse( value );
+            return IPAddress.parse( value );
         } catch ( ParseException e ) {
             logger.debug( "Unable to parse: '" + value + "'" );
         } catch ( UnknownHostException e ) {

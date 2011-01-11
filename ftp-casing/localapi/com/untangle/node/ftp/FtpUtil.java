@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import com.untangle.node.token.ParseException;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 
 /**
  * Utilities for the FTP protocol.
@@ -88,7 +88,7 @@ class FtpUtil
                 throw new ParseException( "Unable to parse extended port command" );
             }
 
-            return new InetSocketAddress(IPaddr.parse(matcher.group(2)).getAddr(),
+            return new InetSocketAddress(IPAddress.parse(matcher.group(2)).getAddr(),
                                          Integer.valueOf(matcher.group(3)));
         } catch (ParseException e) {
             throw e;

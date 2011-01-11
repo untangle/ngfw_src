@@ -25,7 +25,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
@@ -45,8 +45,8 @@ public class VpnGroup extends Rule implements Validatable
     /* The interface that clients from the client pool are associated with */
     private byte intf;
 
-    private IPaddr address;
-    private IPaddr netmask;
+    private IPAddress address;
+    private IPAddress netmask;
     private boolean useDNS = false;
 
     public VpnGroup() { }
@@ -71,13 +71,13 @@ public class VpnGroup extends Rule implements Validatable
      * @return the pool address to send to the client, don't use in
      * bridging mode.
      */
-    @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getAddress()
+    @Type(type="com.untangle.uvm.type.IPAddressUserType")
+    public IPAddress getAddress()
     {
         return this.address;
     }
 
-    public void setAddress( IPaddr address )
+    public void setAddress( IPAddress address )
     {
         this.address = address;
     }
@@ -89,13 +89,13 @@ public class VpnGroup extends Rule implements Validatable
      *
      * @return the pool netmask to send to the client
      */
-    @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getNetmask()
+    @Type(type="com.untangle.uvm.type.IPAddressUserType")
+    public IPAddress getNetmask()
     {
         return this.netmask;
     }
 
-    public void setNetmask( IPaddr netmask )
+    public void setNetmask( IPAddress netmask )
     {
         this.netmask = netmask;
     }

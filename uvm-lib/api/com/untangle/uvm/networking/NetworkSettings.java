@@ -8,7 +8,7 @@ import org.json.JSONString;
 import org.json.JSONObject;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 
 /**
  * This object represents the current configuration of all network settings

@@ -27,7 +27,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
@@ -47,7 +47,7 @@ public class VpnClientBase extends Rule implements Validatable
 
     private static final int MAX_NAME_LENGTH = 60;
 
-    private IPaddr address;            // may be null.
+    private IPAddress address;            // may be null.
 
     // The name of the address group to pull this client address
     private String groupName;
@@ -97,13 +97,13 @@ public class VpnClientBase extends Rule implements Validatable
      *
      * @return static address of the machine.
      */
-    @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getAddress()
+    @Type(type="com.untangle.uvm.type.IPAddressUserType")
+    public IPAddress getAddress()
     {
         return this.address;
     }
 
-    public void setAddress( IPaddr address )
+    public void setAddress( IPAddress address )
     {
         this.address = address;
     }

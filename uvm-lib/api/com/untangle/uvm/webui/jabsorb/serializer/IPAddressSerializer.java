@@ -6,14 +6,14 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 
 @SuppressWarnings({"serial","unchecked"})
-public class IPaddrSerializer extends AbstractSerializer {
+public class IPAddressSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialise.
 	 */
-	private static Class[] _serializableClasses = new Class[] { IPaddr.class };
+	private static Class[] _serializableClasses = new Class[] { IPAddress.class };
 
 	/**
 	 * Classes that this can serialise to.
@@ -39,7 +39,7 @@ public class IPaddrSerializer extends AbstractSerializer {
 		
         if( o == null ) {
             return "";
-        } else if (o instanceof IPaddr) {
+        } else if (o instanceof IPAddress) {
 			return o.toString();
 		}
         
@@ -70,7 +70,7 @@ public class IPaddrSerializer extends AbstractSerializer {
 		Object returnValue = null;
 		String val = json instanceof String ? (String) json : json.toString();
 		try {
-			returnValue = IPaddr.parse(val);
+			returnValue = IPAddress.parse(val);
 		} catch (Exception e) {
 			throw new UnmarshallException("Invalid \"address\" specified:"
 					+ val);

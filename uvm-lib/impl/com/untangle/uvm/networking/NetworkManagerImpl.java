@@ -42,7 +42,7 @@ import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPSessionDesc;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
@@ -149,7 +149,7 @@ public class NetworkManagerImpl implements NetworkManager
     /* Return the primary address of the device, this is the primary
      * external address.  which is the first address registered on the
      * first network space */
-    public IPaddr getPrimaryAddress()
+    public IPAddress getPrimaryAddress()
     {
         NetworkSettings settings = this.networkSettings;
 
@@ -384,7 +384,7 @@ public class NetworkManagerImpl implements NetworkManager
      * returns a recommendation for the internal network. 
      * @param externalAddress The external address, if null, this uses the external address of the box.
      */
-    public IPNetwork getWizardInternalAddressSuggesstion( IPaddr externalAddress )
+    public IPNetwork getWizardInternalAddressSuggesstion( IPAddress externalAddress )
     {
         try {
             if ( externalAddress == null ) { 
@@ -409,7 +409,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
     }
 
-    public void setWizardNatEnabled( IPaddr address, IPaddr netmask, boolean enableDhcpServer )
+    public void setWizardNatEnabled( IPAddress address, IPAddress netmask, boolean enableDhcpServer )
         throws Exception
     {
         logger.debug( "enabling nat as requested by setup wizard: " + address + "/" + netmask );
@@ -629,7 +629,7 @@ public class NetworkManagerImpl implements NetworkManager
 
         if ( network == null ) return null;
 
-        IPaddr address = network.getNetwork();
+        IPAddress address = network.getNetwork();
 
         if ( address == null ) return null;
 

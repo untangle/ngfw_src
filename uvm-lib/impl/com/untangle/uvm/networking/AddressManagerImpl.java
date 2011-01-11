@@ -24,7 +24,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.script.ScriptWriter;
@@ -141,7 +141,7 @@ class AddressManagerImpl implements LocalAddressManager
         }
 
         /* The address and port of the external router that is in front of us */
-        IPaddr ip = NetworkUtil.BOGUS_DHCP_ADDRESS;
+        IPAddress ip = NetworkUtil.BOGUS_DHCP_ADDRESS;
 
         HostAddress currentAddress = this.addressSettings.getCurrentPublicAddress();
         if (( currentAddress != null ) && ( currentAddress.getIp() != null ) && 

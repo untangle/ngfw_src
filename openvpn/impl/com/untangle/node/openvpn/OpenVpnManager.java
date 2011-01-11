@@ -31,7 +31,7 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.util.I18nUtil;
@@ -243,8 +243,8 @@ public class OpenVpnManager
             sw.appendVariable( FLAG_DEVICE, DEVICE_BRIDGE );
         } else {
             sw.appendVariable( FLAG_DEVICE, DEVICE_ROUTING );
-            IPaddr localEndpoint  = settings.getServerAddress().getIp();
-            IPaddr remoteEndpoint = getRemoteEndpoint( localEndpoint );
+            IPAddress localEndpoint  = settings.getServerAddress().getIp();
+            IPAddress remoteEndpoint = getRemoteEndpoint( localEndpoint );
 
             sw.appendVariable( FLAG_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
             writePushRoute( sw, localEndpoint, null );
@@ -289,8 +289,8 @@ public class OpenVpnManager
             for ( ClientSiteNetwork siteNetwork : site.getExportedAddressList()) {
                 if ( !siteNetwork.isLive()) continue;
 
-                IPaddr network = siteNetwork.getNetwork();
-                IPaddr netmask = siteNetwork.getNetmask();
+                IPAddress network = siteNetwork.getNetwork();
+                IPAddress netmask = siteNetwork.getNetmask();
 
                 writeRoute( sw, network, netmask );
                 writePushRoute( sw, network, netmask );
@@ -436,8 +436,8 @@ public class OpenVpnManager
 
             ScriptWriter sw = new VpnScriptWriter();
 
-            IPaddr localEndpoint  = client.getAddress();
-            IPaddr remoteEndpoint = getRemoteEndpoint( localEndpoint );
+            IPAddress localEndpoint  = client.getAddress();
+            IPAddress remoteEndpoint = getRemoteEndpoint( localEndpoint );
             String name           = client.getInternalName();
 
             logger.info( "Writing client configuration file for [" + name + "]" );
@@ -446,23 +446,23 @@ public class OpenVpnManager
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
 
             if(group.getUseDNS()) {
-                List<IPaddr> dnsServers = null;
+                List<IPAddress> dnsServers = null;
 
                 if ( settings.getIsDnsOverrideEnabled()) {
                     dnsServers = settings.getDnsServerList();
                 } else {
-                    dnsServers = new LinkedList<IPaddr>();
+                    dnsServers = new LinkedList<IPAddress>();
                     for (InterfaceSettings intf : networkSettings.getInterfaceList()) {
                         if (intf.isWAN()) {
                             if (intf.getDns1() != null)
-                                dnsServers.add(new IPaddr(intf.getDns1()));
+                                dnsServers.add(new IPAddress(intf.getDns1()));
                             if (intf.getDns2() != null)
-                                dnsServers.add(new IPaddr(intf.getDns2()));
+                                dnsServers.add(new IPAddress(intf.getDns2()));
                         }
                     }
                 }
 
-                for(IPaddr addr : dnsServers) {
+                for(IPAddress addr : dnsServers) {
                     sw.appendVariable( "push", "\"dhcp-option DNS " + addr.toString() + "\"");
                 }
 
@@ -486,8 +486,8 @@ public class OpenVpnManager
 
             ScriptWriter sw = new VpnScriptWriter();
 
-            IPaddr localEndpoint  = site.getAddress();
-            IPaddr remoteEndpoint = getRemoteEndpoint( localEndpoint );
+            IPAddress localEndpoint  = site.getAddress();
+            IPAddress remoteEndpoint = getRemoteEndpoint( localEndpoint );
             String name           = site.getInternalName();
 
             logger.info( "Writing site configuration file for [" + name + "]" );
@@ -505,7 +505,7 @@ public class OpenVpnManager
         }
     }
 
-    private void writePushRoute( ScriptWriter sw, IPaddr address, IPaddr netmask )
+    private void writePushRoute( ScriptWriter sw, IPAddress address, IPAddress netmask )
     {
         if ( address == null ) {
             logger.warn( "attempt to write route with null address" );
@@ -525,7 +525,7 @@ public class OpenVpnManager
         String value = "\"route ";
         if ( netmask != null ) {
             /* the route command complains you do not pass in the base address */
-            value += IPaddr.and( new IPaddr(address ), new IPaddr(netmask ));
+            value += IPAddress.and( new IPAddress(address ), new IPAddress(netmask ));
             value += " " + netmask.getHostAddress();
         } else {
             value += address.getHostAddress();
@@ -536,17 +536,17 @@ public class OpenVpnManager
         sw.appendVariable( FLAG_PUSH,  value );
     }
 
-    private void writeRoute( ScriptWriter sw, IPaddr address, IPaddr netmask )
+    private void writeRoute( ScriptWriter sw, IPAddress address, IPAddress netmask )
     {
         writeRoute( sw, FLAG_ROUTE, address, netmask );
     }
 
-    private void writeClientRoute( ScriptWriter sw, IPaddr address, IPaddr netmask )
+    private void writeClientRoute( ScriptWriter sw, IPAddress address, IPAddress netmask )
     {
         writeRoute( sw, FLAG_CLI_ROUTE, address, netmask );
     }
 
-    private void writeRoute( ScriptWriter sw, String type, IPaddr address, IPaddr netmask )
+    private void writeRoute( ScriptWriter sw, String type, IPAddress address, IPAddress netmask )
     {
         if ( address == null || address.getAddr() == null ) {
             logger.warn( "attempt to write a route with a null address" );
@@ -556,7 +556,7 @@ public class OpenVpnManager
         String value = "";
 
         if ( netmask != null && ( netmask.getAddr() != null )) {
-            value += IPaddr.and( address, netmask );
+            value += IPAddress.and( address, netmask );
             value += " " + netmask;
         } else {
             value += address;
@@ -576,10 +576,10 @@ public class OpenVpnManager
     }
 
     /* A safe function (exceptionless) for InetAddress.getByAddress */
-    private IPaddr getByAddress( byte[] data )
+    private IPAddress getByAddress( byte[] data )
     {
         try {
-            return new IPaddr(InetAddress.getByAddress( data ));
+            return new IPAddress(InetAddress.getByAddress( data ));
         } catch ( UnknownHostException e ) {
             logger.error( "Something happened, array should be 4 actually " + data.length + " bytes", e );
         }
@@ -588,7 +588,7 @@ public class OpenVpnManager
 
     /* For Tunnel nodes, this gets the corresponding remote endpoint, see the openvpn howto for
      * the definition of a remote and local endpoint */
-    private IPaddr getRemoteEndpoint( IPaddr localEndpoint )
+    private IPAddress getRemoteEndpoint( IPAddress localEndpoint )
     {
         byte[] data = localEndpoint.getAddr().getAddress();
         data[3] += 1;

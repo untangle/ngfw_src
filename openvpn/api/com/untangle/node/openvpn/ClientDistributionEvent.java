@@ -30,7 +30,7 @@ import org.hibernate.annotations.Type;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 
 /**
  * Log event for client distribution.
@@ -45,13 +45,13 @@ import com.untangle.uvm.node.IPaddr;
 public class ClientDistributionEvent extends LogEvent implements Serializable
 {
 
-    private IPaddr address;
+    private IPAddress address;
     private String clientName;
 
     // Constructors
     public ClientDistributionEvent() { }
 
-    public ClientDistributionEvent( IPaddr address, String clientName )
+    public ClientDistributionEvent( IPAddress address, String clientName )
     {
         this.address    = address;
         this.clientName = clientName;
@@ -64,13 +64,13 @@ public class ClientDistributionEvent extends LogEvent implements Serializable
      * @return Address of the client that performed the request.
      */
     @Column(name="remote_address")
-    @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getAddress()
+    @Type(type="com.untangle.uvm.type.IPAddressUserType")
+    public IPAddress getAddress()
     {
         return this.address;
     }
 
-    public void setAddress( IPaddr address )
+    public void setAddress( IPAddress address )
     {
         this.address = address;
     }

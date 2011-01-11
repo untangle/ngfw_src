@@ -30,7 +30,7 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.firewall.MACAddress;
 import org.hibernate.annotations.Type;
 
@@ -54,7 +54,7 @@ import org.hibernate.annotations.Type;
 
         private MACAddress mac;
         private HostName   hostname;
-        private IPaddr     ip;
+        private IPAddress     ip;
         private Date       endOfLease;
         private int        eventType;
 
@@ -109,13 +109,13 @@ import org.hibernate.annotations.Type;
          *
          * @return desired static address.
          */
-        @Type(type="com.untangle.uvm.type.IPaddrUserType")
-        public IPaddr getIP()
+        @Type(type="com.untangle.uvm.type.IPAddressUserType")
+        public IPAddress getIP()
         {
             return this.ip;
         }
 
-        public void setIP( IPaddr ip )
+        public void setIP( IPAddress ip )
         {
             this.ip = ip;
         }

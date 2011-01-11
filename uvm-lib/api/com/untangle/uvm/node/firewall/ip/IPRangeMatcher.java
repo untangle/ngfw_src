@@ -36,7 +36,7 @@ package com.untangle.uvm.node.firewall.ip;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 
@@ -98,7 +98,7 @@ public final class IPRangeMatcher extends IPDBMatcher
      * @return A RangeMatcher that matches IP address from
      * <param>start</param> to <param>end</param>, inclusive.
      */
-    public static IPDBMatcher makeRangeInstance( IPaddr start, IPaddr end )
+    public static IPDBMatcher makeRangeInstance( IPAddress start, IPAddress end )
     {
         return makeRangeInstance( start.getAddr(), end.getAddr());
     }
@@ -148,8 +148,8 @@ public final class IPRangeMatcher extends IPDBMatcher
             }
 
             try {
-                return makeRangeInstance( IPaddr.parse( ipArray[0] ).getAddr(),
-                                          IPaddr.parse( ipArray[1] ).getAddr());
+                return makeRangeInstance( IPAddress.parse( ipArray[0] ).getAddr(),
+                                          IPAddress.parse( ipArray[1] ).getAddr());
             } catch ( UnknownHostException e ) {
                 throw new ParseException( e );
             }

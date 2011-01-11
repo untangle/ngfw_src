@@ -8,7 +8,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.node.HostNameList;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.Rule;
 
 public class DnsHostEntry 
@@ -17,11 +17,11 @@ public class DnsHostEntry
     private HostNameList hostNameList = HostNameList.getEmptyHostNameList();
 
     /** The IP address that all of these hostnames resolves to */
-    private IPaddr staticAddress = null;
+    private IPAddress staticAddress = null;
 
     public DnsHostEntry() { }
 
-    public DnsHostEntry(HostNameList hostNameList, IPaddr staticAddress)
+    public DnsHostEntry(HostNameList hostNameList, IPAddress staticAddress)
     {
         this.hostNameList  = hostNameList;
         this.staticAddress = staticAddress;
@@ -40,12 +40,12 @@ public class DnsHostEntry
         this.hostNameList = hostNameList;
     }
 
-    public IPaddr getAddress()
+    public IPAddress getAddress()
     {
         return this.staticAddress;
     }
 
-    public void setAddress( IPaddr staticAddress )
+    public void setAddress( IPAddress staticAddress )
     {
         this.staticAddress = staticAddress;
     }

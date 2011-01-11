@@ -18,26 +18,26 @@
 
 package com.untangle.uvm.type;
 
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 
 /**
  * Hibernate <code>UserType</code> for persisting
- * <code>IPaddr</code> objects.
+ * <code>IPAddress</code> objects.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class IPaddrUserType extends StringBasedUserType
+public class IPAddressUserType extends StringBasedUserType
 {
-    private static final IPaddr EMPTY_IPADDR = new IPaddr( null );
+    private static final IPAddress EMPTY_IPADDR = new IPAddress( null );
 
     /* special string used to represent an empty ip addr */
     private static final String EMPTY_STRING = "0.0.0.0/31";
 
-    public Class<IPaddr> returnedClass()
+    public Class<IPAddress> returnedClass()
     {
-        return IPaddr.class;
+        return IPAddress.class;
     }
 
     protected String userTypeToString( Object v )
@@ -45,11 +45,11 @@ public class IPaddrUserType extends StringBasedUserType
         /* null (don't actually have to worry about null because of the StringBasedUserType.) */
         if ( v == null ) return null;
 
-        IPaddr i = (IPaddr)v;
+        IPAddress i = (IPAddress)v;
 
         if ( i.isEmpty()) return EMPTY_STRING;
 
-        return ((IPaddr)v).toString();
+        return ((IPAddress)v).toString();
     }
 
     public Object createUserType( String val ) throws Exception
@@ -65,10 +65,10 @@ public class IPaddrUserType extends StringBasedUserType
 
         /* This is a special string that is used to store an empty IP
          * address in the database.  this is because 0.0.0.0 (an
-         * address of 0.0.0.0) differs from IPaddr( null ) (no address
+         * address of 0.0.0.0) differs from IPAddress( null ) (no address
          * at all). */
         if ( EMPTY_STRING.equals( val )) return EMPTY_IPADDR;
 
-        return IPaddr.parse( val );
+        return IPAddress.parse( val );
     }
 }

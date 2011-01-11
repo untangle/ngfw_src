@@ -39,7 +39,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 import com.untangle.uvm.node.firewall.ParsingConstants;
@@ -154,7 +154,7 @@ public final class IPSetMatcher extends IPDBMatcher
                 ipString = ipString.trim();
                 
                 try {
-                    addressSet.add ( IPaddr.parse( ipString ).getAddr());
+                    addressSet.add ( IPAddress.parse( ipString ).getAddr());
                 } catch ( UnknownHostException e ) {
                     throw new ParseException( "Unable to create an ip set matcher, the ip address '" + 
                                               ipString + "' is invalid", e );

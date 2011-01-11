@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.security.NodeId;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.node.openvpn.Constants;
 import com.untangle.node.openvpn.VpnNode;
@@ -119,7 +119,7 @@ class Util
             String commonName = null;
 
             try {
-                IPaddr address = IPaddr.parse( request.getRemoteAddr());
+                IPAddress address = IPAddress.parse( request.getRemoteAddr());
                 commonName = node.lookupClientDistributionKey( key, address );
             } catch ( Exception e ) {
                 logger.error( "Error connecting to the openvpn node", e );

@@ -46,7 +46,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
@@ -86,12 +86,12 @@ public class AddressSettings implements Serializable, Validatable
     /* This is the address of an external router that has a redirect
      * to this untangle.  Used when we are in bridge mode behind
      * another box. */
-    private IPaddr publicIPaddr;
+    private IPAddress publicIPAddress;
     
     /**
      * This is the port on the external router that is redirect to the
      * untangle's httpsPort. <code>publicPort</code> is used in
-     * conjunction with <code>publicIPaddr</code>
+     * conjunction with <code>publicIPAddress</code>
      */
     private int publicPort;
 
@@ -105,7 +105,7 @@ public class AddressSettings implements Serializable, Validatable
         this.hostname = settings.hostname;
         this.isHostnamePublic = settings.isHostnamePublic;
         this.isPublicAddressEnabled = settings.isPublicAddressEnabled;
-        this.publicIPaddr = settings.publicIPaddr;
+        this.publicIPAddress = settings.publicIPAddress;
     }
         
     @Id
@@ -193,11 +193,11 @@ public class AddressSettings implements Serializable, Validatable
     @Transient
     public String getPublicAddress()
     {
-        if ( this.publicIPaddr == null || this.publicIPaddr.isEmpty()) return "";
+        if ( this.publicIPAddress == null || this.publicIPAddress.isEmpty()) return "";
 
-        if ( this.publicPort == NetworkUtil.DEF_HTTPS_PORT ) return this.publicIPaddr.toString();
+        if ( this.publicPort == NetworkUtil.DEF_HTTPS_PORT ) return this.publicIPAddress.toString();
 
-        return this.publicIPaddr.toString() + ":" + this.publicPort;
+        return this.publicIPAddress.toString() + ":" + this.publicPort;
     }
 
     /**
@@ -215,19 +215,19 @@ public class AddressSettings implements Serializable, Validatable
         if ( newValue.length() == 0 ) return;
 
         try {
-            IPaddr address;
+            IPAddress address;
             String valueArray[] = newValue.split( ":" );
             switch ( valueArray.length ) {
             case 1:
-                address = IPaddr.parse( valueArray[0] );
-                setPublicIPaddr( address );
+                address = IPAddress.parse( valueArray[0] );
+                setPublicIPAddress( address );
                 setPublicPort( NetworkUtil.DEF_HTTPS_PORT );
                 break;
 
             case 2:
-                address = IPaddr.parse( valueArray[0] );
+                address = IPAddress.parse( valueArray[0] );
                 int port = Integer.parseInt( valueArray[1] );
-                setPublicIPaddr( address );
+                setPublicIPAddress( address );
                 setPublicPort( port );
                 break;
 
@@ -244,10 +244,10 @@ public class AddressSettings implements Serializable, Validatable
      * Retrieve the address portion of the public address.
      */
     @Column(name="public_ip_addr")
-    @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getPublicIPaddr()
+    @Type(type="com.untangle.uvm.type.IPAddressUserType")
+    public IPAddress getPublicIPAddress()
     {
-        return this.publicIPaddr;
+        return this.publicIPAddress;
     }
 
     /**
@@ -255,9 +255,9 @@ public class AddressSettings implements Serializable, Validatable
      *
      * @param newValue the new address for the public address.
      */
-    public void setPublicIPaddr( IPaddr newValue )
+    public void setPublicIPAddress( IPAddress newValue )
     {
-        this.publicIPaddr = newValue;
+        this.publicIPAddress = newValue;
     }
 
     /**
@@ -291,7 +291,7 @@ public class AddressSettings implements Serializable, Validatable
     @Transient
     public boolean hasPublicAddress()
     {
-        return (( this.publicIPaddr != null ) &&  !this.publicIPaddr.isEmpty());
+        return (( this.publicIPAddress != null ) &&  !this.publicIPAddress.isEmpty());
     }
 
     /**
@@ -305,12 +305,12 @@ public class AddressSettings implements Serializable, Validatable
         /* if using the public address then, get the address from the settings. */
         String publicAddress = this.getPublicAddress();
 
-        IPaddr primaryAddress = com.untangle.uvm.client.RemoteUvmContextFactory.context().networkManager().getPrimaryAddress();
+        IPAddress primaryAddress = com.untangle.uvm.client.RemoteUvmContextFactory.context().networkManager().getPrimaryAddress();
         
         /* has public address trumps over all other settings */
         if ( this.getIsPublicAddressEnabled() && ( publicAddress != null ) && ( publicAddress.trim().length() > 0 )) {
             /* has public address is set and a public address is available */
-            address = new HostAddress( this.getPublicIPaddr());
+            address = new HostAddress( this.getPublicIPAddress());
             
         } else if ( this.getIsHostNamePublic() )  {
             /* no public address, use the primary address, and the hostname */

@@ -13,7 +13,7 @@ import javax.xml.bind.ValidationException;
 import com.untangle.uvm.node.AddressRange;
 import com.untangle.uvm.node.AddressValidator;
 import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
@@ -31,39 +31,39 @@ public class NetworkUtil
     private static final NetworkUtil INSTANCE;
 
     /** An empty IP address, 0.0.0.0 */
-    public static final IPaddr  EMPTY_IPADDR;
+    public static final IPAddress  EMPTY_IPADDR;
 
     /* Default address for the outside restricted outside network */
-    public static final IPaddr  DEF_OUTSIDE_NETWORK;
+    public static final IPAddress  DEF_OUTSIDE_NETWORK;
 
     /* Default address for the outside restricted outside netmask */
-    public static final IPaddr  DEF_OUTSIDE_NETMASK;
+    public static final IPAddress  DEF_OUTSIDE_NETMASK;
 
     /* Default local domain */
     public static final HostName LOCAL_DOMAIN_DEFAULT;
 
     /* The address to use when a DHCP request fails */
-    public static final IPaddr  BOGUS_DHCP_ADDRESS;
+    public static final IPAddress  BOGUS_DHCP_ADDRESS;
 
     /* The netmask to use if a DHCP request fails */
-    public static final IPaddr  BOGUS_DHCP_NETMASK;
+    public static final IPAddress  BOGUS_DHCP_NETMASK;
 
     /* Default start of the DHCP range */
-    public static final IPaddr DEFAULT_DHCP_START;
+    public static final IPAddress DEFAULT_DHCP_START;
 
     /* Default end of the DHCP range. */
-    public static final IPaddr DEFAULT_DHCP_END;
+    public static final IPAddress DEFAULT_DHCP_END;
 
     /* Default NAT address */
-    public static final IPaddr DEFAULT_NAT_ADDRESS;
+    public static final IPAddress DEFAULT_NAT_ADDRESS;
 
     /* Default NAT netmask */
-    public static final IPaddr DEFAULT_NAT_NETMASK;
+    public static final IPAddress DEFAULT_NAT_NETMASK;
 
     /* This is the address to use during setup */
-    public static final IPaddr SETUP_ADDRESS;
+    public static final IPAddress SETUP_ADDRESS;
 
-    public static final IPaddr BOGUS_ADDRESS;
+    public static final IPAddress BOGUS_ADDRESS;
 
     /* ??? which one */
     public static final HostName DEFAULT_HOSTNAME;
@@ -147,11 +147,11 @@ public class NetworkUtil
      * @return True iff <code>address/netmask</code> is considered a
      * private address.
      */
-    public boolean isPrivateNetwork( IPaddr address, IPaddr netmask )
+    public boolean isPrivateNetwork( IPAddress address, IPAddress netmask )
     {
         if (( address == null ) || ( netmask == null )) return false;
 
-        IPaddr base = address.and( netmask );
+        IPAddress base = address.and( netmask );
 
         for ( IPMatcher matcher : this.privateNetworkList ) {
             if ( matcher.isMatch( base.getAddr())) return true;
@@ -196,12 +196,12 @@ public class NetworkUtil
     public String toRouteString( IPNetwork network ) throws Exception
     {
         /* XXX This is kind of hokey and should be precalculated at creation time */
-        IPaddr netmask = network.getNetmask();
+        IPAddress netmask = network.getNetmask();
 
         try {
             int cidr = netmask.toCidr();
 
-            IPaddr networkAddress = network.getNetwork().and( netmask );
+            IPAddress networkAddress = network.getNetwork().and( netmask );
             /* Very important, the ip command barfs on spaces. */
             return networkAddress.toString() + "/" + cidr;
         } catch ( ParseException e ) {
@@ -217,7 +217,7 @@ public class NetworkUtil
      * @param publicPort The port part of the public address.
      * @return The public address string.
      */
-    public String generatePublicAddress( IPaddr publicAddress, int publicPort )
+    public String generatePublicAddress( IPAddress publicAddress, int publicPort )
     {
         if ( publicAddress == null || publicAddress.isEmpty()) return "";
 
@@ -226,7 +226,7 @@ public class NetworkUtil
         return publicAddress.toString() + ":" + publicPort;
     }
 
-    public boolean isBogus( IPaddr address )
+    public boolean isBogus( IPAddress address )
     {
         if ( BOGUS_ADDRESS == null ) return false;
 
@@ -259,37 +259,37 @@ public class NetworkUtil
 
     static
     {
-        IPaddr emptyAddr        = null;
-        IPaddr outsideNetwork   = null;
-        IPaddr outsideNetmask   = null;
-        IPaddr bogusDHCPAddress = null;
-        IPaddr bogusDHCPNetmask = null;
-        IPaddr dhcpStart        = null;
-        IPaddr dhcpEnd          = null;
-        IPaddr bogusAddress     = null;
+        IPAddress emptyAddr        = null;
+        IPAddress outsideNetwork   = null;
+        IPAddress outsideNetmask   = null;
+        IPAddress bogusDHCPAddress = null;
+        IPAddress bogusDHCPNetmask = null;
+        IPAddress dhcpStart        = null;
+        IPAddress dhcpEnd          = null;
+        IPAddress bogusAddress     = null;
 
-        IPaddr natAddress       = null;
-        IPaddr natNetmask       = null;
+        IPAddress natAddress       = null;
+        IPAddress natNetmask       = null;
 
-        IPaddr setupAddress     = null;
+        IPAddress setupAddress     = null;
 
         HostName h, l;
 
         try {
-            emptyAddr        = IPaddr.parse( "0.0.0.0" );
-            outsideNetwork   = IPaddr.parse( "1.2.3.4" );
-            outsideNetmask   = IPaddr.parse( "255.255.255.0" );
-            bogusDHCPAddress = IPaddr.parse( "169.254.210.50" );
-            bogusDHCPNetmask = IPaddr.parse( "255.255.255.0" );
-            bogusAddress     = IPaddr.parse( "192.0.2.1" );
+            emptyAddr        = IPAddress.parse( "0.0.0.0" );
+            outsideNetwork   = IPAddress.parse( "1.2.3.4" );
+            outsideNetmask   = IPAddress.parse( "255.255.255.0" );
+            bogusDHCPAddress = IPAddress.parse( "169.254.210.50" );
+            bogusDHCPNetmask = IPAddress.parse( "255.255.255.0" );
+            bogusAddress     = IPAddress.parse( "192.0.2.1" );
 
-            dhcpStart      = IPaddr.parse( "192.168.2.100" );
-            dhcpEnd        = IPaddr.parse( "192.168.2.200" );
+            dhcpStart      = IPAddress.parse( "192.168.2.100" );
+            dhcpEnd        = IPAddress.parse( "192.168.2.200" );
 
-            natAddress = IPaddr.parse( "192.168.2.254" );
-            natNetmask = IPaddr.parse( "255.255.255.0" );
+            natAddress = IPAddress.parse( "192.168.2.254" );
+            natNetmask = IPAddress.parse( "255.255.255.0" );
 
-            setupAddress = IPaddr.parse( "192.168.1.1" );
+            setupAddress = IPAddress.parse( "192.168.1.1" );
         } catch( Exception e ) {
             System.err.println( "this should never happen: " + e );
             emptyAddr = null;

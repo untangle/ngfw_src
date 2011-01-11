@@ -44,7 +44,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
 
@@ -85,11 +85,11 @@ public class AccessSettings implements Serializable, Validatable
 
     /* When <code>isOutsideAccessRestricted</code> is true this is the
      * network that access is restricted to. */
-    private IPaddr outsideNetwork;
+    private IPAddress outsideNetwork;
 
     /* When <code>isOutsideAccessRestricted</code> is true this is the
      * netmask that access is restricted to. */
-    private IPaddr outsideNetmask;
+    private IPAddress outsideNetmask;
 
     /* True iff administration is allowed from outside. */
     private boolean isOutsideAdministrationEnabled;
@@ -226,8 +226,8 @@ public class AccessSettings implements Serializable, Validatable
      * the internet.
      */
     @Column(name="outside_network")
-    @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getOutsideNetwork()
+    @Type(type="com.untangle.uvm.type.IPAddressUserType")
+    public IPAddress getOutsideNetwork()
     {
         if ( this.outsideNetwork == null ) this.outsideNetwork = NetworkUtil.DEF_OUTSIDE_NETWORK;
         return this.outsideNetwork;
@@ -241,10 +241,10 @@ public class AccessSettings implements Serializable, Validatable
      * @param newValue The network that is is allowed to administer the box from
      * the internet.
      */
-    public void setOutsideNetwork( IPaddr newValue )
+    public void setOutsideNetwork( IPAddress newValue )
     {
         if ( newValue == null ) newValue = NetworkUtil.DEF_OUTSIDE_NETWORK;
-        if ( !IPaddr.equals( this.outsideNetwork, newValue )) this.isClean = false;
+        if ( !IPAddress.equals( this.outsideNetwork, newValue )) this.isClean = false;
         this.outsideNetwork = newValue;
     }
 
@@ -257,8 +257,8 @@ public class AccessSettings implements Serializable, Validatable
      * the internet.
      */
     @Column(name="outside_netmask")
-    @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getOutsideNetmask()
+    @Type(type="com.untangle.uvm.type.IPAddressUserType")
+    public IPAddress getOutsideNetmask()
     {
         if ( this.outsideNetmask == null ) this.outsideNetmask = NetworkUtil.DEF_OUTSIDE_NETMASK;
         return this.outsideNetmask;
@@ -272,10 +272,10 @@ public class AccessSettings implements Serializable, Validatable
      * @param newValue The netmask for the network that is is allowed to administer the box from
      * the internet.
      */
-    public void setOutsideNetmask( IPaddr newValue )
+    public void setOutsideNetmask( IPAddress newValue )
     {
         if ( newValue == null ) newValue = NetworkUtil.DEF_OUTSIDE_NETMASK;
-        if ( !IPaddr.equals( this.outsideNetmask, newValue )) this.isClean = false;
+        if ( !IPAddress.equals( this.outsideNetmask, newValue )) this.isClean = false;
         this.outsideNetmask = newValue;
     }
 

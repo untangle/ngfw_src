@@ -44,7 +44,7 @@ import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.networking.MiscSettings;
 import com.untangle.uvm.networking.NetworkSettingsListener;
 import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.NetworkManager;
@@ -120,17 +120,17 @@ public interface NetworkManager
     /* Get the public URL of the box */
     String getPublicAddress();
 
-    IPaddr getPrimaryAddress();
+    IPAddress getPrimaryAddress();
 
     /* Allow the setup wizard to setup NAT properly, or disable it. */
-    void setWizardNatEnabled(IPaddr address, IPaddr netmask, boolean enableDhcpServer ) 
+    void setWizardNatEnabled(IPAddress address, IPAddress netmask, boolean enableDhcpServer ) 
         throws Exception;
     void setWizardNatDisabled() throws Exception;
 
     /* returns a recommendation for the internal network. */
     /* @param externalAddress The external address, if null, this uses
      * the external address of the box. */
-    IPNetwork getWizardInternalAddressSuggesstion(IPaddr externalAddress);
+    IPNetwork getWizardInternalAddressSuggesstion(IPAddress externalAddress);
 
     /* Returns a list of the physical interfaces on the box. (eth0, eth1, etc). */
     public List<String> getPhysicalInterfaceNames() throws Exception;

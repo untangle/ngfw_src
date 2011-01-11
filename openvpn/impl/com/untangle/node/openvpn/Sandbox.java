@@ -39,7 +39,7 @@ import com.untangle.uvm.networking.InterfaceSettings;
 import com.untangle.uvm.node.AddressRange;
 import com.untangle.uvm.node.AddressValidator;
 import com.untangle.uvm.node.HostAddress;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.script.ScriptRunner;
@@ -125,7 +125,7 @@ public class Sandbox
         } 
 
         /* Parse out the client configuration address */
-        vpnServerAddress = new HostAddress( new IPaddr( null ));
+        vpnServerAddress = new HostAddress( new IPAddress( null ));
         BufferedReader in = null;
         try { 
             in = new BufferedReader( new FileReader( OPENVPN_CLIENT_FILE ));
@@ -146,7 +146,7 @@ public class Sandbox
             }
         } catch ( Exception e ) {
             logger.warn( "Error reading client configuration file", e );
-            vpnServerAddress = new HostAddress( new IPaddr( null ));
+            vpnServerAddress = new HostAddress( new IPAddress( null ));
         } finally {
             if ( in != null ) try { in.close(); } catch ( Exception e ) {};
         }

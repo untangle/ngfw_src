@@ -49,9 +49,9 @@ public class HostAddress implements Serializable
     private final HostName hostName;
     
     /* the IP represented by this host address, can be null. */
-    private final IPaddr ip;
+    private final IPAddress ip;
 
-    public HostAddress( IPaddr ip )
+    public HostAddress( IPAddress ip )
     {
         this( ip, null );
     }
@@ -61,7 +61,7 @@ public class HostAddress implements Serializable
         this( null, hostName );
     }
 
-    public HostAddress( IPaddr ip, HostName hostName )
+    public HostAddress( IPAddress ip, HostName hostName )
     {
         this.ip = ip;
         this.hostName = hostName;
@@ -72,7 +72,7 @@ public class HostAddress implements Serializable
         return this.hostName;
     }
 
-    public IPaddr getIp()
+    public IPAddress getIp()
     {
         return this.ip;
     }
@@ -88,11 +88,11 @@ public class HostAddress implements Serializable
     /* Address is either a hostname or an ip address */
     public static HostAddress parse( String address ) throws ParseException
     {
-        IPaddr ip = null;
+        IPAddress ip = null;
         HostName hostName = null;
 
         try {
-            ip = IPaddr.parse( address );
+            ip = IPAddress.parse( address );
         } catch ( ParseException e ) {
             /* It is not an IP, try it as a hostname */
             ip = null;

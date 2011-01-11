@@ -34,7 +34,7 @@ import org.hibernate.annotations.Type;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 
 /**
  * Log event for when a client logs in.
@@ -50,7 +50,7 @@ import com.untangle.uvm.node.IPaddr;
 public class ClientConnectEvent extends LogEvent implements Serializable
 {
 
-    private IPaddr address;
+    private IPAddress address;
     private int port;
     private String clientName;
     private Date start; /* Start of the session */
@@ -61,7 +61,7 @@ public class ClientConnectEvent extends LogEvent implements Serializable
     // Constructors
     public ClientConnectEvent() {}
 
-    public ClientConnectEvent( Date start, IPaddr address, int port, String clientName )
+    public ClientConnectEvent( Date start, IPAddress address, int port, String clientName )
     {
         this.start      = start;
         this.address    = address;
@@ -75,13 +75,13 @@ public class ClientConnectEvent extends LogEvent implements Serializable
      * @return Address of where the client connected from.
      */
     @Column(name="remote_address")
-    @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getAddress()
+    @Type(type="com.untangle.uvm.type.IPAddressUserType")
+    public IPAddress getAddress()
     {
         return this.address;
     }
 
-    public void setAddress( IPaddr address )
+    public void setAddress( IPAddress address )
     {
         this.address = address;
     }

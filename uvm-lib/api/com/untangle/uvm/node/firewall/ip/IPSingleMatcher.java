@@ -36,7 +36,7 @@ package com.untangle.uvm.node.firewall.ip;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 import com.untangle.uvm.node.firewall.ParsingConstants;
@@ -94,13 +94,13 @@ public final class IPSingleMatcher extends IPDBMatcher
     }
 
     /**
-     * Create a single matcher, uses an IPaddr instead of an
+     * Create a single matcher, uses an IPAddress instead of an
      * InetAddress.
      *
      * @param address The address that should match.
      * @return An IPMatcher that matches IP address <param>address</param>
      */
-    public static IPDBMatcher makeInstance( IPaddr address )
+    public static IPDBMatcher makeInstance( IPAddress address )
     {
         return makeInstance( address.getAddr());
     }
@@ -127,7 +127,7 @@ public final class IPSingleMatcher extends IPDBMatcher
             }
             
             try {
-                return makeInstance( IPaddr.parse( value ));
+                return makeInstance( IPAddress.parse( value ));
             } catch ( UnknownHostException e ) {
                 throw new ParseException( e );
             }

@@ -37,7 +37,7 @@ import java.net.InetAddress;
 import java.util.List;
 
 import com.untangle.uvm.networking.IPNetwork;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.ParsingFactory;
 
@@ -95,7 +95,7 @@ public class IPMatcherFactory
         return IPSimpleMatcher.getNilMatcher();
     }
 
-    public final IPDBMatcher makeSingleMatcher( IPaddr address )
+    public final IPDBMatcher makeSingleMatcher( IPAddress address )
     {
         return IPSingleMatcher.makeInstance( address );
     }
@@ -105,7 +105,7 @@ public class IPMatcherFactory
         return IPSingleMatcher.makeInstance( address );
     }
 
-    public final IPDBMatcher makeSubnetMatcher( IPaddr network, IPaddr netmask )
+    public final IPDBMatcher makeSubnetMatcher( IPAddress network, IPAddress netmask )
     {
         return IPSubnetMatcher.makeInstance( network, netmask );
     }

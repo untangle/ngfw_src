@@ -38,7 +38,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 
 /**
@@ -59,15 +59,15 @@ public class IPNetwork implements Serializable
     private static final IPNetwork EMPTY_IPNETWORK;
     
     /* The network */
-    private final IPaddr network;
+    private final IPAddress network;
 
     /* The netmask */
-    private final IPaddr netmask;
+    private final IPAddress netmask;
 
     /* User/Database representation for this IPNetwork. */
     private final String user;
 
-    private IPNetwork( IPaddr network, IPaddr netmask, String user )
+    private IPNetwork( IPAddress network, IPAddress netmask, String user )
     {
         this.network = network;
         this.netmask = netmask;
@@ -79,7 +79,7 @@ public class IPNetwork implements Serializable
      *
      * @return The network.
      */
-    public IPaddr getNetwork()
+    public IPAddress getNetwork()
     {
         return this.network;
     }
@@ -89,7 +89,7 @@ public class IPNetwork implements Serializable
      *
      * @return The netmask.
      */
-    public IPaddr getNetmask()
+    public IPAddress getNetmask()
     {
         return this.netmask;
     }
@@ -156,9 +156,9 @@ public class IPNetwork implements Serializable
         try {
             String cidr = ipArray[1].trim();
             if ( cidr.length() < 3 ) {
-                return new IPNetwork( IPaddr.parse( ipArray[0] ), IPaddr.cidrToIPaddr( cidr ), value );
+                return new IPNetwork( IPAddress.parse( ipArray[0] ), IPAddress.cidrToIPAddress( cidr ), value );
             } else {
-                return new IPNetwork( IPaddr.parse( ipArray[0] ), IPaddr.parse( ipArray[1] ), value );
+                return new IPNetwork( IPAddress.parse( ipArray[0] ), IPAddress.parse( ipArray[1] ), value );
             }
         } catch ( UnknownHostException e ) {
             throw new ParseException( e );
@@ -174,7 +174,7 @@ public class IPNetwork implements Serializable
      */
     public static IPNetwork makeInstance( InetAddress network, InetAddress netmask )
     {
-        return makeInstance( new IPaddr(network), new IPaddr(netmask));
+        return makeInstance( new IPAddress(network), new IPAddress(netmask));
     }
 
     /**
@@ -184,7 +184,7 @@ public class IPNetwork implements Serializable
      * @param netmask The netmask of this network.
      * @return A new IP Network for <code>network / netmask</code>
      */
-    public static IPNetwork makeInstance( IPaddr network, IPaddr netmask )
+    public static IPNetwork makeInstance( IPAddress network, IPAddress netmask )
     {
         String user = network + "/" + netmask;
         return new IPNetwork( network, netmask, user );
@@ -210,6 +210,6 @@ public class IPNetwork implements Serializable
             EMPTY = null;
         }
 
-        EMPTY_IPNETWORK = new IPNetwork( new IPaddr( EMPTY ), new IPaddr( EMPTY ), "0.0.0.0/0" );
+        EMPTY_IPNETWORK = new IPNetwork( new IPAddress( EMPTY ), new IPAddress( EMPTY ), "0.0.0.0/0" );
     }
 }

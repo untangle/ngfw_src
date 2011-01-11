@@ -41,7 +41,7 @@ import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.node.HostAddress;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.security.NodeId;
@@ -99,8 +99,8 @@ public class VpnSettings implements Serializable, Validatable
     private List<VpnSite> siteList;
 
     private boolean isDnsOverrideEnabled = false;
-    private IPaddr dns1;
-    private IPaddr dns2;
+    private IPAddress dns1;
+    private IPAddress dns2;
 
     /* This is the port to put into config files */
     private int publicPort = DEFAULT_PUBLIC_PORT;
@@ -309,33 +309,33 @@ public class VpnSettings implements Serializable, Validatable
     }
 
     @Column(name="dns_1")
-    @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getDns1()
+    @Type(type="com.untangle.uvm.type.IPAddressUserType")
+    public IPAddress getDns1()
     {
         return this.dns1;
     }
 
-    public void setDns1( IPaddr newValue )
+    public void setDns1( IPAddress newValue )
     {
         this.dns1 = newValue;
     }
 
     @Column(name="dns_2")
-    @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getDns2()
+    @Type(type="com.untangle.uvm.type.IPAddressUserType")
+    public IPAddress getDns2()
     {
         return this.dns2;
     }
 
-    public void setDns2( IPaddr newValue )
+    public void setDns2( IPAddress newValue )
     {
         this.dns2 = newValue;
     }
 
     @Transient
-    public List<IPaddr> getDnsServerList()
+    public List<IPAddress> getDnsServerList()
     {
-        List<IPaddr> dnsServerList = new LinkedList<IPaddr>();
+        List<IPAddress> dnsServerList = new LinkedList<IPAddress>();
 
         if (( this.dns1 != null ) && ( !this.dns1.isEmpty())) dnsServerList.add( this.dns1 );
         if (( this.dns2 != null ) && ( !this.dns2.isEmpty())) dnsServerList.add( this.dns2 );

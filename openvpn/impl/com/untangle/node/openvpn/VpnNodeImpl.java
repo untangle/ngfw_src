@@ -41,7 +41,7 @@ import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.Validator;
@@ -394,7 +394,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     }
 
     /* Get the common name for the key, and clear it if it exists */
-    public synchronized String lookupClientDistributionKey( String key, IPaddr clientAddress )
+    public synchronized String lookupClientDistributionKey( String key, IPAddress clientAddress )
     {
         if (logger.isDebugEnabled()) {
             logger.debug( "Looking up client for key: " + key );
@@ -492,13 +492,13 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         return true;
     }
 
-    public void addClientDistributionEvent( IPaddr clientAddress, String clientName )
+    public void addClientDistributionEvent( IPAddress clientAddress, String clientName )
     {
         this.openVpnMonitor.
             addClientDistributionEvent( new ClientDistributionEvent( clientAddress, clientName ));
     }
 
-    private boolean lookupClientDistributionKey( String key, IPaddr clientAddress, final VpnClientBase client )
+    private boolean lookupClientDistributionKey( String key, IPAddress clientAddress, final VpnClientBase client )
     {
         String clientKey = client.getDistributionKey();
 

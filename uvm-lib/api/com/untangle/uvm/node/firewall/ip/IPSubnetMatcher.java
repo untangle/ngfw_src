@@ -36,7 +36,7 @@ package com.untangle.uvm.node.firewall.ip;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 
@@ -100,7 +100,7 @@ public final class IPSubnetMatcher extends IPDBMatcher
      * @param netmask The netmask/size of <param>network</param>.
      * @return An IPMatcher that matches the specified subnet.
      */
-    public static IPDBMatcher makeInstance( IPaddr network, IPaddr netmask )
+    public static IPDBMatcher makeInstance( IPAddress network, IPAddress netmask )
     {
         return makeInstance( network.getAddr(), netmask.getAddr());
     }
@@ -175,15 +175,15 @@ public final class IPSubnetMatcher extends IPDBMatcher
                 String cidr = ipArray[1].trim();
                 if ( cidr.length() < 3 ) {
                     try {
-                        return makeInstance( IPaddr.parse( ipArray[0] ).getAddr(),
+                        return makeInstance( IPAddress.parse( ipArray[0] ).getAddr(),
                                              Integer.parseInt( cidr ));
                     } catch ( NumberFormatException e ) {
                         throw new ParseException( "Invalid CIDR notion: '" + cidr +
                                                   "' should be a number between 0 and 32" );
                     }
                 } else {
-                    return makeInstance( IPaddr.parse( ipArray[0] ).getAddr(),
-                                         IPaddr.parse( ipArray[1] ).getAddr());
+                    return makeInstance( IPAddress.parse( ipArray[0] ).getAddr(),
+                                         IPAddress.parse( ipArray[1] ).getAddr());
                 }
             } catch ( UnknownHostException e ) {
                 throw new ParseException( e );

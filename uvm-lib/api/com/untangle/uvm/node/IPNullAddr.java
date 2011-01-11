@@ -37,12 +37,12 @@ package com.untangle.uvm.node;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 
-/* This adds the extension that an empty string is parseable as a null IPaddr.
- * This is different from an IPaddr where an empty string is not parseable.
+/* This adds the extension that an empty string is parseable as a null IPAddress.
+ * This is different from an IPAddress where an empty string is not parseable.
  * This is not a very elegant class, and should be destroyed. (rbs).
  */
 @SuppressWarnings("serial")
-public class IPNullAddr extends IPaddr
+public class IPNullAddr extends IPAddress
 {
 
     private static final IPNullAddr EMPTY_ADDR = new IPNullAddr( null );
@@ -61,7 +61,7 @@ public class IPNullAddr extends IPaddr
         if ( dotNotation.length() == 0 ) {
             return EMPTY_ADDR;
         } else {
-            return new IPNullAddr((Inet4Address)IPaddr.parse( dotNotation ).getAddr());
+            return new IPNullAddr((Inet4Address)IPAddress.parse( dotNotation ).getAddr());
         }        
     }
 

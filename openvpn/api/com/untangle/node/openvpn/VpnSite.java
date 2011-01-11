@@ -31,7 +31,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ValidateException;
 
 /**
@@ -46,7 +46,7 @@ import com.untangle.uvm.node.ValidateException;
 @SuppressWarnings("serial")
 public class VpnSite extends VpnClientBase
 {
-    private static final IPaddr EMPTY_ADDR = new IPaddr( null );
+    private static final IPAddress EMPTY_ADDR = new IPAddress( null );
 
     // List of addresses at this site,
     // initially, may not be supported, just use one address.
@@ -105,7 +105,7 @@ public class VpnSite extends VpnClientBase
         return site;
     }
 
-    public void setSiteNetwork( IPaddr network, IPaddr netmask )
+    public void setSiteNetwork( IPAddress network, IPAddress netmask )
     {
     	List<ClientSiteNetwork>  list = getExportedAddressList();
 

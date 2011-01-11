@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("serial")
-public class IPaddr implements Comparable<IPaddr>, Serializable
+public class IPAddress implements Comparable<IPAddress>, Serializable
 {
 
     static final String CIDR_STRINGS[] = 
@@ -26,20 +26,20 @@ public class IPaddr implements Comparable<IPaddr>, Serializable
     };
 
     /* Should be an unmodifiable list or vector */
-    static final IPaddr CIDR_CONVERTER[] = new IPaddr[CIDR_STRINGS.length];
+    static final IPAddress CIDR_CONVERTER[] = new IPAddress[CIDR_STRINGS.length];
     
-    static final Map<IPaddr,Integer> NET_TO_CIDR = new HashMap<IPaddr,Integer>();
+    static final Map<IPAddress,Integer> NET_TO_CIDR = new HashMap<IPAddress,Integer>();
 
     static final int INADDRSZ = 4;
 
     private final InetAddress addr;
 
-    public IPaddr( InetAddress addr )
+    public IPAddress( InetAddress addr )
     {
         this.addr = addr;
     }
 
-    public static IPaddr parse( String dotNotation ) throws ParseException, UnknownHostException
+    public static IPAddress parse( String dotNotation ) throws ParseException, UnknownHostException
     {
         /* Trim any whitespace */
         dotNotation = dotNotation.trim();
@@ -64,23 +64,23 @@ public class IPaddr implements Comparable<IPaddr>, Serializable
             }
         }
 
-        return new IPaddr(InetAddress.getByName( dotNotation ));
+        return new IPAddress(InetAddress.getByName( dotNotation ));
     }
     
-    public static IPaddr cidrToIPaddr( String cidr )
+    public static IPAddress cidrToIPAddress( String cidr )
         throws ParseException
     {
         cidr = cidr.trim();
         
         try {
-            return cidrToIPaddr( Integer.parseInt( cidr ));
+            return cidrToIPAddress( Integer.parseInt( cidr ));
         } catch ( NumberFormatException e ) {
             throw new ParseException( "CIDR notation should contain a number between 0 and 32, '" + 
                                       cidr + "'" );
         }
     }
 
-    public static IPaddr cidrToIPaddr( int cidr )
+    public static IPAddress cidrToIPAddress( int cidr )
         throws ParseException
     {
         if ( cidr < 0 || cidr > CIDR_CONVERTER.length ) {
@@ -91,7 +91,7 @@ public class IPaddr implements Comparable<IPaddr>, Serializable
         return CIDR_CONVERTER[cidr];
     }
     
-    public static IPaddr and( IPaddr addr1, IPaddr addr2 ) 
+    public static IPAddress and( IPAddress addr1, IPAddress addr2 ) 
     {
         return addr1.and( addr2 );
     }
@@ -101,26 +101,26 @@ public class IPaddr implements Comparable<IPaddr>, Serializable
         return addr;
     }
 
-    public IPaddr and( IPaddr addr2 )
+    public IPAddress and( IPAddress addr2 )
     {
         long oper1 = toLong();
         long oper2 = addr2.toLong();
         
-        return makeIPaddr( oper1 & oper2 );
+        return makeIPAddress( oper1 & oper2 );
     }
 
-    public IPaddr or( IPaddr addr2 )
+    public IPAddress or( IPAddress addr2 )
     {
         long oper1 = toLong();
         long oper2 = addr2.toLong();
         
-        return makeIPaddr( oper1 | oper2 );
+        return makeIPAddress( oper1 | oper2 );
     }
     
-    public IPaddr inverse()
+    public IPAddress inverse()
     {
         long oper = toLong();
-        return makeIPaddr( ~oper );
+        return makeIPAddress( ~oper );
     }
 
     public int toCidr() throws ParseException
@@ -131,12 +131,12 @@ public class IPaddr implements Comparable<IPaddr>, Serializable
         return cidr;
     }
 
-    public boolean isGreaterThan( IPaddr addr2 ) 
+    public boolean isGreaterThan( IPAddress addr2 ) 
     {
         return ( this.compareTo( addr2 ) > 0);
     }
     
-    public boolean isInNetwork( IPaddr addr2, IPaddr netmaskAddress )
+    public boolean isInNetwork( IPAddress addr2, IPAddress netmaskAddress )
     {
         long netmask = netmaskAddress.toLong();
 
@@ -173,7 +173,7 @@ public class IPaddr implements Comparable<IPaddr>, Serializable
         return addr.getHostAddress();
     }
 
-    /** Convert an IPaddr to a long */
+    /** Convert an IPAddress to a long */
     private long toLong( )
     {
         /* XXX A little questionable, but this is only used for comparisons anyway */
@@ -199,8 +199,8 @@ public class IPaddr implements Comparable<IPaddr>, Serializable
 
     public boolean equals( Object o )
     {
-        if ( o instanceof IPaddr ) {
-            InetAddress addr2 = ((IPaddr)o).addr;
+        if ( o instanceof IPAddress ) {
+            InetAddress addr2 = ((IPAddress)o).addr;
             if ( addr == null ) {
                 return ( addr2 == null );
             } else {
@@ -211,7 +211,7 @@ public class IPaddr implements Comparable<IPaddr>, Serializable
         return false;
     }
 
-    public int compareTo(IPaddr other)
+    public int compareTo(IPAddress other)
     {
         long oper1 = toLong();
         long oper2 = other.toLong();
@@ -224,7 +224,7 @@ public class IPaddr implements Comparable<IPaddr>, Serializable
             return 0;
     }
 
-    private static IPaddr makeIPaddr( long addr )
+    private static IPAddress makeIPAddress( long addr )
     {
         byte valArray[] = new byte[INADDRSZ];
         InetAddress address = null;
@@ -240,7 +240,7 @@ public class IPaddr implements Comparable<IPaddr>, Serializable
             return null;
         }
 
-        return new IPaddr(address);
+        return new IPAddress(address);
     }
 
     static int byteToInt ( byte val ) 
@@ -250,8 +250,7 @@ public class IPaddr implements Comparable<IPaddr>, Serializable
         return num;
     }
 
-    /* tired of checking for null everywhere */
-    public static boolean equals( IPaddr addr1, IPaddr addr2 )
+    public static boolean equals( IPAddress addr1, IPAddress addr2 )
     {
         if ( addr1 == null || addr1 == null ) return addr1 == addr2;
 
@@ -263,7 +262,7 @@ public class IPaddr implements Comparable<IPaddr>, Serializable
         int c = 0;
         for ( String cidr : CIDR_STRINGS ) {
             try {
-                IPaddr addr = new IPaddr(InetAddress.getByName( cidr ));
+                IPAddress addr = new IPAddress(InetAddress.getByName( cidr ));
                 NET_TO_CIDR.put( addr, c );
                 CIDR_CONVERTER[c++] = addr;
             } catch ( UnknownHostException e ) {

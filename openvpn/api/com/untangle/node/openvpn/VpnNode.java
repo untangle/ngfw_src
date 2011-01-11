@@ -20,7 +20,7 @@ package com.untangle.node.openvpn;
 
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.HostAddress;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.Validator;
@@ -44,7 +44,7 @@ public interface VpnNode extends Node
     public VpnClientBase revokeClientCertificate( VpnSettings settings, VpnClientBase client );
 
     /* Need the address to log where the request came from */
-    public String lookupClientDistributionKey( String key, IPaddr address );
+    public String lookupClientDistributionKey( String key, IPAddress address );
 
     /* Returns a URL to use to download the admin key. */
     public String getAdminDownloadLink( String clientName, ConfigFormat format )
@@ -55,7 +55,7 @@ public interface VpnNode extends Node
     public boolean isAdminKey( String key );
 
     /** Log a distribution event */
-    public void addClientDistributionEvent( IPaddr clientAddress, String clientName );
+    public void addClientDistributionEvent( IPAddress clientAddress, String clientName );
 
     /* Send out the client distribution */
     public void distributeClientConfig( VpnClientBase client ) throws Exception;

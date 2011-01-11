@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 
 /**
  * Builds Syslog packets from <code>LogEvent</code>s.
@@ -115,7 +115,7 @@ class SyslogBuilderImpl implements SyslogBuilder
         addField(key, ia.getHostAddress());
     }
 
-    public void addField(String key, IPaddr ia)
+    public void addField(String key, IPAddress ia)
     {
         addField(key, ia.toString());
     }

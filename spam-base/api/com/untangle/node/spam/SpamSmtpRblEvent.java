@@ -46,7 +46,7 @@ import com.untangle.uvm.logging.PipelineEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.PipelineEndpoints;
 
@@ -63,14 +63,14 @@ import com.untangle.uvm.node.PipelineEndpoints;
 public class SpamSmtpRblEvent extends PipelineEvent
 {
     private HostName hostname;
-    private IPaddr ipAddr;
+    private IPAddress ipAddr;
     private boolean skipped;
 
     // constructors -----------------------------------------------------------
 
     public SpamSmtpRblEvent() {}
 
-    public SpamSmtpRblEvent(PipelineEndpoints plEndp, HostName hostname, IPaddr ipAddr, boolean skipped) {
+    public SpamSmtpRblEvent(PipelineEndpoints plEndp, HostName hostname, IPAddress ipAddr, boolean skipped) {
         super(plEndp);
         this.hostname = hostname;
         this.ipAddr = ipAddr;
@@ -84,7 +84,7 @@ public class SpamSmtpRblEvent extends PipelineEvent
         } catch (ParseException e) {
             this.hostname = HostName.getEmptyHostName();
         }
-        this.ipAddr = new IPaddr(ipAddrIN);
+        this.ipAddr = new IPAddress(ipAddrIN);
         this.skipped = skipped;
     }
 
@@ -112,12 +112,12 @@ public class SpamSmtpRblEvent extends PipelineEvent
      * @return IP address of mail server listed on RBL service.
      */
     @Column(nullable=false)
-    @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getIPAddr() {
+    @Type(type="com.untangle.uvm.type.IPAddressUserType")
+    public IPAddress getIPAddr() {
         return ipAddr;
     }
 
-    public void setIPAddr(IPaddr ipAddr) {
+    public void setIPAddr(IPAddress ipAddr) {
         this.ipAddr = ipAddr;
         return;
     }
