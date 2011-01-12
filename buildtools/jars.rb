@@ -71,7 +71,7 @@ class Jars
   ).map { |f| Jars.downloadTarget(f) }
 
   C3p0       = [ Jars.downloadTarget('c3p0-0.9.1.2/lib/c3p0-0.9.1.2.jar') ]
-  Ant        = [ Jars.downloadTarget('apache-ant-1.6.5/lib/ant.jar') ]
+#  Ant        = [ Jars.downloadTarget('apache-ant-1.6.5/lib/ant.jar') ]
   JavaMailApi= [ Jars.downloadTarget('javamail-1.3.3_01/lib/mailapi.jar') ]
   Jabsorb    = [ Jars.downloadTarget('jabsorb-1.2.2/jabsorb-1.2.2.jar')]
   Json       = [ Jars.downloadTarget('jabsorb-1.2.2/json.jar')]
@@ -157,16 +157,14 @@ class Jars
   ## Groups used for compiling
   # This is available to everything?
   Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres,
-                              Activation, C3p0, Ant, JavaMailApi,
+                              Activation, C3p0, 
+#Ant, 
+                              JavaMailApi,
                               GetText, JavaMail, TomcatEmb, Velocity, 
                               Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc,
                               Jstl, XStream, Json, Jabsorb, Slf4j, DnsJava,
                               Jnlp, JFreeChart)
 
-  Commons    = %w( commons-beanutils-1.7.0/commons-beanutils.jar
-                   hibernate-3.2/lib/commons-collections-2.1.1.jar
-                   commons-digester-1.7/commons-digester-1.7.jar
-                   hibernate-3.2/lib/commons-logging-1.0.4.jar ).map { |f| downloadTarget(f) }
   Itext      = downloadTarget( "itext-1.3/itext-1.3.jar" )
 
   # A jar used to build one of the buildutil classes

@@ -20,7 +20,11 @@ package com.untangle.uvm.logging;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.BufferedReader;
 import java.io.Reader;
+import java.io.Writer;
+import java.io.StringWriter;
+import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,7 +37,6 @@ import org.apache.log4j.spi.LoggerRepository;
 import org.apache.log4j.spi.RepositorySelector;
 import org.apache.log4j.spi.RootLogger;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.apache.tools.ant.filters.ReplaceTokens;
 
 /**
  * Selects logging repository based on the UvmLoggingContext.
@@ -44,8 +47,6 @@ import org.apache.tools.ant.filters.ReplaceTokens;
  */
 public class UvmRepositorySelector implements RepositorySelector
 {
-    public static final String NODE_LOG_FILE_NAME_TOKEN;
-
     private static final UvmLoggingContext UVM_CONTEXT;
     private static final UvmLoggingContextFactory UVM_CONTEXT_FACTORY;
     private static final LogMailer NULL_LOG_MAILER;
@@ -227,6 +228,28 @@ public class UvmRepositorySelector implements RepositorySelector
             this.ctx = ctx;
         }
 
+        public String convertStreamToString(InputStream is) throws java.io.IOException
+        {
+            if (is != null) {
+                Writer writer = new StringWriter();
+ 
+                char[] buffer = new char[1024];
+                try {
+                    Reader reader = new BufferedReader(
+                                                       new InputStreamReader(is, "UTF-8"));
+                    int n;
+                    while ((n = reader.read(buffer)) != -1) {
+                        writer.write(buffer, 0, n);
+                    }
+                } finally {
+                    is.close();
+                }
+                return writer.toString();
+            } else {       
+                return "";
+            }
+        }
+
         void configure()
         {
             String n = ctx.getConfigName();
@@ -238,14 +261,15 @@ public class UvmRepositorySelector implements RepositorySelector
 
             DOMConfigurator configurator = new DOMConfigurator();
             if (null != ctx) {
-                Reader r = new InputStreamReader(is);
-                ReplaceTokens rts = new ReplaceTokens(r);
-                ReplaceTokens.Token tok = new ReplaceTokens.Token();
-                tok.setKey(NODE_LOG_FILE_NAME_TOKEN);
-                tok.setValue(ctx.getFileName());
-                rts.addConfiguredToken(tok);
-
-                configurator.doConfigure(rts, this);
+                try {
+                    String fileStr = convertStreamToString(is);
+                    fileStr = fileStr.replace("@NodeLogFileName@", ctx.getFileName());
+                    InputStream newInputStream = new ByteArrayInputStream(fileStr.getBytes("UTF-8"));
+                    configurator.doConfigure(newInputStream, this);
+                }
+                catch (java.io.IOException e) {
+                    System.err.println("Exceptiong configuring logging exception: " + e);
+                }
             } else {
                 configurator.doConfigure(is, this);
             }
@@ -255,8 +279,6 @@ public class UvmRepositorySelector implements RepositorySelector
     // static initialization --------------------------------------------------
 
     static {
-        NODE_LOG_FILE_NAME_TOKEN = "NodeLogFileName";
-
         UVM_CONTEXT = new UvmLoggingContext()
             {
                 public String getConfigName() { return "log4j-uvm.xml"; }
