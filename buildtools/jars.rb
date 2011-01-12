@@ -128,12 +128,6 @@ class Jars
                  Jars.downloadTarget('jradius-1.1.0-client/lib/jradius-core-1.1.0.jar'),
                  Jars.downloadTarget('jradius-1.1.0-client/lib/jradius-dictionary-1.1.0.jar')]
 
-  # Jnlp       = [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/sample/jnlp/servlet/jnlp.jar") ]
-  Jnlp       = [ Jars.downloadTarget('jnlp/jnlp.jar') ]
-
-  # properJavaRDP Jars
-  ProperJavaRDP = [ 'properJavaRDP-1.1/properJavaRDP-1.1.jar', 'java-getopt-1.0.12/java-getopt-1.0.12.jar' ].map { |f| Jars.downloadTarget(f) }
-
   ## Jars required to run/compile unit tests
   Junit      = [ Jars.downloadTarget('junit4.1/junit-4.1.jar') ]
   Bdb        = [ Jars.downloadTarget('je-4.0.92/lib/je-4.0.92.jar') ]
@@ -157,7 +151,7 @@ class Jars
                               GetText, JavaMail, TomcatEmb, Velocity, 
                               Bdb, HttpClient, XmlRpc,
                               Jstl, XStream, Json, Jabsorb, Slf4j, DnsJava,
-                              Jnlp, JFreeChart)
+                              JFreeChart)
 
   # A jar used to build one of the buildutil classes
   Becl        = downloadTarget('bcel-5.2/bcel-5.2.jar')
