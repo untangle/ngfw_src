@@ -71,7 +71,6 @@ class Jars
   ).map { |f| Jars.downloadTarget(f) }
 
   C3p0       = [ Jars.downloadTarget('c3p0-0.9.1.2/lib/c3p0-0.9.1.2.jar') ]
-#  Ant        = [ Jars.downloadTarget('apache-ant-1.6.5/lib/ant.jar') ]
   JavaMailApi= [ Jars.downloadTarget('javamail-1.3.3_01/lib/mailapi.jar') ]
   Jabsorb    = [ Jars.downloadTarget('jabsorb-1.2.2/jabsorb-1.2.2.jar')]
   Json       = [ Jars.downloadTarget('jabsorb-1.2.2/json.jar')]
@@ -150,22 +149,15 @@ class Jars
                    Ajax/jars/standard.jar
                  ).map { |f| Jars.downloadTarget(f) }
 
-  HtmlParser = [ Jars.downloadTarget('htmlparser1_6_20060319/htmlparser1_6/lib/htmlparser.jar') ]
-
-  VncViewer = [ Jars.downloadTarget('tightvnc-1.2.9/classes/VncViewer.jar') ]
-
   ## Groups used for compiling
   # This is available to everything?
   Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres,
                               Activation, C3p0, 
-#Ant, 
                               JavaMailApi,
                               GetText, JavaMail, TomcatEmb, Velocity, 
-                              Bdb, HttpClient, HtmlParser, VncViewer, XmlRpc,
+                              Bdb, HttpClient, XmlRpc,
                               Jstl, XStream, Json, Jabsorb, Slf4j, DnsJava,
                               Jnlp, JFreeChart)
-
-  Itext      = downloadTarget( "itext-1.3/itext-1.3.jar" )
 
   # A jar used to build one of the buildutil classes
   Becl        = downloadTarget('bcel-5.2/bcel-5.2.jar')

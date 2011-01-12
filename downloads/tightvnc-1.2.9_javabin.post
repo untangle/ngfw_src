@@ -1,5 +1,0 @@
-#! /bin/bash
-#
-# Fixup location
-mkdir $1/tightvnc-1.2.9
-mv $1/LICENCE.TXT $1/WhatsNew $1/ChangeLog $1/README $1/index.html $1/classes $1/tightvnc-1.2.9
