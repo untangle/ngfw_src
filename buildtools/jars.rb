@@ -71,6 +71,7 @@ class Jars
   ).map { |f| Jars.downloadTarget(f) }
 
   C3p0       = [ Jars.downloadTarget('c3p0-0.9.1.2/lib/c3p0-0.9.1.2.jar') ]
+  Ant        = [ Jars.downloadTarget('apache-ant-1.6.5/lib/ant.jar') ]
   JavaMailApi= [ Jars.downloadTarget('javamail-1.3.3_01/lib/mailapi.jar') ]
   Jabsorb    = [ Jars.downloadTarget('jabsorb-1.2.2/jabsorb-1.2.2.jar')]
   Json       = [ Jars.downloadTarget('jabsorb-1.2.2/json.jar')]
