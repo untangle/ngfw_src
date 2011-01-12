@@ -35,8 +35,8 @@ import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.networking.NetworkSettings;
-import com.untangle.uvm.networking.InterfaceSettings;
+import com.untangle.uvm.networking.NetworkConfiguration;
+import com.untangle.uvm.networking.InterfaceConfiguration;
 
 public class OpenVpnManager
 {
@@ -423,7 +423,7 @@ public class OpenVpnManager
         } catch ( Exception e ) {
             logger.error( "Unable to delete the previous client configuration files." );
         }
-        NetworkSettings networkSettings = LocalUvmContextFactory.context().networkManager().getNetworkSettings();
+        NetworkConfiguration networkSettings = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration();
         
         Map<String,VpnGroup> groupMap = buildGroupMap(settings);
 
@@ -452,7 +452,7 @@ public class OpenVpnManager
                     dnsServers = settings.getDnsServerList();
                 } else {
                     dnsServers = new LinkedList<IPAddress>();
-                    for (InterfaceSettings intf : networkSettings.getInterfaceList()) {
+                    for (InterfaceConfiguration intf : networkSettings.getInterfaceList()) {
                         if (intf.isWAN()) {
                             if (intf.getDns1() != null)
                                 dnsServers.add(new IPAddress(intf.getDns1()));

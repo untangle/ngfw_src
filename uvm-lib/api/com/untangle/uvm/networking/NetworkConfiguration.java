@@ -14,33 +14,33 @@ import com.untangle.uvm.node.IPAddress;
  * This object represents the current configuration of all network settings
  */
 @SuppressWarnings("serial")
-public class NetworkSettings implements java.io.Serializable, JSONString
+public class NetworkConfiguration implements java.io.Serializable, JSONString
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private List<InterfaceSettings> interfaceList = null;
+    private List<InterfaceConfiguration> interfaceList = null;
     private Boolean dhcpServerEnabled = null;
     private Boolean dnsServerEnabled = null;
 
     private String hostname = null;
     private String dnsLocalDomain = null;
 
-    public NetworkSettings() {}
+    public NetworkConfiguration() {}
     
-    public NetworkSettings( List<InterfaceSettings> interfaceList, Boolean dhcpServerEnabled, Boolean dnsServerEnabled, String hostname )
+    public NetworkConfiguration( List<InterfaceConfiguration> interfaceList, Boolean dhcpServerEnabled, Boolean dnsServerEnabled, String hostname )
     {
-        this.interfaceList     = Collections.unmodifiableList( new LinkedList<InterfaceSettings>( interfaceList ));
+        this.interfaceList     = Collections.unmodifiableList( new LinkedList<InterfaceConfiguration>( interfaceList ));
         this.dhcpServerEnabled = dhcpServerEnabled;
         this.dnsServerEnabled = dnsServerEnabled;
         this.hostname = hostname;
     }
     
-    public List<InterfaceSettings> getInterfaceList()
+    public List<InterfaceConfiguration> getInterfaceList()
     {
         return this.interfaceList;
     }
 
-    public void setInterfaceList( List<InterfaceSettings> interfaceList )
+    public void setInterfaceList( List<InterfaceConfiguration> interfaceList )
     {
         this.interfaceList = interfaceList;
     }
@@ -92,17 +92,17 @@ public class NetworkSettings implements java.io.Serializable, JSONString
         sb.append( "Network Settings\n" );
         
         sb.append( "\nInterfaces:\n" );
-        for ( InterfaceSettings intf : getInterfaceList()) sb.append( intf + "\n" );
+        for ( InterfaceConfiguration intf : getInterfaceList()) sb.append( intf + "\n" );
         
         return sb.toString();
     }
 
-    public InterfaceSettings findFirstWAN()
+    public InterfaceConfiguration findFirstWAN()
     {
         if (interfaceList == null)
             return null;
         
-        for (InterfaceSettings intf : interfaceList) {
+        for (InterfaceConfiguration intf : interfaceList) {
             if (intf.isWAN())
                 return intf;
         }
@@ -114,7 +114,7 @@ public class NetworkSettings implements java.io.Serializable, JSONString
      * find an interface by its system name
      * "eth0" etc
      */
-    public InterfaceSettings findBySystemName(String systemName)
+    public InterfaceConfiguration findBySystemName(String systemName)
     {
         if (interfaceList == null)
             return null;
@@ -123,7 +123,7 @@ public class NetworkSettings implements java.io.Serializable, JSONString
             return null;
         }
         
-        for (InterfaceSettings intf : interfaceList) {
+        for (InterfaceConfiguration intf : interfaceList) {
             if (systemName.equals(intf.getSystemName()))
                 return intf;
         }
@@ -135,7 +135,7 @@ public class NetworkSettings implements java.io.Serializable, JSONString
      * find an interface by its common name
      * "External" "Internal" etc
      */
-    public InterfaceSettings findByName(String commonName)
+    public InterfaceConfiguration findByName(String commonName)
     {
         if (interfaceList == null)
             return null;
@@ -144,7 +144,7 @@ public class NetworkSettings implements java.io.Serializable, JSONString
             return null;
         }
         
-        for (InterfaceSettings intf : interfaceList) {
+        for (InterfaceConfiguration intf : interfaceList) {
             if (commonName.equals(intf.getName()))
                 return intf;
         }

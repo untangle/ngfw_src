@@ -1,4 +1,4 @@
-/* $HeadURL: svn://chef/work/src/uvm-lib/localapi/com/untangle/uvm/networking/InterfaceSettings.java $ */
+/* $HeadURL: svn://chef/work/src/uvm-lib/localapi/com/untangle/uvm/networking/InterfaceConfiguration.java $ */
 package com.untangle.uvm.networking;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.node.ParseException;
 
 @SuppressWarnings("serial")
-public class InterfaceSettings implements java.io.Serializable, JSONString
+public class InterfaceConfiguration implements java.io.Serializable, JSONString
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -74,29 +74,7 @@ public class InterfaceSettings implements java.io.Serializable, JSONString
     /**
      * Constructor for Static
      */
-    public InterfaceSettings() {}
-
-//     private InterfaceSettings( Integer id, String systemName, String name, String configType,
-//                                Boolean isWAN,
-//                                IPNetwork primaryAddress, List<IPNetwork> aliases,
-//                                InetAddress dns1, InetAddress dns2,
-//                                Integer mtu, String ethernetNegotiation)
-//     {
-//         this.interfaceId = id;
-//         this.systemName = systemName;
-//         this.name = name;
-//         this.configType = configType;
-//         this.isWAN = isWAN;
-//         this.primaryAddress = primaryAddress;
-//         this.primaryAddressStr = primaryAddress.toString();
-//         this.aliases = aliases;
-//         this.dns1 = dns1;
-//         this.dns1Str = dns1.toString();
-//         this.dns2 = dns2;
-//         this.dns2Str = dns2.toString();
-//         this.mtu = mtu;
-//         this.ethernetNegotiation = ethernetNegotiation;
-//     }
+    public InterfaceConfiguration() {}
 
     public Integer getInterfaceId()
     {

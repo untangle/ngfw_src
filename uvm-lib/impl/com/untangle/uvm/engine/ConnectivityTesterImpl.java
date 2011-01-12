@@ -27,9 +27,9 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.RemoteConnectivityTester;
-import com.untangle.uvm.networking.NetworkSettings;
+import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.ConnectionStatus;
-import com.untangle.uvm.networking.InterfaceSettings;
+import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.node.script.ScriptRunner;
 
 class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
@@ -70,8 +70,8 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
      */
     public Status getStatus()
     {
-        NetworkSettings networkSettings = LocalUvmContextFactory.context().networkManager().getNetworkSettings();
-        InterfaceSettings wan = networkSettings.findFirstWAN();
+        NetworkConfiguration networkSettings = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration();
+        InterfaceConfiguration wan = networkSettings.findFirstWAN();
         
         InetAddress dnsPrimary   = wan.getDns1();
         InetAddress dnsSecondary = wan.getDns2();

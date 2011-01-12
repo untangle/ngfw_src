@@ -41,7 +41,7 @@ import com.untangle.uvm.argon.ArgonHook;
 import com.untangle.uvm.argon.ArgonSessionTable;
 import com.untangle.uvm.SessionMonitorEntry;
 import com.untangle.uvm.security.NodeId;
-import com.untangle.uvm.networking.InterfaceSettings;
+import com.untangle.uvm.networking.InterfaceConfiguration;
 
 /**
  * SessionMonitor is a utility class that provides some convenient functions
@@ -83,11 +83,11 @@ class SessionMonitorImpl implements SessionMonitor
          * Find the the system interface name that matches this ID
          * XXX this should be in a utility somewhere
          */
-        List<InterfaceSettings> intfs = uvmContext.networkManager().getNetworkSettings().getInterfaceList();
+        List<InterfaceConfiguration> intfs = uvmContext.networkManager().getNetworkConfiguration().getInterfaceList();
         try {
             int interfaceId = Integer.parseInt(interfaceIdStr);
         
-            for (InterfaceSettings intf : intfs) {
+            for (InterfaceConfiguration intf : intfs) {
 
                 if (((int)intf.getInterfaceId()) == interfaceId) {
                     String systemName = intf.getSystemName();

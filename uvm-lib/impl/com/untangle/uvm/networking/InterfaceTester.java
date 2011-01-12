@@ -65,7 +65,7 @@ class InterfaceTester
      * Test the status of the interfaces listed inside of the interface array.
      * The status for each interface is updated.
      */
-    void updateLinkStatus( NetworkSettings settings )
+    void updateLinkStatus( NetworkConfiguration settings )
     {
         logger.debug( "Updating link status" );
 
@@ -81,7 +81,7 @@ class InterfaceTester
         }
 
 
-        for ( InterfaceSettings intf : settings.getInterfaceList()) {
+        for ( InterfaceConfiguration intf : settings.getInterfaceList()) {
             String intfName = intf.getSystemName();
             String intfStatus = statusMap.get( intfName );
             intf.setConnectionState( UNKNOWN );
@@ -120,20 +120,20 @@ class InterfaceTester
         }
     }
 
-    private String[] getArgs( NetworkSettings settings )
+    private String[] getArgs( NetworkConfiguration settings )
     {
-        List<InterfaceSettings> interfaceList = settings.getInterfaceList();
+        List<InterfaceConfiguration> interfaceList = settings.getInterfaceList();
 
         String args[] = new String[interfaceList.size()];
 
         int c = 0;
-        for ( InterfaceSettings intf : interfaceList )
+        for ( InterfaceConfiguration intf : interfaceList )
             args[c++] = intf.getSystemName();
 
         return args;
     }
 
-    private Map<String,String> getStatus( String[] args, NetworkSettings settings )
+    private Map<String,String> getStatus( String[] args, NetworkConfiguration settings )
     {
         Map<String,String> map = new HashMap<String,String>();
 

@@ -34,8 +34,8 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.networking.NetworkUtil;
-import com.untangle.uvm.networking.NetworkSettings;
-import com.untangle.uvm.networking.InterfaceSettings;
+import com.untangle.uvm.networking.NetworkConfiguration;
+import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.node.AddressRange;
 import com.untangle.uvm.node.AddressValidator;
 import com.untangle.uvm.node.HostAddress;
@@ -185,11 +185,11 @@ public class Sandbox
      * network settings. */
     void autoDetectAddressPool() throws ValidateException
     {
-        NetworkSettings networkSettings = LocalUvmContextFactory.context().networkManager().getNetworkSettings();
+        NetworkConfiguration networkSettings = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration();
         
         /* Load the list of networks. */
         List<AddressRange> currentNetwork = new LinkedList<AddressRange>();
-        for (InterfaceSettings intf : networkSettings.getInterfaceList()) {
+        for (InterfaceConfiguration intf : networkSettings.getInterfaceList()) {
             IPNetwork net;
             AddressRange range;
 
@@ -251,14 +251,14 @@ public class Sandbox
     void autoDetectExportList() throws ValidateException
     {
         /* Load the list of networks. */
-        NetworkSettings networkSettings = LocalUvmContextFactory.context().networkManager().getNetworkSettings();
+        NetworkConfiguration networkSettings = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration();
         
         List<ServerSiteNetwork> networkList = new LinkedList<ServerSiteNetwork>();
         LinkedList<AddressRange> rangeList = new LinkedList<AddressRange>();
         
         AddressValidator av = AddressValidator.getInstance();
         
-        for (InterfaceSettings intf : networkSettings.getInterfaceList()) {
+        for (InterfaceConfiguration intf : networkSettings.getInterfaceList()) {
             if (! intf.isWAN() ) {
                 IPNetwork network = intf.getPrimaryAddress();
             

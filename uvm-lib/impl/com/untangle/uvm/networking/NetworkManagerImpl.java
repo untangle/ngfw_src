@@ -51,7 +51,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     static final String ALPACA_SCRIPT = "/usr/share/untangle-net-alpaca/scripts/";
 
-    /* Script to run after reconfiguration (from NetworkSettings Listener) */
+    /* Script to run after reconfiguration (from NetworkConfiguration Listener) */
     private static final String AFTER_RECONFIGURE_SCRIPT = UVM_BASE + "/bin/ut-networking-after-reconfigure";
 
     /* Script to run to get a list of physical interfaces */
@@ -81,12 +81,12 @@ public class NetworkManagerImpl implements NetworkManager
     private final MiscManagerImpl miscManager;
 
     /* ??? Does the order matter, it shouldn't.  */
-    private Set<NetworkSettingsListener> networkListeners = new HashSet<NetworkSettingsListener>();
+    private Set<NetworkConfigurationListener> networkListeners = new HashSet<NetworkConfigurationListener>();
     private Set<IntfEnumListener> intfEnumListeners = new HashSet<IntfEnumListener>();
 
     /** The nuts and bolts of networking, the real bits of panther.  this my friend
      * should never be null */
-    private NetworkSettings networkSettings = null;
+    private NetworkConfiguration networkSettings = null;
 
     /* Flag to indicate when the UVM has been shutdown */
     private boolean isShutdown = false;
@@ -133,12 +133,12 @@ public class NetworkManagerImpl implements NetworkManager
      * first network space */
     public IPAddress getPrimaryAddress()
     {
-        NetworkSettings settings = this.networkSettings;
+        NetworkConfiguration settings = this.networkSettings;
 
         if ( settings == null )
             return null;
 
-        InterfaceSettings wan = settings.findFirstWAN();
+        InterfaceConfiguration wan = settings.findFirstWAN();
 
         if ( wan == null )
             return null;
@@ -245,7 +245,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
     }
 
-    public NetworkSettings getNetworkSettings()
+    public NetworkConfiguration getNetworkConfiguration()
     {
         return this.networkSettings;
     }
@@ -312,7 +312,7 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /* Save the network settings during the wizard */
-    public void setSetupSettings( AddressSettings address, NetworkSettings settings )
+    public void setSetupSettings( AddressSettings address, NetworkConfiguration settings )
         throws Exception, ValidateException
     {
         this.addressManager.setWizardSettings( address );
@@ -320,17 +320,17 @@ public class NetworkManagerImpl implements NetworkManager
         setSetupSettings( settings );
     }
 
-    public NetworkSettings setSetupSettings( NetworkSettings settings )
+    public NetworkConfiguration setSetupSettings( NetworkConfiguration settings )
         throws Exception, ValidateException
     {
         /* Send the call onto the alpaca */
 
         JSONObject jsonObject = new JSONObject();
         String method = null;
-        InterfaceSettings wan = settings.findFirstWAN();
+        InterfaceConfiguration wan = settings.findFirstWAN();
         
         try {
-            if ( wan.getConfigType().equals(InterfaceSettings.CONFIG_PPPOE) ) {
+            if ( wan.getConfigType().equals(InterfaceConfiguration.CONFIG_PPPOE) ) {
                 /* PPPoE Setup */
                 method = "wizard_external_interface_pppoe";
                 jsonObject.put( "username", wan.getPPPoEUsername());
@@ -359,7 +359,7 @@ public class NetworkManagerImpl implements NetworkManager
             throw new Exception( "Unable to configure the external interface.", e );
         }
 
-        return getNetworkSettings();
+        return getNetworkConfiguration();
     }
 
     /**
@@ -370,7 +370,7 @@ public class NetworkManagerImpl implements NetworkManager
     {
         try {
             if ( externalAddress == null ) { 
-                externalAddress = getNetworkSettings().findFirstWAN().getPrimaryAddress().getNetwork();
+                externalAddress = getNetworkConfiguration().findFirstWAN().getPrimaryAddress().getNetwork();
             }
 
             /* rare case. */
@@ -538,7 +538,7 @@ public class NetworkManagerImpl implements NetworkManager
             }
         }
 
-        this.networkSettings = loadNetworkSettings( );
+        this.networkSettings = loadNetworkConfiguration( );
 
         if ( logger.isDebugEnabled()) {
             logger.debug( "New network settings: " + this.networkSettings );
@@ -607,14 +607,14 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         /* Retrieve the network settings */
-        NetworkSettings settings = this.networkSettings;
+        NetworkConfiguration settings = this.networkSettings;
 
         if ( settings == null ) {
             logger.warn("Failed to fetch network configuration");
             return null;
         }
         
-        InterfaceSettings intf = settings.findBySystemName( ai.getPhysicalName() );
+        InterfaceConfiguration intf = settings.findBySystemName( ai.getPhysicalName() );
 
             if ( intf == null ) {
                 logger.warn("No interface found for system name: " + ai.getPhysicalName() );
@@ -624,7 +624,7 @@ public class NetworkManagerImpl implements NetworkManager
         /**
          * If this interface is bridged with another, use the addr from the other
          */
-        if (InterfaceSettings.CONFIG_BRIDGE.equals(intf.getConfigType())) {
+        if (InterfaceConfiguration.CONFIG_BRIDGE.equals(intf.getConfigType())) {
             String bridgedTo = intf.getBridgedTo();
             logger.warn("getInternalHttpAddress(): bridged to   : " + bridgedTo );
             intf = settings.findByName( bridgedTo );
@@ -694,7 +694,7 @@ public class NetworkManagerImpl implements NetworkManager
     private void callNetworkListeners()
     {
         logger.debug( "Calling network listeners." );
-        for ( NetworkSettingsListener listener : this.networkListeners ) {
+        for ( NetworkConfigurationListener listener : this.networkListeners ) {
             if ( logger.isDebugEnabled()) logger.debug( "Calling listener: " + listener );
 
             try {
@@ -706,12 +706,12 @@ public class NetworkManagerImpl implements NetworkManager
         logger.debug( "Done calling network listeners." );
     }
 
-    public void registerListener( NetworkSettingsListener networkListener )
+    public void registerListener( NetworkConfigurationListener networkListener )
     {
         this.networkListeners.add( networkListener );
     }
 
-    public void unregisterListener( NetworkSettingsListener networkListener )
+    public void unregisterListener( NetworkConfigurationListener networkListener )
     {
         this.networkListeners.remove( networkListener );
     }
@@ -826,13 +826,13 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /* Load the network configuration */
-    private NetworkSettings loadNetworkSettings()
+    private NetworkConfiguration loadNetworkConfiguration()
     {
         SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
-        NetworkSettings settings = null;
+        NetworkConfiguration settings = null;
         
         try {
-            settings = settingsManager.loadBasePath(NetworkSettings.class, "/etc/untangle-net-alpaca/", "", "netConfig");
+            settings = settingsManager.loadBasePath(NetworkConfiguration.class, "/etc/untangle-net-alpaca/", "", "netConfig");
         } catch (SettingsManager.SettingsException e) {
             logger.error("Unable to read license file: ", e );
             return null;
@@ -847,9 +847,9 @@ public class NetworkManagerImpl implements NetworkManager
         return settings;
     }
 
-    class AfterReconfigureScriptListener implements NetworkSettingsListener
+    class AfterReconfigureScriptListener implements NetworkConfigurationListener
     {
-        public void event( NetworkSettings settings )
+        public void event( NetworkConfiguration settings )
         {
             /* Run the script */
             try {

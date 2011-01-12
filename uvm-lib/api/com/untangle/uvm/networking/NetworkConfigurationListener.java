@@ -33,10 +33,10 @@
 
 package com.untangle.uvm.networking;
 
-import com.untangle.uvm.networking.NetworkSettings;
+import com.untangle.uvm.networking.NetworkConfiguration;
 
 /* Interface for monitoring changes to the Network Settings */
-public interface NetworkSettingsListener
+public interface NetworkConfigurationListener
 {
-    public void event( NetworkSettings settings );
+    public void event( NetworkConfiguration settings );
 }

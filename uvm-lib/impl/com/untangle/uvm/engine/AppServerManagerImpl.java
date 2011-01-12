@@ -16,8 +16,8 @@ import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.security.CertInfo;
 import com.untangle.uvm.security.RFC2253Name;
 import com.untangle.uvm.util.QuarantineOutsideAccessValve;
-import com.untangle.uvm.networking.NetworkSettingsListener;
-import com.untangle.uvm.networking.NetworkSettings;
+import com.untangle.uvm.networking.NetworkConfigurationListener;
+import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.LocalUvmContextFactory;
 
 /**
@@ -68,8 +68,8 @@ class AppServerManagerImpl implements LocalAppServerManager
             logger.warn("could not start Tomcat", exn);
         }
 
-        uvmContext.networkManager().registerListener(new NetworkSettingsListener() {
-                public void event(NetworkSettings settings)
+        uvmContext.networkManager().registerListener(new NetworkConfigurationListener() {
+                public void event(NetworkConfiguration settings)
                 {
                     String existingAlias = getCurrentServerCertInfo().getSubjectCN();
                     String currentHostname = settings.getHostname().toString();

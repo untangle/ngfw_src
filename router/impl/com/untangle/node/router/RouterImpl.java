@@ -26,8 +26,8 @@ import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.networking.NetworkSettingsListener;
-import com.untangle.uvm.networking.NetworkSettings;
+import com.untangle.uvm.networking.NetworkConfigurationListener;
+import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -44,7 +44,7 @@ public class RouterImpl extends AbstractNode implements Router
     private final RouterStatisticManager statisticManager;
     private final DhcpMonitor dhcpMonitor;
     /* Done with an inner class so the GUI doesn't freak out about not
-     * having the NetworkSettingsListener class */
+     * having the NetworkConfigurationListener class */
     private final SettingsListener listener;
 
     /* Indicate whether or not the node is starting */
@@ -171,7 +171,7 @@ public class RouterImpl extends AbstractNode implements Router
 
         /* Retrieve the new settings from the network manager */
         NetworkManager nm = LocalUvmContextFactory.context().networkManager();
-        NetworkSettings networkSettings = nm.getNetworkSettings();
+        NetworkConfiguration networkSettings = nm.getNetworkConfiguration();
 
         /* Default to it is disabled */
         boolean isDhcpEnabled = false;
@@ -199,9 +199,9 @@ public class RouterImpl extends AbstractNode implements Router
         eventLogger.log(le);
     }
 
-    class SettingsListener implements NetworkSettingsListener
+    class SettingsListener implements NetworkConfigurationListener
     {
-        public void event( NetworkSettings settings )
+        public void event( NetworkConfiguration settings )
         {
             if ( logger.isDebugEnabled()) logger.debug( "network settings changed:" + settings );
             try {

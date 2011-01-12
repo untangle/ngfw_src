@@ -34,7 +34,7 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.networking.AddressSettings;
-import com.untangle.uvm.networking.NetworkSettings;
+import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.RegistrationInfo;
 import com.untangle.uvm.servlet.ServletUtils;
@@ -62,7 +62,7 @@ public class SetupSettingsServlet extends HttpServlet
 
         NetworkManager nm = context.networkManager();
         AddressSettings addressSettings = nm.getAddressSettings();
-        NetworkSettings networkSettings = nm.getNetworkSettings();
+        NetworkConfiguration networkSettings = nm.getNetworkConfiguration();
         RegistrationInfo ri = new RegistrationInfo();
         // pick a random time.
         UpgradeSettings upgrade = context.toolboxManager().getUpgradeSettings();

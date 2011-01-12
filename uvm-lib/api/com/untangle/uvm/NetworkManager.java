@@ -39,10 +39,10 @@ import org.json.JSONArray;
 
 import com.untangle.uvm.networking.AccessSettings;
 import com.untangle.uvm.networking.AddressSettings;
-import com.untangle.uvm.networking.NetworkSettings;
+import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.networking.MiscSettings;
-import com.untangle.uvm.networking.NetworkSettingsListener;
+import com.untangle.uvm.networking.NetworkConfigurationListener;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ValidateException;
@@ -54,19 +54,19 @@ public interface NetworkManager
     /**
      * Retrieve the network settings
      */
-    NetworkSettings getNetworkSettings();
+    NetworkConfiguration getNetworkConfiguration();
 
     /**
      * Save the network settings during the wizard
      */
-    void setSetupSettings(AddressSettings address, NetworkSettings settings)
+    void setSetupSettings(AddressSettings address, NetworkConfiguration settings)
         throws Exception, ValidateException;
 
     /**
      * Save the network settings during the wizard.
      * This can double for refresh because it returns the new, populated network settings.
      */
-    NetworkSettings setSetupSettings(NetworkSettings settings)
+    NetworkConfiguration setSetupSettings(NetworkConfiguration settings)
         throws Exception, ValidateException;
 
     /**
@@ -167,9 +167,9 @@ public interface NetworkManager
      */
     InetAddress getInternalHttpAddress( IPSessionDesc session );
 
-    void registerListener( NetworkSettingsListener networkListener );
+    void registerListener( NetworkConfigurationListener networkListener );
 
-    void unregisterListener( NetworkSettingsListener networkListener );
+    void unregisterListener( NetworkConfigurationListener networkListener );
 
     void refreshIptablesRules();
 }

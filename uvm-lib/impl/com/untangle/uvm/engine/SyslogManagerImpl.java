@@ -31,8 +31,8 @@ import com.untangle.uvm.logging.LoggingSettings;
 import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.networking.NetworkSettingsListener;
-import com.untangle.uvm.networking.NetworkSettings;
+import com.untangle.uvm.networking.NetworkConfigurationListener;
+import com.untangle.uvm.networking.NetworkConfiguration;
 
 /**
  * Implements SyslogManager.
@@ -93,8 +93,8 @@ class SyslogManagerImpl implements SyslogManager
     {
         final NetworkManager nmi = LocalUvmContextFactory.context().networkManager();
 
-        nmi.registerListener(new NetworkSettingsListener() {
-                public void event(NetworkSettings s)
+        nmi.registerListener(new NetworkConfigurationListener() {
+                public void event(NetworkConfiguration s)
                 {
                     hostname = nmi.getHostname().toString();
                 }

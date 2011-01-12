@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.networking.NetworkManagerImpl;
-import com.untangle.uvm.networking.NetworkSettings;
+import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
@@ -398,7 +398,7 @@ public class SystemStatus
              * Network Config
              */
             sb.append(SPACER);
-            NetworkSettings netConf = ((NetworkManagerImpl) LocalUvmContextFactory.context().networkManager()).getNetworkSettings();
+            NetworkConfiguration netConf = ((NetworkManagerImpl) LocalUvmContextFactory.context().networkManager()).getNetworkConfiguration();
             sb.append(netConf.toString());
             sb.append(RETCHAR);
 
