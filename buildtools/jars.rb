@@ -152,7 +152,7 @@ class Jars
                               GetText, JavaMail, TomcatEmb, Velocity, 
                               Bdb, HttpClient, XmlRpc,
                               Jstl, XStream, Json, Jabsorb, Slf4j, DnsJava,
-                              JFreeChart)
+                              JFreeChart, Ant)
 
   # A jar used to build one of the buildutil classes
   Becl        = [ Jars.downloadTarget('bcel-5.2/bcel-5.2.jar') ]
