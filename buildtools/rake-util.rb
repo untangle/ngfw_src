@@ -44,7 +44,7 @@ class DebugLevel
   DEBUG = DebugLevel.new(10, 'debug')
   INFO = DebugLevel.new(5, 'info')
   WARN = DebugLevel.new(3, 'warn')
-  DEFAULT = INFO
+  DEFAULT = DEBUG
 
   def <=>(other)
     self.level <=> other.level
