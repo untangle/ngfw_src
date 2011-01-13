@@ -296,8 +296,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     if (!this.getPolicyManagerLicense(true).valid){
                         this.showPolicyManagerRequired();
                     } else {
-                        //this.updateParentRackStore( this.editorRackCombo, new Ext.data.Record([]));
                         //this.gridParentRackCombo.setValue(0);
+                        this.updateParentRackStore( this.editorRackCombo, new Ext.data.Record([]));
                         Ung.EditorGrid.prototype.addHandler.call(this.gridRacks);
                     }
                 }.createDelegate(this),
