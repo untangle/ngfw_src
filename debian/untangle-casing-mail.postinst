@@ -3,9 +3,9 @@
 
 /usr/bin/ucli -t 30 register untangle-casing-mail 2>/dev/null || true
 
-/etc/init.d/apache2 reload
+[ -x /etc/init.d/apache2 ] && /etc/init.d/apache2 reload
 
-touch /etc/untangle/reports-to-restart
+[ -d /etc/untangle ] && touch /etc/untangle/reports-to-restart
 
 exit 0
 

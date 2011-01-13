@@ -155,8 +155,8 @@ class Jars
                               JFreeChart)
 
   # A jar used to build one of the buildutil classes
-  Becl        = downloadTarget('bcel-5.2/bcel-5.2.jar')
+  Becl        = [ Jars.downloadTarget('bcel-5.2/bcel-5.2.jar') ]
+
   JDKTools    = [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/lib/tools.jar") ]
 
-  
 end

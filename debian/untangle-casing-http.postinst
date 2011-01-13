@@ -3,7 +3,7 @@
 
 /usr/bin/ucli -t 30 register untangle-casing-http 2>/dev/null || true
 
-touch /etc/untangle/reports-to-restart
+[ -d /etc/untangle ] && touch /etc/untangle/reports-to-restart
 
 exit 0
 

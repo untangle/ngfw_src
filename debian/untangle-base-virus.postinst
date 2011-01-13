@@ -1,7 +1,7 @@
 #! /bin/bash
 
-/etc/init.d/apache2 reload
+[ -x /etc/init.d/apache2 ] && /etc/init.d/apache2 reload
 
-touch /etc/untangle/reports-to-restart
+[ -d /etc/untangle ] && touch /etc/untangle/reports-to-restart
 
 exit 0
