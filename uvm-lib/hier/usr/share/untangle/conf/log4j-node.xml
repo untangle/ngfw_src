@@ -148,9 +148,8 @@
     <priority value="WARN"/>
   </category>
 
-  <!-- temporary @ DEBUG for alpha/beta debugging -->
   <category name="com.untangle.node.webcache">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.untangle.node.spam">
