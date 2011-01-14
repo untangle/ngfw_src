@@ -523,21 +523,6 @@ public class NetworkManagerImpl implements NetworkManager
     
     public void refreshNetworkConfig()
     {
-        synchronized( this ) {
-            try {
-                LocalUvmContextFactory.context().localIntfManager().loadInterfaceConfig();
-            } catch ( Exception e ) {
-                logger.error( "Exception loading the interface configuration.", e );
-            }
-
-            try {
-                /* Update the address database in netcap */
-                Netcap.refreshNetworkConfig();
-            } catch ( Exception e ) {
-                logger.error( "Exception updating address.", e );
-            }
-        }
-
         this.networkSettings = loadNetworkConfiguration( );
 
         if ( logger.isDebugEnabled()) {
@@ -564,6 +549,21 @@ public class NetworkManagerImpl implements NetworkManager
             logger.warn( "Error committing the networking.sh file", e );
         }
 
+        synchronized( this ) {
+            try {
+                LocalUvmContextFactory.context().localIntfManager().loadInterfaceConfig();
+            } catch ( Exception e ) {
+                logger.error( "Exception loading the interface configuration.", e );
+            }
+
+            try {
+                /* Update the address database in netcap */
+                Netcap.refreshNetworkConfig();
+            } catch ( Exception e ) {
+                logger.error( "Exception updating address.", e );
+            }
+        }
+        
         try {
             callNetworkListeners();
         } catch ( Exception e ) {
@@ -841,7 +841,7 @@ public class NetworkManagerImpl implements NetworkManager
         if (settings == null) {
             logger.error("Failed to read network settings");
         } else {
-            logger.warn("New Network Settings: " + settings.toJSONString());
+            logger.info("New Network Settings: " + settings.toJSONString());
         }
         
         return settings;

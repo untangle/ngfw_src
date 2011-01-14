@@ -36,8 +36,6 @@ package com.untangle.uvm.localapi;
 import java.util.List;
 
 import com.untangle.uvm.ArgonException;
-import com.untangle.uvm.IntfEnum;
-import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 
 public interface LocalIntfManager
@@ -77,11 +75,7 @@ public interface LocalIntfManager
     /* Unregister a custom interface or DMZ. */
     void unregisterIntf( byte argon ) throws ArgonException;
 
-   /* Retrieve the current interface enumeration */
-    public IntfEnum getIntfEnum();
-
     void loadInterfaceConfig() throws ArgonException;
-    InterfaceComparator getInterfaceComparator();
 
     public IntfDBMatcher[] getIntfMatcherEnumeration();
 }

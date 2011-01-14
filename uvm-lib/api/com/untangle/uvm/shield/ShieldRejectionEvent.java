@@ -55,8 +55,7 @@ import com.untangle.uvm.logging.SyslogPriority;
         // Constructors
         public ShieldRejectionEvent() { }
 
-        public ShieldRejectionEvent( InetAddress clientAddr, byte clientIntf, double reputation, int mode,
-                                     int limited, int dropped, int rejected )
+        public ShieldRejectionEvent( InetAddress clientAddr, byte clientIntf, double reputation, int mode, int limited, int dropped, int rejected )
         {
             this.clientAddr = clientAddr;
             this.clientIntf = clientIntf;

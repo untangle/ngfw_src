@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 import com.untangle.uvm.node.firewall.ParsingConstants;
@@ -53,8 +52,7 @@ import com.untangle.uvm.node.firewall.ParsingConstants;
 public final class IntfSetMatcher extends IntfDBMatcher
 {
     /* Cache of the created interface matchers */
-    static Map<ImmutableBitSet,IntfSetMatcher> CACHE
-        = new HashMap<ImmutableBitSet,IntfSetMatcher>();
+    static Map<ImmutableBitSet,IntfSetMatcher> CACHE = new HashMap<ImmutableBitSet,IntfSetMatcher>();
 
     /* Set of bits that shouldn't match */
     private final ImmutableBitSet intfSet;
@@ -62,8 +60,7 @@ public final class IntfSetMatcher extends IntfDBMatcher
     /* String representation for the database */
     private final String databaseRepresentation;
 
-    private IntfSetMatcher(ImmutableBitSet intfSet,
-                           String databaseRepresentation)
+    private IntfSetMatcher(ImmutableBitSet intfSet, String databaseRepresentation)
     {
         this.intfSet = intfSet;
         this.databaseRepresentation = databaseRepresentation;
@@ -74,7 +71,7 @@ public final class IntfSetMatcher extends IntfDBMatcher
      *
      * @param intf Interface to test.
      */
-    public boolean isMatch(byte intf, byte otherIntf, InterfaceComparator c)
+    public boolean isMatch(byte intf, byte otherIntf)
     {
         /* This always matches true */
         if (IntfConstants.UNKNOWN_INTF == intf

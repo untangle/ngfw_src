@@ -35,7 +35,6 @@ package com.untangle.uvm.node.firewall;
 
 import java.net.InetAddress;
 
-import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcher;
@@ -67,29 +66,25 @@ public abstract class TrafficIntfMatcher extends TrafficMatcher
         this.dstIntf = rule.getDstIntf();
     }
 
-    public boolean isMatch(VnetSessionDesc session, Protocol protocol,
-                           InterfaceComparator c)
+    public boolean isMatch(VnetSessionDesc session, Protocol protocol)
     {
-        return (isMatchIntf(session.clientIntf(), session.serverIntf(), c) &&
-                super.isMatch(session, protocol));
+        return (isMatchIntf(session.clientIntf(), session.serverIntf()) && super.isMatch(session, protocol));
     }
 
-    public boolean isMatch(IPNewSessionRequest request, Protocol protocol,
-                           InterfaceComparator c)
+    public boolean isMatch(IPNewSessionRequest request, Protocol protocol)
     {
-        return isMatchIntf(request.clientIntf(), request.serverIntf(), c)
-            && super.isMatch(request, protocol);
+        return isMatchIntf(request.clientIntf(), request.serverIntf()) && super.isMatch(request, protocol);
     }
 
     public boolean isMatch(Protocol protocol, byte srcIntf, byte dstIntf,
                            InetAddress srcAddress, InetAddress dstAddress,
-                           int srcPort, int dstPort, InterfaceComparator c)
+                           int srcPort, int dstPort)
     {
-        return (isMatchIntf(srcIntf, dstIntf, c) && super.isMatch(protocol, srcAddress, dstAddress, srcPort, dstPort));
+        return (isMatchIntf(srcIntf, dstIntf) && super.isMatch(protocol, srcAddress, dstAddress, srcPort, dstPort));
     }
 
-    public boolean isMatchIntf(byte src, byte dst, InterfaceComparator c)
+    public boolean isMatchIntf(byte src, byte dst)
     {
-        return this.srcIntf.isMatch(src, dst, c) && this.dstIntf.isMatch(dst, src, c);
+        return this.srcIntf.isMatch(src, dst) && this.dstIntf.isMatch(dst, src);
     }
 }

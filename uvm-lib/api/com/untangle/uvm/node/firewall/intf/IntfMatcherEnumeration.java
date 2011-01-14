@@ -113,9 +113,6 @@ final class IntfMatcherEnumeration
         matchers.add( IntfWanMatcher.getWanMatcher());
         matchers.add( IntfWanMatcher.getNonWanMatcher());
 
-        matchers.add( IntfRelativeMatcher.getLessTrustedMatcher());
-        matchers.add( IntfRelativeMatcher.getMoreTrustedMatcher());
-
         /* Convert to an immutable list */
         this.enumeration = matchers.toArray( new IntfDBMatcher[matchers.size()]);
 

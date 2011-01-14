@@ -1,21 +1,3 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
 package com.untangle.node.ips;
 
 import java.util.ArrayList;
@@ -37,9 +19,12 @@ import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.SessionStats;
 import com.untangle.uvm.vnet.event.IPDataEvent;
+import com.untangle.uvm.networking.InterfaceConfiguration;
 
 public class IpsDetectionEngine
 {
+    private final Logger logger = Logger.getLogger(getClass());
+
     public static boolean DO_PROFILING = true;
 
     // Any chunk that takes this long gets an error
@@ -65,8 +50,6 @@ public class IpsDetectionEngine
     Map<Integer,List<IpsRuleHeader>> portC2SMap = new ConcurrentHashMap<Integer,List<IpsRuleHeader>>();
     // bug1443 -- save memory by memoizing
     List<List<IpsRuleHeader>> allPortMapLists = new ArrayList<List<IpsRuleHeader>>();
-
-    private final Logger log = Logger.getLogger(getClass());
 
     public IpsDetectionEngine(IpsNodeImpl node)
     {
@@ -123,7 +106,7 @@ public class IpsDetectionEngine
         portS2CMap = new ConcurrentHashMap<Integer,List<IpsRuleHeader>>();
         allPortMapLists = new ArrayList<List<IpsRuleHeader>>();
 
-        log.debug("Done with reconfigure");
+        logger.debug("Done with reconfigure");
     }
 
     public void stop()
@@ -144,10 +127,10 @@ public class IpsDetectionEngine
         try {
             return (manager.addRule(rule));
         } catch (ParseException e) {
-            log.warn("Could not parse rule: ", e);
+            logger.warn("Could not parse rule: ", e);
         } catch (Exception e) {
-            log.error("Some sort of really bad exception: ", e);
-            log.error("For rule: " + rule);
+            logger.error("Some sort of really bad exception: ", e);
+            logger.error("For rule: " + rule);
         }
         return false;
     }
@@ -177,8 +160,8 @@ public class IpsDetectionEngine
                 portC2SMap.put(request.serverPort(),c2sList);
             }
 
-            if (log.isDebugEnabled())
-                log.debug("c2sHeader list Size: "+c2sList.size() + " For port: "+request.serverPort());
+            if (logger.isDebugEnabled())
+                logger.debug("c2sHeader list Size: "+c2sList.size() + " For port: "+request.serverPort());
         }
 
         if(s2cList == null) {
@@ -198,19 +181,27 @@ public class IpsDetectionEngine
                 portS2CMap.put(request.serverPort(),s2cList);
             }
 
-            if (log.isDebugEnabled())
-                log.debug("s2cHeader list Size: "+s2cList.size() + " For port: "+request.serverPort());
+            if (logger.isDebugEnabled())
+                logger.debug("s2cHeader list Size: "+s2cList.size() + " For port: "+request.serverPort());
         }
 
         //Check matches
         PipelineEndpoints pe = request.pipelineEndpoints();
-        boolean incoming = intfManager.getInterfaceComparator().isMoreTrusted(pe.getServerIntf(), pe.getClientIntf());
+        int intfID = pe.getServerIntf()+1; // XXX add one because its argon->id ??
+        InterfaceConfiguration sourceIntf = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findById(intfID);
+        boolean incoming = true;
+        if (sourceIntf == null) {
+            logger.warn("Unable to find source interface: " + intfID);
+        } else {
+            incoming = sourceIntf.isWAN();
+        }
+            
+        
         Set<IpsRuleSignature> c2sSignatures = manager.matchesHeader(request, incoming, IpsRuleManager.TO_SERVER, c2sList);
         Set<IpsRuleSignature> s2cSignatures = manager.matchesHeader(request, incoming, IpsRuleManager.TO_CLIENT, s2cList);
 
-        if (log.isDebugEnabled())
-            log.debug("s2cSignature list size: " + s2cSignatures.size() + ", c2sSignature list size: " +
-                      c2sSignatures.size());
+        if (logger.isDebugEnabled())
+            logger.debug("s2cSignature list size: " + s2cSignatures.size() + ", c2sSignature list size: " + c2sSignatures.size());
         if (c2sSignatures.size() > 0 || s2cSignatures.size() > 0) {
             request.attach(new Object[] { c2sSignatures, s2cSignatures });
         } else {
@@ -230,7 +221,7 @@ public class IpsDetectionEngine
         Set<IpsRuleSignature> c2sSignatures = (Set<IpsRuleSignature>) sigs[0];
         Set<IpsRuleSignature> s2cSignatures = (Set<IpsRuleSignature>) sigs[1];
 
-        log.debug("registering IpsSessionInfo");
+        logger.debug("registering IpsSessionInfo");
         IpsSessionInfo info = new IpsSessionInfo(node, session, c2sSignatures,
                                                  s2cSignatures);
         sessionInfoMap.put(session.id(), info);
@@ -239,7 +230,7 @@ public class IpsDetectionEngine
 
     public void processFinalized(IPSession session, Protocol protocol) 
     {
-        log.debug("unregistering IpsSessionInfo");
+        logger.debug("unregistering IpsSessionInfo");
         sessionInfoMap.remove(session.id());
     }
 
@@ -254,8 +245,7 @@ public class IpsDetectionEngine
     }
 
     //In process of fixing this
-    public void handleChunk(IPDataEvent event, IPSession session,
-                            boolean isFromServer)
+    public void handleChunk(IPDataEvent event, IPSession session, boolean isFromServer)
     {
         try {
             long startTime = System.currentTimeMillis();
@@ -291,25 +281,25 @@ public class IpsDetectionEngine
                 int numsigs = info.numS2CSignatures();
                 if (elapsed > ERROR_ELAPSED) {
                     dumpProfile();
-                    log.error("took " + elapsed + "ms to run " + numsigs + " s2c rules");
+                    logger.error("took " + elapsed + "ms to run " + numsigs + " s2c rules");
                 } else if (elapsed > WARN_ELAPSED) {
-                    log.warn("took " + elapsed + "ms to run " + numsigs + " s2c rules");
-                } else if (log.isDebugEnabled()) {
-                    log.debug("ms to run " + numsigs + " s2c rules: " + elapsed);
+                    logger.warn("took " + elapsed + "ms to run " + numsigs + " s2c rules");
+                } else if (logger.isDebugEnabled()) {
+                    logger.debug("ms to run " + numsigs + " s2c rules: " + elapsed);
                 }
             } else {
                 int numsigs = info.numC2SSignatures();
                 if (elapsed > ERROR_ELAPSED) {
                     dumpProfile();
-                    log.error("took " + elapsed + "ms to run " + numsigs + " c2s rules");
+                    logger.error("took " + elapsed + "ms to run " + numsigs + " c2s rules");
                 } else if (elapsed > WARN_ELAPSED) {
-                    log.warn("took " + elapsed + "ms to run " + numsigs + " c2s rules");
-                } else if (log.isDebugEnabled()) {
-                    log.debug("ms to run " + numsigs + " c2s rules: " + elapsed);
+                    logger.warn("took " + elapsed + "ms to run " + numsigs + " c2s rules");
+                } else if (logger.isDebugEnabled()) {
+                    logger.debug("ms to run " + numsigs + " c2s rules: " + elapsed);
                 }
             }
         } catch (Exception e) {
-            log.error("Error parsing chunk: ", e);
+            logger.error("Error parsing chunk: ", e);
         }
     }
 

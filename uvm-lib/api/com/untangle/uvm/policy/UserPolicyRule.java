@@ -46,7 +46,6 @@ import org.hibernate.annotations.Type;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.IPSessionDesc;
-import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
@@ -128,12 +127,12 @@ public class UserPolicyRule extends PolicyRule
 
     // PolicyRule methods -----------------------------------------------------
 
-    public boolean matches(IPSessionDesc sd, InterfaceComparator c)
+    public boolean matches(IPSessionDesc sd)
     {
         boolean basicOk =
             isLive()
-            && clientIntf.isMatch(sd.clientIntf(), sd.serverIntf(), c)
-            && serverIntf.isMatch(sd.serverIntf(), sd.clientIntf(), c)
+            && clientIntf.isMatch(sd.clientIntf(), sd.serverIntf())
+            && serverIntf.isMatch(sd.serverIntf(), sd.clientIntf())
             && protocol.isMatch(sd.protocol())
             && clientAddr.isMatch(sd.clientAddr())
             && serverAddr.isMatch(sd.serverAddr())

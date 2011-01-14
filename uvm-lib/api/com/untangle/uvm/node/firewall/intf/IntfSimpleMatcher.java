@@ -33,7 +33,6 @@
 
 package com.untangle.uvm.node.firewall.intf;
 
-import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 import com.untangle.uvm.node.firewall.ParsingConstants;
@@ -67,7 +66,7 @@ public final class IntfSimpleMatcher extends IntfDBMatcher
      *
      * @param intf Interface to test.
      */
-    public boolean isMatch(byte intf, byte otherIntf, InterfaceComparator c)
+    public boolean isMatch(byte intf, byte otherIntf)
     {
         return isAll;
     }

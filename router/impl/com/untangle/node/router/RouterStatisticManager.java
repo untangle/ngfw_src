@@ -21,7 +21,6 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.StatisticEvent;
-import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.StatisticManager;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
@@ -61,12 +60,9 @@ class RouterStatisticManager extends StatisticManager
     void incrRedirect(Protocol protocol, IPNewSessionRequest request)
     {
         LocalUvmContext uc = LocalUvmContextFactory.context();
-        InterfaceComparator c = uc.localIntfManager().getInterfaceComparator();
 
         /* XXX Incoming/outgoing is all wrong */
-        boolean isOutgoing = matcherIncoming.isMatch(request.clientIntf(),
-                                                     request.serverIntf(),
-                                                     c);
+        boolean isOutgoing = matcherIncoming.isMatch(request.clientIntf(), request.serverIntf());
 
         if (protocol == Protocol.TCP) {
             if (isOutgoing) incrTcpOutgoingRedirects();

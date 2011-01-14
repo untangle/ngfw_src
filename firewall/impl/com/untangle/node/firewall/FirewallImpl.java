@@ -299,24 +299,22 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
             IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
             IntfDBMatcher any = imf.getAllMatcher();
-            IntfDBMatcher external = imf.getLessTrustedMatcher();
-            IntfDBMatcher internal = imf.getMoreTrustedMatcher();
 
             FirewallRule tmp = new FirewallRule(false,
                                                 prmf.getTCPAndUDPMatcher(),
-                                                any, internal,
+                                                any, any,
                                                 ipmf.getAllMatcher(),
                                                 ipmf.getAllMatcher(),
                                                 pmf.getAllMatcher(),
                                                 pmf.makeSingleMatcher(21),
                                                 true);
             tmp.setLog(true);
-            tmp.setDescription("Block and log all incoming traffic destined to port 21 (FTP)");
+            tmp.setDescription("Block and log all traffic destined to port 21 (FTP)");
             firewallList.add(tmp);
 
             /* Block all traffic TCP traffic from the network 1.2.3.4/255.255.255.0 */
             tmp = new FirewallRule(false, prmf.getTCPMatcher(),
-                                   any, external,
+                                   any, any,
                                    IPMatcherFactory.parse("1.2.3.0/255.255.255.0"),
                                    ipmf.getAllMatcher(),
                                    pmf.getAllMatcher(), pmf.getAllMatcher(),

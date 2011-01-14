@@ -41,7 +41,6 @@ import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.IPSessionDesc;
-import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.node.PipelineStats;
@@ -314,10 +313,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
         PolicyManager pmi = upi.localPolicyManager();
         LocalIntfManager im = upi.localIntfManager();
         UserPolicyRule[] userRules = pmi.getUserRules();
-        InterfaceComparator c = im.getInterfaceComparator();
 
         for (UserPolicyRule upr : userRules) {
-            if (upr.matches(sd, c)) {
+            if (upr.matches(sd)) {
                 return upr;
             }
         }

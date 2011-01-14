@@ -35,8 +35,6 @@ package com.untangle.uvm.node.firewall.intf;
 
 import java.io.Serializable;
 
-import com.untangle.uvm.node.InterfaceComparator;
-
 /**
  * An IntfMatcher that is capable of being saved to the database.
  * Done as an abstract class so only classes in this package can
@@ -54,8 +52,7 @@ public abstract class IntfDBMatcher implements IntfMatcher, Serializable
      */
     IntfDBMatcher() { }
 
-    public abstract boolean isMatch(byte iface, byte otherIface,
-                                    InterfaceComparator c);
+    public abstract boolean isMatch(byte iface, byte otherIface);
 
     public abstract String toDatabaseString();
 }

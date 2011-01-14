@@ -150,8 +150,6 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
                 @SuppressWarnings("deprecation")
 				public boolean doWork(Session s) throws SQLException
                 {
-                    IntfEnum intfEnum = LocalUvmContextFactory.context().localIntfManager().getIntfEnum();
-
                     Connection c = s.connection();
                     PreparedStatement ps = c.prepareStatement( SHIELD_REJECTION_EVENT_QUERY );
                     ps.setInt( 1, limit );
@@ -160,17 +158,12 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
                     while (rs.next()) {
                         Date createDate   = new Date( rs.getTimestamp( CREATE_DATE_IDX ).getTime());
                         String clientAddr = rs.getString( CLIENT_ADDR_IDX );
-
-                        String clientIntf = ( intfEnum.getIntfName( rs.getByte( CLIENT_INTF_IDX )));
-                        if ( clientIntf == null ) clientIntf = "unknown";
-
                         double reputation = rs.getDouble( REPUTATION_IDX );
                         int limited       = rs.getInt( LIMITED_IDX );
                         int dropped       = rs.getInt( DROPPED_IDX );
                         int rejected      = rs.getInt( REJECTED_IDX );
 
-                        ShieldRejectionLogEntry entry = new ShieldRejectionLogEntry
-                            ( createDate, clientAddr, clientIntf, reputation, limited, dropped, rejected );
+                        ShieldRejectionLogEntry entry = new ShieldRejectionLogEntry( createDate, clientAddr, reputation, limited, dropped, rejected );
 
                         l.add(entry);
                     }

@@ -97,6 +97,16 @@ public class NetworkConfiguration implements java.io.Serializable, JSONString
         return sb.toString();
     }
 
+    public InterfaceConfiguration findById(int id)
+    {
+        for (InterfaceConfiguration intf : interfaceList) {
+            if (intf.getInterfaceId() == id)
+                return intf;
+        }
+        
+        return null;
+    }
+
     public InterfaceConfiguration findFirstWAN()
     {
         if (interfaceList == null)

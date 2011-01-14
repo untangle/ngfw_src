@@ -64,7 +64,6 @@ import com.untangle.uvm.policy.Policy;
 @SuppressWarnings("serial")
 public class PipelineEndpoints extends LogEvent
 {
-
     private int sessionId;
 
     private short protocol;
@@ -90,8 +89,7 @@ public class PipelineEndpoints extends LogEvent
 
     public PipelineEndpoints() { }
 
-    public PipelineEndpoints(IPSessionDesc begin, IPSessionDesc end,
-                             Policy policy)
+    public PipelineEndpoints(IPSessionDesc begin, IPSessionDesc end, Policy policy)
     {
         // Begin & end and all in between have the same ID
         sessionId = begin.id();
@@ -126,8 +124,7 @@ public class PipelineEndpoints extends LogEvent
 
     // business methods -------------------------------------------------------
 
-    public void completeEndpoints(IPSessionDesc begin, IPSessionDesc end,
-                                  Policy policy)
+    public void completeEndpoints(IPSessionDesc begin, IPSessionDesc end, Policy policy)
     {
         cClientAddr = begin.clientAddr();
         cClientPort = begin.clientPort();

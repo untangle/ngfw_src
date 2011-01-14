@@ -9,7 +9,6 @@ import org.jabsorb.serializer.UnmarshallException;
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
-import com.untangle.uvm.node.firewall.intf.IntfRelativeMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfSetMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfSimpleMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfSingleMatcher;
@@ -28,7 +27,7 @@ public class IntfMatcherSerializer extends AbstractSerializer
      * Classes that this can serialize.
      */
     private static Class[] _serializableClasses = new Class[] {
-        IntfMatcher.class, IntfDBMatcher.class, IntfRelativeMatcher.class, 
+        IntfMatcher.class, IntfDBMatcher.class, 
         IntfSetMatcher.class, IntfSingleMatcher.class, IntfSimpleMatcher.class,
         IntfWanMatcher.class
     };

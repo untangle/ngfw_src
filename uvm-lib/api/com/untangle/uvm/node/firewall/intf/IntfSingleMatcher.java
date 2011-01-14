@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 import com.untangle.uvm.node.firewall.ParsingConstants;
@@ -81,7 +80,7 @@ public final class IntfSingleMatcher extends IntfDBMatcher
      * @param intf Interface to test.
      * @return True if the interface matches.
      */
-    public boolean isMatch(byte iface, byte otherIface, InterfaceComparator c)
+    public boolean isMatch(byte iface, byte otherIface)
     {
         /* These interfaces always match true */
         if (IntfConstants.UNKNOWN_INTF == iface

@@ -714,6 +714,9 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         // start services:
         this.adminManager = new AdminManagerImpl(this, threadRequest);
 
+        // initialize the network Manager
+        this.networkManager = NetworkManagerImpl.getInstance();
+
         this.mailSender = MailSenderImpl.mailSender();
 
         this.logMailer = new LogMailerImpl();
@@ -732,11 +735,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         this.toolboxManager.start();
 
         this.pipelineFoundry = PipelineFoundryImpl.foundry();
-
-        // Retrieve the network settings manager.  (Kind of busted,
-        // but NAT may register a listener, and thus the network
-        // manager should exist.
-        this.networkManager = NetworkManagerImpl.getInstance();
 
         //Start AddressBookImpl
         this.addressBookFactory = AddressBookFactory.makeInstance();

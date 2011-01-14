@@ -27,7 +27,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.Protocol;
@@ -196,15 +195,12 @@ class EventHandler extends AbstractEventHandler
                                                 byte clientIntf, InetAddress clientAddr, int clientPort,
                                                 byte serverIntf, InetAddress serverAddr, int serverPort)
     {
-        InterfaceComparator ifCompare = LocalUvmContextFactory.context().localIntfManager().getInterfaceComparator();
-
         for (FirewallMatcher matcher : firewallRuleList) {
 
             if (matcher.isMatch(protocol,
                                 clientIntf, serverIntf,
                                 clientAddr, serverAddr,
-                                clientPort, serverPort, ifCompare)) {
-
+                                clientPort, serverPort)) {
                 return matcher;
             }
         }

@@ -33,8 +33,6 @@
 
 package com.untangle.uvm.node.firewall.intf;
 
-import com.untangle.uvm.node.InterfaceComparator;
-
 /**
  * An interface to test for particular interfaces.
  *
@@ -49,7 +47,7 @@ public interface IntfMatcher
      * @param intf The interface to test
      * @return True if the <param>intf</param> matches.
      */
-    public boolean isMatch(byte intf, byte otherIface, InterfaceComparator c);
+    public boolean isMatch(byte intf, byte otherIface);
 
 
     /**

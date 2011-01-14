@@ -33,32 +33,24 @@ import com.untangle.jnetcap.JNetcapException;
 import com.untangle.jnetcap.Netcap;
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.localapi.LocalIntfManager;
-import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
+import com.untangle.uvm.networking.NetworkConfiguration;
+import com.untangle.uvm.networking.InterfaceConfiguration;
 
 /* Manager for controlling argon -> netcap interface matching */
 class LocalIntfManagerImpl implements LocalIntfManager
 {
-    private static final String DEFAULT_INTERFACE_ORDER = "External:eth0:1,DMZ:eth2:3,VPN:tun0:8,Internal:eth1:2";
-
     private ArgonInterfaceConverter intfConverter = null;
 
     private final Logger logger = Logger.getLogger(this.getClass());
 
     /* Converter from all of the interface indexes to their display name(eg. external) */
     private IntfEnum intfEnum;
-
-    private InterfaceComparator interfaceComparator;
-
-    /** The current value from the properties value, if the value hasn't changed, the interfaces
-     * are not reloaded. */
-    private String currentInterfaceOrder = null;
-    private String currentWanInterfaces = null;
 
     /**
      * Convert an interface using the argon standard (0 = outside, 1 = inside, 2 = DMZ 1, etc)
@@ -163,105 +155,39 @@ class LocalIntfManagerImpl implements LocalIntfManager
         notifyDependents(prevIntfConverter);
     }
 
-    /* Retrieve the current interface enumeration */
-    public IntfEnum getIntfEnum()
-    {
-        return this.intfEnum;
-    }
-
-    public InterfaceComparator getInterfaceComparator()
-    {
-        return interfaceComparator;
-    }
-
+    @SuppressWarnings("cast")
     public void loadInterfaceConfig() throws ArgonException
     {
-        /* First check to see if the property file exists */
-        FileInputStream fis = null;
-        String interfaceOrder = null;
-        String wanInterfaces = null;
-        String cmd = System.getProperty( "uvm.bin.dir" ) + "/ut-interface-properties";
-        try {
-            Process process = LocalUvmContextFactory.context().exec( cmd );
-            Properties p = new Properties();
-            p.load( process.getInputStream());
-            interfaceOrder = p.getProperty("com.untangle.interface-order");
-            wanInterfaces = p.getProperty("com.untangle.wan-interfaces");
-        } catch (IOException exn) {
-            logger.warn("could not run: " + cmd, exn);
-        } finally {
-            if (null != fis) {
-                try {
-                    fis.close();
-                } catch (IOException exn) {
-                    logger.warn("could not run: " + cmd, exn);
-                }
-            }
-        }
-
-        if (interfaceOrder == null || interfaceOrder.trim().length() == 0) {
-            interfaceOrder = DEFAULT_INTERFACE_ORDER;
-        }
-        if (( wanInterfaces == null ) || ( wanInterfaces.trim().length() == 0 )) {
-            wanInterfaces = String.valueOf( IntfConstants.NETCAP_EXTERNAL );
-        }
-        interfaceOrder = interfaceOrder.trim();
-
-        if (( this.currentInterfaceOrder != null ) && this.currentInterfaceOrder.equals( interfaceOrder ) &&
-            ( this.currentWanInterfaces != null ) && this.currentWanInterfaces.equals( wanInterfaces )) {
-            logger.info( "The interface order is current, not reloading interfaces." );
-            return;
-        }
-
-        logger.debug("Loading the interface order: " + interfaceOrder);
-
-        String[] ifds = interfaceOrder.split(",");
-        BitSet wanInterfaceSet = new BitSet( IntfConstants.NETCAP_MAX );
-        for ( String w : wanInterfaces.split( "," )) {
-            try {
-                int i = Integer.valueOf( w );
-                if (( i >= IntfConstants.NETCAP_MIN ) && ( i <= IntfConstants.NETCAP_MAX )) {
-                    wanInterfaceSet.set( i );
-                }
-            }catch ( Exception e ) {
-            }
-        }
-
-        List<Byte> l = new ArrayList<Byte>(ifds.length);
+        NetworkConfiguration netConf = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration();
         List<ArgonInterface> argonInterfaceList = new LinkedList<ArgonInterface>();
 
-        for (String ifd : ifds) {
-            String[] d = ifd.split(":");
-            if (3 < d.length) {
-                logger.warn("skiping bad interface description: "
-                            + ifd);
-            } else {
-                try {
-                    byte netcap = Byte.parseByte(d[2]);
-                    boolean isWanInterface = wanInterfaceSet.get( netcap );
-                    byte argon = (byte)(netcap - 1);
+        if (netConf == null) {
+            logger.warn("netConfg is null");
+            return;
+        }
+        
+        for (InterfaceConfiguration intfConf : netConf.getInterfaceList()) {
+            try {
+                byte netcap = (byte)intfConf.getInterfaceId().byteValue(); // XXX cast Integer -> byte
+                //byte netcap = Byte.parseByte(d[2]);
+                boolean isWanInterface = intfConf.isWAN();
+                //boolean isWanInterface = wanInterfaceSet.get( netcap );
+                String userString = intfConf.getName();
+                //String userString = d[0];
+                String osName = intfConf.getSystemName();
+                //String osName = d[1];
+                byte argon = (byte)(netcap - 1);
+                //l.add(argon);
 
-                    String userString = d[0];
-                    String osName = d[1];
-                    l.add(argon);
-
-                    argonInterfaceList.add(new ArgonInterface(osName, null, argon, netcap, userString, isWanInterface));
-                } catch (NumberFormatException exn) {
-                    logger.warn("skiping bad interface description: "
-                                + ifd);
-                }
+                argonInterfaceList.add(new ArgonInterface(osName, null, argon, netcap, userString, isWanInterface));
+            } catch (Exception exn) {
+                logger.warn("Bad interface description: ",exn);
             }
         }
-
-        interfaceComparator = new InterfaceComparator(l);
-        logger.info("using interface order: "
-                    + interfaceComparator.toString());
 
         ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
         this.intfConverter = ArgonInterfaceConverter.makeInstance(argonInterfaceList);
         notifyDependents(prevIntfConverter);
-        this.currentInterfaceOrder = interfaceOrder;
-        this.currentWanInterfaces = wanInterfaces;
     }
 
     public IntfDBMatcher[] getIntfMatcherEnumeration()
@@ -287,8 +213,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
     {
         /* Notify netcap that there has been a change to the interfaces */
         try {
-            Netcap.getInstance().configureInterfaceArray(this.intfConverter.getNetcapIntfArray(),
-                                                          this.intfConverter.getNameArray());
+            Netcap.getInstance().configureInterfaceArray(this.intfConverter.getNetcapIntfArray(), this.intfConverter.getNameArray());
         } catch (JNetcapException e) {
             logger.warn("Error updating interface array", e);
             throw new ArgonException("Unable to configure interface array", e);
@@ -317,7 +242,6 @@ class LocalIntfManagerImpl implements LocalIntfManager
             i++;
         }
 
-        this.intfEnum = new IntfEnum(argonIntfArray, intfNameArray,
-                                     intfUserNameArray);
+        this.intfEnum = new IntfEnum(argonIntfArray, intfNameArray, intfUserNameArray);
     }
 }

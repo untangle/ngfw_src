@@ -58,7 +58,6 @@ public class IntfMatcherFactory
         this.parser = new ParsingFactory<IntfDBMatcher>("intf matcher");
         this.parser.registerParsers(IntfSimpleMatcher.PARSER,
                                     IntfWanMatcher.PARSER,
-                                    IntfRelativeMatcher.PARSER,
                                     IntfSingleMatcher.PARSER,
                                     IntfSetMatcher.PARSER);
     }
@@ -71,16 +70,6 @@ public class IntfMatcherFactory
     public IntfDBMatcher getNilMatcher()
     {
         return IntfSimpleMatcher.getNilMatcher();
-    }
-
-    public IntfDBMatcher getMoreTrustedMatcher()
-    {
-        return IntfRelativeMatcher.getMoreTrustedMatcher();
-    }
-
-    public IntfDBMatcher getLessTrustedMatcher()
-    {
-        return IntfRelativeMatcher.getLessTrustedMatcher();
     }
 
     public IntfDBMatcher getExternalMatcher()

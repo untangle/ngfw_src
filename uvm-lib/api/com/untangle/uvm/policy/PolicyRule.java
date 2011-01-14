@@ -39,7 +39,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
 import com.untangle.uvm.node.IPSessionDesc;
-import com.untangle.uvm.node.InterfaceComparator;
 import com.untangle.uvm.node.Rule;
 
 /**
@@ -65,8 +64,7 @@ public abstract class PolicyRule extends Rule
 
     // abstract methods -------------------------------------------------------
 
-    public abstract boolean matches(IPSessionDesc sessionDesc,
-                                    InterfaceComparator c);
+    public abstract boolean matches(IPSessionDesc sessionDesc);
 
     // accessors --------------------------------------------------------------
 
