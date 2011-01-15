@@ -34,7 +34,6 @@ import com.untangle.jnetcap.Netcap;
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
@@ -48,9 +47,6 @@ class LocalIntfManagerImpl implements LocalIntfManager
     private ArgonInterfaceConverter intfConverter = null;
 
     private final Logger logger = Logger.getLogger(this.getClass());
-
-    /* Converter from all of the interface indexes to their display name(eg. external) */
-    private IntfEnum intfEnum;
 
     /**
      * Convert an interface using the argon standard (0 = outside, 1 = inside, 2 = DMZ 1, etc)
@@ -213,30 +209,5 @@ class LocalIntfManagerImpl implements LocalIntfManager
             logger.warn("Error updating interface array", e);
             throw new ArgonException("Unable to configure interface array", e);
         }
-
-        /* Update the interface enumeration */
-        updateIntfEnum();
-
-        /* Update the interface matcher factory, this should be a listener */
-        IntfMatcherFactory.getInstance().updateEnumeration(this.intfEnum);
-    }
-
-    /* Update the interface enumeration */
-    private void updateIntfEnum()
-    {
-        List<ArgonInterface> ail = this.intfConverter.getIntfList();
-        byte[] argonIntfArray = new byte[ail.size()];
-        String[] intfNameArray = new String[ail.size()];
-        String[] intfUserNameArray = new String[ail.size()];
-
-        int i = 0;
-        for (ArgonInterface ai : ail) {
-            argonIntfArray[i] = ai.getArgon();
-            intfNameArray[i] = ai.getName();
-            intfUserNameArray[i] = ai.getUserName();
-            i++;
-        }
-
-        this.intfEnum = new IntfEnum(argonIntfArray, intfNameArray, intfUserNameArray);
     }
 }

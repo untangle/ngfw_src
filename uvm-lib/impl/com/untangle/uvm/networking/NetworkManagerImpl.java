@@ -80,9 +80,8 @@ public class NetworkManagerImpl implements NetworkManager
     /* Manager for MiscSettings */
     private final MiscManagerImpl miscManager;
 
-    /* ??? Does the order matter, it shouldn't.  */
+    /* networkListeners stores parties interested in being notified of network changes */
     private Set<NetworkConfigurationListener> networkListeners = new HashSet<NetworkConfigurationListener>();
-    private Set<IntfEnumListener> intfEnumListeners = new HashSet<IntfEnumListener>();
 
     /** The nuts and bolts of networking, the real bits of panther.  this my friend
      * should never be null */

@@ -3,7 +3,6 @@ package com.untangle.uvm.engine;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.ArgonException;
-import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;

@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.untangle.node.util.PartialListUtil;
-import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;

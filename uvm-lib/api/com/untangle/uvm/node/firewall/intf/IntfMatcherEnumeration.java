@@ -36,7 +36,6 @@ package com.untangle.uvm.node.firewall.intf;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.node.ParseException;
 
 /**
@@ -52,7 +51,6 @@ final class IntfMatcherEnumeration
 
     /* Just in case it is not initialized */
     private IntfDBMatcher enumeration[] = new IntfDBMatcher[] { IntfSimpleMatcher.getAllMatcher() };
-    private IntfEnum intfEnumCache = null;
 
     private IntfMatcherEnumeration()
     {
@@ -60,8 +58,7 @@ final class IntfMatcherEnumeration
 
     public String getIntfUserName(byte intfNum)
     {
-        String s = null == intfEnumCache ? null : intfEnumCache.getIntfUserName(intfNum);
-        return null == s ? "Unknown" : s;
+        return "Unknown";
     }
 
     public byte parseInterface(String v)
@@ -83,41 +80,6 @@ final class IntfMatcherEnumeration
                 throw new ParseException("Bad interface: " + v);
             }
         }
-    }
-
-    /**
-     * Update the current enumeration.  Used when interfaces changes,
-     * such as when VPN or USB interfaces are created.  All, Internal
-     * and External are always available.  If there is a DMZ
-     * interface, then DMZ and DMZ & External are created.  A single
-     * matcher for VPN is created when the VPN interface is
-     * registered.
-     *
-     * @param intfEnum An enumeration of all of the current
-     * interfaces.
-     */
-    synchronized void updateEnumeration( IntfEnum intfEnum )
-    {
-        /* If the cache is up to date, there is nothing to do */
-        if ( this.intfEnumCache == intfEnum ) return;
-
-        List<IntfDBMatcher> matchers = new LinkedList<IntfDBMatcher>();
-
-        matchers.add( IntfSimpleMatcher.getAllMatcher());
-
-        for (byte num : intfEnum.getIntfNums()) {
-            IntfDBMatcher im = IntfSingleMatcher.makeInstance(num);
-            matchers.add(im);
-        }
-
-        matchers.add( IntfWanMatcher.getWanMatcher());
-        matchers.add( IntfWanMatcher.getNonWanMatcher());
-
-        /* Convert to an immutable list */
-        this.enumeration = matchers.toArray( new IntfDBMatcher[matchers.size()]);
-
-        /* Set the cache */
-        this.intfEnumCache = intfEnum;
     }
 
     /**

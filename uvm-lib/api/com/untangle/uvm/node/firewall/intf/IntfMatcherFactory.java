@@ -35,7 +35,6 @@ package com.untangle.uvm.node.firewall.intf;
 
 import java.util.BitSet;
 
-import com.untangle.uvm.IntfEnum;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.ParsingFactory;
 
@@ -90,16 +89,6 @@ public class IntfMatcherFactory
     public IntfDBMatcher getVpnMatcher()
     {
         return IntfSingleMatcher.getVpnMatcher();
-    }
-
-    /**
-     * Update the enumeration of IntfMatchers.
-     *
-     * @param intfEnum The new interface enumeration.
-     */
-    public void updateEnumeration(IntfEnum intfEnum)
-    {
-        IntfMatcherEnumeration.getInstance().updateEnumeration(intfEnum);
     }
 
     /**
