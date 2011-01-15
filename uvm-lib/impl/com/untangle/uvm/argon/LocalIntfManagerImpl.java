@@ -169,15 +169,10 @@ class LocalIntfManagerImpl implements LocalIntfManager
         for (InterfaceConfiguration intfConf : netConf.getInterfaceList()) {
             try {
                 byte netcap = (byte)intfConf.getInterfaceId().byteValue(); // XXX cast Integer -> byte
-                //byte netcap = Byte.parseByte(d[2]);
                 boolean isWanInterface = intfConf.isWAN();
-                //boolean isWanInterface = wanInterfaceSet.get( netcap );
                 String userString = intfConf.getName();
-                //String userString = d[0];
                 String osName = intfConf.getSystemName();
-                //String osName = d[1];
                 byte argon = (byte)(netcap - 1);
-                //l.add(argon);
 
                 argonInterfaceList.add(new ArgonInterface(osName, null, argon, netcap, userString, isWanInterface));
             } catch (Exception exn) {
