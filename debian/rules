@@ -31,7 +31,7 @@ build-arch-stamp:
 	@dh_testdir
 
 # FIXME: only one of the 2 build- is needed
-	rake build
+#	rake build
 
 # FIXME: what's that ?
 	rm -f ./debian/tmp/stamp*
