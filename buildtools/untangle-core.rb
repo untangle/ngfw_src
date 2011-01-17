@@ -70,25 +70,13 @@ require "#{SRC_HOME}/cpd/package.rb"
 ## Other packages
 require "#{SRC_HOME}/util/package.rb"
 
-# # We don't need ipq at all, as netfilter-queue replaces it.
-# # --Seb & Robert
-# # Newer iptables has only PIC library, older has both
-# iptables_dev_package_version = `dpkg -l iptables-dev | tail -1 | awk '{print $3}'`
-# system 'dpkg --compare-versions "$iptables_dev_package_version" ge "1.4.0"'
-# if $? == 0
-#   wlibs         = ['ipq']
-# elsif CCompilerEnv::Amd64
-#   wlibs         = ['ipq_pic']
-# else
-#   wlibs         = ['ipq']
-# end
 wlibs = []
 
 libuvmcore_so = "#{BuildEnv::SRC.staging}/libuvmcore.so"
 
 archives = ['libmvutil', 'libnetcap', 'libvector', 'jmvutil', 'jnetcap', 'jvector']
 
-## Make the so dependent on each archive
+## Make the .so dependent on each archive
 archives.each do |n|
   file libuvmcore_so => BuildEnv::SRC[n]['archive']
 end

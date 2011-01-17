@@ -19,6 +19,11 @@
 # Robert Scott <rbscott@untangle.com>
 # Aaron Read <amread@untangle.com>
 
+## This is how you define where the stamp file will go
+module Rake
+  StampFile = "./taskstamps.txt"
+end
+
 # Certified Filthy2008
 ENV["JAVA_HOME"] = "/usr/lib/jvm/java-6-sun"
 
@@ -29,27 +34,9 @@ SRC_HOME = POTENTIAL_SRC_HOMES.compact.find do |d|
 end
 puts "SRC_HOME = #{SRC_HOME}"
 
-## This is how you define where the stamp file will go
-module Rake
-  StampFile = "./taskstamps.txt"
-end
-
-$DevelBuild = true
-$CleanBuild = false
-ARGV.each do |arg|
-  if arg =~ /install/
-    $DevelBuild = false
-  end
-
-  if arg =~ /clean/
-    $CleanBuild = true
-  end
-end
-
-# XXX Move this into main rakefile
-if File.exist?('./downloads') and not $CleanBuild
-  Kernel.system("make --no-print-directory -C ./downloads")
-end
+# FIXME: ugly, but will do for now
+$DevelBuild = ARGV.grep(/install/).empty?
+puts "DevelBuild = #{$DevelBuild}"
 
 require "./buildtools/stamp-task.rb"
 require "./buildtools/rake-util.rb"
@@ -59,31 +46,24 @@ require "./buildtools/c-compiler.rb"
 require "./buildtools/node.rb"
 
 if SRC_HOME.nil?
-  uvm_lib = BuildEnv::SRC['untangle-libuvm']
   ['bootstrap', 'api', 'localapi', 'impl' ].each do |n|
-    InstalledJar.get(uvm_lib, "/usr/share/untangle/lib/untangle-libuvm-#{n}/")
+    InstalledJar.get(BuildEnv::SRC['untangle-libuvm'],
+                     "/usr/share/untangle/lib/untangle-libuvm-#{n}/")
   end
 
-  InstalledJar.get(uvm_lib, "/usr/share/java/uvm/untangle-libuvm-taglib.jar")
+  InstalledJar.get(BuildEnv::SRC['untangle-libuvm'],
+                   "/usr/share/java/uvm/untangle-libuvm-taglib.jar")
 
-  buildutil = BuildEnv::SRC['untangle-buildutil']
-  ['impl'].each do |n|
-    InstalledJar.get(buildutil, "/usr/share/untangle/lib/untangle-buildutil-#{n}.jar")
-  end
+  InstalledJar.get(BuildEnv::SRC['untangle-buildutil'],
+                   "/usr/share/untangle/lib/untangle-buildutil-impl.jar")
 
   [ 'mail', 'ftp', 'http' ].each do |c|
-    p =  BuildEnv::SRC["untangle-casing-#{c}"]
-    ['localapi'].each do |n|
-      InstalledJar.get(p, "/usr/share/untangle/toolbox/untangle-casing-#{c}-#{n}.jar")
-    end
+    InstalledJar.get(BuildEnv::SRC["untangle-casing-#{c}"],
+                     "/usr/share/untangle/toolbox/untangle-casing-#{c}-localapi.jar")
   end
 
   [ 'virus', 'webfilter' ].each do |c|
-    p =  BuildEnv::SRC["untangle-base-#{c}"]
-    ['impl'].each do |n|
-      InstalledJar.get(p, "/usr/share/untangle/toolbox/untangle-base-#{c}-#{n}/")
-    end
+    InstalledJar.get(BuildEnv::SRC["untangle-base-#{c}"],
+                     "/usr/share/untangle/toolbox/untangle-base-#{c}-impl/")
   end
-elsif not $CleanBuild
-  require "./buildtools/untangle-core.rb"
 end

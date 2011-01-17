@@ -244,38 +244,33 @@ class CopyFiles < Target
   @@ignored_extensions = /(jpe?g|png|gif|exe|ico|lib|jar|sys|bmp|dll)$/
 
   def initialize(package, moveSpecs, taskName, filterset = nil, destBase = nil)
-
+    @package = package
+    @taskName = taskName
     @targetName = "copyfiles:#{package.name}-#{taskName}"
+    @logged = false
+    
     deps = [];
 
-    logged = false      
     [moveSpecs].flatten.each do |moveSpec|
       moveSpec.each_move(destBase) do |src, dest|
-        if not logged then
-          info "[copy    ] #{package.name} #{taskName}"
-          logged = true
-        end
-
+        deps << dest
+        
         if File.symlink?(src)
-          deps << dest
-
           ## Handling symbolic links that don't resolve until in place.
           file dest => src if File.exists?( src )
 
           file dest do
+            log
             ensureDirectory(File.dirname(dest))
             File.symlink(File.readlink(src), dest) if !File.exist?(dest)
           end
         elsif File.directory?(src)
-          deps << dest
-
           file dest => src do
             ensureDirectory(dest)
           end
         else
-          deps << dest
-
           file dest => src do
+            log
             FileUtils.mkdir_p(File.dirname(dest))
             if (filterset && ( src.to_s !~ @@ignored_extensions))
               filter_copy(src, dest, filterset)
@@ -287,7 +282,7 @@ class CopyFiles < Target
         end
       end
     end
-
+    
     super(package, deps)
   end
 
@@ -296,7 +291,14 @@ class CopyFiles < Target
   end
 
   private
-
+  def log
+    if not @logged then
+      info "[copy    ] #{@package.name} #{@taskName}"
+      @logged = true
+    end
+  end
+  
+  private
   def filter_copy(src, dest, filterset)
     File.open(dest, 'w') do |d|
       File.open(src, 'r') do |s|

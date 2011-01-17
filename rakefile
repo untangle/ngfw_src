@@ -23,18 +23,8 @@ require "./buildtools/buildtools.rb"
 task :default => :devel
 task :all => :devel
 
-task :clean do
+task :download_clean do
   Kernel.system( "make --no-print-directory -C downloads distclean" )
-  info "[rm -rf  ] #{BuildEnv::SRC.devel}"
-  FileUtils.rm_rf(BuildEnv::SRC.devel) if File.exist?(BuildEnv::SRC.devel)
-  info "[rm -rf  ] #{BuildEnv::SRC.staging}"
-  FileUtils.rm_rf(BuildEnv::SRC.staging) if File.exist?(BuildEnv::SRC.staging)
-  info "[rm -rf  ] foo.dot"
-  FileUtils.rm_rf("foo.dot") if File.exist?("foo.dot")
-  info "[rm -rf  ] debian/dirs"
-  FileUtils.rm_rf(FileList['debian/*'].select { |f| File.directory?(f) })
-  ## Clear the stamp hashes
-  Rake::StampHash.instance.clear
 end
 
 task :kindaclean do
@@ -50,24 +40,33 @@ task :kindaclean do
   Rake::StampHash.instance.clear
 end
 
-task :build => [BuildEnv::SRC['untangle-vm'], BuildEnv::SRC['node']]
+task :clean => [:download_clean, :kindaclean]
 
-task :hier => BuildEnv::SRC.hierTarget
+task :download do
+  Kernel.system("make --no-print-directory -C downloads") unless $CleanBuild
+end
 
-task :devel => [BuildEnv::SRC['install'], BuildEnv::SRC.installTarget, :hier]
+task :core do
+  require "./buildtools/untangle-core.rb"
+end
+
+task :build => [:core, BuildEnv::SRC['install'], BuildEnv::SRC.installTarget]
+
+task :hier => [:core, BuildEnv::SRC.hierTarget]
+
+task :devel => [:download, :build, :hier]
 
 task :jslint => BuildEnv::SRC.jsLintTarget
   
 task :i18n => BuildEnv::SRC.i18nTarget
 
-# See rake-util.rb, we check the arguments for "pkgs"
-task :install => [:devel, :i18n, :jslint] do
-  # FIXME: hrm, we're taking init scripts from the staging area under
-  # debian/packagename/... and put it back under debian/ ????
+task :debian_init_files do
   FileList["./debian/**/etc/init.d/*"].each do |f|
     FileUtils.cp(f, "./debian/#{File.basename(f)}.init")
   end
 end
+
+task :install => [:devel, :i18n, :jslint, :debian_init_files]
 
 task :javadoc do
   dirs = 'uvm/api:uvm/localapi'
