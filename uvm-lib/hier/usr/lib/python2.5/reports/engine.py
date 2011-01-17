@@ -62,14 +62,13 @@ def get_number_wan_interfaces():
     return wans_found
 
 # Utility function to return index of WAN interfaces
-# returns a comma separated list ex: "1,2"
+# returns a comma separated list ex: "(1,2)"
 # this is a janky way to parse JSON, but python doesn't support json until 3.0
 def get_wan_clause():
     f = open('/etc/untangle-net-alpaca/netConfig.js', 'r')
     str = f.read()
 
-    wans_str = ""
-    wans_found = 0
+    wans = []
 
     for segment in str.split("{"):
         wan = segment.find("WAN")
@@ -78,17 +77,11 @@ def get_wan_clause():
         if (wan > 0):
             wan_clause = segment[wan:wan+12]
             if (wan_clause.find("true") > 0):
-                # OK, we found a WAN
-                # now extract the interfaceId
-                if (wans_found > 0):
-                    wans_str = wans_str+","
-
-                wans_found = wans_found + 1
                 id_idx = segment.find("interfaceId")
                 intf_id = segment[id_idx+13:id_idx+14]
-                wans_str = wans_str + intf_id
+                wans.append(intf_id)
                 
-    return wans_str
+    return "(" + ','.join(wans) + ")"
 
 class Node:
     def __init__(self, name):
