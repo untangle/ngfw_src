@@ -174,10 +174,8 @@ public class StackedBarChart extends Plot
  	da.setMaximumDate(max);
 
         da.setDateFormatOverride(new SimpleDateFormat(dateFormatStr));
-        if (tickUnit != null)  {
-            logger.debug("YAYAYAYAYA");
+        if (tickUnit != null)
             da.setTickUnit(new DateTickUnit(tickUnit, tickFrequency));
-        }
     }
 
     private Date parseTimeStamp(String timeStr) 
