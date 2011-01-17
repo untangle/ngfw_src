@@ -83,6 +83,39 @@ def get_wan_clause():
                 
     return "(" + ','.join(wans) + ")"
 
+# Utility function to return a map from index to interface name
+# returns a map "{1: 'External'}
+# this is a janky way to parse JSON, but python doesn't support json until 3.0
+def get_wan_names_map():
+    f = open('/etc/untangle-net-alpaca/netConfig.js', 'r')
+    str = f.read()
+
+    map = {}
+    wans_found = 0
+
+    for segment in str.split("{"):
+        wan = segment.find("WAN")
+        # look for some text about WAN
+        # look for the word true near it
+        if (wan > 0):
+            wan_clause = segment[wan:wan+12]
+            if (wan_clause.find("true") > 0):
+                # OK, we found a WAN
+                # now extract the interfaceId
+                if (wans_found > 0):
+                    wans_str = wans_str+","
+
+                wans_found = wans_found + 1
+                id_idx = segment.find("interfaceId")
+                intf_id = segment[id_idx+13:id_idx+14]
+
+                name_idx = segment.find("name")
+                srch = re.search('\"(.*)\"',segment[name_idx+5:name_idx+20])
+                
+                map[int(intf_id)] = srch.group(1)
+                
+    return map
+
 class Node:
     def __init__(self, name):
         self.__name = name
