@@ -38,6 +38,11 @@ puts "SRC_HOME = #{SRC_HOME}"
 $DevelBuild = ARGV.grep(/install/).empty?
 puts "DevelBuild = #{$DevelBuild}"
 
+# XXX Move this into main rakefile
+if File.exist?('./downloads') and not $CleanBuild
+  Kernel.system("make --no-print-directory -C ./downloads")
+end
+
 require "./buildtools/stamp-task.rb"
 require "./buildtools/rake-util.rb"
 require "./buildtools/target.rb"

@@ -63,15 +63,12 @@ components_js = CopyFiles.new(uvm_lib,
                                                 "components.js" ),
                               "servlet-reports-apache")
 
-ServletBuilder.new(uvm_lib, 'com.untangle.uvm.reports.jsp',
-                   "./uvm-lib/servlets/reports", [uvm_lib['bootstrap'], components_js])
+ServletBuilder.new(uvm_lib, 'com.untangle.uvm.reports.jsp', "./uvm-lib/servlets/reports", [uvm_lib['bootstrap'], components_js])
 
-ServletBuilder.new(uvm_lib, 'com.untangle.uvm.alpaca.jsp',
-                   "./uvm-lib/servlets/alpaca")
+ServletBuilder.new(uvm_lib, 'com.untangle.uvm.alpaca.jsp', "./uvm-lib/servlets/alpaca")
 
 # library
-ServletBuilder.new(uvm_lib, "com.untangle.uvm.installer.servlet",
-                   "uvm-lib/servlets/library", [])
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.installer.servlet", "uvm-lib/servlets/library", [])
 
 deps = %w(
            slf4j-1.4.3/slf4j-log4j12-1.4.3.jar
@@ -83,27 +80,24 @@ deps += Jars::Jabsorb
 
 deps << taglib
 
-ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui.servlet",
-                   "./uvm-lib/servlets/webui", deps)
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui.servlet", "./uvm-lib/servlets/webui", deps)
 
-ServletBuilder.new(uvm_lib, "com.untangle.uvm.setup.servlet",
-                   "./uvm-lib/servlets/setup", deps)
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.setup.servlet", "./uvm-lib/servlets/setup", deps)
 
 # Ajax Tk
 deps = FileList["#{BuildEnv::downloads}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.blockpage.jsp',
                    "./uvm-lib/servlets/blockpage", deps, [], [])
 
-BuildEnv::SRC.installTarget.install_jars(jts, "#{uvm_lib.distDirectory}/usr/share/untangle/lib",
-                                        nil, false, true)
+BuildEnv::SRC.installTarget.install_jars(jts, "#{uvm_lib.distDirectory}/usr/share/untangle/lib", nil, false, true)
 
 thirdparty = BuildEnv::SRC['untangle-libuvmthirdparty']
 
 BuildEnv::SRC.installTarget.install_jars(Jars::Base, "#{thirdparty.distDirectory}/usr/share/java/uvm")
 BuildEnv::SRC.installTarget.install_jars(Jars::YUICompressor, "#{thirdparty.distDirectory}/usr/share/java/uvm")
+BuildEnv::SRC.installTarget.install_jars(Jars::Bcel, "#{thirdparty.distDirectory}/usr/share/java/uvm")
 BuildEnv::SRC.installTarget.install_jars(Jars::JRadius, "#{thirdparty.distDirectory}/usr/share/java/uvm")
 BuildEnv::SRC.installTarget.install_jars(Jars::Ant, "#{thirdparty.distDirectory}/usr/share/java/uvm")
-BuildEnv::SRC.installTarget.install_jars(Jars::Becl, "#{thirdparty.distDirectory}/usr/share/java/uvm")
 BuildEnv::SRC.installTarget.install_jars(Jars::Junit, "#{thirdparty.distDirectory}/usr/share/java/uvm")
 
 BuildEnv::SRC.installTarget.install_dirs("#{uvm_lib.distDirectory}/usr/share/untangle/toolbox")

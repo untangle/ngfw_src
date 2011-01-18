@@ -110,7 +110,8 @@ class Jars
                  Jars.downloadTarget('xmlrpc-3.1/lib/ws-commons-util-1.0.2.jar') ]
 
   ## GUIJars
-  JFreeChart = [ 'jfreechart-1.0.13.jar', 'jcommon-1.0.16.jar' ].map { |p| Jars.downloadTarget("jfreechart-1.0.13/lib/#{p}") }
+  JFreeChart = [ Jars.downloadTarget('jfreechart-1.0.13/lib/jfreechart-1.0.13.jar'),
+                 Jars.downloadTarget('jfreechart-1.0.13/lib/jcommon-1.0.16.jar')]
 
   ## Miscellaneous Jars
   JavaMail   = [ Jars.downloadTarget('javamail-1.3.3_01/mail.jar') ]
@@ -125,22 +126,21 @@ class Jars
                  Jars.downloadTarget('jradius-1.1.0-client/lib/commons-pool-1.5.4.jar'),
                  Jars.downloadTarget('jradius-1.1.0-client/lib/gnu-crypto-2.0.1.jar'),
                  Jars.downloadTarget('jradius-1.1.0-client/lib/jradius-core-1.1.0.jar'),
-                 Jars.downloadTarget('jradius-1.1.0-client/lib/jradius-dictionary-1.1.0.jar')]
+                 Jars.downloadTarget('jradius-1.1.0-client/lib/jradius-dictionary-1.1.0.jar'), 
+                 Jars.downloadTarget('bcel-5.2/bcel-5.2.jar')               ]
 
   ## Jars required to run/compile unit tests
   Junit      = [ Jars.downloadTarget('junit4.1/junit-4.1.jar') ]
   Bdb        = [ Jars.downloadTarget('je-4.0.92/lib/je-4.0.92.jar') ]
   DnsJava    = [ Jars.downloadTarget('dnsjava-2.0.6/dnsjava-2.0.6.jar') ]
 
-  HttpClient = %w( commons-httpclient-3.0/commons-httpclient-3.0.jar
-                   commons-codec-1.3/commons-codec-1.3.jar
-                   commons-fileupload-1.1/commons-fileupload-1.1.jar
-                   commons-io-1.1/commons-io-1.1.jar
-                 ).map { |n| Jars.downloadTarget(n) }
+  HttpClient = [ Jars.downloadTarget('commons-httpclient-3.0/commons-httpclient-3.0.jar'),
+                 Jars.downloadTarget('commons-codec-1.3/commons-codec-1.3.jar'),
+                 Jars.downloadTarget('commons-fileupload-1.1/commons-fileupload-1.1.jar'),
+                 Jars.downloadTarget('commons-io-1.1/commons-io-1.1.jar')]
 
-  Jstl       = %w( Ajax/jars/jstl.jar
-                   Ajax/jars/standard.jar
-                 ).map { |f| Jars.downloadTarget(f) }
+  Jstl       = [ Jars.downloadTarget('Ajax/jars/jstl.jar'),
+                 Jars.downloadTarget('Ajax/jars/standard.jar') ]
 
   ## Groups used for compiling
   # This is available to everything?
@@ -153,7 +153,7 @@ class Jars
                               JFreeChart, Ant)
 
   # A jar used to build one of the buildutil classes
-  Becl        = [ Jars.downloadTarget('bcel-5.2/bcel-5.2.jar') ]
+  Bcel        = [ Jars.downloadTarget('bcel-5.2/bcel-5.2.jar') ]
 
   JDKTools    = [ ThirdpartyJar.get("#{BuildEnv::JAVA_HOME}/lib/tools.jar") ]
 

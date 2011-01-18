@@ -18,7 +18,7 @@
 
 buildutil = BuildEnv::SRC["untangle-buildutil"]
 
-jt = JarTarget.build_target(buildutil, [Jars::Becl], 'impl', ["./util/impl"])
+jt = JarTarget.build_target(buildutil, [Jars::Bcel], 'impl', ["./util/impl"])
 BuildEnv::SRC.installTarget.install_jars(jt, "#{buildutil.distDirectory}/usr/share/untangle/lib")
 
 ms = MoveSpec.new("./util/hier", FileList["./util/hier/**/*"], buildutil.distDirectory)
