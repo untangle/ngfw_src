@@ -26,13 +26,14 @@ class Jars
     if File.exist?(p)
       ThirdpartyJar.get(p)
     else
-      b = File.basename(path)
-      paths = [ "/usr/share/java/uvm/#{b}",
-                "/usr/share/java/reports/#{b}",
-                "/usr/share/untangle/web/webstart/#{b}" ]
-      p = paths.find do |f|
-        File.exist?(f)
-      end
+      #b = File.basename(path)
+      #paths = [ "/usr/share/java/uvm/#{b}",
+      #          "/usr/share/java/reports/#{b}",
+      #          "/usr/share/untangle/web/webstart/#{b}" ]
+      #p = paths.find do |f|
+      #  File.exist?(f)
+      #end
+      p = nil
 
       if p.nil?
         h = ([ "#{BuildEnv::downloads}/#{path}" ] + paths).map do |p|
