@@ -43,18 +43,20 @@ end
 task :clean => [:download_clean, :kindaclean]
 
 task :download do
-  Kernel.system("make --no-print-directory -C downloads") unless $CleanBuild
+  Kernel.system("make --no-print-directory -C downloads")
 end
 
 task :core do
   require "./buildtools/untangle-core.rb"
 end
 
-task :build => [:core, BuildEnv::SRC['install'], BuildEnv::SRC.installTarget]
+task :build => [:download, :core, BuildEnv::SRC['untangle-vm'],
+                BuildEnv::SRC['node'] ]
 
 task :hier => [:core, BuildEnv::SRC.hierTarget]
 
-task :devel => [:download, :build, :hier]
+task :devel => [:build, :hier, BuildEnv::SRC['install'],
+                BuildEnv::SRC.installTarget]
 
 task :jslint => BuildEnv::SRC.jsLintTarget
   
