@@ -94,7 +94,7 @@ public class SettingsManagerImpl implements SettingsManager
 
         try {
             URL url = new URL(urlStr);
-            logger.info("Fetching Settings from URL: " + url); 
+            logger.debug("Fetching Settings from URL: " + url); 
 
             HttpClient hc = new HttpClient();
             HttpMethod get = new GetMethod(url.toString());
