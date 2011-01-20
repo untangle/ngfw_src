@@ -77,17 +77,22 @@ public class LicenseManagerImpl implements LicenseManager
     /**
      * Pulse that syncs the license, this is a daemon task.
      */
-    private final Pulse pulse = new Pulse("uvm-license", true, task);
+    private Pulse pulse = null;
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    
     private LicenseManagerImpl()
     {
+        this.pulse = new Pulse("uvm-license", true, task);
+        this.pulse.start(TIMER_DELAY);
         this._readLicenses();
         this._mapLicenses();
+        try {
+            reloadLicenses();
+        } catch (Exception e) {
+            logger.warn("Failed to reload licenses: ", e);
+        }
     }
-
 
     /**
      * Reload all of the licenses from the file system.
@@ -585,18 +590,18 @@ public class LicenseManagerImpl implements LicenseManager
      */
     private void _syncLicensesWithServer()
     {
-            logger.info("Reloading licenses..." );
+        logger.info("Reloading licenses..." );
 
-            synchronized (LicenseManagerImpl.this) {
-                _readLicenses();
+        synchronized (LicenseManagerImpl.this) {
+            _readLicenses();
 
-                _downloadLicenses();
-                _checkRevocations(); 
+            _downloadLicenses();
+            _checkRevocations(); 
                 
-                _mapLicenses();
-            }
+            _mapLicenses();
+        }
 
-            logger.info("Reloading licenses... done" );
+        logger.info("Reloading licenses... done" );
     }
     
     private class LycenseSyncTask implements Runnable
@@ -609,12 +614,5 @@ public class LicenseManagerImpl implements LicenseManager
     
     static {
         INSTANCE = new LicenseManagerImpl();
-
-        /*
-         * This will actually run it twice, but the second call is blocking
-         * until the licenses have been loaded
-         */
-        INSTANCE.pulse.start(TIMER_DELAY);
-        INSTANCE.reloadLicenses();
     }
 }
