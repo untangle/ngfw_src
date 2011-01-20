@@ -33,16 +33,17 @@ class Jars
       #p = paths.find do |f|
       #  File.exist?(f)
       #end
-      p = nil
+#       p = nil
 
-      if p.nil?
-        h = ([ "#{BuildEnv::downloads}/#{path}" ] + paths).map do |p|
-          "#{p}: #{File.exist?(p)}"
-        end
+#       if p.nil?
+#         h = ([ "#{BuildEnv::downloads}/#{path}" ] + paths).map do |p|
+#           "#{p}: #{File.exist?(p)}"
+#         end
 
-        warn "Could not find #{path} (#{h.join(',')})"
-      else
-        ThirdpartyJar.get(p)
+#        warn "Could not find #{path} (#{h.join(',')})"
+      warn "Could not find #{p}"
+#       else
+#         ThirdpartyJar.get(p)
       end
     end
   end
