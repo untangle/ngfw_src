@@ -39,7 +39,7 @@ $DevelBuild = ARGV.grep(/install/).empty?
 puts "DevelBuild = #{$DevelBuild}"
 
 # XXX Move this into main rakefile
-if File.exist?('./downloads') and not $CleanBuild
+if File.exist?('./downloads')
   Kernel.system("make --no-print-directory -C ./downloads")
 end
 
