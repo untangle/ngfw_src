@@ -44,10 +44,7 @@ import com.untangle.node.mime.MIMEMessage;
 import com.untangle.node.mime.MIMEOutputStream;
 import com.untangle.node.mime.MIMEUtil;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.ArgonException;
-import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.vnet.TCPSession;
 
 /**
@@ -67,8 +64,6 @@ public class SpamSmtpHandler extends BufferingSessionHandler
 
     private static WrappedMessageGenerator msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,MOD_BODY_TEMPLATE);
 
-    private static final LocalIntfManager intfManager = LocalUvmContextFactory.context().localIntfManager();
-    
     private final SpamNodeImpl spamImpl;
     private final SpamSmtpConfig config;
     private final QuarantineNodeView quarantine;
@@ -153,14 +148,15 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         }
 
         try {
-            if (!config.getScanWanMail() && intfManager.getIntfByArgon(session.serverIntf()).isWanInterface()) {
+            boolean isWan = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.serverIntf()).isWAN();
+            if (!config.getScanWanMail() && isWan) {
                 logger.debug("Ignoring WAN-bound SMTP mail");
                 postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.SAFELIST);
                 spamImpl.incrementPassCount();
                 return PASS_MESSAGE;
             }
         }
-        catch (ArgonException e) {
+        catch (Exception e) {
             logger.warn("Unable to lookup destination interface", e);
         }
         
@@ -185,17 +181,6 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         }
 
         SmtpSpamMessageAction action = config.getMsgAction();
-
-        // XXX This has been deprecated by the scan_wan_mail setting
-        // Anything going out External MARK instead of QUARANTINE
-        //         if (action == SmtpSpamMessageAction.QUARANTINE
-        //                 && session.serverIntf() == IntfConstants.EXTERNAL_INTF) {
-        //             // Change action now, as it'll make the event logs
-        //             // more accurate
-        //             logger.debug("Implicitly converting policy from \"QUARANTINE\"" +
-        //                            " to \"MARK\" as we have a message going out external");
-        //             action = SmtpSpamMessageAction.MARK;
-        //         }
 
         if (config.getBlockSuperSpam()
             && config.getSuperSpamStrength() / 10.0f <= report.getScore()) {
@@ -293,14 +278,15 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         }
 
         try {
-            if (!config.getScanWanMail() && intfManager.getIntfByArgon(session.serverIntf()).isWanInterface()) {
+            boolean isWan = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.serverIntf()).isWAN();
+            if (!config.getScanWanMail() && isWan) {
                 logger.debug("Ignoring WAN-bound SMTP mail");
                 postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.SAFELIST);
                 spamImpl.incrementPassCount();
                 return BlockOrPassResult.PASS;
             }
         }
-        catch (ArgonException e) {
+        catch (Exception e) {
             logger.warn("Unable to lookup destination interface", e);
         }
         
@@ -323,12 +309,11 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         SmtpSpamMessageAction action = config.getMsgAction();
 
         // Anything going out External MARK instead of QUARANTINE
-        if (action == SmtpSpamMessageAction.QUARANTINE
-                && session.serverIntf() == IntfConstants.EXTERNAL_INTF) {
+        boolean isWan = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.serverIntf()).isWAN();
+        if (action == SmtpSpamMessageAction.QUARANTINE && isWan) {
             // Change action now, as it'll make the event logs
             // more accurate
-            logger.debug("Implicitly converting policy from \"QUARANTINE\"" +
-                           " to \"MARK\" as we have a message going out external");
+            logger.debug("Implicitly converting policy from \"QUARANTINE\"" + " to \"MARK\" as we have a message going out WAN");
             action = SmtpSpamMessageAction.MARK;
         }
 

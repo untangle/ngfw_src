@@ -66,7 +66,7 @@ public final class IntfSimpleMatcher extends IntfDBMatcher
      *
      * @param intf Interface to test.
      */
-    public boolean isMatch(byte intf, byte otherIntf)
+    public boolean isMatch(int intf, int otherIntf)
     {
         return isAll;
     }

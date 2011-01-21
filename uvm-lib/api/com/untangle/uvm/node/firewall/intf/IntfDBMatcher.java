@@ -52,7 +52,7 @@ public abstract class IntfDBMatcher implements IntfMatcher, Serializable
      */
     IntfDBMatcher() { }
 
-    public abstract boolean isMatch(byte iface, byte otherIface);
+    public abstract boolean isMatch(int iface, int otherIface);
 
     public abstract String toDatabaseString();
 }

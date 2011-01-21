@@ -23,7 +23,6 @@ import org.apache.log4j.Logger;
 import com.untangle.jnetcap.Netcap;
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.ArgonException;
-import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
@@ -51,7 +50,6 @@ public class Argon
     int jvectorDebugLevel   = 0;
     int mvutilDebugLevel    = 0;
 
-    private LocalIntfManagerImpl intfManager;
     int sessionThreadLimit  = 10000;
     int newSessionSchedPolicy  = SCHED_NORMAL;
     int sessionSchedPolicy  = SCHED_NORMAL;
@@ -167,9 +165,6 @@ public class Argon
             logger.warn( "Unable to commit initial alpaca files.", e );
         }
 
-        this.intfManager = new LocalIntfManagerImpl();
-        this.intfManager.initializeIntfArray();
-
         /* Initialize the network manager, this has to be done after netcap init. */
         networkManager.init();
 
@@ -226,10 +221,4 @@ public class Argon
         return INSTANCE;
     }
 
-
-    /* ----------------- Package ----------------- */
-    LocalIntfManager getIntfManager()
-    {
-        return this.intfManager;
-    }
 }

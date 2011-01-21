@@ -38,6 +38,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.uvm.ArgonManager;
+import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.SystemStatEvent;
@@ -51,6 +52,8 @@ import com.untangle.uvm.message.MessageQueue;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.message.StatInterval;
 import com.untangle.uvm.message.Stats;
+import com.untangle.uvm.networking.NetworkConfiguration;
+import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.policy.Policy;
@@ -706,7 +709,6 @@ class MessageManagerImpl implements LocalMessageManager
             long txBytes0 = 0, txBytes1 = 0;
 
             ArgonManager am = UvmContextImpl.getInstance().argonManager();
-            String external = am.getIntfManager().getExternal().getPhysicalName();
 
             m.put("uvmSessions",am.getSessionCount());
             m.put("uvmTCPSessions",am.getSessionCount(SessionEndpoints.PROTO_TCP));
@@ -723,8 +725,9 @@ class MessageManagerImpl implements LocalMessageManager
                     if (matcher.find()) {
                         String iface = matcher.group(1);
 
-                        // Restrict to only the external interface (bug 5616)
-                        if (!iface.equals(external))
+                        InterfaceConfiguration intfConf = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findBySystemName(iface);
+                        // Restrict to only the WAN interfaces (bug 5616)
+                        if ( intfConf == null || !intfConf.isWAN() )
                             continue;
 
                         // get stored previous values or initialize them to 0

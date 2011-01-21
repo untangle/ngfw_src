@@ -30,7 +30,6 @@ import com.untangle.jvector.Sink;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.UDPSink;
 import com.untangle.jvector.UDPSource;
-import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.node.PipelineEndpoints;
 
 
@@ -115,7 +114,6 @@ public class UDPHook implements NetcapHook
          */
         protected boolean serverComplete()
         {
-            LocalIntfManager lim = Argon.getInstance().getIntfManager();
 
             if ( sessionList.isEmpty()) {
                 /* No sessions, complete with the current session parameters */
@@ -141,13 +139,13 @@ public class UDPHook implements NetcapHook
             /* Setup the marking */
             serverTraffic.isMarkEnabled( true );
             
-            serverTraffic.mark( lim.toNetcap( clientSide.clientIntf()) );
+            serverTraffic.mark( clientSide.clientIntf() );
 
             serverTraffic.lock();
 
             this.netcapUDPSession.setServerTraffic(serverTraffic);
 
-            byte intf = lim.toNetcap( serverSide.serverIntf());
+            int intf = serverSide.serverIntf();
 
             if ( !netcapUDPSession.merge( serverTraffic, intf )) {
                 /* Merged out and indicate that the session was rejected */
@@ -174,7 +172,7 @@ public class UDPHook implements NetcapHook
             clientTraffic.isMarkEnabled( true );
                 
             /* Packets cannot go back out on the server interface */
-            clientTraffic.mark( Argon.getInstance().getIntfManager().toNetcap( serverSide.serverIntf()) );
+            clientTraffic.mark( serverSide.serverIntf() );
 
             clientTraffic.lock();
 

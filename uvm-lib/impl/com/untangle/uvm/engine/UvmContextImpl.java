@@ -1,21 +1,4 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
+/* $HeadURL$ */
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
@@ -56,7 +39,6 @@ import com.untangle.uvm.benchmark.RemoteBenchmarkManager;
 import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.license.LicenseManagerFactory;
 import com.untangle.uvm.license.LicenseManager;
-import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.LogEvent;
@@ -66,7 +48,6 @@ import com.untangle.uvm.message.LocalMessageManager;
 import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.policy.PolicyManagerFactory;
@@ -112,7 +93,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private UvmState state;
     private AdminManagerImpl adminManager;
     private ArgonManagerImpl argonManager;
-    private RemoteIntfManagerImpl remoteIntfManager;
     private RemoteLoggingManagerImpl loggingManager;
     private SyslogManagerImpl syslogManager;
     private EventLogger<LogEvent> eventLogger;
@@ -282,11 +262,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     public ArgonManagerImpl argonManager()
     {
         return this.argonManager;
-    }
-
-    public LocalIntfManager localIntfManager()
-    {
-        return this.argonManager.getIntfManager();
     }
 
     public LicenseManager licenseManager()
@@ -898,23 +873,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     RemoteAppServerManagerAdaptor remoteAppServerManager()
     {
         return remoteAppServerManager;
-    }
-
-    public RemoteIntfManager intfManager()
-    {
-        /* This doesn't have to be synchronized, because it doesn't
-         * matter if two are created */
-        if (remoteIntfManager == null) {
-            // Create the remote interface manager
-            LocalIntfManager lim = argonManager.getIntfManager();
-            if (null == lim) {
-                logger.warn("ArgonManager.getIntfManager() is not initialized");
-                return null;
-            }
-            remoteIntfManager = new RemoteIntfManagerImpl(lim);
-        }
-
-        return remoteIntfManager;
     }
 
     boolean refreshToolbox()

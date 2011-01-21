@@ -160,7 +160,7 @@ public class NetcapTCPSession extends NetcapSession
 
     /* Connect to the server with new settings on the traffic side */
     public void   serverComplete( InetAddress clientAddress, int clientPort,
-                                  InetAddress serverAddress, int serverPort, byte intf, int flags )
+                                  InetAddress serverAddress, int serverPort, int intf, int flags )
     {
         if ( clientAddress == null ) clientAddress = serverSide.client().host();
         if ( clientPort    == 0    ) clientPort    = serverSide.client().port();
@@ -179,13 +179,12 @@ public class NetcapTCPSession extends NetcapSession
     }
     
     public void   serverComplete( InetAddress clientAddress, int clientPort,
-                                  InetAddress serverAddress, int serverPort, byte intf ) 
+                                  InetAddress serverAddress, int serverPort, int intf ) 
     {
         serverComplete( clientAddress, clientPort, serverAddress, serverPort, intf, DEFAULT_SERVER_COMPLETE_FLAGS );
     }
     
-    private static native int setServerEndpoint ( long sessionPointer, long clientAddress, int clientPort,
-                                                  long serverAddress, int serverPort, byte intf );
+    private static native int setServerEndpoint ( long sessionPointer, long clientAddress, int clientPort, long serverAddress, int serverPort, int intf );
 
     private static native void clientComplete           ( long sessionPointer, int flags );
     private static native void clientReset              ( long sessionPointer, int flags );

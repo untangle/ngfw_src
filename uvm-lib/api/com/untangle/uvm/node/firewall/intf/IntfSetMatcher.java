@@ -71,7 +71,7 @@ public final class IntfSetMatcher extends IntfDBMatcher
      *
      * @param intf Interface to test.
      */
-    public boolean isMatch(byte intf, byte otherIntf)
+    public boolean isMatch(int intf, int otherIntf)
     {
         /* This always matches true */
         if (IntfConstants.UNKNOWN_INTF == intf
@@ -100,7 +100,7 @@ public final class IntfSetMatcher extends IntfDBMatcher
             if (0 < ur.length()) {
                 ur.append(" & ");
             }
-            ur.append(ime.getIntfUserName((byte)intf));
+            ur.append(ime.getIntfUserName(intf));
         }
 
         return ur.toString();
@@ -111,13 +111,13 @@ public final class IntfSetMatcher extends IntfDBMatcher
      *
      * @param intfArray array of interfaces that should match.
      */
-    public static IntfDBMatcher makeInstance(byte ... intfArray)
+    public static IntfDBMatcher makeInstance(int ... intfArray)
         throws ParseException
     {
         BitSet intfSet = new BitSet(IntfConstants.MAX_INTF);
 
         /* The first pass is to just fill the bitset */
-        for (byte intf : intfArray) intfSet.set(intf);
+        for (int intf : intfArray) intfSet.set(intf);
 
         StringBuilder dbr = new StringBuilder();
 
@@ -127,7 +127,7 @@ public final class IntfSetMatcher extends IntfDBMatcher
             if (dbr.length() > 0) {
                 dbr.append(",");
             }
-            dbr.append(Byte.toString((byte)intf));
+            dbr.append(Integer.toString(intf));
         }
 
         return makeInstance(intfSet, dbr.toString());
@@ -160,7 +160,7 @@ public final class IntfSetMatcher extends IntfDBMatcher
             /* Split up the items */
             String databaseArray[] = value.split(ParsingConstants.MARKER_SEPERATOR);
 
-            byte intfArray[] = new byte[databaseArray.length];
+            int intfArray[] = new int[databaseArray.length];
 
             int c = 0;
             for (String databaseString : databaseArray) {

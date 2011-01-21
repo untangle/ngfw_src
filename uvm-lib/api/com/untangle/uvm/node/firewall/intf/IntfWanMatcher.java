@@ -71,7 +71,7 @@ public final class IntfWanMatcher extends IntfDBMatcher
      *
      * @param intf Interface to test.
      */
-    public boolean isMatch(byte intf, byte otherIntf)
+    public boolean isMatch(int intf, int otherIntf)
     {
         /* This always matches true */
         if (IntfConstants.UNKNOWN_INTF == intf

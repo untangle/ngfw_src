@@ -66,7 +66,7 @@ static __inline__ int _get_sock( netcap_session_t* session, int if_client )
  */
 JNIEXPORT jint JNICALL JF_TCPSession( setServerEndpoint )
   (JNIEnv *env, jclass _class, jlong session_ptr, jlong client_addr, jint client_port, 
-   jlong server_addr,  jint server_port, jbyte intf )
+   jlong server_addr,  jint server_port, jint intf )
 {
     netcap_session_t* session;
 

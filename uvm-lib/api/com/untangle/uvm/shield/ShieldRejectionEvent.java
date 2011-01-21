@@ -45,7 +45,7 @@ import com.untangle.uvm.logging.SyslogPriority;
     public class ShieldRejectionEvent extends LogEvent implements Serializable
     {
         private InetAddress clientAddr;
-        private byte        clientIntf;
+        private int        clientIntf;
         private double      reputation;
         private int         mode;
         private int         limited;
@@ -55,7 +55,7 @@ import com.untangle.uvm.logging.SyslogPriority;
         // Constructors
         public ShieldRejectionEvent() { }
 
-        public ShieldRejectionEvent( InetAddress clientAddr, byte clientIntf, double reputation, int mode, int limited, int dropped, int rejected )
+        public ShieldRejectionEvent( InetAddress clientAddr, int clientIntf, double reputation, int mode, int limited, int dropped, int rejected )
         {
             this.clientAddr = clientAddr;
             this.clientIntf = clientIntf;
@@ -90,7 +90,7 @@ import com.untangle.uvm.logging.SyslogPriority;
          * @return the identity of the user that generated the event
          */
         @Column(name="client_intf", nullable=false)
-        public byte getClientIntf()
+        public int getClientIntf()
         {
             return this.clientIntf;
         }

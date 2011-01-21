@@ -19,7 +19,6 @@
 package com.untangle.uvm.argon;
 
 import com.untangle.uvm.ArgonManager;
-import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.localapi.SessionMatcher;
 
 /**
@@ -34,12 +33,6 @@ public class ArgonManagerImpl implements ArgonManager
             
     private ArgonManagerImpl()
     {
-    }
-    
-    /** Get the interface manager */
-    public LocalIntfManager getIntfManager()
-    {
-        return Argon.getInstance().getIntfManager();
     }
     
     /** Get the number of sessions from the ArgonSessionTable */

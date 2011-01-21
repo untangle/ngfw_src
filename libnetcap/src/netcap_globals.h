@@ -101,7 +101,7 @@ struct ip_sendnfmark_opts {
 #define MARK_LIBERATE  0x10000000
 
 /* Indicates a packet destined for the local host */
-#define MARK_LOCAL     0x00000100
+#define MARK_LOCAL     0x00010000
 
 #define MARK_LOCAL_OFFSET     4
 #define MARK_LOCAL_MASK    0xF0

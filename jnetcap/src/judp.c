@@ -468,7 +468,7 @@ JNIEXPORT jint JNICALL JF_UDPSession( send )
  */
 JNIEXPORT jint JNICALL JF_UDPSession( merge )
   ( JNIEnv *env, jclass _class, jlong pointer, jlong src_addr, jint src_port, 
-    jlong dst_addr, jint dst_port, jbyte intf )
+    jlong dst_addr, jint dst_port, jint intf )
 {
     int ret;
     in_addr_t src = (in_addr_t)JLONG_TO_UINT( src_addr );

@@ -238,8 +238,7 @@ int netcap_interface_update_address( void )
 }
 
 /* Setup the mapping between netcap interfaces and interface info */
-int netcap_interface_configure_intf( netcap_intf_t* intf_array, netcap_intf_string_t* intf_name_array,
-                                     int intf_count )
+int netcap_interface_configure_intf( netcap_intf_t* intf_array, netcap_intf_string_t* intf_name_array, int intf_count )
 {
     if ( intf_name_array == NULL || intf_array == NULL || intf_count < 0 ||
          intf_count > NETCAP_MAX_INTERFACES ) {

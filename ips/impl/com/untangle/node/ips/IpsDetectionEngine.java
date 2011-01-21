@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
@@ -38,8 +37,6 @@ public class IpsDetectionEngine
 
     private IpsRuleManager manager;
     private IpsNodeImpl node;
-
-    private static final LocalIntfManager intfManager = LocalUvmContextFactory.context().localIntfManager();
 
     // We can't just attach the session info to a session, we have to
     // attach it to the 'pipeline', since we have to access it from

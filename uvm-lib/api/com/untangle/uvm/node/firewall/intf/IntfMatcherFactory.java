@@ -116,7 +116,7 @@ public class IntfMatcherFactory
      *
      * @param intf The interface to match.
      */
-    public IntfDBMatcher makeSingleMatcher(byte intf) throws ParseException
+    public IntfDBMatcher makeSingleMatcher(int intf) throws ParseException
     {
         return IntfSingleMatcher.makeInstance(intf);
     }
@@ -127,7 +127,7 @@ public class IntfMatcherFactory
      *
      * @param intfArray An array of interfaces to match.
      */
-    public IntfDBMatcher makeSetMatcher(byte ... intfArray) throws ParseException
+    public IntfDBMatcher makeSetMatcher(int ... intfArray) throws ParseException
     {
         switch (intfArray.length) {
         case 0: return IntfSimpleMatcher.getNilMatcher();

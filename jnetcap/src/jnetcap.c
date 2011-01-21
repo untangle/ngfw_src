@@ -672,7 +672,7 @@ JNIEXPORT jintArray JNICALL JF_Netcap( cTcpRedirectPorts )
  * Signature: ([Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_untangle_jnetcap_Netcap_cConfigureInterfaceArray
-  (JNIEnv* env , jobject _this, jbyteArray j_intf_array, jobjectArray j_interface_array )
+  (JNIEnv* env , jobject _this, jintArray j_intf_array, jobjectArray j_interface_array )
 {
     int  num_intf;
     int  intf_array_length;

@@ -21,7 +21,6 @@ import com.untangle.jnetcap.Netcap;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.IPAddress;
@@ -85,7 +84,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /** The nuts and bolts of networking, the real bits of panther.  this my friend
      * should never be null */
-    private NetworkConfiguration networkSettings = null;
+    private NetworkConfiguration networkConfiguration = null;
 
     /* Flag to indicate when the UVM has been shutdown */
     private boolean isShutdown = false;
@@ -124,7 +123,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     public void updateLinkStatus()
     {
-        InterfaceTester.getInstance().updateLinkStatus( this.networkSettings );
+        InterfaceTester.getInstance().updateLinkStatus( this.networkConfiguration );
     }
 
     /* Return the primary address of the device, this is the primary
@@ -132,7 +131,7 @@ public class NetworkManagerImpl implements NetworkManager
      * first network space */
     public IPAddress getPrimaryAddress()
     {
-        NetworkConfiguration settings = this.networkSettings;
+        NetworkConfiguration settings = this.networkConfiguration;
 
         if ( settings == null )
             return null;
@@ -246,7 +245,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     public NetworkConfiguration getNetworkConfiguration()
     {
-        return this.networkSettings;
+        return this.networkConfiguration;
     }
 
     public void remapInterfaces( String[] osArray, String[] userArray ) throws Exception
@@ -522,10 +521,10 @@ public class NetworkManagerImpl implements NetworkManager
     
     public void refreshNetworkConfig()
     {
-        this.networkSettings = loadNetworkConfiguration( );
+        this.networkConfiguration = loadNetworkConfiguration( );
 
         if ( logger.isDebugEnabled()) {
-            logger.debug( "New network settings: " + this.networkSettings );
+            logger.debug( "New network settings: " + this.networkConfiguration );
         }
 
         /**
@@ -548,19 +547,24 @@ public class NetworkManagerImpl implements NetworkManager
             logger.warn( "Error committing the networking.sh file", e );
         }
 
-        synchronized( this ) {
-            try {
-                LocalUvmContextFactory.context().localIntfManager().loadInterfaceConfig();
-            } catch ( Exception e ) {
-                logger.error( "Exception loading the interface configuration.", e );
-            }
-
-            try {
-                /* Update the address database in netcap */
-                Netcap.refreshNetworkConfig();
-            } catch ( Exception e ) {
-                logger.error( "Exception updating address.", e );
-            }
+        /**
+         * Update Netcap
+         */
+        int numInterfaces = this.networkConfiguration.getInterfaceList().size();
+        int[] idArray   = new int[numInterfaces];
+        String[] nameArray = new String[numInterfaces];
+        int i = 0;
+        for ( InterfaceConfiguration intfConf : this.networkConfiguration.getInterfaceList() ) {
+            idArray[i] = intfConf.getInterfaceId();
+            nameArray[i] = intfConf.getName();
+            i++;
+        }
+        try {
+            Netcap.getInstance().configureInterfaceArray(idArray, nameArray);
+            /* Update the address database in netcap */
+            Netcap.refreshNetworkConfig();
+        } catch ( Exception e ) {
+            logger.error( "Exception updating address.", e );
         }
         
         try {
@@ -585,59 +589,46 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public InetAddress getInternalHttpAddress( IPSessionDesc session )
     {
-        byte argonIntf = session.clientIntf();
-        ArgonInterface ai = null;
-        logger.warn("getInternalHttpAddress()");
-        
-        try {
-            ai = LocalUvmContextFactory.context().localIntfManager().getIntfByArgon( argonIntf );
-        } catch ( Exception e ) {
-            ai = null;
-        }
-
-        if ( ai == null ) return null;
-
-        logger.warn("getInternalHttpAddress(): isWanInterface(): " + ai.isWanInterface() );
-        
-        /* WAN ports never have HTTP open */
-        if ( ai.isWanInterface() ) {
-            //this is normal no error logged
-            return null;
-        }
-
         /* Retrieve the network settings */
-        NetworkConfiguration settings = this.networkSettings;
-
-        if ( settings == null ) {
+        NetworkConfiguration netConf = this.networkConfiguration;
+        if ( netConf == null ) {
             logger.warn("Failed to fetch network configuration");
             return null;
         }
+
+        InterfaceConfiguration intfConf = netConf.findById(session.clientIntf());
+        logger.warn("getInternalHttpAddress(): intfConf: " + intfConf );
+        if ( intfConf == null ) {
+            logger.warn("Failed to fetch interface configuration");
+            return null;
+        }
+
+        /* WAN ports never have HTTP open */
+        boolean isWan = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.clientIntf()).isWAN();
+        logger.warn("getInternalHttpAddress(): isWanInterface(): " + isWan );
+        if ( isWan ) {
+            //this is normal no error logged
+            return null;
+        }
         
-        InterfaceConfiguration intf = settings.findBySystemName( ai.getPhysicalName() );
-
-            if ( intf == null ) {
-                logger.warn("No interface found for system name: " + ai.getPhysicalName() );
-                return null;
-            }
-
         /**
          * If this interface is bridged with another, use the addr from the other
          */
-        if (InterfaceConfiguration.CONFIG_BRIDGE.equals(intf.getConfigType())) {
-            String bridgedTo = intf.getBridgedTo();
+        if (InterfaceConfiguration.CONFIG_BRIDGE.equals(intfConf.getConfigType())) {
+            String bridgedTo = intfConf.getBridgedTo();
             logger.warn("getInternalHttpAddress(): bridged to   : " + bridgedTo );
-            intf = settings.findByName( bridgedTo );
+            intfConf = netConf.findByName( bridgedTo );
 
-            if ( intf == null ) {
+            if ( intfConf == null ) {
                 logger.warn("No Interface found for name: " + bridgedTo );
                 return null;
             }
         }
 
-        IPNetwork network = intf.getPrimaryAddress();
+        IPNetwork network = intfConf.getPrimaryAddress();
 
         if ( network == null ) {
-            logger.warn("No primary address for: " + intf.getName());
+            logger.warn("No primary address for: " + intfConf.getName());
             return null;
         }
 
@@ -697,7 +688,7 @@ public class NetworkManagerImpl implements NetworkManager
             if ( logger.isDebugEnabled()) logger.debug( "Calling listener: " + listener );
 
             try {
-                listener.event( this.networkSettings );
+                listener.event( this.networkConfiguration );
             } catch ( Exception e ) {
                 logger.error( "Exception calling listener", e );
             }

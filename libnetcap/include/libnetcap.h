@@ -72,8 +72,8 @@ typedef enum {
     NC_INTF_13,
     NC_INTF_14,
     NC_INTF_15,
-    NC_INTF_LOOPBACK = 17,
-    NC_INTF_UNK      = 18
+    NC_INTF_LOOPBACK = 254,
+    NC_INTF_UNK      = 255
 } netcap_intf_t;
 
 typedef enum {

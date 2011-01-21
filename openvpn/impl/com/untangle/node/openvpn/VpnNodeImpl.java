@@ -707,12 +707,12 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
         unDeployWebApp();
 
-        try {
-            LocalUvmContextFactory.context().localIntfManager().unregisterIntf( IntfConstants.VPN_INTF );
-        } catch ( Exception e ) {
-            /* There is nothing else to do but print out the message */
-            logger.error( "Unable to deregister vpn interface", e );
-        }
+//         try {
+//             LocalUvmContextFactory.context().localIntfManager().unregisterIntf( IntfConstants.VPN_INTF );
+//         } catch ( Exception e ) {
+//             /* There is nothing else to do but print out the message */
+//             logger.error( "Unable to deregister vpn interface", e );
+//         }
 
         try {
             ScriptRunner.getInstance().exec( CLEANUP_SCRIPT );

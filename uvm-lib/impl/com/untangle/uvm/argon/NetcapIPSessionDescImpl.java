@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 import com.untangle.jnetcap.Endpoint;
 import com.untangle.jnetcap.Endpoints;
 import com.untangle.jnetcap.NetcapSession;
-import com.untangle.uvm.localapi.LocalIntfManager;
 
 class NetcapIPSessionDescImpl implements ArgonIPSessionDesc
 {
@@ -60,15 +59,13 @@ class NetcapIPSessionDescImpl implements ArgonIPSessionDesc
         Endpoint client = side.client();
         Endpoint server = side.server();
 
-        LocalIntfManager lim = Argon.getInstance().getIntfManager();
-
         this.clientAddr = client.host();
         this.clientPort = client.port();
-        this.clientIntf = lim.toArgon( session.clientSide().interfaceId());
+        this.clientIntf = session.clientSide().interfaceId();
 
         this.serverAddr = server.host();
         this.serverPort = server.port();
-        this.serverIntf = lim.toArgon( session.serverSide().interfaceId());
+        this.serverIntf = session.serverSide().interfaceId();
     }
 
     /**

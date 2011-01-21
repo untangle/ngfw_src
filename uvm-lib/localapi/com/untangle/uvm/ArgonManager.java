@@ -33,14 +33,10 @@
 
 package com.untangle.uvm;
 
-import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.localapi.SessionMatcher;
 
 public interface ArgonManager
 {    
-    /** Get the interface manager */
-    public LocalIntfManager getIntfManager();
-    
     /** Get the number of sessions from the ArgonSessionTable */
     public int getSessionCount();
 

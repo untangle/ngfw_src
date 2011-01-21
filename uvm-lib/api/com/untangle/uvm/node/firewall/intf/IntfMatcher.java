@@ -47,7 +47,7 @@ public interface IntfMatcher
      * @param intf The interface to test
      * @return True if the <param>intf</param> matches.
      */
-    public boolean isMatch(byte intf, byte otherIface);
+    public boolean isMatch(int intf, int otherIface);
 
 
     /**

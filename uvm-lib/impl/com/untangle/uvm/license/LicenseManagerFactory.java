@@ -72,12 +72,12 @@ public class LicenseManagerFactory
             return;
 
         try {
-            logger.warn("Loading License Manager...");
+            logger.info("Loading License Manager...");
 
             Class<LicenseManager> clz = (Class<LicenseManager>)Class.forName( LICENSE_CLASS_NAME );
             this.realLicenseManager = (LicenseManager)(clz.getMethod( "getInstance" ).invoke( null ));
 
-            logger.warn("Loading License Manager... done");
+            logger.info("Loading License Manager... done");
         } catch ( java.lang.ClassNotFoundException e ) {
             //this happens if the license node isn't on the server
             this.realLicenseManager = null;

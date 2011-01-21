@@ -48,11 +48,8 @@ public final class ArgonInterface
 
     private final String userName;
 
-    /* Netcap index for the interface */
-    private final byte netcap;
-
-    /* Argon index for the interface */
-    private final byte argon;
+    /* Index for the interface */
+    private final int interfaceId;
 
     /* The string value */
     private final String string;
@@ -60,30 +57,27 @@ public final class ArgonInterface
     /* True if this is a WAN interface */
     private final boolean isWanInterface;
 
-    public ArgonInterface( String physicalName, byte argon, byte netcap, String userName )
+    public ArgonInterface( String physicalName, int interfaceId, String userName )
     {
-        this( physicalName, null, argon, netcap, userName );
+        this( physicalName, null, interfaceId, userName );
     }
 
     /**
      * In order to avoid the pain of typecasting everywhere, netcap and argon are
      * should be bytes, but are typecast inside of the constructor
      */
-    public ArgonInterface( String physicalName, String secondaryName, byte argon, byte netcap, String userName )
+    public ArgonInterface( String physicalName, String secondaryName, int interfaceId, String userName )
     {
-        this( physicalName, secondaryName, argon, netcap, userName, false );
+        this( physicalName, secondaryName, interfaceId, userName, false );
     }
 
-    public ArgonInterface( String physicalName, String secondaryName, byte argon, byte netcap, 
-                           String userName, boolean isWanInterface )
+    public ArgonInterface( String physicalName, String secondaryName, int interfaceId, String userName, boolean isWanInterface )
     {
         this.physicalName = physicalName.trim();
         if ( secondaryName == null ) secondaryName = "";
         this.secondaryName = secondaryName.trim();
-        this.netcap = netcap;
-        this.argon = argon;
-        this.string =  "'" + this.physicalName + "," +  this.secondaryName + "' " +
-            this.argon + "/" + this.netcap;
+        this.interfaceId = interfaceId;
+        this.string =  "'" + this.physicalName + "," +  this.secondaryName + "' " + this.interfaceId;
         this.userName = userName;
         this.isWanInterface = isWanInterface;
     }
@@ -120,15 +114,9 @@ public final class ArgonInterface
     }
 
     /** Get the index that netcap uses to reference the interface */
-    public byte getNetcap()
+    public int getInterfaceId()
     {
-        return this.netcap;
-    }
-
-    /** Get the index that argon uses to reference the interface */
-    public byte getArgon()
-    {
-        return this.argon;
+        return this.interfaceId;
     }
 
     public boolean isWanInterface()
@@ -141,29 +129,6 @@ public final class ArgonInterface
         return this.string;
     }
 
-    /** Get how "outside" or trustworty an interface is.  This is
-     * useful for sorting inside the policy manager which determines
-     * policies by comparing whether an interface is more inside of
-     * another interface */
-    public int getTrustworthiness()
-    {
-        switch ( this.argon ) {
-        case IntfConstants.EXTERNAL_INTF: return 0;     /* External interface is the least trustworthy */
-        case IntfConstants.DMZ_INTF:      return 1;     /* DMZ is the second least trustworthy */
-        case IntfConstants.INTERNAL_INTF: return 100;   /* Internal interface is the most trustworthy */
-        default:
-            /* The index determines the trustworthiness of all other interfaces */
-            return this.argon;
-        }
-    }
-
-    /** Return a new argon interface with a modified secondary interface */
-    public ArgonInterface makeNewSecondaryIntf( String secondaryName )
-    {
-        return new ArgonInterface( this.physicalName, secondaryName, this.argon, this.netcap, this.userName, 
-                                   this.isWanInterface );
-    }
-
     public boolean equals(Object o)
     {
         ArgonInterface ai = (ArgonInterface)o;
@@ -171,7 +136,7 @@ public final class ArgonInterface
                  this.physicalName.equals( ai.physicalName )) &&
             ( this.secondaryName == null ? ai.secondaryName == null :
               this.secondaryName.equals( ai.secondaryName )) &&
-            ( this.netcap == ai.netcap ) && ( this.argon == ai.argon );
+            ( this.interfaceId == ai.interfaceId );
     }
 
     public int hashCode()
@@ -179,8 +144,7 @@ public final class ArgonInterface
         int result = 17;
         if ( this.physicalName != null ) result = ( 37 * result ) + this.physicalName.hashCode();
         if ( this.secondaryName != null ) result = ( 37 * result ) + this.secondaryName.hashCode();
-        result = ( 37 * result ) + ( 263 + netcap );
-        result = ( 37 * result ) + ( 257 + argon );
+        result = ( 37 * result ) + ( 263 + interfaceId );
         return result;
     }
 }

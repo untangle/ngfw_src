@@ -71,7 +71,7 @@ public class NetcapUDPSession extends NetcapSession
      * @return Returns whether or not the session was merged, or merged out.  True If this session
      *         should continue, false if this session was merged out.
      */
-    public boolean merge( IPTraffic traffic, byte intf )
+    public boolean merge( IPTraffic traffic, int intf )
     {
         int ret  = merge( pointer.value(),
                           Inet4AddressConverter.toLong( traffic.dst().host()), traffic.dst().port(),
@@ -164,7 +164,7 @@ public class NetcapUDPSession extends NetcapSession
      * @param dstAddr - Destination address(server side, client address)
      * @param dstPort - Destination port(server side, client port)
      */
-    private static native int    merge( long sessionPointer, long srcAddr, int srcPort, long dstAddr, int dstPort, byte intf );
+    private static native int    merge( long sessionPointer, long srcAddr, int srcPort, long dstAddr, int dstPort, int intf );
 
     private static native long    mailboxPointer( long sessionPointer, boolean ifClient );
     

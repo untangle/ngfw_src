@@ -41,7 +41,6 @@ import com.sleepycat.je.Environment;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.client.RemoteUvmContext;
-import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.logging.SyslogManager;
@@ -116,8 +115,6 @@ public interface LocalUvmContext extends RemoteUvmContext
     AdminManager adminManager();
 
     ArgonManager argonManager();
-
-    LocalIntfManager localIntfManager();
 
     RemoteReportingManager reportingManager();
 

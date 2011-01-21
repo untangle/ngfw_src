@@ -35,7 +35,7 @@ import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.ArgonInterface;
-import com.untangle.uvm.localapi.LocalIntfManager;
+import com.untangle.uvm.networking.InterfaceConfiguration;
 
 import com.untangle.uvm.shield.ShieldRejectionEvent;
 import com.untangle.uvm.shield.ShieldStatisticEvent;
@@ -153,8 +153,7 @@ public class LogIteration
         return event;
     }
 
-    private static void parseUserData( List<ShieldRejectionEvent>  rejectionEvents, 
-                                       InetAddress address, JSONArray user_js ) throws JSONException
+    private static void parseUserData( List<ShieldRejectionEvent>  rejectionEvents, InetAddress address, JSONArray user_js ) throws JSONException
     {
         double reputation = user_js.getDouble( 0 );
 
@@ -162,25 +161,22 @@ public class LogIteration
             JSONArray temp_js = user_js.getJSONArray( c );
             if ( temp_js.length() != 6 ) continue;
             
-            LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
-
             /* Mark it as internal */
-            byte clientIntf = IntfConstants.INTERNAL_INTF;
+            InterfaceConfiguration clientIntf = null;
 
             try {
-                ArgonInterface ai = lim.getIntfByName( temp_js.optString( 0, "" ));
-                if ( ai != null ) clientIntf = ai.getArgon();
-            } catch ( ArgonException e ) {
-                clientIntf = IntfConstants.INTERNAL_INTF;
+                clientIntf = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findBySystemName( temp_js.optString( 0, "" ));
+            } catch ( Exception e ) {
+                clientIntf = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findByName("Internal");
             }
 
             int mode = 0;
-
+            int clientIntfId = clientIntf.getInterfaceId();
             int limited = temp_js.getInt( 3 );
             int dropped = temp_js.getInt( 2 );
             int rejected = temp_js.getInt( 1 );
 
-            rejectionEvents.add( new ShieldRejectionEvent( address, clientIntf, reputation, mode, limited, dropped, rejected ));
+            rejectionEvents.add( new ShieldRejectionEvent( address, clientIntfId, reputation, mode, limited, dropped, rejected ));
         }
     }
     

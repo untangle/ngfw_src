@@ -62,7 +62,7 @@ final class ImmutableBitSet implements Serializable
      * @param value The bit to test.
      * @return True if <param>value</param> is set.
      */
-    boolean get( byte value )
+    boolean get( int value )
     {
         return bitSet.get(value );
     }

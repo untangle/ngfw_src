@@ -56,30 +56,15 @@ final class IntfMatcherEnumeration
     {
     }
 
-    public String getIntfUserName(byte intfNum)
+    public String getIntfUserName(int intfNum)
     {
         return "Unknown";
     }
 
-    public byte parseInterface(String v)
+    public int parseInterface(String v)
         throws ParseException
     {
-        try {
-            return Byte.parseByte(v);
-        } catch (NumberFormatException exn) {
-            // XXX hacks for pre 5.1
-            if (v.equalsIgnoreCase("o")) {
-                return 0;
-            } else if (v.equalsIgnoreCase("i")) {
-                return 1;
-            } else if (v.equalsIgnoreCase("d")) {
-                return 2;
-            } else if (v.equalsIgnoreCase("v")) {
-                return 7;
-            } else {
-                throw new ParseException("Bad interface: " + v);
-            }
-        }
+        return Integer.parseInt(v);
     }
 
     /**

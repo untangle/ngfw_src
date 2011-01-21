@@ -8,7 +8,6 @@ import com.untangle.jnetcap.PortRange;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.ArgonInterface;
-import com.untangle.uvm.localapi.LocalIntfManager;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
@@ -74,10 +73,9 @@ public class RuleManager
         scriptWriter.appendLine("# Ports that the Untangle-vm is listening for incoming TCP connections");
         scriptWriter.appendVariable( TCP_REDIRECT_PORT_FLAG, tcp.low() + "-" + tcp.high());
         
-        LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
-        
-        /* Setup all of the values for the interfaces */
         /* XXX When we want to use custom interfaces we should just redefine INTERFACE_ORDER */
+        /* Setup all of the values for the interfaces */
+        //LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
         //         for ( ArgonInterface intf : lim.getIntfList()) {
         //             if ( intf.hasSecondaryName()) {
         //                 String argonName = IntfConstants.toName( intf.getArgon()).toUpperCase();

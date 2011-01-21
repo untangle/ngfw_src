@@ -49,7 +49,6 @@ import com.untangle.uvm.benchmark.RemoteBenchmarkManager;
 import com.untangle.uvm.license.LicenseManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.message.RemoteMessageManager;
-import com.untangle.uvm.node.RemoteIntfManager;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.reports.RemoteReportingManager;
@@ -109,13 +108,6 @@ public interface RemoteUvmContext
      * @return the RemoteAdminManager.
      */
     AdminManager adminManager();
-
-    /**
-     * Get the <code>RemoteIntfManager</code> singleton.
-     *
-     * @return the RemoteIntfManager.
-     */
-    RemoteIntfManager intfManager();
 
     /**
      * Get the <code>NetworkManager</code> singleton.

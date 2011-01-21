@@ -29,7 +29,8 @@ import java.util.Collections;
 import java.net.InetAddress;
 import org.apache.log4j.Logger;
 
-public final class Netcap {
+public final class Netcap
+{
     public static final short IPPROTO_UDP  = 17;
     public static final short IPPROTO_TCP  = 6;
     public static final short IPPROTO_ICMP = 1;
@@ -221,7 +222,7 @@ public final class Netcap {
     /**
      * Configure the netcap interface array
      */
-    public void configureInterfaceArray( byte intfIndexArray[], String interfaceArray[] )
+    public void configureInterfaceArray( int intfIndexArray[], String interfaceArray[] )
         throws JNetcapException
     {
         try {
@@ -397,5 +398,5 @@ public final class Netcap {
     /**
      * Function to configure the netcap interface array 
      */
-    private native void cConfigureInterfaceArray( byte intfIndexArray[], String interfaceArray[] );
+    private native void cConfigureInterfaceArray( int intfIndexArray[], String interfaceArray[] );
 }

@@ -42,8 +42,9 @@ public abstract class NetcapSession
     private final static int FLAG_NAT_TO_HOST   = 21;
     private final static int FLAG_NAT_TO_PORT   = 22;
 
-    /* This is the mask for the remove the client/server parts */
+    /* This is the mask for the the client/server parts */
     @SuppressWarnings("unused")
+    /* It is suppressed warning here because its used in JNI */
 	private final static int FLAG_MASK        = 0xFFF;
 
     protected final Endpoints clientSide;
