@@ -41,28 +41,6 @@ puts "DevelBuild = #{$DevelBuild}"
 require "./buildtools/stamp-task.rb"
 require "./buildtools/rake-util.rb"
 require "./buildtools/target.rb"
+require "./buildtools/jars.rb"
 require "./buildtools/c-compiler.rb"
 require "./buildtools/node.rb"
-
-if SRC_HOME.nil?
-  ['bootstrap', 'api', 'localapi', 'impl' ].each do |n|
-    InstalledJar.get(BuildEnv::SRC['untangle-libuvm'],
-                     "/usr/share/untangle/lib/untangle-libuvm-#{n}/")
-  end
-
-  InstalledJar.get(BuildEnv::SRC['untangle-libuvm'],
-                   "/usr/share/java/uvm/untangle-libuvm-taglib.jar")
-
-  InstalledJar.get(BuildEnv::SRC['untangle-buildutil'],
-                   "/usr/share/untangle/lib/untangle-buildutil-impl.jar")
-
-  [ 'mail', 'ftp', 'http' ].each do |c|
-    InstalledJar.get(BuildEnv::SRC["untangle-casing-#{c}"],
-                     "/usr/share/untangle/toolbox/untangle-casing-#{c}-localapi.jar")
-  end
-
-  [ 'virus', 'webfilter' ].each do |c|
-    InstalledJar.get(BuildEnv::SRC["untangle-base-#{c}"],
-                     "/usr/share/untangle/toolbox/untangle-base-#{c}-impl/")
-  end
-end

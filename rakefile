@@ -44,15 +44,14 @@ task :clean => [:download_clean, :kindaclean]
 
 task :download do
   Kernel.system("make --no-print-directory -C downloads")
-  require "./buildtools/jars.rb"
 end
 
-task :core do
+task :core => :download do
+  Jars.findJars
   require "./buildtools/untangle-core.rb"
 end
 
-task :build => [:download, :core, BuildEnv::SRC['untangle-vm'],
-                BuildEnv::SRC['node'] ]
+task :build => [:core, BuildEnv::SRC['untangle-vm'], BuildEnv::SRC['node'] ]
 
 task :hier => [:core, BuildEnv::SRC.hierTarget]
 
