@@ -68,7 +68,7 @@ import com.untangle.uvm.util.DateTruncator;
 
 public class StackedBarChart extends Plot
 {
-    private static final DateFormat DF = new SimpleDateFormat("yyyy-MM-dd");
+    private static final DateFormat DF = new SimpleDateFormat("MMM-dd");
 
     private static final DateFormat HF = new SimpleDateFormat("HH");
 
@@ -96,7 +96,7 @@ public class StackedBarChart extends Plot
     private int getInterval(String timeStr) {
     	try {
     		DF.parse(timeStr);
-                return 8;
+                return 3;
     	} catch (java.text.ParseException exn) {
             try{
                 HF.parse(timeStr);
@@ -170,14 +170,12 @@ public class StackedBarChart extends Plot
 	min = DateTruncator.truncateDate(min, trunc, true);
 	max = DateTruncator.truncateDate(max, trunc, true);
 	logger.debug("... adapted to: " + min + " -> " + max + " (tickUnit=" + tickUnit + ", tickFrequency=" + tickFrequency);
- 	da.setMinimumDate(min);
- 	da.setMaximumDate(max);
+// 	da.setMinimumDate(min);
+// 	da.setMaximumDate(max);
 
         da.setDateFormatOverride(new SimpleDateFormat(dateFormatStr));
-        if (tickUnit != null)  {
-            logger.debug("YAYAYAYAYA");
+        if (tickUnit != null) 
             da.setTickUnit(new DateTickUnit(tickUnit, tickFrequency));
-        }
     }
 
     private Date parseTimeStamp(String timeStr) 

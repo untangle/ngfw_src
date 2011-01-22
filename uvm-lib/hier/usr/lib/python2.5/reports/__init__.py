@@ -72,7 +72,7 @@ def __hour_formatter(x, pos):
     return x.strftime("%H")
 
 def __date_formatter(x, pos):
-    return x.strftime("%Y-%m-%d")
+    return x.strftime("%b-%d")
 
 def __timestamp_formatter(x, pos):
     return x.strftime("%Y-%m-%d %H:%M")
