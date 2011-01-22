@@ -26,27 +26,27 @@ class Jars
     if File.exist?(p)
       ThirdpartyJar.get(p)
     else
-      #b = File.basename(path)
-      #paths = [ "/usr/share/java/uvm/#{b}",
-      #          "/usr/share/java/reports/#{b}",
-      #          "/usr/share/untangle/web/webstart/#{b}" ]
-      #p = paths.find do |f|
-      #  File.exist?(f)
-      #end
-      #       p = nil
+      b = File.basename(path)
+      paths = [ "/usr/share/java/uvm/#{b}",
+                "/usr/share/java/reports/#{b}",
+                "/usr/share/untangle/web/webstart/#{b}" ]
+      p = paths.find do |f|
+        File.exist?(f)
+      end
       
-      #       if p.nil?
-      #         h = ([ "#{BuildEnv::downloads}/#{path}" ] + paths).map do |p|
-      #           "#{p}: #{File.exist?(p)}"
-      #         end
+      if p.nil?
+        h = ([ "#{BuildEnv::downloads}/#{path}" ] + paths).map do |p|
+          "#{p}: #{File.exist?(p)}"
+        end
 
-      #        warn "Could not find #{path} (#{h.join(',')})"
-      warn "Could not find #{p}"
-      #       else
-      #         ThirdpartyJar.get(p)
+        warn "Could not find #{path} (#{h.join(',')})"
+        warn "Could not find #{p}"
+      else
+        ThirdpartyJar.get(p)
+      end
     end
   end
-
+  
   def Jars.makeGroup(*jars)
     [ jars ].flatten.compact.uniq
   end
