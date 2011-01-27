@@ -1,3 +1,4 @@
+require 'untangle/remote_uvm_context'
 
 nm = Untangle::RemoteUvmContext.networkManager()
 
