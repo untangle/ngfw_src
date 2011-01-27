@@ -68,9 +68,12 @@ import com.untangle.uvm.util.DateTruncator;
 
 public class StackedBarChart extends Plot
 {
-    private static final DateFormat DF = new SimpleDateFormat("yyyy-MM-dd");
-
-    private static final DateFormat HF = new SimpleDateFormat("HH");
+    private static DateFormat DF = new SimpleDateFormat("yyyy-MM-dd");
+    private static DateFormat HF = new SimpleDateFormat("yyyy-MM-dd HH");
+    static {
+        DF.setLenient(false);
+        HF.setLenient(false);
+    }
 
     // duplicated from com.uvm.engine.ReportingManagerImpl
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
@@ -95,12 +98,12 @@ public class StackedBarChart extends Plot
 
     private int getInterval(String timeStr) {
     	try {
-    		DF.parse(timeStr);
-                return 8;
+            HF.parse(timeStr);
+            return 1;
     	} catch (java.text.ParseException exn) {
             try{
-                HF.parse(timeStr);
-                return 1;
+    		DF.parse(timeStr);
+                return 8;
             } catch (java.text.ParseException exn2) {
                 logger.warn("Couldn't get time interval for row key: " + timeStr, exn2);
             }
@@ -140,10 +143,10 @@ public class StackedBarChart extends Plot
 	long range = (max.getTime() - min.getTime()) / 1000;
 
 	int trunc; // where to truncate the boundaries
-	String dateFormatStr; // the format for X-axix ticks
+	String dateFormatStr; // the format for X-axis ticks
 	DateTickUnitType tickUnit = null;
         int tickFrequency = -1;
-	logger.debug(min + " -> " + max + " (" + range + ")");
+	logger.debug(min + " -> " + max + " (" + range + " seconds)");
 	if (range < 45 * 60) { // less than 45min
 	    trunc = Calendar.MINUTE;
 	    dateFormatStr = "mm:ss";
@@ -153,8 +156,8 @@ public class StackedBarChart extends Plot
 	} else if (range <= 24 * 60 * 60) { // less than 24h
 	    trunc = Calendar.DATE;
 	    dateFormatStr = "HH:mm";
-//             tickUnit = DateTickUnitType.HOUR;
-//             tickFrequency = 4;
+            tickUnit = DateTickUnitType.HOUR;
+            tickFrequency = 4;
         } else if (range <= 7 * 24 * 60 * 60 ) { // less than 7 days
 	    trunc = Calendar.DATE;
 	    dateFormatStr = "MMM-d";
@@ -169,7 +172,7 @@ public class StackedBarChart extends Plot
 
 	min = DateTruncator.truncateDate(min, trunc, true);
 	max = DateTruncator.truncateDate(max, trunc, true);
-	logger.debug("... adapted to: " + min + " -> " + max + " (tickUnit=" + tickUnit + ", tickFrequency=" + tickFrequency);
+	logger.debug("... adapted to: " + min + " -> " + max + " (tickUnit=" + tickUnit + ", tickFrequency=" + tickFrequency + ")");
  	da.setMinimumDate(min);
  	da.setMaximumDate(max);
 
@@ -182,10 +185,10 @@ public class StackedBarChart extends Plot
     {
     	Date date = null;
     	try {
-    		date = DF.parse(timeStr);
+            date = HF.parse(timeStr);
     	} catch (java.text.ParseException exn) {
             try{
-                date = HF.parse(timeStr);
+    		date = DF.parse(timeStr);
             } catch (java.text.ParseException exn2) {
                 logger.warn("Couldn't parse time for row key: " + timeStr, exn2);
             }
@@ -236,7 +239,6 @@ public class StackedBarChart extends Plot
                     cal.add(Calendar.HOUR, interval);
 
                     TimePeriod period = new SimpleTimePeriod(d, cal.getTime());
-
                     dataset.add(period, v, columnKey);
                 } catch (Exception exn) {
                     logger.warn("Bad row key: " + rowKey, exn);

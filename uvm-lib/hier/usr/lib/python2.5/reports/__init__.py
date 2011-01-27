@@ -68,14 +68,14 @@ def __time_of_day_formatter(x, pos):
     t = DateTimeDeltaFromSeconds(x)
     return "%02d:%02d" % (t.hour, t.minute)
 
+def __timestamp_formatter(x, pos):
+    return x.strftime("%Y-%m-%d %H:%M")
+
 def __hour_formatter(x, pos):
-    return x.strftime("%H")
+    return x.strftime("%Y-%m-%d %H")
 
 def __date_formatter(x, pos):
     return x.strftime("%Y-%m-%d")
-
-def __timestamp_formatter(x, pos):
-    return x.strftime("%Y-%m-%d %H:%M")
 
 def __identity_formatter(x, pos):
     return x
