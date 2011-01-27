@@ -117,6 +117,7 @@ class SpamBaseNode(Node):
         sections.append(s)
 
         sections.append(SpamDetail(self.__title, self.__short_name))
+        sections.append(SpamDetailAll(self.__title, self.__short_name))
 
         return Report(self, sections)
 
@@ -609,6 +610,66 @@ AND m1.msg_id = m2.msg_id
        DateFromMx(start_date), DateFromMx(end_date),
        DateFromMx(start_date), DateFromMx(end_date),
        self.__short_name)
+
+        if email:
+            sql += " AND m1.addr = %s" % QuotedString(email)
+
+        return sql + " ORDER BY m1.time_stamp DESC"
+
+class SpamDetailAll(DetailSection):
+
+    def __init__(self, title, short_name):
+        self.__title = title.split()[0].lower() # keep 1st word only
+        self.__short_name = short_name
+        DetailSection.__init__(self, '%s-events-all' % (self.__title,),
+                               _('%s Events (all)' % (self.__title.capitalize(),)))
+
+    def get_columns(self, host=None, user=None, email=None):
+        if host or user:
+            return None
+
+        rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
+
+        rv.append(ColumnDesc('hname', _('Client'), 'String'))
+
+        rv += [ColumnDesc('%s_score' % (self.__short_name,), _('Score')),
+               ColumnDesc('m2.addr', _('Msg Sender')),
+               ColumnDesc('subject', _('Subject')),
+               ColumnDesc('s_server_addr', _('Destination Ip')),
+               ColumnDesc('case', _('Action')),
+               ColumnDesc('addr', _('Msg Receiver'), 'EmailLink')]
+
+        return rv
+
+    def get_sql(self, start_date, end_date, host=None, user=None, email=None):
+        if host or user:
+            return None
+
+        sql = """\
+SELECT m1.time_stamp, m1.hname, m1.%s_score, m2.addr, m1.subject, host(m1.s_server_addr),
+       CASE m1.%s_action WHEN 'P' THEN '%s'
+                      WHEN 'B' THEN '%s'
+                      WHEN 'M' THEN '%s'
+                      WHEN 'Q' THEN '%s'
+                      WHEN 'S' THEN '%s'
+                      WHEN 'Z' THEN '%s'
+                      END,
+       m1.addr
+FROM reports.n_mail_addrs AS m1, reports.n_mail_addrs AS m2
+WHERE m1.time_stamp >= %s AND m1.time_stamp < %s
+AND m2.time_stamp >= %s AND m2.time_stamp < %s
+AND m1.addr_kind = 'T'
+AND m2.addr_kind = 'F'
+AND m1.msg_id = m2.msg_id
+""" % (self.__short_name, self.__short_name,
+       _('Passed'),
+       _('Blocked'),
+       _('Marked'),
+       _('Quarantined'),
+       _('Safelisted'),
+       _('Oversize'),
+       DateFromMx(start_date), DateFromMx(end_date),
+       DateFromMx(start_date), DateFromMx(end_date))
 
         if email:
             sql += " AND m1.addr = %s" % QuotedString(email)
