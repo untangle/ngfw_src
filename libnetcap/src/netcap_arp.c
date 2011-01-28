@@ -334,7 +334,7 @@ static int _arp_dst_intf ( netcap_intf_db_t* db, netcap_intf_t* intf, netcap_int
     netcap_intf_info_t* intf_info;
 
     /* Indicate the interface is unknown in case there is an error */
-    *intf = NC_INTF_UNK;
+    *intf = NF_INTF_UNKNOWN;
 
     if ( _out_interface( &intf_index, src_ip, dst_ip, &next_hop ) < 0 ) {
         return errlog( ERR_CRITICAL, "_out_interface\n" );
@@ -412,7 +412,7 @@ static int _arp_dst_intf ( netcap_intf_db_t* db, netcap_intf_t* intf, netcap_int
      * because they will be going out the same interface they *
      * came in on, and those will be dropped.                 */
 
-    if ( NC_INTF_UNK == ( *intf = intf_info->netcap_intf )) {
+    if ( NF_INTF_UNKNOWN == ( *intf = intf_info->netcap_intf )) {
         return errlog( ERR_CRITICAL, "netcap_intf_db_index_to_info %d\n", intf_index );
     }
     
@@ -496,7 +496,7 @@ static int _arp_bridge_intf   ( netcap_intf_db_t* db, netcap_intf_t* out_intf,
         if ( errno == EINVAL ) {
             /* this indicates that the MAC address requested is not in the bridge table.
              * to solve this, you have to go through a full ARP request. */
-            *out_intf = NC_INTF_UNK;
+            *out_intf = NF_INTF_UNKNOWN;
             debug ( 10, "ROUTE: Invalid argument, MAC Address is only found in ARP Cache.\n" );
             return -1;
         } else {
@@ -508,7 +508,7 @@ static int _arp_bridge_intf   ( netcap_intf_db_t* db, netcap_intf_t* out_intf,
     if (( out_intf_info = netcap_intf_db_index_to_info( db, ret )) == NULL ) {
         /* XXX What to do here */
         errlog( ERR_WARNING, "Nothing is known about the outgoing interface index %d\n", ret );
-        *out_intf = NC_INTF_UNK;
+        *out_intf = NF_INTF_UNKNOWN;
     } else {
         *out_intf = out_intf_info->netcap_intf;
     }

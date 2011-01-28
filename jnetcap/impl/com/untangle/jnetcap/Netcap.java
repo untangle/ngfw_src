@@ -42,7 +42,7 @@ public final class Netcap
     public static final int MAX_THREADS    = 50;
 
     /* The largest interface that netcap will return */
-    public static final int MAX_INTERFACE = 32;
+    public static final int MAX_INTERFACE = 256;
 
     /* The proc file containing the routing tables */
     private static final String ROUTE_PROC_FILE = "/proc/net/route";

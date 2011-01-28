@@ -64,10 +64,10 @@ public class IntfConstants
     public static final int  NETCAP_ERROR    = 0;
 
     /* Index used if the interface is the loopback interface of the box */
-    public static final int  NETCAP_LOOPBACK = 17;
+    public static final int  NETCAP_LOOPBACK = 254;
 
     /* Index used when netcap was unable to determine the interface. */
-    public static final int  NETCAP_UNKNOWN  = 18;
+    public static final int  NETCAP_UNKNOWN  = 255;
 
     /* The minimum index for a netcap interface 8*/
     public static final int  NETCAP_MIN      = 1;

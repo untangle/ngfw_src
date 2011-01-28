@@ -92,11 +92,11 @@ JNIEXPORT jlong JNICALL JF_IPTraffic( createIPTraffic )
     pkt->proto           = IPPROTO_UDP;
     pkt->src.host.s_addr = JLONG_TO_UINT( src );
     pkt->src.port        = (u_short)src_port;
-    pkt->src_intf        = NC_INTF_UNK;
+    pkt->src_intf        = NF_INTF_UNKNOWN;
 
     pkt->dst.host.s_addr = JLONG_TO_UINT( dst );
     pkt->dst.port        = (u_short)dst_port;
-    pkt->dst_intf        = NC_INTF_UNK;
+    pkt->dst_intf        = NF_INTF_UNKNOWN;
 
     pkt->ttl             = 255;
     pkt->tos             = 0;
@@ -220,7 +220,7 @@ JNIEXPORT jstring JNICALL JF_IPTraffic( getStringValue )
     default: return errlogargs_null();
     }
     
-    if ( intf == NC_INTF_UNK ) return (*env)->NewStringUTF( env, "" );
+    if ( intf == NF_INTF_UNKNOWN ) return (*env)->NewStringUTF( env, "" );
         
     if ( netcap_interface_intf_to_string( intf, buf, sizeof( buf )) < 0 ) {
         return errlog_null( ERR_CRITICAL, "netcap_intf_to_string\n" );

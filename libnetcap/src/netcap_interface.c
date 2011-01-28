@@ -385,7 +385,7 @@ int netcap_interface_string_to_intf ( char *intf_name, netcap_intf_t *intf )
     if ( db == NULL ) return errlog( ERR_CRITICAL, "interface.db is not initialized\n" );
 
     netcap_intf_info_t* tmp;
-    *intf = NC_INTF_UNK;
+    *intf = NF_INTF_UNKNOWN;
 
     if (( tmp = netcap_intf_db_name_to_info( db, (netcap_intf_string_t*)intf_name )) == NULL ) {
         return errlog( ERR_WARNING, "netcap_intf_db_name_to_info\n" );
@@ -435,12 +435,12 @@ netcap_intf_t netcap_interface_index_to_intf( int index )
     netcap_intf_db_t* db = _interface.db;
     if ( db == NULL ) {
         errlog( ERR_CRITICAL, "interface.db is not initialized\n" );
-        return NC_INTF_UNK;
+        return NF_INTF_UNKNOWN;
     }
 
     if (( tmp = netcap_intf_db_index_to_info( db, index )) == NULL ) {
         errlog( ERR_WARNING, "netcap_intf_db_index_to_info %d\n", index );
-        return NC_INTF_UNK;
+        return NF_INTF_UNKNOWN;
     }
 
     return tmp->netcap_intf;
@@ -474,7 +474,7 @@ int netcap_interface_dst_intf       ( netcap_session_t* session )
 {
     if ( session == NULL ) return errlogargs();
     
-    if ( session->srv.intf != NC_INTF_UNK ) {
+    if ( session->srv.intf != NF_INTF_UNKNOWN ) {
         debug( 10, "INTERFACE: (%10u) Destination interface is already known %d\n", 
                session->session_id, session->srv.intf );
         return 0;

@@ -36,7 +36,7 @@
 
 #define NETCAP_MAX_IF_NAME_LEN  IF_NAMESIZE
 
-#define NETCAP_MAX_INTERFACES   32 /* XXX */
+#define NETCAP_MAX_INTERFACES   256 
 
 #define NC_INTF_MAX NC_INTF_LOOPBACK
 
@@ -73,7 +73,7 @@ typedef enum {
     NC_INTF_14,
     NC_INTF_15,
     NC_INTF_LOOPBACK = 254,
-    NC_INTF_UNK      = 255
+    NF_INTF_UNKNOWN      = 255
 } netcap_intf_t;
 
 typedef enum {

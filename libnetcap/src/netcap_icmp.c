@@ -605,7 +605,7 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
     /* if the caller uses the force flag, then override the default bits of the mark */
     if ( pkt->is_marked == IS_MARKED_FORCE_FLAG ) nfmark = pkt->nfmark;
 
-    if ( pkt->dst_intf != NC_INTF_UNK ) debug( 1, "NETCAP_ICMP: !NC_INTF_UNK Unsupported (IP_DEVICE)\n" );
+    if ( pkt->dst_intf != NF_INTF_UNKNOWN ) debug( 1, "NETCAP_ICMP: !NC_INTF_UNK Unsupported (IP_DEVICE)\n" );
 
     /* Setup the destination */
     memset(&dst, 0, sizeof(dst));

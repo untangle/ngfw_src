@@ -188,7 +188,7 @@ JNIEXPORT jstring JNICALL JF_Session( getStringValue )
 
     switch( req_id & JN_Session( FLAG_MASK )) {
     case JN_Session( FLAG_INTERFACE ):
-        if ( endpoints->intf == NC_INTF_UNK ) return (*env)->NewStringUTF( env, "" );
+        if ( endpoints->intf == NF_INTF_UNKNOWN ) return (*env)->NewStringUTF( env, "" );
         
         if ( netcap_interface_intf_to_string( endpoints->intf, buf, sizeof( buf )) < 0 ) {
             return errlog_null( ERR_CRITICAL, "netcap_intf_to_string\n" );

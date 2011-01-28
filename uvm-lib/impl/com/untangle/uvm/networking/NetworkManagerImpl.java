@@ -556,7 +556,7 @@ public class NetworkManagerImpl implements NetworkManager
         int i = 0;
         for ( InterfaceConfiguration intfConf : this.networkConfiguration.getInterfaceList() ) {
             idArray[i] = intfConf.getInterfaceId();
-            nameArray[i] = intfConf.getName();
+            nameArray[i] = intfConf.getSystemName();
             i++;
         }
         try {

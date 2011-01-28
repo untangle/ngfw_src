@@ -438,7 +438,7 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
     sess = _netcap_get_or_create_sess(&new_sess_flag,
                                       cli_addr,cli_port,cli_sock,
                                       srv_addr,srv_port,-1,
-                                      cli_intf_idx,NC_INTF_UNK,
+                                      cli_intf_idx,NF_INTF_UNKNOWN,
                                       flags,0);
 
     if (!sess)

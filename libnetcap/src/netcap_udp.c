@@ -228,7 +228,7 @@ int  netcap_udp_recvfrom (int sock, void* buf, size_t len, int flags, netcap_pkt
     }
     
     /* Clear the output interface */
-    pkt->dst_intf = NC_INTF_UNK;
+    pkt->dst_intf = NF_INTF_UNKNOWN;
 
     memcpy(&pkt->src.host,&cli.sin_addr,sizeof(struct in_addr));
     pkt->src.port = ntohs(cli.sin_port);
@@ -438,7 +438,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     /* if the caller uses the force flag, then override the default bits of the mark */
     if ( pkt->is_marked == IS_MARKED_FORCE_FLAG ) nfmark = pkt->nfmark;
     
-    if ( pkt->dst_intf != NC_INTF_UNK ) errlog(ERR_CRITICAL,"NC_INTF_UNK Unsupported (IP_DEVICE)\n");
+    if ( pkt->dst_intf != NF_INTF_UNKNOWN ) errlog(ERR_CRITICAL,"NC_INTF_UNK Unsupported (IP_DEVICE)\n");
 
     /* Setup the destination */
     memset(&dst, 0, sizeof(dst));

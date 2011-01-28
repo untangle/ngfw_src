@@ -415,7 +415,7 @@ JNIEXPORT jstring JNICALL JF_Netcap( convertIntfToString )
 {
     char buf[NETCAP_MAX_IF_NAME_LEN];
 
-    if ( intf == NC_INTF_UNK ) return (*env)->NewStringUTF( env, "" );
+    if ( intf == NF_INTF_UNKNOWN ) return (*env)->NewStringUTF( env, "" );
     
     if ( netcap_interface_intf_to_string( intf, buf, sizeof( buf )) < 0 ) {
         return jmvutil_error_null( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid interface: %d\n", intf );

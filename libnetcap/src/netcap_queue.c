@@ -490,7 +490,7 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
     u_int32_t out_dev = 0;
     if (ip_header->protocol == IPPROTO_ICMP) { 
         debug(10, "ICMP packets dont have outdev info\n");
-        pkt->dst_intf = NC_INTF_UNK;
+        pkt->dst_intf = NF_INTF_UNKNOWN;
     }else{
         out_dev = nfq_get_physoutdev( nfa );
         if ( out_dev == 0 ) out_dev = nfq_get_outdev( nfa );
@@ -499,7 +499,7 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
         }
         if (( pkt->dst_intf = netcap_interface_index_to_intf( out_dev )) == 0 ) {
             /* This occurs when the interface is a bridge */
-            pkt->dst_intf = NC_INTF_UNK;
+            pkt->dst_intf = NF_INTF_UNKNOWN;
         }
     }
 
