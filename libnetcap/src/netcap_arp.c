@@ -62,6 +62,7 @@ static struct
         
     /* Variable sized, must be at the end of the array, the default values of arrays */
     unsigned long delay_array[];
+    
 } _netcap_arp = 
 {
     .sock     = -1,
@@ -94,21 +95,16 @@ static struct
 };
 
 static int  _is_initialized    ( void );
-static int  _issue_arp_request ( struct in_addr* src_ip, struct in_addr* dst_ip, 
-                                 netcap_intf_info_t* info );
-static int  _build_arp_packet  ( struct ether_arp* pkt, struct in_addr* src_ip, struct in_addr* dst_ip,
-                                 netcap_intf_bridge_info_t* info );
 
-static int  _arp_dst_intf      ( netcap_intf_db_t* db, netcap_intf_t* intf, netcap_intf_t src_intf, 
-                                 struct in_addr* src_ip, struct in_addr* dst_ip, 
-                                 unsigned long* delay_array );
+static int  _issue_arp_request ( struct in_addr* src_ip, struct in_addr* dst_ip, netcap_intf_info_t* info );
 
-static int  _arp_address       ( netcap_intf_db_t* db, struct in_addr* dst_ip, struct ether_addr* mac, 
-                                 netcap_intf_info_t* intf_info, unsigned long* delays, int force_request );
+static int  _build_arp_packet  ( struct ether_arp* pkt, struct in_addr* src_ip, struct in_addr* dst_ip, netcap_intf_bridge_info_t* info );
 
-static int _arp_bridge_intf   ( netcap_intf_db_t* db, netcap_intf_t* out_intf, 
-                                struct ether_addr* mac_address, netcap_intf_info_t* intf_info );
+static int  _arp_dst_intf      ( netcap_intf_db_t* db, netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, struct in_addr* dst_ip, unsigned long* delay_array );
 
+static int  _arp_address       ( netcap_intf_db_t* db, struct in_addr* dst_ip, struct ether_addr* mac, netcap_intf_info_t* intf_info, unsigned long* delays, int force_request );
+
+static int  _arp_bridge_intf   ( netcap_intf_db_t* db, netcap_intf_t* out_intf, struct ether_addr* mac_address, netcap_intf_info_t* intf_info );
 
 /**
  * Perform the ioctl to determine which interface a packet is going to go out on.
@@ -118,20 +114,20 @@ static int _arp_bridge_intf   ( netcap_intf_db_t* db, netcap_intf_t* out_intf,
  * @param dst_ip   - The destination to be lookuped up.
  * @param next_hop - Updated to contain the address of the next hop.
  */
-static int  _out_interface     ( int* index, struct in_addr* src_ip, struct in_addr* dst_ip, 
-                                 struct in_addr* next_hop );
+static int  _out_interface     ( int* index, struct in_addr* src_ip, struct in_addr* dst_ip, struct in_addr* next_hop );
 
 /**
  * A fake connection is required in order to make the kernel care about the ARP response that comes 
  * back from the machine.  Otherwise, the kernel will ignore the ARP response from dst_ip.
  **/
-static int  _fake_connect      ( struct in_addr* src_ip, struct in_addr* dst_ip, 
-                                 netcap_intf_info_t* intf_info );
-static int  _get_arp_entry     ( struct in_addr* ip, struct ether_addr* mac, 
-                                 netcap_intf_info_t* intf_info );
+static int  _fake_connect      ( struct in_addr* src_ip, struct in_addr* dst_ip, netcap_intf_info_t* intf_info );
+
+static int  _get_arp_entry     ( struct in_addr* ip, struct ether_addr* mac, netcap_intf_info_t* intf_info );
+
 static void _mac_to_string     ( char *mac_string, int len, struct ether_addr* mac );
 
 static netcap_intf_info_t* _get_bridge_info ( netcap_intf_db_t* db, int index );
+
 
 int netcap_arp_init           ( void )
 {    
@@ -233,14 +229,12 @@ int netcap_arp_configure_bridge( netcap_intf_db_t* db, netcap_intf_info_t* intf_
     return ret;
 }
 
-int netcap_arp_dst_intf       ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, 
-                                struct in_addr* dst_ip )
+int netcap_arp_dst_intf       ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, struct in_addr* dst_ip )
 {
     return netcap_arp_dst_intf_delay( intf, src_intf, src_ip, dst_ip, _netcap_arp.delay_array );
 }
 
-int netcap_arp_dst_intf_delay ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, 
-                                struct in_addr* dst_ip, unsigned long* delay_array )
+int netcap_arp_dst_intf_delay ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, struct in_addr* dst_ip, unsigned long* delay_array )
 {
     netcap_intf_db_t* db = NULL;
 
@@ -256,8 +250,7 @@ int netcap_arp_dst_intf_delay ( netcap_intf_t* intf, netcap_intf_t src_intf, str
     return _arp_dst_intf( db, intf, src_intf, src_ip, dst_ip, delay_array );
 }
 
-int netcap_arp_address        ( struct in_addr* dst_ip, struct ether_addr* mac, int bridge_intf_index,
-                                unsigned long* delays )
+int netcap_arp_address        ( struct in_addr* dst_ip, struct ether_addr* mac, int bridge_intf_index, unsigned long* delays )
 {
     netcap_intf_db_t* db = NULL;
     netcap_intf_info_t* intf_info = NULL;
@@ -277,8 +270,7 @@ int netcap_arp_address        ( struct in_addr* dst_ip, struct ether_addr* mac, 
     return _arp_address( db, dst_ip, mac, intf_info, delays, ~NETCAP_ARP_FORCE );
 }
 
-int netcap_arp_bridge_intf    ( netcap_intf_t* out_intf, struct ether_addr* mac_address, 
-                                int bridge_intf_index )
+int netcap_arp_bridge_intf    ( netcap_intf_t* out_intf, struct ether_addr* mac_address, int bridge_intf_index )
 {
     if ( !_is_initialized()) return errlog( ERR_CRITICAL, "netcap_arp is not initialized\n" );
 
@@ -298,8 +290,9 @@ int netcap_arp_bridge_intf    ( netcap_intf_t* out_intf, struct ether_addr* mac_
     return _arp_bridge_intf( db, out_intf, mac_address, intf_info );
 }
 
-static int  _issue_arp_request ( struct in_addr* src_ip, struct in_addr* dst_ip, 
-                                 netcap_intf_info_t* intf_info )
+
+
+static int  _issue_arp_request ( struct in_addr* src_ip, struct in_addr* dst_ip, netcap_intf_info_t* intf_info )
 {
     struct ether_arp pkt;
     
@@ -326,8 +319,7 @@ static int  _issue_arp_request ( struct in_addr* src_ip, struct in_addr* dst_ip,
     return 0;
 }
 
-static int _arp_dst_intf ( netcap_intf_db_t* db, netcap_intf_t* intf, netcap_intf_t src_intf, 
-                           struct in_addr* src_ip, struct in_addr* dst_ip, unsigned long* delay_array )
+static int  _arp_dst_intf      ( netcap_intf_db_t* db, netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, struct in_addr* dst_ip, unsigned long* delay_array )
 {
     int intf_index;
     struct in_addr next_hop;
@@ -419,9 +411,7 @@ static int _arp_dst_intf ( netcap_intf_db_t* db, netcap_intf_t* intf, netcap_int
     return NETCAP_ARP_SUCCESS;
 }
 
-static int  _arp_address       ( netcap_intf_db_t* db, struct in_addr* dst_ip, struct ether_addr* mac, 
-                                 netcap_intf_info_t* intf_info, unsigned long* delay_array, 
-                                 int force_request )
+static int  _arp_address       ( netcap_intf_db_t* db, struct in_addr* dst_ip, struct ether_addr* mac, netcap_intf_info_t* intf_info, unsigned long* delay_array, int force_request )
 {
     int c;
     unsigned long delay;
@@ -464,8 +454,7 @@ static int  _arp_address       ( netcap_intf_db_t* db, struct in_addr* dst_ip, s
     return NETCAP_ARP_NOERROR;
 }
 
-static int _arp_bridge_intf   ( netcap_intf_db_t* db, netcap_intf_t* out_intf, 
-                                struct ether_addr* mac_address, netcap_intf_info_t* intf_info )
+static int  _arp_bridge_intf   ( netcap_intf_db_t* db, netcap_intf_t* out_intf, struct ether_addr* mac_address, netcap_intf_info_t* intf_info )
 {
     struct ifreq ifr;
 	int ret;
@@ -518,8 +507,7 @@ static int _arp_bridge_intf   ( netcap_intf_db_t* db, netcap_intf_t* out_intf,
 	return 0;
 }
 
-static int  _build_arp_packet  ( struct ether_arp* pkt, struct in_addr* src_ip, struct in_addr* dst_ip,
-                                 netcap_intf_bridge_info_t* bridge_info )
+static int  _build_arp_packet  ( struct ether_arp* pkt, struct in_addr* src_ip, struct in_addr* dst_ip, netcap_intf_bridge_info_t* bridge_info )
 {    
     pkt->ea_hdr.ar_hrd = htons( ARPHRD_ETHER );
     pkt->ea_hdr.ar_pro = htons( ETH_P_IP );
@@ -534,8 +522,7 @@ static int  _build_arp_packet  ( struct ether_arp* pkt, struct in_addr* src_ip, 
     return 0;
 }
 
-static int  _out_interface     ( int* index, struct in_addr* src_ip, struct in_addr* dst_ip, 
-                                 struct in_addr* next_hop )
+static int  _out_interface     ( int* index, struct in_addr* src_ip, struct in_addr* dst_ip, struct in_addr* next_hop )
 {
     /* Presently src_ip is ignored. ignored, but this may one day become important */
     if ( src_ip != NULL ) debug( 11, "ROUTE: Source ip presently ignored\n" );
@@ -582,9 +569,7 @@ static int  _out_interface     ( int* index, struct in_addr* src_ip, struct in_a
     return 0;
 }
 
-
-static int  _fake_connect      ( struct in_addr* src_ip, struct in_addr* dst_ip, 
-                                 netcap_intf_info_t* intf_info )
+static int  _fake_connect      ( struct in_addr* src_ip, struct in_addr* dst_ip, netcap_intf_info_t* intf_info )
 {
     struct sockaddr_in dst_addr;
     int fake_fd;
