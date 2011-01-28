@@ -302,7 +302,7 @@ JNIEXPORT jint JNICALL JF_IPTraffic( setStringValue )
     netcap_pkt_t* pkt;
     const char* str;
     netcap_intf_t* intf;
-    int ret;
+    int ret = 0;
 
     JLONG_TO_PACKET( pkt, pkt_ptr );
     if (( req & JN_IPTraffic( FLAG_SRC_MASK )) == JN_IPTraffic( FLAG_SRC )) {
