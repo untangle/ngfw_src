@@ -35,8 +35,6 @@ import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
-import com.untangle.uvm.benchmark.RemoteBenchmarkManager;
-import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.license.LicenseManagerFactory;
 import com.untangle.uvm.license.LicenseManager;
 import com.untangle.uvm.logging.EventLogger;
@@ -120,7 +118,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private HeapMonitor heapMonitor;
     private UploadManagerImpl uploadManager;
     private SettingsManagerImpl settingsManager;
-    private LocalBenchmarkManagerImpl benchmarkManager;
     private OemManagerImpl oemManager;
     private SessionMonitorImpl sessionMonitor;
     
@@ -646,8 +643,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         
         this.settingsManager = new SettingsManagerImpl();
         
-        this.benchmarkManager = new LocalBenchmarkManagerImpl();
-
         this.sessionMonitor = new SessionMonitorImpl();
         
         JSONSerializer serializer = new JSONSerializer();
@@ -939,18 +934,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.settingsManager;
     }
 
-    @Override
-    public LocalBenchmarkManager localBenchmarkManager()
-    {
-        return this.benchmarkManager;
-    }
-
-    @Override
-    public RemoteBenchmarkManager benchmarkManager()
-    {
-        return this.benchmarkManager;
-    }
-    
     @Override
     public RemoteOemManager oemManager()
     {

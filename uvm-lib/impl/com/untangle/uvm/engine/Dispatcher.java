@@ -38,9 +38,6 @@ import com.untangle.uvm.argon.ArgonTCPSessionImpl;
 import com.untangle.uvm.argon.ArgonTCPNewSessionRequest;
 import com.untangle.uvm.argon.ArgonUDPNewSessionRequest;
 import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
-import com.untangle.uvm.benchmark.Benchmark;
-import com.untangle.uvm.benchmark.Event;
-import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LoadCounter;
@@ -114,8 +111,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     private final BlingBlinger udpTotalSessionRequestCounter;
     private final BlingBlinger tcpTotalSessionRequestCounter;
     
-    protected Benchmark benchmark;
-
     /**
      * <code>mainThread</code> is the master thread started by
      * <code>start</code>.  It handles connecting to argonConnector, monitoring
@@ -653,17 +648,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         } else {
             long startTime = 0;
 
-            updateBenchmark();
-            Benchmark b = this.benchmark;
-            if ( b != null ) {
-                startTime = System.nanoTime();
-            }
             sessionEventListener.handleTCPNewSessionRequest(event);
-            
-            if ( b != null ) {
-                /* If enabled, log the amount of time required to get a server / client writable event */
-                b.addEvent(Event.SETUP_TIME, ( System.nanoTime() - startTime ) / 1000l);
-            }
         }
     }
 
@@ -676,16 +661,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         } else {
             long startTime = 0;
 
-            updateBenchmark();
-            Benchmark b = this.benchmark;
-            if ( b != null ) {
-                startTime = System.nanoTime();
-            }
             sessionEventListener.handleUDPNewSessionRequest(event);
-            if ( b != null ) {
-                /* If enabled, log the amount of time required to get a server / client writable event */
-                b.addEvent(Event.SETUP_TIME, ( System.nanoTime() - startTime ) / 1000l);
-            }
         }
     }
 
@@ -721,17 +697,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         } else {
             long startTime = 0;
 
-            Benchmark b = this.benchmark;
-            if ( b != null ) {
-                startTime = System.nanoTime();
-            }
-
             IPDataResult result = sessionEventListener.handleTCPClientChunk(event);
-
-            if ( b != null ) {
-                /* If enabled, log the amount of time required to get a server / client writable event */
-                b.addEvent(Event.PACKET_READ, ( System.nanoTime() - startTime )/ 1000l);
-            }
 
             return result;
         }
@@ -747,17 +713,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         } else {
             long startTime = 0;
 
-            Benchmark b = this.benchmark;
-            if ( b != null ) {
-                startTime = System.nanoTime();
-            }
-            
             IPDataResult result = sessionEventListener.handleTCPServerChunk(event);
-            
-            if ( b != null ) {
-                /* If enabled, log the amount of time required to get a server / client writable event */
-                b.addEvent(Event.PACKET_READ, ( System.nanoTime() - startTime ) / 1000l);
-            }
             
             return result;
         }
@@ -773,15 +729,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         } else {
             long startTime = 0;
             
-            Benchmark b = this.benchmark;
-            if ( b != null ) {
-                startTime = System.nanoTime();
-            }
             IPDataResult result = sessionEventListener.handleTCPClientWritable(event);
-            if ( b != null ) {
-                /* If enabled, log the amount of time required to get a server / client writable event */
-                b.addEvent(Event.PACKET_WRITE, ( System.nanoTime() - startTime ) / 1000l);
-            }
             
             return result;
         }
@@ -797,15 +745,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         } else {
             long startTime = 0;
             
-            Benchmark b = this.benchmark;
-            if ( b != null ) {
-                startTime = System.nanoTime();
-            }
             IPDataResult result = sessionEventListener.handleTCPServerWritable(event);
-            if ( b != null ) {
-                /* If enabled, log the amount of time required to get a server / client writable event */
-                b.addEvent(Event.PACKET_WRITE, ( System.nanoTime() - startTime ) / 1000l);
-            }
+
             return result;
         }
     }
@@ -820,15 +761,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         } else {
             long startTime = 0;
             
-            Benchmark b = this.benchmark;
-            if ( b != null ) {
-                startTime = System.nanoTime();
-            }
             sessionEventListener.handleUDPClientPacket(event);
-            if ( b != null ) {
-                /* If enabled, log the amount of time required to get a server / client writable event */
-                b.addEvent(Event.PACKET_READ, ( System.nanoTime() - startTime ) / 1000l);
-            }
+
         }
     }
 
@@ -842,17 +776,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         } else {
             long startTime = 0;
             
-            Benchmark b = this.benchmark;
-            if ( b != null ) {
-                startTime = System.nanoTime();
-            }
-
             sessionEventListener.handleUDPServerPacket(event);
-            
-            if ( b != null ) {
-                /* If enabled, log the amount of time required to get a server / client writable event */
-                b.addEvent(Event.PACKET_READ, ( System.nanoTime() - startTime ) / 1000l);
-            }
+
         }
     }
 
@@ -1056,8 +981,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         }
     }
 
-    private void elog(Level level, String eventName, int sessionId,
-                      long dataSize)
+    private void elog(Level level, String eventName, int sessionId, long dataSize)
     {
         if (sessionEventLogger.isEnabledFor(level)) {
             StringBuilder message = new StringBuilder("EV[");
@@ -1073,14 +997,4 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         }
     }
     
-    private void updateBenchmark()
-    {
-        LocalBenchmarkManager bm = LocalUvmContextFactory.context().localBenchmarkManager();
-        
-        if ( !bm.isEnabled()) {
-            this.benchmark = null;
-        } else if ( this.benchmark == null ) {
-            benchmark = bm.getBenchmark(argonConnector.node().getNodeId(), argonConnector.getPipeSpec().getName(), true);
-        }
-    }
 }

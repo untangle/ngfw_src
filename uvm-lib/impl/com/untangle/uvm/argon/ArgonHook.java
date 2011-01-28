@@ -37,9 +37,6 @@ import com.untangle.jvector.Vector;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.benchmark.Benchmark;
-import com.untangle.uvm.benchmark.Event;
-import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.vnet.Session;
@@ -97,14 +94,8 @@ public abstract class ArgonHook implements Runnable
      */
     public final void run()
     {
-        LocalBenchmarkManager bm = LocalUvmContextFactory.context().localBenchmarkManager();
-        Benchmark benchmark = null;
         long start = 0;
 
-        if ( bm.isEnabled()) {
-            start = System.nanoTime();
-            benchmark = bm.getBenchmark(TOTALS,"totals", true);
-        }
         PipelineEndpoints endpoints = null;
         try {
             ClassLoader cl = getClass().getClassLoader();
@@ -223,10 +214,6 @@ public abstract class ArgonHook implements Runnable
                     if ( logger.isDebugEnabled())
                         logger.debug( "Starting vectoring for session " + sessionGlobalState );
                     
-                    if ( benchmark != null ) {
-                        benchmark.addEvent(Event.SETUP_TIME, ( System.nanoTime() - start ) / 1000l); 
-                    }
-
                     /* Start vectoring */
                     vector.vector();
 
@@ -238,10 +225,6 @@ public abstract class ArgonHook implements Runnable
                 if ( logger.isDebugEnabled())
                     logger.debug( "Finished vectoring for session: " + sessionGlobalState );
             } else {
-                if ( benchmark != null ) {
-                    benchmark.addEvent(Event.SETUP_TIME, ( System.nanoTime() - start ) / 1000l); 
-                }
-
                 logger.info( "Session rejected, skipping vectoring: " + sessionGlobalState );
             }
         } catch ( Exception e ) {

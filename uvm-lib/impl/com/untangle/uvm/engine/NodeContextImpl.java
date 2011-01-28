@@ -153,6 +153,7 @@ class NodeContextImpl implements NodeContext
             uctx.loadUvmResource(uvmResource);
         }
         if (0 < urs.size()) {
+            logger.error("CALLING LOADRUP");
             uctx.loadRup();
         }
 

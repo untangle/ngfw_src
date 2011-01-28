@@ -45,7 +45,6 @@ import com.untangle.uvm.RemoteSkinManager;
 import com.untangle.uvm.RemoteOemManager;
 import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
-import com.untangle.uvm.benchmark.RemoteBenchmarkManager;
 import com.untangle.uvm.license.LicenseManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.message.RemoteMessageManager;
@@ -287,14 +286,6 @@ public interface RemoteUvmContext
     void restoreBackup(String fileName)
         throws IOException, IllegalArgumentException;
 
-    /**
-     * Loads premium functionality.
-     *
-     * @return true if premium functionality was loaded.
-     */
-    boolean loadRup();
-
     String setProperty(String key, String value);
-    
-    RemoteBenchmarkManager benchmarkManager();
+
 }

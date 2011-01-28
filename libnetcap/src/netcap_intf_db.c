@@ -1,20 +1,4 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
+/* $HeadURL$ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,7 +12,7 @@
 #include "netcap_intf_db.h"
 
 /* Just to avoid collisions make it slightly larger */
-#define IF_TABLE_SIZE           57
+#define IF_TABLE_SIZE           357
 
 static __inline__ int _check_intf  ( netcap_intf_t intf )
 {
@@ -48,13 +32,14 @@ static __inline__ int _check_index    ( int index )
 
 static int  _add_data( netcap_intf_info_t* intf_info, netcap_intf_address_data_t* data );
 
-
 /**
  * Check if it is safe to ignore an interface that doesn't have any configuration data.
  * @param intf_name Name of the interface to test.
  * @return 1 if the interface can be safely ignored, 0 otherwise.
  */
 static int _is_ignore_interface( netcap_intf_string_t* intf_name );
+
+
 
 netcap_intf_db_t* netcap_intf_db_malloc  ( void )
 {
@@ -187,8 +172,7 @@ int               netcap_intf_db_add_info( netcap_intf_db_t* db, netcap_intf_inf
     return 0;
 }
 
-int               netcap_intf_db_configure_intf( netcap_intf_db_t* db, netcap_intf_t* intf_array,
-                                                 netcap_intf_string_t* intf_name_array, int intf_count )
+int               netcap_intf_db_configure_intf( netcap_intf_db_t* db, netcap_intf_t* intf_array, netcap_intf_string_t* intf_name_array, int intf_count )
 {
     if (( intf_name_array == NULL ) || ( intf_array == NULL ) || 
         ( intf_count < 0 ) || ( intf_count > NETCAP_MAX_INTERFACES )) {
@@ -292,8 +276,7 @@ netcap_intf_info_t* netcap_intf_db_name_to_info  ( netcap_intf_db_t* db, netcap_
 /* Fill in the address, netmask and broadcast address for the
  * interface name, If the information already exists, it is not added
  */
-int                netcap_intf_db_fill_data( netcap_intf_info_t* intf_info, int sockfd, 
-                                             netcap_intf_string_t* name )
+int                netcap_intf_db_fill_data( netcap_intf_info_t* intf_info, int sockfd, netcap_intf_string_t* name )
 {
     struct ifreq ifr;
     struct in_addr* ioctl_data = &((struct sockaddr_in*)(&ifr.ifr_addr))->sin_addr;
@@ -339,6 +322,8 @@ int                netcap_intf_db_fill_data( netcap_intf_info_t* intf_info, int 
     
     return 1;
 }
+
+
 
 static int  _add_data( netcap_intf_info_t* intf_info, netcap_intf_address_data_t* data )
 {

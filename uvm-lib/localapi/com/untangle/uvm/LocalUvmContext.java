@@ -39,7 +39,6 @@ import java.io.IOException;
 
 import com.sleepycat.je.Environment;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
-import com.untangle.uvm.benchmark.LocalBenchmarkManager;
 import com.untangle.uvm.client.RemoteUvmContext;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.RemoteLoggingManager;
@@ -332,8 +331,4 @@ public interface LocalUvmContext extends RemoteUvmContext
      */
     SettingsManager settingsManager();
     
-    /**
-     * Retrieve the benchmark manager.
-     */
-    LocalBenchmarkManager localBenchmarkManager();
 }
