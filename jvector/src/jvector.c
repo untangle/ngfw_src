@@ -648,7 +648,7 @@ static void              _event_raze          ( event_t* event )
 {
     jvector_event_t* jv_event = (jvector_event_t*)event;
     jmethodID        mid = _jvector.event.raze;
-    JNIEnv* env;
+    JNIEnv* env = NULL;
 
     if ( _init_java_call( jv_event, &env, mid, "event.raze" ) < 0 ) return;
 
