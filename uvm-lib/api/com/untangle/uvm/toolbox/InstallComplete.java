@@ -46,12 +46,12 @@ public class InstallComplete extends Message
 {
 
     private final boolean success;
-    private final MackageDesc requestingMackage;
+    private final PackageDesc requestingPackage;
 
-    public InstallComplete(boolean success, MackageDesc requestingMackage)
+    public InstallComplete(boolean success, PackageDesc requestingPackage)
     {
         this.success = success;
-        this.requestingMackage = requestingMackage;
+        this.requestingPackage = requestingPackage;
     }
 
     // accessors --------------------------------------------------------------
@@ -61,13 +61,13 @@ public class InstallComplete extends Message
         return success;
     }
 
-    public MackageDesc getRequestingMackage()
+    public PackageDesc getRequestingPackage()
     {
-        return requestingMackage;
+        return requestingPackage;
     }
 
     public boolean isUpgrade()
     {
-        return null == requestingMackage;
+        return null == requestingPackage;
     }
 }

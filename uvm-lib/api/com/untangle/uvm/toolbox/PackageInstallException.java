@@ -34,30 +34,30 @@
 package com.untangle.uvm.toolbox;
 
 /**
- * Signals that a problem has occured uninstalling a Debian package.
+ * Signals that a problem has occured installing a Debian package.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class MackageUninstallException extends MackageException
+public class PackageInstallException extends PackageException
 {
-    public MackageUninstallException()
+    public PackageInstallException()
     {
         super();
     }
 
-    public MackageUninstallException(String message)
+    public PackageInstallException(String message)
     {
         super(message);
     }
 
-    public MackageUninstallException(String message, Throwable cause)
+    public PackageInstallException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
-    public MackageUninstallException(Throwable cause)
+    public PackageInstallException(Throwable cause)
     {
         super(cause);
     }

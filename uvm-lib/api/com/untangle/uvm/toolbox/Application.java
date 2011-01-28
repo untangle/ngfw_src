@@ -38,29 +38,29 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class Application implements Comparable<Application>, Serializable
 {
-    private final MackageDesc libItem;
-    private final MackageDesc trialLibItem;
-    private final MackageDesc node;
+    private final PackageDesc libItem;
+    private final PackageDesc trialLibItem;
+    private final PackageDesc node;
 
-    public Application(MackageDesc libItem, MackageDesc trialLibItem,
-                       MackageDesc node)
+    public Application(PackageDesc libItem, PackageDesc trialLibItem,
+                       PackageDesc node)
     {
         this.libItem = libItem;
         this.trialLibItem = trialLibItem;
         this.node = node;
     }
 
-    public MackageDesc getLibItem()
+    public PackageDesc getLibItem()
     {
         return libItem;
     }
 
-    public MackageDesc getTrialLibItem()
+    public PackageDesc getTrialLibItem()
     {
         return trialLibItem;
     }
 
-    public MackageDesc getNode()
+    public PackageDesc getNode()
     {
         return node;
     }
@@ -68,13 +68,13 @@ public class Application implements Comparable<Application>, Serializable
     public int getViewPosition()
     {
         if (libItem != null &&
-            libItem.getViewPosition() != MackageDesc.UNKNOWN_POSITION) {
+            libItem.getViewPosition() != PackageDesc.UNKNOWN_POSITION) {
             return libItem.getViewPosition();
         } else if (trialLibItem != null
-                   && trialLibItem.getViewPosition() != MackageDesc.UNKNOWN_POSITION) {
+                   && trialLibItem.getViewPosition() != PackageDesc.UNKNOWN_POSITION) {
             return trialLibItem.getViewPosition();
         } else if (node != null
-                   && node.getViewPosition() != MackageDesc.UNKNOWN_POSITION) {
+                   && node.getViewPosition() != PackageDesc.UNKNOWN_POSITION) {
             return node.getViewPosition();
         } else {
             return -1;

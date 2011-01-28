@@ -45,7 +45,7 @@ import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.NodeId;
-import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.toolbox.PackageDesc;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.vnet.NodeBase;
@@ -249,7 +249,7 @@ class NodeContextImpl implements NodeContext
         return nodePreferences;
     }
 
-    public MackageDesc getMackageDesc()
+    public PackageDesc getPackageDesc()
     {
         return toolboxManager.mackageDesc(mackageName);
     }
@@ -284,16 +284,16 @@ class NodeContextImpl implements NodeContext
     public boolean resourceExists(String res)
     {
         String baseNodeName = nodeDesc.getNodeBase();
-        return resourceExistsInt(res, getMackageDesc(), baseNodeName);
+        return resourceExistsInt(res, getPackageDesc(), baseNodeName);
     }
 
     public InputStream getResourceAsStream(String res)
     {
         String baseNodeName = nodeDesc.getNodeBase();
-        return getResourceAsStreamInt(res, getMackageDesc(), baseNodeName);
+        return getResourceAsStreamInt(res, getPackageDesc(), baseNodeName);
     }
 
-    private boolean resourceExistsInt(String res, MackageDesc mackageDesc,
+    private boolean resourceExistsInt(String res, PackageDesc mackageDesc,
                                       String baseNodeName)
     {
         boolean exists;
@@ -314,7 +314,7 @@ class NodeContextImpl implements NodeContext
         else {
             // bug3699: Try the base, if any.
             if (baseNodeName != null) {
-                MackageDesc baseDesc = toolboxManager.mackageDesc(baseNodeName);
+                PackageDesc baseDesc = toolboxManager.mackageDesc(baseNodeName);
                 if (baseDesc == null) {
                     return false;
                 }
@@ -326,7 +326,7 @@ class NodeContextImpl implements NodeContext
     }
 
     private InputStream getResourceAsStreamInt(String res,
-                                               MackageDesc mackageDesc,
+                                               PackageDesc mackageDesc,
                                                String baseNodeName)
     {
         try {
@@ -342,7 +342,7 @@ class NodeContextImpl implements NodeContext
         } catch (FileNotFoundException exn) {
             // bug3699: Try the base, if any.
             if (baseNodeName != null) {
-                MackageDesc baseDesc = toolboxManager.mackageDesc(baseNodeName);
+                PackageDesc baseDesc = toolboxManager.mackageDesc(baseNodeName);
                 if (baseDesc == null) {
                     logger.warn("resource not found, base missing: " + baseNodeName);
                     return null;
@@ -480,14 +480,14 @@ class NodeContextImpl implements NodeContext
             return null;
         }
 
-        MackageDesc md = toolboxManager.mackageDesc(parent);
+        PackageDesc md = toolboxManager.mackageDesc(parent);
 
         if (null == md) {
             logger.warn("parent does not exist: " + parent);
             throw new DeployException("could not create parent: " + parent);
         }
 
-        if (MackageDesc.Type.CASING == md.getType()) {
+        if (PackageDesc.Type.CASING == md.getType()) {
             policy = null;
         }
 

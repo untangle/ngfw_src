@@ -45,17 +45,17 @@ import com.untangle.uvm.message.Message;
 public class InstallAndInstantiateComplete extends Message
 {
 
-    private final MackageDesc requestingMackage;
+    private final PackageDesc requestingPackage;
 
-    public InstallAndInstantiateComplete(MackageDesc requestingMackage)
+    public InstallAndInstantiateComplete(PackageDesc requestingPackage)
     {
-        this.requestingMackage = requestingMackage;
+        this.requestingPackage = requestingPackage;
     }
 
     // accessors --------------------------------------------------------------
 
-    public MackageDesc getRequestingMackage()
+    public PackageDesc getRequestingPackage()
     {
-        return requestingMackage;
+        return requestingPackage;
     }
 }

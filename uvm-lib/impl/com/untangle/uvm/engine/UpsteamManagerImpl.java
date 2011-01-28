@@ -28,9 +28,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.toolbox.MackageDesc;
-import com.untangle.uvm.toolbox.MackageInstallException;
-import com.untangle.uvm.toolbox.MackageUninstallException;
+import com.untangle.uvm.toolbox.PackageDesc;
+import com.untangle.uvm.toolbox.PackageInstallException;
+import com.untangle.uvm.toolbox.PackageUninstallException;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.toolbox.UpstreamManager;
 import com.untangle.uvm.toolbox.UpstreamService;
@@ -69,7 +69,7 @@ class UpstreamManagerImpl implements UpstreamManager
 
     void refresh()
     {
-        MackageDesc[] installed = toolboxMgr.installed();
+        PackageDesc[] installed = toolboxMgr.installed();
         services = new ArrayList<UpstreamService>();
 
         // Each line in upstream-services that is not a comment is of
@@ -100,7 +100,7 @@ class UpstreamManagerImpl implements UpstreamManager
                         logger.debug("Adding new always enabled upstream service: " + sname);
                         serv = new UpstreamService(sname, true, null);
                     } else {
-                        for (MackageDesc md : installed) {
+                        for (PackageDesc md : installed) {
                             logger.debug("checking " + spack + " against " + md.getName());
                             if (spack.equals(md.getName())) {
                                 enabled = true;
@@ -159,7 +159,7 @@ class UpstreamManagerImpl implements UpstreamManager
         return null;
     }
 
-    public void enableService(String name) throws IllegalArgumentException, MackageInstallException
+    public void enableService(String name) throws IllegalArgumentException, PackageInstallException
     {
         UpstreamService service = getService(name);
         if (service == null)
@@ -172,13 +172,13 @@ class UpstreamManagerImpl implements UpstreamManager
         logger.info("Enabling upstream service: " + name);
         toolboxMgr.install(configPackage);
 
-        // Finally since we didn't throw a Mackage exception, change the
+        // Finally since we didn't throw a Package exception, change the
         // service to enabled.
         services.remove(service);
         services.add(new UpstreamService(name, true, configPackage));
     }
 
-    public void disableService(String name) throws IllegalArgumentException, MackageUninstallException
+    public void disableService(String name) throws IllegalArgumentException, PackageUninstallException
     {
         UpstreamService service = getService(name);
         if (service == null)
@@ -191,7 +191,7 @@ class UpstreamManagerImpl implements UpstreamManager
         logger.info("Disabling upstream service: " + name);
         toolboxMgr.uninstall(configPackage);
 
-        // Finally since we didn't throw a Mackage exception, change the
+        // Finally since we didn't throw a Package exception, change the
         // service to disabled.
         services.remove(service);
         services.add(new UpstreamService(name, false, configPackage));

@@ -32,15 +32,15 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="u_mackage_state", schema="settings")
-class MackageState
+class PackageState
 {
     private Long id;
     private String mackageName;
     private boolean enabled;
 
-    MackageState() { }
+    PackageState() { }
 
-    MackageState(String mackageName, boolean enabled)
+    PackageState(String mackageName, boolean enabled)
     {
         this.mackageName = mackageName;
         this.enabled = enabled;
@@ -67,12 +67,12 @@ class MackageState
      * @return name of mackage.
      */
     @Column(name="mackage_name", nullable=false)
-    public String getMackageName()
+    public String getPackageName()
     {
         return mackageName;
     }
 
-    public void setMackageName(String mackageName)
+    public void setPackageName(String mackageName)
     {
         this.mackageName = mackageName;
     }

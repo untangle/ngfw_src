@@ -66,7 +66,7 @@ import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
 import com.untangle.uvm.security.NodeId;
-import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.toolbox.PackageDesc;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.TransactionWork;
@@ -138,10 +138,10 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             public int compare(NodeId t1, NodeId t2) {
                 NodeContextImpl tci1 = nodeIds.get(t1);
                 NodeContextImpl tci2 = nodeIds.get(t2);
-                int rpi1 = tci1.getMackageDesc().getViewPosition();
-                int rpi2 = tci2.getMackageDesc().getViewPosition();
+                int rpi1 = tci1.getPackageDesc().getViewPosition();
+                int rpi2 = tci2.getPackageDesc().getViewPosition();
                 if (rpi1 == rpi2) {
-                    return tci1.getMackageDesc().getName().compareToIgnoreCase(tci2.getMackageDesc().getName());
+                    return tci1.getPackageDesc().getName().compareToIgnoreCase(tci2.getPackageDesc().getName());
                 } else if (rpi1 < rpi2) {
                     return -1;
                 } else {
@@ -204,7 +204,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
         for (NodeId nodeId : getNodesForPolicy(policy)) {
             NodeContext nc = nodeContext(nodeId);
-            MackageDesc md = nc.getMackageDesc();
+            PackageDesc md = nc.getPackageDesc();
 
             if (!md.isInvisible()) {
                 NodeDesc nd = nc.getNodeDesc();
@@ -214,10 +214,10 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
         for (NodeId nodeId : nodeIds) {
             NodeContext nc = nodeContext(nodeId);
-            MackageDesc md = nc.getMackageDesc();
+            PackageDesc md = nc.getPackageDesc();
 
-            MackageDesc.Type type = md.getType();
-            if (!md.isInvisible() && MackageDesc.Type.SERVICE == type) {
+            PackageDesc.Type type = md.getType();
+            if (!md.isInvisible() && PackageDesc.Type.SERVICE == type) {
                 NodeDesc nd = nc.getNodeDesc();
                 l.add(nd);
             }
@@ -263,9 +263,9 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
     {
         UvmContextImpl mctx = UvmContextImpl.getInstance();
         ToolboxManagerImpl tbm = mctx.toolboxManager();
-        MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
+        PackageDesc mackageDesc = tbm.mackageDesc(nodeName);
 
-        if (MackageDesc.Type.SERVICE == mackageDesc.getType()) {
+        if (PackageDesc.Type.SERVICE == mackageDesc.getType()) {
             p = null;
         }
 
@@ -275,7 +275,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
          */
         for (NodeId nodeId : getNodesForPolicy(p,false)) {
             NodeContext nc = nodeContext(nodeId);
-            MackageDesc md = nc.getMackageDesc();
+            PackageDesc md = nc.getPackageDesc();
 
             if (md.getName().equals(mackageDesc.getName())) {
                 throw new DeployException("Node " + mackageDesc.getName() + " already exists in Policy " + p + ".");
@@ -316,9 +316,9 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         }
 
         Node node = tc.node();
-        MackageDesc.Type type = mackageDesc.getType();
+        PackageDesc.Type type = mackageDesc.getType();
 
-        if (null != node && !mackageDesc.isInvisible() && (MackageDesc.Type.NODE == type || MackageDesc.Type.SERVICE == type)) {
+        if (null != node && !mackageDesc.isInvisible() && (PackageDesc.Type.NODE == type || PackageDesc.Type.SERVICE == type)) {
             LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
             Counters c = lmm.getCounters(node.getNodeId());
             LicenseManager lm = LocalUvmContextFactory.context().licenseManager();
@@ -536,7 +536,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
                 if (0 < tc.getNodeDesc().getExports().size()) {
                     // exported resources, must restart everything
                     for (NodeId nodeId : nodeIds.keySet()) {
-                        MackageDesc md = nodeIds.get(nodeId).getMackageDesc();
+                        PackageDesc md = nodeIds.get(nodeId).getPackageDesc();
                         if (!md.getInstalledVersion().equals(availVer)) {
                             logger.info("new version available: " + name);
                             unload(nodeId);
@@ -546,7 +546,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
                     }
                 } else {
                     for (NodeId nodeId : nNodeIds) {
-                        MackageDesc md = nodeIds.get(nodeId).getMackageDesc();
+                        PackageDesc md = nodeIds.get(nodeId).getPackageDesc();
                         if (!md.getInstalledVersion().equals(availVer)) {
                             logger.info("new version available: " + name);
                             unload(nodeId);
@@ -562,13 +562,13 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         clearEnabledNodes();
     }
 
-    void startAutoStart(MackageDesc extraPkg)
+    void startAutoStart(PackageDesc extraPkg)
     {
         ToolboxManagerImpl tbm = (ToolboxManagerImpl)LocalUvmContextFactory.context().toolboxManager();
 
-        List<MackageDesc> mds = new ArrayList<MackageDesc>();
+        List<PackageDesc> mds = new ArrayList<PackageDesc>();
 
-        for (MackageDesc md : tbm.installed()) {
+        for (PackageDesc md : tbm.installed()) {
             if (md.isAutoStart()) {
                 mds.add(md);
             }
@@ -577,7 +577,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         if (null != extraPkg && extraPkg.isAutoStart()) {
             mds.add(extraPkg);
         }
-        for (MackageDesc md : mds) {
+        for (PackageDesc md : mds) {
             List<NodeId> l = nodeInstances(md.getName());
 
             NodeId t = null;
@@ -678,7 +678,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             final String name = tps.getName();
             loadedParents.add(name);
             final String[] args = tps.getArgArray();
-            final MackageDesc mackageDesc = tbm.mackageDesc(name);
+            final PackageDesc mackageDesc = tbm.mackageDesc(name);
 
             Runnable r = new Runnable()
                 {
@@ -794,7 +794,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         for (NodePersistentState tps : unloaded) {
             String name = tps.getName();
             logger.info("Getting mackage desc for: " + name);
-            MackageDesc md = tbm.mackageDesc(name);
+            PackageDesc md = tbm.mackageDesc(name);
             if (null == md) {
                 logger.warn("could not get mackage desc for: " + name);
                 continue;
@@ -854,7 +854,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
      * @exception DeployException the descriptor does not parse or
      * parent cannot be loaded.
      */
-    private NodeDesc initNodeDesc(MackageDesc mackageDesc, URL[] urls, NodeId nodeId) throws DeployException
+    private NodeDesc initNodeDesc(PackageDesc mackageDesc, URL[] urls, NodeId nodeId) throws DeployException
     {
         // XXX assumes no parent cl has this file.
         InputStream is = new URLClassLoader(urls).getResourceAsStream(DESC_PATH);
@@ -886,10 +886,10 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
     private Policy getDefaultPolicyForNode(String nodeName) throws DeployException
     {
         ToolboxManager tbm = LocalUvmContextFactory.context().toolboxManager();
-        MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
+        PackageDesc mackageDesc = tbm.mackageDesc(nodeName);
         if (mackageDesc == null)
             throw new DeployException("Node named " + nodeName + " not found");
-        if (MackageDesc.Type.SERVICE != mackageDesc.getType()) {
+        if (PackageDesc.Type.SERVICE != mackageDesc.getType()) {
             return null;
         } else {
             return LocalUvmContextFactory.context().localPolicyManager().getDefaultPolicy();

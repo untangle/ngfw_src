@@ -46,10 +46,10 @@ import org.apache.log4j.Logger;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class MackageDesc implements Serializable
+public class PackageDesc implements Serializable
 {
 
-    private static final Logger logger = Logger.getLogger(MackageDesc.class);
+    private static final Logger logger = Logger.getLogger(PackageDesc.class);
 
     public static final int UNKNOWN_POSITION = -1;
 
@@ -80,7 +80,7 @@ public class MackageDesc implements Serializable
     private final boolean invisible;
     private final String hide;
 
-    public MackageDesc(Map<String, String> m, String installedVersion)
+    public PackageDesc(Map<String, String> m, String installedVersion)
     {
         name = m.get("package");
 
@@ -236,7 +236,7 @@ public class MackageDesc implements Serializable
 
     public String toString()
     {
-        return "Mackage name: " + name;
+        return "Package name: " + name;
     }
 
     // private methods ---------------------------------------------------------

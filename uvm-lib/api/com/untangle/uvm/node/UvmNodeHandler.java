@@ -42,7 +42,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.untangle.uvm.security.NodeId;
-import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.toolbox.PackageDesc;
 
 /**
  * SAX handler for uvm-node.xml files.
@@ -54,7 +54,7 @@ public class UvmNodeHandler extends DefaultHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final MackageDesc mackageDesc;
+    private final PackageDesc mackageDesc;
 
     private final List<String> parents = new LinkedList<String>();
     private final List<String> exports = new LinkedList<String>();
@@ -71,7 +71,7 @@ public class UvmNodeHandler extends DefaultHandler
     private StringBuilder exportBuilder;
     private StringBuilder uvmResourceBuilder;
 
-    public UvmNodeHandler(MackageDesc mackageDesc)
+    public UvmNodeHandler(PackageDesc mackageDesc)
     {
         this.mackageDesc = mackageDesc;
     }

@@ -46,20 +46,20 @@ public class DownloadComplete extends Message
 {
 
     private final boolean success;
-    private final MackageDesc requestingMackage;
+    private final PackageDesc requestingPackage;
     private final String errorMessage;
     
-    public DownloadComplete(boolean success, MackageDesc requestingMackage)
+    public DownloadComplete(boolean success, PackageDesc requestingPackage)
     {
         this.success = success;
-        this.requestingMackage = requestingMackage;
+        this.requestingPackage = requestingPackage;
         this.errorMessage = null;
     }
 
-    public DownloadComplete(boolean success, MackageDesc requestingMackage, String errorMessage)
+    public DownloadComplete(boolean success, PackageDesc requestingPackage, String errorMessage)
     {
         this.success = success;
-        this.requestingMackage = requestingMackage;
+        this.requestingPackage = requestingPackage;
         this.errorMessage = errorMessage;
     }
     
@@ -70,14 +70,14 @@ public class DownloadComplete extends Message
         return success;
     }
 
-    public MackageDesc getRequestingMackage()
+    public PackageDesc getRequestingPackage()
     {
-        return requestingMackage;
+        return requestingPackage;
     }
 
     public boolean isUpgrade()
     {
-        return null == requestingMackage;
+        return null == requestingPackage;
     }
 
     public String getErrorMessage()

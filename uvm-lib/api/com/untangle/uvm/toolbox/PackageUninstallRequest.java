@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/work/src/uvm-lib/api/com/untangle/uvm/toolbox/MackageUninstallRequest.java $
+ * $HeadURL: svn://chef/work/src/uvm-lib/api/com/untangle/uvm/toolbox/PackageUninstallRequest.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
@@ -42,18 +42,18 @@ import com.untangle.uvm.message.Message;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class MackageUninstallRequest extends Message
+public class PackageUninstallRequest extends Message
 {
-    private final MackageDesc mackageDesc;
+    private final PackageDesc mackageDesc;
     private final boolean installed;
 
-    public MackageUninstallRequest(MackageDesc mackageDesc, boolean installed)
+    public PackageUninstallRequest(PackageDesc mackageDesc, boolean installed)
     {
         this.mackageDesc = mackageDesc;
         this.installed = installed;
     }
 
-    public MackageDesc getMackageDesc()
+    public PackageDesc getPackageDesc()
     {
         return mackageDesc;
     }

@@ -37,7 +37,7 @@ import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.policy.Policy;
 
 /**
- * Manager for the Toolbox, which holds Mackages. A Mackage is all
+ * Manager for the Toolbox, which holds Packages. A Package is all
  * data concerning a Node that is not related to any particular
  * node instance.
  *
@@ -60,7 +60,7 @@ public interface ToolboxManager
      * @param doUpdate will force an apt-get update before returning the state
      * @return UgradeStatus the current state
      */
-    UpgradeStatus getUpgradeStatus(boolean doUpdate) throws MackageException, InterruptedException;
+    UpgradeStatus getUpgradeStatus(boolean doUpdate) throws PackageException, InterruptedException;
 
     /**
      * Returns true if the box can reach updates.untangle.com
@@ -70,16 +70,16 @@ public interface ToolboxManager
     /**
      * All known mackages.
      *
-     * @return an array of <code>MackageDesc</code>s.
+     * @return an array of <code>PackageDesc</code>s.
      */
-    MackageDesc[] available();
+    PackageDesc[] available();
 
     /**
      * All installed mackages.
      *
-     * @return a <code>MackageDesc[]</code> value
+     * @return a <code>PackageDesc[]</code> value
      */
-    MackageDesc[] installed();
+    PackageDesc[] installed();
 
     /**
      * Tests if a package is installed.
@@ -92,88 +92,88 @@ public interface ToolboxManager
     /**
      * All installed mackages, which are visible within the GUI
      *
-     * @return a <code>MackageDesc[]</code> value
+     * @return a <code>PackageDesc[]</code> value
      */
-    MackageDesc[] installedVisible();
+    PackageDesc[] installedVisible();
 
     /**
-     * Mackages available but not installed.
+     * Packages available but not installed.
      *
-     * @return a <code>MackageDesc[]</code> value
+     * @return a <code>PackageDesc[]</code> value
      */
-    MackageDesc[] uninstalled();
+    PackageDesc[] uninstalled();
 
     /**
-     * Mackages installed but not up to date.
+     * Packages installed but not up to date.
      *
-     * @return a <code>MackageDesc[]</code> value
+     * @return a <code>PackageDesc[]</code> value
      */
-    MackageDesc[] upgradable();
+    PackageDesc[] upgradable();
 
     /**
-     * Mackages installed with latest version.
+     * Packages installed with latest version.
      *
-     * @return a <code>MackageDesc[]</code> value
+     * @return a <code>PackageDesc[]</code> value
      */
-    MackageDesc[] upToDate();
+    PackageDesc[] upToDate();
 
     /**
-     * Get the MackageDesc for a node.
+     * Get the PackageDesc for a node.
      *
      * @param name the name of the node.
-     * @return the MackageDesc.
+     * @return the PackageDesc.
      */
-    MackageDesc mackageDesc(String name);
+    PackageDesc mackageDesc(String name);
 
     /**
-     * Install a Mackage in the Toolbox.
+     * Install a Package in the Toolbox.
      *
-     * @param name the name of the Mackage.
-     * @exception MackageInstallException when <code>name</code> cannot
+     * @param name the name of the Package.
+     * @exception PackageInstallException when <code>name</code> cannot
      *     be installed.
      */
-    void install(String name) throws MackageInstallException;
+    void install(String name) throws PackageInstallException;
 
     /**
-     * Install a Mackage in the Toolbox and instantiate in the Rack.
+     * Install a Package in the Toolbox and instantiate in the Rack.
      *
-     * @param name the name of the Mackage.
+     * @param name the name of the Package.
      * @param p the policy to install
-     * @exception MackageInstallException when <code>name</code> cannot
+     * @exception PackageInstallException when <code>name</code> cannot
      *     be installed.
      */
-    void installAndInstantiate(String name, Policy p) throws MackageInstallException, DeployException;
+    void installAndInstantiate(String name, Policy p) throws PackageInstallException, DeployException;
 
     /**
-     * Remove a Mackage from the toolbox.
+     * Remove a Package from the toolbox.
      *
-     * @param name the name of the Mackage.
-     * @exception MackageUninstallException when <code>name</code> cannot
+     * @param name the name of the Package.
+     * @exception PackageUninstallException when <code>name</code> cannot
      *    be uninstalled.
      */
-    void uninstall(String name) throws MackageUninstallException;
+    void uninstall(String name) throws PackageUninstallException;
 
 //     /**
 //      * Updated the system package cache
 //      *
 //      * @param millis timeout in milliseconds
-//      * @exception MackageException when timeout exceeded or an error occurs
+//      * @exception PackageException when timeout exceeded or an error occurs
 //      */
-//     void update(long millis) throws MackageException;
+//     void update(long millis) throws PackageException;
 
     /**
      * Updated the system package cache (default timeout)
      *
-     * @exception MackageException when timeout exceeded or an error occurs
+     * @exception PackageException when timeout exceeded or an error occurs
      */
-    void update() throws MackageException;
+    void update() throws PackageException;
 
     /**
      * Upgrade the system
      *
-     * @exception MackageException when an error occurs
+     * @exception PackageException when an error occurs
      */
-    void upgrade() throws MackageException;
+    void upgrade() throws PackageException;
 
     /**
      * This function sends message to UI to initiate a install
@@ -188,20 +188,20 @@ public interface ToolboxManager
     void requestUninstall(String mackageName);
 
     /**
-     * Register the deployment of a Mackage at a particular URL.
+     * Register the deployment of a Package at a particular URL.
      *
-     * @param url location of the Mackage.
+     * @param url location of the Package.
      * @throws DeployException if deployment fails.
      */
-    void register(String name) throws MackageInstallException;
+    void register(String name) throws PackageInstallException;
 
     /**
-     * Register the deployment of a Mackage at a particular URL.
+     * Register the deployment of a Package at a particular URL.
      *
-     * @param url location of the Mackage.
+     * @param url location of the Package.
      * @throws DeployException if deployment fails.
      */
-    void unregister(String mackageName) throws MackageInstallException;
+    void unregister(String mackageName) throws PackageInstallException;
 
     /**
      * save Upgrade Settings

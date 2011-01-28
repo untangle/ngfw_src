@@ -39,7 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.untangle.uvm.security.NodeId;
-import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.toolbox.PackageDesc;
 
 /**
  * Node settings and properties.
@@ -53,7 +53,7 @@ public class NodeDesc implements Serializable
 
     private final NodeId tid;
 
-    private final MackageDesc mackageDesc;
+    private final PackageDesc mackageDesc;
 
     private final String className;
     private final String reportsClassName;
@@ -72,7 +72,7 @@ public class NodeDesc implements Serializable
     private final int tcpServerReadBufferSize = 8192;
     private final int udpMaxPacketSize = 16384;
 
-    public NodeDesc(NodeId tid, MackageDesc mackageDesc, String className,
+    public NodeDesc(NodeId tid, PackageDesc mackageDesc, String className,
                     String reportsClassName, String nodeBase,
                     List<String> exports, List<String> parents,
                     List<String> uvmResources, boolean singleInstance,
@@ -108,7 +108,7 @@ public class NodeDesc implements Serializable
         return tid;
     }
 
-    public MackageDesc getMackageDesc()
+    public PackageDesc getPackageDesc()
     {
         return mackageDesc;
     }

@@ -65,12 +65,12 @@ import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.toolbox.Application;
 import com.untangle.uvm.toolbox.InstallAndInstantiateComplete;
-import com.untangle.uvm.toolbox.MackageDesc;
-import com.untangle.uvm.toolbox.MackageException;
-import com.untangle.uvm.toolbox.MackageInstallException;
-import com.untangle.uvm.toolbox.MackageInstallRequest;
-import com.untangle.uvm.toolbox.MackageUninstallException;
-import com.untangle.uvm.toolbox.MackageUninstallRequest;
+import com.untangle.uvm.toolbox.PackageDesc;
+import com.untangle.uvm.toolbox.PackageException;
+import com.untangle.uvm.toolbox.PackageInstallException;
+import com.untangle.uvm.toolbox.PackageInstallRequest;
+import com.untangle.uvm.toolbox.PackageUninstallException;
+import com.untangle.uvm.toolbox.PackageUninstallRequest;
 import com.untangle.uvm.toolbox.RackView;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.toolbox.UpstreamManager;
@@ -108,17 +108,17 @@ class ToolboxManagerImpl implements ToolboxManager
         }
     }
 
-    private final Map<String, MackageState> mackageState;
+    private final Map<String, PackageState> mackageState;
     private CronJob cronJob;
     private final UpdateTask updateTask = new UpdateTask();
     private final Map<Long, AptLogTail> tails = new HashMap<Long, AptLogTail>();
 
-    private volatile Map<String, MackageDesc> packageMap;
-    private volatile MackageDesc[] available;
-    private volatile MackageDesc[] installed;
-    private volatile MackageDesc[] uninstalled;
-    private volatile MackageDesc[] upgradable;
-    private volatile MackageDesc[] upToDate;
+    private volatile Map<String, PackageDesc> packageMap;
+    private volatile PackageDesc[] available;
+    private volatile PackageDesc[] installed;
+    private volatile PackageDesc[] uninstalled;
+    private volatile PackageDesc[] upgradable;
+    private volatile PackageDesc[] upToDate;
 
     private volatile boolean updating = false;
     private volatile boolean upgrading = false;
@@ -129,7 +129,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
     private ToolboxManagerImpl()
     {
-        mackageState = loadMackageState();
+        mackageState = loadPackageState();
 
         refreshLists();
     }
@@ -165,24 +165,24 @@ class ToolboxManagerImpl implements ToolboxManager
     public RackView getRackView(Policy p)
     {
 
-        MackageDesc[] available = this.available;
-        MackageDesc[] installed = this.installed;
+        PackageDesc[] available = this.available;
+        PackageDesc[] installed = this.installed;
 
-        Map<String, MackageDesc> nodes = new HashMap<String, MackageDesc>();
-        Map<String, MackageDesc> trials = new HashMap<String, MackageDesc>();
-        Map<String, MackageDesc> libitems = new HashMap<String, MackageDesc>();
+        Map<String, PackageDesc> nodes = new HashMap<String, PackageDesc>();
+        Map<String, PackageDesc> trials = new HashMap<String, PackageDesc>();
+        Map<String, PackageDesc> libitems = new HashMap<String, PackageDesc>();
         Set<String> displayNames = new HashSet<String>();
         Set<String> hiddenApps = new HashSet<String>();
-        for (MackageDesc md : available) {
+        for (PackageDesc md : available) {
             String dn = md.getDisplayName();
-            MackageDesc.Type type = md.getType();
-            if (type == MackageDesc.Type.LIB_ITEM) {
+            PackageDesc.Type type = md.getType();
+            if (type == PackageDesc.Type.LIB_ITEM) {
                 displayNames.add(dn);
                 libitems.put(dn, md);
                 if (md.getHide().contains("true")) {
                     hiddenApps.add(dn);
                 }
-            } else if (type == MackageDesc.Type.TRIAL) {
+            } else if (type == PackageDesc.Type.TRIAL) {
                 // Workaround for Trial display names. better solution
                 // is welcome.
                 String realDn=dn.replaceFirst(" [0-9]+.Day Trial","");
@@ -192,21 +192,21 @@ class ToolboxManagerImpl implements ToolboxManager
             }
         }
 
-        for (MackageDesc md : installed) {
+        for (PackageDesc md : installed) {
             String dn = md.getDisplayName();
-            MackageDesc.Type type = md.getType();
+            PackageDesc.Type type = md.getType();
 
-            if (type == MackageDesc.Type.LIB_ITEM) {
+            if (type == PackageDesc.Type.LIB_ITEM) {
                 libitems.remove(dn);
                 trials.remove(dn);
                 hiddenApps.remove(dn);
-            } else if (type == MackageDesc.Type.TRIAL) {
+            } else if (type == PackageDesc.Type.TRIAL) {
                 // Workaround for Trial display names. better solution is welcome.
                 String realDn=dn.replaceFirst(" [0-9]+.Day Trial","");
                 realDn=realDn.replaceFirst(" Limited Trial","");
                 trials.remove(realDn);
                 hiddenApps.remove(dn);
-            } else if (!md.isInvisible() && (type == MackageDesc.Type.NODE || type == MackageDesc.Type.SERVICE)) {
+            } else if (!md.isInvisible() && (type == PackageDesc.Type.NODE || type == PackageDesc.Type.SERVICE)) {
                 displayNames.add(dn);
                 nodes.put(dn, md);
                 hiddenApps.remove(dn);
@@ -234,9 +234,9 @@ class ToolboxManagerImpl implements ToolboxManager
 
         List<Application> apps = new ArrayList<Application>(displayNames.size());
         for (String dn : displayNames) {
-            MackageDesc l = libitems.get(dn);
-            MackageDesc t = trials.get(dn);
-            MackageDesc n = nodes.get(dn);
+            PackageDesc l = libitems.get(dn);
+            PackageDesc t = trials.get(dn);
+            PackageDesc n = nodes.get(dn);
 
             if (!hiddenApps.contains(dn) && ( l != null || t != null || n != null)) {
                 Application a = new Application(l, t, n);
@@ -249,14 +249,14 @@ class ToolboxManagerImpl implements ToolboxManager
         Map<String, License> licenseMap = new HashMap<String, License>();
         LicenseManager lm = LocalUvmContextFactory.context().licenseManager();
         for (NodeDesc nd : instances) {
-            String n = nd.getMackageDesc().getName();
+            String n = nd.getPackageDesc().getName();
             licenseMap.put(n, lm.getLicense(n));
         }
         Map<NodeId, NodeState> runStates=nm.allNodeStates();
         return new RackView(apps, instances, statDescs, licenseMap, runStates);
     }
 
-    public UpgradeStatus getUpgradeStatus(boolean doUpdate) throws MackageException, InterruptedException
+    public UpgradeStatus getUpgradeStatus(boolean doUpdate) throws PackageException, InterruptedException
     {
         if(doUpdate && !upgrading && !installing) 
             update();
@@ -282,25 +282,25 @@ class ToolboxManagerImpl implements ToolboxManager
     }
     
     // all known mackages
-    public MackageDesc[] available()
+    public PackageDesc[] available()
     {
-        MackageDesc[] available = this.available;
-        MackageDesc[] retVal = new MackageDesc[available.length];
+        PackageDesc[] available = this.available;
+        PackageDesc[] retVal = new PackageDesc[available.length];
         System.arraycopy(available, 0, retVal, 0, retVal.length);
         return retVal;
     }
 
-    public MackageDesc[] installed()
+    public PackageDesc[] installed()
     {
-        MackageDesc[] installed = this.installed;
-        MackageDesc[] retVal = new MackageDesc[installed.length];
+        PackageDesc[] installed = this.installed;
+        PackageDesc[] retVal = new PackageDesc[installed.length];
         System.arraycopy(installed, 0, retVal, 0, retVal.length);
         return retVal;
     }
 
     public boolean isInstalled(String name)
     {
-        for (MackageDesc md : this.installed) {
+        for (PackageDesc md : this.installed) {
             if (md.getName().equals(name)) {
                 return true;
             }
@@ -309,51 +309,51 @@ class ToolboxManagerImpl implements ToolboxManager
         return false;
     }
 
-    public MackageDesc[] installedVisible()
+    public PackageDesc[] installedVisible()
     {
-        MackageDesc[] installed = installed();
-        Vector<MackageDesc> visibleVector = new Vector<MackageDesc>();
-        for( MackageDesc mackageDesc : installed ){
+        PackageDesc[] installed = installed();
+        Vector<PackageDesc> visibleVector = new Vector<PackageDesc>();
+        for( PackageDesc mackageDesc : installed ){
             if( mackageDesc.getViewPosition() >= 0 )
                 visibleVector.add(mackageDesc);
         }
-        return visibleVector.toArray(new MackageDesc[0]);
+        return visibleVector.toArray(new PackageDesc[0]);
     }
 
-    public MackageDesc[] uninstalled()
+    public PackageDesc[] uninstalled()
     {
-        MackageDesc[] uninstalled = this.uninstalled;
-        MackageDesc[] retVal = new MackageDesc[uninstalled.length];
+        PackageDesc[] uninstalled = this.uninstalled;
+        PackageDesc[] retVal = new PackageDesc[uninstalled.length];
         System.arraycopy(uninstalled, 0, retVal, 0, retVal.length);
         return retVal;
     }
 
-    public MackageDesc[] upgradable()
+    public PackageDesc[] upgradable()
     {
-        MackageDesc[] upgradable = this.upgradable;
-        MackageDesc[] retVal = new MackageDesc[upgradable.length];
+        PackageDesc[] upgradable = this.upgradable;
+        PackageDesc[] retVal = new PackageDesc[upgradable.length];
         System.arraycopy(upgradable, 0, retVal, 0, retVal.length);
         return retVal;
     }
 
-    public MackageDesc[] upToDate()
+    public PackageDesc[] upToDate()
     {
-        MackageDesc[] upToDate = this.upToDate;
-        MackageDesc[] retVal = new MackageDesc[upToDate.length];
+        PackageDesc[] upToDate = this.upToDate;
+        PackageDesc[] retVal = new PackageDesc[upToDate.length];
         System.arraycopy(upToDate, 0, retVal, 0, retVal.length);
         return retVal;
     }
 
-    public MackageDesc mackageDesc(String name)
+    public PackageDesc mackageDesc(String name)
     {
         return packageMap.get(name);
     }
 
-    public void install(String name) throws MackageInstallException
+    public void install(String name) throws PackageInstallException
     {
         logger.info("install(" + name + ")");
 
-        MackageDesc req = mackageDesc(name);
+        PackageDesc req = mackageDesc(name);
         if (null == req) {
             logger.warn("No such mackage: " + name);
         }
@@ -365,12 +365,12 @@ class ToolboxManagerImpl implements ToolboxManager
         try {
             subnodes = predictNodeInstall(name);
         }
-        catch (MackageException e) {
-            throw new MackageInstallException(e);
+        catch (PackageException e) {
+            throw new PackageInstallException(e);
         }
         for (String node : subnodes) {
-            MackageDesc pkgDesc = mackageDesc(node);
-            MackageDesc uvmDesc = mackageDesc("untangle-vm");
+            PackageDesc pkgDesc = mackageDesc(node);
+            PackageDesc uvmDesc = mackageDesc("untangle-vm");
             if (pkgDesc == null || uvmDesc == null) {
                 logger.warn("Unable to read package desc");
                 continue; //assume it matches
@@ -394,7 +394,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
             if (!pkgVer.equals(uvmVer)) {
                 logger.warn("Unable to install: " + node + " version mismatch (" + pkgVer + " != " + uvmVer + ")");
-                throw new MackageInstallException("Unable to install: " + node + " version mismatch (" + pkgVer + " != " + uvmVer + ")");
+                throw new PackageInstallException("Unable to install: " + node + " version mismatch (" + pkgVer + " != " + uvmVer + ")");
             }
         }
 
@@ -411,9 +411,9 @@ class ToolboxManagerImpl implements ToolboxManager
         try {
             installing = true;
             execApt("install " + name, alt.getKey());
-        } catch (MackageException exn) {
+        } catch (PackageException exn) {
             logger.warn("install failed", exn);
-            throw new MackageInstallException(exn);
+            throw new PackageInstallException(exn);
         } finally {
             installing = false;
         }
@@ -423,7 +423,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
     private final Object installAndInstantiateLock = new Object();
 
-    public void installAndInstantiate(final String name, final Policy p) throws MackageInstallException
+    public void installAndInstantiate(final String name, final Policy p) throws PackageInstallException
     {
         logger.info("installAndInstantiate( " + name + ")");
         
@@ -435,7 +435,7 @@ class ToolboxManagerImpl implements ToolboxManager
             if (isInstalled(name)) {
                 logger.warn("mackage " + name + " already installed, ignoring");
                 //fix for bug #7675
-                //throw new MackageInstallException("package " + name + " already installed");
+                //throw new PackageInstallException("package " + name + " already installed");
                 return;
             }
 
@@ -445,8 +445,8 @@ class ToolboxManagerImpl implements ToolboxManager
             try {
                 subnodes = predictNodeInstall(name);
             }
-            catch (MackageException e) {
-                throw new MackageInstallException(e);
+            catch (PackageException e) {
+                throw new PackageInstallException(e);
             }
                 
             /**
@@ -468,7 +468,7 @@ class ToolboxManagerImpl implements ToolboxManager
                     }
                 } catch (DeployException exn) {
                     logger.warn("could not deploy", exn);
-                } catch (MackageInstallException e) {
+                } catch (PackageInstallException e) {
                     logger.warn("could not register", e);
                 } catch (Exception exn) {
                     logger.warn("could not instantiate", exn);
@@ -476,7 +476,7 @@ class ToolboxManagerImpl implements ToolboxManager
             }
 
             LocalMessageManager mm = mctx.localMessageManager();
-            MackageDesc mackageDesc = mackageDesc(name);
+            PackageDesc mackageDesc = mackageDesc(name);
             Message m = new InstallAndInstantiateComplete(mackageDesc);
             mm.submitMessage(m);
         }
@@ -484,7 +484,7 @@ class ToolboxManagerImpl implements ToolboxManager
         logger.info("installAndInstantiate( " + name + ") return");
     }
 
-    public void uninstall(String name) throws MackageUninstallException
+    public void uninstall(String name) throws PackageUninstallException
     {
         // stop intances
         NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().nodeManager();
@@ -497,15 +497,15 @@ class ToolboxManagerImpl implements ToolboxManager
         try {
             removing = true;
             execApt("remove " + name);
-        } catch (MackageException exn) {
-            throw new MackageUninstallException(exn);
+        } catch (PackageException exn) {
+            throw new PackageUninstallException(exn);
         } finally {
             removing = false;
         }
 
     }
 
-    public void update() throws MackageException
+    public void update() throws PackageException
     {
         int maxtries = 4;
         for (int i=0; i<maxtries; i++) {
@@ -514,14 +514,14 @@ class ToolboxManagerImpl implements ToolboxManager
                 update(15000*(i+1));
                 return;
             }
-            catch (MackageException e) {
+            catch (PackageException e) {
                 // try again with no timeout
                 logger.warn("ut-apt update exception: " + e + " - trying again...");
             }
         }
     }
 
-    public void upgrade() throws MackageException
+    public void upgrade() throws PackageException
     {
         final AptLogTail alt;
 
@@ -536,7 +536,7 @@ class ToolboxManagerImpl implements ToolboxManager
         try {
             upgrading = true;
             execApt("upgrade", alt.getKey());
-        } catch (MackageException exn) {
+        } catch (PackageException exn) {
             logger.warn("could not upgrade", exn);
             throw exn;
         } finally {
@@ -548,20 +548,20 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public void requestInstall(String mackageName)
     {
-        MackageDesc md = packageMap.get(mackageName);
+        PackageDesc md = packageMap.get(mackageName);
         if (null == md) {
             logger.warn("Could not find package for: " + mackageName);
             return;
         }
 
-        MackageInstallRequest mir = new MackageInstallRequest(md,isInstalled(mackageName));
+        PackageInstallRequest mir = new PackageInstallRequest(md,isInstalled(mackageName));
         LocalMessageManager mm = LocalUvmContextFactory.context().localMessageManager();
 
         // Make sure there isn't an existing outstanding install request for this mackage.
         for (Message msg : mm.getMessages()) {
-            if (msg instanceof MackageInstallRequest) {
-                MackageInstallRequest existingMir = (MackageInstallRequest)msg;
-                if (existingMir.getMackageDesc() == md) {
+            if (msg instanceof PackageInstallRequest) {
+                PackageInstallRequest existingMir = (PackageInstallRequest)msg;
+                if (existingMir.getPackageDesc() == md) {
                     logger.warn("requestInstall(" + mackageName + "): ignoring request; install request already pending");
                     return;
                 }
@@ -574,20 +574,20 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public void requestUninstall(String mackageName)
     {
-        MackageDesc md = packageMap.get(mackageName);
+        PackageDesc md = packageMap.get(mackageName);
         if (null == md) {
             logger.warn("Could not find package for: " + mackageName);
             return;
         }
 
-        MackageUninstallRequest mir = new MackageUninstallRequest(md,isInstalled(mackageName));
+        PackageUninstallRequest mir = new PackageUninstallRequest(md,isInstalled(mackageName));
         LocalMessageManager mm = LocalUvmContextFactory.context().localMessageManager();
 
         // Make sure there isn't an existing outstanding uninstall request for this mackage.
         for (Message msg : mm.getMessages()) {
-            if (msg instanceof MackageUninstallRequest) {
-                MackageUninstallRequest existingMir = (MackageUninstallRequest)msg;
-                if (existingMir.getMackageDesc() == md) {
+            if (msg instanceof PackageUninstallRequest) {
+                PackageUninstallRequest existingMir = (PackageUninstallRequest)msg;
+                if (existingMir.getPackageDesc() == md) {
                     logger.warn("requestUninstall(" + mackageName + "): ignoring request; install request already pending");
                     return;
                 }
@@ -599,7 +599,7 @@ class ToolboxManagerImpl implements ToolboxManager
     }
     
     // registers a mackage and restarts all instances in previous state
-    public void register(String pkgName) throws MackageInstallException
+    public void register(String pkgName) throws PackageInstallException
     {
         logger.debug("registering mackage: " + pkgName);
 
@@ -683,7 +683,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
     // package private methods ------------------------------------------------
 
-    protected  URL getResourceDir(MackageDesc md)
+    protected  URL getResourceDir(PackageDesc md)
     {
         try {
             return new URL(TOOLBOX_URL, md.getName() + "-impl/");
@@ -695,15 +695,15 @@ class ToolboxManagerImpl implements ToolboxManager
 
     protected  boolean isEnabled(String mackageName)
     {
-        MackageState ms = mackageState.get(mackageName);
+        PackageState ms = mackageState.get(mackageName);
         return null == ms ? true : ms.isEnabled();
     }
 
-    protected List<MackageDesc> getInstalledAndAutoStart()
+    protected List<PackageDesc> getInstalledAndAutoStart()
     {
-        List<MackageDesc> mds = new ArrayList<MackageDesc>();
+        List<PackageDesc> mds = new ArrayList<PackageDesc>();
 
-        for (MackageDesc md : installed()) {
+        for (PackageDesc md : installed()) {
             if (md.isAutoStart()) {
                 mds.add(md);
             }
@@ -721,7 +721,7 @@ class ToolboxManagerImpl implements ToolboxManager
             logger.debug("doing automatic update");
             try {
                 update();
-            } catch (MackageException exn) {
+            } catch (PackageException exn) {
                 logger.warn("could not update", exn);
             }
 
@@ -729,7 +729,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 logger.debug("doing automatic upgrade");
                 try {
                     upgrade();
-                } catch (MackageException exn) {
+                } catch (PackageException exn) {
                     logger.warn("could not upgrade", exn);
                 }
             }
@@ -738,17 +738,17 @@ class ToolboxManagerImpl implements ToolboxManager
 
     // private methods --------------------------------------------------------
     @SuppressWarnings("unchecked") //Query
-    private Map<String, MackageState> loadMackageState()
+    private Map<String, PackageState> loadPackageState()
     {
-        final Map<String, MackageState> m = new HashMap<String, MackageState>();
+        final Map<String, PackageState> m = new HashMap<String, PackageState>();
 
         TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(org.hibernate.Session s)
                 {
-                    Query q = s.createQuery("from MackageState ms");
-                    for (MackageState ms : (List<MackageState>)q.list()) {
-                        m.put(ms.getMackageName(), ms);
+                    Query q = s.createQuery("from PackageState ms");
+                    for (PackageState ms : (List<PackageState>)q.list()) {
+                        m.put(ms.getPackageName(), ms);
                     }
                     return true;
                 }
@@ -760,7 +760,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
     // package list functions -------------------------------------------------
 
-    private void update(long millis) throws MackageException
+    private void update(long millis) throws PackageException
     {
         FutureTask<Object> f = new FutureTask<Object>(new Callable<Object>()
             {
@@ -785,14 +785,14 @@ class ToolboxManagerImpl implements ToolboxManager
                 tryAgain = true;
             } catch (ExecutionException exn) {
                 Throwable t = exn.getCause();
-                if (t instanceof MackageException) {
-                    throw (MackageException)t;
+                if (t instanceof PackageException) {
+                    throw (PackageException)t;
                 } else {
                     throw new RuntimeException(t);
                 }
             } catch (TimeoutException exn) {
                 f.cancel(true);
-                throw new MackageException("ut-apt timed out");
+                throw new PackageException("ut-apt timed out");
             }
         } while (tryAgain);
     }
@@ -801,13 +801,13 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         packageMap = parsePkgs();
 
-        List<MackageDesc> availList = new ArrayList<MackageDesc>(packageMap.size());
-        List<MackageDesc> instList = new ArrayList<MackageDesc>(packageMap.size());
-        List<MackageDesc> uninstList = new ArrayList<MackageDesc>(packageMap.size());
-        List<MackageDesc> curList = new ArrayList<MackageDesc>(packageMap.size());
-        List<MackageDesc> upList = new ArrayList<MackageDesc>(packageMap.size());
+        List<PackageDesc> availList = new ArrayList<PackageDesc>(packageMap.size());
+        List<PackageDesc> instList = new ArrayList<PackageDesc>(packageMap.size());
+        List<PackageDesc> uninstList = new ArrayList<PackageDesc>(packageMap.size());
+        List<PackageDesc> curList = new ArrayList<PackageDesc>(packageMap.size());
+        List<PackageDesc> upList = new ArrayList<PackageDesc>(packageMap.size());
 
-        for (MackageDesc md : packageMap.values()) {
+        for (PackageDesc md : packageMap.values()) {
             availList.add(md);
 
             if (null == md.getInstalledVersion()) {
@@ -816,7 +816,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 instList.add(md);
 
 
-                if (MackageDesc.Type.LIB_ITEM == md.getType()) {
+                if (PackageDesc.Type.LIB_ITEM == md.getType()) {
                     // lib items always up to date
                     curList.add(md);
                 } else {
@@ -831,24 +831,24 @@ class ToolboxManagerImpl implements ToolboxManager
             }
         }
 
-        available = availList.toArray(new MackageDesc[availList.size()]);
-        installed = instList.toArray(new MackageDesc[instList.size()]);
-        uninstalled = uninstList.toArray(new MackageDesc[uninstList.size()]);
-        upgradable = upList.toArray(new MackageDesc[upList.size()]);
-        upToDate = curList.toArray(new MackageDesc[curList.size()]);
+        available = availList.toArray(new PackageDesc[availList.size()]);
+        installed = instList.toArray(new PackageDesc[instList.size()]);
+        uninstalled = uninstList.toArray(new PackageDesc[uninstList.size()]);
+        upgradable = upList.toArray(new PackageDesc[upList.size()]);
+        upToDate = curList.toArray(new PackageDesc[curList.size()]);
     }
 
-    private Map<String, MackageDesc> parsePkgs()
+    private Map<String, PackageDesc> parsePkgs()
     {
         Map<String, String> instList = parseInstalled();
-        Map<String, MackageDesc> pkgs = parseAvailable(instList);
+        Map<String, PackageDesc> pkgs = parseAvailable(instList);
 
         return pkgs;
     }
 
-    private Map<String, MackageDesc> parseAvailable(Map<String, String> instList)
+    private Map<String, PackageDesc> parseAvailable(Map<String, String> instList)
     {
-        Map<String, MackageDesc> pkgs;
+        Map<String, PackageDesc> pkgs;
 
         synchronized(this) {
             try {
@@ -857,16 +857,16 @@ class ToolboxManagerImpl implements ToolboxManager
                 pkgs = readPkgList(p.getInputStream(), instList);
             } catch (Exception exn) {
                 logger.fatal("Unable to parse ut-apt available list, proceeding with empty list", exn);
-                return new HashMap<String, MackageDesc>();
+                return new HashMap<String, PackageDesc>();
             }
         }
 
         return pkgs;
     }
 
-    private Map<String, MackageDesc> readPkgList(InputStream is, Map<String, String> instList) throws IOException
+    private Map<String, PackageDesc> readPkgList(InputStream is, Map<String, String> instList) throws IOException
     {
-        Map<String, MackageDesc> pkgs = new HashMap<String, MackageDesc>();
+        Map<String, PackageDesc> pkgs = new HashMap<String, PackageDesc>();
 
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
@@ -904,7 +904,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
                 String name = m.get("package");
 
-                MackageDesc md = new MackageDesc(m, instList.get(name));
+                PackageDesc md = new PackageDesc(m, instList.get(name));
                 if (null == md.getType()) {
                     continue;
                 }
@@ -994,7 +994,7 @@ class ToolboxManagerImpl implements ToolboxManager
         return m;
     }
 
-    private synchronized void execApt(String command, long key) throws MackageException
+    private synchronized void execApt(String command, long key) throws PackageException
     {
         String cmdStr = System.getProperty("uvm.bin.dir") + "/ut-apt " + (0 > key ? "" : "-k " + key + " ") + command;
 
@@ -1021,7 +1021,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 logger.debug("ut-apt done.");
                 int e = proc.exitValue();
                 if (0 != e) {
-                    throw new MackageException("ut-apt " + command + " exited with: " + e);
+                    throw new PackageException("ut-apt " + command + " exited with: " + e);
                 }
             } catch (IOException e) {
                 logger.info( "exception while in mackage: ", e);
@@ -1031,7 +1031,7 @@ class ToolboxManagerImpl implements ToolboxManager
         refreshLists();
     }
 
-    private void execApt(String command) throws MackageException
+    private void execApt(String command) throws PackageException
     {
         execApt(command, -1);
     }
@@ -1039,7 +1039,7 @@ class ToolboxManagerImpl implements ToolboxManager
     /**
      * Returns a list of packages that will be installed as a result of installing this node
      */
-    private List<String> predictNodeInstall(String pkg) throws MackageException
+    private List<String> predictNodeInstall(String pkg) throws PackageException
     {
         logger.info("predictNodeInstall(" + pkg + ")");
         
@@ -1053,13 +1053,13 @@ class ToolboxManagerImpl implements ToolboxManager
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
                 String line;
                 while (null != (line = br.readLine())) {
-                    MackageDesc md = packageMap.get(line);
+                    PackageDesc md = packageMap.get(line);
                     if (md == null) {
                         logger.debug("Ignoring non-mackage: " + line);
                         continue;
                     }
-                    MackageDesc.Type mdType = md.getType();
-                    if (mdType != MackageDesc.Type.NODE && mdType != MackageDesc.Type.SERVICE) {
+                    PackageDesc.Type mdType = md.getType();
+                    if (mdType != PackageDesc.Type.NODE && mdType != PackageDesc.Type.SERVICE) {
                         logger.debug("Ignoring non-node/service mackage: " + line);
                         continue;
                     }
@@ -1085,7 +1085,7 @@ class ToolboxManagerImpl implements ToolboxManager
                  */
                 int e = proc.exitValue();
                 if (0 != e) {
-                    throw new MackageException("ut-apt predictInstall exited with: " + e);
+                    throw new PackageException("ut-apt predictInstall exited with: " + e);
                 }
             } catch (IOException exn) {
                 logger.warn("could not predict node install: " + pkg, exn);

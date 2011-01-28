@@ -33,33 +33,32 @@
 
 package com.untangle.uvm.toolbox;
 
-import com.untangle.uvm.message.Message;
-
 /**
- * Signals a request from the GUI to initiate installation of a Debian package.
+ * Signals that a problem has occured uninstalling a Debian package.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class MackageInstallRequest extends Message
+public class PackageUninstallException extends PackageException
 {
-    private final MackageDesc mackageDesc;
-    private final boolean installed;
-
-    public MackageInstallRequest(MackageDesc mackageDesc, boolean installed)
+    public PackageUninstallException()
     {
-        this.mackageDesc = mackageDesc;
-        this.installed = installed;
+        super();
     }
 
-    public MackageDesc getMackageDesc()
+    public PackageUninstallException(String message)
     {
-        return mackageDesc;
+        super(message);
     }
 
-    public boolean isInstalled()
+    public PackageUninstallException(String message, Throwable cause)
     {
-        return installed;
+        super(message, cause);
+    }
+
+    public PackageUninstallException(Throwable cause)
+    {
+        super(cause);
     }
 }

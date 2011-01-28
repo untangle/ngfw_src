@@ -49,16 +49,16 @@ public class DownloadProgress extends Message
     private final int bytesDownloaded;
     private final int size;
     private final String speed;
-    private final MackageDesc requestingMackage;
+    private final PackageDesc requestingPackage;
 
     public DownloadProgress(String name, int bytesDownloaded, int size,
-                            String speed, MackageDesc requestingMackage)
+                            String speed, PackageDesc requestingPackage)
     {
         this.name = name;
         this.bytesDownloaded = bytesDownloaded;
         this.size = size;
         this.speed = speed;
-        this.requestingMackage = requestingMackage;
+        this.requestingPackage = requestingPackage;
     }
 
     // accessors --------------------------------------------------------------
@@ -83,14 +83,14 @@ public class DownloadProgress extends Message
         return speed;
     }
 
-    public MackageDesc getRequestingMackage()
+    public PackageDesc getRequestingPackage()
     {
-        return requestingMackage;
+        return requestingPackage;
     }
 
     public boolean isUpgrade()
     {
-        return null == requestingMackage;
+        return null == requestingPackage;
     }
 
     // Object methods ---------------------------------------------------------

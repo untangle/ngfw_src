@@ -79,10 +79,10 @@ public interface UpstreamManager
      *
      * @param name a <code>String</code> naming the service to enable.
      * @exception IllegalArgumentException if the name does not name a service
-     * @exception MackageInstallException if an error occurs while installing the configPackage
+     * @exception PackageInstallException if an error occurs while installing the configPackage
      */
     void enableService(String name)
-        throws IllegalArgumentException, MackageInstallException;
+        throws IllegalArgumentException, PackageInstallException;
 
     /**
      * <code>disableService</code> disables the service with the given name.
@@ -94,8 +94,8 @@ public interface UpstreamManager
      *
      * @param name a <code>String</code> naming the service to disable.
      * @exception IllegalArgumentException if the name does not name a service or if the service has no configPackage
-     * @exception MackageUninstallException if an exception occurs while uninstalling the configPackage
+     * @exception PackageUninstallException if an exception occurs while uninstalling the configPackage
      */
     void disableService(String name)
-        throws IllegalArgumentException, MackageUninstallException;
+        throws IllegalArgumentException, PackageUninstallException;
 }

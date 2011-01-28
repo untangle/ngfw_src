@@ -46,12 +46,12 @@ public class InstallTimeout extends Message
 {
 
     private final long time;
-    private final MackageDesc requestingMackage;
+    private final PackageDesc requestingPackage;
 
-    public InstallTimeout(long time, MackageDesc requestingMackage)
+    public InstallTimeout(long time, PackageDesc requestingPackage)
     {
         this.time = time;
-        this.requestingMackage = requestingMackage;
+        this.requestingPackage = requestingPackage;
     }
 
     // accessors --------------------------------------------------------------
@@ -61,13 +61,13 @@ public class InstallTimeout extends Message
         return time;
     }
 
-    public MackageDesc getRequestingMackage()
+    public PackageDesc getRequestingPackage()
     {
-        return requestingMackage;
+        return requestingPackage;
     }
 
     public boolean isUpgrade()
     {
-        return null == requestingMackage;
+        return null == requestingPackage;
     }
 }

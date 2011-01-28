@@ -42,24 +42,24 @@ import com.untangle.uvm.UvmException;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class MackageException extends UvmException
+public class PackageException extends UvmException
 {
-    public MackageException()
+    public PackageException()
     {
         super();
     }
 
-    public MackageException(String message)
+    public PackageException(String message)
     {
         super(message);
     }
 
-    public MackageException(String message, Throwable cause)
+    public PackageException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
-    public MackageException(Throwable cause)
+    public PackageException(Throwable cause)
     {
         super(cause);
     }

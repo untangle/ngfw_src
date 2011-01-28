@@ -68,7 +68,7 @@ import com.untangle.uvm.reports.SummarySection;
 import com.untangle.uvm.reports.TableOfContents;
 import com.untangle.uvm.reports.User;
 import com.untangle.uvm.security.NodeId;
-import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.toolbox.PackageDesc;
 
 class RemoteReportingManagerImpl implements RemoteReportingManager
 {
@@ -538,7 +538,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         Map<Integer, Application> m = new TreeMap<Integer, Application>();
 
         for (String s : appNames) {
-            MackageDesc md = tm.mackageDesc(s);
+            PackageDesc md = tm.mackageDesc(s);
 
             int pos;
 

@@ -37,7 +37,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import com.untangle.uvm.security.NodeId;
-import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.toolbox.PackageDesc;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.VnetSessionDesc;
 
@@ -78,11 +78,11 @@ public interface NodeContext
     NodePreferences getNodePreferences();
 
     /**
-     * Get the {@link MackageDesc} corresponding to this instance.
+     * Get the {@link PackageDesc} corresponding to this instance.
      *
-     * @return the MackageDesc.
+     * @return the PackageDesc.
      */
-    MackageDesc getMackageDesc();
+    PackageDesc getPackageDesc();
 
     // XXX should be LocalNodeContext ------------------------------------
 

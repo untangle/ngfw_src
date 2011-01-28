@@ -36,7 +36,7 @@ import com.untangle.uvm.toolbox.DownloadProgress;
 import com.untangle.uvm.toolbox.DownloadSummary;
 import com.untangle.uvm.toolbox.InstallComplete;
 import com.untangle.uvm.toolbox.InstallTimeout;
-import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.toolbox.PackageDesc;
 
 /**
  * Tails apt output to produce progress messages for the Swing GUI.
@@ -61,7 +61,7 @@ class AptLogTail implements Runnable
     }
 
     private final long key;
-    private final MackageDesc requestingMackage;
+    private final PackageDesc requestingPackage;
 
     private final RandomAccessFile raf;
 
@@ -70,12 +70,12 @@ class AptLogTail implements Runnable
 
     // constructor ------------------------------------------------------------
 
-    AptLogTail(long key, MackageDesc requestingMackage)
+    AptLogTail(long key, PackageDesc requestingPackage)
     {
         logger.debug("new AptLogTail: " + key);
 
         this.key = key;
-        this.requestingMackage = requestingMackage;
+        this.requestingPackage = requestingPackage;
 
         File f = new File(APT_LOG);
         if (!f.exists()) {
@@ -161,7 +161,7 @@ class AptLogTail implements Runnable
         }
 
         logger.debug("Sending DownloadSummary(downloadQueue.size()=" + downloadQueue.size() + ", totalSize=" + totalSize + ")");
-        mm.submitMessage(new DownloadSummary(downloadQueue.size(), totalSize, requestingMackage));
+        mm.submitMessage(new DownloadSummary(downloadQueue.size(), totalSize, requestingPackage));
 
         for (PackageInfo pi : downloadQueue) {
             logger.debug("downloading: " + pi);
@@ -170,11 +170,11 @@ class AptLogTail implements Runnable
                 Matcher m = DOWNLOAD_PATTERN.matcher(line);
                 if (line.startsWith("DOWNLOAD SUCCEEDED: ")) {
                     logger.debug("Sending DownloadComplete");
-                    mm.submitMessage(new DownloadComplete(true, requestingMackage));
+                    mm.submitMessage(new DownloadComplete(true, requestingPackage));
                     break;
                 } else if (line.startsWith("DOWNLOAD FAILED: " )) {
                     logger.debug("Sending DownloadComplete (failed)");
-                    mm.submitMessage(new DownloadComplete(false, requestingMackage));
+                    mm.submitMessage(new DownloadComplete(false, requestingPackage));
                     break;
                 } else if (m.matches()) {
                     int bytesDownloaded = Integer.parseInt(m.group(1)) * 1000;
@@ -182,7 +182,7 @@ class AptLogTail implements Runnable
 
                     // enqueue event
                     DownloadProgress dpe;
-                    if (null == requestingMackage) {
+                    if (null == requestingPackage) {
                         dpe = new DownloadProgress
                             (pi.file, bytesDownloaded, pi.size, speed, null);
                     } else {
@@ -193,7 +193,7 @@ class AptLogTail implements Runnable
                             soFar += ppi.bytesDownloaded;
                         }
 
-                        dpe = new DownloadProgress(pi.file, soFar, totalSize, speed, requestingMackage);
+                        dpe = new DownloadProgress(pi.file, soFar, totalSize, speed, requestingPackage);
                     }
 
                     logger.debug("Sending DownloadProgress:" + dpe);
@@ -205,7 +205,7 @@ class AptLogTail implements Runnable
         }
 
         logger.debug("Sending InstallComplete");
-        mm.submitMessage(new InstallComplete(true, requestingMackage));
+        mm.submitMessage(new InstallComplete(true, requestingPackage));
     }
 
     private String readLine()
@@ -225,7 +225,7 @@ class AptLogTail implements Runnable
                             // just end the thread adding TimeoutEvent
                             logger.warn("AptLogTail timing out: "
                                         + (t - lastActivity));
-                            mm.submitMessage(new InstallTimeout(t, requestingMackage));
+                            mm.submitMessage(new InstallTimeout(t, requestingPackage));
                             throw new RuntimeException("timing out: " + (t - lastActivity));
                         } else {
                             Thread.sleep(100);
@@ -248,7 +248,7 @@ class AptLogTail implements Runnable
 
     private boolean isUpgrade()
     {
-        return null == requestingMackage;
+        return null == requestingPackage;
     }
 
     private static class PackageInfo
