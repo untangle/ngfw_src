@@ -453,7 +453,7 @@ int          list_remove_val_dups  (list_t* ll, void* val)
 int          list_pop_head   ( list_t* ll, void** val )
 {
     list_node_t* head;
-    int          ret;
+    int          ret = 0;
 
     if ( ll == NULL || val == NULL ) { errno = EINVAL; return errlogargs(); }
 
@@ -478,7 +478,7 @@ int          list_pop_head   ( list_t* ll, void** val )
 int          list_pop_tail   ( list_t* ll, void** val )
 {
     list_node_t* tail;
-    int          ret;
+    int          ret = 0;
 
     if ( ll == NULL || val == NULL ) { errno = EINVAL; return errlogargs(); }
 
