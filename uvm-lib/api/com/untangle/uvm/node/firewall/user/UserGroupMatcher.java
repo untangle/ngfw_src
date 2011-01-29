@@ -3,7 +3,7 @@ package com.untangle.uvm.node.firewall.user;
 import java.util.Collections;
 import java.util.List;
 
-import com.untangle.uvm.client.RemoteUvmContextFactory;
+import com.untangle.uvm.RemoteUvmContextFactory;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 

@@ -37,8 +37,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.client.RemoteUvmContextFactory;
-import com.untangle.uvm.client.RemoteUvmContext;
+import com.untangle.uvm.RemoteUvmContextFactory;
+import com.untangle.uvm.RemoteUvmContext;
 import com.untangle.uvm.engine.DataSourceFactory;
 import com.untangle.uvm.reports.ApplicationData;
 import com.untangle.uvm.reports.ColumnDesc;

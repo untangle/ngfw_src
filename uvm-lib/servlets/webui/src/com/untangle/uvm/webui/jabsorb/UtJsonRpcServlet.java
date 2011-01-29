@@ -29,8 +29,8 @@ import org.apache.log4j.Logger;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONRPCServlet;
 
-import com.untangle.uvm.client.RemoteUvmContextFactory;
-import com.untangle.uvm.client.RemoteUvmContext;
+import com.untangle.uvm.RemoteUvmContextFactory;
+import com.untangle.uvm.RemoteUvmContext;
 import com.untangle.uvm.servlet.ServletUtils;
 
 /**

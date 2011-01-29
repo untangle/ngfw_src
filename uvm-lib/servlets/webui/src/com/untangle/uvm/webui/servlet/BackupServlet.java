@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.client.RemoteUvmContextFactory;
-import com.untangle.uvm.client.RemoteUvmContext;
+import com.untangle.uvm.RemoteUvmContextFactory;
+import com.untangle.uvm.RemoteUvmContext;
 
 /**
  * A servlet for backup UVM configuration

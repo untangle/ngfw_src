@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.untangle.uvm.client.RemoteUvmContextFactory;
+import com.untangle.uvm.RemoteUvmContextFactory;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.Parser;
 

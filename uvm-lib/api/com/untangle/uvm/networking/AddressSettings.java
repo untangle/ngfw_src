@@ -305,7 +305,7 @@ public class AddressSettings implements Serializable, Validatable
         /* if using the public address then, get the address from the settings. */
         String publicAddress = this.getPublicAddress();
 
-        IPAddress primaryAddress = com.untangle.uvm.client.RemoteUvmContextFactory.context().networkManager().getPrimaryAddress();
+        IPAddress primaryAddress = com.untangle.uvm.RemoteUvmContextFactory.context().networkManager().getPrimaryAddress();
         
         /* has public address trumps over all other settings */
         if ( this.getIsPublicAddressEnabled() && ( publicAddress != null ) && ( publicAddress.trim().length() > 0 )) {

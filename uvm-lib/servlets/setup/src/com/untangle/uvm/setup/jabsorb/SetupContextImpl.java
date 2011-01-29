@@ -25,8 +25,8 @@ import javax.transaction.TransactionRolledbackException;
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.AdminManager;
-import com.untangle.uvm.client.RemoteUvmContextFactory;
-import com.untangle.uvm.client.RemoteUvmContext;
+import com.untangle.uvm.RemoteUvmContextFactory;
+import com.untangle.uvm.RemoteUvmContext;
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.User;
 

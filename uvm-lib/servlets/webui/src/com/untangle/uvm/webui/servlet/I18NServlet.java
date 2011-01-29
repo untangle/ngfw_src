@@ -30,8 +30,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.untangle.uvm.RemoteLanguageManager;
-import com.untangle.uvm.client.RemoteUvmContextFactory;
-import com.untangle.uvm.client.RemoteUvmContext;
+import com.untangle.uvm.RemoteUvmContextFactory;
+import com.untangle.uvm.RemoteUvmContext;
 
 /**
  * A servlet that when given a module name returns a javascript hash containing
