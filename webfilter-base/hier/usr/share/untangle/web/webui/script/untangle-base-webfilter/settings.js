@@ -1115,11 +1115,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex : 'client',
                     renderer : asClient
                 }, {
-                    header : this.i18n._("username"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'uid'
-                }, {
                     id: 'request',
                     header : this.i18n._("request"),
                     width : 200,
@@ -1163,6 +1158,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name : 'clientAddress',
             mapping : 'clientAddress'
                 }, {
+                    name : 'uid',
+            mapping : 'uid'
+                },{
                     name : 'request',
             mapping : 'requestUri'
         }],
