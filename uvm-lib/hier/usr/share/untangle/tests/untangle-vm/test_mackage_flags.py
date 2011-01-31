@@ -1,6 +1,6 @@
 from untangle.ats.uvm_setup import UvmSetup
 
-class TestMackageFlags(UvmSetup):
+class TestPackageFlags(UvmSetup):
     def test_hide_on( self ):
         toolbox_manager = self.remote_uvm_context.toolboxManager()
 

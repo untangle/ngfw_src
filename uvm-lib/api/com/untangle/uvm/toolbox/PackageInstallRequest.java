@@ -44,18 +44,18 @@ import com.untangle.uvm.message.Message;
 @SuppressWarnings("serial")
 public class PackageInstallRequest extends Message
 {
-    private final PackageDesc mackageDesc;
+    private final PackageDesc packageDesc;
     private final boolean installed;
 
-    public PackageInstallRequest(PackageDesc mackageDesc, boolean installed)
+    public PackageInstallRequest(PackageDesc packageDesc, boolean installed)
     {
-        this.mackageDesc = mackageDesc;
+        this.packageDesc = packageDesc;
         this.installed = installed;
     }
 
     public PackageDesc getPackageDesc()
     {
-        return mackageDesc;
+        return packageDesc;
     }
 
     public boolean isInstalled()

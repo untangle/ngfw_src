@@ -631,8 +631,8 @@ Ung.Main=Ext.extend(Object, {
         return rpc.intfManager;
     },
 
-    unactivateNode: function(mackageDesc) {
-        Ung.AppItem.updateState(mackageDesc.displayName,"unactivating");
+    unactivateNode: function(packageDesc) {
+        Ung.AppItem.updateState(packageDesc.displayName,"unactivating");
         rpc.nodeManager.nodeInstances(function (result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 var tids=result;
@@ -654,7 +654,7 @@ Ung.Main=Ext.extend(Object, {
                         */
                     }.createDelegate(this), this.name);
                 }
-        }.createDelegate(mackageDesc), mackageDesc.name);
+        }.createDelegate(packageDesc), packageDesc.name);
     },
 
     // open context sensitive help
@@ -676,7 +676,7 @@ Ung.Main=Ext.extend(Object, {
             this.buildPolicies();
         }.createDelegate(this));
     },
-    getNodeMackageDesc: function(Tid) {
+    getNodePackageDesc: function(Tid) {
         var i;
         if(this.myApps!==null) {
             for(i=0;i<this.myApps.length;i++) {
@@ -691,10 +691,10 @@ Ung.Main=Ext.extend(Object, {
         var node={};
         node.tid=nodeDesc.tid.id;
         node.Tid=nodeDesc.tid;
-        node.md=nodeDesc.mackageDesc;
+        node.md=nodeDesc.packageDesc;
         node.hasPowerButton=nodeDesc.hasPowerButton;
-        node.name=nodeDesc.mackageDesc.name;
-        node.displayName=nodeDesc.mackageDesc.displayName;
+        node.name=nodeDesc.packageDesc.name;
+        node.displayName=nodeDesc.packageDesc.displayName;
         node.license=license;
         node.image='image?name='+node.name;
         node.blingers=statDesc;
@@ -744,7 +744,7 @@ Ung.Main=Ext.extend(Object, {
             var nodeDesc=rpc.rackView.instances.list[i];
             var node=this.createNode(nodeDesc,
                 rpc.rackView.statDescs.map[nodeDesc.tid.id],
-                rpc.rackView.licenseMap.map[nodeDesc.mackageDesc.name],
+                rpc.rackView.licenseMap.map[nodeDesc.packageDesc.name],
                 rpc.rackView.runStates.map[nodeDesc.tid.id]);
             this.nodes.push(node);
         }
@@ -811,27 +811,27 @@ Ung.Main=Ext.extend(Object, {
         Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy ], callback, 1500, 10 );
     },
 
-    installNode: function(mackageDesc, appItem) {
+    installNode: function(packageDesc, appItem) {
         
-        if(mackageDesc===null) {
+        if(packageDesc===null) {
             return;
         }
         
         /* Sanity check to see if the node is already installed. */
-        node = main.getNode(mackageDesc.name);
+        node = main.getNode(packageDesc.name);
         if (( node !== null ) && ( node.Tid.policy.id == rpc.currentPolicy.id )) {
             appItem.hide();
             return;
         }
         
-        Ung.AppItem.updateState(mackageDesc.displayName, "installing");
-        main.addNodePreview(mackageDesc);
+        Ung.AppItem.updateState(packageDesc.displayName, "installing");
+        main.addNodePreview(packageDesc);
         rpc.nodeManager.instantiateAndStart(function (result, exception) {
             if(Ung.Util.handleException(exception)) {
                 main.removeNodePreview(this.name);
                 return;
             }
-        }.createDelegate(mackageDesc), mackageDesc.name, rpc.currentPolicy);
+        }.createDelegate(packageDesc), packageDesc.name, rpc.currentPolicy);
     },
     /**
      *  Returns the reference to the IE window if one exists

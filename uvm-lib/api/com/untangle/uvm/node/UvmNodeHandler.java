@@ -54,7 +54,7 @@ public class UvmNodeHandler extends DefaultHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final PackageDesc mackageDesc;
+    private final PackageDesc packageDesc;
 
     private final List<String> parents = new LinkedList<String>();
     private final List<String> exports = new LinkedList<String>();
@@ -71,16 +71,16 @@ public class UvmNodeHandler extends DefaultHandler
     private StringBuilder exportBuilder;
     private StringBuilder uvmResourceBuilder;
 
-    public UvmNodeHandler(PackageDesc mackageDesc)
+    public UvmNodeHandler(PackageDesc packageDesc)
     {
-        this.mackageDesc = mackageDesc;
+        this.packageDesc = packageDesc;
     }
 
     // public methods ---------------------------------------------------------
 
     public NodeDesc getNodeDesc(NodeId tid)
     {
-        return new NodeDesc(tid, mackageDesc, className, reportsClassName,
+        return new NodeDesc(tid, packageDesc, className, reportsClassName,
                             nodeBase, exports, parents, uvmResources,
                             singleInstance, hasPowerButton, noStart);
     }

@@ -147,31 +147,31 @@ public class Launcher extends HttpServlet
         return getActionURL( request, "wizard", null );
     }
 
-    private URL getLibraryURL( HttpServletRequest request, String mackageName ) throws MalformedURLException
+    private URL getLibraryURL( HttpServletRequest request, String packageName ) throws MalformedURLException
     {
-        return getActionURL( request, "browse", mackageName );
+        return getActionURL( request, "browse", packageName );
     }
 
-    private URL getBuyURL( HttpServletRequest request, String mackageName ) throws MalformedURLException
+    private URL getBuyURL( HttpServletRequest request, String packageName ) throws MalformedURLException
     {
-        return getActionURL( request, "buy", mackageName );
+        return getActionURL( request, "buy", packageName );
     }
 
-    private URL getWelcomeURL( HttpServletRequest request, String mackageName ) throws MalformedURLException
+    private URL getWelcomeURL( HttpServletRequest request, String packageName ) throws MalformedURLException
     {
-        return getActionURL( request, "welcome", mackageName );
+        return getActionURL( request, "welcome", packageName );
     }
 
-    private URL getActionURL( HttpServletRequest request, String action, String mackageName ) throws MalformedURLException
+    private URL getActionURL( HttpServletRequest request, String action, String packageName ) throws MalformedURLException
     {
         String url = System.getProperty(PROPERTY_STORE_URL);
         if (url == null)
             url = DEFAULT_STORE_URL;
         
         String query = getLibraryQuery( request, action );
-        if ( mackageName != null ) {
+        if ( packageName != null ) {
             try {
-                query += "&name=" + URLEncoder.encode( mackageName, "UTF-8" );
+                query += "&name=" + URLEncoder.encode( packageName, "UTF-8" );
             }
             catch (java.io.UnsupportedEncodingException exc) {
                 throw new RuntimeException("unsupported encoding"); //should never happen

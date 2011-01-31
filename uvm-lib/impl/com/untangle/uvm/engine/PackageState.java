@@ -35,14 +35,14 @@ import javax.persistence.Table;
 class PackageState
 {
     private Long id;
-    private String mackageName;
+    private String packageName;
     private boolean enabled;
 
     PackageState() { }
 
-    PackageState(String mackageName, boolean enabled)
+    PackageState(String packageName, boolean enabled)
     {
-        this.mackageName = mackageName;
+        this.packageName = packageName;
         this.enabled = enabled;
     }
 
@@ -69,12 +69,12 @@ class PackageState
     @Column(name="mackage_name", nullable=false)
     public String getPackageName()
     {
-        return mackageName;
+        return packageName;
     }
 
-    public void setPackageName(String mackageName)
+    public void setPackageName(String packageName)
     {
-        this.mackageName = mackageName;
+        this.packageName = packageName;
     }
 
     /**

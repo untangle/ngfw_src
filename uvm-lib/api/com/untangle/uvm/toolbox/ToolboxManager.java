@@ -123,7 +123,7 @@ public interface ToolboxManager
      * @param name the name of the node.
      * @return the PackageDesc.
      */
-    PackageDesc mackageDesc(String name);
+    PackageDesc packageDesc(String name);
 
     /**
      * Install a Package in the Toolbox.
@@ -179,13 +179,13 @@ public interface ToolboxManager
      * This function sends message to UI to initiate a install
      * The UI is responsible for actually initiating the install
      */
-    void requestInstall(String mackageName);
+    void requestInstall(String packageName);
 
     /**
      * This function sends message to UI to initiate a uninstall
      * The UI is responsible for actually initiating the uninstall
      */
-    void requestUninstall(String mackageName);
+    void requestUninstall(String packageName);
 
     /**
      * Register the deployment of a Package at a particular URL.
@@ -201,7 +201,7 @@ public interface ToolboxManager
      * @param url location of the Package.
      * @throws DeployException if deployment fails.
      */
-    void unregister(String mackageName) throws PackageInstallException;
+    void unregister(String packageName) throws PackageInstallException;
 
     /**
      * save Upgrade Settings

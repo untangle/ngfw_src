@@ -306,7 +306,7 @@ public interface LocalUvmContext extends RemoteUvmContext
      *
      * @return true if premium functionality was loaded.
      */
-    boolean loadRup();
+    //boolean loadRup();
 
     /*
      * Loads a shared library (.so) into the UVM classloader.  This

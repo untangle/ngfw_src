@@ -108,7 +108,7 @@ class ToolboxManagerImpl implements ToolboxManager
         }
     }
 
-    private final Map<String, PackageState> mackageState;
+    private final Map<String, PackageState> packageState;
     private CronJob cronJob;
     private final UpdateTask updateTask = new UpdateTask();
     private final Map<Long, AptLogTail> tails = new HashMap<Long, AptLogTail>();
@@ -129,7 +129,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
     private ToolboxManagerImpl()
     {
-        mackageState = loadPackageState();
+        packageState = loadPackageState();
 
         refreshLists();
     }
@@ -313,9 +313,9 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         PackageDesc[] installed = installed();
         Vector<PackageDesc> visibleVector = new Vector<PackageDesc>();
-        for( PackageDesc mackageDesc : installed ){
-            if( mackageDesc.getViewPosition() >= 0 )
-                visibleVector.add(mackageDesc);
+        for( PackageDesc packageDesc : installed ){
+            if( packageDesc.getViewPosition() >= 0 )
+                visibleVector.add(packageDesc);
         }
         return visibleVector.toArray(new PackageDesc[0]);
     }
@@ -344,7 +344,7 @@ class ToolboxManagerImpl implements ToolboxManager
         return retVal;
     }
 
-    public PackageDesc mackageDesc(String name)
+    public PackageDesc packageDesc(String name)
     {
         return packageMap.get(name);
     }
@@ -353,7 +353,7 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         logger.info("install(" + name + ")");
 
-        PackageDesc req = mackageDesc(name);
+        PackageDesc req = packageDesc(name);
         if (null == req) {
             logger.warn("No such mackage: " + name);
         }
@@ -369,8 +369,8 @@ class ToolboxManagerImpl implements ToolboxManager
             throw new PackageInstallException(e);
         }
         for (String node : subnodes) {
-            PackageDesc pkgDesc = mackageDesc(node);
-            PackageDesc uvmDesc = mackageDesc("untangle-vm");
+            PackageDesc pkgDesc = packageDesc(node);
+            PackageDesc uvmDesc = packageDesc("untangle-vm");
             if (pkgDesc == null || uvmDesc == null) {
                 logger.warn("Unable to read package desc");
                 continue; //assume it matches
@@ -476,8 +476,8 @@ class ToolboxManagerImpl implements ToolboxManager
             }
 
             LocalMessageManager mm = mctx.localMessageManager();
-            PackageDesc mackageDesc = mackageDesc(name);
-            Message m = new InstallAndInstantiateComplete(mackageDesc);
+            PackageDesc packageDesc = packageDesc(name);
+            Message m = new InstallAndInstantiateComplete(packageDesc);
             mm.submitMessage(m);
         }
 
@@ -546,15 +546,15 @@ class ToolboxManagerImpl implements ToolboxManager
         return;
     }
 
-    public void requestInstall(String mackageName)
+    public void requestInstall(String packageName)
     {
-        PackageDesc md = packageMap.get(mackageName);
+        PackageDesc md = packageMap.get(packageName);
         if (null == md) {
-            logger.warn("Could not find package for: " + mackageName);
+            logger.warn("Could not find package for: " + packageName);
             return;
         }
 
-        PackageInstallRequest mir = new PackageInstallRequest(md,isInstalled(mackageName));
+        PackageInstallRequest mir = new PackageInstallRequest(md,isInstalled(packageName));
         LocalMessageManager mm = LocalUvmContextFactory.context().localMessageManager();
 
         // Make sure there isn't an existing outstanding install request for this mackage.
@@ -562,25 +562,25 @@ class ToolboxManagerImpl implements ToolboxManager
             if (msg instanceof PackageInstallRequest) {
                 PackageInstallRequest existingMir = (PackageInstallRequest)msg;
                 if (existingMir.getPackageDesc() == md) {
-                    logger.warn("requestInstall(" + mackageName + "): ignoring request; install request already pending");
+                    logger.warn("requestInstall(" + packageName + "): ignoring request; install request already pending");
                     return;
                 }
             }
         }
 
-        logger.info("requestInstall: " + mackageName);
+        logger.info("requestInstall: " + packageName);
         mm.submitMessage(mir);
     }
 
-    public void requestUninstall(String mackageName)
+    public void requestUninstall(String packageName)
     {
-        PackageDesc md = packageMap.get(mackageName);
+        PackageDesc md = packageMap.get(packageName);
         if (null == md) {
-            logger.warn("Could not find package for: " + mackageName);
+            logger.warn("Could not find package for: " + packageName);
             return;
         }
 
-        PackageUninstallRequest mir = new PackageUninstallRequest(md,isInstalled(mackageName));
+        PackageUninstallRequest mir = new PackageUninstallRequest(md,isInstalled(packageName));
         LocalMessageManager mm = LocalUvmContextFactory.context().localMessageManager();
 
         // Make sure there isn't an existing outstanding uninstall request for this mackage.
@@ -588,13 +588,13 @@ class ToolboxManagerImpl implements ToolboxManager
             if (msg instanceof PackageUninstallRequest) {
                 PackageUninstallRequest existingMir = (PackageUninstallRequest)msg;
                 if (existingMir.getPackageDesc() == md) {
-                    logger.warn("requestUninstall(" + mackageName + "): ignoring request; install request already pending");
+                    logger.warn("requestUninstall(" + packageName + "): ignoring request; install request already pending");
                     return;
                 }
             }
         }
 
-        logger.info("requestUninstall: " + mackageName);
+        logger.info("requestUninstall: " + packageName);
         mm.submitMessage(mir);
     }
     
@@ -610,7 +610,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
         NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().nodeManager();
         nm.restart(pkgName);
-        nm.startAutoStart(mackageDesc(pkgName));
+        nm.startAutoStart(packageDesc(pkgName));
     }
 
     // unregisters a mackage and unloads all instances
@@ -693,9 +693,9 @@ class ToolboxManagerImpl implements ToolboxManager
         }
     }
 
-    protected  boolean isEnabled(String mackageName)
+    protected  boolean isEnabled(String packageName)
     {
-        PackageState ms = mackageState.get(mackageName);
+        PackageState ms = packageState.get(packageName);
         return null == ms ? true : ms.isEnabled();
     }
 

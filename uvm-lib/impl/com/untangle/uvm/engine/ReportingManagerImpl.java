@@ -538,7 +538,7 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
         Map<Integer, Application> m = new TreeMap<Integer, Application>();
 
         for (String s : appNames) {
-            PackageDesc md = tm.mackageDesc(s);
+            PackageDesc md = tm.packageDesc(s);
 
             int pos;
 

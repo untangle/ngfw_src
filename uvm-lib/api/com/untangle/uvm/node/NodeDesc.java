@@ -53,7 +53,7 @@ public class NodeDesc implements Serializable
 
     private final NodeId tid;
 
-    private final PackageDesc mackageDesc;
+    private final PackageDesc packageDesc;
 
     private final String className;
     private final String reportsClassName;
@@ -72,14 +72,14 @@ public class NodeDesc implements Serializable
     private final int tcpServerReadBufferSize = 8192;
     private final int udpMaxPacketSize = 16384;
 
-    public NodeDesc(NodeId tid, PackageDesc mackageDesc, String className,
+    public NodeDesc(NodeId tid, PackageDesc packageDesc, String className,
                     String reportsClassName, String nodeBase,
                     List<String> exports, List<String> parents,
                     List<String> uvmResources, boolean singleInstance,
                     boolean hasPowerButton, boolean noStart)
     {
         this.tid = tid;
-        this.mackageDesc = mackageDesc;
+        this.packageDesc = packageDesc;
         this.className = className;
         this.reportsClassName = reportsClassName;
         this.nodeBase = nodeBase;
@@ -90,7 +90,7 @@ public class NodeDesc implements Serializable
         l = null == uvmResources ? new LinkedList<String>() : uvmResources;
         this.uvmResources = Collections.unmodifiableList(l);
         this.singleInstance = singleInstance;
-        String n = mackageDesc.getDisplayName();
+        String n = packageDesc.getDisplayName();
         this.syslogName = null == n ? null : n.replaceAll("\\p{Space}", "_");
         this.hasPowerButton = hasPowerButton;
         this.noStart = noStart;
@@ -110,7 +110,7 @@ public class NodeDesc implements Serializable
 
     public PackageDesc getPackageDesc()
     {
-        return mackageDesc;
+        return packageDesc;
     }
 
     /**
@@ -120,7 +120,7 @@ public class NodeDesc implements Serializable
      */
     public String getName()
     {
-        return mackageDesc.getName();
+        return packageDesc.getName();
     }
 
     /**
@@ -210,7 +210,7 @@ public class NodeDesc implements Serializable
      */
     public String getDisplayName()
     {
-        return mackageDesc.getDisplayName();
+        return packageDesc.getDisplayName();
     }
 
     /**

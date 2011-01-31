@@ -153,14 +153,14 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         return l;
     }
 
-    public List<NodeId> nodeInstances(String mackageName)
+    public List<NodeId> nodeInstances(String packageName)
     {
         List<NodeId> l = new LinkedList<NodeId>();
 
         for (NodeId nodeId : nodeIds.keySet()) {
             NodeContext tc = nodeIds.get(nodeId);
             if (null != tc) {
-                if (tc.getNodeDesc().getName().equals(mackageName)) {
+                if (tc.getNodeDesc().getName().equals(packageName)) {
                     l.add(nodeId);
                 }
             }
@@ -263,9 +263,9 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
     {
         UvmContextImpl mctx = UvmContextImpl.getInstance();
         ToolboxManagerImpl tbm = mctx.toolboxManager();
-        PackageDesc mackageDesc = tbm.mackageDesc(nodeName);
+        PackageDesc packageDesc = tbm.packageDesc(nodeName);
 
-        if (PackageDesc.Type.SERVICE == mackageDesc.getType()) {
+        if (PackageDesc.Type.SERVICE == packageDesc.getType()) {
             p = null;
         }
 
@@ -277,8 +277,8 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             NodeContext nc = nodeContext(nodeId);
             PackageDesc md = nc.getPackageDesc();
 
-            if (md.getName().equals(mackageDesc.getName())) {
-                throw new DeployException("Node " + mackageDesc.getName() + " already exists in Policy " + p + ".");
+            if (md.getName().equals(packageDesc.getName())) {
+                throw new DeployException("Node " + packageDesc.getName() + " already exists in Policy " + p + ".");
             }
         }
 
@@ -294,17 +294,17 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             }
             NodeId nodeId = newNodeId(p, nodeName);
 
-            URL[] resUrls = new URL[] { tbm.getResourceDir(mackageDesc) };
+            URL[] resUrls = new URL[] { tbm.getResourceDir(packageDesc) };
 
             logger.info("initializing node desc for: " + nodeName);
-            tDesc = initNodeDesc(mackageDesc, resUrls, nodeId);
+            tDesc = initNodeDesc(packageDesc, resUrls, nodeId);
 
             if (!live) {
                 throw new DeployException("NodeManager is shut down");
             }
 
             tc = new NodeContextImpl
-                ((URLClassLoader)getClass().getClassLoader(), tDesc, mackageDesc.getName(), true);
+                ((URLClassLoader)getClass().getClassLoader(), tDesc, packageDesc.getName(), true);
             nodeIds.put(nodeId, tc);
             try {
                 tc.init(args);
@@ -316,14 +316,14 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         }
 
         Node node = tc.node();
-        PackageDesc.Type type = mackageDesc.getType();
+        PackageDesc.Type type = packageDesc.getType();
 
-        if (null != node && !mackageDesc.isInvisible() && (PackageDesc.Type.NODE == type || PackageDesc.Type.SERVICE == type)) {
+        if (null != node && !packageDesc.isInvisible() && (PackageDesc.Type.NODE == type || PackageDesc.Type.SERVICE == type)) {
             LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
             Counters c = lmm.getCounters(node.getNodeId());
             LicenseManager lm = LocalUvmContextFactory.context().licenseManager();
 
-            NodeInstantiated ne = new NodeInstantiated(tDesc, c.getStatDescs(),lm.getLicense(mackageDesc.getName()));
+            NodeInstantiated ne = new NodeInstantiated(tDesc, c.getStatDescs(),lm.getLicense(packageDesc.getName()));
             LocalMessageManager mm = mctx.localMessageManager();
             mm.submitMessage(ne);
         }
@@ -525,7 +525,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
     {
         ToolboxManager tbm = LocalUvmContextFactory .context().toolboxManager();
 
-        String availVer = tbm.mackageDesc(name).getInstalledVersion();
+        String availVer = tbm.packageDesc(name).getInstalledVersion();
 
         synchronized (this) {
             List<NodeId> nNodeIds = nodeInstances(name);
@@ -678,7 +678,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             final String name = tps.getName();
             loadedParents.add(name);
             final String[] args = tps.getArgArray();
-            final PackageDesc mackageDesc = tbm.mackageDesc(name);
+            final PackageDesc packageDesc = tbm.packageDesc(name);
 
             Runnable r = new Runnable()
                 {
@@ -687,7 +687,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
                         logger.info("Restarting: " + nodeId + " (" + name + ")");
                         NodeContextImpl tc = null;
                         try {
-                            tc = new NodeContextImpl((URLClassLoader)getClass().getClassLoader(), tDesc, mackageDesc.getName(), false);
+                            tc = new NodeContextImpl((URLClassLoader)getClass().getClassLoader(), tDesc, packageDesc.getName(), false);
                             nodeIds.put(nodeId, tc);
                             tc.init(args);
                             logger.info("Restarted: " + nodeId);
@@ -794,7 +794,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         for (NodePersistentState tps : unloaded) {
             String name = tps.getName();
             logger.info("Getting mackage desc for: " + name);
-            PackageDesc md = tbm.mackageDesc(name);
+            PackageDesc md = tbm.packageDesc(name);
             if (null == md) {
                 logger.warn("could not get mackage desc for: " + name);
                 continue;
@@ -854,7 +854,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
      * @exception DeployException the descriptor does not parse or
      * parent cannot be loaded.
      */
-    private NodeDesc initNodeDesc(PackageDesc mackageDesc, URL[] urls, NodeId nodeId) throws DeployException
+    private NodeDesc initNodeDesc(PackageDesc packageDesc, URL[] urls, NodeId nodeId) throws DeployException
     {
         // XXX assumes no parent cl has this file.
         InputStream is = new URLClassLoader(urls).getResourceAsStream(DESC_PATH);
@@ -863,10 +863,10 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             for (URL u : urls) {
                 ul.add(u);
             }
-            throw new DeployException(mackageDesc.getName() + " desc " + DESC_PATH + " not found in urls: " + ul);
+            throw new DeployException(packageDesc.getName() + " desc " + DESC_PATH + " not found in urls: " + ul);
         }
 
-        UvmNodeHandler mth = new UvmNodeHandler(mackageDesc);
+        UvmNodeHandler mth = new UvmNodeHandler(packageDesc);
 
         try {
             XMLReader xr = XMLReaderFactory.createXMLReader();
@@ -886,10 +886,10 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
     private Policy getDefaultPolicyForNode(String nodeName) throws DeployException
     {
         ToolboxManager tbm = LocalUvmContextFactory.context().toolboxManager();
-        PackageDesc mackageDesc = tbm.mackageDesc(nodeName);
-        if (mackageDesc == null)
+        PackageDesc packageDesc = tbm.packageDesc(nodeName);
+        if (packageDesc == null)
             throw new DeployException("Node named " + nodeName + " not found");
-        if (PackageDesc.Type.SERVICE != mackageDesc.getType()) {
+        if (PackageDesc.Type.SERVICE != packageDesc.getType()) {
             return null;
         } else {
             return LocalUvmContextFactory.context().localPolicyManager().getDefaultPolicy();

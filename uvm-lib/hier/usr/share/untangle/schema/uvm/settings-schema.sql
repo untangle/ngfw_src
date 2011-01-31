@@ -134,7 +134,7 @@ CREATE TABLE settings.u_node_args (
     position int4 NOT NULL,
     PRIMARY KEY (tps_id, position));
 
--- com.untangle.uvm.engine.MackageState
+-- com.untangle.uvm.engine.PackageState
 CREATE TABLE settings.u_mackage_state (
     id int8 NOT NULL,
     mackage_name text NOT NULL,

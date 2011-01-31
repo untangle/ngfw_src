@@ -118,7 +118,7 @@ public class ImageServlet extends HttpServlet
          * Look in the apt cache
          */
         if (result == null) {
-            result = RemoteUvmContextFactory.context().toolboxManager().mackageDesc(name).descIcon();
+            result = RemoteUvmContextFactory.context().toolboxManager().packageDesc(name).descIcon();
         }
 
         /**

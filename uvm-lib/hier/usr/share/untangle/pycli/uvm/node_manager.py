@@ -5,10 +5,10 @@ class NodeManager(Manager):
         self.__remoteContext = remoteContext
         self.__nodeManager = self.__remoteContext.nodeManager()
 
-    def api_instantiate(self,mackageName,*args):
+    def api_instantiate(self,packageName,*args):
         nodeDesc = None
-        if ( Manager.policy == None ): nodeDesc = self.__nodeManager.instantiate( mackageName,args )
-        else: nodeDesc = self.__nodeManager.instantiate( mackageName, Manager.policy, args )
+        if ( Manager.policy == None ): nodeDesc = self.__nodeManager.instantiate( packageName,args )
+        else: nodeDesc = self.__nodeManager.instantiate( packageName, Manager.policy, args )
         tid = nodeDesc["tid"]
         print tid["id"]
         return tid

@@ -16,7 +16,7 @@
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --
 
--- com.untangle.mvvm.engine.MackageState
+-- com.untangle.mvvm.engine.PackageState
 CREATE TABLE settings.mackage_state (
     id int8 NOT NULL,
     mackage_name text NOT NULL,

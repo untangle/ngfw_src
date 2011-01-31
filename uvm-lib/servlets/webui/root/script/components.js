@@ -252,7 +252,7 @@ Ung.Util= {
                 }
 
                 /* build better message for specific errors */
-                if (exception.name == "com.untangle.uvm.toolbox.MackageInstallException" && (exception.message.indexOf("exited with") >= 0)) {
+                if (exception.name == "com.untangle.uvm.toolbox.PackageInstallException" && (exception.message.indexOf("exited with") >= 0)) {
                     message =  i18n._("Unable to contact app store") + ":<br/>";
                     message += i18n._("An error has occured: ") + exception.message + "<br/>";
                     message += i18n._("<br/>");
@@ -260,7 +260,7 @@ Ung.Util= {
                     message += i18n._("Check internet connectivity and network settings.") + "<br/>";
                     message += i18n._("Check that the server is fully up to date.") + "<br/>";
                 }
-                if (exception.name == "com.untangle.uvm.toolbox.MackageException" && (exception.message.indexOf("timed out") >= 0)) {
+                if (exception.name == "com.untangle.uvm.toolbox.PackageException" && (exception.message.indexOf("timed out") >= 0)) {
                     message =  i18n._("Unable to contact app store") + ":<br/>";
                     message += i18n._("Connection timed out") + "<br/>";
                     message += i18n._("<br/>");
@@ -1732,11 +1732,11 @@ Ung.MessageManager = {
                             if(node!=null) {
                                 node.updateRunState(msg.nodeState);
                             }
-                        } else if (msg.javaClass.indexOf("MackageInstallRequest") >= 0) {
+                        } else if (msg.javaClass.indexOf("PackageInstallRequest") >= 0) {
                             if(!msg.installed) {
                                 var policy=null;
                                 policy = rpc.currentPolicy;
-                                var appItemDisplayName=msg.mackageDesc.type=="TRIAL"?main.findLibItemDisplayName(msg.mackageDesc.fullVersion):msg.mackageDesc.displayName;
+                                var appItemDisplayName=msg.packageDesc.type=="TRIAL"?main.findLibItemDisplayName(msg.packageDesc.fullVersion):msg.packageDesc.displayName;
                                 Ung.AppItem.updateState(appItemDisplayName, "download");
                                 if ( main.isIframeWinVisible()) {
                                     main.getIframeWin().closeActionFn();
@@ -1751,27 +1751,27 @@ Ung.MessageManager = {
                                         if (exception)
                                             Ung.AppItem.updateState(appItemDisplayName, null);
                                         if(Ung.Util.handleException(exception)) return;
-                                    }.createDelegate(this),msg.mackageDesc.name, policy);
+                                    }.createDelegate(this),msg.packageDesc.name, policy);
                                 }.createDelegate(this));
                             }
-                        } else if (msg.javaClass.indexOf("MackageUninstallRequest") >= 0) {
+                        } else if (msg.javaClass.indexOf("PackageUninstallRequest") >= 0) {
                             if(!msg.installed) {
-                                var appItemDisplayName=msg.mackageDesc.type=="TRIAL"?main.findLibItemDisplayName(msg.mackageDesc.fullVersion):msg.mackageDesc.displayName;
+                                var appItemDisplayName=msg.packageDesc.type=="TRIAL"?main.findLibItemDisplayName(msg.packageDesc.fullVersion):msg.packageDesc.displayName;
                                 Ung.AppItem.updateState(appItemDisplayName, "uninstall");
                                 rpc.toolboxManager.unregister(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
-                                }.createDelegate(this),msg.mackageDesc.name);
+                                }.createDelegate(this),msg.packageDesc.name);
                                 rpc.toolboxManager.uninstall(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
                                     if ( main.isIframeWinVisible()) {
                                         main.getIframeWin().closeActionFn();
                                     }
-                                }.createDelegate(this),msg.mackageDesc.name);
+                                }.createDelegate(this),msg.packageDesc.name);
                             }
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
                             if(msg.policy==null || msg.policy.id == rpc.currentPolicy.id) {
                                 refreshApps=true;
-                                var node=main.getNode(msg.nodeDesc.mackageDesc.name,msg.nodeDesc.tid.policy);
+                                var node=main.getNode(msg.nodeDesc.packageDesc.name,msg.nodeDesc.tid.policy);
                                 if(!node) {
                                     node=main.createNode(msg.nodeDesc, msg.statDescs, msg.license,"INITIALIZED");
                                     main.nodes.push(node);
@@ -1786,13 +1786,13 @@ Ung.MessageManager = {
                         } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
                             refreshApps=true;
                             this.installInProgress--;
-                            var appItemDisplayName=msg.requestingMackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingMackage.fullVersion):msg.requestingMackage.displayName;
+                            var appItemDisplayName=msg.requestingPackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingPackage.fullVersion):msg.requestingMackage.displayName;
                             Ung.AppItem.updateState(appItemDisplayName, null);
                         } else if(msg.javaClass.indexOf("LicenseUpdateMessage") != -1) {
                             main.loadLicenses();
                         } else {
                             if(msg.upgrade==false) {
-                                var appItemDisplayName=msg.requestingMackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingMackage.fullVersion):msg.requestingMackage.displayName;
+                                var appItemDisplayName=msg.requestingPackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingPackage.fullVersion):msg.requestingMackage.displayName;
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
                                     Ung.AppItem.updateState(appItemDisplayName, "download_summary", msg);
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {

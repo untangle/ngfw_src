@@ -70,12 +70,12 @@ class NodeContextImpl implements NodeContext
     private final boolean isNew;
 
     private NodeBase node;
-    private String mackageName;
+    private String packageName;
 
     private final NodeManager nodeManager;
     private final ToolboxManagerImpl toolboxManager;
 
-    NodeContextImpl(URLClassLoader classLoader, NodeDesc tDesc, String mackageName, boolean isNew) throws DeployException
+    NodeContextImpl(URLClassLoader classLoader, NodeDesc tDesc, String packageName, boolean isNew) throws DeployException
     {
         UvmContextImpl mctx = UvmContextImpl.getInstance();
 
@@ -95,7 +95,7 @@ class NodeContextImpl implements NodeContext
 
         this.nodeDesc = tDesc;
         this.tid = nodeDesc.getTid();
-        this.mackageName = mackageName;
+        this.packageName = packageName;
         this.isNew = isNew;
 
         try {
@@ -112,7 +112,7 @@ class NodeContextImpl implements NodeContext
 
 
             persistentState = new NodePersistentState
-                (tid, mackageName, pKey);
+                (tid, packageName, pKey);
 
             nodePreferences = new NodePreferences(tid);
 
@@ -198,7 +198,7 @@ class NodeContextImpl implements NodeContext
             if (isNew) {
                 node.initializeSettings();
                 node.init(args);
-                boolean enabled = toolboxManager.isEnabled(mackageName);
+                boolean enabled = toolboxManager.isEnabled(packageName);
                 if (!enabled) {
                     node.disable();
                 }
@@ -251,7 +251,7 @@ class NodeContextImpl implements NodeContext
 
     public PackageDesc getPackageDesc()
     {
-        return toolboxManager.mackageDesc(mackageName);
+        return toolboxManager.packageDesc(packageName);
     }
 
     public Node node()
@@ -293,12 +293,12 @@ class NodeContextImpl implements NodeContext
         return getResourceAsStreamInt(res, getPackageDesc(), baseNodeName);
     }
 
-    private boolean resourceExistsInt(String res, PackageDesc mackageDesc,
+    private boolean resourceExistsInt(String res, PackageDesc packageDesc,
                                       String baseNodeName)
     {
         boolean exists;
         try {
-            URL url = new URL(toolboxManager.getResourceDir(mackageDesc), res);
+            URL url = new URL(toolboxManager.getResourceDir(packageDesc), res);
             File f = new File(url.toURI());
             exists = f.exists();
         } catch (MalformedURLException exn) {
@@ -314,7 +314,7 @@ class NodeContextImpl implements NodeContext
         else {
             // bug3699: Try the base, if any.
             if (baseNodeName != null) {
-                PackageDesc baseDesc = toolboxManager.mackageDesc(baseNodeName);
+                PackageDesc baseDesc = toolboxManager.packageDesc(baseNodeName);
                 if (baseDesc == null) {
                     return false;
                 }
@@ -326,11 +326,11 @@ class NodeContextImpl implements NodeContext
     }
 
     private InputStream getResourceAsStreamInt(String res,
-                                               PackageDesc mackageDesc,
+                                               PackageDesc packageDesc,
                                                String baseNodeName)
     {
         try {
-            URL url = new URL(toolboxManager.getResourceDir(mackageDesc), res);
+            URL url = new URL(toolboxManager.getResourceDir(packageDesc), res);
             File f = new File(url.toURI());
             return new FileInputStream(f);
         } catch (MalformedURLException exn) {
@@ -342,7 +342,7 @@ class NodeContextImpl implements NodeContext
         } catch (FileNotFoundException exn) {
             // bug3699: Try the base, if any.
             if (baseNodeName != null) {
-                PackageDesc baseDesc = toolboxManager.mackageDesc(baseNodeName);
+                PackageDesc baseDesc = toolboxManager.packageDesc(baseNodeName);
                 if (baseDesc == null) {
                     logger.warn("resource not found, base missing: " + baseNodeName);
                     return null;
@@ -425,7 +425,7 @@ class NodeContextImpl implements NodeContext
 
             persistentState = (NodePersistentState)q.uniqueResult();
 
-            if (!toolboxManager.isEnabled(mackageName)) {
+            if (!toolboxManager.isEnabled(packageName)) {
                 persistentState.setTargetState(NodeState.DISABLED);
                 s.merge(persistentState);
             } else if (NodeState.DISABLED == persistentState.getTargetState()) {
@@ -480,7 +480,7 @@ class NodeContextImpl implements NodeContext
             return null;
         }
 
-        PackageDesc md = toolboxManager.mackageDesc(parent);
+        PackageDesc md = toolboxManager.packageDesc(parent);
 
         if (null == md) {
             logger.warn("parent does not exist: " + parent);
