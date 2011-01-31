@@ -301,12 +301,6 @@ public interface LocalUvmContext extends RemoteUvmContext
     void restoreBackup(String fileName)
         throws IOException, IllegalArgumentException;
 
-    /**
-     * Loads premium functionality.
-     *
-     * @return true if premium functionality was loaded.
-     */
-    //boolean loadRup();
 
     /*
      * Loads a shared library (.so) into the UVM classloader.  This
@@ -330,5 +324,6 @@ public interface LocalUvmContext extends RemoteUvmContext
      * http://wiki-private/mediawiki/index.php/JStore for more information.
      */
     SettingsManager settingsManager();
-    
+
+    void refreshPolicyManager();
 }

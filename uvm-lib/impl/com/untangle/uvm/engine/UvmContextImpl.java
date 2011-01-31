@@ -520,11 +520,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         backupManager.restoreBackup(fileName);
     }
 
-    public boolean loadRup()
-    {
-        return loadRup(true);
-    }
-
     public boolean isActivated()
     {
         File keyFile = new File(UID_FILE);
@@ -669,7 +664,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
         this.loggingManager = new RemoteLoggingManagerImpl(repositorySelector);
         loggingManager.initSchema("uvm");
-        loadRup(false);
         loggingManager.start();
 
         this.eventLogger = EventLoggerFactory.factory().getEventLogger();
@@ -895,6 +889,14 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         }
     }
 
+    public void refreshPolicyManager()
+    {
+        synchronized (this) {
+            this.policyManagerFactory.refresh();
+            this.addressBookFactory.refresh();
+        }
+    }
+    
     public LocalTomcatManager tomcatManager()
     {
         return tomcatManager;
@@ -941,21 +943,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     }
 
     // private methods --------------------------------------------------------
-
-    private boolean loadRup(boolean refreshManagers)
-    {
-        main.loadRup();
-
-        refreshSessionFactory();
-
-        if ( refreshManagers) {
-            // Do these in same order as boot time.
-            policyManagerFactory.refresh();
-            addressBookFactory.refresh();
-        }
-
-        return true;
-    }
 
     private boolean testHibernateConnection()
     {

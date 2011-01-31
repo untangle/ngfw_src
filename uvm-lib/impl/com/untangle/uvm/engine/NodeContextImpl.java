@@ -152,10 +152,6 @@ class NodeContextImpl implements NodeContext
         for (String uvmResource : urs) {
             uctx.loadUvmResource(uvmResource);
         }
-        if (0 < urs.size()) {
-            logger.error("CALLING LOADRUP");
-            uctx.loadRup();
-        }
 
         final LocalUvmContext mctx = LocalUvmContextFactory.context();
         try {
