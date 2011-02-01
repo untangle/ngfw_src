@@ -209,7 +209,7 @@ public class CPDManager
         /* This will force adconnector to relookup the address and log any associated events */
         LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) {
-            adconnector.getPhoneBook().expireUser( address );
+            adconnector.getIpUsernameMap().expireUser( address );
         }
         
         CPDLoginEvent.EventType eventType = isAuthenticated ? 
@@ -251,7 +251,7 @@ public class CPDManager
         /* This will force adconnector to relookup the address and log any associated events */
         LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) {
-            adconnector.getPhoneBook().expireUser( address );
+            adconnector.getIpUsernameMap().expireUser( address );
         }
 
         CPDBaseSettings baseSettings = this.cpd.getBaseSettings();

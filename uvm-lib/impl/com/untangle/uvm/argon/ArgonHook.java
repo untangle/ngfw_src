@@ -141,7 +141,7 @@ public abstract class ArgonHook implements Runnable
             /* lookup the user information */
             LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
             if (adconnector != null) {
-                String username = adconnector.getPhoneBook().tryLookupUser( clientSide.clientAddr() );
+                String username = adconnector.getIpUsernameMap().tryLookupUser( clientSide.clientAddr() );
                 if (username != null && username.length() > 0 ) { 
                     logger.debug( "user information: " + username );
                     sessionGlobalState.setUser( username );

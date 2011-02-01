@@ -36,7 +36,7 @@ package com.untangle.uvm.user;
 import java.net.InetAddress;
 import java.util.Date;
 
-public interface PhoneBookAssistant
+public interface IpUsernameMapAssistant
 {
     /* Lookup a corresponding Username for the given addr
      * returns username or null if entry doesn't exist */

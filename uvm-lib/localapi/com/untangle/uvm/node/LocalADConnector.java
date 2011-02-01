@@ -17,9 +17,9 @@
  */
 package com.untangle.uvm.node;
 
-import com.untangle.uvm.user.PhoneBook;
+import com.untangle.uvm.user.IpUsernameMap;
 
 public interface LocalADConnector 
 {
-    public PhoneBook getPhoneBook();
+    public IpUsernameMap getIpUsernameMap();
 }

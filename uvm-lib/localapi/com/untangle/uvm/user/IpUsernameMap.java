@@ -20,7 +20,7 @@ package com.untangle.uvm.user;
 
 import java.net.InetAddress;
 
-public interface PhoneBook
+public interface IpUsernameMap
 {
     public String lookupUser( InetAddress address );
 
@@ -30,8 +30,8 @@ public interface PhoneBook
 
     public void refreshUser ( InetAddress address );
     
-    public void registerAssistant( PhoneBookAssistant newAssistant );
+    public void registerAssistant( IpUsernameMapAssistant newAssistant );
 
-    public void unregisterAssistant( PhoneBookAssistant assistant );
+    public void unregisterAssistant( IpUsernameMapAssistant assistant );
 
 }

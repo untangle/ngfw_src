@@ -6,7 +6,7 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
- * $Id: CPDPhoneBookAssistant.java 25604 2010-01-26 03:55:59Z rbscott $
+ * $Id: CPDIpUsernameMapAssistant.java 25604 2010-01-26 03:55:59Z rbscott $
  */
 package com.untangle.node.cpd;
 
@@ -22,7 +22,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.user.PhoneBookAssistant;
+import com.untangle.uvm.user.IpUsernameMapAssistant;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.node.NodeState;
@@ -33,7 +33,7 @@ import com.untangle.uvm.node.LocalADConnector;
  * @author rbscott
  *
  */
-public class CPDPhoneBookAssistant implements PhoneBookAssistant {
+public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
 
     /* how often to refresh internal cache from database */
     private final long DATABASE_READER_INTERVAL = 10000L;
@@ -53,7 +53,7 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
     private List<HostDatabaseEntry> localStatus = new LinkedList<HostDatabaseEntry>();    
     
     /* -------------- Constructors -------------- */
-    public CPDPhoneBookAssistant(CPDImpl cpd)
+    public CPDIpUsernameMapAssistant(CPDImpl cpd)
     {
         this.cpd = cpd;
         this.databaseReader = new Pulse("CPDDatabaseReader", true, new CPDDatabaseReader(cpd,this));
@@ -69,11 +69,11 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
     {
         MapValue cacheEntry = this.cache.get(addr);
         if (cacheEntry != null) {
-            logger.debug("CPDPhoneBook lookup IP: " + addr + " User: " + cacheEntry.username);
+            logger.debug("CPDIpUsernameMap lookup IP: " + addr + " User: " + cacheEntry.username);
 
             return cacheEntry.username;
         } else {
-            logger.debug("CPDPhoneBook lookup IP: " + addr + " User: None");
+            logger.debug("CPDIpUsernameMap lookup IP: " + addr + " User: None");
 
             return null;
         }
@@ -142,7 +142,7 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
 
         LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) {
-            adconnector.getPhoneBook().lookupUser( addr );
+            adconnector.getIpUsernameMap().lookupUser( addr );
         }
     }
 
@@ -164,7 +164,7 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
 
         LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) {
-            adconnector.getPhoneBook().expireUser( addr );
+            adconnector.getIpUsernameMap().expireUser( addr );
         }
     }
 
@@ -174,8 +174,8 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
 
         LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) {
-            adconnector.getPhoneBook().unregisterAssistant( this );
-            logger.debug("CPDPhoneBookAssistant unregistered");
+            adconnector.getIpUsernameMap().unregisterAssistant( this );
+            logger.debug("CPDIpUsernameMapAssistant unregistered");
         }
     }
     
@@ -200,9 +200,9 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
     private class CPDDatabaseReader implements Runnable
     {
         private final CPDImpl cpd;
-        private final CPDPhoneBookAssistant assistant;
+        private final CPDIpUsernameMapAssistant assistant;
 
-        public CPDDatabaseReader(CPDImpl cpd, CPDPhoneBookAssistant assistant)
+        public CPDDatabaseReader(CPDImpl cpd, CPDIpUsernameMapAssistant assistant)
         {
             this.cpd = cpd;
             this.assistant = assistant;
@@ -221,12 +221,12 @@ public class CPDPhoneBookAssistant implements PhoneBookAssistant {
                         if (!registered) {
                             LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
                             if (adconnector != null) {
-                                adconnector.getPhoneBook().registerAssistant( assistant );
-                                logger.debug("CPDPhoneBookAssistant registered");
+                                adconnector.getIpUsernameMap().registerAssistant( assistant );
+                                logger.debug("CPDIpUsernameMapAssistant registered");
                                 registered = true;
                             }
                             else {
-                                logger.debug("CPDPhoneBookAssistant ignoring (adconnector not running)");
+                                logger.debug("CPDIpUsernameMapAssistant ignoring (adconnector not running)");
                             }
                         }
 

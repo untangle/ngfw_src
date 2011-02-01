@@ -69,7 +69,7 @@ public class CPDImpl extends AbstractNode implements CPD
     private final CustomUploadHandler uploadHandler = new CustomUploadHandler(); 
     private final Logger logger = Logger.getLogger(CPDImpl.class);
 
-    private final CPDPhoneBookAssistant assistant = new CPDPhoneBookAssistant(this);
+    private final CPDIpUsernameMapAssistant assistant = new CPDIpUsernameMapAssistant(this);
 
     private final PipeSpec[] pipeSpecs;
     
@@ -448,7 +448,7 @@ public class CPDImpl extends AbstractNode implements CPD
                 this.manager.clearHostDatabase();
                 
                 /* Flush all of the entries that are in the phonebook XXX */
-                //LocalUvmContextFactory.context().localPhoneBook().flushEntries();
+                //LocalUvmContextFactory.context().localIpUsernameMap().flushEntries();
             }
         } catch (JSONException e) {
             logger.warn( "Unable to convert the JSON while clearing the host database, continuing.", e);
