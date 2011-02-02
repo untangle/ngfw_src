@@ -29,7 +29,7 @@ public final class IntfSingleMatcher extends IntfDBMatcher
     private static final IntfDBMatcher DMZ_MATCHER;
 
     /* Interface matcher for the vpn interface */
-    private static final IntfDBMatcher VPN_MATCHER;
+    private static final IntfDBMatcher OPENVPN_MATCHER;
 
     /* Map of interfaces to their matcher */
     static Map<Integer,IntfSingleMatcher> CACHE = new HashMap<Integer,IntfSingleMatcher>();
@@ -93,10 +93,10 @@ public final class IntfSingleMatcher extends IntfDBMatcher
     }
 
     /**
-     * Retrieve the VPN matcher */
+     * Retrieve the OPENVPN matcher */
     public static IntfDBMatcher getVpnMatcher()
     {
-        return VPN_MATCHER;
+        return OPENVPN_MATCHER;
     }
 
     public static IntfDBMatcher makeInstance(int intf)
@@ -140,5 +140,5 @@ public final class IntfSingleMatcher extends IntfDBMatcher
         EXTERNAL_MATCHER = makeInstance(IntfConstants.EXTERNAL_INTF);
         INTERNAL_MATCHER = makeInstance(IntfConstants.INTERNAL_INTF);
         DMZ_MATCHER = makeInstance(IntfConstants.DMZ_INTF);
-        VPN_MATCHER = makeInstance(IntfConstants.VPN_INTF);
+        OPENVPN_MATCHER = makeInstance(IntfConstants.OPENVPN_INTF);
     }}

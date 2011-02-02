@@ -36,7 +36,7 @@ class EventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger( EventHandler.class );
 
-    /* Is this a VPN client, a VPN client passes all traffic */
+    /* Is this a OPENVPN client, a OPENVPN client passes all traffic */
     private boolean isUntanglePlatformClient = false;
 
     /* Any client can connect to any exported address and vice versa */
@@ -69,25 +69,25 @@ class EventHandler extends AbstractEventHandler
     {
         if ( logger.isDebugEnabled()) logger.debug( "New session: [" + request.id() + "]" );
 
-        if ( request.clientIntf() != IntfConstants.VPN_INTF &&
-             request.serverIntf() != IntfConstants.VPN_INTF ) {
+        if ( request.clientIntf() != IntfConstants.OPENVPN_INTF &&
+             request.serverIntf() != IntfConstants.OPENVPN_INTF ) {
             /* Nothing to do */
             request.release();
             return;
         }
-        else if ( request.clientIntf() == IntfConstants.VPN_INTF &&
-                  request.serverIntf() == IntfConstants.VPN_INTF ) {
+        else if ( request.clientIntf() == IntfConstants.OPENVPN_INTF &&
+                  request.serverIntf() == IntfConstants.OPENVPN_INTF ) {
             /* XXXXXXXXXX sort this out */
             request.release();
             return;
         }
         /* XXXX Handle bridging */
-        else if ( request.clientIntf() == IntfConstants.VPN_INTF ) {
-            /* VPN client going to another interface */
+        else if ( request.clientIntf() == IntfConstants.OPENVPN_INTF ) {
+            /* OPENVPN client going to another interface */
             checkAddress( request, request.clientAddr(), request.serverAddr());
         }
         else {
-            /* Local user trying to reach a VPN client */
+            /* Local user trying to reach a OPENVPN client */
             checkAddress( request, request.serverAddr(), request.clientAddr());
         }
     }
@@ -142,7 +142,7 @@ class EventHandler extends AbstractEventHandler
 
         /* Accept the request */
         if ( logger.isDebugEnabled()) {
-            logger.debug( "Accepted VPN session: [" + request.id() + "]" );
+            logger.debug( "Accepted OPENVPN session: [" + request.id() + "]" );
         }
         node.incrementPassCount();
         request.release();
@@ -160,7 +160,7 @@ class EventHandler extends AbstractEventHandler
 
         /* XXX Probably want to create an event */
         if ( logger.isDebugEnabled()) {
-            logger.debug( "Blocked VPN session: [" + request.id() + "]" );
+            logger.debug( "Blocked OPENVPN session: [" + request.id() + "]" );
         }
 
         // node.statisticManager.incrRequest( protocol, request, reject );

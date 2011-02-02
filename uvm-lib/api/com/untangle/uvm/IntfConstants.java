@@ -45,50 +45,15 @@ public class IntfConstants
     public static final String INTERNAL = "Internal";
     public static final String EXTERNAL = "External";
     public static final String DMZ      = "DMZ";
-    public static final String VPN      = "VPN";
+    public static final String OPENVPN  = "OpenVPN";
 
-    /* The argon index for the four default interfaces */
+    /* The common indices for the interfaces */
+    public static final int   UNKNOWN_INTF  = 0;
     public static final int   EXTERNAL_INTF = 1;
     public static final int   INTERNAL_INTF = 2;
     public static final int   DMZ_INTF      = 3;
-    public static final int   VPN_INTF      = 255;
-
-    /* Internal constants, the string representation is never shown to the user */
-
-    public static final int   MAX_INTF      = 255;
-    public static final int   UNKNOWN_INTF  = MAX_INTF + 2;
-    public static final int   LOOPBACK_INTF = MAX_INTF + 1;
-
-    /* These are constants for netcap interfaces that are not actually interfaces. */
-    /* Index used when netcap had an error determining the interface */
-    public static final int  NETCAP_ERROR    = 0;
-
-    /* Index used if the interface is the loopback interface of the box */
-    public static final int  NETCAP_LOOPBACK = 254;
-
-    /* Index used when netcap was unable to determine the interface. */
-    public static final int  NETCAP_UNKNOWN  = 255;
-
-    /* The minimum index for a netcap interface 8*/
-    public static final int  NETCAP_MIN      = 1;
-
-    /* The maximum index for a netcap interface */
-    public static final int  NETCAP_MAX      = MAX_INTF;
-
-    /* Netcap indices for the default interfaces */
-    public static final int  NETCAP_EXTERNAL = EXTERNAL_INTF;
-    public static final int  NETCAP_INTERNAL = INTERNAL_INTF;
-    public static final int  NETCAP_DMZ      = DMZ_INTF;
-    public static final int  NETCAP_VPN      = VPN_INTF;
-
-    /* Argon constants */
-    public static final int  ARGON_MIN      = 0;
-    public static final int  ARGON_MAX      = MAX_INTF;
-
-    /* argon equalivalent for the non-network, network interfaces */
-    public static final int  ARGON_ERROR    = ARGON_MIN - 1;
-    public static final int  ARGON_LOOPBACK = LOOPBACK_INTF;
-    public static final int  ARGON_UNKNOWN  = UNKNOWN_INTF;
-
+    public static final int   LOOPBACK_INTF = 254;
+    public static final int   OPENVPN_INTF  = 255;
+    public static final int   MAX_INTF      = 256;
 }
 
