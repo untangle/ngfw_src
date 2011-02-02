@@ -54,7 +54,7 @@ public final class IntfSingleMatcher extends IntfDBMatcher
         if (IntfConstants.UNKNOWN_INTF == iface
             || IntfConstants.LOOPBACK_INTF == iface) {
             return true;
-        } else if (iface >= IntfConstants.MAX_INTF) {
+        } else if (iface > IntfConstants.MAX_INTF) {
             return false;
         } else {
             return (this.intf == iface);

@@ -77,7 +77,7 @@ public final class IntfSetMatcher extends IntfDBMatcher
         if (IntfConstants.UNKNOWN_INTF == intf
             || IntfConstants.LOOPBACK_INTF == intf) {
             return true;
-        } else if (intf >= IntfConstants.MAX_INTF) {
+        } else if (intf > IntfConstants.MAX_INTF) {
             return false;
         }
 
@@ -114,7 +114,7 @@ public final class IntfSetMatcher extends IntfDBMatcher
     public static IntfDBMatcher makeInstance(int ... intfArray)
         throws ParseException
     {
-        BitSet intfSet = new BitSet(IntfConstants.MAX_INTF);
+        BitSet intfSet = new BitSet(IntfConstants.MAX_INTF+1);
 
         /* The first pass is to just fill the bitset */
         for (int intf : intfArray) intfSet.set(intf);

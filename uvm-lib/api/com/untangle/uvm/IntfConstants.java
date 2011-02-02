@@ -47,13 +47,21 @@ public class IntfConstants
     public static final String DMZ      = "DMZ";
     public static final String OPENVPN  = "OpenVPN";
 
-    /* The common indices for the interfaces */
-    public static final int   UNKNOWN_INTF  = 0;
+    /**
+     * An interface index of 0 is an error condition
+     * Likely that it was not properly initialized or tagged
+     */
+    public static final int   UNKNOWN_INTF  = 0; 
+
+    /**
+     * Common Indexs for interfaces
+     */
+    public static final int   MIN_INTF      = 1;
     public static final int   EXTERNAL_INTF = 1;
     public static final int   INTERNAL_INTF = 2;
     public static final int   DMZ_INTF      = 3;
     public static final int   LOOPBACK_INTF = 254;
     public static final int   OPENVPN_INTF  = 255;
-    public static final int   MAX_INTF      = 256;
+    public static final int   MAX_INTF      = 255;
 }
 

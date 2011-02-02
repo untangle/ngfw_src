@@ -59,7 +59,7 @@ public final class IntfWanMatcher extends IntfDBMatcher
     /* true if this is the all matcher */
     private final boolean isWanMatcher;
 
-    private static BitSet WAN_BIT_SET = new BitSet(IntfConstants.MAX_INTF);
+    private static BitSet WAN_BIT_SET = new BitSet(IntfConstants.MAX_INTF+1);
 
     private IntfWanMatcher(boolean isWanMatcher)
     {
@@ -77,7 +77,7 @@ public final class IntfWanMatcher extends IntfDBMatcher
         if (IntfConstants.UNKNOWN_INTF == intf
             || IntfConstants.LOOPBACK_INTF == intf) {
             return true;
-        } else if (intf >= IntfConstants.MAX_INTF) {
+        } else if (intf > IntfConstants.MAX_INTF) {
             return false;
         }
 
