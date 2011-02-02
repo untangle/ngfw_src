@@ -467,23 +467,23 @@ msgstr "IP Client"
 msgid "Client Port"
 msgstr "Port Client"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:74
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:74
 msgid "Host:"
 msgstr "Hôte:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:75
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:75
 msgid "URL:"
 msgstr "URL:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:77
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:77
 msgid "Reason:"
 msgstr "Raison:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:87
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:87
 msgid "Unblock For Now"
 msgstr "Débloquage temporaire"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:93
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:93
 msgid "Unblock Permanently"
 msgstr "Débloquage permanent"
 

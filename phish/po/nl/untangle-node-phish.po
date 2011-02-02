@@ -242,22 +242,22 @@ msgstr "geblokkeerde Phish HTTP verkeer"
 msgid "Passed Phish HTTP Traffic"
 msgstr "Doorgelaten Phish HTTP verkeer"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:48
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:48
 msgid "Host:"
 msgstr "Host:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:49
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:49
 msgid "URL:"
 msgstr "URL:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:51
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:51
 msgid "Reason:"
 msgstr "Reden:"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:57
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:57
 msgid "Unblock For Now"
 msgstr "Deblokkeer voor nu"
 
-#: ../../uvm-lib/servlets/blockpage/root/blockpage_template.jspx:63
+#: ../../uvm/servlets/blockpage/root/blockpage_template.jspx:63
 msgid "Unblock Permanently"
 msgstr "Deblokkeer permanent"

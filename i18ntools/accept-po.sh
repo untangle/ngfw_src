@@ -36,7 +36,7 @@ for f in $(find $t -type f -name '*.po'); do
             d=$work/src/gui
             ;;
         untangle-libuvm)
-            d=$work/src/uvm-lib
+            d=$work/src/uvm
             ;;
         untangle-node-adblocker)
             d=$work/src/adblocker

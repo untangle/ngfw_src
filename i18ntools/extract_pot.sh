@@ -6,7 +6,7 @@ then
 fi    
 
 
-cp ../uvm-lib/po/untangle-libuvm.pot ./pot/
+cp ../uvm/po/untangle-libuvm.pot ./pot/
 cp ../../pkgs/untangle-apache2-config/po/untangle-apache2-config.pot ./pot/
 cp ../../pkgs/untangle-net-alpaca/po/untangle-net-alpaca.pot ./pot/
 cp ../../../internal/isotools/installer-pkgs-additional/untangle-system-stats/debian/po/templates.pot ./pot/untangle-system-stats.pot

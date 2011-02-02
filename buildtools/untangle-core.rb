@@ -29,7 +29,7 @@ require "#{SRC_HOME}/libvector/package.rb"
 require "#{SRC_HOME}/jmvutil/package.rb"
 require "#{SRC_HOME}/jnetcap/package.rb"
 require "#{SRC_HOME}/jvector/package.rb"
-require "#{SRC_HOME}/uvm-lib/package.rb"
+require "#{SRC_HOME}/uvm/package.rb"
 
 require "#{SRC_HOME}/reporting/package.rb"
 require "#{SRC_HOME}/ftp-casing/package.rb"

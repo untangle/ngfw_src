@@ -10,7 +10,7 @@ then
     mkdir $1
 fi    
 
-cp ../uvm-lib/po/$1/untangle-libuvm.po ./$1/
+cp ../uvm/po/$1/untangle-libuvm.po ./$1/
 cp ../gui/po/$1/untangle-install-wizard.po ./$1/
 cp ../../pkgs/untangle-apache2-config/po/$1/untangle-apache2-config.po ./$1/
 cp ../../pkgs/untangle-net-alpaca/po/$1/untangle-net-alpaca.po ./$1/
