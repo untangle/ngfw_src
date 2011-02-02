@@ -116,12 +116,12 @@
   </category>
 
   <category name="com.untangle.node.license">
-    <priority value="INFO"/>
+    <priority value="WARN"/>
   </category>
 
   <!-- for ext-impl -->
   <category name="com.untangle.uvm.license">
-    <priority value="INFO"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.untangle.node.adconnector">
