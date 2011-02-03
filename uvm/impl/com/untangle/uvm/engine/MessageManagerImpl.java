@@ -720,15 +720,22 @@ class MessageManagerImpl implements LocalMessageManager
             try {
                 br = new BufferedReader(new FileReader("/proc/net/dev"));
                 Integer i = new Integer(0);
+
                 for (String l = br.readLine(); null != l; l = br.readLine(), i += 1) {
                     Matcher matcher = NET_DEV_PATTERN.matcher(l);
                     if (matcher.find()) {
                         String iface = matcher.group(1);
-
-                        InterfaceConfiguration intfConf = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findBySystemName(iface);
-                        // Restrict to only the WAN interfaces (bug 5616)
-                        if ( intfConf == null || !intfConf.isWAN() )
+                        
+                        NetworkConfiguration netConf = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration();
+                        if (netConf == null) {
+                            logger.warn("Failed to read network configuration");
                             continue;
+                        } else {
+                            InterfaceConfiguration intfConf = netConf.findBySystemName(iface);
+                            // Restrict to only the WAN interfaces (bug 5616)
+                            if ( intfConf == null || !intfConf.isWAN() )
+                                continue;
+                        }
 
                         // get stored previous values or initialize them to 0
                         Long rxbytes0 = rxtxBytes0.get("rx"+i);
