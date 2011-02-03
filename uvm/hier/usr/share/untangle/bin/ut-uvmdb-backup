@@ -25,7 +25,6 @@ tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
     etc/openvpn \
     etc/resolv.conf \
 	etc/apache2/ssl \
-    usr/share/untangle/conf/argon.properties \
     usr/share/untangle/conf/keystore \
     usr/share/untangle/conf/uvm.networking.properties \
     usr/share/untangle/conf/networking.sh \
