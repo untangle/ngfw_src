@@ -204,8 +204,8 @@ public class SettingsManagerImpl implements SettingsManager
             StringBuilder jsonString = new StringBuilder();
             reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
-            char buffer[] = new char[1024];
             while (true) {
+                char buffer[] = new char[1024];
                 if (reader.read(buffer) <= 0) {
                     break;
                 }
@@ -213,7 +213,7 @@ public class SettingsManagerImpl implements SettingsManager
                 jsonString.append(buffer);
             }
 
-            logger.debug("Loading Settings: \n" + jsonString);
+            logger.debug("Loading Settings: \n" + "-----------------------------\n" + jsonString + "-----------------------------\n");
 
             return (T) serializer.fromJSON(jsonString.toString());
 
