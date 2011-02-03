@@ -238,14 +238,6 @@ public class Main
         logger.info("uvm.settings.dir " + uvmSettings);
         logger.info("uvm.tmp.dir      " + uvmTmp);
         logger.info("uvm.skins.dir    " + uvmSkins);
-
-        File f = new File(uvmConf + "/uvm.properties");
-        if (f.exists()) {
-            logger.info("Loading " + f);
-            System.getProperties().load(new FileInputStream(f));
-        } else {
-            logger.warn("Could not find " + f);
-        }
     }
 
     private void startUvm() throws Exception
