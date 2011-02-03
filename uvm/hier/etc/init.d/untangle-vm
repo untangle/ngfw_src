@@ -174,18 +174,14 @@ case "$1" in
 
         # Attempt polite kill first
         start-stop-daemon -s INT --stop \
-            -v \
+            -q \
             --pidfile ${UVM_RUNDIR}/${UVM_PID}
         code=$?
-
-        echo -n "s$?"
 
         start-stop-daemon -s INT --stop \
-            -v \
+            -q \
             --pidfile ${UVM_RUNDIR}/${UVM_PID}
         code=$?
-
-        echo -n "s$?"
 
         if [ $code != "0" ] ; then
 	        unmonitorAll
