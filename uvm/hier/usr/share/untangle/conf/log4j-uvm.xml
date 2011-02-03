@@ -20,9 +20,9 @@
 
 <!-- ===================================================================== -->
 <!--                                                                       -->
-<!--  Log4j Configuration for UVM                                         -->
+<!--  Log4j Configuration for UVM                                          -->
 <!--                                                                       -->
-<!--     Configuration of all uvm loggers lives here.                     -->
+<!--     Configuration of all uvm loggers lives here.                      -->
 <!--                                                                       -->
 <!-- ===================================================================== -->
 
@@ -123,6 +123,11 @@
   <!-- normal level for engine and following is INFO -->
   <category name="com.untangle.uvm.engine">
     <priority value="INFO"/>
+  </category>
+
+  <!-- temporary to debug startup phase network settings -->
+  <category name="com.untangle.uvm.engine.SettingsManagerImpl">
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.untangle.uvm.policy">
