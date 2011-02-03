@@ -90,13 +90,6 @@ public interface LocalUvmContext extends RemoteUvmContext
     SyslogManager syslogManager();
 
     /**
-     * Get the <code>PolicyManager</code> singleton.
-     *
-     * @return a <code>PolicyManager</code> value
-     */
-    PolicyManager localPolicyManager();
-
-    /**
      * Get the <code>AdminManager</code> singleton.
      *
      * @return a <code>AdminManager</code> value

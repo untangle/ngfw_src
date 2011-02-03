@@ -165,7 +165,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         if (logger.isDebugEnabled()) {
             logger.debug("sid: " + sessionDesc.id() +
                          " policy " + policy +
-                         " policyManager " + UvmContextImpl.getInstance().localPolicyManager().getClass().getName());
+                         " policyManager " + UvmContextImpl.getInstance().policyManager().getClass().getName());
             logger.debug("sid: " + sessionDesc.id() +
                          " pipe in " + (t1 - t0) +
                          " made: " + (ct1 - ct0) +
@@ -292,7 +292,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     protected PolicyRule selectPolicy(IPSessionDesc sd)
     {
         UvmContextImpl upi = UvmContextImpl.getInstance();
-        PolicyManager pmi = upi.localPolicyManager();
+        PolicyManager pmi = upi.policyManager();
         UserPolicyRule[] userRules = pmi.getUserRules();
 
         for (UserPolicyRule upr : userRules) {
@@ -380,7 +380,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
             Map<ArgonConnector, ArgonConnector> availCasings)
     {
         UvmContextImpl upi = UvmContextImpl.getInstance();
-        PolicyManager pmi = upi.localPolicyManager();
+        PolicyManager pmi = upi.policyManager();
 
         boolean welded = false;
 
@@ -432,7 +432,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
             Map<ArgonConnector, ArgonConnector> availCasings)
     {
         UvmContextImpl upi = UvmContextImpl.getInstance();
-        PolicyManager pmi = upi.localPolicyManager();
+        PolicyManager pmi = upi.policyManager();
 
         boolean welded = false;
 
@@ -487,7 +487,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     
     private void removeDuplicates(Policy policy, List<ArgonConnectorFitting> chain)
     {
-        PolicyManager pmi = LocalUvmContextFactory.context().localPolicyManager();
+        PolicyManager pmi = LocalUvmContextFactory.context().policyManager();
         NodeManager nodeManager = LocalUvmContextFactory.context().nodeManager();
 
         Set<String> enabledNodes = nodeManager.getEnabledNodes(policy);

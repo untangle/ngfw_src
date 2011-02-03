@@ -49,7 +49,6 @@ import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.policy.PolicyManagerFactory;
-import com.untangle.uvm.policy.RemotePolicyManager;
 import com.untangle.uvm.RegistrationInfo;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.servlet.UploadHandler;
@@ -214,14 +213,9 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.syslogManager;
     }
 
-    public PolicyManager localPolicyManager()
+    public PolicyManager policyManager()
     {
         return this.policyManagerFactory.policyManager();
-    }
-
-    public RemotePolicyManager policyManager()
-    {
-        return this.policyManagerFactory.remotePolicyManager();
     }
 
     public MailSenderImpl mailSender()

@@ -17,7 +17,7 @@ import com.untangle.uvm.license.LicenseManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.message.RemoteMessageManager;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.policy.RemotePolicyManager;
+import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.reports.RemoteReportingManager;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
@@ -57,7 +57,7 @@ public interface RemoteUvmContext
      *
      * @return the PolicyManager.
      */
-    RemotePolicyManager policyManager();
+    PolicyManager policyManager();
 
     /**
      * Get the <code>RemoteAdminManager</code> singleton.

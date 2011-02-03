@@ -892,7 +892,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         if (PackageDesc.Type.SERVICE != packageDesc.getType()) {
             return null;
         } else {
-            return LocalUvmContextFactory.context().localPolicyManager().getDefaultPolicy();
+            return LocalUvmContextFactory.context().policyManager().getDefaultPolicy();
         }
     }
 
@@ -925,7 +925,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
     private List<Policy> getAllPolicies(Policy p)
     {
-        PolicyManager lpi = LocalUvmContextFactory.context().localPolicyManager();
+        PolicyManager lpi = LocalUvmContextFactory.context().policyManager();
 
         List<Policy> l = new ArrayList<Policy>();
         while (null != p) {
