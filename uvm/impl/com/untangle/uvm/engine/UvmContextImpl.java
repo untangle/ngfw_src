@@ -102,7 +102,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private RemoteConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
     private ToolboxManagerImpl toolboxManager;
-    private UpstreamManagerImpl upstreamManager;
     private NodeManagerImpl nodeManager;
     private CronManager cronManager;
     private AppServerManagerImpl appServerManager;
@@ -198,11 +197,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     public ToolboxManagerImpl toolboxManager()
     {
         return this.toolboxManager;
-    }
-
-    public UpstreamManagerImpl upstreamManager()
-    {
-        return this.upstreamManager;
     }
 
     public NodeManager nodeManager()
@@ -691,11 +685,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         this.policyManagerFactory = PolicyManagerFactory.makeInstance();
 
         this.toolboxManager = ToolboxManagerImpl.toolboxManager();
-
-        this.upstreamManager = UpstreamManagerImpl.upstreamManager();
-
-        // Now that upstreamManager is alive, we can get the upgrade settings and
-        // start the cron job
         this.toolboxManager.start();
 
         this.pipelineFoundry = PipelineFoundryImpl.foundry();
@@ -867,7 +856,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     boolean refreshToolbox()
     {
         boolean result = main.refreshToolbox();
-        upstreamManager.refresh();
         return result;
     }
 

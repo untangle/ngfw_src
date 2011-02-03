@@ -18,7 +18,6 @@ import org.hibernate.Query;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.script.ScriptWriter;
-import com.untangle.uvm.toolbox.UpstreamManager;
 import com.untangle.uvm.util.TransactionWork;
 
 class AccessManagerImpl implements LocalAccessManager
@@ -169,9 +168,9 @@ class AccessManagerImpl implements LocalAccessManager
         
         try {
             if ( access.getIsSupportEnabled()) {
-                LocalUvmContextFactory.context().upstreamManager().enableService(UpstreamManager.SUPPORT_SERVICE_NAME);
+                enableService("untangle-support-agent");
             } else {
-                LocalUvmContextFactory.context().upstreamManager().disableService(UpstreamManager.SUPPORT_SERVICE_NAME);
+                disableService("untangle-support-agent");
             }
         } catch ( Exception ex ) {
             logger.error( "Unable to enable support", ex );
@@ -183,5 +182,27 @@ class AccessManagerImpl implements LocalAccessManager
         if ( status ) registerService( key );
         else          unregisterService( key );
     }
+
+    private void enableService(String name) 
+    {
+        try {
+            LocalUvmContextFactory.context().toolboxManager().install(name);
+        }
+        catch (com.untangle.uvm.toolbox.PackageInstallException exc) {
+            logger.warn("Failed to install package: " + name, exc );
+        }
+    }
+
+    private void disableService(String name)
+    {
+        try {
+            LocalUvmContextFactory.context().toolboxManager().uninstall(name);
+        }
+        catch (com.untangle.uvm.toolbox.PackageUninstallException exc) {
+            logger.warn("Failed to uninstall package: " + name, exc );
+        }
+    }
+
 }
+
 

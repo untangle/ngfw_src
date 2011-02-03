@@ -53,7 +53,6 @@ import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.RegistrationInfo;
 import com.untangle.uvm.servlet.UploadManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
-import com.untangle.uvm.toolbox.UpstreamManager;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.LocalTomcatManager;
@@ -89,15 +88,6 @@ public interface LocalUvmContext extends RemoteUvmContext
     RemoteLoggingManager loggingManager();
 
     SyslogManager syslogManager();
-
-    /**
-     * Get the <code>UpstreamManager</code> singleton.
-     * This provides registration & control of upstream
-     * services, normally those running on the local machine.
-     *
-     * @return the <code>UpstreamManager</code>
-     */
-    UpstreamManager upstreamManager();
 
     /**
      * Get the <code>PolicyManager</code> singleton.

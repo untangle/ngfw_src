@@ -1,21 +1,4 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
+/* $HeadURL$ */
 package com.untangle.uvm.snmp;
 
 import java.io.File;
@@ -27,99 +10,90 @@ import org.hibernate.Session;
 
 import com.untangle.node.util.IOUtil;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.toolbox.UpstreamManager;
-import com.untangle.uvm.toolbox.UpstreamService;
 import com.untangle.uvm.util.HasConfigFiles;
 import com.untangle.uvm.util.TransactionWork;
 
-//TODO bscott The template for the snmpd.conf file should
-//            be a Velocity template
-
 /**
  * Implementation of the SnmpManager
- *
  */
-public class SnmpManagerImpl
-    implements SnmpManager, HasConfigFiles {
+public class SnmpManagerImpl implements SnmpManager, HasConfigFiles
+{
 
     private static final String EOL = "\n";
     private static final String BLANK_LINE = EOL + EOL;
     private static final String TWO_LINES = BLANK_LINE + EOL;
 
-    private static final String DEFAULT_FILE_NAME =
-        "/etc/default/snmpd";
-    private static final String CONF_FILE_NAME =
-        "/etc/snmp/snmpd.conf";
-    private static final String WRAPPER_NAME =
-        "/usr/share/untangle/bin/snmpd-restart";
+    private static final String DEFAULT_FILE_NAME = "/etc/default/snmpd";
+    private static final String CONF_FILE_NAME = "/etc/snmp/snmpd.conf";
+    private static final String WRAPPER_NAME = "/usr/share/untangle/bin/snmpd-restart";
 
-    private static final SnmpManagerImpl s_instance =
-        new SnmpManagerImpl();
-    private final Logger m_logger =
-        Logger.getLogger(SnmpManagerImpl.class);
-    private SnmpSettings m_settings;
+    private static final SnmpManagerImpl s_instance = new SnmpManagerImpl();
+    private final Logger logger = Logger.getLogger(SnmpManagerImpl.class);
+    private SnmpSettings settings;
 
-    private SnmpManagerImpl() {
+    private SnmpManagerImpl()
+    {
 
         TransactionWork<Object> tw = new TransactionWork<Object>() {
-                public boolean doWork(Session s) {
-                    Query q = s.createQuery("from SnmpSettings");
-                    m_settings = (SnmpSettings)q.uniqueResult();
+            public boolean doWork(Session s) {
+                Query q = s.createQuery("from SnmpSettings");
+                settings = (SnmpSettings)q.uniqueResult();
 
-                    if(m_settings == null) {
-                        m_settings = new SnmpSettings();
+                if(settings == null) {
+                    settings = new SnmpSettings();
 
-                        m_settings.setEnabled(false);
-                        m_settings.setPort(SnmpSettings.STANDARD_MSG_PORT);
-                        m_settings.setCommunityString("CHANGE_ME");
-                        m_settings.setSysContact("MY_CONTACT_INFO");
-                        m_settings.setSysLocation("MY_LOCATION");
-                        m_settings.setSendTraps(false);
-                        m_settings.setTrapHost("MY_TRAP_HOST");
-                        m_settings.setTrapCommunity("MY_TRAP_COMMUNITY");
-                        m_settings.setTrapPort(SnmpSettings.STANDARD_TRAP_PORT);
+                    settings.setEnabled(false);
+                    settings.setPort(SnmpSettings.STANDARD_MSG_PORT);
+                    settings.setCommunityString("CHANGE_ME");
+                    settings.setSysContact("MY_CONTACT_INFO");
+                    settings.setSysLocation("MY_LOCATION");
+                    settings.setSendTraps(false);
+                    settings.setTrapHost("MY_TRAP_HOST");
+                    settings.setTrapCommunity("MY_TRAP_COMMUNITY");
+                    settings.setTrapPort(SnmpSettings.STANDARD_TRAP_PORT);
 
-                        s.save(m_settings);
-                    }
-                    return true;
+                    s.save(settings);
                 }
+                return true;
+            }
 
-                public Object getResult() { return null; }
-            };
+            public Object getResult() { return null; }
+        };
         LocalUvmContextFactory.context().runTransaction(tw);
 
-        m_logger.info("Initialized SnmpManager");
+        logger.info("Initialized SnmpManager");
         if(!isSnmpInstalled()) {
-            m_logger.warn("Snmpd is not installed");
+            logger.warn("Snmpd is not installed");
         }
     }
 
-    public static SnmpManagerImpl snmpManager() {
+    public static SnmpManagerImpl snmpManager()
+    {
         return s_instance;
     }
 
-    public SnmpSettings getSnmpSettings() {
-        return m_settings;
+    public SnmpSettings getSnmpSettings()
+    {
+        return settings;
     }
 
-    public void setSnmpSettings(final SnmpSettings settings) {
+    public void setSnmpSettings(final SnmpSettings settings)
+    {
         TransactionWork<Object> tw = new TransactionWork<Object>() {
-                public boolean doWork(Session s) {
-                    s.merge(settings);
-                    return true;
-                }
+            public boolean doWork(Session s) {
+                s.merge(settings);
+                return true;
+            }
 
-                public Object getResult() { return null; }
-            };
+            public Object getResult() { return null; }
+        };
         LocalUvmContextFactory.context().runTransaction(tw);
-        m_settings = settings;
+        this.settings = settings;
 
         if (!isSnmpInstalled()) {
-            m_logger.warn("Snmpd is not installed");
-        } else if (!isAutoConfigEnabled()) {
-            m_logger.info("Snmpd auto configuration is not enabled");
+            logger.warn("Snmpd is not installed");
         } else {
-	    reconfigure();
+            reconfigure();
         }
     }
 
@@ -129,14 +103,15 @@ public class SnmpManagerImpl
         reconfigure();
     }
 
-    private void reconfigure() {
-        writeDefaultCtlFile(m_settings);
-	writeSnmpdConfFile(m_settings);
-	restartDaemon();
+    private void reconfigure()
+    {
+        writeDefaultCtlFile(settings);
+        writeSnmpdConfFile(settings);
+        restartDaemon();
     }
 
-
-    private void writeDefaultCtlFile(SnmpSettings settings) {
+    private void writeDefaultCtlFile(SnmpSettings settings)
+    {
 
         //This is a total hack - and we should use templates
 
@@ -156,8 +131,8 @@ public class SnmpManagerImpl
         strToFile(snmpdCtl.toString(), DEFAULT_FILE_NAME);
     }
 
-
-    private void writeSnmpdConfFile(SnmpSettings settings) {
+    private void writeSnmpdConfFile(SnmpSettings settings)
+    {
 
         StringBuilder snmpd_config = new StringBuilder();
         snmpd_config.append("# Generated by Untangle").append(EOL);
@@ -212,10 +187,10 @@ public class SnmpManagerImpl
             snmpd_config.append("group MyROGroup v2c local").append(EOL);
             snmpd_config.append("group MyROGroup usm local").append(EOL);
             //snmpd_config.append("view mib2 included  .iso.org.dod.internet.mgmt.mib-2").append(EOL);
-	    //snmpd_config.append("view mib2 included  .iso.org.dod.internet.private.1.30054").append(EOL);
+            //snmpd_config.append("view mib2 included  .iso.org.dod.internet.private.1.30054").append(EOL);
             //snmpd_config.append("access MyROGroup \"\" any noauth exact mib2 none none").append(EOL);
-	    snmpd_config.append("view mib2 included  .iso").append(EOL);
-	    snmpd_config.append("access MyROGroup \"\" any noauth exact mib2 none none");
+            snmpd_config.append("view mib2 included  .iso").append(EOL);
+            snmpd_config.append("access MyROGroup \"\" any noauth exact mib2 none none");
         }
         else {
             snmpd_config.append("# No one has access (no community string)").append(EOL);
@@ -224,7 +199,8 @@ public class SnmpManagerImpl
         strToFile(snmpd_config.toString(), CONF_FILE_NAME);
     }
 
-    private boolean strToFile(String s, String fileName) {
+    private boolean strToFile(String s, String fileName)
+    {
         FileOutputStream fos = null;
         File tmp = null;
         try {
@@ -241,12 +217,11 @@ public class SnmpManagerImpl
         catch(Exception ex) {
             IOUtil.close(fos);
             tmp.delete();
-            m_logger.error("Unable to create SNMP control file \"" +
-                           fileName + "\"", ex);
+            logger.error("Unable to create SNMP control file \"" +
+                         fileName + "\"", ex);
             return false;
         }
     }
-
 
     /**
      * Note that if we've disabled SNMP support (and it was enabled)
@@ -254,42 +229,36 @@ public class SnmpManagerImpl
      * intuitive - but trust me.  The "etc/default/snmpd" file which we
      * write controls this.
      */
-    private void restartDaemon() {
+    private void restartDaemon()
+    {
         try {
-            m_logger.debug("Restarting the snmpd...");
+            logger.debug("Restarting the snmpd...");
             Process p = LocalUvmContextFactory.context().exec(new String[] {
                     WRAPPER_NAME });
             p.waitFor();
-            m_logger.debug("Restart of SNMPD exited with " +
-                           p.exitValue());
+            logger.debug("Restart of SNMPD exited with " +
+                         p.exitValue());
         }
         catch(Exception ex) {
-            m_logger.error("Error restarting snmpd", ex);
+            logger.error("Error restarting snmpd", ex);
         }
     }
 
-    private boolean isNotNullOrBlank(String s) {
+    private boolean isNotNullOrBlank(String s)
+    {
         return s != null && !"".equals(s.trim());
     }
 
-    private String qqOrNullToDefault(String str, String def) {
+    private String qqOrNullToDefault(String str, String def)
+    {
         return isNotNullOrBlank(str)?
             str:def;
     }
 
-    private boolean isSnmpInstalled() {
+    private boolean isSnmpInstalled()
+    {
         return new File("/etc/snmp").exists();
     }
-
-    public boolean isAutoConfigEnabled()
-    {
-        UpstreamService svc = LocalUvmContextFactory.context().
-            upstreamManager().getService(UpstreamManager.SNMPD_SERVICE_NAME);
-        if (svc == null)
-            return false;
-        return svc.enabled();
-    }
-
 }
 
 
