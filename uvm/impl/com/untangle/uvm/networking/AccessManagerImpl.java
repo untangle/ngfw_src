@@ -156,11 +156,6 @@ class AccessManagerImpl implements LocalAccessManager
 
     private void setSupportAccess( AccessSettings access )
     {
-        if ( !NetworkManagerImpl.getInstance().getSaveSettings()) {
-            logger.warn( "not modifying support access as requested." );
-            return;
-        }
-
         if ( access == null ) {
             logger.warn( "unable to set support access, address settings are not initialized." );            
             return;

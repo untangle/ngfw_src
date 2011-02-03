@@ -60,10 +60,6 @@ public class NetworkManagerImpl implements NetworkManager
     private static final long ALPACA_RETRY_COUNT = 3;
     private static final long ALPACA_RETRY_DELAY_MS = 6000;
 
-    /* A flag for devel environments, used to determine whether or not
-     * the etc files actually are written, this enables/disables reconfiguring networking */
-    private boolean saveSettings = true;
-
     /* Inidicates whether or not the networking manager has been initialized */
     private boolean isInitialized = false;
 
@@ -523,6 +519,11 @@ public class NetworkManagerImpl implements NetworkManager
     {
         this.networkConfiguration = loadNetworkConfiguration( );
 
+        if (this.networkConfiguration == null) {
+            logger.error("Failed to load network configuration, creating reasonable default.");
+            this.networkConfiguration = new NetworkConfiguration();
+        }
+        
         if ( logger.isDebugEnabled()) {
             logger.debug( "New network settings: " + this.networkConfiguration );
         }
@@ -707,25 +708,11 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /* ----------------- Package ----------------- */
-    boolean getSaveSettings()
-    {
-        return this.saveSettings;
-    }
 
     /* ----------------- Private ----------------- */
     private void initPriv() throws Exception, ValidateException
     {
-        String disableSaveSettings = System.getProperty( "uvm.devel.nonetworking" );
-
-        /* Do not save settings if requested */
-        if ( Boolean.valueOf( disableSaveSettings ) == true ) {
-            this.saveSettings = false;
-        }
-
         loadAllSettings();
-
-        /* Done before so these get called on the first update */
-        //registerListener(new Foo());
 
         refreshNetworkConfig();
 

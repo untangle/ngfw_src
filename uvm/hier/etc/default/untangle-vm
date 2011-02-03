@@ -46,9 +46,6 @@ UVM_USER=root
 UVM_YJP=${UVM_YJP=$:-no}
 UVM_NICENESS=0
 
-## if in the build, disable network configuration by default
-#UVM_ARGS="${UVM_ARGS} -Duvm.devel.nonetworking=true"
-
 ## Set a session limit - defaults to 10k
 #UVM_ARGS="${UVM_ARGS} -Dargon.sessionlimit=${UVM_SESSION_LIMIT}"
 
@@ -93,12 +90,6 @@ UVM_ARGS="${UVM_ARGS} -Dnetworkaddress.cache.ttl=30 -Dsun.net.inetaddr.ttl=30 -D
 
 ## Default Logging
 UVM_ARGS="${UVM_ARGS}  -Dlog4j.configuration=file:@PREFIX@/usr/share/untangle/conf/log4j-uvm.xml"
-
-# If inside the devel environment 
-if [ "x" != "x@PREFIX@" ] ; then
-    ## Disable writing of networking config files
-    UVM_ARGS="${UVM_ARGS} -Duvm.devel.nonetworking=true"
-fi
 
 
 

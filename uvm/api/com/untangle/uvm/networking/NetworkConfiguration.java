@@ -25,7 +25,14 @@ public class NetworkConfiguration implements java.io.Serializable, JSONString
     private String hostname = null;
     private String dnsLocalDomain = null;
 
-    public NetworkConfiguration() {}
+    public NetworkConfiguration()
+    {
+        hostname = "hostname.example.com";
+        dnsLocalDomain = "example.com";
+        dhcpServerEnabled = false;
+        dnsServerEnabled = false;
+        interfaceList = new LinkedList<InterfaceConfiguration>();
+    }
     
     public NetworkConfiguration( List<InterfaceConfiguration> interfaceList, Boolean dhcpServerEnabled, Boolean dnsServerEnabled, String hostname )
     {
