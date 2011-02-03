@@ -86,15 +86,6 @@ public interface RemoteUvmContext
     RemoteLoggingManager loggingManager();
 
     /**
-     * Get the <code>UpstreamManager</code> singleton.
-     * This provides registration & control of upstream
-     * services, normally those running on the local machine.
-     *
-     * @return the <code>UpstreamManager</code>
-     */
-    UpstreamManager upstreamManager();
-
-    /**
      * Get the <code>PolicyManager</code> singleton.
      *
      * @return the PolicyManager.
