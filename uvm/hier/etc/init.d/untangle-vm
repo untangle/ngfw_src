@@ -88,8 +88,8 @@ case "$1" in
                 rm -f ${UVM_RUNDIR}/${UVM_PID}
             else
                 echo "Already started."
-		monitorAll
-		log_end_msg 0
+		        monitorAll
+		        log_end_msg 0
                 exit
             fi
         fi
@@ -131,11 +131,11 @@ case "$1" in
                     echo -e "x]\nException in $UVM_CONSOLE_LOG"
                     if [ "x" != "x@PREFIX@" ] ; then
                         $0 stop
-			log_end_msg 0
+			            log_end_msg 0
                         exit
                     fi
-		    monitorAll
-		    log_end_msg 0
+		            monitorAll
+		            log_end_msg 0
                     exit
                 fi
             fi
@@ -151,22 +151,22 @@ case "$1" in
             sleep 1
             echo -n "."
             if [ "x" != "x$FINI" ] ; then
-	        monitorAll
+	            monitorAll
                 updateStatusExit "]\n" "Running"
             fi
         done
 
         echo "x]"
-	log_end_msg 0
+	    log_end_msg 0
         ;;
 
     stop)
         log_daemon_msg "Stopping $DESC"
-	unmonitorAll
+	    unmonitorAll
 
         if [ ! -f ${UVM_RUNDIR}/${UVM_PID} ] ; then
             echo "Not Running."
-	    log_end_msg 0
+	        log_end_msg 0
             exit
         fi
 
@@ -174,12 +174,21 @@ case "$1" in
 
         # Attempt polite kill first
         start-stop-daemon -s INT --stop \
-            -q \
+            -v \
             --pidfile ${UVM_RUNDIR}/${UVM_PID}
         code=$?
 
+        echo -n "s$?"
+
+        start-stop-daemon -s INT --stop \
+            -v \
+            --pidfile ${UVM_RUNDIR}/${UVM_PID}
+        code=$?
+
+        echo -n "s$?"
+
         if [ $code != "0" ] ; then
-	    unmonitorAll
+	        unmonitorAll
             updateStatusExit "x]\n" "Stopped"
         fi
 
@@ -192,7 +201,7 @@ case "$1" in
             echo -n "."
             if [ "x" != "x$FINI" ] ; then
                 sleep 1
-		unmonitorAll
+		        unmonitorAll
                 updateStatusExit "]\n" "Stopped"
             fi
             if [ -z "`uvmJavaPid`" ] ; then
@@ -214,7 +223,7 @@ case "$1" in
             echo -n "."
             if [ "x" != "x$FINI" ] ; then
                 sleep 1 
-		unmonitorAll
+		        unmonitorAll
                 updateStatusExit "]\n" "Stopped"
             fi
             if [ -z "`uvmJavaPid`" ] ; then
@@ -237,8 +246,8 @@ case "$1" in
         done
 
         echo "x]"
-	unmonitorAll
-	log_end_msg 0
+	    unmonitorAll
+	    log_end_msg 0
         ;;
 
     restart|force-reload)
