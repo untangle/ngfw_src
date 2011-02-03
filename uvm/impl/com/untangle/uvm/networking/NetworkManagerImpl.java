@@ -144,7 +144,7 @@ public class NetworkManagerImpl implements NetworkManager
         IPNetwork primary = wan.getPrimaryAddress();
 
         if ( primary == null) {
-            logger.warn("Unknown primary address: " + primary + "wan: " + wan);
+            logger.warn("NULL primary address for wan: " + wan.getName());
             return null;
         }
         
