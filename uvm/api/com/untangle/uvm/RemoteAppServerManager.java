@@ -83,8 +83,7 @@ public interface RemoteAppServerManager
      * values) there is no explanation given to the caller. The error
      * will be in the logs and engineering will have to investigate.
      */
-    boolean regenCert(RFC2253Name dn,
-                      int durationInDays);
+    boolean regenCert(RFC2253Name dn, int durationInDays);
 
     /**
      * Import the signed certificate for this machine. The input to
@@ -114,7 +113,6 @@ public interface RemoteAppServerManager
      */
     boolean importServerCert(byte[] cert, byte[] caCert);
 
-
     /**
      * Get the current certificate used by this instance of the UVM.
      * Further information for this cert can be obtained via {@link
@@ -124,7 +122,6 @@ public interface RemoteAppServerManager
      * on the server.
      */
     byte[] getCurrentServerCert();
-
 
     /**
      * Generate a certificate signature request (CSR), for submission
@@ -138,7 +135,6 @@ public interface RemoteAppServerManager
      * users are advised to contact Untangle support.
      */
     byte[] generateCSR();
-
 
     /**
      * Get information on the given certificate. This method is

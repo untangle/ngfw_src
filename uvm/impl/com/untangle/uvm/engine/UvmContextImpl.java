@@ -104,7 +104,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private NodeManagerImpl nodeManager;
     private CronManager cronManager;
     private AppServerManagerImpl appServerManager;
-    private RemoteAppServerManagerAdaptor remoteAppServerManager;
     private AddressBookFactory addressBookFactory;
     private BrandingManagerImpl brandingManager;
     private SkinManagerImpl skinManager;
@@ -184,7 +183,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     public RemoteAppServerManager appServerManager()
     {
-        return this.remoteAppServerManager;
+        return this.appServerManager;
     }
     
     public ToolboxManagerImpl toolboxManager()
@@ -702,8 +701,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
         this.appServerManager = new AppServerManagerImpl(this);
 
-        this.remoteAppServerManager = new RemoteAppServerManagerAdaptor(appServerManager);
-        
         this.licenseManagerFactory = LicenseManagerFactory.makeInstance();
 
         // start vectoring:
@@ -834,9 +831,9 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     // package protected methods ----------------------------------------------
 
-    RemoteAppServerManagerAdaptor remoteAppServerManager()
+    RemoteAppServerManager remoteAppServerManager()
     {
-        return remoteAppServerManager;
+        return appServerManager;
     }
 
     boolean refreshToolbox()

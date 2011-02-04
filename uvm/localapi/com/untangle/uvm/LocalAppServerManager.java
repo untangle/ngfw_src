@@ -77,7 +77,6 @@ public interface LocalAppServerManager
 
     ServletContext loadGlobalApp(String urlBase, String rootDir, Valve valve);
 
-
     /**
      * Load a portal web app. This app will not use
      * authentication. The web app's files are already assumed to be
@@ -143,8 +142,7 @@ public interface LocalAppServerManager
      * values) there is no explanation given to the caller. The error
      * will be in the logs and engineering will have to investigate.
      */
-    boolean regenCert(RFC2253Name dn,
-                      int durationInDays);
+    boolean regenCert(RFC2253Name dn, int durationInDays);
 
     /**
      * Import the signed certificate for this machine. The input to

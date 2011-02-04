@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.util.OpenSSLWrapper;
 import com.untangle.uvm.LocalAppServerManager;
+import com.untangle.uvm.RemoteAppServerManager;
 import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.security.CertInfo;
 import com.untangle.uvm.security.RFC2253Name;
@@ -24,7 +25,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
  * TODO A work in progress (currently a disorganized mess of crap taken
  * from the old "main" and "TomcatManager" code.
  */
-class AppServerManagerImpl implements LocalAppServerManager
+class AppServerManagerImpl implements LocalAppServerManager, RemoteAppServerManager
 {
     private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
 
