@@ -41,7 +41,7 @@ import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LoadCounter;
-import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
@@ -192,7 +192,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
         liveSessions = new ConcurrentHashMap<IPSession,IPSession>();
 
-        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(node.getNodeId());
         udpLiveSessionCounter = c.makeLoadCounter("udpLiveSessionCounter", "UDP sessions");
         tcpLiveSessionCounter = c.makeLoadCounter("tcpLiveSessionCounter", "TCP sessions");

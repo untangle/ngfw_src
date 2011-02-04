@@ -56,7 +56,7 @@ import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.IPMaddr;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.NodeContext;
@@ -217,8 +217,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
         ef = new SpywareCookieFilter();
         eventLogger.addSimpleEventFilter(ef);
 
-        LocalMessageManager lmm = LocalUvmContextFactory.context()
-            .localMessageManager();
+        MessageManager lmm = LocalUvmContextFactory.context()
+            .messageManager();
         Counters c = lmm.getCounters(getNodeId());
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Pages scanned"), null, I18nUtil.marktr("SCAN"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Pages blocked"), null, I18nUtil.marktr("BLOCK"));

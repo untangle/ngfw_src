@@ -44,7 +44,7 @@ import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.MessageManager;
 
 
 public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
@@ -78,7 +78,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         ef = new ProtoFilterBlockedFilter();
         eventLogger.addSimpleEventFilter(ef);
 
-        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Sessions scanned"), null, I18nUtil.marktr("SCAN"));
         detectBlinger = c.addActivity("detect", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("LOG"));

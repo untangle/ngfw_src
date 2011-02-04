@@ -48,7 +48,7 @@ import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.UncachedEventManager;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeState;
@@ -98,7 +98,7 @@ public class CPDImpl extends AbstractNode implements CPD
         this.settings = new CPDSettings();
         this.pipeSpecs = new PipeSpec[0];
         
-        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Blocked Sessions"), null, I18nUtil.marktr("BLOCK"));
         authorizeBlinger = c.addActivity("authorize", I18nUtil.marktr("Authorized Clients"), null, I18nUtil.marktr("AUTHORIZE"));

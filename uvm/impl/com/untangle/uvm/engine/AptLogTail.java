@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.toolbox.DownloadComplete;
 import com.untangle.uvm.toolbox.DownloadProgress;
 import com.untangle.uvm.toolbox.DownloadSummary;
@@ -123,7 +123,7 @@ class AptLogTail implements Runnable
 
     public void doIt()
     {
-        LocalMessageManager mm = LocalUvmContextFactory.context().localMessageManager();
+        MessageManager mm = LocalUvmContextFactory.context().messageManager();
         
         // find `start key'
         logger.debug("finding start key: \"start " + key + "\"");
@@ -210,7 +210,7 @@ class AptLogTail implements Runnable
 
     private String readLine()
     {
-        LocalMessageManager mm = LocalUvmContextFactory.context().localMessageManager();
+        MessageManager mm = LocalUvmContextFactory.context().messageManager();
 
         try {
             while (true) {

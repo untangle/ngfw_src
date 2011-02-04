@@ -38,8 +38,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.RemoteUvmContext;
+import com.untangle.uvm.RemoteUvmContextFactory;
 import com.untangle.uvm.security.NodeId;
 
 /**
@@ -53,14 +53,11 @@ public class Counters
 {
     private final NodeId tid;
 
-    private final Map<String, BlingBlinger> metrics
-        = new LinkedHashMap<String, BlingBlinger>();
+    private final Map<String, BlingBlinger> metrics = new LinkedHashMap<String, BlingBlinger>();
 
-    private final Map<String, BlingBlinger> activities
-        = new LinkedHashMap<String, BlingBlinger>();
+    private final Map<String, BlingBlinger> activities = new LinkedHashMap<String, BlingBlinger>();
 
-    private final Map<String, LoadMaster> loads
-        = new LinkedHashMap<String, LoadMaster>();
+    private final Map<String, LoadMaster> loads = new LinkedHashMap<String, LoadMaster>();
 
     public Counters(NodeId tid)
     {
@@ -78,8 +75,7 @@ public class Counters
         return b;
     }
 
-    public BlingBlinger addMetric(String name, String displayName, String unit,
-                                  boolean displayable)
+    public BlingBlinger addMetric(String name, String displayName, String unit, boolean displayable)
     {
         BlingBlinger b = new BlingBlinger(name, displayName, unit, null,
                                           displayable);
@@ -96,9 +92,7 @@ public class Counters
         return addMetric(name, displayName, unit, true);
     }
 
-    public BlingBlinger addActivity(String name, String displayName,
-                                    String unit, String action,
-                                    boolean displayable)
+    public BlingBlinger addActivity(String name, String displayName, String unit, String action, boolean displayable)
     {
         BlingBlinger b = new BlingBlinger(name, displayName, unit, action,
                                           displayable);
@@ -114,8 +108,7 @@ public class Counters
         return b;
     }
 
-    public BlingBlinger addActivity(String name, String displayName,
-                                    String unit, String action)
+    public BlingBlinger addActivity(String name, String displayName, String unit, String action)
     {
         return addActivity(name, displayName, unit, action, true);
     }
@@ -154,7 +147,7 @@ public class Counters
 
     public StatDescs getStatDescs()
     {
-        LocalUvmContext mctx = LocalUvmContextFactory.context();
+        RemoteUvmContext mctx = RemoteUvmContextFactory.context();
         List<ActiveStat> activeStats = mctx.messageManager().getActiveMetrics(tid);
         return new StatDescs(metrics.values(), activities.values(), activeStats);
     }

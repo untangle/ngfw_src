@@ -44,8 +44,8 @@ import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.message.LocalMessageManager;
-import com.untangle.uvm.message.RemoteMessageManager;
+import com.untangle.uvm.message.MessageManager;
+import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.reports.RemoteReportingManager;
@@ -147,9 +147,7 @@ public interface LocalUvmContext extends RemoteUvmContext
      */
     LanguageManager languageManager();
 
-    RemoteMessageManager messageManager();
-
-    LocalMessageManager localMessageManager();
+    MessageManager messageManager();
 
     /**
      * Once settings have been restored, and the UVM has been booted, call

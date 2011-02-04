@@ -29,7 +29,7 @@ import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.argon.ArgonTCPSession;
@@ -94,7 +94,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
         logger = argonConnector.sessionLoggerTCP();
 
-        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(argonConnector.node().getNodeId());
         s2nChunks = c.getBlingBlinger("s2nChunks");
         c2nChunks = c.getBlingBlinger("c2nChunks");

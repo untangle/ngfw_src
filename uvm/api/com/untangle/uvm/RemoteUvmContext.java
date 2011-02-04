@@ -15,7 +15,7 @@ import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.license.LicenseManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
-import com.untangle.uvm.message.RemoteMessageManager;
+import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.reports.RemoteReportingManager;
@@ -124,11 +124,11 @@ public interface RemoteUvmContext
     SkinManager skinManager();
 
     /**
-     * Get the <code>RemoteMessageManager</code> singleton.
+     * Get the <code>MessageManager</code> singleton.
      *
-     * @return the RemoteMessageManager
+     * @return the MessageManager
      */
-    RemoteMessageManager messageManager();
+    MessageManager messageManager();
 
     /**
      * Get the <code>LanguageManager</code> singleton.

@@ -43,7 +43,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.Pipeline;
@@ -91,8 +91,8 @@ public class CasingAdaptor extends AbstractEventHandler
         this.clientSide = clientSide;
         this.releaseParseExceptions = releaseParseExceptions;
 
-        LocalMessageManager lmm = LocalUvmContextFactory.context()
-            .localMessageManager();
+        MessageManager lmm = LocalUvmContextFactory.context()
+            .messageManager();
         Counters c = lmm.getCounters(node.getNodeId());
         s2nBytes = c.getBlingBlinger("s2nBytes");
         c2nBytes = c.getBlingBlinger("c2nBytes");

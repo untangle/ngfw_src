@@ -35,7 +35,7 @@ import com.untangle.uvm.Period;
 import com.untangle.uvm.license.License;
 import com.untangle.uvm.license.LicenseManager;
 import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.Message;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.node.DeployException;
@@ -200,7 +200,7 @@ class ToolboxManagerImpl implements ToolboxManager
         Map<NodeId, StatDescs> statDescs = new HashMap<NodeId, StatDescs>(instances.size());
         for (NodeDesc nd : instances) {
             NodeId t = nd.getTid();
-            LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+            MessageManager lmm = LocalUvmContextFactory.context().messageManager();
             Counters c = lmm.getCounters(t);
             StatDescs sd = c.getStatDescs();
             statDescs.put(t, sd);
@@ -456,7 +456,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 } 
             }
 
-            LocalMessageManager mm = mctx.localMessageManager();
+            MessageManager mm = mctx.messageManager();
             PackageDesc packageDesc = packageDesc(name);
             Message m = new InstallAndInstantiateComplete(packageDesc);
             mm.submitMessage(m);
@@ -536,7 +536,7 @@ class ToolboxManagerImpl implements ToolboxManager
         }
 
         PackageInstallRequest mir = new PackageInstallRequest(md,isInstalled(packageName));
-        LocalMessageManager mm = LocalUvmContextFactory.context().localMessageManager();
+        MessageManager mm = LocalUvmContextFactory.context().messageManager();
 
         // Make sure there isn't an existing outstanding install request for this mackage.
         for (Message msg : mm.getMessages()) {
@@ -562,7 +562,7 @@ class ToolboxManagerImpl implements ToolboxManager
         }
 
         PackageUninstallRequest mir = new PackageUninstallRequest(md,isInstalled(packageName));
-        LocalMessageManager mm = LocalUvmContextFactory.context().localMessageManager();
+        MessageManager mm = LocalUvmContextFactory.context().messageManager();
 
         // Make sure there isn't an existing outstanding uninstall request for this mackage.
         for (Message msg : mm.getMessages()) {

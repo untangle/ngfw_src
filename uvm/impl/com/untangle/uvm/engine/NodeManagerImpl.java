@@ -52,7 +52,7 @@ import com.untangle.uvm.logging.UvmLoggingContext;
 import com.untangle.uvm.logging.UvmLoggingContextFactory;
 import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.NodeManager;
@@ -319,12 +319,12 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         PackageDesc.Type type = packageDesc.getType();
 
         if (null != node && !packageDesc.isInvisible() && (PackageDesc.Type.NODE == type || PackageDesc.Type.SERVICE == type)) {
-            LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+            MessageManager lmm = LocalUvmContextFactory.context().messageManager();
             Counters c = lmm.getCounters(node.getNodeId());
             LicenseManager lm = LocalUvmContextFactory.context().licenseManager();
 
             NodeInstantiated ne = new NodeInstantiated(tDesc, c.getStatDescs(),lm.getLicense(packageDesc.getName()));
-            LocalMessageManager mm = mctx.localMessageManager();
+            MessageManager mm = mctx.messageManager();
             mm.submitMessage(ne);
         }
         

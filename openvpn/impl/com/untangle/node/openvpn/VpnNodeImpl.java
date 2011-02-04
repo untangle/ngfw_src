@@ -38,7 +38,7 @@ import com.untangle.uvm.MailSender;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPAddress;
@@ -123,7 +123,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
 
 
-        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Clients blocked"), null, I18nUtil.marktr("BLOCK"));
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Clients passed"), null, I18nUtil.marktr("PASS"));

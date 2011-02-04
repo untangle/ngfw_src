@@ -39,7 +39,7 @@ import java.util.Map;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.NodeId;
 
-public interface RemoteMessageManager
+public interface MessageManager
 {
     MessageQueue getMessageQueue();
     MessageQueue getMessageQueue(Integer key);
@@ -51,6 +51,12 @@ public interface RemoteMessageManager
     List<ActiveStat> getActiveMetrics(NodeId tid);
     void setActiveMetrics(NodeId tid, List<ActiveStat> activeMetrics);
     List<Message> getMessages();
+    List<Message> getMessages(Integer key);
 
     Integer getMessageKey();
+
+    Counters getUvmCounters();
+    Counters getCounters(NodeId t);
+    void submitMessage(Message m);
+    void setActiveMetricsIfNotSet(NodeId tid, BlingBlinger... l);
 }

@@ -25,7 +25,7 @@ import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.IPMaddrValidator;
 import com.untangle.uvm.node.MimeType;
@@ -97,7 +97,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         UnblockEventAllFilter ueaf = new UnblockEventAllFilter(this);
         unblockEventLogger.addSimpleEventFilter(ueaf);
 
-        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Pages scanned"), null, I18nUtil.marktr("SCAN"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Pages blocked"), null, I18nUtil.marktr("BLOCK"));

@@ -34,7 +34,7 @@ import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
@@ -109,7 +109,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
         ef = new FirewallBlockedFilter();
         eventLogger.addSimpleEventFilter(ef);
 
-        LocalMessageManager lmm = LocalUvmContextFactory.context().localMessageManager();
+        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Sessions passed"), null, I18nUtil.marktr("PASS"));
         loggedBlinger = c.addActivity("log", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("LOG"));

@@ -42,8 +42,8 @@ import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.LogMailerImpl;
 import com.untangle.uvm.logging.UvmRepositorySelector;
-import com.untangle.uvm.message.LocalMessageManager;
-import com.untangle.uvm.message.RemoteMessageManager;
+import com.untangle.uvm.message.MessageManager;
+import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeManager;
@@ -108,8 +108,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private AddressBookFactory addressBookFactory;
     private BrandingManagerImpl brandingManager;
     private SkinManagerImpl skinManager;
-    private MessageManagerImpl localMessageManager;
-    private RemoteMessageManager messageManager;
+    private MessageManagerImpl messageManager;
     private LanguageManagerImpl languageManager;
     private LicenseManagerFactory licenseManagerFactory;
     private TomcatManagerImpl tomcatManager;
@@ -168,14 +167,9 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.skinManager;
     }
 
-    public RemoteMessageManager messageManager()
+    public MessageManager messageManager()
     {
         return this.messageManager;
-    }
-
-    public LocalMessageManager localMessageManager()
-    {
-        return this.localMessageManager;
     }
 
     public LanguageManagerImpl languageManager()
@@ -695,9 +689,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         // start nodes:
         this.nodeManager = new NodeManagerImpl(repositorySelector);
 
-        this.localMessageManager = new MessageManagerImpl();
-
-        this.messageManager = new RemoteMessageManagerAdaptor(localMessageManager);
+        this.messageManager = new MessageManagerImpl();
 
         // Retrieve the reporting configuration manager
         this.reportingManager = RemoteReportingManagerImpl.reportingManager();
@@ -718,7 +710,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         Argon.getInstance().run( networkManager );
 
         // Start statistic gathering
-        localMessageManager.start();
+        messageManager.start();
 
         this.heapMonitor = new HeapMonitor();
         String useHeapMonitor = System.getProperty(HeapMonitor.KEY_ENABLE_MONITOR);
@@ -763,8 +755,8 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     {
         state = UvmState.DESTROYED;
 
-        if (localMessageManager != null)
-            localMessageManager.stop();
+        if (messageManager != null)
+            messageManager.stop();
 
         // stop vectoring:
         try {

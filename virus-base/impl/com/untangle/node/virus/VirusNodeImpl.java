@@ -44,7 +44,7 @@ import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
@@ -205,8 +205,8 @@ public abstract class VirusNodeImpl extends AbstractNode
         ef = new VirusSmtpFilter(vendor);
         eventLogger.addSimpleEventFilter(ef);
 
-        LocalMessageManager lmm = LocalUvmContextFactory.context()
-            .localMessageManager();
+        MessageManager lmm = LocalUvmContextFactory.context()
+            .messageManager();
         Counters c = lmm.getCounters(getNodeId());
         scanBlinger = c.addActivity("scan",
                                     I18nUtil.marktr("Documents scanned"), null,

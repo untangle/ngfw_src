@@ -46,7 +46,7 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.message.ActiveStat;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.Message;
 import com.untangle.uvm.message.MessageQueue;
 import com.untangle.uvm.message.StatDescs;
@@ -61,7 +61,7 @@ import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.TransactionWork;
 
-class MessageManagerImpl implements LocalMessageManager
+class MessageManagerImpl implements MessageManager
 {
     private static final long CLIENT_TIMEOUT = 1800000; // 30 min
 
@@ -121,7 +121,7 @@ class MessageManagerImpl implements LocalMessageManager
         updatePulse.stop();
     }
 
-    // RemoteMessageManager methods -------------------------------------------
+    // MessageManager methods -------------------------------------------
 
     public MessageQueue getMessageQueue()
     {
@@ -260,7 +260,7 @@ class MessageManagerImpl implements LocalMessageManager
         return key;
     }
 
-    // LocalMessageManager methods --------------------------------------------
+    // MessageManager methods --------------------------------------------
 
     public Counters getUvmCounters()
     {

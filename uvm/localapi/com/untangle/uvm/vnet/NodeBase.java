@@ -47,7 +47,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
 import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.LocalMessageManager;
+import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
@@ -88,7 +88,7 @@ public abstract class NodeBase implements Node
         nodeContext = nodeManager.threadContext();
         tid = nodeContext.getNodeId();
 
-        Counters c = uvm.localMessageManager().getCounters(tid);
+        Counters c = uvm.messageManager().getCounters(tid);
         c.addMetric("s2nChunks", I18nUtil.marktr("Server to node chunks"), null, false);
         c.addMetric("c2nChunks", I18nUtil.marktr("Client to node chunks"), null, false);
         c.addMetric("n2sChunks", I18nUtil.marktr("Node to server chunks"), null, false);
@@ -372,7 +372,7 @@ public abstract class NodeBase implements Node
                 wasStarted = true;
             }
 
-            LocalMessageManager mm = LocalUvmContextFactory.context().localMessageManager();
+            MessageManager mm = LocalUvmContextFactory.context().messageManager();
             NodeStateChange nsc = new NodeStateChange(nodeContext.getNodeDesc(), ts);
             mm.submitMessage(nsc);
 
