@@ -533,6 +533,19 @@ Ung.Main=Ext.extend(Object, {
             if(Ung.Util.handleException(exception)) return;
         }.createDelegate(this));
     },
+
+    getNetworkManager : function(forceReload) {
+        if (forceReload || rpc.networkManager === undefined) {
+            try {
+                rpc.networkManager = rpc.jsonrpc.RemoteUvmContext.networkManager();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+
+        }
+        return rpc.networkManager;
+    },
+
     getLoggingManager : function(forceReload) {
         if (forceReload || rpc.loggingManager === undefined) {
             try {
@@ -616,19 +629,6 @@ Ung.Main=Ext.extend(Object, {
             }
         }
         return rpc.mailSender;
-    },
-
-    getIntfManager : function(forceReload)
-    {
-        if ( forceReload || rpc.intfManager === undefined) {
-            try {
-                rpc.intfManager = rpc.jsonrpc.RemoteUvmContext.intfManager();
-            } catch ( e ) {
-                Ung.Util.rpcExHandler(e);
-            }
-        }
-
-        return rpc.intfManager;
     },
 
     unactivateNode: function(packageDesc) {

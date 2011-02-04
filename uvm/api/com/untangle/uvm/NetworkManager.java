@@ -172,4 +172,6 @@ public interface NetworkManager
     void unregisterListener( NetworkConfigurationListener networkListener );
 
     void refreshIptablesRules();
+
+    String[] getPossibleInterfaces();
 }

@@ -380,18 +380,18 @@ Ung.Util= {
     todo: function() {
         Ext.MessageBox.alert(i18n._("TODO"),"TODO: implement this.");
     },
-    interfaceEnumeration : null,
+    possibleInterfaces : null,
     getInterfaceList : function(wanMatchers, anyMatcher) {
         var data = [];
         var datacount = 0;
 
-        if(this.interfaceEnumeration==null) {
-            var intfManager = main.getIntfManager();
-            this.interfaceEnumeration = intfManager.getIntfMatcherEnumeration();
+        if(this.possibleInterfaces==null) {
+            var netManager = main.getNetworkManager();
+            this.possibleInterfaces = netManager.getPossibleInterfaces();
         }
 
-        for ( var c = 0 ; c < this.interfaceEnumeration.length ; c++ ) {
-            var key =this.interfaceEnumeration[c];
+        for ( var c = 0 ; c < this.possibleInterfaces.length ; c++ ) {
+            var key =this.possibleInterfaces[c];
             var name = key;
             switch ( key ) {
             case "any":

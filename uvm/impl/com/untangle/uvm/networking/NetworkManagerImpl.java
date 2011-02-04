@@ -585,6 +585,26 @@ public class NetworkManagerImpl implements NetworkManager
             logger.warn("Failed to refresh IPtables: ",e);
         }
     }
+
+    public String[] getPossibleInterfaces()
+    {
+        LinkedList<String> possibleInterfaces = new LinkedList<String>();
+
+        /**
+         * These are always possible
+         */
+        possibleInterfaces.add("any");
+        possibleInterfaces.add("wan");
+        possibleInterfaces.add("non-wan");
+
+        if (this.networkConfiguration != null) {   
+            for ( InterfaceConfiguration intfConf : this.networkConfiguration.getInterfaceList() ) {
+                possibleInterfaces.add(intfConf.getInterfaceId().toString());
+            }
+        }
+
+        return possibleInterfaces.toArray(new String[0]);
+    }
     
     /*
      * This returns an address where the host should be able to access
