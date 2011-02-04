@@ -25,7 +25,7 @@ import javax.persistence.Transient;
 
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.TrafficIntfRule;
-import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 import com.untangle.uvm.node.firewall.port.PortDBMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
@@ -54,7 +54,7 @@ public class FirewallRule extends TrafficIntfRule
     public FirewallRule() { }
 
     public FirewallRule(boolean isLive, ProtocolDBMatcher protocol,
-                        IntfDBMatcher clientIface, IntfDBMatcher serverIface,
+                        IntfMatcher clientIface, IntfMatcher serverIface,
                         IPDBMatcher srcAddress, IPDBMatcher dstAddress,
                         PortDBMatcher srcPort, PortDBMatcher dstPort,
                         boolean isTrafficBlocker)

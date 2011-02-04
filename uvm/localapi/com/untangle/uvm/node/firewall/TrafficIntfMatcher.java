@@ -85,6 +85,6 @@ public abstract class TrafficIntfMatcher extends TrafficMatcher
 
     public boolean isMatchIntf(byte src, byte dst)
     {
-        return this.srcIntf.isMatch(src, dst) && this.dstIntf.isMatch(dst, src);
+        return this.srcIntf.isMatch(src) && this.dstIntf.isMatch(dst);
     }
 }

@@ -36,7 +36,7 @@ import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.Validator;
-import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
@@ -298,7 +298,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
             List<FirewallRule> firewallList = new LinkedList<FirewallRule>();
 
             IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
-            IntfDBMatcher any = imf.getAllMatcher();
+            IntfMatcher any = imf.getAnyMatcher();
 
             FirewallRule tmp = new FirewallRule(false,
                                                 prmf.getTCPAndUDPMatcher(),

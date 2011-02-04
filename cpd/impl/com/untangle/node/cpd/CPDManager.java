@@ -20,10 +20,8 @@ import com.untangle.node.cpd.CPDSettings.AuthenticationType;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.addrbook.RemoteAddressBook.Backend;
 import com.untangle.uvm.node.firewall.ParsingConstants;
-import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
-import com.untangle.uvm.node.firewall.intf.IntfSetMatcher;
-import com.untangle.uvm.node.firewall.intf.IntfSimpleMatcher;
-import com.untangle.uvm.node.firewall.intf.IntfSingleMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 import com.untangle.uvm.node.firewall.ip.IPRangeMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSetMatcher;
@@ -348,25 +346,38 @@ public class CPDManager
     }
     
     /* CPD doesn't understand the set syntax, have to break rules into their individual parts */
-    private List<Integer> splitInterfaceList(IntfDBMatcher matcher)
+    private List<Integer> splitInterfaceList(IntfMatcher matcher)
     {
         List<Integer> clientInterfaceList = new ArrayList<Integer>(1);
         clientInterfaceList.add(-1);
 
-        if ( matcher instanceof IntfSingleMatcher) {
+        /**
+         * XXX this function relies on the underlying format of IntfMatcher
+         * This should be fixed
+         */
+
+        int index = 0;
+        boolean singleIntf = false;
+        try {
+            /* try to parse as int */
+            index = Integer.parseInt(matcher.toString());
+            singleIntf = true;
+        } catch (NumberFormatException e) {/* ignore */}
+
+        if ( singleIntf ) {
             clientInterfaceList = new ArrayList<Integer>(1);
-            clientInterfaceList.add(Integer.parseInt(matcher.toDatabaseString()));
-        } else if ( matcher instanceof IntfSetMatcher ) {
-            String[] i = matcher.toDatabaseString().split(ParsingConstants.MARKER_SEPERATOR);
+            clientInterfaceList.add(index);
+        } else if ( matcher.toString().contains(",")) {
+            String[] i = matcher.toDatabaseString().split(",");
             clientInterfaceList = new ArrayList<Integer>(i.length);
             
             for ( String intf : i ) {
                 clientInterfaceList.add(Integer.parseInt(intf));
             }
-        } else if ( matcher == IntfSimpleMatcher.getNilMatcher()) {
+        } else if ( matcher == IntfMatcherFactory.getInstance().getNilMatcher() || matcher.toString().equals("none")) {
             logger.info( "Capture rule with nil interface matcher, returning.");
             return null;
-        } else if ( matcher == IntfSimpleMatcher.getAllMatcher()) {
+        } else if ( matcher == IntfMatcherFactory.getInstance().getAnyMatcher() || matcher.toString().equals("any")) {
             /* Nothing to do here */
         } else {
             logger.info( "Capture rule with invalid interface matcher, returning.");
@@ -404,7 +415,7 @@ public class CPDManager
             throws JSONException
     {
         serializeCaptureRule(captureRules, new CaptureRule(true, false,
-                                                           "passed client", IntfSimpleMatcher.getAllMatcher(), client,
+                                                           "passed client", IntfMatcherFactory.getInstance().getAnyMatcher(), client,
                                                            server, "00:00", "23:59",
                                                            "mon,tue,wed,thu,fri,sat,sun"));
     }

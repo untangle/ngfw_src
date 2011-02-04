@@ -25,8 +25,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.node.Rule;
-import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
-import com.untangle.uvm.node.firewall.intf.IntfSimpleMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
 
@@ -41,7 +41,7 @@ public class CaptureRule extends Rule
     public static final String ALL_DAYS = "mon,tue,wed,thu,fri,sat,sun";
     
     private boolean capture = true;
-    private IntfDBMatcher clientInterface = IntfSimpleMatcher.getAllMatcher();
+    private IntfMatcher clientInterface = IntfMatcherFactory.getInstance().getAnyMatcher();
     private IPDBMatcher clientAddress = IPSimpleMatcher.getAllMatcher();
     private IPDBMatcher serverAddress = IPSimpleMatcher.getAllMatcher();
     
@@ -55,7 +55,7 @@ public class CaptureRule extends Rule
     }
 	
 	public CaptureRule( boolean live, boolean capture, String description, 
-	        IntfDBMatcher clientInterface, IPDBMatcher clientAddress, IPDBMatcher serverAddress,
+	        IntfMatcher clientInterface, IPDBMatcher clientAddress, IPDBMatcher serverAddress,
 	        String startTime, String endTime, String days )
 	{
 	    setLive(live);
@@ -83,12 +83,12 @@ public class CaptureRule extends Rule
 
     @Column(name="client_interface", nullable=false)
     @Type(type="com.untangle.uvm.type.firewall.IntfMatcherUserType")
-    public IntfDBMatcher getClientInterface()
+    public IntfMatcher getClientInterface()
     {
         return this.clientInterface;
     }
 
-    public void setClientInterface( IntfDBMatcher newValue )
+    public void setClientInterface( IntfMatcher newValue )
     {
         this.clientInterface = newValue;
     }

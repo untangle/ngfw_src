@@ -783,7 +783,8 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
         // stop services:
         try {
-            toolboxManager.destroy();
+            if (toolboxManager != null)
+                toolboxManager.destroy();
         } catch (Exception exn) {
             logger.warn("could not destroy ToolboxManager", exn);
         }
@@ -802,19 +803,22 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         eventLogger = null;
 
         try {
-            loggingManager.stop();
+            if (loggingManager != null)
+                loggingManager.stop();
         } catch (Exception exn) {
             logger.error("could not stop RemoteLoggingManager", exn);
         }
 
         try {
-            sessionFactory.close();
+            if (sessionFactory != null)
+                sessionFactory.close();
         } catch (HibernateException exn) {
             logger.warn("could not close Hibernate SessionFactory", exn);
         }
 
         try {
-            cronManager.destroy();
+            if (cronManager != null)
+                cronManager.destroy();
             cronManager = null;
         } catch (Exception exn) {
             logger.warn("could not stop CronManager", exn);

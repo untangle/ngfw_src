@@ -14,7 +14,6 @@ import com.untangle.uvm.webui.jabsorb.serializer.IPMaddrSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.InetAddressSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.IntfMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.LazyInitializerSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.PortMatcherSerializer;
@@ -78,7 +77,6 @@ public class ServletUtils
 
         // firewal related serializers
         registrator.registerSerializer(root, new ProtocolMatcherSerializer());
-        registrator.registerSerializer(root, new IntfMatcherSerializer());
         registrator.registerSerializer(root, new IPMatcherSerializer());
         registrator.registerSerializer(root, new PortMatcherSerializer());
         registrator.registerSerializer(root, new TimeMatcherSerializer());

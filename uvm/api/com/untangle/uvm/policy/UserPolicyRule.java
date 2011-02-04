@@ -78,10 +78,10 @@ public class UserPolicyRule extends PolicyRule
     private ProtocolMatcher protocol;
 
     /* True if this matches client interface */
-    private IntfMatcher clientIntf = IntfMatcherFactory.getInstance().getExternalMatcher();
+    private IntfMatcher clientIntf = IntfMatcherFactory.getInstance().getAnyMatcher();
 
     /* True if this matches the server interface */
-    private IntfMatcher serverIntf = IntfMatcherFactory.getInstance().getInternalMatcher();
+    private IntfMatcher serverIntf = IntfMatcherFactory.getInstance().getAnyMatcher();
 
     private IPMatcher clientAddr;
     private IPMatcher serverAddr;
@@ -131,8 +131,8 @@ public class UserPolicyRule extends PolicyRule
     {
         boolean basicOk =
             isLive()
-            && clientIntf.isMatch(sd.clientIntf(), sd.serverIntf())
-            && serverIntf.isMatch(sd.serverIntf(), sd.clientIntf())
+            && clientIntf.isMatch(sd.clientIntf())
+            && serverIntf.isMatch(sd.serverIntf())
             && protocol.isMatch(sd.protocol())
             && clientAddr.isMatch(sd.clientAddr())
             && serverAddr.isMatch(sd.serverAddr())

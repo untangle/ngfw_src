@@ -1,20 +1,4 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
+/* $HeadURL$ */
 package com.untangle.node.cpd;
 
 import java.io.File;
@@ -52,7 +36,7 @@ import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.firewall.intf.IntfSingleMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.I18nUtil;
@@ -113,16 +97,16 @@ public class CPDImpl extends AbstractNode implements CPD
         /* Create a set of default capture rules */
         List<CaptureRule> rules = new LinkedList<CaptureRule>();
         rules.add(new CaptureRule(false, true,
-                "Require a login for traffic on the internal interface", 
-                IntfSingleMatcher.getInternalMatcher(), 
-                IPSimpleMatcher.getAllMatcher(), IPSimpleMatcher.getAllMatcher(),
-                CaptureRule.START_OF_DAY, CaptureRule.END_OF_DAY, CaptureRule.ALL_DAYS));
+                                  "Require a login for traffic on the internal (non-wan) interfaces", 
+                                  IntfMatcherFactory.getInstance().getNonWanMatcher(), 
+                                  IPSimpleMatcher.getAllMatcher(), IPSimpleMatcher.getAllMatcher(),
+                                  CaptureRule.START_OF_DAY, CaptureRule.END_OF_DAY, CaptureRule.ALL_DAYS));
         
         rules.add(new CaptureRule(false, true,
-                "Require a login between 8:00 AM and 5 PM on the internal interface.", 
-                IntfSingleMatcher.getInternalMatcher(), 
-                IPSimpleMatcher.getAllMatcher(), IPSimpleMatcher.getAllMatcher(),
-                "8:00", "17:00", CaptureRule.ALL_DAYS));
+                                  "Require a login between 8:00 AM and 5 PM on the internal (non-wan) interfaces.", 
+                                  IntfMatcherFactory.getInstance().getNonWanMatcher(), 
+                                  IPSimpleMatcher.getAllMatcher(), IPSimpleMatcher.getAllMatcher(),
+                                  "8:00", "17:00", CaptureRule.ALL_DAYS));
         
         settings.setCaptureRules(rules);
         settings.getBaseSettings().setPageParameters(getDefaultPageParameters());

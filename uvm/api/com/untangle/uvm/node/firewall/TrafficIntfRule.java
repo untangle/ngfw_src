@@ -38,8 +38,8 @@ import javax.persistence.MappedSuperclass;
 
 import org.hibernate.annotations.Type;
 
-import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
+import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 import com.untangle.uvm.node.firewall.port.PortDBMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
@@ -56,17 +56,15 @@ public abstract class TrafficIntfRule extends TrafficRule
 {
 
     /* True if this matches source interface */
-    private IntfDBMatcher srcIntf = IntfMatcherFactory.getInstance()
-        .getAllMatcher();
+    private IntfMatcher srcIntf = IntfMatcherFactory.getInstance().getAnyMatcher();
 
     /* True if this matches the destination interface */
-    private IntfDBMatcher dstIntf = IntfMatcherFactory.getInstance()
-        .getAllMatcher();
+    private IntfMatcher dstIntf = IntfMatcherFactory.getInstance().getAnyMatcher();
 
     public TrafficIntfRule() { }
 
     public TrafficIntfRule(boolean isLive, ProtocolDBMatcher protocol,
-                           IntfDBMatcher srcIntf, IntfDBMatcher dstIntf,
+                           IntfMatcher srcIntf, IntfMatcher dstIntf,
                            IPDBMatcher srcAddress, IPDBMatcher dstAddress,
                            PortDBMatcher srcPort, PortDBMatcher dstPort)
     {
@@ -76,35 +74,35 @@ public abstract class TrafficIntfRule extends TrafficRule
     }
 
     /**
-     * source IntfDBMatcher
+     * source IntfMatcher
      *
      * @return the source IP matcher.
      */
     @Column(name="src_intf_matcher")
     @Type(type="com.untangle.uvm.type.firewall.IntfMatcherUserType")
-    public IntfDBMatcher getSrcIntf()
+    public IntfMatcher getSrcIntf()
     {
         return srcIntf;
     }
 
-    public void setSrcIntf( IntfDBMatcher srcIntf )
+    public void setSrcIntf( IntfMatcher srcIntf )
     {
         this.srcIntf = srcIntf;
     }
 
     /**
-     * destination IntfDBMatcher
+     * destination IntfMatcher
      *
      * @return the destination IP matcher.
      */
     @Column(name="dst_intf_matcher")
     @Type(type="com.untangle.uvm.type.firewall.IntfMatcherUserType")
-    public IntfDBMatcher getDstIntf()
+    public IntfMatcher getDstIntf()
     {
         return dstIntf;
     }
 
-    public void setDstIntf( IntfDBMatcher dstIntf )
+    public void setDstIntf( IntfMatcher dstIntf )
     {
         this.dstIntf = dstIntf;
     }
