@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/branch/prod/web-ui/work/src/uvm/impl/com/untangle/uvm/engine/RemoteLanguageManagerImpl.java $
+ * $HeadURL: svn://chef/branch/prod/web-ui/work/src/uvm/impl/com/untangle/uvm/engine/LanguageManagerImpl.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -51,7 +51,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocaleInfo;
-import com.untangle.uvm.RemoteLanguageManager;
+import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.RemoteUvmContextFactory;
 import com.untangle.uvm.RemoteUvmContext;
@@ -63,12 +63,12 @@ import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.TransactionWork;
 
 /**
- * Implementation of RemoteLanguageManagerImpl.
+ * Implementation of LanguageManagerImpl.
  *
  * @author <a href="mailto:cmatei@untangle.com">Catalin Matei</a>
  * @version 1.0
  */
-class RemoteLanguageManagerImpl implements RemoteLanguageManager
+class LanguageManagerImpl implements LanguageManager
 {
     private static final String LANGUAGES_DIR;
     private static final String LANGUAGES_COMMUNITY_DIR;
@@ -98,7 +98,7 @@ class RemoteLanguageManagerImpl implements RemoteLanguageManager
         LOCALE_DIR = "/usr/share/locale"; // place for .mo files
     }
 
-    public RemoteLanguageManagerImpl(UvmContextImpl uvmContext)
+    public LanguageManagerImpl(UvmContextImpl uvmContext)
     {
         this.uvmContext = uvmContext;
 

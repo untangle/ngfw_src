@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.untangle.uvm.RemoteLanguageManager;
+import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.RemoteUvmContextFactory;
 import com.untangle.uvm.RemoteUvmContext;
 
@@ -51,7 +51,7 @@ public class I18NServlet extends HttpServlet {
         throws ServletException, IOException
     {
         RemoteUvmContext uvm = RemoteUvmContextFactory.context();
-        RemoteLanguageManager languageManager = uvm.languageManager();
+        LanguageManager languageManager = uvm.languageManager();
 
         String module = req.getParameter("module");
 

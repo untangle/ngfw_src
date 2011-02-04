@@ -24,7 +24,7 @@ import java.util.Map;
 
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LocaleInfo;
-import com.untangle.uvm.RemoteLanguageManager;
+import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.SkinManager;
 import com.untangle.uvm.SkinInfo;
 import com.untangle.uvm.SkinSettings;
@@ -45,7 +45,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
 
     private final SkinManager skinManager = new SkinManagerImpl();
     private final RemoteReportingManager reportingManager = new RemoteReportingManagerImpl();
-    private final RemoteLanguageManager languageManager = new RemoteLanguageManagerImpl();
+    private final LanguageManager languageManager = new LanguageManagerImpl();
 
 
     private ReportsContextImpl( RemoteUvmContext context )
@@ -63,7 +63,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         return this.skinManager;
     }
 
-    public RemoteLanguageManager languageManager()
+    public LanguageManager languageManager()
     {
         return this.languageManager;
     }
@@ -113,7 +113,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         }
     }
 
-    private class RemoteLanguageManagerImpl implements RemoteLanguageManager
+    private class LanguageManagerImpl implements LanguageManager
     {
         /**
          * Get the settings.

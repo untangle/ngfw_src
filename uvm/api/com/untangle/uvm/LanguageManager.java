@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/branch/prod/web-ui/work/src/uvm/api/com/untangle/uvm/RemoteLanguageManager.java $
+ * $HeadURL: svn://chef/branch/prod/web-ui/work/src/uvm/api/com/untangle/uvm/LanguageManager.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
@@ -44,7 +44,7 @@ import org.apache.commons.fileupload.FileItem;
  * @author <a href="mailto:cmatei@untangle.com">Catalin Matei</a>
  * @version 1.0
  */
-public interface RemoteLanguageManager
+public interface LanguageManager
 {
     /**
      * Get the settings.

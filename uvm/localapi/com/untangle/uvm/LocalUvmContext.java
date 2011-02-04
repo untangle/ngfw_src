@@ -141,11 +141,11 @@ public interface LocalUvmContext extends RemoteUvmContext
     SkinManager skinManager();
 
     /**
-     * Get the <code>RemoteLanguageManager</code> singleton.
+     * Get the <code>LanguageManager</code> singleton.
      *
-     * @return the RemoteLanguageManager.
+     * @return the LanguageManager.
      */
-    RemoteLanguageManager languageManager();
+    LanguageManager languageManager();
 
     RemoteMessageManager messageManager();
 

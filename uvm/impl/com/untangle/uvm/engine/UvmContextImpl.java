@@ -110,7 +110,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private SkinManagerImpl skinManager;
     private MessageManagerImpl localMessageManager;
     private RemoteMessageManager messageManager;
-    private RemoteLanguageManagerImpl languageManager;
+    private LanguageManagerImpl languageManager;
     private LicenseManagerFactory licenseManagerFactory;
     private TomcatManagerImpl tomcatManager;
     private HeapMonitor heapMonitor;
@@ -178,7 +178,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.localMessageManager;
     }
 
-    public RemoteLanguageManagerImpl languageManager()
+    public LanguageManagerImpl languageManager()
     {
         return this.languageManager;
     }
@@ -690,7 +690,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
         //Skins and Language managers
         this.skinManager = new SkinManagerImpl(this);
-        this.languageManager = new RemoteLanguageManagerImpl(this);
+        this.languageManager = new LanguageManagerImpl(this);
 
         // start nodes:
         this.nodeManager = new NodeManagerImpl(repositorySelector);

@@ -33,7 +33,7 @@ import org.jabsorb.serializer.MarshallException;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocalUvmContext;
 
-import com.untangle.uvm.RemoteLanguageManager;
+import com.untangle.uvm.LanguageManager;
 
 /**
  * A servlet which will display the start page
@@ -60,7 +60,7 @@ public class Language extends HttpServlet
             throw new ServletException( "Unable to load the default serializer", e );
         }
 
-        RemoteLanguageManager rlm = context.languageManager();
+        LanguageManager rlm = context.languageManager();
         
         try {
             request.setAttribute( "languageList", js.toJSON( rlm.getLanguagesList()));

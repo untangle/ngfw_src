@@ -7,7 +7,7 @@ import com.untangle.uvm.MailSender;
 import com.untangle.uvm.RemoteAppServerManager;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.RemoteConnectivityTester;
-import com.untangle.uvm.RemoteLanguageManager;
+import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.SkinManager;
 import com.untangle.uvm.RemoteOemManager;
@@ -131,11 +131,11 @@ public interface RemoteUvmContext
     RemoteMessageManager messageManager();
 
     /**
-     * Get the <code>RemoteLanguageManager</code> singleton.
+     * Get the <code>LanguageManager</code> singleton.
      *
-     * @return the RemoteLanguageManager.
+     * @return the LanguageManager.
      */
-    RemoteLanguageManager languageManager();
+    LanguageManager languageManager();
 
     /**
      * The license manager.

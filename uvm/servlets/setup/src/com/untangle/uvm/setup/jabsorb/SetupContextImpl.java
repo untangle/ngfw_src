@@ -23,7 +23,7 @@ import java.util.TimeZone;
 import javax.transaction.TransactionRolledbackException;
 
 import com.untangle.uvm.LanguageSettings;
-import com.untangle.uvm.RemoteLanguageManager;
+import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.RemoteUvmContextFactory;
 import com.untangle.uvm.RemoteUvmContext;
@@ -45,7 +45,7 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
 
     public void setLanguage( String language )
     {
-        RemoteLanguageManager lm = this.context.languageManager();
+        LanguageManager lm = this.context.languageManager();
         LanguageSettings ls = lm.getLanguageSettings();
         ls.setLanguage( language );
         lm.setLanguageSettings( ls );

@@ -23,7 +23,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import com.untangle.uvm.RemoteLanguageManager;
+import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.SkinManager;
 import com.untangle.uvm.reports.RemoteReportingManager;
 
@@ -175,6 +175,6 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 
         public SkinManager skinManager();
 
-        public RemoteLanguageManager languageManager();                
+        public LanguageManager languageManager();                
     }
 }
