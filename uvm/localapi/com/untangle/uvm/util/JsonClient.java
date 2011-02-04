@@ -73,10 +73,9 @@ public class JsonClient
 
     private static final JsonClient INSTANCE = new JsonClient();
 
-    private final MultiThreadedHttpConnectionManager connectionManager =
-        new MultiThreadedHttpConnectionManager();
+    private final MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
 
-    private static final String ALPACA_BASE_URL = "http://localhost:3000/alpaca/";
+    private static final String ALPACA_BASE_URL = "http://127.0.0.1:3000/alpaca/";
     private static final String ALPACA_NONCE_FILE = "/etc/untangle-net-alpaca/nonce";
 
     private final Logger logger = Logger.getLogger(getClass());
