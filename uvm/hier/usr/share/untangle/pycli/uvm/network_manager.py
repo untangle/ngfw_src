@@ -8,4 +8,7 @@ class NetworkManager(Manager):
     def api_updateaddress( self ):
         self.__networkManager.refreshNetworkConfig()
 
+    def api_refreshnetworkconfig( self ):
+        self.__networkManager.refreshNetworkConfig()
+
 Manager.managers.append( NetworkManager )
