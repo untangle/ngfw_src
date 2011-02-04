@@ -162,7 +162,7 @@ public class Argon
         try {
             JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "write_files", null );
         } catch ( Exception e ) {
-            logger.warn( "Unable to commit initial alpaca files.", e );
+            logger.warn( "Failed to write UVM config files. (net-alpaca returned an error)", e );
         }
 
         /* Initialize the network manager, this has to be done after netcap init. */

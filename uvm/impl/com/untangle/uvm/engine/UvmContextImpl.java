@@ -964,7 +964,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         try {
             JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "wizard_start", null );
         } catch (Exception exc) {
-            logger.error("Failed to initialize Factory Defaults",exc);
+            logger.error("Failed to initialize Factory Defaults (net-alpaca returned an error)",exc);
         }
 
         /**
