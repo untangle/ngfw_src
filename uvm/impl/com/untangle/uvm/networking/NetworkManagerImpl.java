@@ -33,7 +33,9 @@ import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
 import com.untangle.uvm.SettingsManager;
 
-/* XXX This shouldn't be public */
+/**
+ * The Network Manager handles all the network configuration
+ */
 public class NetworkManagerImpl implements NetworkManager
 {
     private static NetworkManagerImpl INSTANCE = null;
