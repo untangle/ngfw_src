@@ -199,18 +199,14 @@ public class SettingsManagerImpl implements SettingsManager
     private <T> T _loadInputStream(Class<T> clz, InputStream is)
         throws SettingsException
     {
-        Reader reader = null;
+        BufferedReader reader = null;
         try {
             StringBuilder jsonString = new StringBuilder();
             reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
-            while (true) {
-                char buffer[] = new char[1024];
-                if (reader.read(buffer) <= 0) {
-                    break;
-                }
-
-                jsonString.append(buffer);
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonString.append(line+"\n");
             }
 
             logger.debug("Loading Settings: \n" + "-----------------------------\n" + jsonString + "-----------------------------\n");
