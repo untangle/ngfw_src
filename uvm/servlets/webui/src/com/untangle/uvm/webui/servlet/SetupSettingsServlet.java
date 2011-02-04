@@ -62,11 +62,6 @@ public class SetupSettingsServlet extends HttpServlet
 
         NetworkManager nm = context.networkManager();
 
-        /**
-         * Refresh the network config just to make sure it is current
-         */
-        nm.refreshNetworkConfig();
-
         AddressSettings addressSettings = nm.getAddressSettings();
         NetworkConfiguration networkSettings = nm.getNetworkConfiguration();
         RegistrationInfo ri = new RegistrationInfo();
