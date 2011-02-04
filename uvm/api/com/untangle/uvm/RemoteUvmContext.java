@@ -9,7 +9,7 @@ import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.RemoteConnectivityTester;
 import com.untangle.uvm.RemoteLanguageManager;
 import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.RemoteSkinManager;
+import com.untangle.uvm.SkinManager;
 import com.untangle.uvm.RemoteOemManager;
 import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
@@ -117,11 +117,11 @@ public interface RemoteUvmContext
     RemoteBrandingManager brandingManager();
 
     /**
-     * Get the <code>RemoteSkinManager</code> singleton.
+     * Get the <code>SkinManager</code> singleton.
      *
-     * @return the RemoteSkinManager.
+     * @return the SkinManager.
      */
-    RemoteSkinManager skinManager();
+    SkinManager skinManager();
 
     /**
      * Get the <code>RemoteMessageManager</code> singleton.

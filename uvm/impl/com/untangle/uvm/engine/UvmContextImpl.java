@@ -107,7 +107,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private RemoteAppServerManagerAdaptor remoteAppServerManager;
     private AddressBookFactory addressBookFactory;
     private BrandingManagerImpl brandingManager;
-    private RemoteSkinManagerImpl skinManager;
+    private SkinManagerImpl skinManager;
     private MessageManagerImpl localMessageManager;
     private RemoteMessageManager messageManager;
     private RemoteLanguageManagerImpl languageManager;
@@ -163,7 +163,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.brandingManager;
     }
 
-    public RemoteSkinManagerImpl skinManager()
+    public SkinManagerImpl skinManager()
     {
         return this.skinManager;
     }
@@ -689,7 +689,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         this.brandingManager = new BrandingManagerImpl();
 
         //Skins and Language managers
-        this.skinManager = new RemoteSkinManagerImpl(this);
+        this.skinManager = new SkinManagerImpl(this);
         this.languageManager = new RemoteLanguageManagerImpl(this);
 
         // start nodes:

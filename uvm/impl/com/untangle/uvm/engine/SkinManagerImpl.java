@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/branch/prod/web-ui/work/src/uvm/impl/com/untangle/uvm/engine/RemoteSkinManagerImpl.java $
+ * $HeadURL: svn://chef/branch/prod/web-ui/work/src/uvm/impl/com/untangle/uvm/engine/SkinManagerImpl.java $
  * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -40,7 +40,7 @@ import org.hibernate.Session;
 
 import com.thoughtworks.xstream.XStream;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.RemoteSkinManager;
+import com.untangle.uvm.SkinManager;
 import com.untangle.uvm.SkinInfo;
 import com.untangle.uvm.SkinSettings;
 import com.untangle.uvm.UvmException;
@@ -50,12 +50,12 @@ import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.TransactionWork;
 
 /**
- * Implementation of RemoteSkinManager.
+ * Implementation of SkinManager.
  *
  * @author <a href="mailto:cmatei@untangle.com">Catalin Matei</a>
  * @version 1.0
  */
-class RemoteSkinManagerImpl implements RemoteSkinManager
+class SkinManagerImpl implements SkinManager
 {
     private static final String SKINS_DIR;
     private static final String DEFAULT_SKIN = "default";
@@ -68,7 +68,7 @@ class RemoteSkinManagerImpl implements RemoteSkinManager
     private final UvmContextImpl uvmContext;
     private SkinSettings skinSettings;
 
-    RemoteSkinManagerImpl(UvmContextImpl uvmContext)
+    SkinManagerImpl(UvmContextImpl uvmContext)
     {
     	this.uvmContext = uvmContext;    	
     	

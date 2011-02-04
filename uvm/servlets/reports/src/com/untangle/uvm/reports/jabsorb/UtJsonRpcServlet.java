@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import com.untangle.uvm.RemoteLanguageManager;
-import com.untangle.uvm.RemoteSkinManager;
+import com.untangle.uvm.SkinManager;
 import com.untangle.uvm.reports.RemoteReportingManager;
 
 import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
@@ -173,7 +173,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
     {
         public RemoteReportingManager reportingManager();
 
-        public RemoteSkinManager skinManager();
+        public SkinManager skinManager();
 
         public RemoteLanguageManager languageManager();                
     }

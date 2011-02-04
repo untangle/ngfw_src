@@ -134,11 +134,11 @@ public interface LocalUvmContext extends RemoteUvmContext
     RemoteOemManager oemManager();
     
     /**
-     * Get the <code>RemoteSkinManager</code> singleton.
+     * Get the <code>SkinManager</code> singleton.
      *
-     * @return the RemoteSkinManager.
+     * @return the SkinManager.
      */
-    RemoteSkinManager skinManager();
+    SkinManager skinManager();
 
     /**
      * Get the <code>RemoteLanguageManager</code> singleton.
