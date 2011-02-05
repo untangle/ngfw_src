@@ -5,9 +5,6 @@ class NetworkManager(Manager):
         self.__remoteContext = remoteContext
         self.__networkManager = self.__remoteContext.networkManager()
 
-    def api_updateaddress( self ):
-        self.__networkManager.refreshNetworkConfig()
-
     def api_refreshnetworkconfig( self ):
         self.__networkManager.refreshNetworkConfig()
 
