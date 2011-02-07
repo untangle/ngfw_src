@@ -548,11 +548,10 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
             for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
             int exitValue = p.waitFor();
             if (0 != exitValue) {
-                logger.error("Unable to activate (" + exitValue
-                        + ") with uid: " + uid);
+                logger.error("Unable to activate (" + exitValue + ") with uid: " + uid);
                 return false;
             } else {
-                logger.info("Product activated with uid: " + uid);
+                logger.info("Activated with uid: " + uid);
             }
         } catch (InterruptedException exn) {
             logger.error("Interrupted during activation with uid: " + uid);

@@ -633,7 +633,11 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                         status = i18n._( "connected" );
                         divClass = "draggable-enabled-interface";
                     }
-
+                    if ( value[1] == "disconnected" ) {
+                        status = i18n._( "disconnected" );
+                        divClass = "draggable-disabled-interface";
+                    }
+                    
                     return "<div class='" + divClass + "'>" + value[0] + " : " + status + "</div>";
                 },
                 width : 400
@@ -748,9 +752,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         for ( c = 0 ;  c < data.length ; c++ ) {
             i = data[c];
             /* This is the VPN interfaces, and this is a magic number. */
-            if ( i.argonIntf == 7 ) {
-                continue;
-            }
+            if ( i.systemName.indexOf( 'tun0' ) == 0 ) continue;
 
             /* This is an interface that does not exist */
             if ( i.systemName.indexOf( 'nointerface' ) == 0 ) continue;
@@ -820,7 +822,8 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
 
     arRefreshInterfaces : function()
     {
-        rpc.networkManager.getInterfaceList( this.completeRefreshInterfaces.createDelegate( this ), true );
+        rpc.networkManager.updateLinkStatus();
+        rpc.networkManager.getNetworkConfiguration( this.completeRefreshInterfaces.createDelegate( this ) );
     },
 
     completeRefreshInterfaces : function( result, exception )
@@ -836,7 +839,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             return;
         }
 
-        var interfaceList = this.fixInterfaceList( result );
+        var interfaceList = this.fixInterfaceList( result.interfaceList );
 
         if ( interfaceList.length != this.interfaceStore.getCount()) {
             Ext.MessageBox.alert( i18n._( "New interfaces" ), i18n._ ( "There are new interfaces, please restart the wizard." ), exception.message );
