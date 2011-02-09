@@ -18,17 +18,22 @@
 
 package com.untangle.node.firewall;
 
+
 import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
+import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.firewall.TrafficIntfRule;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
 
 /**
  * Rule for matching based on IP addresses and subnets.
@@ -39,7 +44,7 @@ import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
 @Entity
 @Table(name="n_firewall_rule", schema="settings")
 @SuppressWarnings("serial")
-public class FirewallRule extends TrafficIntfRule
+public class FirewallRule extends Rule
 {
     
     private static final String ACTION_BLOCK     = "Block";
@@ -49,6 +54,21 @@ public class FirewallRule extends TrafficIntfRule
 
     private boolean isTrafficBlocker;
 
+
+    /* True if this matches source interface */
+    private IntfMatcher srcIntf = IntfMatcher.getAnyMatcher();
+
+    /* True if this matches the destination interface */
+    private IntfMatcher dstIntf = IntfMatcher.getAnyMatcher();
+
+    private ProtocolDBMatcher protocol;
+
+    private IPDBMatcher   srcAddress;
+    private IPDBMatcher   dstAddress;
+
+    private PortMatcher srcPort;
+    private PortMatcher dstPort;
+    
     // constructors -----------------------------------------------------------
 
     public FirewallRule() { }
@@ -59,11 +79,18 @@ public class FirewallRule extends TrafficIntfRule
                         PortMatcher srcPort, PortMatcher dstPort,
                         boolean isTrafficBlocker)
     {
-        super(isLive, protocol, clientIface, serverIface,
-              srcAddress, dstAddress, srcPort, dstPort);
-
         /* Attributes of the firewall */
         this.isTrafficBlocker = isTrafficBlocker;
+
+        this.srcIntf = srcIntf;
+        this.dstIntf = dstIntf;
+
+        setLive( isLive );
+        this.protocol   = protocol;
+        this.srcAddress = srcAddress;
+        this.dstAddress = dstAddress;
+        this.srcPort    = srcPort;
+        this.dstPort    = dstPort;
     }
 
 
@@ -111,5 +138,124 @@ public class FirewallRule extends TrafficIntfRule
     public static String getActionDefault()
     {
         return ACTION_ENUMERATION[0];
+    }
+
+    /**
+     * source IntfMatcher
+     *
+     * @return the source IP matcher.
+     */
+    @Column(name="src_intf_matcher")
+    @Type(type="com.untangle.uvm.type.firewall.IntfMatcherUserType")
+    public IntfMatcher getSrcIntf()
+    {
+        return srcIntf;
+    }
+
+    public void setSrcIntf( IntfMatcher srcIntf )
+    {
+        this.srcIntf = srcIntf;
+    }
+
+    /**
+     * destination IntfMatcher
+     *
+     * @return the destination IP matcher.
+     */
+    @Column(name="dst_intf_matcher")
+    @Type(type="com.untangle.uvm.type.firewall.IntfMatcherUserType")
+    public IntfMatcher getDstIntf()
+    {
+        return dstIntf;
+    }
+
+    public void setDstIntf( IntfMatcher dstIntf )
+    {
+        this.dstIntf = dstIntf;
+    }
+
+    /**
+     * Protocol matcher
+     *
+     * @return the protocol matcher.
+     */
+    @Column(name="protocol_matcher")
+    @Type(type="com.untangle.uvm.type.firewall.ProtocolMatcherUserType")
+    public ProtocolDBMatcher getProtocol()
+    {
+        return protocol;
+    }
+
+    public void setProtocol( ProtocolDBMatcher protocol )
+    {
+        this.protocol = protocol;
+    }
+
+    /**
+     * source IPDBMatcher
+     *
+     * @return the source IP matcher.
+     */
+    @Column(name="src_ip_matcher")
+    @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
+    public IPDBMatcher getSrcAddress()
+    {
+        return srcAddress;
+    }
+
+    public void setSrcAddress( IPDBMatcher srcAddress )
+    {
+        this.srcAddress = srcAddress;
+    }
+
+    /**
+     * destination IPDBMatcher
+     *
+     * @return the destination IP matcher.
+     */
+    @Column(name="dst_ip_matcher")
+    @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
+    public IPDBMatcher getDstAddress()
+    {
+        return dstAddress;
+    }
+
+    public void setDstAddress( IPDBMatcher dstAddress )
+    {
+        this.dstAddress = dstAddress;
+    }
+
+    /**
+     * source PortMatcher
+     *
+     * @return the source IP matcher.
+     */
+    @Column(name="src_port_matcher")
+    @Type(type="com.untangle.uvm.type.firewall.PortMatcherUserType")
+    public PortMatcher getSrcPort()
+    {
+        return srcPort;
+    }
+
+    public void setSrcPort( PortMatcher srcPort )
+    {
+        this.srcPort = srcPort;
+    }
+
+    /**
+     * destination PortMatcher
+     *
+     * @return the destination IP matcher.
+     */
+    @Column(name="dst_port_matcher")
+    @Type(type="com.untangle.uvm.type.firewall.PortMatcherUserType")
+    public PortMatcher getDstPort()
+    {
+        return dstPort;
+    }
+
+    public void setDstPort( PortMatcher dstPort )
+    {
+        this.dstPort = dstPort;
     }
 }
