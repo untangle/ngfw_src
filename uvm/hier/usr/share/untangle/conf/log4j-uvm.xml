@@ -127,7 +127,7 @@
 
   <!-- temporary to debug startup phase network settings -->
   <category name="com.untangle.uvm.engine.SettingsManagerImpl">
-    <priority value="DEBUG"/>
+    <priority value="INFO"/>
   </category>
 
   <category name="com.untangle.uvm.policy">
