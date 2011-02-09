@@ -23,8 +23,8 @@ import java.util.Map;
 
 import com.untangle.uvm.node.ValidationResult;
 import com.untangle.uvm.node.Validator;
+import com.untangle.uvm.node.firewall.port.PortMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
-import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
 
 public class FirewallValidator implements Validator {
 
@@ -90,8 +90,8 @@ public class FirewallValidator implements Validator {
     private String getInvalidPort(List<String> values) {
         for (String value : values) {
             try {
-                PortMatcherFactory.parse(value);
-            } catch (Exception e) {
+                new PortMatcher(value);
+            } catch (IllegalArgumentException e) {
                 return value;
             }
         }

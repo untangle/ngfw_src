@@ -1,6 +1,8 @@
 /* $HeadURL$ */
 package com.untangle.uvm.node.firewall.intf;
 
+import java.util.LinkedList;
+
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.networking.InterfaceConfiguration;
@@ -15,15 +17,38 @@ import com.untangle.uvm.RemoteUvmContext;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-public class IntfMatcher 
+@SuppressWarnings("serial")
+public class IntfMatcher implements java.io.Serializable
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private static final IntfMatcher ANY_MATCHER = new IntfMatcher("any");
+    private static final IntfMatcher NONE_MATCHER = new IntfMatcher("none");
+    private static final IntfMatcher WAN_MATCHER = new IntfMatcher("wan");
+    private static final IntfMatcher NONWAN_MATCHER = new IntfMatcher("non_wan");
 
+    private final Logger logger = Logger.getLogger(getClass());
+    
     public String matcher;
 
+    private enum IntfMatcherType { ANY, NONE, ANY_WAN, ANY_NON_WAN, SINGLE, LIST };
+    
+    /**
+     * The type of this matcher
+     */
+    private IntfMatcherType type = IntfMatcherType.NONE;
+
+    /**
+     * if this intf matcher is a list of intf matchers, this list stores the children
+     */
+    private LinkedList<IntfMatcher> children = null;
+
+    /**
+     * If this intf matcher is a single this store the single interface ID
+     */
+    private int singleInt = -1;
+        
     public IntfMatcher(String matcher)
     {
-        this.matcher = matcher;
+        initialize(matcher);
     }
     
     /**
@@ -59,59 +84,41 @@ public class IntfMatcher
      */
     public boolean isMatch(InterfaceConfiguration intfConf)
     {
-        if ("any".equals(matcher))
+        switch (this.type) {
+
+        case ANY:
             return true;
-        if ("all".equals(matcher))
-            return true;
-        if ("none".equals(matcher))
+
+        case NONE:
             return false;
-        if ("wan".equals(matcher))
+
+        case ANY_WAN:
             return intfConf.isWAN();
-        if ("non_wan".equals(matcher))
+
+        case ANY_NON_WAN:
             return !intfConf.isWAN();
-
-        int index = intfConf.getInterfaceId();
-        
-        if (matcher.contains(",")) {
-            /* must be a comma separated list */
-            String[] results = matcher.split(",");
-
-            /* check each one */
-            for (String intString : results) {
-                try {
-                    if (index == Integer.parseInt(intString))
-                        return true;
-                } catch (NumberFormatException e) {
-                    logger.warn("Unknown interface format: \"" + matcher + "\" specifically: \"" + intString + "\"", e);
-                }
-            }
-
-            return false; /* didn't match any of the above */
-        }
-
-        /* if it isn't of the above it must just be any integer */
-        try {
-            if (index == Integer.parseInt(matcher))
+            
+        case SINGLE:
+            if (singleInt == intfConf.getInterfaceId())
                 return true;
-        } catch (NumberFormatException e) {
-            logger.warn("Unknown interface format: " + matcher, e);
-        }
+            return false;
 
-        /* If it didn't match anything at this point it doesn't match */
-        return false;
+        case LIST:
+            for (IntfMatcher child : this.children) {
+                if (child.isMatch(intfConf))
+                    return true;
+            }
+            return false;
+
+        default:
+            logger.warn("Unknown port matcher type: " + this.type);
+            return false;
+        }
     }
     
 
     /**
      * Retrieve the database representation of this interface matcher.
-     * "1" matches interface 1
-     * "1,2" matches 1 OR 2
-     * "any" matches any interface
-     * "all" matches any interface
-     * "wan" matches any wan interface
-     * "non_wan" matches any non_wan interface
-     * "none" matches nothing
-     *
      *
      * @return The database representation of this interface matcher.
      */
@@ -120,9 +127,90 @@ public class IntfMatcher
         return matcher;
     }
 
+    /**
+     * return toDatabaseString()
+     */
     public String toString()
     {
-        return matcher;
+        return toDatabaseString();
     }
 
+    public static IntfMatcher getAnyMatcher()
+    {
+        return ANY_MATCHER;
+    }
+    
+    public static IntfMatcher getNilMatcher()
+    {
+        return NONE_MATCHER;
+    }
+
+    public static IntfMatcher getWanMatcher()
+    {
+        return WAN_MATCHER;
+    }
+
+    public static IntfMatcher getNonWanMatcher()
+    {
+        return NONWAN_MATCHER;
+    }
+
+    private void initialize( String matcher )
+    {
+        this.matcher = matcher;
+
+        if ("any".equals(matcher)) {
+            this.type = IntfMatcherType.ANY;
+            return;
+        }
+        if ("all".equals(matcher)) {
+            this.type = IntfMatcherType.ANY;
+            return;
+        }
+        if ("none".equals(matcher)) {
+            this.type = IntfMatcherType.NONE;
+            return;
+        }
+        if ("wan".equals(matcher)) {
+            this.type = IntfMatcherType.ANY_WAN;
+            return;
+        }
+        if ("non_wan".equals(matcher)) {
+            this.type = IntfMatcherType.ANY_NON_WAN;
+            return;
+        }
+
+        /**
+         * if it contains a comma it must be a list
+         */
+        if (matcher.contains(",")) {
+            this.type = IntfMatcherType.LIST;
+
+            this.children = new LinkedList<IntfMatcher>();
+
+            String[] results = matcher.split(",");
+            
+            /* check each one */
+            for (String childString : results) {
+                IntfMatcher child = new IntfMatcher(childString);
+                this.children.add(child);
+            }
+
+            return;
+        }
+
+        /**
+         * if it isn't any of these it must be a basic SINGLE matcher
+         */
+        this.type = IntfMatcherType.SINGLE;
+        try {
+            this.singleInt = Integer.parseInt(matcher);
+        } catch (NumberFormatException e) {
+            logger.warn("Unknown IntfMatcher format: \"" + matcher + "\"", e);
+            throw new java.lang.IllegalArgumentException("Unknown IntfMatcher format: \"" + matcher + "\"", e);
+
+        }
+
+        return;
+    }        
 }

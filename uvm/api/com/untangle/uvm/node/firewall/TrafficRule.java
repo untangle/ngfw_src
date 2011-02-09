@@ -41,8 +41,7 @@ import org.hibernate.annotations.Type;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
-import com.untangle.uvm.node.firewall.port.PortDBMatcher;
-import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.port.PortMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
 
@@ -63,8 +62,8 @@ abstract class TrafficRule extends Rule
     private IPDBMatcher   srcAddress;
     private IPDBMatcher   dstAddress;
 
-    private PortDBMatcher srcPort;
-    private PortDBMatcher dstPort;
+    private PortMatcher srcPort;
+    private PortMatcher dstPort;
 
     // constructors -----------------------------------------------------------
 
@@ -72,7 +71,7 @@ abstract class TrafficRule extends Rule
 
     public TrafficRule( boolean       isLive,     ProtocolDBMatcher protocol,
                         IPDBMatcher   srcAddress, IPDBMatcher     dstAddress,
-                        PortDBMatcher srcPort,    PortDBMatcher   dstPort )
+                        PortMatcher srcPort,      PortMatcher   dstPort )
     {
         setLive( isLive );
         this.protocol   = protocol;
@@ -85,16 +84,6 @@ abstract class TrafficRule extends Rule
     // accessors --------------------------------------------------------------
 
     /* Hack that sets the ports to zero for Ping sessions */
-    public void fixPing() throws ParseException
-    {
-        PortDBMatcher pingMatcher = PortMatcherFactory.getInstance().getPingMatcher();
-        if ( this.protocol.equals( ProtocolMatcherFactory.getInstance().getPingMatcher())) {
-            this.srcPort = pingMatcher;
-            this.dstPort = pingMatcher;
-        } else if ( this.srcPort.equals( pingMatcher ) || this.dstPort.equals( pingMatcher )) {
-            throw new ParseException( "Invalid port for a non-ping traffic type" );
-        }
-    }
 
     /**
      * Protocol matcher
@@ -148,35 +137,35 @@ abstract class TrafficRule extends Rule
     }
 
     /**
-     * source PortDBMatcher
+     * source PortMatcher
      *
      * @return the source IP matcher.
      */
     @Column(name="src_port_matcher")
     @Type(type="com.untangle.uvm.type.firewall.PortMatcherUserType")
-    public PortDBMatcher getSrcPort()
+    public PortMatcher getSrcPort()
     {
         return srcPort;
     }
 
-    public void setSrcPort( PortDBMatcher srcPort )
+    public void setSrcPort( PortMatcher srcPort )
     {
         this.srcPort = srcPort;
     }
 
     /**
-     * destination PortDBMatcher
+     * destination PortMatcher
      *
      * @return the destination IP matcher.
      */
     @Column(name="dst_port_matcher")
     @Type(type="com.untangle.uvm.type.firewall.PortMatcherUserType")
-    public PortDBMatcher getDstPort()
+    public PortMatcher getDstPort()
     {
         return dstPort;
     }
 
-    public void setDstPort( PortDBMatcher dstPort )
+    public void setDstPort( PortMatcher dstPort )
     {
         this.dstPort = dstPort;
     }

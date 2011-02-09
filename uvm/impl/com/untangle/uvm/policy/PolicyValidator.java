@@ -24,7 +24,7 @@ import java.util.Map;
 import com.untangle.uvm.node.ValidationResult;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
-import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.port.PortMatcher;
 
 public class PolicyValidator implements Validator {
 
@@ -84,8 +84,8 @@ public class PolicyValidator implements Validator {
     private String getInvalidPort(List<String> values) {
         for (String value : values) {
             try {
-                PortMatcherFactory.parse(value);
-            } catch (Exception e) {
+                new PortMatcher(value);
+            } catch (java.lang.IllegalArgumentException e) {
                 return value;
             }
         }

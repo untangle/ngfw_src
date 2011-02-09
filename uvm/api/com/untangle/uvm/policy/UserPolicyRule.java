@@ -48,10 +48,8 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
-import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcher;
-import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
 import com.untangle.uvm.node.firewall.time.DayOfWeekMatcher;
@@ -78,10 +76,10 @@ public class UserPolicyRule extends PolicyRule
     private ProtocolMatcher protocol;
 
     /* True if this matches client interface */
-    private IntfMatcher clientIntf = IntfMatcherFactory.getInstance().getAnyMatcher();
+    private IntfMatcher clientIntf = IntfMatcher.getAnyMatcher();
 
     /* True if this matches the server interface */
-    private IntfMatcher serverIntf = IntfMatcherFactory.getInstance().getAnyMatcher();
+    private IntfMatcher serverIntf = IntfMatcher.getAnyMatcher();
 
     private IPMatcher clientAddr;
     private IPMatcher serverAddr;
@@ -437,19 +435,6 @@ public class UserPolicyRule extends PolicyRule
     public boolean isSameRow(UserPolicyRule pr)
     {
         return getId().equals(pr.getId());
-    }
-
-    /* Hack that sets the ports to zero for Ping sessions */
-    public void fixPing() throws ParseException
-    {
-        PortMatcher pingMatcher = PortMatcherFactory.getInstance().getPingMatcher();
-
-        if ( this.protocol.equals( ProtocolMatcherFactory.getInstance().getPingMatcher())) {
-            this.clientPort = pingMatcher;
-            this.serverPort = pingMatcher;
-        } else if ( this.clientPort.equals( pingMatcher ) || this.serverPort.equals( pingMatcher )) {
-            throw new ParseException( "Invalid port for a non-ping traffic type" );
-        }
     }
 
     // Object methods ---------------------------------------------------------

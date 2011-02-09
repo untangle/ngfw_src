@@ -8,14 +8,13 @@ import com.untangle.uvm.logging.StatisticEvent;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.StatisticManager;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
-import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.Protocol;
 
 class RouterStatisticManager extends StatisticManager
 {
     /* Interface matcher to determine if the sessions is incoming or outgoing */
-    final IntfMatcher matcherIncoming = IntfMatcherFactory.getInstance().getWanMatcher();
+    final IntfMatcher matcherIncoming = IntfMatcher.getWanMatcher();
 
     private RouterStatisticEvent statisticEvent = new RouterStatisticEvent();
 

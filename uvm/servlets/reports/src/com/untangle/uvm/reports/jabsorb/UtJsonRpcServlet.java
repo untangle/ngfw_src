@@ -1,21 +1,4 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
+/* $HeadURL$ */
 package com.untangle.uvm.reports.jabsorb;
 
 import java.io.IOException;
@@ -39,6 +22,7 @@ import com.untangle.uvm.webui.jabsorb.serializer.InetAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.LazyInitializerSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.PortMatcherSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.IntfMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.ProtocolMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.RFC2253NameSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeMatcherSerializer;
@@ -153,6 +137,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 b.registerSerializer(new ProtocolMatcherSerializer());
                 b.registerSerializer(new IPMatcherSerializer());
                 b.registerSerializer(new PortMatcherSerializer());
+                b.registerSerializer(new IntfMatcherSerializer());
                 b.registerSerializer(new TimeMatcherSerializer());
                 b.registerSerializer(new UserMatcherSerializer());
 

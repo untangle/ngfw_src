@@ -37,9 +37,8 @@ import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
-import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
-import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.port.PortMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.policy.Policy;
@@ -286,7 +285,6 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
         try {
             IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
-            PortMatcherFactory pmf = PortMatcherFactory.getInstance();
             ProtocolMatcherFactory prmf = ProtocolMatcherFactory.getInstance();
 
 
@@ -297,16 +295,15 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
             List<FirewallRule> firewallList = new LinkedList<FirewallRule>();
 
-            IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
-            IntfMatcher any = imf.getAnyMatcher();
+            IntfMatcher any = IntfMatcher.getAnyMatcher();
 
             FirewallRule tmp = new FirewallRule(false,
                                                 prmf.getTCPAndUDPMatcher(),
                                                 any, any,
                                                 ipmf.getAllMatcher(),
                                                 ipmf.getAllMatcher(),
-                                                pmf.getAllMatcher(),
-                                                pmf.makeSingleMatcher(21),
+                                                PortMatcher.getAnyMatcher(),
+                                                new PortMatcher("21"),
                                                 true);
             tmp.setLog(true);
             tmp.setDescription("Block and log all traffic destined to port 21 (FTP)");
@@ -317,7 +314,8 @@ public class FirewallImpl extends AbstractNode implements Firewall
                                    any, any,
                                    IPMatcherFactory.parse("1.2.3.0/255.255.255.0"),
                                    ipmf.getAllMatcher(),
-                                   pmf.getAllMatcher(), pmf.getAllMatcher(),
+                                   PortMatcher.getAnyMatcher(),
+                                   PortMatcher.getAnyMatcher(),
                                    true);
             tmp.setDescription("Block all TCP traffic from 1.2.3.0 netmask 255.255.255.0");
             firewallList.add(tmp);
@@ -326,8 +324,8 @@ public class FirewallImpl extends AbstractNode implements Firewall
                                    any, any,
                                    ipmf.getAllMatcher(),
                                    IPMatcherFactory.parse("1.2.3.1 - 1.2.3.10"),
-                                   pmf.makeRangeMatcher(1000, 5000),
-                                   pmf.getAllMatcher(),
+                                   new PortMatcher("1000-5000"),
+                                   PortMatcher.getAnyMatcher(),
                                    false);
             tmp.setLog(true);
             tmp.setDescription("Accept and log all traffic to the range 1.2.3.1 - 1.2.3.10 from ports 1000-5000");

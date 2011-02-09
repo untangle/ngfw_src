@@ -21,7 +21,6 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.addrbook.RemoteAddressBook.Backend;
 import com.untangle.uvm.node.firewall.ParsingConstants;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
-import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 import com.untangle.uvm.node.firewall.ip.IPRangeMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSetMatcher;
@@ -374,10 +373,10 @@ public class CPDManager
             for ( String intf : i ) {
                 clientInterfaceList.add(Integer.parseInt(intf));
             }
-        } else if ( matcher == IntfMatcherFactory.getInstance().getNilMatcher() || matcher.toString().equals("none")) {
+        } else if ( matcher == IntfMatcher.getNilMatcher() || matcher.toString().equals("none")) {
             logger.info( "Capture rule with nil interface matcher, returning.");
             return null;
-        } else if ( matcher == IntfMatcherFactory.getInstance().getAnyMatcher() || matcher.toString().equals("any")) {
+        } else if ( matcher == IntfMatcher.getAnyMatcher() || matcher.toString().equals("any")) {
             /* Nothing to do here */
         } else {
             logger.info( "Capture rule with invalid interface matcher, returning.");
@@ -415,7 +414,7 @@ public class CPDManager
             throws JSONException
     {
         serializeCaptureRule(captureRules, new CaptureRule(true, false,
-                                                           "passed client", IntfMatcherFactory.getInstance().getAnyMatcher(), client,
+                                                           "passed client", IntfMatcher.getAnyMatcher(), client,
                                                            server, "00:00", "23:59",
                                                            "mon,tue,wed,thu,fri,sat,sun"));
     }

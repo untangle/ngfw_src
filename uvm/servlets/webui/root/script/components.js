@@ -399,16 +399,12 @@ Ung.Util= {
                     key = null;
                     break;
                 }
-                name = i18n._("any") ;
+                name = i18n._("Any") ;
                 break;
-            case "0": name = i18n._("External") ; break;
-            case "1": name = i18n._("Internal") ; break;
-            case "2": name = i18n._("DMZ") ; break;
-            case "3": 
-            case "4": 
-            case "5": 
-            case "6": name = String.format( i18n._("Interface {0}"), key ); break;
-            case "7": name = i18n._("VPN") ; break;
+            case "1": name = i18n._("External") ; break;
+            case "2": name = i18n._("Internal") ; break;
+            case "3": name = i18n._("DMZ") ; break;
+            case "255": name = i18n._("OpenVPN") ; break;
             case "wan": 
                 if ( wanMatchers === false ) {
                     key = null;
@@ -425,8 +421,14 @@ Ung.Util= {
                 name = i18n._("Any non-WAN") ;
                 break;
 
+            case "4": 
+            case "5": 
+                /* ... */
+            case "254":
             default :
-                /* XXX need to do something here? for interfaces like External | Internal XXX */
+                name = String.format( i18n._("Interface {0}"), key );
+                break;
+
             }
             
             if ( key != null && key != "less_trusted" && key != "more_trusted" ) {

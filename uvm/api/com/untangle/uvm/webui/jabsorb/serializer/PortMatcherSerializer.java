@@ -6,16 +6,11 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-import com.untangle.uvm.node.firewall.port.PortDBMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcher;
-import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
-import com.untangle.uvm.node.firewall.port.PortRangeMatcher;
-import com.untangle.uvm.node.firewall.port.PortSetMatcher;
-import com.untangle.uvm.node.firewall.port.PortSimpleMatcher;
-import com.untangle.uvm.node.firewall.port.PortSingleMatcher;
 
 @SuppressWarnings({"serial","unchecked"})
-public class PortMatcherSerializer extends AbstractSerializer {
+public class PortMatcherSerializer extends AbstractSerializer
+{
 	/**
 	 * Classes that this can serialize to.
 	 */
@@ -24,16 +19,15 @@ public class PortMatcherSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialize.
 	 */
-	private static Class[] _serializableClasses = new Class[] { PortMatcher.class, PortDBMatcher.class, PortRangeMatcher.class, PortSetMatcher.class, 
-	                                                    PortSingleMatcher.class, PortSimpleMatcher.class, PortSimpleMatcher.getAllMatcher().getClass(), 
-                                                        PortSimpleMatcher.getNilMatcher().getClass(), PortSimpleMatcher.getPingMatcher().getClass() };
+	private static Class[] _serializableClasses = new Class[] { PortMatcher.class };
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.jabsorb.serializer.Serializer#getJSONClasses()
 	 */
-	public Class[] getJSONClasses() {
+	public Class[] getJSONClasses()
+    {
 		return _JSONClasses;
 	}
 
@@ -42,7 +36,8 @@ public class PortMatcherSerializer extends AbstractSerializer {
 	 * 
 	 * @see org.jabsorb.serializer.Serializer#getSerializableClasses()
 	 */
-	public Class[] getSerializableClasses() {
+	public Class[] getSerializableClasses()
+    {
 		return _serializableClasses;
 	}
 
@@ -53,9 +48,10 @@ public class PortMatcherSerializer extends AbstractSerializer {
 	 *      java.lang.Object, java.lang.Object)
 	 */
 	public Object marshall(SerializerState state, Object p, Object o)
-			throws MarshallException {
-		if (o instanceof PortDBMatcher) {
-			return ((PortDBMatcher) o).toDatabaseString();
+			throws MarshallException
+    {
+		if (o instanceof PortMatcher) {
+			return ((PortMatcher) o).toDatabaseString();
 		}
 		return null;
 	}
@@ -67,7 +63,8 @@ public class PortMatcherSerializer extends AbstractSerializer {
 	 *      java.lang.Class, java.lang.Object)
 	 */
 	public ObjectMatch tryUnmarshall(SerializerState state, Class clazz,
-			Object json) throws UnmarshallException {
+			Object json) throws UnmarshallException
+    {
 		state.setSerialized(json, ObjectMatch.OKAY);
 		return ObjectMatch.OKAY;
 	}
@@ -79,11 +76,12 @@ public class PortMatcherSerializer extends AbstractSerializer {
 	 *      java.lang.Class, java.lang.Object)
 	 */
 	public Object unmarshall(SerializerState state, Class clazz, Object json)
-			throws UnmarshallException {
+			throws UnmarshallException
+    {
         Object returnValue = null;
         String val = json instanceof String ? (String) json : json.toString();
         try {
-            returnValue = PortMatcherFactory.parse(val);
+            returnValue = new PortMatcher(val);
         } catch (Exception e) {
             throw new UnmarshallException("Invalid \"port\" specified:"
                                           + val);

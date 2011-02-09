@@ -595,7 +595,7 @@ public class NetworkManagerImpl implements NetworkManager
          */
         possibleInterfaces.add("any");
         possibleInterfaces.add("wan");
-        possibleInterfaces.add("non-wan");
+        possibleInterfaces.add("non_wan");
 
         if (this.networkConfiguration != null) {   
             for ( InterfaceConfiguration intfConf : this.networkConfiguration.getInterfaceList() ) {

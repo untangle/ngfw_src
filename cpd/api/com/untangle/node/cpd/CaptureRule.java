@@ -26,7 +26,6 @@ import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
-import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
 
@@ -41,7 +40,7 @@ public class CaptureRule extends Rule
     public static final String ALL_DAYS = "mon,tue,wed,thu,fri,sat,sun";
     
     private boolean capture = true;
-    private IntfMatcher clientInterface = IntfMatcherFactory.getInstance().getAnyMatcher();
+    private IntfMatcher clientInterface = IntfMatcher.getAnyMatcher();
     private IPDBMatcher clientAddress = IPSimpleMatcher.getAllMatcher();
     private IPDBMatcher serverAddress = IPSimpleMatcher.getAllMatcher();
     

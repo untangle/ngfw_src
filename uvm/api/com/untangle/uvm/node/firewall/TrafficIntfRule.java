@@ -38,10 +38,9 @@ import javax.persistence.MappedSuperclass;
 
 import org.hibernate.annotations.Type;
 
-import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
-import com.untangle.uvm.node.firewall.port.PortDBMatcher;
+import com.untangle.uvm.node.firewall.port.PortMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
 
 /**
@@ -56,17 +55,17 @@ public abstract class TrafficIntfRule extends TrafficRule
 {
 
     /* True if this matches source interface */
-    private IntfMatcher srcIntf = IntfMatcherFactory.getInstance().getAnyMatcher();
+    private IntfMatcher srcIntf = IntfMatcher.getAnyMatcher();
 
     /* True if this matches the destination interface */
-    private IntfMatcher dstIntf = IntfMatcherFactory.getInstance().getAnyMatcher();
+    private IntfMatcher dstIntf = IntfMatcher.getAnyMatcher();
 
     public TrafficIntfRule() { }
 
     public TrafficIntfRule(boolean isLive, ProtocolDBMatcher protocol,
                            IntfMatcher srcIntf, IntfMatcher dstIntf,
                            IPDBMatcher srcAddress, IPDBMatcher dstAddress,
-                           PortDBMatcher srcPort, PortDBMatcher dstPort)
+                           PortMatcher srcPort, PortMatcher dstPort)
     {
         super(isLive, protocol, srcAddress, dstAddress, srcPort, dstPort);
         this.srcIntf = srcIntf;
