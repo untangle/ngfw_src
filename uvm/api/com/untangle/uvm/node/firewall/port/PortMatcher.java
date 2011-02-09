@@ -145,6 +145,29 @@ public class PortMatcher implements java.io.Serializable
     {
         this.matcher = matcher;
 
+        /**
+         * If it contains a comma it must be a list of port matchers
+         * if so, go ahead and initialize the children
+         */
+        if (matcher.contains(",")) {
+            this.type = PortMatcherType.LIST;
+
+            this.children = new LinkedList<PortMatcher>();
+
+            String[] results = matcher.split(",");
+            
+            /* check each one */
+            for (String childString : results) {
+                PortMatcher child = new PortMatcher(childString);
+                this.children.add(child);
+            }
+
+            return;
+        }
+
+        /**
+         * Check the common constants
+         */
         if ("any".equals(matcher))  {
             this.type = PortMatcherType.ANY;
             return;
@@ -182,26 +205,6 @@ public class PortMatcher implements java.io.Serializable
             return;
         }
             
-        /**
-         * If it contains a comma it must be a list of port matchers
-         * if so, go ahead and initialize the children
-         */
-        if (matcher.contains(",")) {
-            this.type = PortMatcherType.LIST;
-
-            this.children = new LinkedList<PortMatcher>();
-
-            String[] results = matcher.split(",");
-            
-            /* check each one */
-            for (String childString : results) {
-                PortMatcher child = new PortMatcher(childString);
-                this.children.add(child);
-            }
-
-            return;
-        }
-
         /**
          * if it isn't any of these it must be a basic SINGLE matcher
          */

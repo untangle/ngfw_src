@@ -159,6 +159,28 @@ public class IntfMatcher implements java.io.Serializable
     {
         this.matcher = matcher;
 
+        /**
+         * if it contains a comma it must be a list
+         */
+        if (matcher.contains(",")) {
+            this.type = IntfMatcherType.LIST;
+
+            this.children = new LinkedList<IntfMatcher>();
+
+            String[] results = matcher.split(",");
+            
+            /* check each one */
+            for (String childString : results) {
+                IntfMatcher child = new IntfMatcher(childString);
+                this.children.add(child);
+            }
+
+            return;
+        }
+
+        /**
+         * check the common constants
+         */
         if ("any".equals(matcher)) {
             this.type = IntfMatcherType.ANY;
             return;
@@ -177,25 +199,6 @@ public class IntfMatcher implements java.io.Serializable
         }
         if ("non_wan".equals(matcher)) {
             this.type = IntfMatcherType.ANY_NON_WAN;
-            return;
-        }
-
-        /**
-         * if it contains a comma it must be a list
-         */
-        if (matcher.contains(",")) {
-            this.type = IntfMatcherType.LIST;
-
-            this.children = new LinkedList<IntfMatcher>();
-
-            String[] results = matcher.split(",");
-            
-            /* check each one */
-            for (String childString : results) {
-                IntfMatcher child = new IntfMatcher(childString);
-                this.children.add(child);
-            }
-
             return;
         }
 
