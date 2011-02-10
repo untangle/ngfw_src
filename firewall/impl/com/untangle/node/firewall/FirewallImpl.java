@@ -39,7 +39,7 @@ import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcher;
-import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.util.I18nUtil;
@@ -284,8 +284,6 @@ public class FirewallImpl extends AbstractNode implements Firewall
         FirewallSettings settings = new FirewallSettings(this.getNodeId());
 
         try {
-            ProtocolMatcherFactory prmf = ProtocolMatcherFactory.getInstance();
-
             /* A few sample settings */
             settings.getBaseSettings().setQuickExit(true);
             settings.getBaseSettings().setRejectSilently(true);
@@ -296,7 +294,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
             IntfMatcher any = IntfMatcher.getAnyMatcher();
 
             FirewallRule tmp = new FirewallRule(false,
-                                                prmf.getTCPAndUDPMatcher(),
+                                                ProtocolMatcher.getTCPAndUDPMatcher(),
                                                 any, any,
                                                 IPMatcher.getAnyMatcher(),
                                                 IPMatcher.getAnyMatcher(),
@@ -308,7 +306,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
             firewallList.add(tmp);
 
             /* Block all traffic TCP traffic from the network 1.2.3.4/255.255.255.0 */
-            tmp = new FirewallRule(false, prmf.getTCPMatcher(),
+            tmp = new FirewallRule(false, ProtocolMatcher.getTCPMatcher(),
                                    any, any,
                                    new IPMatcher("1.2.3.0/255.255.255.0"),
                                    IPMatcher.getAnyMatcher(),
@@ -318,7 +316,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
             tmp.setDescription("Block all TCP traffic from 1.2.3.0 netmask 255.255.255.0");
             firewallList.add(tmp);
 
-            tmp = new FirewallRule(false, prmf.getTCPAndUDPMatcher(),
+            tmp = new FirewallRule(false, ProtocolMatcher.getTCPAndUDPMatcher(),
                                    any, any,
                                    IPMatcher.getAnyMatcher(),
                                    new IPMatcher("1.2.3.1 - 1.2.3.10"),

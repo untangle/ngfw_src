@@ -32,8 +32,7 @@ import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcher;
-import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
-import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
 
 /**
  * Rule for matching based on IP addresses and subnets.
@@ -61,7 +60,7 @@ public class FirewallRule extends Rule
     /* True if this matches the destination interface */
     private IntfMatcher dstIntf = IntfMatcher.getAnyMatcher();
 
-    private ProtocolDBMatcher protocol;
+    private ProtocolMatcher protocol;
 
     private IPMatcher   srcAddress;
     private IPMatcher   dstAddress;
@@ -73,7 +72,7 @@ public class FirewallRule extends Rule
 
     public FirewallRule() { }
 
-    public FirewallRule(boolean isLive, ProtocolDBMatcher protocol,
+    public FirewallRule(boolean isLive, ProtocolMatcher protocol,
                         IntfMatcher clientIface, IntfMatcher serverIface,
                         IPMatcher srcAddress, IPMatcher dstAddress,
                         PortMatcher srcPort, PortMatcher dstPort,
@@ -181,12 +180,12 @@ public class FirewallRule extends Rule
      */
     @Column(name="protocol_matcher")
     @Type(type="com.untangle.uvm.type.firewall.ProtocolMatcherUserType")
-    public ProtocolDBMatcher getProtocol()
+    public ProtocolMatcher getProtocol()
     {
         return protocol;
     }
 
-    public void setProtocol( ProtocolDBMatcher protocol )
+    public void setProtocol( ProtocolMatcher protocol )
     {
         this.protocol = protocol;
     }

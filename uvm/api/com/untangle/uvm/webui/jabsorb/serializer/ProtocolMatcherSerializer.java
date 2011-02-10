@@ -6,14 +6,11 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-import com.untangle.uvm.node.firewall.protocol.ProtocolBasicMatcher;
-import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
-import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
-import com.untangle.uvm.node.firewall.protocol.ProtocolSimpleMatcher;
 
 @SuppressWarnings({"serial","unchecked"})
-public class ProtocolMatcherSerializer extends AbstractSerializer {
+public class ProtocolMatcherSerializer extends AbstractSerializer
+{
 	/**
 	 * Classes that this can serialize to.
 	 */
@@ -22,15 +19,15 @@ public class ProtocolMatcherSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialize.
 	 */
-	private static Class[] _serializableClasses = new Class[] { ProtocolSimpleMatcher.class, ProtocolBasicMatcher.class, ProtocolDBMatcher.class, 
-                                        ProtocolMatcher.class };
+	private static Class[] _serializableClasses = new Class[] { ProtocolMatcher.class };
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.jabsorb.serializer.Serializer#getJSONClasses()
 	 */
-	public Class[] getJSONClasses() {
+	public Class[] getJSONClasses()
+    {
 		return _JSONClasses;
 	}
 
@@ -39,7 +36,8 @@ public class ProtocolMatcherSerializer extends AbstractSerializer {
 	 * 
 	 * @see org.jabsorb.serializer.Serializer#getSerializableClasses()
 	 */
-	public Class[] getSerializableClasses() {
+	public Class[] getSerializableClasses()
+    {
 		return _serializableClasses;
 	}
 
@@ -50,9 +48,10 @@ public class ProtocolMatcherSerializer extends AbstractSerializer {
 	 *      java.lang.Object, java.lang.Object)
 	 */
 	public Object marshall(SerializerState state, Object p, Object o)
-			throws MarshallException {
-		if (o instanceof ProtocolDBMatcher) {
-			return ((ProtocolDBMatcher) o).toDatabaseString();
+			throws MarshallException
+    {
+		if (o instanceof ProtocolMatcher) {
+			return ((ProtocolMatcher) o).toDatabaseString();
 		}
 		return null;
 	}
@@ -64,7 +63,8 @@ public class ProtocolMatcherSerializer extends AbstractSerializer {
 	 *      java.lang.Class, java.lang.Object)
 	 */
 	public ObjectMatch tryUnmarshall(SerializerState state, Class clazz,
-			Object json) throws UnmarshallException {
+			Object json) throws UnmarshallException
+    {
 		state.setSerialized(json, ObjectMatch.OKAY);
 		return ObjectMatch.OKAY;
 	}
@@ -76,14 +76,14 @@ public class ProtocolMatcherSerializer extends AbstractSerializer {
 	 *      java.lang.Class, java.lang.Object)
 	 */
 	public Object unmarshall(SerializerState state, Class clazz, Object json)
-			throws UnmarshallException {
+			throws UnmarshallException
+    {
         Object returnValue = null;
         String val = json instanceof String ? (String) json : json.toString();
         try {
-            returnValue = ProtocolMatcherFactory.parse(val);
+            returnValue = new ProtocolMatcher(val);
         } catch (Exception e) {
-            throw new UnmarshallException("Invalid \"protocol\" specified:"
-                                          + val);
+            throw new UnmarshallException("Invalid \"protocol\" specified:" + val);
         }
         
         if (returnValue == null) {

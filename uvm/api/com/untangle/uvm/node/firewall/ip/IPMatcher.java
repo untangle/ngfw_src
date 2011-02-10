@@ -13,7 +13,7 @@ import com.untangle.uvm.networking.IPNetwork;
 /**
  * An interface to test for an address.
  *
- * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
  * @version 1.0
  */
 public class IPMatcher

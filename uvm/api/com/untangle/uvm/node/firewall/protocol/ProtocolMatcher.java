@@ -1,55 +1,72 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
- */
-
+/* $HeadURL$ */
 package com.untangle.uvm.node.firewall.protocol;
+
+import java.util.LinkedList;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.Protocol;
 
 /**
- * An interface to test for an address.
+ * An matcher for protcols
  *
- * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * Examples:
+ * "any"
+ * "TCP"
+ * "TCP,UDP"
+ *
+ * ProtocolMatcher it is case insensitive
+ *
+ * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
  * @version 1.0
  */
-public interface ProtocolMatcher
+public class ProtocolMatcher
 {
+    private static ProtocolMatcher ANY_MATCHER = new ProtocolMatcher("any");
+    private static ProtocolMatcher TCP_MATCHER = new ProtocolMatcher("tcp");
+    private static ProtocolMatcher UDP_MATCHER = new ProtocolMatcher("udp");
+
+    private final Logger logger = Logger.getLogger(getClass());
+    
+    private enum ProtocolMatcherType { ANY, NONE, SINGLE, LIST };
+    
+    /**
+     * The type of this matcher
+     */
+    private ProtocolMatcherType type = ProtocolMatcherType.NONE;
+
+    /**
+     * This stores the string representation of this matcher
+     */
+    private String matcher;
+
+    /**
+     * If this matcher is a single matcher this stores the protocol to match
+     */
+    private int single;
+    
+    /**
+     * if this port matcher is a list of port matchers, this list stores the children
+     */
+    private LinkedList<ProtocolMatcher> children = null;
+
+    
+
+    public ProtocolMatcher( String matcher )
+    {
+        initialize(matcher);
+    }
+    
     /**
      * Return true if <param>protocol</param> matches this matcher.
      *
      * @param protocol The protocol to test
      * @return True if the <param>protocol</param> matches.
      */
-    public boolean isMatch( Protocol protocol );
+    public boolean isMatch( Protocol protocol )
+    {
+        return isMatch(protocol.getId());
+    }
 
     /**
      * Return true if <param>protocol</param> matches this matcher.
@@ -57,12 +74,113 @@ public interface ProtocolMatcher
      * @param protocol The protocol to test
      * @return True if the <param>protocol</param> matches.
      */
-    public boolean isMatch( short protocol );
+    public boolean isMatch( int protocol )
+    {
+       switch (this.type) {
 
+        case ANY:
+            return true;
+
+        case NONE:
+            return false;
+
+        case SINGLE:
+            if (this.single == protocol)
+                return true;
+            return false;
+
+        case LIST:
+            for (ProtocolMatcher child : this.children) {
+                if (child.isMatch(protocol))
+                    return true;
+            }
+            return false;
+
+        default:
+            logger.warn("Unknown port matcher type: " + this.type);
+            return false;
+        }
+    }
+    
     /**
      * Retrieve the database representation of this protocol matcher.
      *
      * @return The database representation of this protocol matcher.
      */
-    public String toDatabaseString();
+    public String toDatabaseString()
+    {
+        return this.matcher;
+    }
+
+    public String toString()
+    {
+        return toDatabaseString();
+    }
+
+    public static ProtocolMatcher getTCPAndUDPMatcher()
+    {
+        return ANY_MATCHER;
+    }
+    
+    public static ProtocolMatcher getTCPMatcher()
+    {
+        return TCP_MATCHER;
+    }
+
+    public static ProtocolMatcher getUDPMatcher()
+    {
+        return UDP_MATCHER;
+    }
+    
+    private void initialize( String matcher )
+    {
+        matcher = matcher.toLowerCase();
+
+        /**
+         * If it contains a comma it must be a list of protocol matchers
+         * if so, go ahead and initialize the children
+         */
+        if (matcher.contains(",")) {
+            this.type = ProtocolMatcherType.LIST;
+
+            this.children = new LinkedList<ProtocolMatcher>();
+
+            String[] results = matcher.split(",");
+            
+            /* check each one */
+            for (String childString : results) {
+                ProtocolMatcher child = new ProtocolMatcher(childString);
+                this.children.add(child);
+            }
+
+            return;
+        }
+
+        /**
+         * Check the common constants
+         */
+        if ("any".equals(matcher))  {
+            this.type = ProtocolMatcherType.ANY;
+            return;
+        }
+        if ("all".equals(matcher)) {
+            this.type = ProtocolMatcherType.ANY;
+            return;
+        }
+        if ("none".equals(matcher)) {
+            this.type = ProtocolMatcherType.NONE;
+            return;
+        }
+        if ("tcp".equals(matcher)) {
+            this.type = ProtocolMatcherType.SINGLE;
+            this.single = Protocol.TCP.getId();
+            return;
+        }
+        if ("udp".equals(matcher)) {
+            this.type = ProtocolMatcherType.SINGLE;
+            this.single = Protocol.UDP.getId();
+            return;
+        }
+    }
+
 }
