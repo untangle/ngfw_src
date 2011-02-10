@@ -23,13 +23,34 @@ public class IPMatcher
     private static IPMatcher INTERNAL_MATCHER = new IPMatcher("internal");
     private static IPMatcher EXTERNAL_MATCHER = new IPMatcher("external");
 
-    private final Logger logger = Logger.getLogger(getClass());
+    /* Number of bytes in an IPv4 address */
+    private static final int INADDRSZ = 4; /* XXX IPv6 */
+
+    /* An array of the CIDR values */
+    private static final String CIDR_STRINGS[] = 
+    {
+        "0.0.0.0",         "128.0.0.0",       "192.0.0.0",       "224.0.0.0",
+        "240.0.0.0",       "248.0.0.0",       "252.0.0.0",       "254.0.0.0",
+        "255.0.0.0",       "255.128.0.0",     "255.192.0.0",     "255.224.0.0",
+        "255.240.0.0",     "255.248.0.0",     "255.252.0.0",     "255.254.0.0",
+        "255.255.0.0",     "255.255.128.0",   "255.255.192.0",   "255.255.224.0",
+        "255.255.240.0",   "255.255.248.0",   "255.255.252.0",   "255.255.254.0",
+        "255.255.255.0",   "255.255.255.128", "255.255.255.192", "255.255.255.224",
+        "255.255.255.240", "255.255.255.248", "255.255.255.252", "255.255.255.254",
+        "255.255.255.255"
+    };
+
+    /* Should be an unmodifiable list or vector */
+    private static final InetAddress CIDR_CONVERTER[] = new InetAddress[CIDR_STRINGS.length];
 
     private static LinkedList<IPNetwork> internalNetworkList = null;
+
+    private final Logger logger = Logger.getLogger(getClass());
+
+    public static enum IPMatcherType { ANY, NONE, SINGLE, RANGE, SUBNET, INTERNAL, EXTERNAL, LIST };
     
     public String matcher;
 
-    public enum IPMatcherType { ANY, NONE, SINGLE, RANGE, SUBNET, INTERNAL, EXTERNAL, LIST };
     
     /**
      * The type of this matcher
@@ -58,6 +79,8 @@ public class IPMatcher
      */
     private InetAddress single = null;
 
+
+    
     public IPMatcher( String matcher )
     {
         initialize(matcher);
@@ -72,6 +95,8 @@ public class IPMatcher
         this.subnetNetwork = addrToLong(network.getAddr());
         this.subnetNetmask = addrToLong(netmask.getAddr());
     }
+
+
     
     /**
      * Return true if <param>address</param> matches this matcher.
@@ -141,6 +166,15 @@ public class IPMatcher
     }
 
     /**
+     * Returns the type of this matcher
+     * This is useful outside the class in a few select instances
+     */
+    public IPMatcherType getType()
+    {
+        return this.type;
+    }
+
+    /**
      * Retrieve the database representation of this port matcher.
      *
      * @return The database representation of this port matcher.
@@ -157,6 +191,45 @@ public class IPMatcher
     {
         return toDatabaseString();
     }
+
+
+    
+    public static IPMatcher getAnyMatcher()
+    {
+        return ANY_MATCHER;
+    }
+
+    public static IPMatcher getNilMatcher()
+    {
+        return NIL_MATCHER;
+    }
+    
+    public static IPMatcher getInternalMatcher()
+    {
+        return INTERNAL_MATCHER;
+    }
+
+    public static IPMatcher getExternalMatcher()
+    {
+        return EXTERNAL_MATCHER;
+    }
+
+    public static IPMatcher makeSubnetMatcher( IPAddress network, IPAddress netmask )
+    {
+        return new IPMatcher( network, netmask );
+    }
+
+    /**
+     * Update the internal network with a list of networks.
+     * 
+     * @param networkList The list of networks that are on the internal interface.
+     */    
+    public static synchronized void setInternalNetworks( LinkedList<IPNetwork> networkList )
+    {
+        internalNetworkList = networkList;
+    }
+    
+
 
     /**
      * Initialize all the private variables
@@ -311,27 +384,10 @@ public class IPMatcher
 
         return;
     }
-
-    /* Number of bytes in an IPv4 address */
-    static final int INADDRSZ = 4; /* XXX IPv6 */
-
-    /* An array of the CIDR values */
-    static final String CIDR_STRINGS[] = 
-    {
-        "0.0.0.0",         "128.0.0.0",       "192.0.0.0",       "224.0.0.0",
-        "240.0.0.0",       "248.0.0.0",       "252.0.0.0",       "254.0.0.0",
-        "255.0.0.0",       "255.128.0.0",     "255.192.0.0",     "255.224.0.0",
-        "255.240.0.0",     "255.248.0.0",     "255.252.0.0",     "255.254.0.0",
-        "255.255.0.0",     "255.255.128.0",   "255.255.192.0",   "255.255.224.0",
-        "255.255.240.0",   "255.255.248.0",   "255.255.252.0",   "255.255.254.0",
-        "255.255.255.0",   "255.255.255.128", "255.255.255.192", "255.255.255.224",
-        "255.255.255.240", "255.255.255.248", "255.255.255.252", "255.255.255.254",
-        "255.255.255.255"
-    };
-
-    /* Should be an unmodifiable list or vector */
-    static final InetAddress CIDR_CONVERTER[] = new InetAddress[CIDR_STRINGS.length];
-
+    
+    /**
+     * Convert a 4-byte address to a long
+     */
     private static long addrToLong( InetAddress address )
     {
         long val = 0;
@@ -351,7 +407,7 @@ public class IPMatcher
      * @param cidr CIDR index to convert.
      * @return the InetAddress that corresponds to <param>cidr</param>.
      */
-    private InetAddress cidrToInetAddress( int cidr ) throws ParseException
+    private static InetAddress cidrToInetAddress( int cidr ) throws ParseException
     {
         if ( cidr < 0 || cidr > CIDR_CONVERTER.length ) {
             throw new ParseException( "CIDR notation[" + cidr + "] should end with a number between 0 and " + CIDR_CONVERTER.length );
@@ -366,57 +422,19 @@ public class IPMatcher
      * @param cidr CIDR index to convert.
      * @return the long that corresponds to <param>cidr</param>.
      */    
-    private long cidrToLong( int cidr ) throws ParseException
+    private static long cidrToLong( int cidr ) throws ParseException
     {
         return addrToLong( cidrToInetAddress( cidr ));
     }
 
+    /**
+     * convert a byte (unsigned) to int
+     */
     private static int byteToInt( byte val )
     {
         int num = val;
         if ( num < 0 ) num = num & 0x7F + 0x80;
         return num;
-    }
-    
-    public static IPMatcher getAnyMatcher()
-    {
-        return ANY_MATCHER;
-    }
-
-    public static IPMatcher getNilMatcher()
-    {
-        return NIL_MATCHER;
-    }
-    
-    public static IPMatcher getInternalMatcher()
-    {
-        return INTERNAL_MATCHER;
-    }
-
-    public static IPMatcher getExternalMatcher()
-    {
-        return EXTERNAL_MATCHER;
-    }
-    
-
-    public static IPMatcher makeSubnetMatcher( IPAddress network, IPAddress netmask )
-    {
-        return new IPMatcher( network, netmask );
-    }
-
-    /**
-     * Update the internal network with a list of networks.
-     * 
-     * @param networkList The list of networks that are on the internal interface.
-     */    
-    public static synchronized void setInternalNetworks( LinkedList<IPNetwork> networkList )
-    {
-        internalNetworkList = networkList;
-    }
-
-    public IPMatcherType getType()
-    {
-        return this.type;
     }
 
     static
