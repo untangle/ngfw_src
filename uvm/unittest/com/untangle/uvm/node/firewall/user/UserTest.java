@@ -33,7 +33,7 @@ public class UserTest
 
     @Test public void parseSimple() throws Exception
     {
-        UserDBMatcher um = UserMatcherFactory.parse(ParsingConstants.MARKER_ANY);
+        UserMatcher um = UserMatcherFactory.parse(ParsingConstants.MARKER_ANY);
         Assert.assertEquals(um, UserSimpleMatcher.getAllMatcher());
         Assert.assertEquals(um.toString(), ParsingConstants.MARKER_ANY);
         Assert.assertTrue(um.isMatch("foo"));
@@ -67,7 +67,7 @@ public class UserTest
 
     @Test public void parseSingle() throws Exception
     {
-        UserDBMatcher um = UserMatcherFactory.parse("wow");
+        UserMatcher um = UserMatcherFactory.parse("wow");
         Assert.assertFalse(um.equals(UserSimpleMatcher.getAllMatcher()));
         Assert.assertEquals(um.getClass(), UserSingleMatcher.class);
         Assert.assertEquals(um.toString(), "wow");
@@ -93,7 +93,7 @@ public class UserTest
 
     @Test public void parseSet() throws Exception
     {
-        UserDBMatcher um = UserMatcherFactory.parse("one;two ; three");
+        UserMatcher um = UserMatcherFactory.parse("one;two ; three");
         Assert.assertFalse(um.equals(UserSimpleMatcher.getAllMatcher()));
         Assert.assertEquals(um.getClass(), UserSetMatcher.class);
         Assert.assertEquals(um.toString(), "one ; three ; two");

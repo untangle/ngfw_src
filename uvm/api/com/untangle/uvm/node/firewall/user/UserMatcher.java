@@ -1,41 +1,188 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
- */
-
+/* $HeadURL$ */
 package com.untangle.uvm.node.firewall.user;
 
-public interface UserMatcher
-{
-    public boolean isMatch( String user );
+import java.util.LinkedList;
 
-    public String toDatabaseString();
+import org.apache.log4j.Logger;
+
+import com.untangle.uvm.RemoteUvmContextFactory;
+
+public class UserMatcher
+{
+    private static UserMatcher ANY_MATCHER = new UserMatcher("any");
+
+    public static final String MARKER_SEPERATOR = ";";
+    public static final String MARKER_ANY = "[any]";
+    public static final String MARKER_NONE = "[none]";
+    public static final String MARKER_UNAUTHENTICATED = "[unauthenticated]";
+    public static final String MARKER_AUTHENTICATED = "[authenticated]";
+    public static final String MARKER_GROUP = "group::";
+    
+    private final Logger logger = Logger.getLogger(getClass());
+
+    /**
+     * This stores the string representation of this matcher
+     */
+    public String matcher;
+
+    /**
+     * This is all the available types of user matchers
+     */
+    private enum UserMatcherType { ANY, NONE, SINGLE, GROUP, AUTHENTICATED, UNAUTHENTICATED, LIST };
+
+    /**
+     * The type of this matcher
+     */
+    private UserMatcherType type = UserMatcherType.NONE;
+    
+    /**
+     * This stores the username if this is a single matcher
+     */
+    public String single = null;
+
+    /**
+     * This stores the group name if this is a group matcher
+     */
+    public String groupName = null;
+
+    /**
+     * if this port matcher is a list of port matchers, this list stores the children
+     */
+    private LinkedList<UserMatcher> children = null;
+
+
+    
+    /**
+     * There are no public constructors
+     * Use the "create" static function to create User Matchers
+     */
+    public UserMatcher(String matcher)
+    {
+        initialize(matcher);
+    }
+    
+    public boolean isMatch( String user )
+    {
+        switch (this.type) {
+
+        case ANY:
+            return true;
+
+        case NONE:
+            return false;
+            
+        case SINGLE:
+            if (user.equalsIgnoreCase(this.single))
+                return true;
+            return false;
+            
+        case GROUP:
+            boolean isMemberOf = RemoteUvmContextFactory.context().appAddressBook().isMemberOf(user,this.groupName);
+            return isMemberOf;
+            
+        case AUTHENTICATED:
+            /* XXX this was kept for backwards compatability */
+            return (user != null); 
+
+        case UNAUTHENTICATED:
+            /* XXX this was kept for backwards compatability */
+            return (user == null); 
+
+        case LIST:
+            for (UserMatcher child : this.children) {
+                if (child.isMatch(user))
+                    return true;
+            }
+            return false;
+
+        default:
+            logger.warn("Unknown port matcher type: " + this.type);
+            return false;
+            
+        }
+    }
+
+    public String toDatabaseString()
+    {
+        return this.matcher;
+    }
+
+    /**
+     * return toDatabaseString()
+     */
+    public String toString()
+    {
+        return toDatabaseString();
+    }
+    
+    public static synchronized UserMatcher getAnyMatcher()
+    {
+        return ANY_MATCHER;
+    }
+
+    /**
+     * Initialize all the private variables
+     */
+    private void initialize( String matcher )
+    {
+        this.matcher = matcher;
+
+        /**
+         * If it contains a comma it must be a list of port matchers
+         * if so, go ahead and initialize the children
+         */
+        if (matcher.contains(MARKER_SEPERATOR)) {
+            this.type = UserMatcherType.LIST;
+
+            this.children = new LinkedList<UserMatcher>();
+
+            String[] results = matcher.split(MARKER_SEPERATOR);
+            
+            /* check each one */
+            for (String childString : results) {
+                UserMatcher child = new UserMatcher(childString);
+                this.children.add(child);
+            }
+
+            return;
+        }
+
+        /**
+         * Check the common constants
+         */
+        if (MARKER_ANY.equals(matcher))  {
+            this.type = UserMatcherType.ANY;
+            return;
+        }
+        if (MARKER_NONE.equals(matcher))  {
+            this.type = UserMatcherType.ANY;
+            return;
+        }
+        if (MARKER_AUTHENTICATED.equals(matcher)) {
+            this.type = UserMatcherType.UNAUTHENTICATED;
+            return;
+        }
+        if (MARKER_UNAUTHENTICATED.equals(matcher)) {
+            this.type = UserMatcherType.UNAUTHENTICATED;
+            return;
+        }
+
+        /**
+         * If it contains a group matcher it must be a group matcher
+         */
+        if (matcher.contains( MARKER_GROUP )) {
+            this.type = UserMatcherType.GROUP;
+            this.groupName = matcher.replace(MARKER_GROUP, "");
+            return;
+        }
+        
+        /**
+         * if it isn't any of these it must be a basic SINGLE matcher
+         */
+        this.type = UserMatcherType.SINGLE;
+        this.single = matcher;
+
+        return;
+    }
+
 }

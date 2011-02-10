@@ -53,7 +53,6 @@ import com.untangle.uvm.node.firewall.port.PortMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
 import com.untangle.uvm.node.firewall.time.DayOfWeekMatcher;
 import com.untangle.uvm.node.firewall.user.UserMatcher;
-import com.untangle.uvm.node.firewall.user.UserMatcherFactory;
 
 /**
  * These are the policy rules that are created by the user.  
@@ -92,7 +91,7 @@ public class UserPolicyRule extends PolicyRule
 
     private boolean invertEntireDuration;
 
-    private UserMatcher user = UserMatcherFactory.getInstance().getAllMatcher();
+    private UserMatcher user = UserMatcher.getAnyMatcher();
 
     // constructors -----------------------------------------------------------
 

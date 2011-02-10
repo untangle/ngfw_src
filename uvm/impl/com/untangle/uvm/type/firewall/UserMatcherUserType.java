@@ -19,7 +19,6 @@
 package com.untangle.uvm.type.firewall;
 
 import com.untangle.uvm.node.firewall.user.UserMatcher;
-import com.untangle.uvm.node.firewall.user.UserMatcherFactory;
 import com.untangle.uvm.type.StringBasedUserType;
 
 @SuppressWarnings("serial")
@@ -37,6 +36,6 @@ public class UserMatcherUserType extends StringBasedUserType
 
     public Object createUserType( String val ) throws Exception
     {
-        return UserMatcherFactory.parse( val );
+        return new UserMatcher( val );
     }
 }
