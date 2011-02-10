@@ -22,10 +22,10 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.firewall.intf.IntfMatcher;
-import com.untangle.uvm.node.firewall.ip.IPMatcher;
-import com.untangle.uvm.node.firewall.port.PortMatcher;
-import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
+import com.untangle.uvm.node.IntfMatcher;
+import com.untangle.uvm.node.IPMatcher;
+import com.untangle.uvm.node.PortMatcher;
+import com.untangle.uvm.node.ProtocolMatcher;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.vnet.Protocol;

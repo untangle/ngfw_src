@@ -18,7 +18,7 @@
 
 package com.untangle.uvm.type.firewall;
 
-import com.untangle.uvm.node.firewall.time.DayOfWeekMatcher;
+import com.untangle.uvm.node.DayOfWeekMatcher;
 import com.untangle.uvm.type.StringBasedUserType;
 
 @SuppressWarnings("serial")

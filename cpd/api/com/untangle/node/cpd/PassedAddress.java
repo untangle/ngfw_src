@@ -6,7 +6,7 @@ import javax.persistence.MappedSuperclass;
 import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.node.Rule;
-import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.IPMatcher;
 
 @SuppressWarnings("serial")
 @MappedSuperclass

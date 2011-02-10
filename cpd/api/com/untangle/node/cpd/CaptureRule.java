@@ -25,8 +25,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.node.Rule;
-import com.untangle.uvm.node.firewall.intf.IntfMatcher;
-import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.IntfMatcher;
+import com.untangle.uvm.node.IPMatcher;
 
 @Entity
 @Table(name="n_cpd_capture_rule", schema="settings")

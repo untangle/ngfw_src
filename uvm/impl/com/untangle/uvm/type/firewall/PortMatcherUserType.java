@@ -18,7 +18,7 @@
 
 package com.untangle.uvm.type.firewall;
 
-import com.untangle.uvm.node.firewall.port.PortMatcher;
+import com.untangle.uvm.node.PortMatcher;
 import com.untangle.uvm.type.StringBasedUserType;
 
 @SuppressWarnings("serial")

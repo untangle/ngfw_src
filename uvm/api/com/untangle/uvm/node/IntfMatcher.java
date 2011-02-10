@@ -1,5 +1,5 @@
 /* $HeadURL$ */
-package com.untangle.uvm.node.firewall.intf;
+package com.untangle.uvm.node;
 
 import java.util.LinkedList;
 

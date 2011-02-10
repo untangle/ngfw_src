@@ -6,7 +6,7 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-import com.untangle.uvm.node.firewall.intf.IntfMatcher;
+import com.untangle.uvm.node.IntfMatcher;
 
 
 @SuppressWarnings({"serial","unchecked"})

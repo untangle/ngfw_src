@@ -30,7 +30,7 @@ import java.util.Set;
 
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.HostAddress;
-import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.IPMatcher;
 import org.apache.log4j.Logger;
 
 /* Class used to assign addresses to clients */

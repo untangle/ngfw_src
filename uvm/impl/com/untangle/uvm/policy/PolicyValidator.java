@@ -23,8 +23,8 @@ import java.util.Map;
 
 import com.untangle.uvm.node.ValidationResult;
 import com.untangle.uvm.node.Validator;
-import com.untangle.uvm.node.firewall.ip.IPMatcher;
-import com.untangle.uvm.node.firewall.port.PortMatcher;
+import com.untangle.uvm.node.IPMatcher;
+import com.untangle.uvm.node.PortMatcher;
 
 public class PolicyValidator implements Validator {
 

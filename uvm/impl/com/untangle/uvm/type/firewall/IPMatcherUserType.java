@@ -18,7 +18,7 @@
 
 package com.untangle.uvm.type.firewall;
 
-import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.type.StringBasedUserType;
 
 @SuppressWarnings("serial")

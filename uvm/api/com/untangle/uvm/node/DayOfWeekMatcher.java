@@ -1,5 +1,5 @@
 /* $HeadURL$ */
-package com.untangle.uvm.node.firewall.time;
+package com.untangle.uvm.node;
 
 import java.util.LinkedList;
 import java.util.Date;

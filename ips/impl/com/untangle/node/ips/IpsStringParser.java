@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.PortRange;
-import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.vnet.Protocol;
 
 public class IpsStringParser

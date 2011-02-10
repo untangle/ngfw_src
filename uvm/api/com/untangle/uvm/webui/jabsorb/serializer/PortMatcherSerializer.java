@@ -6,7 +6,7 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-import com.untangle.uvm.node.firewall.port.PortMatcher;
+import com.untangle.uvm.node.PortMatcher;
 
 @SuppressWarnings({"serial","unchecked"})
 public class PortMatcherSerializer extends AbstractSerializer

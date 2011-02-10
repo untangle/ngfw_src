@@ -47,12 +47,12 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.firewall.intf.IntfMatcher;
-import com.untangle.uvm.node.firewall.ip.IPMatcher;
-import com.untangle.uvm.node.firewall.port.PortMatcher;
-import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
-import com.untangle.uvm.node.firewall.time.DayOfWeekMatcher;
-import com.untangle.uvm.node.firewall.user.UserMatcher;
+import com.untangle.uvm.node.IntfMatcher;
+import com.untangle.uvm.node.IPMatcher;
+import com.untangle.uvm.node.PortMatcher;
+import com.untangle.uvm.node.ProtocolMatcher;
+import com.untangle.uvm.node.DayOfWeekMatcher;
+import com.untangle.uvm.node.UserMatcher;
 
 /**
  * These are the policy rules that are created by the user.  

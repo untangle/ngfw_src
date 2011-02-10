@@ -29,7 +29,7 @@ import java.util.WeakHashMap;
 
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.SessionEndpoints;
-import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.vnet.Protocol;
 
 public class IpsRuleHeader

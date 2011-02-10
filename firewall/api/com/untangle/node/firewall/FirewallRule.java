@@ -29,10 +29,10 @@ import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.firewall.intf.IntfMatcher;
-import com.untangle.uvm.node.firewall.ip.IPMatcher;
-import com.untangle.uvm.node.firewall.port.PortMatcher;
-import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
+import com.untangle.uvm.node.IntfMatcher;
+import com.untangle.uvm.node.IPMatcher;
+import com.untangle.uvm.node.PortMatcher;
+import com.untangle.uvm.node.ProtocolMatcher;
 
 /**
  * Rule for matching based on IP addresses and subnets.

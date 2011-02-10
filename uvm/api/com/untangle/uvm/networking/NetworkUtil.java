@@ -16,7 +16,7 @@ import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
-import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.IPMatcher;
 
 /**
  * A number of utilities for working with IP addresses and network
