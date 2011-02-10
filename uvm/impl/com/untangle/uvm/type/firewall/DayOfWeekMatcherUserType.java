@@ -19,7 +19,6 @@
 package com.untangle.uvm.type.firewall;
 
 import com.untangle.uvm.node.firewall.time.DayOfWeekMatcher;
-import com.untangle.uvm.node.firewall.time.DayOfWeekMatcherFactory;
 import com.untangle.uvm.type.StringBasedUserType;
 
 @SuppressWarnings("serial")
@@ -37,6 +36,6 @@ public class DayOfWeekMatcherUserType extends StringBasedUserType
 
     public Object createUserType( String val ) throws Exception
     {
-        return DayOfWeekMatcherFactory.parse( val );
+        return new DayOfWeekMatcher( val );
     }
 }

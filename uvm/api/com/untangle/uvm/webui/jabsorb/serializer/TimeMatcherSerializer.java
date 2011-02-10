@@ -6,15 +6,11 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-import com.untangle.uvm.node.firewall.time.DayOfWeekDBMatcher;
 import com.untangle.uvm.node.firewall.time.DayOfWeekMatcher;
-import com.untangle.uvm.node.firewall.time.DayOfWeekMatcherFactory;
-import com.untangle.uvm.node.firewall.time.DayOfWeekSetMatcher;
-import com.untangle.uvm.node.firewall.time.DayOfWeekSimpleMatcher;
-import com.untangle.uvm.node.firewall.time.DayOfWeekSingleMatcher;
 
 @SuppressWarnings({"serial","unchecked"})
-public class TimeMatcherSerializer extends AbstractSerializer {
+public class TimeMatcherSerializer extends AbstractSerializer
+{
 	/**
 	 * Classes that this can serialize to.
 	 */
@@ -23,16 +19,16 @@ public class TimeMatcherSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialize.
 	 */
-	private static Class[] _serializableClasses = new Class[] { DayOfWeekMatcher.class, DayOfWeekDBMatcher.class, DayOfWeekSetMatcher.class, 
-                                    DayOfWeekSingleMatcher.class, DayOfWeekSimpleMatcher.class, DayOfWeekSimpleMatcher.getAllMatcher().getClass(), 
-                                    DayOfWeekSimpleMatcher.getNilMatcher().getClass() };
+	private static Class[] _serializableClasses = new Class[] { DayOfWeekMatcher.class };
 
+    
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.jabsorb.serializer.Serializer#getJSONClasses()
 	 */
-	public Class[] getJSONClasses() {
+	public Class[] getJSONClasses()
+    {
 		return _JSONClasses;
 	}
 
@@ -41,7 +37,8 @@ public class TimeMatcherSerializer extends AbstractSerializer {
 	 * 
 	 * @see org.jabsorb.serializer.Serializer#getSerializableClasses()
 	 */
-	public Class[] getSerializableClasses() {
+	public Class[] getSerializableClasses()
+    {
 		return _serializableClasses;
 	}
 
@@ -52,9 +49,10 @@ public class TimeMatcherSerializer extends AbstractSerializer {
 	 *      java.lang.Object, java.lang.Object)
 	 */
 	public Object marshall(SerializerState state, Object p, Object o)
-			throws MarshallException {
-		if (o instanceof DayOfWeekDBMatcher) {
-			return ((DayOfWeekDBMatcher) o).toDatabaseString();
+			throws MarshallException
+    {
+		if (o instanceof DayOfWeekMatcher) {
+			return ((DayOfWeekMatcher) o).toDatabaseString();
 		}
 		return null;
 	}
@@ -66,7 +64,8 @@ public class TimeMatcherSerializer extends AbstractSerializer {
 	 *      java.lang.Class, java.lang.Object)
 	 */
 	public ObjectMatch tryUnmarshall(SerializerState state, Class clazz,
-			Object json) throws UnmarshallException {
+			Object json) throws UnmarshallException
+    {
 		state.setSerialized(json, ObjectMatch.OKAY);
 		return ObjectMatch.OKAY;
 	}
@@ -78,14 +77,14 @@ public class TimeMatcherSerializer extends AbstractSerializer {
 	 *      java.lang.Class, java.lang.Object)
 	 */
 	public Object unmarshall(SerializerState state, Class clazz, Object json)
-			throws UnmarshallException {
+			throws UnmarshallException
+    {
         Object returnValue = null;
         String val = json instanceof String ? (String) json : json.toString();
         try {
-            returnValue = DayOfWeekMatcherFactory.parse(val);
+            returnValue = new DayOfWeekMatcher(val);
         } catch (Exception e) {
-            throw new UnmarshallException("Invalid \"interface\" specified:"
-                                          + val);
+            throw new UnmarshallException("Invalid \"interface\" specified:" + val);
         }
         
         if (returnValue == null) {

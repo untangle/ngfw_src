@@ -134,7 +134,7 @@ public class ProtocolMatcher
     
     private void initialize( String matcher )
     {
-        matcher = matcher.toLowerCase();
+        this.matcher = matcher.toLowerCase();
 
         /**
          * If it contains a comma it must be a list of protocol matchers

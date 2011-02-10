@@ -52,7 +52,6 @@ import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
 import com.untangle.uvm.node.firewall.time.DayOfWeekMatcher;
-import com.untangle.uvm.node.firewall.time.DayOfWeekMatcherFactory;
 import com.untangle.uvm.node.firewall.user.UserMatcher;
 import com.untangle.uvm.node.firewall.user.UserMatcherFactory;
 
@@ -89,7 +88,7 @@ public class UserPolicyRule extends PolicyRule
     private String startTimeString;
     private String endTimeString;
 
-    private DayOfWeekMatcher dayOfWeek = DayOfWeekMatcherFactory.getInstance().getAllMatcher();
+    private DayOfWeekMatcher dayOfWeek = DayOfWeekMatcher.getAnyMatcher();
 
     private boolean invertEntireDuration;
 
