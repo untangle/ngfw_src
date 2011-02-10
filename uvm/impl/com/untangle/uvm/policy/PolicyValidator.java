@@ -23,7 +23,7 @@ import java.util.Map;
 
 import com.untangle.uvm.node.ValidationResult;
 import com.untangle.uvm.node.Validator;
-import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcher;
 
 public class PolicyValidator implements Validator {
@@ -72,7 +72,7 @@ public class PolicyValidator implements Validator {
 	private String getInvalidAddress(List<String> values) {
         for (String value : values) {
             try {
-                IPMatcherFactory.parse(value);
+                new IPMatcher(value);
             } catch (Exception e) {
                 return value;
             }

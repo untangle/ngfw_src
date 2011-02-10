@@ -25,7 +25,6 @@ import java.util.Map;
 
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
-import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
@@ -179,12 +178,10 @@ class EventHandler extends AbstractEventHandler
         List <IPMatcher> clientAddressList = new LinkedList<IPMatcher>();
         List <IPMatcher> exportedAddressList = new LinkedList<IPMatcher>();
 
-        IPMatcherFactory imf = IPMatcherFactory.getInstance();
-
         for ( VpnGroup group : settings.getGroupList()) {
             /* Don't insert inactive groups */
             if ( !group.isLive()) continue;
-            IPMatcher matcher = imf.makeSubnetMatcher( group.getAddress(), group.getNetmask());
+            IPMatcher matcher = IPMatcher.makeSubnetMatcher( group.getAddress(), group.getNetmask());
 
             clientAddressList.add( matcher );
             if (logger.isDebugEnabled()) {
@@ -204,7 +201,7 @@ class EventHandler extends AbstractEventHandler
             for ( ClientSiteNetwork siteNetwork : site.getExportedAddressList()) {
                 if ( !siteNetwork.isLive()) continue;
                 IPMatcher matcher =
-                    imf.makeSubnetMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask());
+                    IPMatcher.makeSubnetMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask());
 
                 clientAddressList.add( matcher );
                 if (logger.isDebugEnabled()) {
@@ -216,7 +213,7 @@ class EventHandler extends AbstractEventHandler
         for ( ServerSiteNetwork siteNetwork : settings.getExportedAddressList()) {
             if ( !siteNetwork.isLive()) continue;
             IPMatcher matcher =
-                imf.makeSubnetMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask());
+                IPMatcher.makeSubnetMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask());
 
             exportedAddressList.add( matcher );
             if (logger.isDebugEnabled()) {

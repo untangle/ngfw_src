@@ -17,7 +17,6 @@ import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
-import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 
 /**
  * A number of utilities for working with IP addresses and network
@@ -129,7 +128,7 @@ public class NetworkUtil
 
         for ( String matcherString : PRIVATE_NETWORK_STRINGS ) {
             try {
-                matchers.add( IPMatcherFactory.parse( matcherString ));
+                matchers.add( new IPMatcher( matcherString ));
             } catch ( Exception e ) {
                 System.err.println( "Unable to parse: " + matcherString );
             }

@@ -21,12 +21,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.addrbook.RemoteAddressBook.Backend;
 import com.untangle.uvm.node.firewall.ParsingConstants;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
-import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
-import com.untangle.uvm.node.firewall.ip.IPRangeMatcher;
-import com.untangle.uvm.node.firewall.ip.IPSetMatcher;
-import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
-import com.untangle.uvm.node.firewall.ip.IPSingleMatcher;
-import com.untangle.uvm.node.firewall.ip.IPSubnetMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.JsonClient.ConnectionException;
@@ -289,12 +284,12 @@ public class CPDManager
         /* Add the passed clients and addresses first, and then add the capture rules */
         for ( PassedClient client : settings.getPassedClients()) {
             if (client.isLive())
-                serializePassedAddress(captureRules,client.getAddress(), IPSimpleMatcher.getAllMatcher());
+                serializePassedAddress(captureRules, client.getAddress(), IPMatcher.getAnyMatcher());
         }
         
         for ( PassedServer server : settings.getPassedServers()) {
             if (server.isLive())
-                serializePassedAddress(captureRules,IPSimpleMatcher.getAllMatcher(), server.getAddress());
+                serializePassedAddress(captureRules, IPMatcher.getAnyMatcher(), server.getAddress());
         }
         
         for ( CaptureRule captureRule : settings.getCaptureRules()) {
@@ -387,21 +382,30 @@ public class CPDManager
         return clientInterfaceList;
     }
     
-    private List<String> splitAddressList(IPDBMatcher matcher)
+    private List<String> splitAddressList(IPMatcher matcher)
     {
         List<String> addressList = new ArrayList<String>();
         addressList.add("any");
 
-        if ( ( matcher instanceof IPSingleMatcher) || ( matcher instanceof IPSubnetMatcher) ||
-                ( matcher instanceof IPRangeMatcher ) || ( matcher instanceof IPSetMatcher)) {
+        IPMatcher.IPMatcherType type = matcher.getType();
+        
+        if ( ( type == IPMatcher.IPMatcherType.SINGLE ) ||
+             ( type == IPMatcher.IPMatcherType.SUBNET ) ||
+             ( type == IPMatcher.IPMatcherType.RANGE )  ||
+             ( type == IPMatcher.IPMatcherType.LIST )) {
+            
             addressList = new ArrayList<String>(1);
             addressList.add(matcher.toDatabaseString());
-        } else if ( matcher == IPSimpleMatcher.getNilMatcher()) {
+
+        } else if ( type == IPMatcher.IPMatcherType.NONE ) {
+
             logger.info( "Capture rule with nil address matcher, returning.");
             return null;
-        } else if ( matcher == IPSimpleMatcher.getAllMatcher()) {
+        } else if ( type == IPMatcher.IPMatcherType.ANY ) {
+
             /* Nothing to do here */
         } else {
+
             logger.info( "Capture rule with invalid interface matcher, returning.");
             return null;
             /* Other matcher types are ignored */
@@ -410,7 +414,7 @@ public class CPDManager
         return addressList;
     }
     
-    private void serializePassedAddress(JSONArray captureRules, IPDBMatcher client, IPDBMatcher server)
+    private void serializePassedAddress(JSONArray captureRules, IPMatcher client, IPMatcher server)
             throws JSONException
     {
         serializeCaptureRule(captureRules, new CaptureRule(true, false,

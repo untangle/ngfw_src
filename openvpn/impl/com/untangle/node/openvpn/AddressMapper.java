@@ -31,7 +31,6 @@ import java.util.Set;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
-import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import org.apache.log4j.Logger;
 
 /* Class used to assign addresses to clients */
@@ -99,8 +98,7 @@ class AddressMapper
             boolean isServerGroup = group.equals( serverGroup );
 
             /* Create a new ip matcher to validate all of the created addresses */
-            IPMatcher matcher =
-                IPMatcherFactory.getInstance().makeSubnetMatcher( group.getAddress(), group.getNetmask());
+            IPMatcher matcher = IPMatcher.makeSubnetMatcher( group.getAddress(), group.getNetmask());
 
             /* Create enough addresses for all of the clients, and possible the server */
             Set<IPAddress> addressSet = createAddressSet( clients.size() + ( isServerGroup ? 1 : 0 ),

@@ -30,7 +30,6 @@ import java.util.WeakHashMap;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
-import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.vnet.Protocol;
 
 public class IpsRuleHeader
@@ -38,8 +37,7 @@ public class IpsRuleHeader
     public static final boolean IS_BIDIRECTIONAL = true;
     public static final boolean IS_SERVER = true;
 
-    private static final Map<IpsRuleHeader, WeakReference<IpsRuleHeader>> INSTANCES
-        = new WeakHashMap<IpsRuleHeader, WeakReference<IpsRuleHeader>>();
+    private static final Map<IpsRuleHeader, WeakReference<IpsRuleHeader>> INSTANCES = new WeakHashMap<IpsRuleHeader, WeakReference<IpsRuleHeader>>();
 
     private final int action;
     private final Protocol protocol;
@@ -170,9 +168,8 @@ public class IpsRuleHeader
         boolean clientIPMatch = false;
         Iterator<IPMatcher> clientIt = clientIpSet.iterator();
 
-        IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
-        IPMatcher internalMatcher = ipmf.getInternalMatcher();
-        IPMatcher externalMatcher = ipmf.getExternalMatcher();
+        IPMatcher internalMatcher = IPMatcher.getInternalMatcher();
+        IPMatcher externalMatcher = IPMatcher.getExternalMatcher();
 
         while(clientIt.hasNext() && !clientIPMatch) {
             IPMatcher matcher = clientIt.next();

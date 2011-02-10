@@ -37,7 +37,7 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
-import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
@@ -99,13 +99,13 @@ public class CPDImpl extends AbstractNode implements CPD
         rules.add(new CaptureRule(false, true,
                                   "Require a login for traffic on the internal (non-wan) interfaces", 
                                   IntfMatcher.getNonWanMatcher(), 
-                                  IPSimpleMatcher.getAllMatcher(), IPSimpleMatcher.getAllMatcher(),
+                                  IPMatcher.getAnyMatcher(), IPMatcher.getAnyMatcher(),
                                   CaptureRule.START_OF_DAY, CaptureRule.END_OF_DAY, CaptureRule.ALL_DAYS));
         
         rules.add(new CaptureRule(false, true,
                                   "Require a login between 8:00 AM and 5 PM on the internal (non-wan) interfaces.", 
                                   IntfMatcher.getNonWanMatcher(), 
-                                  IPSimpleMatcher.getAllMatcher(), IPSimpleMatcher.getAllMatcher(),
+                                  IPMatcher.getAnyMatcher(), IPMatcher.getAnyMatcher(),
                                   "8:00", "17:00", CaptureRule.ALL_DAYS));
         
         settings.setCaptureRules(rules);

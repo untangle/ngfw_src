@@ -26,7 +26,6 @@ import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
-import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.util.JsonClient;
@@ -374,7 +373,7 @@ public class NetworkManagerImpl implements NetworkManager
                 return IPNetwork.parse( "172.16.0.1/24" );
             }
 
-            IPMatcher matcher = IPMatcherFactory.parse( "192.0.0.0/8" );
+            IPMatcher matcher = new IPMatcher( "192.0.0.0/8" );
             
             if ( matcher.isMatch( externalAddress.getAddr())) {
                 return IPNetwork.parse( "172.16.0.1/24" );

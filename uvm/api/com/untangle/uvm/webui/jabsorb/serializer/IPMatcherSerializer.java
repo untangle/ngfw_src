@@ -6,16 +6,7 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
-import com.untangle.uvm.node.firewall.ip.IPInternalMatcher;
-import com.untangle.uvm.node.firewall.ip.IPLocalMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
-import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
-import com.untangle.uvm.node.firewall.ip.IPRangeMatcher;
-import com.untangle.uvm.node.firewall.ip.IPSetMatcher;
-import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
-import com.untangle.uvm.node.firewall.ip.IPSingleMatcher;
-import com.untangle.uvm.node.firewall.ip.IPSubnetMatcher;
 
 @SuppressWarnings({"serial","unchecked"})
 public class IPMatcherSerializer extends AbstractSerializer {
@@ -27,8 +18,7 @@ public class IPMatcherSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialize.
 	 */
-	private static Class[] _serializableClasses = new Class[] { IPMatcher.class, IPDBMatcher.class, IPInternalMatcher.class, IPLocalMatcher.class, 
-                                    IPRangeMatcher.class, IPSetMatcher.class, IPSingleMatcher.class, IPSimpleMatcher.class, IPSubnetMatcher.class };
+	private static Class[] _serializableClasses = new Class[] { IPMatcher.class };
 
 	/*
 	 * (non-Javadoc)
@@ -56,8 +46,8 @@ public class IPMatcherSerializer extends AbstractSerializer {
 	 */
 	public Object marshall(SerializerState state, Object p, Object o)
 			throws MarshallException {
-		if (o instanceof IPDBMatcher) {
-			return ((IPDBMatcher) o).toDatabaseString();
+		if (o instanceof IPMatcher) {
+			return ((IPMatcher) o).toDatabaseString();
 		}
 		return null;
 	}
@@ -85,7 +75,7 @@ public class IPMatcherSerializer extends AbstractSerializer {
         Object returnValue = null;
         String val = json instanceof String ? (String) json : json.toString();
         try {
-            returnValue = IPMatcherFactory.parse(val);
+            returnValue = new IPMatcher(val);
         } catch (Exception e) {
             throw new UnmarshallException("Invalid \"interface\" specified:"
                                           + val);

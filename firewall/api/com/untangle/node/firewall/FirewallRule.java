@@ -30,7 +30,7 @@ import org.hibernate.annotations.Type;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
-import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
@@ -63,8 +63,8 @@ public class FirewallRule extends Rule
 
     private ProtocolDBMatcher protocol;
 
-    private IPDBMatcher   srcAddress;
-    private IPDBMatcher   dstAddress;
+    private IPMatcher   srcAddress;
+    private IPMatcher   dstAddress;
 
     private PortMatcher srcPort;
     private PortMatcher dstPort;
@@ -75,7 +75,7 @@ public class FirewallRule extends Rule
 
     public FirewallRule(boolean isLive, ProtocolDBMatcher protocol,
                         IntfMatcher clientIface, IntfMatcher serverIface,
-                        IPDBMatcher srcAddress, IPDBMatcher dstAddress,
+                        IPMatcher srcAddress, IPMatcher dstAddress,
                         PortMatcher srcPort, PortMatcher dstPort,
                         boolean isTrafficBlocker)
     {
@@ -192,35 +192,35 @@ public class FirewallRule extends Rule
     }
 
     /**
-     * source IPDBMatcher
+     * source IPMatcher
      *
      * @return the source IP matcher.
      */
     @Column(name="src_ip_matcher")
     @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
-    public IPDBMatcher getSrcAddress()
+    public IPMatcher getSrcAddress()
     {
         return srcAddress;
     }
 
-    public void setSrcAddress( IPDBMatcher srcAddress )
+    public void setSrcAddress( IPMatcher srcAddress )
     {
         this.srcAddress = srcAddress;
     }
 
     /**
-     * destination IPDBMatcher
+     * destination IPMatcher
      *
      * @return the destination IP matcher.
      */
     @Column(name="dst_ip_matcher")
     @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
-    public IPDBMatcher getDstAddress()
+    public IPMatcher getDstAddress()
     {
         return dstAddress;
     }
 
-    public void setDstAddress( IPDBMatcher dstAddress )
+    public void setDstAddress( IPMatcher dstAddress )
     {
         this.dstAddress = dstAddress;
     }

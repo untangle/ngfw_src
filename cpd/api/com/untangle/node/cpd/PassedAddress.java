@@ -6,23 +6,22 @@ import javax.persistence.MappedSuperclass;
 import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.node.Rule;
-import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
-import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
 
 @SuppressWarnings("serial")
 @MappedSuperclass
 public abstract class PassedAddress extends Rule
 {
-    private IPDBMatcher address = IPSimpleMatcher.getNilMatcher();
+    private IPMatcher address = IPMatcher.getNilMatcher();
     
     @Column(name="address", nullable=false)
     @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
-    public IPDBMatcher getAddress()
+    public IPMatcher getAddress()
     {
         return this.address;
     }
 
-    public void setAddress( IPDBMatcher newValue )
+    public void setAddress( IPMatcher newValue )
     {
         this.address = newValue;
     }

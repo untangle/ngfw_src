@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
-import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.vnet.Protocol;
 
 public class IpsStringParser
@@ -149,21 +148,20 @@ public class IpsStringParser
     private static List<IPMatcher> parseIPToken(String ipString)
         throws ParseException
     {
-        IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
         List<IPMatcher> ipList = new ArrayList<IPMatcher>();
         if (ipString.equalsIgnoreCase("any"))
-            ipList.add(ipmf.getAllMatcher());
+            ipList.add(IPMatcher.getAnyMatcher());
         else if (ipString.equalsIgnoreCase(EXTERNAL_IP))
-            ipList.add(ipmf.getExternalMatcher());
+            ipList.add(IPMatcher.getExternalMatcher());
         else if (ipString.equalsIgnoreCase(HOME_IP))
-            ipList.add(ipmf.getInternalMatcher());
+            ipList.add(IPMatcher.getInternalMatcher());
         else {
             ipString = ipString.replaceAll("\\[","");
             ipString = ipString.replaceAll("\\]","");
 
             String allAddrs[] = ipString.split(",");
             for (int i=0; i < allAddrs.length; i++)
-                ipList.add(IPMatcherFactory.parse(validateMask(allAddrs[i])));
+                ipList.add(new IPMatcher(validateMask(allAddrs[i])));
         }
         return ipList;
     }

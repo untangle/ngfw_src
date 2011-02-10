@@ -26,8 +26,7 @@ import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
-import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
-import com.untangle.uvm.node.firewall.ip.IPSimpleMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
 
 @Entity
 @Table(name="n_cpd_capture_rule", schema="settings")
@@ -41,8 +40,8 @@ public class CaptureRule extends Rule
     
     private boolean capture = true;
     private IntfMatcher clientInterface = IntfMatcher.getAnyMatcher();
-    private IPDBMatcher clientAddress = IPSimpleMatcher.getAllMatcher();
-    private IPDBMatcher serverAddress = IPSimpleMatcher.getAllMatcher();
+    private IPMatcher clientAddress = IPMatcher.getAnyMatcher();
+    private IPMatcher serverAddress = IPMatcher.getAnyMatcher();
     
     String startTime = START_OF_DAY;
     String endTime = END_OF_DAY;
@@ -54,7 +53,7 @@ public class CaptureRule extends Rule
     }
 	
 	public CaptureRule( boolean live, boolean capture, String description, 
-	        IntfMatcher clientInterface, IPDBMatcher clientAddress, IPDBMatcher serverAddress,
+	        IntfMatcher clientInterface, IPMatcher clientAddress, IPMatcher serverAddress,
 	        String startTime, String endTime, String days )
 	{
 	    setLive(live);
@@ -94,24 +93,24 @@ public class CaptureRule extends Rule
 
     @Column(name="client_address", nullable=false)
     @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
-    public IPDBMatcher getClientAddress()
+    public IPMatcher getClientAddress()
     {
         return this.clientAddress;
     }
 
-    public void setClientAddress( IPDBMatcher newValue )
+    public void setClientAddress( IPMatcher newValue )
     {
         this.clientAddress = newValue;
     }
 
     @Column(name="server_address", nullable=false)
     @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
-    public IPDBMatcher getServerAddress()
+    public IPMatcher getServerAddress()
     {
         return this.serverAddress;
     }
 
-    public void setServerAddress( IPDBMatcher newValue )
+    public void setServerAddress( IPMatcher newValue )
     {
         this.serverAddress = newValue;
     }
