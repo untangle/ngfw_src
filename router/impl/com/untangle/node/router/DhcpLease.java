@@ -22,7 +22,7 @@ import java.util.Date;
 
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.node.firewall.MACAddress;
+import com.untangle.uvm.node.MACAddress;
 import org.apache.log4j.Logger;
 
 /* XXX Probably should be an inner class for DhcpMonitor */

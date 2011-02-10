@@ -24,7 +24,7 @@ import com.untangle.uvm.node.IPNullAddr;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
-import com.untangle.uvm.node.firewall.MACAddress;
+import com.untangle.uvm.node.MACAddress;
 
 /* Utilities that are only required inside of this package */
 class NetworkUtilPriv extends NetworkUtil

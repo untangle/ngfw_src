@@ -19,7 +19,6 @@ import com.untangle.node.cpd.CPD.BlingerType;
 import com.untangle.node.cpd.CPDSettings.AuthenticationType;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.addrbook.RemoteAddressBook.Backend;
-import com.untangle.uvm.node.firewall.ParsingConstants;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.ip.IPMatcher;
 import com.untangle.uvm.node.script.ScriptRunner;

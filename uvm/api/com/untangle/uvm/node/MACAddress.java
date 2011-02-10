@@ -32,7 +32,7 @@
  * to do so, delete this exception statement from your version.
  */
 
-package com.untangle.uvm.node.firewall;
+package com.untangle.uvm.node;
 
 import java.io.Serializable;
 

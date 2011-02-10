@@ -34,7 +34,7 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.firewall.MACAddress;
+import com.untangle.uvm.node.MACAddress;
 import org.apache.log4j.Logger;
 
 /** !!! Time permitting, this should also move into the UVM */

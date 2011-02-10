@@ -29,7 +29,7 @@ import javax.persistence.TemporalType;
 
 import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.node.firewall.MACAddress;
+import com.untangle.uvm.node.MACAddress;
 import org.hibernate.annotations.Type;
 
 /**
@@ -85,7 +85,7 @@ import org.hibernate.annotations.Type;
          *
          * @return the mac address.
          */
-        @Type(type="com.untangle.uvm.type.firewall.MACAddressUserType")
+        @Type(type="com.untangle.uvm.type.MACAddressUserType")
         public MACAddress getMac()
         {
             return mac;
