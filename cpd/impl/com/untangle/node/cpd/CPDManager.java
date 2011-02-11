@@ -344,41 +344,38 @@ public class CPDManager
         List<Integer> clientInterfaceList = new ArrayList<Integer>(1);
         clientInterfaceList.add(-1);
 
-        /**
-         * XXX this function relies on the underlying format of IntfMatcher
-         * This should be fixed
-         */
-
         int index = 0;
-        boolean singleIntf = false;
-        try {
-            /* try to parse as int */
-            index = Integer.parseInt(matcher.toString());
-            singleIntf = true;
-        } catch (NumberFormatException e) {/* ignore */}
+        String matcherStr = matcher.toString();
+        clientInterfaceList = new ArrayList<Integer>(1);
 
-        if ( singleIntf ) {
-            clientInterfaceList = new ArrayList<Integer>(1);
-            clientInterfaceList.add(index);
-        } else if ( matcher.toString().contains(",")) {
-            String[] i = matcher.toDatabaseString().split(",");
-            clientInterfaceList = new ArrayList<Integer>(i.length);
-            
-            for ( String intf : i ) {
-                clientInterfaceList.add(Integer.parseInt(intf));
+        switch (matcher.getType()) {
+
+        case SINGLE:
+            try {
+                index = Integer.parseInt(matcherStr);
+                clientInterfaceList.add(index);
+            } catch (NumberFormatException e) {
+                logger.warn("Unknown interface format: " + matcherStr);
             }
-        } else if ( matcher == IntfMatcher.getNilMatcher() || matcher.toString().equals("none")) {
-            logger.info( "Capture rule with nil interface matcher, returning.");
+            return clientInterfaceList;
+
+        case LIST:
+            String[] i = matcherStr.split(",");
+            for (index = 1 ; index < 256 ; index++) {
+                if (matcher.isMatch(index)) {
+                    clientInterfaceList.add(index);
+                }
+            }
+            return clientInterfaceList;
+
+        case ANY:
+            return clientInterfaceList;
+
+        default:
+            /* all other cases return null*/
             return null;
-        } else if ( matcher == IntfMatcher.getAnyMatcher() || matcher.toString().equals("any")) {
-            /* Nothing to do here */
-        } else {
-            logger.info( "Capture rule with invalid interface matcher, returning.");
-            return null;
-            /* Other matcher types are ignored */
+
         }
-        
-        return clientInterfaceList;
     }
     
     private List<String> splitAddressList(IPMatcher matcher)

@@ -36,11 +36,11 @@ public class IntfMatcher
     private static final IntfMatcher WAN_MATCHER = new IntfMatcher(MARKER_WAN);
     private static final IntfMatcher NONWAN_MATCHER = new IntfMatcher(MARKER_NON_WAN);
 
+    public enum IntfMatcherType { ANY, NONE, ANY_WAN, ANY_NON_WAN, SINGLE, LIST };
+
     private final Logger logger = Logger.getLogger(getClass());
     
-    public String matcher;
-
-    private enum IntfMatcherType { ANY, NONE, ANY_WAN, ANY_NON_WAN, SINGLE, LIST };
+    private String matcher;
     
     /**
      * The type of this matcher
@@ -61,7 +61,15 @@ public class IntfMatcher
     {
         initialize(matcher);
     }
-    
+
+    /**
+     * return the type of matcher
+     */
+    public IntfMatcherType getType()
+    {
+        return this.type;
+    }
+
     /**
      * Return true if <param>interfaceId</param> matches this matcher.
      *
