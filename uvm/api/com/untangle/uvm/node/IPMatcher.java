@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.RemoteUvmContextFactory;
+import com.untangle.uvm.RemoteUvmContext;
+import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.networking.IPNetwork;
@@ -103,14 +105,7 @@ public class IPMatcher
     {
         initialize(matcher);
 
-        /**
-         * If this is the first IPMatcher to be initialized
-         * start the network listener
-         */
-        if (listener == null) {
-            this.listener = new NetworkListener();
-            RemoteUvmContextFactory.context().networkManager().registerListener( this.listener );
-        }
+        initializeListerner();
     }
 
     /**
@@ -157,6 +152,7 @@ public class IPMatcher
             return (( tmp & this.subnetNetmask ) == this.subnetNetwork );
             
         case INTERNAL:
+            initializeListerner();
             tmp = addrToLong( address );
             if ( internalNetworkList != null ) {
                 for ( IPNetwork network : internalNetworkList ) {
@@ -170,6 +166,7 @@ public class IPMatcher
             
         case EXTERNAL:
             /* same as internal, but inverted */
+            initializeListerner();
             tmp = addrToLong( address );
             if ( internalNetworkList != null ) {
                 for ( IPNetwork network : internalNetworkList ) {
@@ -261,7 +258,30 @@ public class IPMatcher
     }
     
 
-
+    /**
+     * This initialized the listener if it isnt already
+     * It is safe to call this function multiple times
+     */
+    private synchronized void initializeListerner()
+    {
+        /**
+         * If this is the first IPMatcher to be initialized
+         * start the network listener
+         */
+        if (listener == null) {
+            RemoteUvmContext context = RemoteUvmContextFactory.context();
+            if (context == null)
+                return;
+            
+            NetworkManager netMan = RemoteUvmContextFactory.context().networkManager();
+            if (netMan == null)
+                return;
+                    
+            this.listener = new NetworkListener();
+            netMan.registerListener( this.listener );
+        }
+    }
+    
     /**
      * Initialize all the private variables
      */
@@ -489,9 +509,12 @@ public class IPMatcher
             if (primary != null)
                 internalNetworkList.add(primary);
 
-            for (IPNetwork alias : intfConf.getAliases()) {
-                if (alias != null)
-                    internalNetworkList.add(alias);
+            List<IPNetwork> aliases = intfConf.getAliases();
+            if (aliases != null) {
+                for (IPNetwork alias : aliases) {
+                    if (alias != null)
+                        internalNetworkList.add(alias);
+                }
             }
         }
 
