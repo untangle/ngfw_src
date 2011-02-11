@@ -18,13 +18,20 @@ import com.untangle.uvm.vnet.Protocol;
  * ProtocolMatcher it is case insensitive
  *
  * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
- * @version 1.0
  */
 public class ProtocolMatcher
 {
-    private static ProtocolMatcher ANY_MATCHER = new ProtocolMatcher("any");
-    private static ProtocolMatcher TCP_MATCHER = new ProtocolMatcher("tcp");
-    private static ProtocolMatcher UDP_MATCHER = new ProtocolMatcher("udp");
+    private static final String MARKER_ANY = "any";
+    private static final String MARKER_ALL = "all";
+    private static final String MARKER_NONE = "none";
+    private static final String MARKER_SEPERATOR = ",";
+    private static final String MARKER_SEPERATOR2 = "&"; 
+    private static final String MARKER_TCP = "tcp";
+    private static final String MARKER_UDP = "udp";
+
+    private static ProtocolMatcher ANY_MATCHER = new ProtocolMatcher(MARKER_ANY);
+    private static ProtocolMatcher TCP_MATCHER = new ProtocolMatcher(MARKER_TCP);
+    private static ProtocolMatcher UDP_MATCHER = new ProtocolMatcher(MARKER_UDP);
 
     private final Logger logger = Logger.getLogger(getClass());
     
@@ -51,7 +58,9 @@ public class ProtocolMatcher
     private LinkedList<ProtocolMatcher> children = null;
 
     
-
+    /**
+     * Create a protocol matcher from the given string
+     */
     public ProtocolMatcher( String matcher )
     {
         initialize(matcher);
@@ -134,18 +143,19 @@ public class ProtocolMatcher
     
     private void initialize( String matcher )
     {
-        this.matcher = matcher.toLowerCase();
+        matcher = matcher.toLowerCase().trim();
+        this.matcher = matcher;
 
         /**
          * If it contains a comma it must be a list of protocol matchers
          * if so, go ahead and initialize the children
          */
-        if (matcher.contains(",")) {
+        if (matcher.contains(MARKER_SEPERATOR)) {
             this.type = ProtocolMatcherType.LIST;
 
             this.children = new LinkedList<ProtocolMatcher>();
 
-            String[] results = matcher.split(",");
+            String[] results = matcher.split(MARKER_SEPERATOR);
             
             /* check each one */
             for (String childString : results) {
@@ -157,30 +167,53 @@ public class ProtocolMatcher
         }
 
         /**
+         * If it contains a ampersand it must be a list of protocol matchers
+         * if so, go ahead and initialize the children
+         */
+        if (matcher.contains(MARKER_SEPERATOR2)) {
+            this.type = ProtocolMatcherType.LIST;
+
+            this.children = new LinkedList<ProtocolMatcher>();
+
+            String[] results = matcher.split(MARKER_SEPERATOR2);
+            
+            /* check each one */
+            for (String childString : results) {
+                ProtocolMatcher child = new ProtocolMatcher(childString);
+                this.children.add(child);
+            }
+
+            return;
+        }
+        
+        /**
          * Check the common constants
          */
-        if ("any".equals(matcher))  {
+        if (MARKER_ANY.equals(matcher))  {
             this.type = ProtocolMatcherType.ANY;
             return;
         }
-        if ("all".equals(matcher)) {
+        if (MARKER_ALL.equals(matcher)) {
             this.type = ProtocolMatcherType.ANY;
             return;
         }
-        if ("none".equals(matcher)) {
+        if (MARKER_NONE.equals(matcher)) {
             this.type = ProtocolMatcherType.NONE;
             return;
         }
-        if ("tcp".equals(matcher)) {
+        if (MARKER_TCP.equals(matcher)) {
             this.type = ProtocolMatcherType.SINGLE;
             this.single = Protocol.TCP.getId();
             return;
         }
-        if ("udp".equals(matcher)) {
+        if (MARKER_UDP.equals(matcher)) {
             this.type = ProtocolMatcherType.SINGLE;
             this.single = Protocol.UDP.getId();
             return;
         }
+
+        logger.error("Invalid Protocol matcher: \"" + matcher + "\"");
+        throw new IllegalArgumentException("Invalid Protocol matcher: \"" + matcher + "\"");
     }
 
 }

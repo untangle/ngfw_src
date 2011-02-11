@@ -22,10 +22,17 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class PortMatcher implements java.io.Serializable
 {
-    private static PortMatcher ANY_MATCHER = new PortMatcher("any");
+    private static final String MARKER_ANY = "any";
+    private static final String MARKER_ALL = "all";
+    private static final String MARKER_NONE = "none";
+    private static final String MARKER_SEPERATOR = ",";
+    private static final String MARKER_RANGE = "-";
 
+    private static PortMatcher ANY_MATCHER = new PortMatcher(MARKER_ANY);
+     
     private final Logger logger = Logger.getLogger(getClass());
 
+    
     public String matcher;
 
     private enum PortMatcherType { ANY, NONE, SINGLE, RANGE, LIST };
@@ -143,18 +150,19 @@ public class PortMatcher implements java.io.Serializable
      */
     private void initialize( String matcher )
     {
+        matcher = matcher.toLowerCase().trim();
         this.matcher = matcher;
 
         /**
          * If it contains a comma it must be a list of port matchers
          * if so, go ahead and initialize the children
          */
-        if (matcher.contains(",")) {
+        if (matcher.contains(MARKER_SEPERATOR)) {
             this.type = PortMatcherType.LIST;
 
             this.children = new LinkedList<PortMatcher>();
 
-            String[] results = matcher.split(",");
+            String[] results = matcher.split(MARKER_SEPERATOR);
             
             /* check each one */
             for (String childString : results) {
@@ -168,15 +176,15 @@ public class PortMatcher implements java.io.Serializable
         /**
          * Check the common constants
          */
-        if ("any".equals(matcher))  {
+        if (MARKER_ANY.equals(matcher))  {
             this.type = PortMatcherType.ANY;
             return;
         }
-        if ("all".equals(matcher)) {
+        if (MARKER_ALL.equals(matcher)) {
             this.type = PortMatcherType.ANY;
             return;
         }
-        if ("none".equals(matcher)) {
+        if (MARKER_NONE.equals(matcher)) {
             this.type = PortMatcherType.NONE;
             return;
         }
@@ -184,10 +192,10 @@ public class PortMatcher implements java.io.Serializable
         /**
          * If it contains a dash it must be a range
          */
-        if (matcher.contains("-")) {
+        if (matcher.contains(MARKER_RANGE)) {
             this.type = PortMatcherType.RANGE;
             
-            String[] results = matcher.split("-");
+            String[] results = matcher.split(MARKER_RANGE);
 
             if (results.length != 2) {
                 logger.warn("Invalid PortMatcher: Invalid Range: " + matcher);

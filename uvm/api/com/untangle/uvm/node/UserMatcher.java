@@ -9,14 +9,14 @@ import com.untangle.uvm.RemoteUvmContextFactory;
 
 public class UserMatcher
 {
-    private static UserMatcher ANY_MATCHER = new UserMatcher("any");
+    private static final String MARKER_SEPERATOR = ";";
+    private static final String MARKER_ANY = "[any]";
+    private static final String MARKER_NONE = "[none]";
+    private static final String MARKER_UNAUTHENTICATED = "[unauthenticated]";
+    private static final String MARKER_AUTHENTICATED = "[authenticated]";
+    private static final String MARKER_GROUP = "group::";
 
-    public static final String MARKER_SEPERATOR = ";";
-    public static final String MARKER_ANY = "[any]";
-    public static final String MARKER_NONE = "[none]";
-    public static final String MARKER_UNAUTHENTICATED = "[unauthenticated]";
-    public static final String MARKER_AUTHENTICATED = "[authenticated]";
-    public static final String MARKER_GROUP = "group::";
+    private static UserMatcher ANY_MATCHER = new UserMatcher(MARKER_ANY);
     
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -53,8 +53,7 @@ public class UserMatcher
 
     
     /**
-     * There are no public constructors
-     * Use the "create" static function to create User Matchers
+     * Create a user matcher from the given string
      */
     public UserMatcher(String matcher)
     {
@@ -125,6 +124,7 @@ public class UserMatcher
      */
     private void initialize( String matcher )
     {
+        matcher = matcher.toLowerCase().trim();
         this.matcher = matcher;
 
         /**

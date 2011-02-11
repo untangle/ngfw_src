@@ -12,18 +12,29 @@ import com.untangle.uvm.RemoteUvmContext;
 
 
 /**
- * An interface to test for particular interfaces.
+ * An matcher for interfaces
  *
- * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
- * @version 1.0
+ * Examples:
+ * "any"
+ * "wan"
+ * "1"
+ * "1,2"
+ *
+ * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
  */
-@SuppressWarnings("serial")
-public class IntfMatcher implements java.io.Serializable
+public class IntfMatcher
 {
-    private static final IntfMatcher ANY_MATCHER = new IntfMatcher("any");
-    private static final IntfMatcher NONE_MATCHER = new IntfMatcher("none");
-    private static final IntfMatcher WAN_MATCHER = new IntfMatcher("wan");
-    private static final IntfMatcher NONWAN_MATCHER = new IntfMatcher("non_wan");
+    private static final String MARKER_ANY = "any";
+    private static final String MARKER_ALL = "all";
+    private static final String MARKER_NONE = "none";
+    private static final String MARKER_WAN = "wan";
+    private static final String MARKER_NON_WAN = "non_wan";
+    private static final String MARKER_SEPERATOR = ",";
+
+    private static final IntfMatcher ANY_MATCHER = new IntfMatcher(MARKER_ANY);
+    private static final IntfMatcher NONE_MATCHER = new IntfMatcher(MARKER_NONE);
+    private static final IntfMatcher WAN_MATCHER = new IntfMatcher(MARKER_WAN);
+    private static final IntfMatcher NONWAN_MATCHER = new IntfMatcher(MARKER_NON_WAN);
 
     private final Logger logger = Logger.getLogger(getClass());
     
@@ -157,17 +168,18 @@ public class IntfMatcher implements java.io.Serializable
 
     private void initialize( String matcher )
     {
+        matcher = matcher.toLowerCase().trim();
         this.matcher = matcher;
 
         /**
          * if it contains a comma it must be a list
          */
-        if (matcher.contains(",")) {
+        if (matcher.contains(MARKER_SEPERATOR)) {
             this.type = IntfMatcherType.LIST;
 
             this.children = new LinkedList<IntfMatcher>();
 
-            String[] results = matcher.split(",");
+            String[] results = matcher.split(MARKER_SEPERATOR);
             
             /* check each one */
             for (String childString : results) {
@@ -181,23 +193,23 @@ public class IntfMatcher implements java.io.Serializable
         /**
          * check the common constants
          */
-        if ("any".equals(matcher)) {
+        if (MARKER_ANY.equals(matcher)) {
             this.type = IntfMatcherType.ANY;
             return;
         }
-        if ("all".equals(matcher)) {
+        if (MARKER_ALL.equals(matcher)) {
             this.type = IntfMatcherType.ANY;
             return;
         }
-        if ("none".equals(matcher)) {
+        if (MARKER_NONE.equals(matcher)) {
             this.type = IntfMatcherType.NONE;
             return;
         }
-        if ("wan".equals(matcher)) {
+        if (MARKER_WAN.equals(matcher)) {
             this.type = IntfMatcherType.ANY_WAN;
             return;
         }
-        if ("non_wan".equals(matcher)) {
+        if (MARKER_NON_WAN.equals(matcher)) {
             this.type = IntfMatcherType.ANY_NON_WAN;
             return;
         }

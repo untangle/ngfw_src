@@ -1,5 +1,5 @@
 /* $HeadURL$ */
-package com.untangle.uvm.type.firewall;
+package com.untangle.uvm.type;
 
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.type.StringBasedUserType;

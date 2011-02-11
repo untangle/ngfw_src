@@ -7,9 +7,33 @@ import java.util.Calendar;
 
 import org.apache.log4j.Logger;
 
+/**
+ * An matcher for days of the week
+ *
+ * Examples:
+ * "any"
+ * "Monday"
+ * "Monday,Tuesday"
+ *
+ * DayOfWeekMatcher it is case insensitive
+ *
+ * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
+ */
 public class DayOfWeekMatcher
 {
-    private static DayOfWeekMatcher ANY_MATCHER = new DayOfWeekMatcher("any");
+    private static final String MARKER_ANY = "any";
+    private static final String MARKER_ALL = "all";
+    private static final String MARKER_NONE = "none";
+    private static final String MARKER_SEPERATOR = ",";
+    private static final String MARKER_MONDAY    = "monday";
+    private static final String MARKER_TUESDAY   = "tuesday";
+    private static final String MARKER_WEDNESDAY = "wednesday";
+    private static final String MARKER_THURSDAY  = "thursday";
+    private static final String MARKER_FRIDAY    = "friday";
+    private static final String MARKER_SATURDAY  = "saturday";
+    private static final String MARKER_SUNDAY    = "sunday";
+
+    private static DayOfWeekMatcher ANY_MATCHER = new DayOfWeekMatcher(MARKER_ANY);
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -36,6 +60,10 @@ public class DayOfWeekMatcher
     private LinkedList<DayOfWeekMatcher> children = null;
 
 
+    
+    /**
+     * Construct a day of week matcher from the given string
+     */
     public DayOfWeekMatcher( String matcher )
     {
         initialize(matcher);
@@ -57,19 +85,19 @@ public class DayOfWeekMatcher
             int calDay = cal.get(Calendar.DAY_OF_WEEK);
             switch (calDay) {
             case Calendar.MONDAY:
-                return (this.single.equals("monday"));
+                return (this.single.equals(MARKER_MONDAY));
             case Calendar.TUESDAY:
-                return (this.single.equals("tuesday"));
+                return (this.single.equals(MARKER_TUESDAY));
             case Calendar.WEDNESDAY:
-                return (this.single.equals("wednesday"));
+                return (this.single.equals(MARKER_WEDNESDAY));
             case Calendar.THURSDAY:
-                return (this.single.equals("thursday"));
+                return (this.single.equals(MARKER_THURSDAY));
             case Calendar.FRIDAY:
-                return (this.single.equals("friday"));
+                return (this.single.equals(MARKER_FRIDAY));
             case Calendar.SATURDAY:
-                return (this.single.equals("saturday"));
+                return (this.single.equals(MARKER_SATURDAY));
             case Calendar.SUNDAY:
-                return (this.single.equals("sunday"));
+                return (this.single.equals(MARKER_SUNDAY));
             default:
                 return false;
             }
@@ -104,18 +132,19 @@ public class DayOfWeekMatcher
     
     private void initialize( String matcher )
     {
-        this.matcher = matcher.toLowerCase();
+        matcher = matcher.toLowerCase().trim();
+        this.matcher = matcher;
 
         /**
          * If it contains a comma it must be a list of protocol matchers
          * if so, go ahead and initialize the children
          */
-        if (matcher.contains(",")) {
+        if (matcher.contains(MARKER_SEPERATOR)) {
             this.type = DayOfWeekMatcherType.LIST;
 
             this.children = new LinkedList<DayOfWeekMatcher>();
 
-            String[] results = matcher.split(",");
+            String[] results = matcher.split(MARKER_SEPERATOR);
             
             /* check each one */
             for (String childString : results) {
@@ -129,25 +158,22 @@ public class DayOfWeekMatcher
         /**
          * Check the common constants
          */
-        if ("any".equals(matcher))  {
+        if (MARKER_ANY.equals(matcher))  {
             this.type = DayOfWeekMatcherType.ANY;
             return;
         }
-        if ("all".equals(matcher)) {
+        if (MARKER_ALL.equals(matcher)) {
             this.type = DayOfWeekMatcherType.ANY;
             return;
         }
-        if ("none".equals(matcher)) {
+        if (MARKER_NONE.equals(matcher)) {
             this.type = DayOfWeekMatcherType.NONE;
             return;
         }
-        if ("sunday".equals(matcher) ||
-            "monday".equals(matcher) ||
-            "tuesday".equals(matcher) ||
-            "wednesday".equals(matcher) ||
-            "thursday".equals(matcher) ||
-            "friday".equals(matcher) ||
-            "saturday".equals(matcher)) {
+        if (MARKER_SUNDAY.equals(matcher) || MARKER_MONDAY.equals(matcher) ||
+            MARKER_TUESDAY.equals(matcher) || MARKER_WEDNESDAY.equals(matcher) ||
+            MARKER_THURSDAY.equals(matcher) || MARKER_FRIDAY.equals(matcher) ||
+            MARKER_SATURDAY.equals(matcher)) {
             this.type = DayOfWeekMatcherType.SINGLE;
             this.single = matcher;
             return;

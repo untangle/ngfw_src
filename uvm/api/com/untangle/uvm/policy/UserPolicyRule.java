@@ -229,7 +229,7 @@ public class UserPolicyRule extends PolicyRule
      * @return the source IP matcher.
      */
     @Column(name="client_intf_matcher")
-    @Type(type="com.untangle.uvm.type.firewall.IntfMatcherUserType")
+    @Type(type="com.untangle.uvm.type.IntfMatcherUserType")
     public IntfMatcher getClientIntf()
     {
         return clientIntf;
@@ -246,7 +246,7 @@ public class UserPolicyRule extends PolicyRule
      * @return the destination IP matcher.
      */
     @Column(name="server_intf_matcher")
-    @Type(type="com.untangle.uvm.type.firewall.IntfMatcherUserType")
+    @Type(type="com.untangle.uvm.type.IntfMatcherUserType")
     public IntfMatcher getServerIntf()
     {
         return serverIntf;
@@ -263,7 +263,7 @@ public class UserPolicyRule extends PolicyRule
      * @return the protocol matcher.
      */
     @Column(name="protocol_matcher")
-    @Type(type="com.untangle.uvm.type.firewall.ProtocolMatcherUserType")
+    @Type(type="com.untangle.uvm.type.ProtocolMatcherUserType")
     public ProtocolMatcher getProtocol()
     {
         return protocol;
@@ -280,7 +280,7 @@ public class UserPolicyRule extends PolicyRule
      * @return the user matcher.
      */
     @Column(name="user_matcher")
-    @Type(type="com.untangle.uvm.type.firewall.UserMatcherUserType")
+    @Type(type="com.untangle.uvm.type.UserMatcherUserType")
     public UserMatcher getUser()
     {
         return user;
@@ -329,7 +329,7 @@ public class UserPolicyRule extends PolicyRule
      * @return the day of week matcher.
      */
     @Column(name="day_of_week_matcher")
-    @Type(type="com.untangle.uvm.type.firewall.DayOfWeekMatcherUserType")
+    @Type(type="com.untangle.uvm.type.DayOfWeekMatcherUserType")
     public DayOfWeekMatcher getDayOfWeek()
     {
         return dayOfWeek;
@@ -346,7 +346,7 @@ public class UserPolicyRule extends PolicyRule
      * @return the client address IP matcher.
      */
     @Column(name="client_ip_matcher")
-    @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
+    @Type(type="com.untangle.uvm.type.IPMatcherUserType")
     public IPMatcher getClientAddr()
     {
         return clientAddr;
@@ -363,7 +363,7 @@ public class UserPolicyRule extends PolicyRule
      * @return the server address IP matcher.
      */
     @Column(name="server_ip_matcher")
-    @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
+    @Type(type="com.untangle.uvm.type.IPMatcherUserType")
     public IPMatcher getServerAddr()
     {
         return serverAddr;
@@ -380,7 +380,7 @@ public class UserPolicyRule extends PolicyRule
      * @return the client port matcher.
      */
     @Column(name="client_port_matcher")
-    @Type(type="com.untangle.uvm.type.firewall.PortMatcherUserType")
+    @Type(type="com.untangle.uvm.type.PortMatcherUserType")
     public PortMatcher getClientPort()
     {
         return clientPort;
@@ -397,7 +397,7 @@ public class UserPolicyRule extends PolicyRule
      * @return the server port matcher.
      */
     @Column(name="server_port_matcher")
-    @Type(type="com.untangle.uvm.type.firewall.PortMatcherUserType")
+    @Type(type="com.untangle.uvm.type.PortMatcherUserType")
     public PortMatcher getServerPort()
     {
         return serverPort;

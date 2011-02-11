@@ -18,10 +18,19 @@ import com.untangle.uvm.networking.IPNetwork;
  */
 public class IPMatcher
 {
-    private static IPMatcher ANY_MATCHER = new IPMatcher("any");
-    private static IPMatcher NIL_MATCHER = new IPMatcher("none");
-    private static IPMatcher INTERNAL_MATCHER = new IPMatcher("internal");
-    private static IPMatcher EXTERNAL_MATCHER = new IPMatcher("external");
+    private static final String MARKER_ANY = "any";
+    private static final String MARKER_ALL = "all";
+    private static final String MARKER_NONE = "none";
+    private static final String MARKER_SEPERATOR = ",";
+    private static final String MARKER_RANGE = "-";
+    private static final String MARKER_SUBNET = "/";
+    private static final String MARKER_INTERNAL = "internal";
+    private static final String MARKER_EXTERNAL = "external";
+
+    private static IPMatcher ANY_MATCHER = new IPMatcher(MARKER_ANY);
+    private static IPMatcher NIL_MATCHER = new IPMatcher(MARKER_NONE);
+    private static IPMatcher INTERNAL_MATCHER = new IPMatcher(MARKER_INTERNAL);
+    private static IPMatcher EXTERNAL_MATCHER = new IPMatcher(MARKER_EXTERNAL);
 
     /* Number of bytes in an IPv4 address */
     private static final int INADDRSZ = 4; /* XXX IPv6 */
@@ -236,18 +245,19 @@ public class IPMatcher
      */
     private void initialize( String matcher )
     {
+        matcher = matcher.toLowerCase().trim();
         this.matcher = matcher;
 
         /**
          * If it contains a comma it must be a list of port matchers
          * if so, go ahead and initialize the children
          */
-        if (matcher.contains(",")) {
+        if (matcher.contains(MARKER_SEPERATOR)) {
             this.type = IPMatcherType.LIST;
 
             this.children = new LinkedList<IPMatcher>();
 
-            String[] results = matcher.split(",");
+            String[] results = matcher.split(MARKER_SEPERATOR);
             
             /* check each one */
             for (String childString : results) {
@@ -261,23 +271,23 @@ public class IPMatcher
         /**
          * Check the common constants
          */
-        if ("any".equals(matcher))  {
+        if (MARKER_ANY.equals(matcher))  {
             this.type = IPMatcherType.ANY;
             return;
         }
-        if ("all".equals(matcher)) {
+        if (MARKER_ALL.equals(matcher)) {
             this.type = IPMatcherType.ANY;
             return;
         }
-        if ("none".equals(matcher)) {
+        if (MARKER_NONE.equals(matcher)) {
             this.type = IPMatcherType.NONE;
             return;
         }
-        if ("internal".equals(matcher)) {
+        if (MARKER_INTERNAL.equals(matcher)) {
             this.type = IPMatcherType.INTERNAL;
             return;
         }
-        if ("external".equals(matcher)) {
+        if (MARKER_EXTERNAL.equals(matcher)) {
             this.type = IPMatcherType.EXTERNAL;
             return;
         }
@@ -285,10 +295,10 @@ public class IPMatcher
         /**
          * If it contains a dash it must be a range
          */
-        if (matcher.contains("-")) {
+        if (matcher.contains(MARKER_RANGE)) {
             this.type = IPMatcherType.RANGE;
             
-            String[] results = matcher.split("-");
+            String[] results = matcher.split(MARKER_RANGE);
 
             if (results.length != 2) {
                 logger.warn("Invalid IPMatcher: Invalid Range: " + matcher);
@@ -318,10 +328,10 @@ public class IPMatcher
         /**
          * If it contains a slash it must be a subnet matcher
          */
-        if (matcher.contains("/")) {
+        if (matcher.contains(MARKER_SUBNET)) {
             this.type = IPMatcherType.SUBNET;
             
-            String[] results = matcher.split("/");
+            String[] results = matcher.split(MARKER_SUBNET);
 
             if (results.length != 2) {
                 logger.warn("Invalid IPMatcher: Invalid Subnet: " + matcher);
