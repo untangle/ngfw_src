@@ -145,7 +145,7 @@ public class FirewallRule extends Rule
      * @return the source IP matcher.
      */
     @Column(name="src_intf_matcher")
-    @Type(type="com.untangle.uvm.type.firewall.IntfMatcherUserType")
+    @Type(type="com.untangle.uvm.type.IntfMatcherUserType")
     public IntfMatcher getSrcIntf()
     {
         return srcIntf;
@@ -162,7 +162,7 @@ public class FirewallRule extends Rule
      * @return the destination IP matcher.
      */
     @Column(name="dst_intf_matcher")
-    @Type(type="com.untangle.uvm.type.firewall.IntfMatcherUserType")
+    @Type(type="com.untangle.uvm.type.IntfMatcherUserType")
     public IntfMatcher getDstIntf()
     {
         return dstIntf;
@@ -179,7 +179,7 @@ public class FirewallRule extends Rule
      * @return the protocol matcher.
      */
     @Column(name="protocol_matcher")
-    @Type(type="com.untangle.uvm.type.firewall.ProtocolMatcherUserType")
+    @Type(type="com.untangle.uvm.type.ProtocolMatcherUserType")
     public ProtocolMatcher getProtocol()
     {
         return protocol;
@@ -196,7 +196,7 @@ public class FirewallRule extends Rule
      * @return the source IP matcher.
      */
     @Column(name="src_ip_matcher")
-    @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
+    @Type(type="com.untangle.uvm.type.IPMatcherUserType")
     public IPMatcher getSrcAddress()
     {
         return srcAddress;
@@ -213,7 +213,7 @@ public class FirewallRule extends Rule
      * @return the destination IP matcher.
      */
     @Column(name="dst_ip_matcher")
-    @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
+    @Type(type="com.untangle.uvm.type.IPMatcherUserType")
     public IPMatcher getDstAddress()
     {
         return dstAddress;
@@ -230,7 +230,7 @@ public class FirewallRule extends Rule
      * @return the source IP matcher.
      */
     @Column(name="src_port_matcher")
-    @Type(type="com.untangle.uvm.type.firewall.PortMatcherUserType")
+    @Type(type="com.untangle.uvm.type.PortMatcherUserType")
     public PortMatcher getSrcPort()
     {
         return srcPort;
@@ -247,7 +247,7 @@ public class FirewallRule extends Rule
      * @return the destination IP matcher.
      */
     @Column(name="dst_port_matcher")
-    @Type(type="com.untangle.uvm.type.firewall.PortMatcherUserType")
+    @Type(type="com.untangle.uvm.type.PortMatcherUserType")
     public PortMatcher getDstPort()
     {
         return dstPort;

@@ -80,7 +80,7 @@ public class CaptureRule extends Rule
     }
 
     @Column(name="client_interface", nullable=false)
-    @Type(type="com.untangle.uvm.type.firewall.IntfMatcherUserType")
+    @Type(type="com.untangle.uvm.type.IntfMatcherUserType")
     public IntfMatcher getClientInterface()
     {
         return this.clientInterface;
@@ -92,7 +92,7 @@ public class CaptureRule extends Rule
     }
 
     @Column(name="client_address", nullable=false)
-    @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
+    @Type(type="com.untangle.uvm.type.IPMatcherUserType")
     public IPMatcher getClientAddress()
     {
         return this.clientAddress;
@@ -104,7 +104,7 @@ public class CaptureRule extends Rule
     }
 
     @Column(name="server_address", nullable=false)
-    @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
+    @Type(type="com.untangle.uvm.type.IPMatcherUserType")
     public IPMatcher getServerAddress()
     {
         return this.serverAddress;

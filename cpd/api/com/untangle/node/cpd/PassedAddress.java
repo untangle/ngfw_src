@@ -15,7 +15,7 @@ public abstract class PassedAddress extends Rule
     private IPMatcher address = IPMatcher.getNilMatcher();
     
     @Column(name="address", nullable=false)
-    @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
+    @Type(type="com.untangle.uvm.type.IPMatcherUserType")
     public IPMatcher getAddress()
     {
         return this.address;
