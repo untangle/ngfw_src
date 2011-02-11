@@ -595,8 +595,10 @@ public class LicenseManagerImpl implements LicenseManager
         synchronized (LicenseManagerImpl.this) {
             _readLicenses();
 
-            _downloadLicenses();
-            _checkRevocations(); 
+            if (! LocalUvmContextFactory.context().isDevel()) {
+                _downloadLicenses();
+                _checkRevocations();
+            }
                 
             _mapLicenses();
         }
