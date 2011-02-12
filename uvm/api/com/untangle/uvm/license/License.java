@@ -27,7 +27,7 @@ public class License implements Serializable
     /**
      * Various Names
      */
-    public static final String ADCONNECTOR = "untangle-node-policy";
+    public static final String ADCONNECTOR = "untangle-node-adconnector";
     public static final String POLICY = "untangle-node-policy";
     public static final String PORTAL = "untangle-node-portal";
     public static final String KAV = "untangle-node-kav";
