@@ -84,7 +84,7 @@ class AdminManager(Manager):
                     'name' : "[no description]",
                     'readOnly' : False,
                     'email' : '[no email]',
-                    'javaClass' : "com.untangle.uvm.security.User"
+                    'javaClass' : "com.untangle.uvm.User"
                 }
                 message = "Created new user with login: " + login
             else:

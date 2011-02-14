@@ -20,13 +20,13 @@
 CREATE SCHEMA settings;
 CREATE SEQUENCE settings.hibernate_sequence;
 
--- com.untangle.uvm.security.AdminSettings
+-- com.untangle.uvm.AdminSettings
 CREATE TABLE settings.u_admin_settings (
     admin_settings_id int8 NOT NULL,
     summary_period_id int8,
     PRIMARY KEY (admin_settings_id));
 
--- com.untangle.uvm.security.User
+-- com.untangle.uvm.User
 CREATE TABLE settings.u_user (
     id int8 NOT NULL,
     login text NOT NULL,
@@ -181,7 +181,7 @@ CREATE TABLE settings.u_string_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.untangle.uvm.security.NodeId
+-- com.untangle.uvm.NodeId
 CREATE TABLE settings.u_tid (
     id int8 NOT NULL,
     policy_id int8,
