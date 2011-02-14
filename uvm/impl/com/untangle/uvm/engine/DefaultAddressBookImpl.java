@@ -525,11 +525,6 @@ class DefaultAddressBookImpl implements RemoteAddressBook
         localAdapter.changePassword(uid, newPassword);
     }
 
-    public String productIdentifier()
-    {
-        return License.ADCONNECTOR;
-    }
-
     private boolean isNotConfigured()
     {
         if ( settings == null ) return false;

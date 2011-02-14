@@ -66,9 +66,7 @@ class AddressBookFactory
             className = PREMIUM_ADDRESSBOOK_IMPL;
         }
         try {
-            Constructor<PremiumAddressBook> constructor =
-                (Constructor<PremiumAddressBook>)Class.forName( className ).
-                getDeclaredConstructor(DefaultAddressBookImpl.class);
+            Constructor<PremiumAddressBook> constructor = (Constructor<PremiumAddressBook>)Class.forName( className ).getDeclaredConstructor(DefaultAddressBookImpl.class);
 
             this.premium = constructor.newInstance( this.limited );
             this.premium.init();

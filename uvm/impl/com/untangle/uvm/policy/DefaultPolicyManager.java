@@ -246,11 +246,6 @@ class DefaultPolicyManager implements PolicyManager
         return userRules;
     }
 
-    public String productIdentifier()
-    {
-        return License.POLICY;
-    }
-
     public PolicyRule getDefaultPolicyRule()
     {
         return defaultPolicyRule;
