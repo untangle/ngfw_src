@@ -10,7 +10,7 @@
 NAME="$0"
 REG_UID="$1"
 UID_TEMPLATE=XXX_REG_UID_XXX
-DEFAULT_UNTANGLE_SOURCE="deb http://${UID_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} stable main premium upstream\ndeb http://${UID_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} lagonda main premium upstream"
+DEFAULT_UNTANGLE_SOURCE="deb http://${UID_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} stable main premium upstream\ndeb http://${UID_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} lagonda-1 main premium upstream"
 #UID_VERIFICATION="@PREFIX@/usr/bin/utverifykey"
 
 if [ -n "$REG_UID" ] ; then 
