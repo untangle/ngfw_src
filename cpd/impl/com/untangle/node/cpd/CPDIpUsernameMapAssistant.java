@@ -250,8 +250,13 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
 
                                 /* if cache miss - add to cache */
                                 /* don't count DEFAULT_USERNAME as a valid user */
-                                if ( cacheEntry == null && ! CPDImpl.DEFAULT_USERNAME.equals(username)) { /* cache miss */
-                                    addCache(addr,username);
+                                if ( cacheEntry == null ) {
+                                    /* cache miss */
+
+                                    /* only add the is it isnt the default username (no login specified) */
+                                    if (! CPDImpl.DEFAULT_USERNAME.equals(username)) {
+                                        addCache(addr,username);
+                                    }
                                 }
                                 /* if cache hit - update expire time as its still in the database */
                                 else {
