@@ -159,56 +159,57 @@ def make_proxy( parser, timeout=30 ):
 
     return proxy
 
-parser = ArgumentParser()
+if __name__ == "__main__":
+  parser = ArgumentParser()
 
-try:
-    if ( sys.stdout.encoding != "UTF-8" ):
-        sys.stderr.write( "Changing to UTF-8 encoding\n" )
-        (e,d,sr,sw) = codecs.lookup("UTF-8")
+  try:
+      if ( sys.stdout.encoding != "UTF-8" ):
+          sys.stderr.write( "Changing to UTF-8 encoding\n" )
+          (e,d,sr,sw) = codecs.lookup("UTF-8")
 
-        sys.stdout = sw(sys.stdout)
-        sys.stderr = sw(sys.stderr)
-        
-except:
-    sys.stderr.write( "Unable to change to UTF-8 encoding\n" )
+          sys.stdout = sw(sys.stdout)
+          sys.stderr = sw(sys.stderr)
 
-try:
-    script_args = parser.parse_args()
-except:
-    printUsage()
-    sys.exit(1)
+  except:
+      sys.stderr.write( "Unable to change to UTF-8 encoding\n" )
 
-proxy = make_proxy( parser, parser.timeout )
-remoteContext = proxy.RemoteUvmContext
+  try:
+      script_args = parser.parse_args()
+  except:
+      printUsage()
+      sys.exit(1)
 
-if ( parser.policy_name != None ):
-    Manager.policy = remoteContext.policyManager().getPolicy(parser.policy_name)
+  proxy = make_proxy( parser, parser.timeout )
+  remoteContext = proxy.RemoteUvmContext
 
-Manager.verbosity = parser.verbosity
+  if ( parser.policy_name != None ):
+      Manager.policy = remoteContext.policyManager().getPolicy(parser.policy_name)
 
-calledMethod = False
+  Manager.verbosity = parser.verbosity
 
-if len(script_args) == 0:
-    printUsage()
-    sys.exit(1)
+  calledMethod = False
 
-method = script_args.pop(0).lower()
+  if len(script_args) == 0:
+      printUsage()
+      sys.exit(1)
 
-for manager in Manager.managers:
-    try:
-        dir(manager).index( "api_" + method )
-    except ValueError:
-        continue
+  method = script_args.pop(0).lower()
 
-    calledMethod = True
-    try:
-        remoteManager = manager(remoteContext)
-        getattr( remoteManager, "api_" + method )( *script_args )
-    except JSONRPCException, e:
-        sys.stderr.write( "Unable to make the request: (%s)\n" % e.error )
-    break
+  for manager in Manager.managers:
+      try:
+          dir(manager).index( "api_" + method )
+      except ValueError:
+          continue
 
-if not calledMethod:
-    sys.stderr.write( "Unable to find method: (%s)\n" % method )
-    printUsage()
-    sys.exit(1)
+      calledMethod = True
+      try:
+          remoteManager = manager(remoteContext)
+          getattr( remoteManager, "api_" + method )( *script_args )
+      except JSONRPCException, e:
+          sys.stderr.write( "Unable to make the request: (%s)\n" % e.error )
+      break
+
+  if not calledMethod:
+      sys.stderr.write( "Unable to find method: (%s)\n" % method )
+      printUsage()
+      sys.exit(1)

@@ -25,10 +25,11 @@ class NodeManager(Manager):
         tid = self.buildTid( tidString )
         self.__nodeManager.destroy( tid )
 
-    def api_instances(self):
+    def get_instances(self):
         if ( Manager.policy == None ): instances = self.__nodeManager.nodeInstances()
         else: instances = self.__nodeManager.nodeInstances( Manager.policy )
 
+        tids = {}
         for tid in instances["list"]:
             nodeContext, node = self.__get_node( tid, True )
 
@@ -37,7 +38,14 @@ class NodeManager(Manager):
 
             if ( policy == None ): policy = "null"
             else: policy = self.getPolicyString( policy )
-            print "%s\t%-25s\t%s\t%s" % ( tid["name"], nodeContext.getNodeDesc()["name"], policy, node.getRunState())
+            
+            tids[tid["name"]] = (nodeContext.getNodeDesc()["name"], policy, node.getRunState())
+        
+        return tids
+
+    def api_instances(self):
+        for k, v in self.get_instances().iteritems():
+            print "%s\t%-25s\t%s\t%s" % (k, v[0], v[1], v[2])
 
     def api_sessions(self,tidString = None):
         if ( tidString != None ): tids = [ self.buildTid( tidString )]

@@ -7,5 +7,6 @@ from uvm.network_manager import NetworkManager
 from uvm.uvm_manager import UvmManager
 from uvm.policy_manager import PolicyManager
 from uvm.license_manager import LicenseManager
+from uvm.message_manager import MessageManager
 
 from uvm.manager import Manager
