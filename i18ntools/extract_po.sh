@@ -24,7 +24,7 @@ do
     cp ../${module_dir}/po/$1/${module}.po ./$1/
 done
 
-for module in untangle-node-adconnector untangle-node-boxbackup untangle-node-portal untangle-node-pcremote untangle-node-splitd untangle-node-faild
+for module in untangle-node-adconnector untangle-node-bandwidth untangle-node-boxbackup untangle-node-branding untangle-node-commtouch untangle-node-faild untangle-node-kav untangle-node-license untangle-node-policy untangle-node-sitefilter untangle-node-faild untangle-node-splitd untangle-node-webcache
 do 
     module_dir=`echo "${module}"|cut -d"-" -f3`
     cp ../../../hades/src/${module_dir}/po/$1/${module}.po ./$1/

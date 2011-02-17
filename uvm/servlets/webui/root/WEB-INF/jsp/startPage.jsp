@@ -40,27 +40,33 @@
     <script type="text/javascript" src="/script/country.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
 
-<!-- Just for Test, normaly this resources are Dynamically loaded
--->
-    <script type="text/javascript" src="script/untangle-node-openvpn/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-spyware/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-protofilter/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-shield/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-base-webfilter/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-webfilter/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-phish/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-spamassassin/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-ips/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-firewall/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-portal/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-reporting/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-boxbackup/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-pcremote/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-policy/settings.js?s=${buildStamp}"></script>
+    <!-- Just for Test, normaly this resources are Dynamically loaded -->
+    <script type="text/javascript" src="script/untangle-node-adblocker/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-adconnector/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-base-virus/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-clam/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-bandwidth/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-boxbackup/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-branding/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-clam/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-commtouch/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-cpd/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-faild/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-firewall/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-ips/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-kav/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-license/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-openvpn/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-phish/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-policy/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-protofilter/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-reporting/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-shield/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-sitefilter/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-spamassassin/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-splitd/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-spyware/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-support/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-webcache/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-webfilter/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/administration.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/email.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/system.js?s=${buildStamp}"></script>

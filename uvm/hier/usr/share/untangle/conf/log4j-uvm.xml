@@ -142,14 +142,6 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.portal.proxy">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.node.rsa.proxy">
-    <priority value="INFO"/>
-  </category>
-
   <category name="com.mchange">
     <priority value="INFO"/>
   </category>

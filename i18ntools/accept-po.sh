@@ -44,8 +44,23 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-adconnector)
             d=$hades/src/adconnector
             ;;
+        untangle-node-bandwidth)
+            d=$hades/src/bandwidth
+            ;;
         untangle-node-boxbackup)
             d=$hades/src/boxbackup
+            ;;
+        untangle-node-branding)
+            d=$hades/src/branding
+            ;;
+        untangle-node-commtouch)
+            d=$hades/src/commtouch
+            ;;
+        untangle-node-cpd)
+            d=$work/src/cpd
+            ;;
+        untangle-node-faild)
+            d=$hades/src/faild
             ;;
         untangle-node-firewall)
             d=$work/src/firewall
@@ -53,17 +68,20 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-ips)
             d=$work/src/ips
             ;;
+        untangle-node-kav)
+            d=$hades/src/kav
+            ;;
+        untangle-node-license)
+            d=$hades/src/license
+            ;;
         untangle-node-openvpn)
             d=$work/src/openvpn
-            ;;
-        untangle-node-pcremote)
-            d=$hades/src/pcremote
             ;;
         untangle-node-phish)
             d=$work/src/phish
             ;;
-        untangle-node-portal)
-            d=$hades/src/portal
+        untangle-node-policy)
+            d=$hades/src/policy
             ;;
         untangle-node-protofilter)
             d=$work/src/protofilter
@@ -74,26 +92,32 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-shield)
             d=$work/src/shield
             ;;
+        untangle-node-sitefilter)
+            d=$hades/src/sitefilter
+            ;;
         untangle-node-spamassassin)
             d=$work/src/spamassassin
+            ;;
+        untangle-node-splitd)
+            d=$hades/src/splitd
             ;;
         untangle-node-spyware)
             d=$work/src/spyware
             ;;
+        untangle-node-support)
+            d=$hades/src/support
+            ;;
+        untangle-node-webcache)
+            d=$hades/src/webcache
+            ;;
+        untangle-node-webfilter)
+            d=$work/src/webfilter
+            ;;
         untangle-net-alpaca)
             d=$work/pkgs/untangle-net-alpaca
             ;;
-        untangle-systray)
-            d=$internal/isotools/wintangle-installer
-            ;;
         untangle-system-stats*)
             d=$internal/isotools/installer-pkgs-additional/untangle-system-stats/debian
-            ;;
-        untangle-systray)
-            d=$internal/isotools/wintangle-systray
-            ;;
-        wintangle-installer)
-            d=$internal/isotools/wintangle-installer/
             ;;
         *)
             echo "unknown module: $m"
