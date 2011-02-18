@@ -672,6 +672,9 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             title : i18n._( "Network Cards" ),
             panel : panel,
             onLoad : function( complete ) {
+
+                this.refreshInterfaces();
+                
                 if ( this.isDragAndDropInitialized == false ) {
                     this.initializeDragAndDrop();
                 }
