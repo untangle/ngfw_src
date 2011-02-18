@@ -1202,8 +1202,8 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             hideWindow = true;
         }
 
-        wanConfig.pPPoEUsername = this.pppoePanel.find( "name", "username" )[0].getValue();
-        wanConfig.pPPoEPassword = this.pppoePanel.find( "name", "password" )[0].getValue();
+        wanConfig.PPPoEUsername = this.pppoePanel.find( "name", "username" )[0].getValue();
+        wanConfig.PPPoEPassword = this.pppoePanel.find( "name", "password" )[0].getValue();
 
         var complete = this.complete.createDelegate( this, [ handler, hideWindow ], true );
         rpc.networkManager.setSetupSettings( complete, wanConfig );
