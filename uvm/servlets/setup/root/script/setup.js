@@ -872,10 +872,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         this.configTypes = [];
         this.configTypes.push( [ "dhcp", i18n._( "Dynamic (DHCP)" ) ] );
         this.configTypes.push( [ "static", i18n._( "Static" ) ] );
-        
-        if ( Ung.SetupWizard.CurrentValues.hasMultipleInterfaces == true ) {
-            this.configTypes.push( [ "pppoe", i18n._( "PPPoE" ) ] );
-        }
+        this.configTypes.push( [ "pppoe", i18n._( "PPPoE" ) ] );
 
         this.cards = [];
 
@@ -1119,9 +1116,11 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             panel : panel,
             onLoad : function( complete )
             {
-                if ( !this.isInitialized ) {
-                    this.cardPanel.layout.setActiveItem( 0 );
-                }
+                this.refreshNetworkSettings();
+
+//                 if ( !this.isInitialized ) {
+//                     this.cardPanel.layout.setActiveItem( 0 );
+//                 }
 
                 this.isInitialized = true;
                 complete();
@@ -1323,8 +1322,16 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
      * displayed inside of the User Interface. */
     refreshNetworkSettings : function()
     {
+        var c = 0;
         var wanConfig = Ung.SetupWizard.CurrentValues.wanConfiguration;
-        for ( var c = 0; c < this.cards.length ; c++ ) {
+
+        this.updateValue( this.card.panel.find("name", "configType")[0], wanConfig.configType);
+        for ( c = 0; c < this.configTypes.length ; c++ ) {
+            if (this.configTypes[c][0] == wanConfig.configType)
+                this.cardPanel.layout.setActiveItem( c );
+        }
+
+        for ( c = 0; c < this.cards.length ; c++ ) {
             var card = this.cards[c];
             this.updateValue( card.find( "name", "ip" )[0] , wanConfig.primaryAddress.network );
             this.updateValue( card.find( "name", "netmask" )[0] , wanConfig.primaryAddress.netmask );
