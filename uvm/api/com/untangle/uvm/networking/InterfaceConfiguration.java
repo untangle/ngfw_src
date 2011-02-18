@@ -154,7 +154,11 @@ public class InterfaceConfiguration implements java.io.Serializable, JSONString
     public void setAliasesStr( List<String> aliasesStr )
     {
         this.aliasesStr = aliasesStr;
-
+        this.aliases = null;
+        
+        if (aliasesStr == null)
+            return;
+        
         /* build a new parsed aliases list */
         List<IPNetwork> aliases = new LinkedList<IPNetwork>();
         for (String aliasStr : aliasesStr) {
@@ -192,6 +196,11 @@ public class InterfaceConfiguration implements java.io.Serializable, JSONString
     {
         return this.gateway;
     }
+
+    public void setGateway( InetAddress gateway)
+    {
+        this.gateway = gateway;
+    }
     
     public String getDns1Str()
     {
@@ -213,6 +222,11 @@ public class InterfaceConfiguration implements java.io.Serializable, JSONString
         return this.dns1;
     }
 
+    public void setDns1( InetAddress dns1 )
+    {
+        this.dns1 = dns1;
+    }
+    
     public String getDns2Str()
     {
         return this.dns2Str;
@@ -233,6 +247,11 @@ public class InterfaceConfiguration implements java.io.Serializable, JSONString
         return this.dns2;
     }
 
+    public void setDns2( InetAddress dns2 )
+    {
+        this.dns2 = dns2;
+    }
+    
     public Integer getMtu()
     {
         return this.mtu;

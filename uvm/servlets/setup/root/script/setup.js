@@ -1157,61 +1157,56 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             hideWindow = true;
         }
 
-        var ns = Ung.SetupWizard.CurrentValues.networkSettings;
-        ns.dhcpEnabled = true;
-        ns.PPPoESettings.live = false;
-
-        ns.singleNicEnabled = !Ung.SetupWizard.CurrentValues.hasMultipleInterfaces;
+        var wanConfig = Ung.SetupWizard.CurrentValues.wanConfiguration;
+        wanConfig.configType = "dynamic";
 
         var complete = this.complete.createDelegate( this, [ handler, hideWindow ], true );
-        rpc.networkManager.setSetupSettings( complete, ns );
+        rpc.networkManager.setSetupSettings( complete, wanConfig );
     },
-
     saveStatic : function( handler, hideWindow )
     {
-        var ns = Ung.SetupWizard.CurrentValues.networkSettings;
-        ns.dhcpEnabled = false;
-        ns.PPPoESettings.live = false;
+        var wanConfig = Ung.SetupWizard.CurrentValues.wanConfiguration;
+        wanConfig.configType = "static";
 
         if ( hideWindow == null ) {
             hideWindow = true;
         }
 
-        ns.host = this.staticPanel.find( "name", "ip" )[0].getValue();
-        ns.netmask = this.staticPanel.find( "name", "netmask" )[0].getRawValue();
-        ns.gateway = this.staticPanel.find( "name", "gateway" )[0].getValue();
-        ns.dns1 = this.staticPanel.find( "name", "dns1" )[0].getValue();
+        // delete unused stuff
+        delete wanConfig.primaryAddress;
+        delete wanConfig.dns1Str;
+        delete wanConfig.dns2Str;
+        delete wanConfig.gatewayStr;
+
+        wanConfig.primaryAddressStr = this.staticPanel.find( "name", "ip" )[0].getValue() + "/" + this.staticPanel.find( "name", "netmask" )[0].getValue();
+        wanConfig.gateway = this.staticPanel.find( "name", "gateway" )[0].getValue();
+        wanConfig.dns1 = this.staticPanel.find( "name", "dns1" )[0].getValue();
         var dns2 = this.staticPanel.find( "name", "dns2" )[0].getValue();
 
         if ( dns2.length > 0 ) {
-            ns.dns2 = dns2;
+            wanConfig.dns2 = dns2;
         } else {
-            ns.dns2 = null;
+            wanConfig.dns2 = null;
         }
 
-        ns.singleNicEnabled = !Ung.SetupWizard.CurrentValues.hasMultipleInterfaces;
-
         var complete = this.complete.createDelegate( this, [ handler, hideWindow ], true );
-        rpc.networkManager.setSetupSettings( complete, ns );
+        rpc.networkManager.setSetupSettings( complete, wanConfig );
     },
 
     savePPPoE : function( handler, hideWindow )
     {
-        var ns = Ung.SetupWizard.CurrentValues.networkSettings;
-        ns.dhcpEnabled = true;
-        ns.PPPoESettings.live = true;
+        var wanConfig = Ung.SetupWizard.CurrentValues.wanConfiguration;
+        wanConfig.configType = "pppoe";
 
         if ( hideWindow == null ) {
             hideWindow = true;
         }
 
-        ns.PPPoESettings.username = this.pppoePanel.find( "name", "username" )[0].getValue();
-        ns.PPPoESettings.password = this.pppoePanel.find( "name", "password" )[0].getValue();
-
-        ns.singleNicEnabled = false;
+        wanConfig.pPPoEUsername = this.pppoePanel.find( "name", "username" )[0].getValue();
+        wanConfig.pPPoEPassword = this.pppoePanel.find( "name", "password" )[0].getValue();
 
         var complete = this.complete.createDelegate( this, [ handler, hideWindow ], true );
-        rpc.networkManager.setSetupSettings( complete, ns );
+        rpc.networkManager.setSetupSettings( complete, wanConfig );
     },
 
     complete : function( result, exception, foo, handler, hideWindow )
@@ -1227,14 +1222,13 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             return;
         }
 
-        Ung.SetupWizard.CurrentValues.networkSettings = result;
+        Ung.SetupWizard.CurrentValues.wanConfiguration = result;
 
         if ( result.host == Ung.SetupWizard.BOGUS_ADDRESS ) {
-            Ung.SetupWizard.CurrentValues.networkSettings.host = null;
-            Ung.SetupWizard.CurrentValues.networkSettings.netmask = null;
-            Ung.SetupWizard.CurrentValues.networkSettings.gateway = null;
-            Ung.SetupWizard.CurrentValues.networkSettings.dns1 = null;
-            Ung.SetupWizard.CurrentValues.networkSettings.dns2 = null;
+            Ung.SetupWizard.CurrentValues.wanConfiguration.primaryAddress = null;
+            Ung.SetupWizard.CurrentValues.wanConfiguration.gateway = null;
+            Ung.SetupWizard.CurrentValues.wanConfiguration.dns1 = null;
+            Ung.SetupWizard.CurrentValues.wanConfiguration.dns2 = null;
         }
 
         this.refreshNetworkSettings();
@@ -1326,14 +1320,14 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
      * displayed inside of the User Interface. */
     refreshNetworkSettings : function()
     {
-        var settings = Ung.SetupWizard.CurrentValues.networkSettings;
+        var wanConfig = Ung.SetupWizard.CurrentValues.wanConfiguration;
         for ( var c = 0; c < this.cards.length ; c++ ) {
             var card = this.cards[c];
-            this.updateValue( card.find( "name", "ip" )[0], settings.host );
-            this.updateValue( card.find( "name", "netmask" )[0], settings.netmask );
-            this.updateValue( card.find( "name", "gateway" )[0], settings.gateway );
-            this.updateValue( card.find( "name", "dns1" )[0], settings.dns1 );
-            this.updateValue( card.find( "name", "dns2" )[0], settings.dns2 );
+            this.updateValue( card.find( "name", "ip" )[0] , wanConfig.primaryAddress.network );
+            this.updateValue( card.find( "name", "netmask" )[0] , wanConfig.primaryAddress.netmask );
+            this.updateValue( card.find( "name", "gateway" )[0], wanConfig.gateway );
+            this.updateValue( card.find( "name", "dns1" )[0], wanConfig.dns1 );
+            this.updateValue( card.find( "name", "dns2" )[0], wanConfig.dns2 );
         }
     },
 

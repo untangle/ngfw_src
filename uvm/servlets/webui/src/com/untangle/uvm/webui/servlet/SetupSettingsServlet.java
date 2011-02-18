@@ -1,21 +1,4 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
+/* $HeadURL$ */
 package com.untangle.uvm.webui.servlet;
 
 import java.io.IOException;
@@ -35,6 +18,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.networking.AddressSettings;
 import com.untangle.uvm.networking.NetworkConfiguration;
+import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.RegistrationInfo;
 import com.untangle.uvm.servlet.ServletUtils;
@@ -63,19 +47,20 @@ public class SetupSettingsServlet extends HttpServlet
         NetworkManager nm = context.networkManager();
 
         AddressSettings addressSettings = nm.getAddressSettings();
-        NetworkConfiguration networkSettings = nm.getNetworkConfiguration();
+        NetworkConfiguration networkConfiguration = nm.getNetworkConfiguration();
+        InterfaceConfiguration wanConfig = networkConfiguration.findFirstWAN();
         RegistrationInfo ri = new RegistrationInfo();
         // pick a random time.
         UpgradeSettings upgrade = context.toolboxManager().getUpgradeSettings();
 
         try {
             request.setAttribute( "addressSettings", js.toJSON( addressSettings ));
-            request.setAttribute( "interfaceArray", js.toJSON( networkSettings.getInterfaceList()));
+            request.setAttribute( "interfaceArray", js.toJSON( networkConfiguration.getInterfaceList()));
             request.setAttribute( "registrationInfo", js.toJSON( ri ));
             request.setAttribute( "users", js.toJSON( context.adminManager().getAdminSettings()));
             request.setAttribute( "upgradeSettings", js.toJSON( upgrade ));
             request.setAttribute( "mailSettings", js.toJSON( context.mailSender().getMailSettings()));
-            request.setAttribute( "networkSettings", js.toJSON( networkSettings ));
+            request.setAttribute( "wanConfiguration", js.toJSON( wanConfig ));
         } catch ( MarshallException e ) {
             throw new ServletException( "Unable to serializer JSON", e );
         }

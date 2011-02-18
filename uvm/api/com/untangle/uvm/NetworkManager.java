@@ -40,6 +40,7 @@ import org.json.JSONArray;
 import com.untangle.uvm.networking.AccessSettings;
 import com.untangle.uvm.networking.AddressSettings;
 import com.untangle.uvm.networking.NetworkConfiguration;
+import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.networking.MiscSettings;
 import com.untangle.uvm.networking.NetworkConfigurationListener;
@@ -59,14 +60,14 @@ public interface NetworkManager
     /**
      * Save the network settings during the wizard
      */
-    void setSetupSettings(AddressSettings address, NetworkConfiguration settings)
+    void setSetupSettings( AddressSettings address, InterfaceConfiguration settings )
         throws Exception, ValidateException;
 
     /**
      * Save the network settings during the wizard.
      * This can double for refresh because it returns the new, populated network settings.
      */
-    NetworkConfiguration setSetupSettings(NetworkConfiguration settings)
+    InterfaceConfiguration setSetupSettings( InterfaceConfiguration settings )
         throws Exception, ValidateException;
 
     /**

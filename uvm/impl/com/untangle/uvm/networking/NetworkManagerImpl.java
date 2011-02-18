@@ -307,7 +307,7 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /* Save the network settings during the wizard */
-    public void setSetupSettings( AddressSettings address, NetworkConfiguration settings )
+    public void setSetupSettings( AddressSettings address, InterfaceConfiguration settings )
         throws Exception, ValidateException
     {
         this.addressManager.setWizardSettings( address );
@@ -315,33 +315,34 @@ public class NetworkManagerImpl implements NetworkManager
         setSetupSettings( settings );
     }
 
-    public NetworkConfiguration setSetupSettings( NetworkConfiguration settings )
+    public InterfaceConfiguration setSetupSettings( InterfaceConfiguration wan )
         throws Exception, ValidateException
     {
         /* Send the call onto the alpaca */
 
         JSONObject jsonObject = new JSONObject();
         String method = null;
-        InterfaceConfiguration wan = settings.findFirstWAN();
         
         try {
-            if ( wan.getConfigType().equals(InterfaceConfiguration.CONFIG_PPPOE) ) {
+            if ( InterfaceConfiguration.CONFIG_PPPOE.equals(wan.getConfigType()) ) {
                 /* PPPoE Setup */
                 method = "wizard_external_interface_pppoe";
                 jsonObject.put( "username", wan.getPPPoEUsername());
                 jsonObject.put( "password", wan.getPPPoEPassword());
-            } else if ( settings.getDhcpServerEnabled()) {
+            } else if ( InterfaceConfiguration.CONFIG_DYNAMIC.equals(wan.getConfigType()) ) {
                 /* Dynamic address */
                 method = "wizard_external_interface_dynamic";
-            } else {
+            } else if ( InterfaceConfiguration.CONFIG_STATIC.equals(wan.getConfigType()) ) {
                 /* Must be a static address */
                 jsonObject.put( "ip", wan.getPrimaryAddress().getNetwork().toString());
                 jsonObject.put( "netmask", wan.getPrimaryAddress().getNetmask().toString());
-                jsonObject.put( "default_gateway", wan.getGateway().toString());
-                jsonObject.put( "dns_1", wan.getDns1().toString());
+                jsonObject.put( "default_gateway", wan.getGateway().toString().replace("/",""));
+                jsonObject.put( "dns_1", wan.getDns1().toString().replace("/",""));
                 InetAddress dns2 = wan.getDns2();
                 if ( dns2 != null ) jsonObject.put( "dns_2", dns2.toString());
                 method = "wizard_external_interface_static";
+            } else {
+                throw new Exception( "Unknown config type: " + wan.getConfigType());
             }
         } catch ( JSONException e ) {
             throw new Exception( "Unable to build JSON Object", e );
@@ -354,7 +355,7 @@ public class NetworkManagerImpl implements NetworkManager
             throw new Exception( "Unable to configure the external interface.", e );
         }
 
-        return getNetworkConfiguration();
+        return getNetworkConfiguration().findFirstWAN();
     }
 
     /**
