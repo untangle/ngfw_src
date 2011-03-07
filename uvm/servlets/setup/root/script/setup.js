@@ -1333,8 +1333,10 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 
         for ( c = 0; c < this.cards.length ; c++ ) {
             var card = this.cards[c];
-            this.updateValue( card.find( "name", "ip" )[0] , wanConfig.primaryAddress.network );
-            this.updateValue( card.find( "name", "netmask" )[0] , wanConfig.primaryAddress.netmask );
+            if (wanConfig.primaryAddress != null) {
+                this.updateValue( card.find( "name", "ip" )[0] , wanConfig.primaryAddress.network );
+                this.updateValue( card.find( "name", "netmask" )[0] , wanConfig.primaryAddress.netmask );
+            }
             this.updateValue( card.find( "name", "gateway" )[0], wanConfig.gateway );
             this.updateValue( card.find( "name", "dns1" )[0], wanConfig.dns1 );
             this.updateValue( card.find( "name", "dns2" )[0], wanConfig.dns2 );
