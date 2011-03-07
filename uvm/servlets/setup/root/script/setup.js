@@ -1116,11 +1116,11 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             panel : panel,
             onLoad : function( complete )
             {
-                this.refreshNetworkSettings();
+                if ( !this.isInitialized ) {
+                    this.cardPanel.layout.setActiveItem( 0 );
+                }
 
-//                 if ( !this.isInitialized ) {
-//                     this.cardPanel.layout.setActiveItem( 0 );
-//                 }
+                this.refreshNetworkSettings();
 
                 this.isInitialized = true;
                 complete();
@@ -1324,22 +1324,26 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
     {
         var c = 0;
         var wanConfig = Ung.SetupWizard.CurrentValues.wanConfiguration;
-
-        this.updateValue( this.card.panel.find("name", "configType")[0], wanConfig.configType);
+        var isConfigured = (wanConfig.primaryAddress != null);
+        
         for ( c = 0; c < this.configTypes.length ; c++ ) {
             if (this.configTypes[c][0] == wanConfig.configType)
                 this.cardPanel.layout.setActiveItem( c );
         }
 
+        if (isConfigured) {
+            this.updateValue( this.card.panel.find("name", "configType")[0], wanConfig.configType);
+        }
+        
         for ( c = 0; c < this.cards.length ; c++ ) {
             var card = this.cards[c];
             if (wanConfig.primaryAddress != null) {
                 this.updateValue( card.find( "name", "ip" )[0] , wanConfig.primaryAddress.network );
                 this.updateValue( card.find( "name", "netmask" )[0] , wanConfig.primaryAddress.netmask );
+                this.updateValue( card.find( "name", "gateway" )[0], wanConfig.gateway );
+                this.updateValue( card.find( "name", "dns1" )[0], wanConfig.dns1 );
+                this.updateValue( card.find( "name", "dns2" )[0], wanConfig.dns2 );
             }
-            this.updateValue( card.find( "name", "gateway" )[0], wanConfig.gateway );
-            this.updateValue( card.find( "name", "dns1" )[0], wanConfig.dns1 );
-            this.updateValue( card.find( "name", "dns2" )[0], wanConfig.dns2 );
         }
     },
 

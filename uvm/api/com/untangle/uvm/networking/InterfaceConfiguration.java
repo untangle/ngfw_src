@@ -134,10 +134,14 @@ public class InterfaceConfiguration implements java.io.Serializable, JSONString
     public void setPrimaryAddressStr( String primaryAddressStr )
     {
         this.primaryAddressStr = primaryAddressStr;
-        try {
-            this.primaryAddress = IPNetwork.parse(primaryAddressStr);
-        } catch (ParseException e) {
-            logger.warn("Unable to parse IP: " + gateway, e);
+        if (primaryAddressStr == null)
+            this.primaryAddress = null;
+        else {
+            try {
+                this.primaryAddress = IPNetwork.parse(primaryAddressStr);
+            } catch (ParseException e) {
+                logger.warn("Unable to parse IP: " + gateway, e);
+            }
         }
     }
 
@@ -185,10 +189,15 @@ public class InterfaceConfiguration implements java.io.Serializable, JSONString
     public void setGatewayStr( String gatewayStr )
     {
         this.gatewayStr = gatewayStr;
-        try {
-            this.gateway = InetAddress.getByName(gatewayStr);
-        } catch (java.net.UnknownHostException e) {
-            logger.warn("Unable to parse IP: " + gateway, e);
+        if (gatewayStr == null) {
+            this.gateway = null;
+        }
+        else {   
+            try {
+                this.gateway = InetAddress.getByName(gatewayStr);
+            } catch (java.net.UnknownHostException e) {
+                logger.warn("Unable to parse IP: " + gateway, e);
+            }
         }
     }
 
@@ -210,10 +219,15 @@ public class InterfaceConfiguration implements java.io.Serializable, JSONString
     public void setDns1Str( String dns1Str )
     {
         this.dns1Str = dns1Str;
-        try {
-            this.dns1 = InetAddress.getByName(dns1Str);
-        } catch (java.net.UnknownHostException e) {
-            logger.warn("Unable to parse IP: " + dns1, e);
+        if (dns1Str == null) {
+            this.dns1 = null;
+        }
+        else {
+            try {
+                this.dns1 = InetAddress.getByName(dns1Str);
+            } catch (java.net.UnknownHostException e) {
+                logger.warn("Unable to parse IP: " + dns1, e);
+            }
         }
     }
 
@@ -235,10 +249,15 @@ public class InterfaceConfiguration implements java.io.Serializable, JSONString
     public void setDns2Str( String dns2Str )
     {
         this.dns2Str = dns2Str;
-        try {
-            this.dns2 = InetAddress.getByName(dns2Str);
-        } catch (java.net.UnknownHostException e) {
-            logger.warn("Unable to parse IP: " + dns2, e);
+        if (dns2Str == null) {
+            this.dns2 = null;
+        }
+        else {
+            try {
+                this.dns2 = InetAddress.getByName(dns2Str);
+            } catch (java.net.UnknownHostException e) {
+                logger.warn("Unable to parse IP: " + dns2, e);
+            }
         }
     }
 
