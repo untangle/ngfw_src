@@ -1326,23 +1326,23 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         var wanConfig = Ung.SetupWizard.CurrentValues.wanConfiguration;
         var isConfigured = (wanConfig.primaryAddress != null);
         
-        for ( c = 0; c < this.configTypes.length ; c++ ) {
-            if (this.configTypes[c][0] == wanConfig.configType)
-                this.cardPanel.layout.setActiveItem( c );
-        }
-
         if (isConfigured) {
+            for ( c = 0; c < this.configTypes.length ; c++ ) {
+                if (this.configTypes[c][0] == wanConfig.configType)
+                    this.cardPanel.layout.setActiveItem( c );
+            }
+
             this.updateValue( this.card.panel.find("name", "configType")[0], wanConfig.configType);
-        }
         
-        for ( c = 0; c < this.cards.length ; c++ ) {
-            var card = this.cards[c];
-            if (wanConfig.primaryAddress != null) {
-                this.updateValue( card.find( "name", "ip" )[0] , wanConfig.primaryAddress.network );
-                this.updateValue( card.find( "name", "netmask" )[0] , wanConfig.primaryAddress.netmask );
-                this.updateValue( card.find( "name", "gateway" )[0], wanConfig.gateway );
-                this.updateValue( card.find( "name", "dns1" )[0], wanConfig.dns1 );
-                this.updateValue( card.find( "name", "dns2" )[0], wanConfig.dns2 );
+            for ( c = 0; c < this.cards.length ; c++ ) {
+                var card = this.cards[c];
+                if (wanConfig.primaryAddress != null) {
+                    this.updateValue( card.find( "name", "ip" )[0] , wanConfig.primaryAddress.network );
+                    this.updateValue( card.find( "name", "netmask" )[0] , wanConfig.primaryAddress.netmask );
+                    this.updateValue( card.find( "name", "gateway" )[0], wanConfig.gateway );
+                    this.updateValue( card.find( "name", "dns1" )[0], wanConfig.dns1 );
+                    this.updateValue( card.find( "name", "dns2" )[0], wanConfig.dns2 );
+                }
             }
         }
     },
