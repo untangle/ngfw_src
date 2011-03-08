@@ -1,4 +1,0 @@
-#!/bin/dash
-
-find /sys/class/net/ -mindepth 2 -maxdepth 2 -name 'device' | sed 's|/sys/class/net/\([^/]\+\)/device|\1|'
-

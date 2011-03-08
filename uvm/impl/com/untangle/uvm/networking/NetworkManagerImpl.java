@@ -56,9 +56,6 @@ public class NetworkManagerImpl implements NetworkManager
     private static final String REGISTRATION_DONE_FILE = System.getProperty("uvm.conf.dir") + "/.regdone-flag";
     private static final String REGISTRATION_SCRIPT    = System.getProperty("uvm.bin.dir") + "/ut-register";
 
-    /* Script to run to get a list of physical interfaces */
-    private static final String GET_PHYSICAL_INTF_SCRIPT = UVM_BASE + "/bin/ut-networking-get-physical-interfaces";
-
     private static final long ALPACA_RETRY_COUNT = 3;
     private static final long ALPACA_RETRY_DELAY_MS = 6000;
 
@@ -421,24 +418,6 @@ public class NetworkManagerImpl implements NetworkManager
             logger.warn( "Unable to disable NAT in wizard", e );
             throw new Exception( "Unable to disable NAT.", e );
         }
-    }
-
-    /* Return a list of the physical interfaces on the box */
-    public List<String> getPhysicalInterfaceNames() throws Exception
-    {
-        List<String> names = new LinkedList<String>();
-
-        try {
-            String values = ScriptRunner.getInstance().exec( GET_PHYSICAL_INTF_SCRIPT );
-            for ( String value : values.split( "[\\s\\n]" )) {
-                names.add( value );
-            }
-        } catch ( Exception e ) {
-            logger.error( "Unable to get list of interfaces.", e );
-            throw new Exception( "Unable to get list of interfaces." );
-        }
-
-        return names;
     }
 
     public Boolean isQosEnabled()

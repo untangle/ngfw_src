@@ -133,9 +133,6 @@ public interface NetworkManager
      * the external address of the box. */
     IPNetwork getWizardInternalAddressSuggesstion(IPAddress externalAddress);
 
-    /* Returns a list of the physical interfaces on the box. (eth0, eth1, etc). */
-    public List<String> getPhysicalInterfaceNames() throws Exception;
-
     /* Forces the link status to be re-examined, since it is likely to
      * have changed */
     void updateLinkStatus();

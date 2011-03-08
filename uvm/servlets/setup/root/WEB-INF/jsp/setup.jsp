@@ -45,7 +45,6 @@
       Ung.SetupWizard.CurrentValues = {
           timezone : "${timezone.ID}",
           languageMap : ${languageMap},
-          hasMultipleInterfaces : ${hasMultipleInterfaces}
       };
 
       Ext.onReady(Ung.Setup.init);

@@ -57,14 +57,6 @@ public class SetupServlet extends HttpServlet
         Map<String,String> languageMap = context.languageManager().getTranslations( "untangle-libuvm" );
         request.setAttribute( "languageMap", new JSONObject( languageMap ).toString());
 
-        try {
-            List<String> il = context.networkManager().getPhysicalInterfaceNames();
-            request.setAttribute( "hasMultipleInterfaces", il.size() > 1 );
-        } catch ( Exception e ) {
-            logger.warn( "Unable to determine the number of interfaces, assuming multiple.", e );
-            request.setAttribute( "hasMultipleInterfaces", true );
-        }
-            
         String url="/WEB-INF/jsp/setup.jsp";
         ServletContext sc = getServletContext();
         RequestDispatcher rd = sc.getRequestDispatcher(url);

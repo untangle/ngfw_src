@@ -646,14 +646,8 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
 
         
         var panelTitle = i18n._('Identify Network Cards');
-        if ( Ung.SetupWizard.CurrentValues.hasMultipleInterfaces == false ) {
-            panelTitle = i18n._("These network cards were detected.");
-        }
         var panelText = i18n._( "This step can help you identify your external, internal, and other network cards. Plug an active cable into each network card one at a time and hit refresh to determine which network card is which. You can also drag and drop the interfaces to remap them at this time." );
 
-        if ( Ung.SetupWizard.CurrentValues.hasMultipleInterfaces == false ) {
-            panelText = String.format( i18n._( "{0}Only one network card was detected. {1} requires two network cards to install as a transparent bridge or network router. However, {2} can be installed as a Re-Router\u2122 allowing out-of-line filtering of network traffic using a single Network Card. To do so click Next to continue.{3}{4}"), '<div class="wizard-network-rerouter"><span>', oemName, oemName, '</span></div>', '<img class="wizard-network-image" src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/re-router.png"/>' );
-        }
         var panel = new Ext.Panel({
             defaults : { cls : 'noborder' },
             items : [{
@@ -777,12 +771,6 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
 
     saveInterfaceList : function( handler )
     {
-        /* If there is only one interface, there is no point remapping the interfaces */
-        if ( !Ung.SetupWizard.CurrentValues.hasMultipleInterfaces ) {
-            handler();
-            return;
-        }
-
         Ext.MessageBox.wait( i18n._( "Remapping Network Interfaces" ), i18n._( "Please wait" ));
 
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
@@ -977,77 +965,76 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             }]}));
 
         /* PPPoE Panel */
-        if ( Ung.SetupWizard.CurrentValues.hasMultipleInterfaces == true ) {
-            this.pppoePanel = new Ext.FormPanel({
-                saveData : this.savePPPoE.createDelegate( this ),
-                border : false,
-                cls : 'network-card-form-margin',
-                labelWidth : Ung.SetupWizard.LabelWidth2,
+        this.pppoePanel = new Ext.FormPanel({
+            saveData : this.savePPPoE.createDelegate( this ),
+            border : false,
+            cls : 'network-card-form-margin',
+            labelWidth : Ung.SetupWizard.LabelWidth2,
+            defaultType : 'textfield',
+            items : [{
+                xtype : 'fieldset',
+                title : i18n._( "PPPoE Settings" ),
                 defaultType : 'textfield',
+                defaults : {
+                    readOnly : true
+                },
+                autoHeight : true,
                 items : [{
-                    xtype : 'fieldset',
-                    title : i18n._( "PPPoE Settings" ),
-                    defaultType : 'textfield',
-                    defaults : {
-                        readOnly : true
-                    },
-                    autoHeight : true,
-                    items : [{
-                        fieldLabel : i18n._( "Username" ),
-                        name : "username",
-                        disabled : false,
-                        readOnly : false,
-                        fieldClass : '',
-                        labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px'
-                    },{
-                        name : "password",
-                        inputType : 'password',
-                        fieldLabel : i18n._( "Password" ),
-                        disabled : false,
-                        readOnly : false,
-                        fieldClass : '',
-                        labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px'
-                    },{
-                        fieldLabel : i18n._( "IP" ),
-                        labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
-                        name : "ip",
-                        fieldClass : 'noborder'
-                    },{
-                        fieldLabel : i18n._( "Netmask" ),
-                        name : "netmask",
-                        labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
-                        fieldClass : 'noborder'
-                    },{
-                        name : "gateway",
-                        fieldLabel : i18n._( "Gateway" ),
-                        labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
-                        fieldClass : 'noborder'
-                    },{
-                        name : "dns1",
-                        fieldLabel : i18n._( "Primary DNS" ),
-                        labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
-                        fieldClass : 'noborder'
-                    },{
-                        name : "dns2",
-                        fieldLabel : i18n._( "Secondary DNS" ),
-                        labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
-                        fieldClass : 'noborder'
-                    },{
-                        xtype : 'button',
-                        text : i18n._( 'Refresh' ),
-                        handler : this.refresh.createDelegate( this ),
-                        disabled : false,
-                        cls : 'right-align'
-                    },{
-                        xtype : 'button',
-                        text : i18n._( 'Test Connectivity' ),
-                        cls : 'test-connectivity',
-                        handler : this.testConnectivity.createDelegate( this ),
-                        disabled : false
-                    }]
-                }]});
-            this.cards.push( this.pppoePanel );
-        }
+                    fieldLabel : i18n._( "Username" ),
+                    name : "username",
+                    disabled : false,
+                    readOnly : false,
+                    fieldClass : '',
+                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px'
+                },{
+                    name : "password",
+                    inputType : 'password',
+                    fieldLabel : i18n._( "Password" ),
+                    disabled : false,
+                    readOnly : false,
+                    fieldClass : '',
+                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px'
+                },{
+                    fieldLabel : i18n._( "IP" ),
+                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
+                    name : "ip",
+                    fieldClass : 'noborder'
+                },{
+                    fieldLabel : i18n._( "Netmask" ),
+                    name : "netmask",
+                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
+                    fieldClass : 'noborder'
+                },{
+                    name : "gateway",
+                    fieldLabel : i18n._( "Gateway" ),
+                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
+                    fieldClass : 'noborder'
+                },{
+                    name : "dns1",
+                    fieldLabel : i18n._( "Primary DNS" ),
+                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
+                    fieldClass : 'noborder'
+                },{
+                    name : "dns2",
+                    fieldLabel : i18n._( "Secondary DNS" ),
+                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
+                    fieldClass : 'noborder'
+                },{
+                    xtype : 'button',
+                    text : i18n._( 'Refresh' ),
+                    handler : this.refresh.createDelegate( this ),
+                    disabled : false,
+                    cls : 'right-align'
+                },{
+                    xtype : 'button',
+                    text : i18n._( 'Test Connectivity' ),
+                    cls : 'test-connectivity',
+                    handler : this.testConnectivity.createDelegate( this ),
+                    disabled : false
+                }]
+            }]});
+        this.cards.push( this.pppoePanel );
+
 
         this.cardPanel = new Ext.Panel({
             cls : 'untangle-form-panel',
@@ -1063,10 +1050,6 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         });
 
         var configureText = i18n._("Configure your Internet Connection");
-        
-        if ( Ung.SetupWizard.CurrentValues.hasMultipleInterfaces == false ) {
-            configureText = i18n._("Configure your Network Settings");
-        }
         
         var configure = new Ext.FormPanel({
             cls : "untangle-form-panel",
@@ -1108,9 +1091,6 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         this.isInitialized = false;
 
         var cardTitle = i18n._( "Internet Connection" );
-        if ( Ung.SetupWizard.CurrentValues.hasMultipleInterfaces == false ) {
-            cardTitle = i18n._( "Network Settings" );
-        }
         this.card = {
             title : cardTitle,
             panel : panel,
@@ -1140,11 +1120,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 
     saveSettings : function( handler )
     {
-        if ( Ung.SetupWizard.CurrentValues.hasMultipleInterfaces ) {
-            Ext.MessageBox.wait( i18n._( "Saving Internet Connection Settings" ), i18n._( "Please wait" ));
-        } else {
-            Ext.MessageBox.wait( i18n._( "Saving Network Settings" ), i18n._( "Please wait" ));
-        }
+        Ext.MessageBox.wait( i18n._( "Saving Internet Connection Settings" ), i18n._( "Please wait" ));
 
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
     },
@@ -1952,11 +1928,8 @@ Ung.Setup = {
         cards.push( registration.card );
         cards.push( interfaces.card );
         cards.push( internet.card );
-        var internal = null;
-        if ( Ung.SetupWizard.CurrentValues.hasMultipleInterfaces == true ) {
-            internal = new Ung.SetupWizard.InternalNetwork();
-            cards.push( internal.card );
-        }
+        var internal = new Ung.SetupWizard.InternalNetwork();
+        cards.push( internal.card );
         cards.push( email.card );
         cards.push( complete.card );
 

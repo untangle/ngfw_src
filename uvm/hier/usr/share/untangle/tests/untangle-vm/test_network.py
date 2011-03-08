@@ -21,16 +21,6 @@ class TestNetwork(UvmSetup):
         expected = "%s/%s" % ( expected["network"], expected["netmask"] )
         yield self.check_get_internal_address, network_manager, None, expected
 
-    def test_get_physical_interfaces( self ):
-        network_manager = self.remote_uvm_context.networkManager()
-        actual_names = sets.Set( network_manager.getPhysicalInterfaceNames()["list"] )
-        
-        output = commands.getoutput( "find /sys/class/net/ -mindepth 2 -maxdepth 2 -name 'device' | sed 's|/sys/class/net/\([^/]\+\)/device|\\1|'" )
-        print output
-        expected_names = sets.Set( output.split())
-
-        assert expected_names == actual_names
-        
     def check_get_internal_address( self, network_manager, address, expected ):
         response = network_manager.getWizardInternalAddressSuggesstion( address )
 
