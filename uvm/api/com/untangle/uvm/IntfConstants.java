@@ -60,8 +60,7 @@ public class IntfConstants
     public static final int   EXTERNAL_INTF = 1;
     public static final int   INTERNAL_INTF = 2;
     public static final int   DMZ_INTF      = 3;
-    public static final int   LOOPBACK_INTF = 254;
-    public static final int   OPENVPN_INTF  = 255;
-    public static final int   MAX_INTF      = 255;
+    public static final int   OPENVPN_INTF  = 250;
+    public static final int   MAX_INTF      = 250;
 }
 

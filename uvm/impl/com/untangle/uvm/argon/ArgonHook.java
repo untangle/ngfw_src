@@ -117,9 +117,9 @@ public abstract class ArgonHook implements Runnable
              */
             byte serverIntf = netcapSession.serverSide().interfaceId();
             byte clientIntf = netcapSession.clientSide().interfaceId();
-            if ( IntfConstants.UNKNOWN_INTF == serverIntf || IntfConstants.LOOPBACK_INTF == serverIntf ) {
+            if ( IntfConstants.UNKNOWN_INTF == serverIntf ) {
                 if ( logger.isInfoEnabled()) {
-                    logger.info( "" + netcapSession + " destined to unknown or local interface, raze." );
+                    logger.info( "" + netcapSession + " destined to unknown interface, raze." );
                 }
                 raze();
                 return;
