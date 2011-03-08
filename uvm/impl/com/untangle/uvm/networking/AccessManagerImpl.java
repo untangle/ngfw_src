@@ -85,7 +85,7 @@ class AccessManagerImpl implements LocalAccessManager
             /* Load the defaults */
             settings.setIsInsideInsecureEnabled( true );
             settings.setIsOutsideAccessEnabled( true );
-            settings.setIsOutsideAdministrationEnabled( true );
+            settings.setIsOutsideAdministrationEnabled( false );
             settings.setIsOutsideQuarantineEnabled( true );
             settings.setIsOutsideReportingEnabled( false );
             
