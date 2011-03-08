@@ -113,7 +113,8 @@ class EventHandler extends AbstractEventHandler
 
             /* We just blocked, so we have to log too, regardless of what the rule actually says */
             FirewallEvent fwe = new FirewallEvent(request.pipelineEndpoints(), reject, ruleIndex);
-            fwe.setRuleId(rule.getId());
+            if (rule != null)
+                fwe.setRuleId(rule.getId());
             request.attach(fwe);
             node.incrementLogCount(); 
         } else { /* not rejected */
