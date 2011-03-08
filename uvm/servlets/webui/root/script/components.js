@@ -1788,13 +1788,13 @@ Ung.MessageManager = {
                         } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
                             refreshApps=true;
                             this.installInProgress--;
-                            var appItemDisplayName=msg.requestingPackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingPackage.fullVersion):msg.requestingMackage.displayName;
+                            var appItemDisplayName=msg.requestingPackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingPackage.fullVersion):msg.requestingPackage.displayName;
                             Ung.AppItem.updateState(appItemDisplayName, null);
                         } else if(msg.javaClass.indexOf("LicenseUpdateMessage") != -1) {
                             main.loadLicenses();
                         } else {
                             if(msg.upgrade==false) {
-                                var appItemDisplayName=msg.requestingPackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingPackage.fullVersion):msg.requestingMackage.displayName;
+                                var appItemDisplayName=msg.requestingPackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingPackage.fullVersion):msg.requestingPackage.displayName;
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
                                     Ung.AppItem.updateState(appItemDisplayName, "download_summary", msg);
                                 } else if(msg.javaClass.indexOf("DownloadProgress") != -1) {
