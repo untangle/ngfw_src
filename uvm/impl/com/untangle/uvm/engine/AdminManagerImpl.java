@@ -61,7 +61,7 @@ import com.untangle.uvm.util.TransactionWork;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class AdminManagerImpl implements AdminManager, HasConfigFiles
+public class AdminManagerImpl implements AdminManager, HasConfigFiles
 {
     private static final String INITIAL_USER_NAME = "System Administrator";
     private static final String INITIAL_USER_LOGIN = "admin";

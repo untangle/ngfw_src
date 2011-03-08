@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.io.File;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.log4j.Logger;
@@ -51,12 +52,12 @@ public class NetworkManagerImpl implements NetworkManager
 
     static final String ALPACA_SCRIPT = "/usr/share/untangle-net-alpaca/scripts/";
 
-    /* Script to run after reconfiguration (from NetworkConfiguration Listener) */
-    private static final String AFTER_RECONFIGURE_SCRIPT = UVM_BASE + "/bin/ut-networking-after-reconfigure";
+    private static final String REGISTRATION_INFO_FILE = System.getProperty("uvm.conf.dir") + "/registration.info";
+    private static final String REGISTRATION_DONE_FILE = System.getProperty("uvm.conf.dir") + "/.regdone-flag";
+    private static final String REGISTRATION_SCRIPT    = System.getProperty("uvm.bin.dir") + "/ut-register";
 
     /* Script to run to get a list of physical interfaces */
     private static final String GET_PHYSICAL_INTF_SCRIPT = UVM_BASE + "/bin/ut-networking-get-physical-interfaces";
-
 
     private static final long ALPACA_RETRY_COUNT = 3;
     private static final long ALPACA_RETRY_DELAY_MS = 6000;
@@ -748,7 +749,7 @@ public class NetworkManagerImpl implements NetworkManager
         updateLinkStatus();
 
         // Register the built-in listeners
-        registerListener(new AfterReconfigureScriptListener());
+        registerListener(new TryRegistrationListener());
     }
 
     /* Methods for saving and loading the settings files from the database at startup */
@@ -846,13 +847,28 @@ public class NetworkManagerImpl implements NetworkManager
         return settings;
     }
 
-    class AfterReconfigureScriptListener implements NetworkConfigurationListener
+    class TryRegistrationListener implements NetworkConfigurationListener
     {
         public void event( NetworkConfiguration settings )
         {
-            /* Run the script */
             try {
-                ScriptRunner.getInstance().exec( AFTER_RECONFIGURE_SCRIPT );
+                File regDoneFile = new File(REGISTRATION_DONE_FILE);
+                boolean regDone = regDoneFile.exists();
+                File regInfoFile = new File(REGISTRATION_INFO_FILE);
+
+                if (!regDoneFile.exists()) {
+                    logger.warn("Registration info file doesn't exist.");
+                    return;
+                }
+                
+                long regInfoDate = regInfoFile.lastModified();
+                long regDoneDate = regDoneFile.lastModified();
+
+                if ( !regDone || regDoneDate < regInfoDate ) {
+                    //dont need to wait on exit and don't care about return code
+                    LocalUvmContextFactory.context().exec(REGISTRATION_SCRIPT);
+                }
+
             } catch ( Exception e ) {
                 logger.error( "Error running after reconfigure script", e );
             }
