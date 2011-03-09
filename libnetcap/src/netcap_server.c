@@ -38,7 +38,6 @@
 #include "netcap_pkt.h"
 #include "netcap_udp.h"
 #include "netcap_tcp.h"
-#include "netcap_icmp.h"
 #include "netcap_interface.h"
 
 #define EPOLL_INPUT_SET  EPOLLIN|EPOLLPRI|EPOLLERR|EPOLLHUP
@@ -637,9 +636,6 @@ static int  _handle_nfqueue (epoll_info_t* info, int revents)
     }
     
     switch ( pkt->proto ) {
-    case IPPROTO_ICMP:
-        return netcap_icmp_call_hook( pkt );
-        
     case IPPROTO_TCP:
         return global_tcp_syn_hook( pkt );
         

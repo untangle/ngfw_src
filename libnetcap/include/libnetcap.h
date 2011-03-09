@@ -1,27 +1,10 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
+/* $HeadURL$ */
 #ifndef __NETCAP_H_
 #define __NETCAP_H_
 
 #include <sys/types.h>
 #include <netinet/in.h>
 
-//#include <net/if.h>
 #ifndef IF_NAMESIZE
 #define IF_NAMESIZE       16
 #endif
@@ -107,7 +90,8 @@ typedef struct
     char s[NETCAP_MAX_IF_NAME_LEN];
 } netcap_intf_string_t;
 
-/** XXXX
+/**
+ * XXX
  * This should be changed to a sockaddr_in if possible.
  */
 typedef struct netcap_endpoint_t {
@@ -121,8 +105,7 @@ typedef struct netcap_endpoints {
     netcap_endpoint_t srv;
 } netcap_endpoints_t;
 
-typedef struct netcap_ip_tuple
-{
+typedef struct netcap_ip_tuple {
     u_int32_t src_address;
     /* these are stored in network byte order */
     u_int32_t src_protocol_id;
@@ -270,20 +253,6 @@ typedef struct netcap_session {
      */
     mailbox_t cli_mb;
 
-    /** 
-     * The icmp client packet mailbox.
-     * This typically has a maximum size of, and is only used for queuing the last
-     * packet in the case when an icmp error message must be returned.
-     */
-    mailbox_t icmp_cli_mb;
-
-    /** 
-     * The icmp server packet mailbox.
-     * This typically has a maximum size of, and is only used for queuing the last
-     * packet in the case when an icmp error message must be returned.
-     */
-    mailbox_t icmp_srv_mb;
-    
     /* the server side traffic description */
     netcap_endpoints_t srv; 
 
@@ -370,12 +339,6 @@ typedef struct netcap_session {
 
 typedef void (*netcap_tcp_hook_t)  (netcap_session_t* tcp_sess, void* arg);
 typedef void (*netcap_udp_hook_t)  (netcap_session_t* netcap_sess, void* arg);
-/* If session is set, this is a new session, and the pkt is already in the mailbox.
- * if pkt is set, this packet couldn't be associated with a session and should be handled
- * individually 
- */
-typedef void (*netcap_icmp_hook_t) (netcap_session_t* netcap_sess, netcap_pkt_t* pkt, void* arg);
-
 
 /**
  * Initialization, and global controls
@@ -401,39 +364,12 @@ int   netcap_tcp_hook_register   (netcap_tcp_hook_t hook);
 int   netcap_tcp_hook_unregister ();
 int   netcap_udp_hook_register   (netcap_udp_hook_t hook);
 int   netcap_udp_hook_unregister ();
-int   netcap_icmp_hook_register   (netcap_icmp_hook_t hook);
-int   netcap_icmp_hook_unregister ();
 
 /**
  * Packet Sending (XXX include pkt_create?)
  */
 int   netcap_udp_send  (char* data, int data_len, netcap_pkt_t* pkt);
 int   netcap_icmp_send (char *data, int data_len, netcap_pkt_t* pkt);
-
-/**
- * Function to update an ICMP error packet so the host addresses and ports match the values inside of pkt.
- * data      - Buffer to work with.
- * data_len  - length of the current data inside of buffer
- * data_lim  - Total size of data. (This should always be greater than or equal to data_len).
- * icmp_type - Type of ICMP packet that is being sent.
- * icmp_code - Code for the ICMP packet.
- * icmp_pid  - identifier to use for packets wehre it can be modified (non-error packets) (-1 never modify)
- * icmp_mb   - Mailbox to retrieve the packet to respond to.
- */
-int   netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
-                              int icmp_type, int icmp_code, int icmp_pid, mailbox_t* icmp_mb );
-
-/**
- * Function to retrieve the source address of an unaltered data block from an ICMP packet.
- *   This function checks if the source of a packet is relevant and returns 1 if so or zero if it is
- *   not.
- *
- * Returns:
- * -1 : error. source unmodified
- *  0 : The source of the packet is irrelevant
- *  1 : source has been updated to contain the source address of the packet.
- */
-int   netcap_icmp_get_source( char* data, int data_len, netcap_pkt_t* pkt, struct in_addr* source );
 
 /**
  * Resource Freeing 

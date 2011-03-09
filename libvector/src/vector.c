@@ -527,8 +527,7 @@ static int  _vector_handle_src_error_event    ( vector_t* vec, relay_t* relay )
         }
         
         if (evt == NULL) {
-            errlog( ERR_WARNING, "VECTOR(%08x): ERR without a shutdown event (event NULL/%08x)\n", 
-                    vec, key_type );
+            errlog( ERR_WARNING, "VECTOR(%08x): ERR without a shutdown event (event NULL/%08x)\n", vec, key_type );
         } else {
                /* This has been changed from an errlog to a debug
                   statment. This is not an abnormal case - epoll will
@@ -540,8 +539,7 @@ static int  _vector_handle_src_error_event    ( vector_t* vec, relay_t* relay )
                   integrity when a error/reset is coming, we just drop
                   the event totally, and replace with an error
                   shutdown event - dmorris */
-            debug( 1, "VECTOR(%08x): ERR without a shutdown event (event type: %08x/%08x)\n",
-                    vec, evt->type, key_type );
+            debug( 1, "VECTOR(%08x): ERR without a shutdown event (event type: %08x/%08x)\n", vec, evt->type, key_type );
             
             /* Free the event, and return, if there is an error, no need to queue it */
             evt->raze( evt );
@@ -587,11 +585,9 @@ static int  _vector_handle_src_shutdown_event ( vector_t* vec, relay_t* relay )
         }
 
         if (evt == NULL) {
-            errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event (event NULL/%08x)\n", 
-                    vec, key_type );
+            errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event (event NULL/%08x)\n", vec, key_type );
         } else {
-            errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event (event type: %08x/%08x)\n", 
-                    vec, evt->type, key_type );
+            errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event (event type: %08x/%08x)\n", vec, evt->type, key_type );
         
             /* Free the event */
             evt->raze( evt );

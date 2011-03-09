@@ -37,7 +37,6 @@
 #include "netcap_globals.h"
 #include "netcap_init.h"
 #include "netcap_icmp.h"
-#include "netcap_icmp_msg.h"
 #include "netcap_queue.h"
 #include "netcap_sesstable.h"
 #include "netcap_tcp.h"
@@ -269,15 +268,6 @@ int netcap_session_init( netcap_session_t* netcap_sess, netcap_endpoints_t *endp
     /* null out the callback */
     netcap_sess->callback           = NULL;
 
-    /* Need the ICMP mailboxes */
-    /* XXX Only need these for UDP */
-    if ( mailbox_init( &netcap_sess->icmp_cli_mb ) < 0 ) {
-        return errlog( ERR_CRITICAL, "mailbox_init\n" );
-    }
-
-    if ( mailbox_init( &netcap_sess->icmp_srv_mb ) < 0 ) {
-        return errlog( ERR_CRITICAL, "mailbox_init\n" );
-    }
     netcap_sess->first_pkt_id = 0;
 
     return 0;
@@ -335,9 +325,9 @@ int netcap_nc_session_destroy(int if_lock, netcap_session_t* netcap_sess)
     }
 }
 
-int netcap_nc_session__destroy (netcap_session_t* netcap_sess, int if_mb) {
+int netcap_nc_session__destroy (netcap_session_t* netcap_sess, int if_mb)
+{
     netcap_pkt_t* pkt;
-    netcap_icmp_msg_t* msg;
 
     if ( !netcap_sess ) return errlogargs();
 
@@ -368,28 +358,6 @@ int netcap_nc_session__destroy (netcap_session_t* netcap_sess, int if_mb) {
         }
     }
 
-    debug( 10, "Freeing %d ICMP Mailbox messages in the client mailbox\n", 
-           mailbox_size( &netcap_sess->icmp_cli_mb ));
-
-    while(( msg = (netcap_icmp_msg_t*)mailbox_try_get( &netcap_sess->icmp_cli_mb ))) {
-        netcap_icmp_msg_raze( msg );
-    }
-
-    debug( 10, "Freeing %d ICMP Mailbox messages in the server mailbox\n", 
-           mailbox_size( &netcap_sess->icmp_srv_mb ));
-
-    while(( msg = (netcap_icmp_msg_t*)mailbox_try_get( &netcap_sess->icmp_srv_mb ))) {
-        netcap_icmp_msg_raze( msg );
-    }
-
-    if (mailbox_destroy( &netcap_sess->icmp_cli_mb)<0) {
-        errlog(ERR_WARNING,"mailbox_destroy failed\n");
-    }
-        
-    if (mailbox_destroy( &netcap_sess->icmp_srv_mb)<0) {
-        errlog( ERR_WARNING, "mailbox_destroy failed\n" );
-    }
-    
     return 0;
 }
 

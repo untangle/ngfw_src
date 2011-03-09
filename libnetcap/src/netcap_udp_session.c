@@ -1,31 +1,10 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
+/* $HeadURL$ */
 #include <stdlib.h>
-
 #include <netinet/ip.h>
 #include <netinet/udp.h>
-
 #include <mvutil/debug.h>
 #include <mvutil/errlog.h>
-
 #include <libnetcap.h>
-
 #include "netcap_globals.h"
 #include "netcap_queue.h"
 #include "netcap_nfconntrack.h"
@@ -33,15 +12,14 @@
 #include "netcap_sesstable.h"
 
 /* callback for a UDP session */
-static int _callback    ( netcap_session_t* netcap_sess, netcap_callback_action_t action, 
-                          netcap_callback_flag_t flags );
+static int _callback    ( netcap_session_t* netcap_sess, netcap_callback_action_t action, netcap_callback_flag_t flags );
 
 /* liberate a session from being caught by netcap */
-static int  _liberate   ( netcap_session_t* netcap_sess, netcap_callback_action_t action,
-                          netcap_callback_flag_t flags );
+static int  _liberate   ( netcap_session_t* netcap_sess, netcap_callback_action_t action, netcap_callback_flag_t flags );
 
 /* Liberate an individual packet */
 static int _liberate_pkt( netcap_session_t* netcap_sess, netcap_pkt_t* pkt );
+
 
 int netcap_udp_session_init( netcap_session_t* netcap_sess, netcap_pkt_t* pkt ) 
 {
@@ -49,9 +27,8 @@ int netcap_udp_session_init( netcap_session_t* netcap_sess, netcap_pkt_t* pkt )
     
     if ( pkt == NULL ) return errlogargs();
 
-    /* XXX ICMP Hack */
-    if (( pkt->proto != IPPROTO_UDP ) && ( pkt->proto != IPPROTO_ICMP )) {
-        return errlog( ERR_CRITICAL, "non-udp and icmp packet for udp session: %d.\n", pkt->proto );
+    if ( pkt->proto != IPPROTO_UDP ) {
+        return errlog( ERR_CRITICAL, "non-udp packet for udp session: %d.\n", pkt->proto );
     }
 
     netcap_endpoints_bzero( &endpoints );
@@ -145,8 +122,7 @@ int netcap_udp_session_raze(int if_lock, netcap_session_t* netcap_sess)
 
 /**************************************** STATIC ****************************************/
 
-static int _callback ( netcap_session_t* netcap_sess, netcap_callback_action_t action, 
-                       netcap_callback_flag_t flags )
+static int _callback ( netcap_session_t* netcap_sess, netcap_callback_action_t action, netcap_callback_flag_t flags )
 {
     if ( netcap_sess == NULL ) return errlogargs();
         

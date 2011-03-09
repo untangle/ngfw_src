@@ -27,12 +27,10 @@
 #include "netcap_globals.h"
 #include "netcap_udp.h"
 #include "netcap_tcp.h"
-#include "netcap_icmp.h"
 
 netcap_tcp_hook_t     global_tcp_hook     = netcap_tcp_null_hook;
 netcap_tcp_syn_hook_t global_tcp_syn_hook = netcap_tcp_syn_null_hook;
 netcap_udp_hook_t     global_udp_hook     = netcap_udp_null_hook;
-netcap_icmp_hook_t    global_icmp_hook    = netcap_icmp_null_hook;
 
 int  netcap_hooks_init           ( void )
 {
@@ -44,7 +42,6 @@ int  netcap_hooks_cleanup        ( void )
 {
     netcap_udp_hook_unregister();
     netcap_tcp_hook_unregister();
-    netcap_icmp_hook_unregister();
     return 0;
 }
 
@@ -73,19 +70,5 @@ int  netcap_udp_hook_register    ( netcap_udp_hook_t hook )
 int  netcap_udp_hook_unregister  ( void )
 {
     global_udp_hook = netcap_udp_cleanup_hook;
-    return 0;
-}
-
-int  netcap_icmp_hook_register   ( netcap_icmp_hook_t hook )
-{
-    if ( hook == NULL ) return errlogargs();
-    global_icmp_hook = hook;
-    return 0;
-}
-
-int  netcap_icmp_hook_unregister ( void )
-{
-    global_icmp_hook = NULL;
-    global_icmp_hook = netcap_icmp_cleanup_hook;
     return 0;
 }

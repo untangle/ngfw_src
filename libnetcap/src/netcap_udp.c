@@ -42,14 +42,9 @@
 #include "netcap_sesstable.h"
 #include "netcap_interface.h"
 #include "netcap_queue.h"
-#include "netcap_icmp.h"
-#include "netcap_icmp_msg.h"
 #include "netcap_ip.h"
 #include "netcap_pkt.h"
 
-
-/* Cleanup at most 2 UDP packets per iteration */
-#define _ICMP_CACHE_CLEANUP_MAX 2
 
 static struct {
     int send_sock;
@@ -70,11 +65,6 @@ static int _process_queue_pkt( netcap_pkt_t* pkt, u_char** full_pkt, int* full_p
  * Parse an UDP/IP header and set the received port.
  */
 static int _parse_udp_ip_header( netcap_pkt_t* pkt, char* header, int header_len, int buf_len );
-
-/**
- * Cache a packet inside of a ICMP mailbox, this is used to respond to ICMP error messages
- */
-static int _cache_packet( u_char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb );
 
 /**
  * This will release the first packet with a zero length header in order to
@@ -244,7 +234,6 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
     u_char* full_pkt = NULL;
     int full_pkt_len;
     mailbox_t* mb = NULL;
-    mailbox_t* icmp_mb = NULL;
 
     /* If the packet was queued (non-zero id), dequeue it */
     if ( pkt == NULL ) {
@@ -296,25 +285,18 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
         // Dump the packet into the mailbox
 
         // Put the packet into the mailbox
-        if (mailbox_size(&session->cli_mb) > MAX_MB_SIZE ) {
+        if (mailbox_size( &session->cli_mb ) > MAX_MB_SIZE ) {
             errlog( ERR_WARNING,"Mailbox Full: Dropping Packet (%s:%i -> %s:%i)\n",
                     unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
                     unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port);
             netcap_pkt_action_raze( pkt, NF_DROP );
             full_pkt = NULL;
-        } else if (mailbox_put(&session->cli_mb,(void*)pkt)<0) {
+        } else if ( mailbox_put( &session->cli_mb , (void*)pkt ) < 0 ) {
             netcap_pkt_action_raze( pkt, NF_DROP );
             perrlog("mailbox_put");
             full_pkt = NULL;
         }
         
-        /* Caching order is not significant since the other thread/session doesn't exist yet */
-        
-        // Put a copy of the full packet into the mailbox
-        if ( full_pkt != NULL && ( _cache_packet( full_pkt, full_pkt_len, &session->icmp_cli_mb ) < 0 )) {
-            errlog( ERR_CRITICAL, "_cache_packet\n" );
-        }
-
         if ( _insert_first_pkt( session, pkt ) < 0 ) {
             netcap_udp_session_raze( !NC_SESSTABLE_LOCK, session );
             //netcap_pkt_action_raze( pkt, NF_DROP );
@@ -352,11 +334,9 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
         // Figure out the correct mailbox
         if ( pkt->src.host.s_addr == session->cli.cli.host.s_addr ) {
             mb      = &session->cli_mb;
-            icmp_mb = &session->icmp_cli_mb;
             intf    = session->cli.intf;
         } else if ( pkt->src.host.s_addr == session->srv.srv.host.s_addr ) {
             mb      = &session->srv_mb;
-            icmp_mb = &session->icmp_srv_mb;
             intf    = session->srv.intf;
         } else {
             netcap_pkt_raze( pkt );
@@ -384,17 +364,6 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
             netcap_pkt_raze(pkt);
             full_pkt = NULL;
         } else {
-            /* The caching of the packet must occur before the packet is put into the mailbox,
-             * because if it isn't the data could be removed from the mailbox and then the
-             * memory would be invalid
-             * (to test, swap the order, and then add a sleep one in between the two
-             * once it is in there, run echospam through the box and then send a few
-             * UDP packets through, eventually a crash will occur.)
-             */
-            if (( full_pkt != NULL ) && _cache_packet( full_pkt, full_pkt_len, icmp_mb ) < 0 ) {
-                errlog( ERR_CRITICAL, "_cache_packet\n" );
-            }
-
             if ( mailbox_put( mb, (void*)pkt ) < 0 ) {
                 netcap_pkt_raze(pkt);
                 perrlog("mailbox_put");
@@ -615,35 +584,6 @@ static int _process_queue_pkt( netcap_pkt_t* pkt, u_char** full_pkt, int* full_p
 
     pkt->data = &pkt->data[offset];
 
-    return 0;
-}
-
-static int _cache_packet( u_char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb )
-{
-    netcap_icmp_msg_t* msg;
-    netcap_icmp_msg_t* old_msg;
-    int c;
-
-    if ( full_pkt == NULL )
-        return 0;
-    
-    if (( msg = netcap_icmp_msg_create( full_pkt, full_pkt_len )) == NULL ) {
-        return errlog( ERR_CRITICAL, "netcap_icmp_msg_create\n" );
-    }
-
-    /* Try to fetch some packages out */
-    for ( c = 0 ; c < _ICMP_CACHE_CLEANUP_MAX ; c++ ) {
-        if (( old_msg = mailbox_try_get( icmp_mb )) != NULL ) {
-            debug( 10, "UDP: Removing cached ICMP message\n" );
-            if ( netcap_icmp_msg_raze( old_msg ) < 0 ) errlog( ERR_CRITICAL, "netcap_icmp_msg_raze\n" );
-        }
-    }
-    
-    if ( mailbox_put( icmp_mb, (void*)msg ) < 0 ) {
-        netcap_icmp_msg_raze( msg );
-        return perrlog( "mailbox_put\n" );
-    }
-    
     return 0;
 }
 

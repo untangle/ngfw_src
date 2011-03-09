@@ -61,7 +61,6 @@ void dump(void *ptr, int n)
 
 sem_t exit_condition;
 
-void icmp_handler (netcap_pkt_t* pkt, void* arg);
 void syn_handler  (netcap_pkt_t* pkt, void* arg);
 void cleanup(int sig) {sem_post(&exit_condition);}
 
@@ -84,13 +83,12 @@ int main()
         exit(-1);
     }
     debug_set_level(NETCAP_DEBUG_PKG,10);
-    netcap_icmp_hook_register(icmp_handler);
     netcap_syn_hook_register(syn_handler);
     
     /**
      * add all the traffic we want to proxy to the list
      */
-#if 1
+#if 0
     if ((rule[0] = netcap_subscribe(flags,"rule1 queue",IPPROTO_ICMP,NULL,NULL,  NULL,0,0,0,  NULL,NULL,0,0)) < 0) {
         fprintf(stderr,"error adding to traffic list \n");
         return -1;
@@ -125,31 +123,6 @@ int main()
     printf("done\n"); fflush(stdout);
     exit(0);
     return 0;
-}
-
-void  icmp_handler (netcap_pkt_t* pkt, void* arg)
-{
-    struct		icmp *icp = (struct icmp *) (pkt->data + 0x14);
-    struct		in_addr in;
-    unsigned char	proto = *(unsigned char *) (pkt->data + 0x09);
-
-    printf("Intercepted ICMP packet: ");
-    printf("%s -> ",inet_ntoa(pkt->src_addr));
-    printf("%s "  ,inet_ntoa(pkt->dst_addr));
-    printf("len: %i\n",pkt->datalen);
-    printf("prot=%d\n",proto);
-    dump(pkt->data, pkt->datalen);
-
-    icp->icmp_type = ICMP_ECHOREPLY;
-    in = pkt->src_addr;
-    pkt->src_addr = pkt->dst_addr;
-    pkt->dst_addr = in;
-    if (netcap_icmp_send((char *)icp, (pkt->datalen)-0x14, pkt) < 0) 
-        printf("send error %s\n",strerror(errno));
-    
-    netcap_pkt_free (pkt);
-
-    return;
 }
 
 void  syn_handler (netcap_pkt_t* pkt, void* arg)

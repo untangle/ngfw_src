@@ -1,20 +1,4 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
+/* $HeadURL$ */
 #include "netcap_queue.h"
 
 #include <sys/types.h>
@@ -59,11 +43,6 @@
  *         timeval      (8 or 12 octets, only if timing==1)
  *         other data
  */
-
-/* maximum length of IP header (including options) */
-#define	MAXIPLEN	60
-/* max packet contents size */
-#define	MAXPAYLOAD	(IP_MAXPACKET - MAXIPLEN - ICMP_MINLEN)
 
 /* This is passed to the nf_callback using TLS */
 typedef struct
@@ -333,34 +312,29 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
 
     if ( data_len < ntohs( ip_header->tot_len )) return errlogcons();
 
-    if (ip_header->protocol == IPPROTO_ICMP) { 
-        debug(10, "not looking up conntrack for ICMP packet\n");
-    } else {
-        debug(10, "FLAG: Try to get the conntrack information\n");
-        if ( _nfq_get_conntrack( nfa, pkt ) < 0 ) {
-            netcap_set_verdict(pkt->packet_id, NF_DROP, NULL, 0);
-            pkt->packet_id = 0;
-            return errlog( ERR_WARNING, "DROPPING PACKET because it has no conntrack info.\n" );
-        }
+    debug(10, "FLAG: Try to get the conntrack information\n");
+    if ( _nfq_get_conntrack( nfa, pkt ) < 0 ) {
+        netcap_set_verdict(pkt->packet_id, NF_DROP, NULL, 0);
+        pkt->packet_id = 0;
+        return errlog( ERR_WARNING, "DROPPING PACKET because it has no conntrack info.\n" );
+    }
 
-        debug( 10, "Conntrack original info: %s:%d -> %s:%d\n",
-               unet_next_inet_ntoa( pkt->nat_info.original.src_address ), 
-               ntohs( pkt->nat_info.original.src_protocol_id ),
-               unet_next_inet_ntoa( pkt->nat_info.original.dst_address ), 
-               ntohs( pkt->nat_info.original.dst_protocol_id ));
+    debug( 10, "Conntrack original info: %s:%d -> %s:%d\n",
+           unet_next_inet_ntoa( pkt->nat_info.original.src_address ), 
+           ntohs( pkt->nat_info.original.src_protocol_id ),
+           unet_next_inet_ntoa( pkt->nat_info.original.dst_address ), 
+           ntohs( pkt->nat_info.original.dst_protocol_id ));
     
-        debug( 10, "Conntrack reply info: %s:%d -> %s:%d\n",
-               unet_next_inet_ntoa( pkt->nat_info.reply.src_address ), 
-               ntohs( pkt->nat_info.reply.src_protocol_id ),
-               unet_next_inet_ntoa( pkt->nat_info.reply.dst_address ), 
-               ntohs( pkt->nat_info.reply.dst_protocol_id ));
-    } 
+    debug( 10, "Conntrack reply info: %s:%d -> %s:%d\n",
+           unet_next_inet_ntoa( pkt->nat_info.reply.src_address ), 
+           ntohs( pkt->nat_info.reply.src_protocol_id ),
+           unet_next_inet_ntoa( pkt->nat_info.reply.dst_address ), 
+           ntohs( pkt->nat_info.reply.dst_protocol_id ));
+
     /**
-     * if we are not ICMP, undo any NATing.
+     * undo any NATing.
      */
-    if (ip_header->protocol == IPPROTO_ICMP) { 
-        debug(10, "caught ICMP packet\n");
-    } else if (( ip_header->saddr == pkt->nat_info.reply.dst_address ) &&
+    if (( ip_header->saddr == pkt->nat_info.reply.dst_address ) &&
                ( ip_header->daddr == pkt->nat_info.reply.src_address )) {
         /* This is a packet from the original side that has been NATd */
         debug( 10, "QUEUE: Packet from client post NAT.\n");
@@ -487,20 +461,14 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
 
     /* First lookup the physdev_out */
     /* if that fails, check the out_dev */
-    u_int32_t out_dev = 0;
-    if (ip_header->protocol == IPPROTO_ICMP) { 
-        debug(10, "ICMP packets dont have outdev info\n");
+    u_int32_t out_dev = nfq_get_physoutdev( nfa );
+    if ( out_dev == 0 ) out_dev = nfq_get_outdev( nfa );
+    if ( out_dev == 0 ) {
+        errlog( ERR_WARNING, "Unable to determine the destination interface with nfq_get_physoutdev\n");
+    }
+    if (( pkt->dst_intf = netcap_interface_index_to_intf( out_dev )) == 0 ) {
+        /* This occurs when the interface is a bridge */
         pkt->dst_intf = NF_INTF_UNKNOWN;
-    }else{
-        out_dev = nfq_get_physoutdev( nfa );
-        if ( out_dev == 0 ) out_dev = nfq_get_outdev( nfa );
-        if ( out_dev == 0 ) {
-            errlog( ERR_WARNING, "Unable to determine the destination interface with nfq_get_physoutdev\n");
-        }
-        if (( pkt->dst_intf = netcap_interface_index_to_intf( out_dev )) == 0 ) {
-            /* This occurs when the interface is a bridge */
-            pkt->dst_intf = NF_INTF_UNKNOWN;
-        }
     }
 
     debug( 10, "NFQUEUE Output device %d\n", pkt->dst_intf );
