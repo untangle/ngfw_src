@@ -491,33 +491,6 @@ JNIEXPORT jint JNICALL JF_UDPSession( merge )
 
 /*
  * Class:     com_untangle_jnetcap_NetcapUDPSession
- * Method:    icmpMerge
- * Signature: (JJJII)I
- */
-JNIEXPORT jint JNICALL JF_UDPSession( icmpMerge )
-( JNIEnv *env, jclass _class, jlong pointer, jint icmp_pid, jlong src_addr, jlong dst_addr, jbyte intf )
-{
-    int ret;
-    in_addr_t src = (in_addr_t)JLONG_TO_UINT( src_addr );
-    in_addr_t dst = (in_addr_t)JLONG_TO_UINT( dst_addr );
-
-    netcap_session_t* session = (netcap_session_t*)JLONG_TO_ULONG( pointer );
-
-    if ( session == NULL ) return errlogargs();
-    
-    ret = netcap_sesstable_merge_icmp_tuple( session, src, dst, intf, icmp_pid );
-
-    if ( ret < 0 ) {
-        return errlog( ERR_CRITICAL, "netcap_sesstable_merge_icmp_tuple\n" );
-    } else if ( ret > 0 ) {
-        return JN_UDPSession( MERGED_DEAD );
-    }
-    
-    return 0;
-}
-
-/*
- * Class:     com_untangle_jnetcap_NetcapUDPSession
  * Method:    mailboxPointer
  * Signature: (JZ)I
  */

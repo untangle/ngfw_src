@@ -302,26 +302,6 @@ public final class Netcap
     public static native int unregisterTCPHook();
     
     /**
-     * Update an ICMP error packet to contain the data in a cached message.
-     * @return - New length of the ICMP packet.
-     */
-    public static int updateIcmpPacket( byte[] data, int len, int icmpType, int icmpCode, int icmpId,
-                                        ICMPMailbox icmpMailbox )
-    {
-        return updateIcmpPacket( data, len, icmpType, icmpCode, icmpId, icmpMailbox.pointer().value());
-    }
-    
-    /**
-     * Fix an ICMP packet
-     * @param len - Length of the current data inside of the buffer
-     * @param icmpType - Type of ICMP packet.
-     * @param icmpCode - Code for the ICMP packet.
-     * @param trafficPointer - Pointer to the traffic structure the packet will go out on
-     */
-    private static native int updateIcmpPacket( byte[] data, int len, int icmpType, int icmpCode, int id,
-                                                long icmpMailboxPointer );
-    
-    /**
      * Convert a string interface to unique identifer that netcap uses to represent interfaces.</p>
      * @param intf - String containing the interface to convert. (eg. eth0).
      * @return A unique identifier between 1 and MAX_INTERFACES(Inclusive).

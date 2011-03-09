@@ -1,36 +1,4 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
- */
-
+/* $HeadURL$ */
 package com.untangle.uvm.vnet.event;
 
 /**
@@ -42,7 +10,8 @@ package com.untangle.uvm.vnet.event;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public interface SessionEventListener extends java.util.EventListener {
+public interface SessionEventListener extends java.util.EventListener
+{
 
     /**
      * <code>handleTimer</code> is called when the scheduled timer expires.
@@ -51,10 +20,9 @@ public interface SessionEventListener extends java.util.EventListener {
      */
     void handleTimer(IPSessionEvent event);
 
-
-    //////////////////////////////////////////////////////////////////////
-    // TCP
-    //////////////////////////////////////////////////////////////////////
+    /**
+     * TCP
+     */
 
     /**
      * Called before the session is established (when we get the initial SYN).
@@ -73,11 +41,17 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>TCPSessionEvent</code> value
      */
-    void handleTCPNewSession(TCPSessionEvent event) ;
+    void handleTCPNewSession(TCPSessionEvent event);
 
-    IPDataResult handleTCPClientChunk(TCPChunkEvent event) ;
-    IPDataResult handleTCPServerChunk(TCPChunkEvent event) ;
+    /**
+     * Called when data arrives from the client side
+     */
+    IPDataResult handleTCPClientChunk(TCPChunkEvent event);
 
+    /**
+     * Called when data arrives from the server side
+     */
+    IPDataResult handleTCPServerChunk(TCPChunkEvent event);
 
     /**
      * <code>handleTCPServerWritable</code> is called when the write queue to the server has
@@ -88,7 +62,7 @@ public interface SessionEventListener extends java.util.EventListener {
      * @return an <code>IPDataResult</code> value
      * @exception Exception if an error occurs
      */
-    IPDataResult handleTCPServerWritable(TCPSessionEvent event) ;
+    IPDataResult handleTCPServerWritable(TCPSessionEvent event);
 
     /**
      * <code>handleTCPClientWritable</code> is called when the write queue to the client has
@@ -99,7 +73,7 @@ public interface SessionEventListener extends java.util.EventListener {
      * @return an <code>IPDataResult</code> value
      * @exception Exception if an error occurs
      */
-    IPDataResult handleTCPClientWritable(TCPSessionEvent event) ;
+    IPDataResult handleTCPClientWritable(TCPSessionEvent event);
 
     /**
      * <code>handleTCPClientDataEnd</code> is called just as the first EOF (Shutdown) is read from
@@ -112,7 +86,7 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * handleTCPClientFIN is called just after this.
      */
-    IPDataResult handleTCPClientDataEnd(TCPChunkEvent event) ;
+    IPDataResult handleTCPClientDataEnd(TCPChunkEvent event);
 
     /**
      * <code>handleTCPClientFIN</code> is called when the first EOF (Shutdown) is read from
@@ -127,7 +101,7 @@ public interface SessionEventListener extends java.util.EventListener {
      * @param event a <code>TCPSessionEvent</code> value
      * @exception Exception if an error occurs
      */
-    void handleTCPClientFIN(TCPSessionEvent event) ;
+    void handleTCPClientFIN(TCPSessionEvent event);
 
     /**
      * <code>handleTCPServerDataEnd</code> is called just as the first EOF (Shutdown) is read from
@@ -140,7 +114,7 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * handleTCPServerFIN is called just after this.
      */
-    IPDataResult handleTCPServerDataEnd(TCPChunkEvent event) ;
+    IPDataResult handleTCPServerDataEnd(TCPChunkEvent event);
 
     /**
      * <code>handleTCPServerFIN</code> is called when the first EOF (Shutdown) is read from
@@ -155,9 +129,7 @@ public interface SessionEventListener extends java.util.EventListener {
      * @param event a <code>TCPSessionEvent</code> value
      * @exception Exception if an error occurs
      */
-    void handleTCPServerFIN(TCPSessionEvent event) ;
-
-
+    void handleTCPServerFIN(TCPSessionEvent event);
 
     /**
      * <code>handleTCPClientRST</code> is called when the first RST (Reset) is read from
@@ -171,7 +143,7 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>TCPSessionEvent</code> giving the session
      */
-    void handleTCPClientRST(TCPSessionEvent event) ;
+    void handleTCPClientRST(TCPSessionEvent event);
 
     /**
      * <code>handleTCPServerReset</code> is called when the first RST (Reset) is read from
@@ -185,7 +157,7 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>TCPSessionEvent</code> giving the session
      */
-    void handleTCPServerRST(TCPSessionEvent event) ;
+    void handleTCPServerRST(TCPSessionEvent event);
 
     /**
      * As a convenience, <code>handleTCPFinalized</code> is called once both
@@ -202,7 +174,7 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>TCPSessionEvent</code> giving the session
      */
-    void handleTCPFinalized(TCPSessionEvent event)  ;
+    void handleTCPFinalized(TCPSessionEvent event);
 
     /**
      * <code>handleTCPComplete</code> is delivered when a session is:
@@ -216,17 +188,24 @@ public interface SessionEventListener extends java.util.EventListener {
      * @param event a <code>TCPSessionEvent</code> value
      * @exception Exception if an error occurs
      */
-    void handleTCPComplete(TCPSessionEvent event) ;
+    void handleTCPComplete(TCPSessionEvent event);
 
 
-    //////////////////////////////////////////////////////////////////////
-    // UDP
-    //////////////////////////////////////////////////////////////////////
+    /**
+     * UDP
+     */
 
-    // Note that the Packet handlers are not, in general, free to mess with the event's packet
-    // position/limit, as these will be used by the default handler when sending out the packet. XX
-    void handleUDPClientPacket(UDPPacketEvent event) ;
-    void handleUDPServerPacket(UDPPacketEvent event) ;
+    /**
+     * Note that the Packet handlers are not, in general, free to mess with the event's packet
+     * position/limit, as these will be used by the default handler when sending out the packet.
+     */
+    void handleUDPClientPacket(UDPPacketEvent event);
+    
+    /**
+     * Note that the Packet handlers are not, in general, free to mess with the event's packet
+     * position/limit, as these will be used by the default handler when sending out the packet.
+     */
+    void handleUDPServerPacket(UDPPacketEvent event);
 
     /**
      * Called after the session is established (after the new session request
@@ -236,7 +215,7 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>UDPSessionEvent</code> value
      */
-    void handleUDPNewSession(UDPSessionEvent event) ;
+    void handleUDPNewSession(UDPSessionEvent event);
 
     /**
      * Called before the session is established (when we get the initial packet).
@@ -247,13 +226,9 @@ public interface SessionEventListener extends java.util.EventListener {
      */
     void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event) ;
 
-    void handleUDPClientExpired(UDPSessionEvent event)  ;
+    void handleUDPClientExpired(UDPSessionEvent event);
 
-    void handleUDPServerExpired(UDPSessionEvent event)  ;
-
-    void handleUDPClientError(UDPErrorEvent event)  ;
-
-    void handleUDPServerError(UDPErrorEvent event)  ;
+    void handleUDPServerExpired(UDPSessionEvent event);
 
     /**
      * <code>handleUDPServerWritable</code> is called when the write queue to the server has
@@ -264,7 +239,7 @@ public interface SessionEventListener extends java.util.EventListener {
      * @return an <code>IPDataResult</code> value
      * @exception Exception if an error occurs
      */
-    void handleUDPServerWritable(UDPSessionEvent event) ;
+    void handleUDPServerWritable(UDPSessionEvent event);
 
     /**
      * <code>handleUDPClientWritable</code> is called when the write queue to the client has
@@ -275,7 +250,7 @@ public interface SessionEventListener extends java.util.EventListener {
      * @return an <code>IPDataResult</code> value
      * @exception Exception if an error occurs
      */
-    void handleUDPClientWritable(UDPSessionEvent event) ;
+    void handleUDPClientWritable(UDPSessionEvent event);
 
     /**
      * <code>handleUDPFinalized</code> is called once both the client and server have
@@ -292,7 +267,7 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * @param event a <code>UDPSessionEvent</code> giving the session
      */
-    void handleUDPFinalized(UDPSessionEvent event)  ;
+    void handleUDPFinalized(UDPSessionEvent event);
 
     /**
      * <code>handleUDPComplete</code> is delivered when a session is:
@@ -306,6 +281,6 @@ public interface SessionEventListener extends java.util.EventListener {
      * @param event a <code>UDPSessionEvent</code> value
      * @exception Exception if an error occurs
      */
-    void handleUDPComplete(UDPSessionEvent event) ;
+    void handleUDPComplete(UDPSessionEvent event);
 }
 

@@ -21,7 +21,6 @@ package com.untangle.jvector;
 import com.untangle.jnetcap.Netcap;
 import com.untangle.jnetcap.Packet;
 import com.untangle.jnetcap.UDPPacket;
-import com.untangle.jnetcap.ICMPPacket;
 
 public abstract class PacketCrumb extends DataCrumb
 {
@@ -70,8 +69,6 @@ public abstract class PacketCrumb extends DataCrumb
         switch ( protocol ) {
         case Netcap.IPPROTO_UDP:
             return new UDPPacketCrumb((UDPPacket)packet, packet.data());
-        case Netcap.IPPROTO_ICMP:
-            return new ICMPPacketCrumb((ICMPPacket)packet, packet.data());
         default:
             throw new JVectorException( "Unable to determine which crumb to create from protocol: " + protocol );
         }

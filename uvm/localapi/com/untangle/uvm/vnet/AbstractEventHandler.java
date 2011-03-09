@@ -262,20 +262,4 @@ public abstract class AbstractEventHandler implements SessionEventListener {
             session.sendClientPacket(event.packet(), event.header());
     }
 
-    public void handleUDPClientError(UDPErrorEvent event)
-        
-    {
-        // Default just sends the error onwards.
-        UDPSession sess = event.session();
-        sess.sendServerError(event.getErrorType(), event.getErrorCode(), event.packet(), event.getErrorSource(), event.header());
-    }
-
-    public void handleUDPServerError(UDPErrorEvent event)
-        
-    {
-        // Default just sends the error onwards.
-        UDPSession sess = event.session();
-        sess.sendClientError(event.getErrorType(), event.getErrorCode(), event.packet(), event.getErrorSource(), event.header());
-    }
-
 }

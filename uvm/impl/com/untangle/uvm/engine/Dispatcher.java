@@ -781,28 +781,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         }
     }
 
-    void dispatchUDPClientError(UDPErrorEvent event)
-        
-    {
-        IPSessionImpl session = (IPSessionImpl) event.session();
-        elog(Level.DEBUG, "UDPClientError", session.id(), event.packet().remaining());
-        if (sessionEventListener == null || session.released())
-            releasedHandler.handleUDPClientError(event);
-        else
-            sessionEventListener.handleUDPClientError(event);
-    }
-
-    void dispatchUDPServerError(UDPErrorEvent event)
-        
-    {
-        IPSessionImpl session = (IPSessionImpl) event.session();
-        elog(Level.DEBUG, "UDPServerError", session.id(), event.packet().remaining());
-        if (sessionEventListener == null || session.released())
-            releasedHandler.handleUDPServerError(event);
-        else
-            sessionEventListener.handleUDPServerError(event);
-    }
-
     IPDataResult dispatchTCPClientDataEnd(TCPChunkEvent event)
         
     {

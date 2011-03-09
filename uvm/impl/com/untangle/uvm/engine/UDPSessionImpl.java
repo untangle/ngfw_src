@@ -1,28 +1,10 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
+/* $HeadURL$ */
 package com.untangle.uvm.engine;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import com.untangle.jvector.Crumb;
-import com.untangle.jvector.ICMPPacketCrumb;
 import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.PacketCrumb;
@@ -227,36 +209,6 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         addCrumb(side, crumb);
     }
 
-    public void sendClientError(byte icmpType, byte icmpCode, ByteBuffer icmpData, InetAddress icmpSource, IPPacketHeader header)
-    {
-        sendError(CLIENT, icmpType, icmpCode, icmpData, icmpSource, header);
-    }
-
-    public void sendServerError(byte icmpType, byte icmpCode, ByteBuffer icmpData, InetAddress icmpSource, IPPacketHeader header)
-    {
-        sendError(SERVER, icmpType, icmpCode, icmpData, icmpSource, header);
-    }
-
-    private void sendError(int side, byte icmpType, byte icmpCode, ByteBuffer icmpData, InetAddress icmpSource, IPPacketHeader header)
-    {
-        byte[] array;
-        int offset = icmpData.position();
-        int limit = icmpData.remaining();
-        if (icmpData.hasArray()) {
-            array = icmpData.array();
-            offset += icmpData.arrayOffset();
-            limit += icmpData.arrayOffset();
-        } else {
-            warn("out-of-help byte buffer, had to copy");
-            array = new byte[icmpData.remaining()];
-            icmpData.get(array);
-            icmpData.position(offset);
-            offset = 0;
-        }
-        ICMPPacketCrumb crumb = new ICMPPacketCrumb(header.ttl(), header.tos(), header.options(), icmpType, icmpCode, icmpSource, array, offset, limit);
-        addCrumb(side, crumb);
-    }
-
     protected void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)
         
     {
@@ -267,7 +219,6 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             else
                 debug("tryWrite to full outgoing queue");
         } else {
-            // Note: This can be an ICMP or UDP packet.
             Crumb nc = getNextCrumb2Send(side);
             PacketCrumb packet2send = (PacketCrumb) nc;
             assert packet2send != null;
@@ -377,7 +328,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             assert false;
             break;
         default:
-            // Now we know either UDP or ICMP packet.
+            // Now we know this is a UDP.
         }
 
         PacketCrumb pc = (PacketCrumb)crumb;
@@ -426,23 +377,12 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         // a buffer manually -- the position and limit must already be correct when sent, so
         // there's no need for us to duplicate here.
 
-        if (crumb.type() == Crumb.TYPE_ICMP_PACKET) {
-            ICMPPacketCrumb icrumb = (ICMPPacketCrumb)crumb;
-            byte icmpType = icrumb.icmpType();
-            byte icmpCode = icrumb.icmpCode();
-            InetAddress source = icrumb.source();
-            UDPErrorEvent event = new UDPErrorEvent(argonConnector, this, pbuf, pheader, icmpType, icmpCode, source);
-            if (side == CLIENT)
-                dispatcher.dispatchUDPClientError(event);
-            else
-                dispatcher.dispatchUDPServerError(event);
-        } else {
-            UDPPacketEvent event = new UDPPacketEvent(argonConnector, this, pbuf, pheader);
-            if (side == CLIENT)
-                dispatcher.dispatchUDPClientPacket(event);
-            else
-                dispatcher.dispatchUDPServerPacket(event);
-        }
+        UDPPacketEvent event = new UDPPacketEvent(argonConnector, this, pbuf, pheader);
+        if (side == CLIENT)
+            dispatcher.dispatchUDPClientPacket(event);
+        else
+            dispatcher.dispatchUDPServerPacket(event);
+
         // Nothing more to do, any packets to be sent were queued by called to sendClientPacket(), etc,
         // from node's packet handler.
     }
