@@ -1,21 +1,4 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
+/* $HeadURL$ */
 #include <jni.h>
 
 #include <stdio.h>
@@ -139,7 +122,6 @@ static jnetcap_thread_t* jnetcap_thread_malloc();
 
 static void              _udp_hook( netcap_session_t* netcap_session, void* arg );
 static void              _tcp_hook( netcap_session_t* netcap_session, void* arg );
-static void              _icmp_hook( netcap_session_t* netcap_sess, netcap_pkt_t* pkt, void* arg);
 
 /* shared hook between the UDP and TCP hooks, these just get the program into java */
 static void              _hook( int protocol, netcap_session_t* netcap_session, void* arg );
@@ -572,48 +554,6 @@ JNIEXPORT jboolean JNICALL JF_Netcap( isBroadcast )
 
 /*
  * Class:     com_untangle_jnetcap_Netcap
- * Method:    updateIcmpPacket
- * Signature: ([BIII)V
- */
-JNIEXPORT jint JNICALL JF_Netcap( updateIcmpPacket )
-( JNIEnv *env, jobject _this, jbyteArray _data, jint data_len, jint icmp_type, jint icmp_code, jint icmp_pid, jlong _icmp_mb )
-{
-    mailbox_t* icmp_mb = (mailbox_t*)JLONG_TO_ULONG( _icmp_mb );
-    jbyte* data;
-    int data_lim;
-    int ret = -1;
-    
-    if ( icmp_mb == NULL ) {
-        return jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL icmp mailbox\n" );
-    }
-
-    /* Convert the byte array */
-    if (( data = (*env)->GetByteArrayElements( env, _data, NULL )) == NULL ) {
-        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "GetByteArrayElements\n" );
-    }
-    
-    do {
-        data_lim = (*env)->GetArrayLength( env, _data );
-        
-        if ( data_len > data_lim ) {
-            ret = jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "ICMP: size > byte array length\n" );
-            break;
-        }
-        
-        if (( ret = netcap_icmp_update_pkt( (char*) data, data_len, data_lim, icmp_type, icmp_code, icmp_pid, icmp_mb )) < 0 ) {
-            ret = jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_icmp_update_pkt\n" );
-            break;
-        }        
-    } while ( 0 );
-
-    (*env)->ReleaseByteArrayElements( env, _data, data, 0 );
-    
-    return ret;
-}
-
-
-/*
- * Class:     com_untangle_jnetcap_Netcap
  * Method:    isMulticast
  * Signature: (J)Z
  */
@@ -757,19 +697,6 @@ static void*             _udp_run_thread( void* arg )
     return NULL;
 }
 
-static void*             _icmp_run_thread( void* arg )
-{
-    netcap_session_t* netcap_sess = arg;
-    
-    if ( netcap_sess == NULL ) {
-        return errlogargs_null();
-    }
-    
-    _hook( IPPROTO_ICMP, netcap_sess, NULL );
-        
-    return NULL;
-}
-
 static void              _udp_hook( netcap_session_t* netcap_sess, void* arg )
 {
     jnetcap_thread_t* thread_arg = NULL;
@@ -792,43 +719,6 @@ static void              _udp_hook( netcap_session_t* netcap_sess, void* arg )
         return 0;
     }
 
-    if ( _increment_session_count() < 0 ) {
-        netcap_session_raze( netcap_sess );
-        errlog( ERR_CRITICAL, "Hit session limit %d\n", _jnetcap.session_limit );
-        return;
-    }
-
-    if ( _critical_section() < 0 ) {
-        if ( thread_arg != NULL ) jnetcap_thread_raze( thread_arg );
-        thread_arg = NULL;
-        netcap_session_raze( netcap_sess );
-        _decrement_session_count();
-    }
-}
-
-static void              _icmp_hook( netcap_session_t* netcap_sess, netcap_pkt_t* pkt, void* arg)
-{
-    jnetcap_thread_t* thread_arg = NULL;
-    
-    if ( netcap_sess == NULL ) {
-        if ( pkt != NULL ) netcap_pkt_raze( pkt );
-        errlogargs();
-        return;
-    }
-    
-    int _critical_section() {
-        pthread_t id;
-        
-        thread_arg = jnetcap_thread_create( _icmp_run_thread, netcap_sess, _jnetcap.session_sched_policy, NULL );
-        if ( thread_arg == NULL ) return errlog( ERR_CRITICAL, "jnetcap_thread_create" );
-    
-        if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, thread_arg )) {
-            return perrlog( "pthread_create" );
-        }
-
-        return 0;
-    }
-    
     if ( _increment_session_count() < 0 ) {
         netcap_session_raze( netcap_sess );
         errlog( ERR_CRITICAL, "Hit session limit %d\n", _jnetcap.session_limit );
@@ -897,7 +787,6 @@ static void              _hook( int protocol, netcap_session_t* netcap_sess, voi
         }
         
         switch( protocol ) {
-        case IPPROTO_ICMP: global_hook = _jnetcap.java.udp_hook; break;
         case IPPROTO_UDP:  global_hook = _jnetcap.java.udp_hook; break;
         case IPPROTO_TCP:  global_hook = _jnetcap.java.tcp_hook; break;
         default: 
@@ -983,16 +872,18 @@ static int              _register_hook( JNIEnv* env, int protocol, jobject hook 
     }
     
     switch ( protocol ) {
+
     case IPPROTO_UDP: 
         ret = netcap_udp_hook_register( _udp_hook ); 
-        
-        if ( ret < 0 ) 
-            break;
-        
-        ret = netcap_icmp_hook_register( _icmp_hook );
         break;
-    case IPPROTO_TCP: ret = netcap_tcp_hook_register( _tcp_hook ); break;
-    default: ret = -1; /* IMPOSSIBLE */
+
+    case IPPROTO_TCP:
+        ret = netcap_tcp_hook_register( _tcp_hook );
+        break;
+
+    default:
+        ret = -1; /* IMPOSSIBLE */
+
     }
     
     if ( ret < 0 ) {

@@ -1,21 +1,4 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
+/* $HeadURL$ */
 package com.untangle.jnetcap;
 
 import java.io.FileReader;
@@ -33,7 +16,6 @@ public final class Netcap
 {
     public static final short IPPROTO_UDP  = 17;
     public static final short IPPROTO_TCP  = 6;
-    public static final short IPPROTO_ICMP = 1;
 
     private static final int JNETCAP_DEBUG = 1;
     private static final int NETCAP_DEBUG  = 2;
@@ -88,24 +70,6 @@ public final class Netcap
 
     static void error() {
         error( "" );
-    }
-
-    /**
-     * Verify that a protocol is a valid value.</p>
-     * @param protocol - An integer containing the protocol to verify.
-     * @return <code>protocol</code> if the number is value.
-     */
-    public static int verifyProtocol( int protocol ) 
-    {
-        switch ( protocol ) {
-        case IPPROTO_TCP: 
-        case IPPROTO_UDP: 
-        case IPPROTO_ICMP: break;
-            
-        default: error( "Invalid protocol: " + protocol );
-        }
-
-        return protocol;
     }
 
     /**
