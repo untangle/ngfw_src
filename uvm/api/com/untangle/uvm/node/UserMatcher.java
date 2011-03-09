@@ -71,6 +71,8 @@ public class UserMatcher
             return false;
             
         case SINGLE:
+            if (user == null)
+                return false;
             if (user.equalsIgnoreCase(this.single))
                 return true;
             return false;
