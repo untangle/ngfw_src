@@ -1107,7 +1107,8 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                 this.refreshNetworkSettings();
 
                 this.isInitialized = true;
-                complete();
+                rpc.networkManager.getWizardWAN( complete );
+                
             }.createDelegate(this),
             onNext : this.saveSettings.createDelegate( this ),
             onValidate : this.validateInternetConnection.createDelegate(this)

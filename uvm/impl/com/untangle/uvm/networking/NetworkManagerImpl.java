@@ -357,6 +357,14 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
+     * Returns the first WAN
+     */
+    public InterfaceConfiguration getWizardWAN()
+    {
+        return getNetworkConfiguration().findFirstWAN();
+    }
+
+    /**
      * returns a recommendation for the internal network. 
      * @param externalAddress The external address, if null, this uses the external address of the box.
      */

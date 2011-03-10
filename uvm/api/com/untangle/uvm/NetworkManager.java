@@ -126,8 +126,12 @@ public interface NetworkManager
     /* Allow the setup wizard to setup NAT properly, or disable it. */
     void setWizardNatEnabled(IPAddress address, IPAddress netmask, boolean enableDhcpServer ) 
         throws Exception;
-    void setWizardNatDisabled() throws Exception;
 
+    void setWizardNatDisabled()
+        throws Exception;
+
+    public InterfaceConfiguration getWizardWAN();
+    
     /* returns a recommendation for the internal network. */
     /* @param externalAddress The external address, if null, this uses
      * the external address of the box. */
