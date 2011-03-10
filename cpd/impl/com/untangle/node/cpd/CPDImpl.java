@@ -97,14 +97,14 @@ public class CPDImpl extends AbstractNode implements CPD
         /* Create a set of default capture rules */
         List<CaptureRule> rules = new LinkedList<CaptureRule>();
         rules.add(new CaptureRule(false, true,
-                                  "Require a login for traffic on the internal (non-wan) interfaces", 
-                                  IntfMatcher.getNonWanMatcher(), 
+                                  "Require a login for traffic on the an interface (example rule)", 
+                                  new IntfMatcher("2"), 
                                   IPMatcher.getAnyMatcher(), IPMatcher.getAnyMatcher(),
                                   CaptureRule.START_OF_DAY, CaptureRule.END_OF_DAY, CaptureRule.ALL_DAYS));
         
         rules.add(new CaptureRule(false, true,
-                                  "Require a login between 8:00 AM and 5 PM on the internal (non-wan) interfaces.", 
-                                  IntfMatcher.getNonWanMatcher(), 
+                                  "Require a login between 8:00 AM and 5 PM on on interface. (example rule)", 
+                                  new IntfMatcher("2"), 
                                   IPMatcher.getAnyMatcher(), IPMatcher.getAnyMatcher(),
                                   "8:00", "17:00", CaptureRule.ALL_DAYS));
         
