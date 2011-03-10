@@ -774,6 +774,9 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         Ext.MessageBox.wait( i18n._( "Remapping Network Interfaces" ), i18n._( "Please wait" ));
 
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
+
+        /* do this before the next step */
+        rpc.setup.refreshNetworkConfig();
     },
     afterReauthenticate : function( handler )
     {
@@ -1128,7 +1131,6 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
     {
         this.cardPanel.layout.activeItem.saveData( handler );
     },
-
     saveDHCP : function( handler, hideWindow )
     {
         if ( hideWindow == null ) {
@@ -1301,7 +1303,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         var c = 0;
         var wanConfig = Ung.SetupWizard.CurrentValues.wanConfiguration;
         var isConfigured = (wanConfig.primaryAddress != null);
-        
+
         if (isConfigured) {
             for ( c = 0; c < this.configTypes.length ; c++ ) {
                 if (this.configTypes[c][0] == wanConfig.configType)

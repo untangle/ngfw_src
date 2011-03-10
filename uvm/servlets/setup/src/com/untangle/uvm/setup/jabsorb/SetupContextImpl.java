@@ -1,26 +1,11 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
+/* $HeadURL$ */
 package com.untangle.uvm.setup.jabsorb;
 
 import java.util.TimeZone;
 
 import javax.transaction.TransactionRolledbackException;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LanguageManager;
@@ -29,9 +14,13 @@ import com.untangle.uvm.RemoteUvmContextFactory;
 import com.untangle.uvm.RemoteUvmContext;
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.User;
+import com.untangle.uvm.util.JsonClient;
+import com.untangle.uvm.util.XMLRPCUtil;
 
 public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
 {
+    private final Logger logger = Logger.getLogger( this.getClass());
+
     private RemoteUvmContext context;
 
     /* Shamelessly lifted from AdminManagerImpl */
@@ -82,6 +71,34 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
     public String getOemName()
     {
         return this.context.oemManager().getOemName();
+    }
+
+    /**
+     * On first boot the netConfig.js doesn't get written out after DHCP is done
+     * I'm not sure why. However this function is used to re-sync all network settings
+     * so that they are correct on the first run of the wizard
+     */
+    public void refreshNetworkConfig()
+    {
+        /**
+         * First tell alpaca to write the files
+         */
+        try {
+            JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "write_files", null );
+        } catch ( Exception e ) {
+            logger.warn( "Failed to write UVM config files. (net-alpaca returned an error)", e );
+        }
+
+        /**
+         * Then tell the UVM to re-read the files
+         */
+        try {
+            this.context.networkManager().refreshNetworkConfig();
+        } catch ( Exception e ) {
+            logger.warn( "Failed to refresh Network Config", e );
+        }
+        
+        return;
     }
     
     public static UtJsonRpcServlet.SetupContext makeSetupContext()

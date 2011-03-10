@@ -158,8 +158,7 @@ int               jvector_load                ( JNIEnv* env )
     /* Initialize all of the class and method ids */
     if (( _jvector.src.class = _get_global_java_class( J_SRC )) == NULL ) return JNI_ERR;
 
-    _jvector.src.get_event = _get_global_java_mid( _jvector.src.class, J_SRC_GET_EVENT, 
-                                                   J_SRC_GET_EVENT_SIG );
+    _jvector.src.get_event = _get_global_java_mid( _jvector.src.class, J_SRC_GET_EVENT, J_SRC_GET_EVENT_SIG );
 
     _jvector.src.shutdown = _get_global_java_mid( _jvector.src.class, J_SRC_SHUTDOWN, J_SRC_SHUTDOWN_SIG );
 
@@ -173,8 +172,7 @@ int               jvector_load                ( JNIEnv* env )
 
     if (( _jvector.snk.class = _get_global_java_class( J_SNK )) == NULL ) return JNI_ERR;
 
-    _jvector.snk.send_event = _get_global_java_mid( _jvector.snk.class, J_SNK_SEND_EVENT, 
-                                                    J_SNK_SEND_EVENT_SIG );
+    _jvector.snk.send_event = _get_global_java_mid( _jvector.snk.class, J_SNK_SEND_EVENT, J_SNK_SEND_EVENT_SIG );
 
     _jvector.snk.shutdown = _get_global_java_mid( _jvector.snk.class, J_SNK_SHUTDOWN, J_SNK_SHUTDOWN_SIG );
 
