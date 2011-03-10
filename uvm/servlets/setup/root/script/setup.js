@@ -778,6 +778,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         /* do this before the next step */
         rpc.setup.refreshNetworkConfig();
     },
+
     afterReauthenticate : function( handler )
     {
         /* Commit the store to get rid of the change marks */
@@ -1356,7 +1357,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                 cls : 'noborder wizard-internal-network',
                 items : [{
                     xtype : 'radio',
-                    name : 'bridgeInterfaces',
+                    name : 'bridgeOrRouter',
                     inputValue : 'bridge',
                     boxLabel : i18n._('Transparent Bridge'),
                     ctCls : 'large-option',
@@ -1374,7 +1375,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                 cls : 'noborder  wizard-internal-network',
                 items : [{
                     xtype : 'radio',
-                    name : 'bridgeInterfaces',
+                    name : 'bridgeOrRouter',
                     inputValue : 'router',
                     boxLabel : i18n._( 'Router' ),
                     ctCls : 'large-option',
@@ -1449,11 +1450,24 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
             return;
         }
 
+        // find the internal interface and see if its currently set to static.
+        // if so change the default to router
+        var netConf = rpc.networkManager.getNetworkConfiguration();
+        if (netConf != null && netConf.interfaceList != null) {
+            var intfs = netConf.interfaceList.list;
+            for ( var c = 0 ;  c < intfs.length ; c++ ) {
+                if (intfs[c].name == "Internal" && intfs[c].configType == "static" ) {
+                    this.panel.find( "name", "bridgeOrRouter" )[0].setValue(false);
+                    this.panel.find( "name", "bridgeOrRouter" )[1].setValue(true);
+                }
+            }
+        }
+        
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.loadInternalSuggestion.createDelegate( this, [ complete ] ));
     },
     loadInternalSuggestion : function( complete )
     {
-        rpc.networkManager.getWizardInternalAddressSuggesstion( this.completeLoadInternalSuggestion.createDelegate( this, [ complete ], true ), null );
+        rpc.networkManager.getWizardInternalAddressSuggestion( this.completeLoadInternalSuggestion.createDelegate( this, [ complete ], true ), null );
     },
     completeLoadInternalSuggestion : function( result, exception, foo, handler )
     {
@@ -1480,9 +1494,9 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
     {
         var rv = true;
         var nic = false;
-        for(var i=0;i<this.panel.find('name','bridgeInterfaces').length;i++){
-            if(this.panel.find('name','bridgeInterfaces')[i].getValue()){
-                nic = this.panel.find('name','bridgeInterfaces')[i].inputValue;
+        for(var i=0;i<this.panel.find('name','bridgeOrRouter').length;i++){
+            if(this.panel.find('name','bridgeOrRouter')[i].getValue()){
+                nic = this.panel.find('name','bridgeOrRouter')[i].inputValue;
                 break;
             }
         }
@@ -1493,7 +1507,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
     },
     saveInternalNetwork : function( handler )
     {
-        var value = this.panel.find( "name", "bridgeInterfaces" )[0].getGroupValue();
+        var value = this.panel.find( "name", "bridgeOrRouter" )[0].getGroupValue();
 
         if ( value == null ) {
             Ext.MessageBox.alert(i18n._( "Select a value" ), i18n._( "Please choose bridge or router." ));
@@ -1507,7 +1521,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
     afterReauthenticate : function( handler )
     {
         var delegate = this.complete.createDelegate( this, [ handler ], true );
-        var value = this.panel.find( "name", "bridgeInterfaces" )[0].getGroupValue();
+        var value = this.panel.find( "name", "bridgeOrRouter" )[0].getGroupValue();
         if ( value == 'bridge' ) {
             rpc.networkManager.setWizardNatDisabled( delegate );
         } else {

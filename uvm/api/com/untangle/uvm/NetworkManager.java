@@ -131,7 +131,7 @@ public interface NetworkManager
     /* returns a recommendation for the internal network. */
     /* @param externalAddress The external address, if null, this uses
      * the external address of the box. */
-    IPNetwork getWizardInternalAddressSuggesstion(IPAddress externalAddress);
+    IPNetwork getWizardInternalAddressSuggestion(IPAddress externalAddress);
 
     /* Forces the link status to be re-examined, since it is likely to
      * have changed */

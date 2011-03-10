@@ -118,6 +118,16 @@ public class IPMatcher
         this.subnetNetmask = addrToLong(netmask.getAddr());
     }
 
+    /**
+     * Make a subnet matcher
+     */
+    public IPMatcher( IPNetwork net )
+    {
+        this.type = IPMatcherType.SUBNET;
+        this.subnetNetwork = addrToLong(net.getNetwork().getAddr());
+        this.subnetNetmask = addrToLong(net.getNetmask().getAddr());
+    }
+    
 
     
     /**

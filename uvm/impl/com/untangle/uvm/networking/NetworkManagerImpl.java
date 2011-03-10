@@ -360,25 +360,50 @@ public class NetworkManagerImpl implements NetworkManager
      * returns a recommendation for the internal network. 
      * @param externalAddress The external address, if null, this uses the external address of the box.
      */
-    public IPNetwork getWizardInternalAddressSuggesstion( IPAddress externalAddress )
+    public IPNetwork getWizardInternalAddressSuggestion( IPAddress externalAddress )
     {
         try {
-            if ( externalAddress == null ) { 
-                externalAddress = getNetworkConfiguration().findFirstWAN().getPrimaryAddress().getNetwork();
-            }
+            NetworkConfiguration netConf = getNetworkConfiguration();
 
-            /* rare case. */
-            if ( externalAddress == null ) {
-                return IPNetwork.parse( "172.16.0.1/24" );
+            if ( netConf == null ) {
+                logger.warn("NULL network configuration");
+                return IPNetwork.parse( "192.168.1.1/24" );
             }
-
-            IPMatcher matcher = new IPMatcher( "192.0.0.0/8" );
             
-            if ( matcher.isMatch( externalAddress.getAddr())) {
-                return IPNetwork.parse( "172.16.0.1/24" );
+            if ( externalAddress == null ) { 
+                externalAddress = netConf.findFirstWAN().getPrimaryAddress().getNetwork();
+            }
+            
+            if ( externalAddress == null ) {
+                return IPNetwork.parse( "192.168.1.1/24" );
+            }
+
+            /**
+             * Use the already existing internal addr by default
+             * However, If it overlaps with external - suggest something else
+             */
+            InterfaceConfiguration internal = netConf.findByName("Internal");
+            if (internal != null) {
+                IPNetwork internalNet = internal.getPrimaryAddress();
+
+                /**
+                 * If it doesn't have a current address just use 192.168.1.1
+                 */
+                if (internalNet == null)
+                    internalNet = IPNetwork.parse( "192.168.1.1/24" );
+                    
+                IPAddress internalAddr = internalNet.getNetwork();
+                IPMatcher internalMatcher = new IPMatcher( internalNet );
+                
+                if ( internalMatcher.isMatch( externalAddress.getAddr() ) ) {
+                    return IPNetwork.parse( "172.16.0.1/24" );
+                }
+
+                return internalNet;
             }
             
             return IPNetwork.parse( "192.168.1.1/24" );
+            
         } catch ( Exception e ) {
             /* This should never happen */
             throw new RuntimeException( "Unable to suggest an internal address", e );

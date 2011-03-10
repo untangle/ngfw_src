@@ -17,12 +17,12 @@ class TestNetwork(UvmSetup):
 
         basic_settings = network_manager.getBasicSettings()
         address = basic_settings["host"]
-        expected = network_manager.getWizardInternalAddressSuggesstion( address )
+        expected = network_manager.getWizardInternalAddressSuggestion( address )
         expected = "%s/%s" % ( expected["network"], expected["netmask"] )
         yield self.check_get_internal_address, network_manager, None, expected
 
     def check_get_internal_address( self, network_manager, address, expected ):
-        response = network_manager.getWizardInternalAddressSuggesstion( address )
+        response = network_manager.getWizardInternalAddressSuggestion( address )
 
         ## Convert from an IPNetwork to a simple string
         assert expected == "%s/%s" % ( response["network"], response["netmask"] )
