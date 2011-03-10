@@ -8,7 +8,7 @@ UPDATE settings.u_user_policy_rule SET client_intf_matcher = '4' WHERE client_in
 UPDATE settings.u_user_policy_rule SET client_intf_matcher = '5' WHERE client_intf_matcher = '4';
 UPDATE settings.u_user_policy_rule SET client_intf_matcher = '6' WHERE client_intf_matcher = '5';
 UPDATE settings.u_user_policy_rule SET client_intf_matcher = '7' WHERE client_intf_matcher = '6';
-UPDATE settings.u_user_policy_rule SET client_intf_matcher = '255' WHERE client_intf_matcher = '7';
+UPDATE settings.u_user_policy_rule SET client_intf_matcher = '250' WHERE client_intf_matcher = '7';
 
 UPDATE settings.u_user_policy_rule SET server_intf_matcher = '1' WHERE server_intf_matcher = '0';
 UPDATE settings.u_user_policy_rule SET server_intf_matcher = '2' WHERE server_intf_matcher = '1';
@@ -17,7 +17,7 @@ UPDATE settings.u_user_policy_rule SET server_intf_matcher = '4' WHERE server_in
 UPDATE settings.u_user_policy_rule SET server_intf_matcher = '5' WHERE server_intf_matcher = '4';
 UPDATE settings.u_user_policy_rule SET server_intf_matcher = '6' WHERE server_intf_matcher = '5';
 UPDATE settings.u_user_policy_rule SET server_intf_matcher = '7' WHERE server_intf_matcher = '6';
-UPDATE settings.u_user_policy_rule SET server_intf_matcher = '255' WHERE server_intf_matcher = '7';
+UPDATE settings.u_user_policy_rule SET server_intf_matcher = '250' WHERE server_intf_matcher = '7';
 
 -- drop obsolete (unused) tables
 DROP TABLE settings.u_ddnsq_settings;
