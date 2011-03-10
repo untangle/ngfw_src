@@ -404,7 +404,7 @@ Ung.Util= {
             case "1": name = i18n._("External") ; break;
             case "2": name = i18n._("Internal") ; break;
             case "3": name = i18n._("DMZ") ; break;
-            case "255": name = i18n._("OpenVPN") ; break;
+            case "250": name = i18n._("OpenVPN") ; break;
             case "wan": 
                 if ( wanMatchers === false ) {
                     key = null;
