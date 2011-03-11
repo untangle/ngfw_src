@@ -197,7 +197,7 @@ public class LicenseManagerImpl implements LicenseManager
         SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
         
         try {
-            this.settings = settingsManager.loadBasePath(LicenseSettings.class, System.getProperty("uvm.conf.dir"), "licenses", "licenses");
+            this.settings = settingsManager.load( LicenseSettings.class, System.getProperty("uvm.conf.dir") + "/licenses/licenses" );
         } catch (SettingsManager.SettingsException e) {
             logger.error("Unable to read license file: ", e );
             return;
@@ -528,7 +528,7 @@ public class LicenseManagerImpl implements LicenseManager
          */
         SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
         try {
-            settingsManager.saveBasePath(LicenseSettings.class, System.getProperty("uvm.conf.dir"), "licenses", "licenses", newSettings);
+            settingsManager.save(LicenseSettings.class, System.getProperty("uvm.conf.dir") + "/licenses/licenses", newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
         }
