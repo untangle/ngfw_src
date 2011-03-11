@@ -844,7 +844,7 @@ public class NetworkManagerImpl implements NetworkManager
         NetworkConfiguration settings = null;
         
         try {
-            settings = settingsManager.loadBasePath(NetworkConfiguration.class, "/etc/untangle-net-alpaca/", "", "netConfig");
+            settings = settingsManager.load(NetworkConfiguration.class, "/etc/untangle-net-alpaca/netConfig");
         } catch (SettingsManager.SettingsException e) {
             logger.error("Unable to read license file: ", e );
             return null;

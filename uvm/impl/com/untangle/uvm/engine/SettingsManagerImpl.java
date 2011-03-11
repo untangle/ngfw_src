@@ -1,3 +1,4 @@
+/* $Id$ */
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
@@ -44,11 +45,6 @@ public class SettingsManagerImpl implements SettingsManager
      */
     public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd-HHmm");
 
-    /**
-     * Default base path used when a base path is not specified
-     */
-    private String defaultBasePath = System.getProperty("uvm.settings.dir");
-
     private JSONSerializer serializer = null;
 
     private final Map<String, Object> pathLocks = new HashMap<String, Object>();
@@ -73,16 +69,15 @@ public class SettingsManagerImpl implements SettingsManager
     /**
      * Documented in SettingsManager.java
      */
-    public <T> T load(Class<T> clz, String dirName, String id)
+    public <T> T load(Class<T> clz, String fileName)
         throws SettingsException
     {
-        if (!_checkLegalName(id)) {
-            throw new IllegalArgumentException("Invalid id value: '" + id + "'");
+        if (!_checkLegalName(fileName)) {
+            throw new IllegalArgumentException("Invalid file name: '" + fileName + "'");
         }
 
-        return loadBasePath(clz, this.defaultBasePath, dirName, id);
+        return _loadImpl(clz, fileName);
     }
-
 
     /**
      * Documented in SettingsManager.java
@@ -136,47 +131,26 @@ public class SettingsManagerImpl implements SettingsManager
     /**
      * Documented in SettingsManager.java
      */
-    public <T> T save(Class<T> clz, String dirName, String id, T value)
+    public <T> T save(Class<T> clz, String fileName, T value)
         throws SettingsException
     {
-        if (!_checkLegalName(id)) {
-            throw new IllegalArgumentException("Invalid id value: '" + id + "'");
+        if (!_checkLegalName(fileName)) {
+            throw new IllegalArgumentException("Invalid file name: '" + fileName + "'");
         }
 
-        return _saveImpl(clz, this.defaultBasePath, dirName, id, value);
+        return _saveImpl(clz, fileName, value);
     }
+
 
     /**
-     * Documented in SettingsManager.java
+     * Implementation of the load
+     * This appends ".js" to the filename, opens the file, and then calls loadInputStream
      */
-    public <T> T loadBasePath(Class<T> clz, String basePath, String dirName, String id)
-        throws SettingsException
-    {
-        if (!_checkLegalName(id)) {
-            throw new IllegalArgumentException("Invalid id value: '" + id + "'");
-        }
-
-        return _loadImpl(clz, basePath, dirName, id);
-    }
-
-    /**
-     * Documented in SettingsManager.java
-     */
-    public <T> T saveBasePath(Class<T> clz, String basePath, String dirName, String id, T value)
-        throws SettingsException
-    {
-        if (!_checkLegalName(id)) {
-            throw new IllegalArgumentException("Invalid id value: '" + id + "'");
-        }
-
-        return _saveImpl(clz, basePath, dirName, id, value);
-    }
-    
     @SuppressWarnings("unchecked") //JSON
-    private <T> T _loadImpl(Class<T> clz, String basePath, String dirName, String query)
+    private <T> T _loadImpl(Class<T> clz, String fileName)
         throws SettingsException
     {
-        File f = _buildHeadPath(clz, basePath, dirName, query);
+        File f = new File(fileName + ".js");
         if (!f.exists()) {
             return null;
         }
@@ -195,6 +169,10 @@ public class SettingsManagerImpl implements SettingsManager
         }
     }
 
+    /**
+     * Implementation of the load using a stream
+     * 
+     */
     @SuppressWarnings("unchecked") //JSON
     private <T> T _loadInputStream(Class<T> clz, InputStream is)
         throws SettingsException
@@ -226,11 +204,15 @@ public class SettingsManagerImpl implements SettingsManager
         }
     }
     
-    private <T> T _saveImpl(Class<T> clz, String basePath, String dirName, String query, T value)
+    /**
+     * Implementation of the save
+     */
+    private <T> T _saveImpl(Class<T> clz, String fileName, T value)
         throws SettingsException
     {
-        File link = _buildHeadPath(clz, basePath, dirName, query);
-        File output = _buildVersionPath(clz, basePath, dirName, query);
+        File link = new File(fileName + ".js");
+        String versionString = String.valueOf(DATE_FORMATTER.format(new Date()));
+        File output = new File(fileName + ".js" + "-version-" + ".js");
 
         Object lock = this.getLock(output.getParentFile().getAbsolutePath());
 
@@ -316,36 +298,8 @@ public class SettingsManagerImpl implements SettingsManager
                 } catch (Exception e) {
                 }
             }
-            return _loadImpl(clz, basePath, dirName, query);
+            return _loadImpl(clz, fileName);
         }
-    }
-
-    private File _buildHeadPath(Class<?> clz, String basePath, String dirName, String query)
-    {
-        String clzName = clz.getCanonicalName();
-        if (clzName == null) {
-            throw new IllegalArgumentException("null canonical name: '" + clz.toString() + "'");
-        }
-
-        /* First build the file string */
-        String s = File.separator;
-        return new File(basePath + s + dirName + s /* + clzName */ + s + query + ".js");
-    }
-
-    private File _buildVersionPath(Class<?> clz, String basePath, String dirName, String query)
-    {
-        String clzName = clz.getCanonicalName();
-        if (clzName == null) {
-            throw new IllegalArgumentException("null canonical name: '"
-                    + clz.toString() + "'");
-        }
-
-        /* First build the file string */
-        String s = File.separator;
-
-        //String versionString = String.valueOf(System.currentTimeMillis()) + "-" + DATE_FORMATTER.format(new Date());
-        String versionString = String.valueOf(DATE_FORMATTER.format(new Date()));
-        return new File(basePath + s + dirName + s /* + clzName */ + s + query + ".js" + "-version-" + versionString + ".js");
     }
 
     /**
@@ -371,7 +325,7 @@ public class SettingsManagerImpl implements SettingsManager
     private boolean _checkLegalName(String name)
         throws IllegalArgumentException
     {
-        if (!VALID_CHARACTERS.matcher(name).matches()) {
+        if (!VALID_CHARACTERS.matcher(name.replace("/","")).matches()) {
             logger.error("Illegal name: " + name);
             return false;
         }
