@@ -206,15 +206,21 @@ public class SettingsManagerImpl implements SettingsManager
     
     /**
      * Implementation of the save
+     *
+     * This serializes the JSON object to a tmp file
+     * Then formats that tmp file and copies it to another file
+     * Then it repoints the symlink
      */
     private <T> T _saveImpl(Class<T> clz, String fileName, T value)
         throws SettingsException
     {
         File link = new File(fileName + ".js");
         String versionString = String.valueOf(DATE_FORMATTER.format(new Date()));
-        File output = new File(fileName + ".js" + "-version-" + ".js");
+        String outputFile    = fileName + ".js" + "-version-" + versionString + ".js";
+        String outputFileTmp = outputFile + ".tmp";
+        File outputTmp = new File(outputFileTmp);
 
-        Object lock = this.getLock(output.getParentFile().getAbsolutePath());
+        Object lock = this.getLock(outputTmp.getParentFile().getAbsolutePath());
 
         /*
          * Synchronized on the name of the parent directory, so two files cannot
@@ -233,29 +239,34 @@ public class SettingsManagerImpl implements SettingsManager
 
             FileWriter fileWriter = null;
             try {
-                File parentFile = output.getParentFile();
+                File parentFile = outputTmp.getParentFile();
 
                 /* Create the directory structure */
                 parentFile.mkdirs();
 
-                fileWriter = new FileWriter(output);
+                fileWriter = new FileWriter(outputTmp);
                 String json = this.serializer.toJSON(value);
                 logger.debug("Saving Settings: \n" + json);
-
                 fileWriter.write(json);
                 fileWriter.close();
                 fileWriter = null;
 
+                String  formatCmdArray[] = new String[] { "/bin/sh", "-c", "python -m simplejson.tool " + outputFileTmp + " > " + outputFile };
+                Process process = UvmContextImpl.context().exec(formatCmdArray);
+                int exitCode = process.waitFor();
+                outputTmp.delete();
+                process.destroy();
+                
                 /*
                  * Why must SUN/Oracle try everyone's patience; The API for
                  * creating symbolic links is in Java 1.7
                  */
-                String[] chops = output.toString().split(File.separator);
+                String[] chops = outputFile.split(File.separator);
                 String filename = chops[chops.length - 1];
                 String cmdArray[] = new String[] { "ln", "-sf", "./"+filename, link.toString() };
 
-                Process process = UvmContextImpl.context().exec(cmdArray);
-                int exitCode = process.waitFor();
+                process = UvmContextImpl.context().exec(cmdArray);
+                exitCode = process.waitFor();
                 String line = null;
                 BufferedReader tmp = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 
@@ -285,7 +296,7 @@ public class SettingsManagerImpl implements SettingsManager
                  *  fileWriter = null;
                  */
             } catch (IOException e) {
-                throw new SettingsException("Unable to load the file: '" + output + "'", e);
+                throw new SettingsException("Unable to load the file: '" + fileName + "'", e);
             } catch (MarshallException e) {
                 throw new SettingsException("Unable to marshal json string:", e);
             } catch (InterruptedException e) {
