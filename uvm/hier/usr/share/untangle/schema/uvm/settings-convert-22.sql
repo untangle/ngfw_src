@@ -19,6 +19,12 @@ UPDATE settings.u_user_policy_rule SET server_intf_matcher = '6' WHERE server_in
 UPDATE settings.u_user_policy_rule SET server_intf_matcher = '7' WHERE server_intf_matcher = '6';
 UPDATE settings.u_user_policy_rule SET server_intf_matcher = '250' WHERE server_intf_matcher = '7';
 
+UPDATE settings.u_user_policy_rule SET client_intf_matcher = 'any' WHERE client_intf_matcher = 'more_trusted';
+UPDATE settings.u_user_policy_rule SET client_intf_matcher = 'any' WHERE client_intf_matcher = 'less_trusted';
+
+UPDATE settings.u_user_policy_rule SET server_intf_matcher = 'any' WHERE server_intf_matcher = 'more_trusted';
+UPDATE settings.u_user_policy_rule SET server_intf_matcher = 'any' WHERE server_intf_matcher = 'less_trusted';
+
 -- drop obsolete (unused) tables
 DROP TABLE settings.u_ddnsq_settings;
 DROP TABLE settings.u_dhcp_lease_rule;

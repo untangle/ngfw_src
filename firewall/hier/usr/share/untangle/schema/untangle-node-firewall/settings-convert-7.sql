@@ -18,3 +18,11 @@ UPDATE settings.n_firewall_rule SET dst_intf_matcher = '5' WHERE dst_intf_matche
 UPDATE settings.n_firewall_rule SET dst_intf_matcher = '6' WHERE dst_intf_matcher = '5';
 UPDATE settings.n_firewall_rule SET dst_intf_matcher = '7' WHERE dst_intf_matcher = '6';
 UPDATE settings.n_firewall_rule SET dst_intf_matcher = '250' WHERE dst_intf_matcher = '7';
+
+
+UPDATE settings.n_firewall_rule set src_intf_matcher = 'any' WHERE src_intf_matcher = 'more_trusted';
+UPDATE settings.n_firewall_rule set src_intf_matcher = 'any' WHERE src_intf_matcher = 'less_trusted';
+
+UPDATE settings.n_firewall_rule set dst_intf_matcher = 'any' WHERE dst_intf_matcher = 'more_trusted';
+UPDATE settings.n_firewall_rule set dst_intf_matcher = 'any' WHERE dst_intf_matcher = 'less_trusted';
+

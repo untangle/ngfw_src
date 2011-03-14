@@ -431,7 +431,7 @@ Ung.Util= {
 
             }
             
-            if ( key != null && key != "less_trusted" && key != "more_trusted" ) {
+            if ( key != null ) {
                 data[datacount] = [ key,name ];
                 datacount++;
             }
