@@ -369,7 +369,6 @@ GROUP BY time, uid, hname, client_intf, server_intf
         if self.__nat_installed():
             self.__generate_abs_leases(m, start_date, end_date)
             self.__generate_relative_leases(m, start_date, end_date)
-            self.__generate_static_leases(m, start_date, end_date)
 
         self.__generate_manual_map(m, start_date, end_date)
 
@@ -449,29 +448,6 @@ FROM events.n_router_evt_dhcp AS evt
 WHERE hostname != '' AND ((%s <= evt.time_stamp AND evt.time_stamp <= %s)
     OR (%s <= evt.end_of_lease AND evt.end_of_lease <= %s))
 ORDER BY evt.time_stamp""", start_date, end_date)
-
-    @print_timing
-    def __generate_static_leases(self, m, start_date, end_date):
-        conn = sql_helper.get_connection()
-        try:
-            curs = conn.cursor()
-
-            curs.execute("""
-SELECT hostname_list, static_address
-FROM settings.u_dns_static_host_rule""")
-
-            while 1:
-                r = curs.fetchone()
-                if not r:
-                    break
-
-                (hostname, ip) = r
-
-                hostname = hostname.split(" ")[0]
-
-                m[ip] = [Lease((start_date, end_date, ip, hostname, None))]
-        finally:
-            conn.commit()
 
     @print_timing
     def __generate_manual_map(self, m, start_date, end_date):
