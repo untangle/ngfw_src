@@ -76,7 +76,6 @@ CREATE TABLE settings.n_cpd_settings (
     authentication_type TEXT,
     idle_timeout INT4,
     timeout INT4,
-    logout_button BOOL,
     concurrent_logins BOOL,
     page_type TEXT,
     page_parameters TEXT,

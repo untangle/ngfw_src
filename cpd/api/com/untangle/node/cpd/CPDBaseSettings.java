@@ -16,7 +16,6 @@ public class CPDBaseSettings implements Serializable {
     private AuthenticationType authenticationType = AuthenticationType.NONE;
     private int idleTimeout = 0;
     private int timeout = 3600;
-    private boolean isLogoutButtonEnabled = false;
     private boolean areConcurrentLoginsEnabled = true;
     private PageType pageType = PageType.BASIC_MESSAGE;
     private String pageParameters = "";
@@ -86,17 +85,6 @@ public class CPDBaseSettings implements Serializable {
     public void setTimeout( int newValue )
     {
         this.timeout = newValue;
-    }
-    
-    @Column(name="logout_button", nullable=false)
-    public boolean getLogoutButtonEnabled()
-    {
-        return this.isLogoutButtonEnabled;
-    }
-    
-    public void setLogoutButtonEnabled( boolean newValue)
-    {
-        this.isLogoutButtonEnabled = newValue;
     }
     
     @Column(name="concurrent_logins", nullable=false)

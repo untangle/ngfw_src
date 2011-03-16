@@ -268,7 +268,6 @@ public class CPDManager
         json.put("authentication_type", baseSettings.getAuthenticationType().toString());
         json.put("idle_timeout_s", baseSettings.getIdleTimeout());
         json.put("timeout_s", baseSettings.getTimeout());
-        json.put("logout_button_enabled", baseSettings.getLogoutButtonEnabled());
         json.put("page_type", baseSettings.getPageType().toString());
         json.put("page_parameters", new JSONObject(baseSettings.getPageParameters()));
         json.put("redirect_https_enabled", baseSettings.getRedirectHttpsEnabled());

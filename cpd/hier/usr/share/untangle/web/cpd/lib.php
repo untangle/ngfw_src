@@ -47,7 +47,6 @@ SELECT
   n_cpd_settings.authentication_type AS authentication_type, 
   n_cpd_settings.idle_timeout AS idle_timeout, 
   n_cpd_settings.timeout AS timeout, 
-  n_cpd_settings.logout_button AS logout_button, 
   n_cpd_settings.concurrent_logins AS concurrent_logins, 
   n_cpd_settings.page_type AS page_type, 
   n_cpd_settings.page_parameters AS page_parameters, 

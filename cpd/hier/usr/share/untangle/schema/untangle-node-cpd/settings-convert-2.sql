@@ -13,4 +13,5 @@ UPDATE settings.n_cpd_capture_rule SET client_interface = '250' WHERE client_int
 UPDATE settings.n_cpd_capture_rule SET client_interface = 'any' WHERE client_interface = 'more_trusted';
 UPDATE settings.n_cpd_capture_rule SET client_interface = 'any' WHERE client_interface = 'less_trusted';
 
-
+-- obsolete setting
+ALTER TABLE settings.n_cpd_settings DROP COLUMN logout_button;

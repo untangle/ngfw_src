@@ -5,7 +5,6 @@
   <link href="/images/favicon-captive-portal.png" type="image/png" rel="icon"></link>
   <script type="text/javascript">
      var redirectUrl = "<?= get_redirect_url() ?>";
-     var displayLogoutButton = <?= ( $cpd_settings["logout_button"] == "t" ) ? "true" : "false" ?>;
   </script>
   <script src="json2-min.js" type="text/javascript"></script>
   <script src="portal.js" type="text/javascript"></script>

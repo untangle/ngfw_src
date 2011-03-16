@@ -4,7 +4,7 @@ var _popup,popupopened = false;
 function acceptAgreement(){
     var agree = document.getElementById('agree'),agreeValue; 
     if(agree){
-        agreeValue = agree.type == 'hidden' ? true : agree.checked 
+        agreeValue = agree.type == 'hidden' ? true : agree.checked;
         if(agreeValue === true){
             try{
                 showPleaseWait();
@@ -12,7 +12,7 @@ function acceptAgreement(){
 
             }catch(exn){            
                 hidePleaseWait();
-                showError("An error occured. Please try again.")
+                showError("An error occured. Please try again.");
             }
             return;
         }else{
@@ -97,11 +97,7 @@ function authenticateUser( errorField )
         if (req.readyState == 4) {
             var v = JSON.parse( req.responseText );
             if ( v["authenticate"] == true ) {
-                if(displayLogoutButton){
-                    showLogoutPopup();                    
-                }else{
-                    redirectUser();                       
-                }
+                redirectUser();                       
                 return;
             }
 
@@ -141,34 +137,6 @@ function authenticateUser( errorField )
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     req.send("username=" + escape( username ) + "&password=" + escape( password ));
 };
-function showLogoutPopup(){
-    if ( displayLogoutButton ) {
-        var _top  = 5,_left = screen.width-315;
-	
-    	_popup = window.open("logout.php","cpd_logout", "height=90,width=300,status=no,toolbar=no,address=no,menubar=no,location=no,top="+_top+",left="+_left);
-    	try{
-            _popup.blur();
-        }catch(exn){        
-        }
-        window.focus();    	
-    	window.setTimeout(function()
-            {
-                if(_hasPopupBlocker(_popup) || popupopened == false){
-                    TINY.box.show('<div>The logout window was blocked by the browser\'s pop-up blocker.<br/><br/><A href="#" onclick="return showLogoutWindowAndRedirect()" style="font-weight:bold">Show Logout Window and Continue to Site</a>.</div');                
-                }else{    
-                    _popup.blur();                
-                    window.focus();                       
-                    _popup.focus();
-                }
-            },3000);     
-    }
-}
-function showLogoutWindowAndRedirect(){
-    var _top  = 5,_left = screen.width-315;
-    _popup = window.open("logout.php","cpd_logout", "height=90,width=300,status=no,toolbar=no,address=no,menubar=no,location=no,top="+_top+",left="+_left);
-    redirectUser();
-    return false;    
-}
 function redirectUser()
 {
     var t = redirectUrl;
@@ -178,38 +146,6 @@ function redirectUser()
     
     window.location.href = t;
 
-}
-function _hasPopupBlocker(poppedWindow) { 
-    var result = false; 
- 
-    try { 
-        if (typeof poppedWindow == 'undefined') {     
-            // Safari with popup blocker... leaves the popup window handle undefined 
-            result = true; 
-        } 
-        else if (poppedWindow && poppedWindow.closed) { 
-            // This happens if the user opens and closes the client window... 
-            // Confusing because the handle is still available, but it's in a "closed" state. 
-            // We're not saying that the window is not being blocked, we're just saying 
-            // that the window has been closed before the test could be run. 
-            result = false; 
-        } 
-        else if (poppedWindow && poppedWindow.logout) { 
-            // This is the actual test. The client window should be fine. 
-            result = false; 
-        } 
-        else { 
-            // Else we'll assume the window is not OK 
-            result = true; 
-        } 
- 
-    } catch (err) { 
-        //if (console) { 
-        //    console.warn("Could not access popup window", err); 
-        //} 
-    } 
- 
-    return result; 
 }
 var BrowserDetect = {
 	init: function () {
@@ -231,10 +167,11 @@ var BrowserDetect = {
 			else if (dataProp)
 				return data[i].identity;
 		}
+        return null;
 	},
 	searchVersion: function (dataString) {
 		var index = dataString.indexOf(this.versionSearchString);
-		if (index == -1) return;
+		if (index == -1) return null;
 		return parseFloat(dataString.substring(index+this.versionSearchString.length+1));
 	},
 	dataBrowser: [
@@ -329,7 +266,7 @@ var BrowserDetect = {
 BrowserDetect.init();
 var TINY={};
 
-function T$(i){return document.getElementById(i)}
+function T$(i){return document.getElementById(i);}
 TINY.setStyle = function(o){
     if(o.id=='tinybox'){
         o.style.position = 'absolute';
@@ -348,7 +285,7 @@ TINY.setStyle = function(o){
         o.style.border = '1px solid #555';
         o.style.background = '#000';
         o.style.zIndex = 1500;
-    }else if (o.is = 'tinycontent'){
+    }else if (o.is == 'tinycontent'){
         o.style.background = '#FFF';
     }else{
         Unt.db('id doesn not match');
@@ -371,28 +308,28 @@ TINY.box=function(){
 				b=document.createElement('div'); b.id='tinycontent';
 				TINY.setStyle(b);
 				document.body.appendChild(m); document.body.appendChild(p); p.appendChild(b);
-				m.onclick=TINY.box.hide; window.onresize=TINY.box.resize; f=1
+				m.onclick=TINY.box.hide; window.onresize=TINY.box.resize; f=1;
 			}
 			if(!a&&!u){
 				p.style.width=w?w+'px':'auto'; p.style.height=h?h+'px':'auto';
-				p.style.backgroundImage='none'; b.innerHTML=c
+				p.style.backgroundImage='none'; b.innerHTML=c;
 			}else{
-				b.style.display='none'; p.style.width=p.style.height='100px'
+				b.style.display='none'; p.style.width=p.style.height='100px';
 			}
 			this.mask();
 			ic=c; iu=u; iw=w; ih=h; ia=a; this.alpha(m,1,80,3);
-			if(t){setTimeout(function(){TINY.box.hide()},1000*t)}
+			if(t){setTimeout(function(){TINY.box.hide();},1000*t);}
 		},
 		fill:function(c,u,w,h,a){
 			if(u){
 				p.style.backgroundImage='';
 				var x=window.XMLHttpRequest?new XMLHttpRequest():new ActiveXObject('Microsoft.XMLHTTP');
 				x.onreadystatechange=function(){
-					if(x.readyState==4&&x.status==200){TINY.box.psh(x.responseText,w,h,a)}
+					if(x.readyState==4&&x.status==200){TINY.box.psh(x.responseText,w,h,a);}
 				};
-				x.open('GET',c,1); x.send(null)
+				x.open('GET',c,1); x.send(null);
 			}else{
-				this.psh(c,w,h,a)
+				this.psh(c,w,h,a);
 			}
 		},
 		psh:function(c,w,h,a){
@@ -404,11 +341,11 @@ TINY.box=function(){
 					w=parseInt(b.offsetWidth); h=parseInt(b.offsetHeight);
 					b.style.display='none'; p.style.width=x; p.style.height=y;
 				}else{
-					b.innerHTML=c
+					b.innerHTML=c;
 				}
-				this.size(p,w,h)
+				this.size(p,w,h);
 			}else{
-				p.style.backgroundImage='none'
+				p.style.backgroundImage='none';
 			}
 		},
 		destroy : function(){
@@ -428,24 +365,24 @@ TINY.box=function(){
 			Unt.cleanup();
 		},
 		resize:function(){
-			TINY.box.pos(); TINY.box.mask()
+			TINY.box.pos(); TINY.box.mask();
 		},
 		mask:function(){
 			m.style.height=TINY.page.total(1)+'px';
-			m.style.width=''; m.style.width=TINY.page.total(0)+'px'
+			m.style.width=''; m.style.width=TINY.page.total(0)+'px';
 		},
 		pos:function(){
 			var t=(TINY.page.height()/2)-(p.offsetHeight/2); t=t<10?10:t;
 			p.style.top=(t+TINY.page.top())+'px';
-			p.style.left=(TINY.page.width()/2)-(p.offsetWidth/2)+'px'
+			p.style.left=(TINY.page.width()/2)-(p.offsetWidth/2)+'px';
 		},
 		alpha:function(e,d,a){
 			clearInterval(e.ai);
 			if(d==1){
 				e.style.opacity=0; e.style.filter='alpha(opacity=0)';
-				e.style.display='block'; this.pos()
+				e.style.display='block'; this.pos();
 			}
-			e.ai=setInterval(function(){TINY.box.ta(e,a,d)},20)
+			e.ai=setInterval(function(){TINY.box.ta(e,a,d);},20);
 		},
 		ta:function(e,a,d){
 			var o=Math.round(e.style.opacity*100);
@@ -453,13 +390,13 @@ TINY.box=function(){
 				clearInterval(e.ai);
 				if(d==-1){
 					e.style.display='none';
-					e==p?TINY.box.alpha(m,-1,0,2):b.innerHTML=p.style.backgroundImage=''
+					e==p?TINY.box.alpha(m,-1,0,2):b.innerHTML=p.style.backgroundImage='';
 				}else{
-					e==m?this.alpha(p,1,100):TINY.box.fill(ic,iu,iw,ih,ia)
+					e==m?this.alpha(p,1,100):TINY.box.fill(ic,iu,iw,ih,ia);
 				}
 			}else{
 				var n=Math.ceil((o+((a-o)*.5))); n=n==1?0:n;
-				e.style.opacity=n/100; e.style.filter='alpha(opacity='+n+')'
+				e.style.opacity=n/100; e.style.filter='alpha(opacity='+n+')';
 			}
 		},
 		size:function(e,w,h){
@@ -467,16 +404,16 @@ TINY.box=function(){
 			var ow=e.offsetWidth, oh=e.offsetHeight,
 			wo=ow-parseInt(e.style.width), ho=oh-parseInt(e.style.height);
 			var wd=ow-wo>w?0:1, hd=(oh-ho>h)?0:1;
-			e.si=setInterval(function(){TINY.box.ts(e,w,wo,wd,h,ho,hd)},20)
+			e.si=setInterval(function(){TINY.box.ts(e,w,wo,wd,h,ho,hd);},20);
 		},
 		ts:function(e,w,wo,wd,h,ho,hd){
 			var ow=e.offsetWidth-wo, oh=e.offsetHeight-ho;
 			if(ow==w&&oh==h){
-				clearInterval(e.si); p.style.backgroundImage='none'; b.style.display='block'
+				clearInterval(e.si); p.style.backgroundImage='none'; b.style.display='block';
 			}else{
-				if(ow!=w){var n=ow+((w-ow)*.5); e.style.width=wd?Math.ceil(n)+'px':Math.floor(n)+'px'}
-				if(oh!=h){var n=oh+((h-oh)*.5); e.style.height=hd?Math.ceil(n)+'px':Math.floor(n)+'px'}
-				this.pos()
+				if(ow!=w){var n=ow+((w-ow)*.5); e.style.width=wd?Math.ceil(n)+'px':Math.floor(n)+'px';}
+				if(oh!=h){var n=oh+((h-oh)*.5); e.style.height=hd?Math.ceil(n)+'px':Math.floor(n)+'px';}
+				this.pos();
 			}
 		}
 	}

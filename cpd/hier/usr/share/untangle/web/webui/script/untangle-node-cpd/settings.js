@@ -706,17 +706,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         }
                     },{
                         xtype : "checkbox",
-                        boxLabel : this.i18n._("Logout Button Popup"),
-                        tooltip : this.i18n._("Clients will have a logout button pop-up after authentication to provide a way to instantly logout."),
-                        hideLabel : true,
-                        checked : this.getBaseSettings().logoutButtonEnabled,
-                        listeners : {
-                            "check" : function(elem, checked) {
-                                this.getBaseSettings().logoutButtonEnabled = checked;
-                            }.createDelegate(this)
-                        }
-                    },{
-                        xtype : "checkbox",
                         boxLabel : this.i18n._("Allow Concurrent Logins"),
                         tooltip : this.i18n._("This will allow multiple hosts to use the same username & password concurrently."),
                         hideLabel : true,
