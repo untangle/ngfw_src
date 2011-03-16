@@ -416,19 +416,19 @@ TINY.box=function(){
 				this.pos();
 			}
 		}
-	}
+	};
 }();
 
 TINY.page=function(){
 	return{
-		top:function(){return document.documentElement.scrollTop||document.body.scrollTop},
-		width:function(){return self.innerWidth||document.documentElement.clientWidth||document.body.clientWidth},
-		height:function(){return self.innerHeight||document.documentElement.clientHeight||document.body.clientHeight},
+		top:function(){return document.documentElement.scrollTop||document.body.scrollTop;},
+		width:function(){return self.innerWidth||document.documentElement.clientWidth||document.body.clientWidth;},
+		height:function(){return self.innerHeight||document.documentElement.clientHeight||document.body.clientHeight;},
 		total:function(d){
 			var b=document.body, e=document.documentElement;
 			return d?Math.max(Math.max(b.scrollHeight,e.scrollHeight),Math.max(b.clientHeight,e.clientHeight)):
-			Math.max(Math.max(b.scrollWidth,e.scrollWidth),Math.max(b.clientWidth,e.clientWidth))
+			Math.max(Math.max(b.scrollWidth,e.scrollWidth),Math.max(b.clientWidth,e.clientWidth));
 		}
-	}
+	};
 }();
 
