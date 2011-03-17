@@ -958,9 +958,12 @@ AND NOT wf_%s_reason = 'I'""" % (self.__vendor_name, self.__vendor_name)
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('Hits'))
+                host = r[0]
+                if len(host) > 25:
+                    host = host[:25] + "..."
+                ks = KeyStatistic(host, r[1], _('Hits'))
                 lks.append(ks)
-                dataset[r[0]] = r[1]
+                dataset[host] = r[1]
         finally:
             conn.commit()
 
