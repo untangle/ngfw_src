@@ -188,7 +188,8 @@ class RealApt
     log "start #{@stamp}"
     log "apt-get update #{UPDT_OPTS}"
     IO.popen("apt-get update #{UPDT_OPTS}") do |io|
-      io.each_line { |l| log l }
+      io.each_line { |l|
+        log l unless l =~ /W: (Conflicting distribution|You may want to run apt-get update to correct these problems)/ }
       io.close
       r = $?
     end
