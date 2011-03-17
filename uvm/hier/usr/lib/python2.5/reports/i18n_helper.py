@@ -21,4 +21,6 @@ import gettext
 import os
 
 def get_translation(domain):
-    return gettext.translation(domain, fallback=True)
+#    return gettext.translation(domain, fallback=True)
+    return gettext.translation(domain, fallback=True, codeset='utf-8')
+

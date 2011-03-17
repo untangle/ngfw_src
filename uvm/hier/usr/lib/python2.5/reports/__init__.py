@@ -427,6 +427,12 @@ class Highlight:
     @property
     def name(self):
         return self.__name
+    @property
+    def string_template(self):
+        return self.__string_template
+    @property
+    def title(self):
+        return self.__title
 
     def generate(self, report_base, section_base,
                  end_date, report_days=1,
@@ -443,8 +449,19 @@ class Highlight:
             return None
 
         element = Element('highlight')
-        element.set('name', self.__name)
-        element.set('string-template', self.__string_template)
+
+        for k, v in (('name', 'name'), ('string-template', 'string_template')):
+            v = getattr(self, "%s" % v)
+            try:
+                v = v.decode('utf-8')
+            except:
+                pass
+
+            try:
+                element.set(k, v)
+            except:
+                logger.critical("Could not set %s to '%s' (type '%s')" % (k, v, type(v)))
+                raise
 
         for k,v in self.__values.iteritems():
             value_element = Element('highlight-value')
