@@ -1104,20 +1104,21 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                     this.cardPanel.layout.setActiveItem( 0 );
                 }
 
-                this.refreshNetworkSettings();
+                this.refreshNetworkDisplay();
 
                 this.isInitialized = true;
-                rpc.networkManager.getWizardWAN( complete );
-                
+                complete();
             }.createDelegate(this),
             onNext : this.saveSettings.createDelegate( this ),
             onValidate : this.validateInternetConnection.createDelegate(this)
         };
     },
+
     validateInternetConnection : function()
     {
         return _validate(this.cardPanel.layout.activeItem.items.items);
     },
+
     onSelectConfig : function( combo, record, index )
     {
         this.cardPanel.layout.setActiveItem( index );
@@ -1129,10 +1130,12 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
     },
+
     afterReauthenticate : function( handler )
     {
         this.cardPanel.layout.activeItem.saveData( handler );
     },
+
     saveDHCP : function( handler, hideWindow )
     {
         if ( hideWindow == null ) {
@@ -1206,20 +1209,14 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 
         Ung.SetupWizard.CurrentValues.wanConfiguration = result;
 
-        if ( result.host == Ung.SetupWizard.BOGUS_ADDRESS ) {
-            Ung.SetupWizard.CurrentValues.wanConfiguration.primaryAddress = null;
-            Ung.SetupWizard.CurrentValues.wanConfiguration.gateway = null;
-            Ung.SetupWizard.CurrentValues.wanConfiguration.dns1 = null;
-            Ung.SetupWizard.CurrentValues.wanConfiguration.dns2 = null;
-        }
-
-        this.refreshNetworkSettings();
+        this.refreshNetworkDisplay();
 
         if ( hideWindow || ( hideWindow == null )) {
             Ext.MessageBox.hide();
         }
 
-        handler();
+        if (handler != null)
+            handler();
     },
 
     /* Refresh the current network settings (lease or whatever) */
@@ -1300,12 +1297,21 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 
     /* This does not reload the settings, it just updates what is
      * displayed inside of the User Interface. */
-    refreshNetworkSettings : function()
+    refreshNetworkDisplay : function()
     {
         var c = 0;
+        Ung.SetupWizard.CurrentValues.wanConfiguration = rpc.networkManager.getWizardWAN();
         var wanConfig = Ung.SetupWizard.CurrentValues.wanConfiguration;
         var isConfigured = (wanConfig.primaryAddress != null);
 
+        if ( wanConfig.primaryAddress == Ung.SetupWizard.BOGUS_ADDRESS ) {
+            wanConfig.primaryAddress = null;
+            wanConfig.gateway = null;
+            wanConfig.dns1 = null;
+            wanConfig.dns2 = null;
+            isConfigured = false;
+        }
+        
         if (isConfigured) {
             for ( c = 0; c < this.configTypes.length ; c++ ) {
                 if (this.configTypes[c][0] == wanConfig.configType)
@@ -1324,6 +1330,13 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                     this.updateValue( card.find( "name", "dns2" )[0], wanConfig.dns2 );
                 }
             }
+        } else {
+            /* not configured */
+            this.updateValue( card.find( "name", "ip" )[0] , "" );
+            this.updateValue( card.find( "name", "netmask" )[0] , "" );
+            this.updateValue( card.find( "name", "gateway" )[0], "" );
+            this.updateValue( card.find( "name", "dns1" )[0], "" );
+            this.updateValue( card.find( "name", "dns2" )[0], "" );
         }
     },
 
