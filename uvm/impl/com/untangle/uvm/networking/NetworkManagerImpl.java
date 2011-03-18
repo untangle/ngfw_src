@@ -353,6 +353,16 @@ public class NetworkManagerImpl implements NetworkManager
             throw new Exception( "Unable to configure the external interface.", e );
         }
 
+        /**
+         * now force a write of netConfig.js
+         * and re-read it
+         */
+        e = retryAlpacaCall( "write_files", null );
+        if ( e != null ) {
+            logger.warn( "Unable to write files.", e );
+        }
+        refreshNetworkConfig();
+
         return getNetworkConfiguration().findFirstWAN();
     }
 

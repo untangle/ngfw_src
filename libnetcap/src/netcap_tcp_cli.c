@@ -65,11 +65,9 @@ int _netcap_tcp_setsockopt_cli( int sock );
 
 static int  _retrieve_and_reject( netcap_session_t* netcap_sess, netcap_callback_action_t action );
 static int  _send_icmp_response ( netcap_session_t* netcap_sess, netcap_pkt_t* syn );
-
 static int  _forward_rejection  ( netcap_session_t* netcap_sess, netcap_pkt_t* syn );
 
-int _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_callback_action_t action, 
-                                       netcap_callback_flag_t flags )
+int _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_callback_action_t action, netcap_callback_flag_t flags )
 {
     int fd;
     tcp_msg_t* msg;
@@ -220,8 +218,7 @@ int _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_cal
     return 0;
 }
 
-int  _netcap_tcp_callback_cli_reject( netcap_session_t* netcap_sess, netcap_callback_action_t action, 
-                                      netcap_callback_flag_t flags )
+int  _netcap_tcp_callback_cli_reject( netcap_session_t* netcap_sess, netcap_callback_action_t action, netcap_callback_flag_t flags )
 {
     debug( 6, "TCP: (%10u) Client Reject(%d) %s\n", netcap_sess->session_id, 
            action, netcap_session_cli_tuple_print( netcap_sess ));
@@ -346,8 +343,7 @@ int _netcap_tcp_cli_send_reset( netcap_pkt_t* pkt )
 }
 
 /* Do whatever is necessary to undo everything that was done to vector a TCP session */
-int _netcap_tcp_callback_liberate    ( netcap_session_t* netcap_sess, netcap_callback_action_t action, 
-                                       netcap_callback_flag_t flags )
+int _netcap_tcp_callback_liberate    ( netcap_session_t* netcap_sess, netcap_callback_action_t action, netcap_callback_flag_t flags )
 {
     if ( netcap_sess == NULL ) return errlogargs();
 

@@ -497,8 +497,7 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
 
     /* XXXXX Need to hold a lock between calling the get and putting the SYN in the mailbox
      * so the mailbox cannot be deleted from underneath the function */
-    sess = _netcap_get_or_create_sess( &new_sess_flag, cli_addr, cli_port, -1, srv_addr, srv_port, -1,
-                                       cli_intf, srv_intf, flags, 0 );
+    sess = _netcap_get_or_create_sess( &new_sess_flag, cli_addr, cli_port, -1, srv_addr, srv_port, -1, cli_intf, srv_intf, flags, 0 );
 
     if ( sess == NULL ) {
         return errlog( ERR_CRITICAL, "Could not find or create new session\n" );
