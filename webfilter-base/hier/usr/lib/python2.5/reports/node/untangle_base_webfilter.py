@@ -110,6 +110,9 @@ class WebFilterBaseNode(Node):
         sections.append(WebFilterDetailAll(self.__vendor_name))
         sections.append(WebFilterDetailDomains(self.__vendor_name))
 
+        if self.__vendor_name == 'esoft':
+            sections.append(WebFilterDetailUnblock(self.__vendor_name))
+
         return Report(self, sections)
 
     def events_cleanup(self, cutoff):
@@ -1082,6 +1085,55 @@ AND NOT wf_%s_reason = 'I'
 """ % (self.__vendor_name, self.__vendor_name,
        DateFromMx(start_date), DateFromMx(end_date),
        self.__vendor_name, self.__vendor_name)
+
+        if host:
+            sql += " AND hname = %s" % QuotedString(host)
+        if user:
+            sql += " AND uid = %s" % QuotedString(user)
+
+        return sql + " ORDER BY time_stamp DESC"
+
+class WebFilterDetailUnblock(DetailSection):
+    def __init__(self, vendor_name):
+        DetailSection.__init__(self, 'unblocks', _('Unblock Events'))
+
+        self.__vendor_name = vendor_name
+
+    def get_columns(self, host=None, user=None, email=None):
+        if email:
+            return None
+
+        rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
+
+        if host:
+            rv.append(ColumnDesc('hname', _('Client')))
+        else:
+            rv.append(ColumnDesc('hname', _('Client'), 'HostLink'))
+
+        if user:
+            rv.append(ColumnDesc('uid', _('User')))
+        else:
+            rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
+
+        rv += [ColumnDesc('url', _('Url'), 'URL'),
+               ColumnDesc('s_server_addr', _('Server Ip')),
+               ColumnDesc('c_client_addr', _('Client Ip'))]
+
+        return rv
+
+    def get_sql(self, start_date, end_date, host=None, user=None, email=None):
+        if email:
+            return None
+
+        sql = """\
+SELECT time_stamp, hname, uid,
+       CASE s_server_port WHEN 443 THEN 'https://' ELSE 'http://' END || host || uri,
+       host(s_server_addr), c_client_addr::text
+FROM reports.n_http_events
+WHERE time_stamp >= %s AND time_stamp < %s
+AND wf_%s_category = 'unblocked'
+""" % (DateFromMx(start_date), DateFromMx(end_date),
+       self.__vendor_name)
 
         if host:
             sql += " AND hname = %s" % QuotedString(host)
