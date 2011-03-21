@@ -739,7 +739,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         anchor:'100%',
                         height : 40
                     }]
-                }, {
+                },{
                     title: this.i18n._('Generation'),
                     defaults : {
                         xtype : 'fieldset',
@@ -747,7 +747,16 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         layout:'column'
                     },
                     items : [{
+	                        cls: 'description',
+	                        html : this.i18n._('You must complete each of these steps in order every time you import a new signed certificate!'),
+	                        bodyStyle : 'padding-bottom:10px;',
+	                        border : false
+                    	},{
                         items: [{
+                            border: false,
+                            width: 30,
+                            html:'<div class="step_counter">1</div>'
+                        },{
                             border: false,
                             width: 270,
                             layout: 'form',
@@ -774,6 +783,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         items: [{
                             border: false,
+                            width: 30,
+                            html:'<div class="step_counter">2</div>'
+                        },{
+                            border: false,
                             width: 270,
                             layout: 'form',
                             items: [{
@@ -798,6 +811,10 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         }]
                     },{
                         items: [{
+                            border: false,
+                            width: 30,
+                            html:'<div class="step_counter">3</div>'
+                        },{
                             border: false,
                             width: 270,
                             layout: 'form',
