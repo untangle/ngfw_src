@@ -144,7 +144,12 @@ Ext.override( Ext.form.TextField, {
                 html: this.boxLabel
             });
         }
-    })
+    }),
+    updateBoxLabel : function(html){
+        if(this.labelEl) {
+            this.labelEl.dom.innerHTML = html;
+        }
+    }
 });
 
 
@@ -167,54 +172,6 @@ Ung.form.TimeField = Ext.extend(Ext.form.TimeField, {
 });
 Ext.ComponentMgr.registerType('utimefield', Ung.form.TimeField);
 
-
-Ung.form.TextField = Ext.extend( Ext.form.TextField, {
-    onRender : function(ct, position)
-    {
-        Ung.form.TextField.superclass.onRender.call(this, ct, position);
-
-      var parent = this.el.parent();
-
-        if( this.boxLabel ) {
-            this.labelEl = parent.createChild({
-                tag: 'label',
-                htmlFor: this.el.id,
-                cls: 'x-form-textfield-detail',
-                html: this.boxLabel
-            });
-        }
-    },
-    updateBoxLabel : function(html){
-        if(this.labelEl){
-            this.labelEl.dom.innerHTML = html;
-        }
-    }
-});
-Ext.ComponentMgr.registerType('utextfield', Ung.form.TextField);
-Ung.form.NumberField = Ext.extend( Ext.form.NumberField, {
-    onRender : function(ct, position)
-    {
-        Ung.form.NumberField.superclass.onRender.call(this, ct, position);
-
-      var parent = this.el.parent();
-
-        if( this.boxLabel ) {
-            this.labelEl = parent.createChild({
-                tag: 'label',
-                htmlFor: this.el.id,
-                cls: 'x-form-textfield-detail',
-                html: this.boxLabel
-            });
-        }
-    },
-    updateBoxLabel : function(html){
-        if(this.labelEl){
-            this.labelEl.dom.innerHTML = html;
-        }
-    }
-});
-
-Ext.ComponentMgr.registerType('unumberfield', Ung.form.NumberField);
 Ung.Util= {
     goToStartPage: function () {
         Ext.MessageBox.wait(i18n._("Redirecting to the start page..."), i18n._("Please wait"));

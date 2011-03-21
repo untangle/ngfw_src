@@ -152,7 +152,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                                 fn : this.onFieldChange.createDelegate(this)
                             }
                         }
-                    },new Ung.form.TextField({
+                    },new Ext.form.TextField({
                         fieldLabel : i18n._('Organization Name'),
                         name : 'companyName',
                         value : info.companyName,
@@ -162,7 +162,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                                 fn : this.onFieldChange.createDelegate(this)
                             }
                         }
-                    }),new Ung.form.NumberField({
+                    }),new Ext.form.NumberField({
                         minValue : 0,
                         width : 60,
                         allowDecimals : false,

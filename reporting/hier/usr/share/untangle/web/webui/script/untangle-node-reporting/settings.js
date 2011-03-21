@@ -307,7 +307,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             width : 200,
                             minLength : 3,
                             minLengthText : String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
-                        }), new Ung.form.TextField({
+                        }), new Ext.form.TextField({
                             inputType: "password",
                             name : "Confirm Password",
                             dataIndex : "clearPassword",

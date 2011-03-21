@@ -931,7 +931,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     border: false,
                     html: this.i18n._("Traffic to the below network will be routed over the VPN to the remote site.") + "<br/>" +
                         this.i18n._("The remote site network IP/netmask must be separate from the local network IP/netmask.") + "<br/>" 
-                }, new Ung.form.TextField({
+                }, new Ext.form.TextField({
                     xtype : "textfield",
                     name : "Network address",
                     dataIndex : "network",
@@ -940,7 +940,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     allowBlank : false,
                     width : 200,
                     vtype : 'ipAddress'
-                }), new Ung.form.TextField({
+                }), new Ext.form.TextField({
                     xtype : "textfield",
                     name : "Network mask",
                     dataIndex : "netmask",

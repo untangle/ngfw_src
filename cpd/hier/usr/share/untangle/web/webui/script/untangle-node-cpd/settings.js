@@ -671,7 +671,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     autoHeight : true,
                     title : this.i18n._( "Session Settings" ),
                     items : [{
-                        xtype : "unumberfield",
+                        xtype : "numberfield",
                         allowNegative : false,
                         allowBlank : false,
                         name : "idleTimeout",
@@ -688,7 +688,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             }.createDelegate(this)
                         }
                     },{
-                        xtype : "unumberfield",
+                        xtype : "numberfield",
                         allowNegative : false,
                         allowBlank : false,
                         name : "timeout",
