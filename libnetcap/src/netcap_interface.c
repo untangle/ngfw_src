@@ -72,7 +72,7 @@
 
 #define SYSFS_ATTRIBUTE_INDEX  "ifindex"
 
-#define NETCAP_MARK_INTF_MAX    8 // temp lowered
+#define NETCAP_MARK_INTF_MAX    255
 #define NETCAP_MARK_INTF_MASK   0xFF
 
 // lookup maximum for the table
