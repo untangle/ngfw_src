@@ -618,7 +618,7 @@ JNIEXPORT void JNICALL Java_com_untangle_jnetcap_Netcap_cConfigureInterfaceArray
     int  intf_array_length;
     netcap_intf_string_t intf_name_array[NETCAP_MAX_INTERFACES];
     netcap_intf_t intf_array[NETCAP_MAX_INTERFACES];
-    jbyte *j_intf;
+    jint *j_intf;
     int c;
 
     if ( NULL == j_interface_array ) return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL\n" );
@@ -637,8 +637,8 @@ JNIEXPORT void JNICALL Java_com_untangle_jnetcap_Netcap_cConfigureInterfaceArray
                                    "Too many elements in the %d\n", num_intf );
     }
 
-    if (( j_intf = (*env)->GetByteArrayElements( env, j_intf_array, NULL )) == NULL ) {
-        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "GetByteArrayElements\n" );
+    if (( j_intf = (*env)->GetIntArrayElements( env, j_intf_array, NULL )) == NULL ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "GetIntArrayElements\n" );
     }
     
     bzero( intf_name_array, sizeof( intf_name_array ));
@@ -649,21 +649,22 @@ JNIEXPORT void JNICALL Java_com_untangle_jnetcap_Netcap_cConfigureInterfaceArray
         const char* name = NULL;
         jstring j_name = (*env)->GetObjectArrayElement( env, j_interface_array, c );
         if ( j_name == NULL ) {
-            (*env)->ReleaseByteArrayElements( env, j_intf_array, j_intf, 0 );
+            (*env)->ReleaseIntArrayElements( env, j_intf_array, j_intf, 0 );
             return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "Null element at %d\n", c );
         }
         
         if (( name = (*env)->GetStringUTFChars( env, j_name, NULL )) == NULL ) {
-            (*env)->ReleaseByteArrayElements( env, j_intf_array, j_intf, 0 );
+            (*env)->ReleaseIntArrayElements( env, j_intf_array, j_intf, 0 );
             return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
         }
         
         intf_array[c] = j_intf[c];
+        
         strncpy( intf_name_array[c].s, name, sizeof( netcap_intf_string_t ));
         (*env)->ReleaseStringUTFChars( env, j_name, name );
     }
     
-    (*env)->ReleaseByteArrayElements( env, j_intf_array, j_intf, 0 );
+    (*env)->ReleaseIntArrayElements( env, j_intf_array, j_intf, 0 );
 
     if ( netcap_interface_configure_intf( intf_array, intf_name_array, num_intf ) < 0 ) {
         return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_interface_configure_intf\n" );
