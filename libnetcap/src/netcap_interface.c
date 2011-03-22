@@ -76,7 +76,7 @@
 #define NETCAP_MARK_INTF_MASK   0xFF
 
 // lookup maximum for the table
-#define NETCAP_LOOKUP_MAX       129
+#define NETCAP_LOOKUP_MAX       357
 
 // Wait this amount of time before freeing an old bridge configuration
 #define _GARBAGE_DELAY_USEC     SEC_TO_USEC( 20 )
