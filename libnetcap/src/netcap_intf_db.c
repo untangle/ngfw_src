@@ -16,7 +16,7 @@
 
 static __inline__ int _check_intf  ( netcap_intf_t intf )
 {
-    if ( intf < NC_INTF_0 || intf > NETCAP_MAX_INTERFACES ) {
+    if ( intf < 1 || intf > NETCAP_MAX_INTERFACES ) {
         return errlog( ERR_CRITICAL, "Invalid interface: %d\n", intf );
     }
     

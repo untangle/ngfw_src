@@ -51,7 +51,7 @@ public class IntfConstants
      * An interface index of 0 is an error condition
      * Likely that it was not properly initialized or tagged
      */
-    public static final int   UNKNOWN_INTF  = 255; /* from libnetcap.h */
+    public static final int   UNKNOWN_INTF  = 0; /* from libnetcap.h */
 
     /**
      * Common Indexs for interfaces

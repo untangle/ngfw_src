@@ -39,24 +39,8 @@ typedef enum {
 
 typedef enum {
     NC_INTF_ERR = 0,
-    NC_INTF_0 = 1,
-    NC_INTF_1,
-    NC_INTF_2,
-    NC_INTF_3,
-    NC_INTF_4,
-    NC_INTF_5,
-    NC_INTF_6,
-    NC_INTF_7,
-    NC_INTF_8,
-    NC_INTF_9,
-    NC_INTF_10,
-    NC_INTF_11,
-    NC_INTF_12,
-    NC_INTF_13,
-    NC_INTF_14,
-    NC_INTF_15,
+    NF_INTF_UNKNOWN = 0,
     NC_INTF_LOOPBACK = 254,
-    NF_INTF_UNKNOWN      = 255
 } netcap_intf_t;
 
 typedef enum {
