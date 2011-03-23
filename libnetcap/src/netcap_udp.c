@@ -211,7 +211,7 @@ int  netcap_udp_recvfrom (int sock, void* buf, size_t len, int flags, netcap_pkt
     if ( pkt->nfmark == 0 ) {
         debug( 4, "Packet with mark: %#10x\n", pkt->nfmark );
     }
-    if ( netcap_interface_mark_to_intf( pkt->nfmark,&pkt->src_intf ) < 0 ) {
+    if ( netcap_interface_mark_to_cli_intf( pkt->nfmark,&pkt->src_intf ) < 0 ) {
         errlog( ERR_WARNING, "Unable to determine the source interface from mark[%s:%d -> %s:%d]\n",
                 unet_next_inet_ntoa( cli.sin_addr.s_addr ), cli.sin_port,
                 unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port );
@@ -220,6 +220,12 @@ int  netcap_udp_recvfrom (int sock, void* buf, size_t len, int flags, netcap_pkt
     /* Clear the output interface */
     pkt->dst_intf = NF_INTF_UNKNOWN;
 
+    if ( netcap_interface_mark_to_srv_intf( pkt->nfmark,&pkt->dst_intf ) < 0 ) {
+        errlog( ERR_WARNING, "Unable to determine the destination interface from mark[%s:%d -> %s:%d]\n",
+                unet_next_inet_ntoa( cli.sin_addr.s_addr ), cli.sin_port,
+                unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port );
+    }
+    
     memcpy(&pkt->src.host,&cli.sin_addr,sizeof(struct in_addr));
     pkt->src.port = ntohs(cli.sin_port);
     pkt->proto = IPPROTO_UDP;

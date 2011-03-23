@@ -109,9 +109,6 @@ public abstract class ArgonHook implements Runnable
 
             NetworkManager lnm = LocalUvmContextFactory.context().networkManager();
 	    
-            /* Update the server interface */
-            netcapSession.determineServerIntf( );
-
             /**
              * If the server interface is still unknown, drop the session
              */
@@ -239,8 +236,6 @@ public abstract class ArgonHook implements Runnable
                     /* Just in case */
                     logger.warn( "exception debugging invalid netcap interface: ", exn );
                 }
-            } else if ( message.startsWith( "netcap_interface_dst_intf" )) {
-                logger.warn( "Unable to determine the outgoing interface." );
             } else {
                 logger.warn( "Exception executing argon hook:", e );
             }
