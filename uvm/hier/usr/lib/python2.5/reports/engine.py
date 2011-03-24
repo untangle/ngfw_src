@@ -45,21 +45,7 @@ MAIL_REPORT_BLACKLIST = ('untangle-node-boxbackup',)
 # returns a number ex: 1
 # this is a janky way to parse JSON, but python doesn't support json until 3.0
 def get_number_wan_interfaces():
-    f = open('/etc/untangle-net-alpaca/netConfig.js', 'r')
-    str = f.read()
-
-    wans_found = 0
-
-    for segment in str.split("{"):
-        wan_idx = segment.find("WAN")
-        # look for some text about WAN
-        # look for the word true near it
-        if (wan_idx > 0):
-            wan_clause = segment[wan_idx:wan_idx+12]
-            if (wan_clause.find("true") > 0):
-                wans_found = wans_found + 1
-                
-    return wans_found
+    return len(get_wan_clause().split(','))
 
 # Utility function to return index of WAN interfaces
 # returns a comma separated list ex: "(1,2)"
