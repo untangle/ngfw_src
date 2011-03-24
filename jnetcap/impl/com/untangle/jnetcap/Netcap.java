@@ -72,7 +72,36 @@ public final class Netcap
         error( "" );
     }
 
+    /**
+     * Determine if an address is a broadcast 
+     * @param host - The address to check.
+     * @return <code>true</code> if the
+     */
+    public static boolean isBroadcast( InetAddress address )
+    {
+        return isBroadcast( Inet4AddressConverter.toLong( address ));
+    }
+
+    /**
+     * Determine if an address is a multicast
+     * @param host - The address to check.
+     * @return <code>true</code> if the
+     */
+    public static boolean isMulticast( InetAddress address )
+    {
+        return isMulticast( Inet4AddressConverter.toLong( address ));
+    }
+
+    public static boolean isMulticastOrBroadcast( InetAddress address )
+    {
+        long temp = Inet4AddressConverter.toLong( address );
+        return isMulticast( temp ) || isBroadcast( temp );
+    }
+    
+    private static native boolean isBroadcast( long address );
     public static  native boolean isBridgeAlive();
+
+    private static native boolean isMulticast( long address );
 
     /**
      * Initialzie the JNetcap and Netcap library. </p>
@@ -129,6 +158,43 @@ public final class Netcap
         }
 
         return addr;
+    }
+
+    /**
+     * Retrieve the address of an interface
+     */
+    public List<InterfaceData> getInterfaceData( String interfaceString ) throws JNetcapException
+    {
+        try {
+            /* XXXX 3 is the magic number, this magic number and this comment makes no sense */
+            long input[] = new long[MAX_INTERFACE*3];
+            int numIntf = getInterfaceDataArray( interfaceString, input );
+            if ( numIntf <= 0 ) return EMPTY_INTERFACE_DATA_LIST;
+            List<InterfaceData> dataList = new LinkedList<InterfaceData>();
+
+            for ( int c = 0 ; c < numIntf ; c++ ) {
+                dataList.add( new InterfaceData( input[(3 * c) + 0], 
+                                                 input[(3 * c) + 1], 
+                                                 input[(3 * c) + 2] ));
+            }
+            return dataList;
+        } catch ( Exception e ) {
+            throw new JNetcapException( "Error retrieving interface address", e );
+        }
+    }
+
+    /**
+     * Configure the netcap interface array
+     */
+    public void configureInterfaceArray( int intfIndexArray[], String interfaceArray[] )
+        throws JNetcapException
+    {
+        try {
+            cConfigureInterfaceArray( intfIndexArray, interfaceArray );
+        } catch ( Exception e ) {
+            throw new JNetcapException( "Error configuring interface array", e );
+        }
+
     }
 
     /**
@@ -200,6 +266,19 @@ public final class Netcap
     public static native int unregisterTCPHook();
     
     /**
+     * Convert a string interface to unique identifer that netcap uses to represent interfaces.</p>
+     * @param intf - String containing the interface to convert. (eg. eth0).
+     * @return A unique identifier between 1 and MAX_INTERFACES(Inclusive).
+     */
+    public static native byte convertStringToIntf( String intf );
+
+    /**
+     * Convert a netcap representation of an interface to a string.
+     * @param intf - Numeric representation of the interface to convert.
+     */
+    public static native String convertIntfToString( int intf );
+
+    /**
      * Change the debugging level. <p/>
      * 
      * @param type The type debugging to change, this must be either JNETCAP_DEBUG or NETCAP_DEBUG
@@ -251,8 +330,17 @@ public final class Netcap
     }
     
     /**
+     * Specialty functions for NAT and DHCP events to update the address.
+     */
+    public static native void refreshNetworkConfig();
+
+    /**
      * Function to retrieve the TCP redirect ports
      */
     private native int[] cTcpRedirectPorts();
     
+    /**
+     * Function to configure the netcap interface array 
+     */
+    private native void cConfigureInterfaceArray( int intfIndexArray[], String interfaceArray[] );
 }

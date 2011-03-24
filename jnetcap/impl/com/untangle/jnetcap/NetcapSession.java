@@ -187,6 +187,11 @@ public abstract class NetcapSession
         this.serverMark(server_mark);
     }
     
+    public void determineServerIntf( )
+    {
+        determineServerIntf( pointer.value() );
+    }
+
     public void raze()
     {
         raze( pointer.value());
@@ -210,6 +215,7 @@ public abstract class NetcapSession
 
     private static native long getSession( int id, short protocol );
     private static native void raze( long session );
+    private static native void determineServerIntf( long session );
 
     private static native int  getClientMark( long session );
     private static native void setClientMark( long session, int mark );
@@ -251,11 +257,7 @@ public abstract class NetcapSession
 
         public String interfaceName()
         {
-            // is this used? XXX
-            // I think this should be removed
-            // netcap/argon should only deal with interface IDs - dmorris
-            System.err.println("IMPLEMENT ME NetcapSession.java\n");
-            return "";
+            return getStringValue( buildMask( FLAG_INTERFACE ), pointer.value());
         }
         
         public byte interfaceId()

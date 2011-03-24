@@ -332,6 +332,9 @@ int   netcap_cleanup (void);
 const char* netcap_version (void);
 void  netcap_debug_set_level   (int lev);
 
+/** Update everything that must change when the address of the box changes */
+int   netcap_update_address( void );
+
 /**
  * Thread management
  */
@@ -365,6 +368,46 @@ int           netcap_pkt_action_raze ( netcap_pkt_t* pkt, int action );
  */
 int netcap_session_raze(netcap_session_t* session);
 
+/**
+ * Interface management
+ */
+
+/* Convert a string representation of an interface to a netcap representation */
+/* blocking on configuration */
+int netcap_interface_string_to_intf ( char *intf_str, netcap_intf_t *intf );
+
+/* Convert a netcap representation (eg 1) of an interface to a string representation ( eg eth0 ) */
+/* blocking on configuration */
+int netcap_interface_intf_to_string ( netcap_intf_t intf, char *intf_str, int str_len );
+
+/**
+ * netcap_interface_configure_intf:
+ * Configure the mapping from mark indices to interfaces(blocking on configuration)
+ * This must be configured at startup (after initialization but before processing any sessions).
+ * @param intf_name_array - 
+ *      An array of interface names.
+ *        The first index should correspond to the interface with the mark 1, the second with the
+ *        mark 2, etc.
+ * @param num_intf - The number of interfaces in intf_name_array.
+ */
+int netcap_interface_configure_intf ( netcap_intf_t* intf_array, netcap_intf_string_t* intf_name_array, 
+                                      int intf_count );
+
+int netcap_interface_intf_verify    ( netcap_intf_t intf );
+
+/* blocking on configuration */
+int netcap_interface_update_address ( void );
+
+/* blocking on configuration */
+int netcap_interface_is_broadcast   ( in_addr_t addr, int index );
+int netcap_interface_is_multicast   ( in_addr_t addr );
+
+int netcap_interface_count          ( void );
+
+/* Update the session information for a netcap session */
+int netcap_interface_dst_intf       ( netcap_session_t* session );
+
+
 /* Holder for interface data for a particular interface or one of its aliases */
 typedef struct 
 {
@@ -372,6 +415,18 @@ typedef struct
     struct in_addr netmask;
     struct in_addr broadcast;    
 } netcap_intf_address_data_t;
+
+/* Retrieve an array of interface data for an interface. 
+ * @parameter interface_name: name of the interface to lookup.
+ * @parameter data: data structure to fill in.
+ * @parameter data_size: Size of data in bytes.
+ * @return number of elements filled in data or -1 on error.
+ */
+int netcap_interface_get_data       ( char* name, netcap_intf_address_data_t* data, int data_size );
+
+/* blocking on configuration.
+ * Retrieve the netmask for an interface */
+int netcap_interface_get_netmask    ( char* interface_name, struct in_addr* netmask );
 
 /**
  * Query information about the redirect ports.
