@@ -858,7 +858,7 @@ public class NetworkManagerImpl implements NetworkManager
                 boolean regDone = regDoneFile.exists();
                 File regInfoFile = new File(REGISTRATION_INFO_FILE);
 
-                if (!regDoneFile.exists()) {
+                if (!regInfoFile.exists()) {
                     logger.warn("Registration info file doesn't exist.");
                     return;
                 }
