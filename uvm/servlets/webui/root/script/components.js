@@ -4966,8 +4966,22 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         }
     }
 });
-
-
+Ung.ImportSettingsReader = function(meta, recordType){
+    meta = meta || {};
+    Ung.ImportSettingsReader.superclass.constructor.call(this, meta, recordType || meta.fields);
+};
+Ext.extend(Ung.ImportSettingsReader, Ext.data.DataReader, {
+    read : function(response){
+    	var jsonString = Ext.util.Format.htmlDecode(response.responseText);
+        var json = eval("("+jsonString+")");
+        if(!json) {
+        	Ext.MessageBox.alert(i18n._("Warning"), i18n._("Import failed."));
+        }
+        return {
+            success : json
+        };
+    }
+});
 
 //Import Settings window
 Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
@@ -5080,6 +5094,7 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
                 fileUpload : true,
                 xtype : 'form',
                 id : 'import_settings_form'+this.getId(),
+                errorReader: new Ung.ImportSettingsReader(),
                 url : 'gridSettings',
                 border : false,
                 items : [{
@@ -5117,11 +5132,14 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
         }
     },
     importSettingsSuccess : function (form, action) {
+        var result = action.result.success;
         Ext.MessageBox.wait(i18n._("Importing Settings..."), i18n._("Please wait"));
-        if(!action.result.success) {
-            Ext.MessageBox.alert(i18n._("Warning"), action.result.msg);
+        if(!result) {
+            Ext.MessageBox.alert(i18n._("Warning"), i18n._("Import failed."));
+        } else if(!result.success) {
+            Ext.MessageBox.alert(i18n._("Warning"), result.msg);
         } else {
-            this.grid.onImport(this.importMode, action.result.msg);
+            this.grid.onImport(this.importMode, result.msg);
             this.closeWindow();
         }
     },

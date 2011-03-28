@@ -20,6 +20,8 @@ package com.untangle.uvm.webui.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 import java.util.List;
 import java.util.Map;
 
@@ -112,7 +114,7 @@ public class GridSettingsServlet extends HttpServlet {
 			if (msg != null) {
 				obj.put("msg", msg);
 			}
-			out.print(obj);
+			out.print(encodeHtml(obj.toString()));
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -146,4 +148,28 @@ public class GridSettingsServlet extends HttpServlet {
             throw new ServletException("Export failed. Settings must be formatted as a JSON Array.");
         }
 	}
+	private static String encodeHtml(String aText){
+	     final StringBuilder result = new StringBuilder();
+	     final StringCharacterIterator iterator = new StringCharacterIterator(aText);
+	     char character =  iterator.current();
+	     while (character != CharacterIterator.DONE ){
+	       if (character == '<') {
+	         result.append("&lt;");
+	       }
+	       else if (character == '>') {
+	         result.append("&gt;");
+	       }
+	       else if (character == '&') {
+	         result.append("&amp;");
+	       }
+	       else {
+	         //the char is not a special one
+	         //add it to the result as is
+	         result.append(character);
+	       }
+	       character = iterator.next();
+	     }
+	     return result.toString();
+	  }
+	
 }
