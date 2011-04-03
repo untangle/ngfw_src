@@ -56,6 +56,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
     private static final int NUM_TOMCAT_RETRIES = 15; //  5 minutes total
     private static final long TOMCAT_SLEEP_TIME = 20 * 1000; // 20 seconds
 
+    private static final int TOMCAT_MAX_POST_SIZE = 16777216; // 16MB
 
     private static final String STANDARD_WELCOME = "/setup/welcome.do";
 
@@ -111,7 +112,8 @@ public class TomcatManagerImpl implements LocalTomcatManager
             baseHost.setErrorReportValveClass("com.untangle.uvm.engine.UvmErrorReportValve");
             OurSingleSignOn ourSsoWorkaroundValve = new OurSingleSignOn();
 
-            SingleSignOn ssoValve = new SpecialSingleSignOn(uvmContext, "", "/reports", "/library" );
+            SingleSignOn ssoValve = new SpecialSingleSignOn(uvmContext, "",
+                                                            "/reports", "/library" );
 
             // ssoValve.setRequireReauthentication(true);
             baseHost.getPipeline().addValve(ourSsoWorkaroundValve);
@@ -271,7 +273,9 @@ public class TomcatManagerImpl implements LocalTomcatManager
         jkConnector.setProperty("port", "8009");
         jkConnector.setProperty("address", "127.0.0.1");
         jkConnector.setProperty("tomcatAuthentication", "false");
-        
+        jkConnector.setMaxPostSize(TOMCAT_MAX_POST_SIZE);
+        jkConnector.setMaxSavePostSize(TOMCAT_MAX_POST_SIZE);
+
         String secret = getSecret();
         if (null != secret) {
             jkConnector.setProperty("request.secret", secret);
@@ -281,7 +285,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
         // start operation
         try {
             emb.start();
-            logger.info("jkConnector started");
+            logger.info("jkConnector started (maxPostSize = " + TOMCAT_MAX_POST_SIZE + " bytes)");
         } catch (LifecycleException exn) {
             // Note -- right now wrapped is always null!  Thus the
             // following horror:
