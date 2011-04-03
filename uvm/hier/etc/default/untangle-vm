@@ -34,7 +34,7 @@ fi
 #
 UVM_ARGS=""
 
-UVM_LOGDIR=@PREFIX@/var/log/uvm
+UVM_LOGDIR=/var/log/uvm
 UVM_RUNDIR=@PREFIX@/var/run
 UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-$UVM_LOGDIR/console.log}
 UVM_WRAPPER_LOG=$UVM_LOGDIR/wrapper.log

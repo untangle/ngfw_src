@@ -21,6 +21,7 @@ require 'fileutils'
 require 'getoptlong'
 require 'tempfile'
 require 'gettext'
+require 'syslog'
 
 include GetText
 bindtextdomain('untangle-vm')
@@ -35,9 +36,8 @@ REMO_OPTS = " --yes --force-yes --fix-broken --purge "
 PREFIX = "@PREFIX@"
 $ERROR = ""
 
-STDERR.reopen('@UVM_LOG@/apt.log', 'a')
-STDERR.puts(Time.new.strftime("%Y/%m/%d %H:%M:%S"))
-STDERR.flush
+Syslog.open('ut-apt', Syslog::LOG_PID | Syslog::LOG_NDELAY, Syslog::LOG_LOCAL2)
+Syslog.info(Time.new.strftime("%Y/%m/%d %H:%M:%S"))
 
 def printusage()
   puts _('usage:')
@@ -54,8 +54,7 @@ STR
 end
 
 def log(str)
-  STDERR.puts(str)
-  STDERR.flush
+  Syslog.info(str)
 end
 
 class DevApt
@@ -352,7 +351,7 @@ ret = 0
 
 apt = PREFIX.empty? ? RealApt.new(stamp) : DevApt.new(stamp)
 
-exit case ARGV.shift
+rc = case ARGV.shift
      when 'installed'
        apt.installed()
      when 'available'
@@ -378,3 +377,7 @@ exit case ARGV.shift
      else
          printusage()
      end
+
+Syslog.close
+
+exit(rc)

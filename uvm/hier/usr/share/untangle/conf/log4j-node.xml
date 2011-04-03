@@ -37,14 +37,12 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
                      debug="false">
 
-  <appender name="NodeLog" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${uvm.home}/log/@NodeLogFileName@.log"/>
-    <param name="Append" value="true"/>
-    <param name="MaxFileSize" value="5000KB"/>
-    <param name="MaxBackupIndex" value="9"/>
+  <appender name="NODELOG" class="org.apache.log4j.net.SyslogAppender">
+    <param name="SyslogHost" value="localhost"/>
+    <param name="Facility" value="LOCAL1"/>
     <param name="Threshold" value="ALL"/>
-    <layout class="com.untangle.uvm.logging.UtPatternlayout">
-      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%c{1}] &lt;%X{SessionID}&gt; %-5p %m%n"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="node#@NodeLogFileName@: [%c{1}] &lt;%X{SessionID}&gt; %-5p %m%n"/>
     </layout>
   </appender>
 
@@ -223,7 +221,7 @@
   <!-- All Node logs go to individual node log files -->
   <root>
     <priority value="WARN"/>
-    <appender-ref ref="NodeLog"/>
+    <appender-ref ref="NODELOG"/>
     <appender-ref ref="EmailAppender"/>
   </root>
 </log4j:configuration>

@@ -28,12 +28,12 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
                      debug="false">
 
-  <appender name="FILE" class="org.apache.log4j.FileAppender">
-    <param name="File" value="@UVM_HOME@/log/reporter.log"/>
-    <param name="Append" value="true"/>
+  <appender name="REPORTER" class="org.apache.log4j.net.SyslogAppender">
+    <param name="SyslogHost" value="localhost"/>
+    <param name="Facility" value="LOCAL4"/>
     <param name="Threshold" value="ALL"/>
-    <layout class="com.untangle.uvm.logging.UtPatternlayout">
-      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%c{1}] %-5p %m%n"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="[%c{1}] %-5p %m%n"/>
     </layout>
   </appender>
 
@@ -49,8 +49,8 @@
 
   <root>
     <priority value="DEBUG"/>
+    <appender-ref ref="REPORTER"/>
     <appender-ref ref="CONSOLE"/>
-    <appender-ref ref="FILE"/>
   </root>
 
 </log4j:configuration>

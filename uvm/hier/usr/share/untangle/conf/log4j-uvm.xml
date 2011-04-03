@@ -35,25 +35,21 @@
   <!-- Appenders                                      -->
   <!-- ============================================== -->
 
-  <appender name="UVMLog" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${uvm.home}/log/uvm.log"/>
-    <param name="Append" value="true"/>
-    <param name="MaxFileSize" value="500KB"/>
-    <param name="MaxBackupIndex" value="9"/>
+  <appender name="UVMLOG" class="org.apache.log4j.net.SyslogAppender">
+    <param name="SyslogHost" value="localhost"/>
+    <param name="Facility" value="LOCAL0"/>
     <param name="Threshold" value="ALL"/>
-    <layout class="com.untangle.uvm.logging.UtPatternlayout">
-      <!-- This is actually the default conversion, so we could leave it out... -->
-      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%c{1}] %-5p %m%n"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="[%c{1}] %-5p %m%n"/>
     </layout>
   </appender>
 
-  <appender name="REPORTER" class="org.apache.log4j.FileAppender">
-    <param name="File" value="${uvm.home}/log/reporter.log"/>
-    <param name="Append" value="true"/>
+  <appender name="REPORTER" class="org.apache.log4j.net.SyslogAppender">
+    <param name="SyslogHost" value="localhost"/>
+    <param name="Facility" value="LOCAL4"/>
     <param name="Threshold" value="ALL"/>
-    <layout class="com.untangle.uvm.logging.UtPatternlayout">
-      <!-- This is actually the default conversion, so we could leave it out... -->
-      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%c{1}] %-5p %m%n"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="[%c{1}] %-5p %m%n"/>
     </layout>
   </appender>
 
@@ -154,7 +150,7 @@
   <!-- All UVM logs go to the UVMLog file -->
   <root>
     <priority value="WARN"/>
-    <appender-ref ref="UVMLog"/>
+    <appender-ref ref="UVMLOG"/>
     <appender-ref ref="EmailAppender"/>
   </root>
 </log4j:configuration>

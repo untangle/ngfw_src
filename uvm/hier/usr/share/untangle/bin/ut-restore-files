@@ -45,15 +45,15 @@ restore_packages()
 {
     instfile=$1
 
-    apt-get update >> /var/log/uvm/apt.log 2>&1
-    apt-get dist-upgrade $UPGD_OPTS >> /var/log/uvm/apt.log 2>&1
+    apt-get update 2>&1 | logger -f local2.info
+    apt-get dist-upgrade $UPGD_OPTS 2>&1 | logger -f local2.info
     /etc/init.d/untangle-vm stop
     if [ -x /etc/init.d/untangle-reports ]; then
         /etc/init.d/untangle-reports stop
     fi
 
     cat $instfile | cut -d' ' -f1 | \
-      xargs apt-get install $INST_OPTS >> /var/log/uvm/apt.log 2>&1
+      xargs apt-get install $INST_OPTS 2>&1 | logger -f local2.info
 }
 
 

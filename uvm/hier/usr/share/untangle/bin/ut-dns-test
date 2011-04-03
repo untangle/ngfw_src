@@ -1,6 +1,6 @@
 #! /bin/dash
 
-exec >> @UVM_LOG@/iptables.log 2>&1
+exec 2>&1 | logger -t uvmiptables
 
 DNS_TRIES=7
 DNS_TIMEOUT=2

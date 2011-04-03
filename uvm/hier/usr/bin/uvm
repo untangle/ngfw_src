@@ -6,10 +6,10 @@ NAME=$0
 # get a bunch of default values
 source @PREFIX@/etc/default/untangle-vm
 
-UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-"@PREFIX@/var/log/uvm/console.log"}
-UVM_UVM_LOG=${UVM_UVM_LOG:-"@PREFIX@/var/log/uvm/uvm.log"}
-UVM_GC_LOG=${UVM_GC_LOG:-"@PREFIX@/var/log/uvm/gc.log"}
-UVM_WRAPPER_LOG=${UVM_WRAPPER_LOG:-"@PREFIX@/var/log/uvm/wrapper.log"}
+UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-"/var/log/uvm/console.log"}
+UVM_UVM_LOG=${UVM_UVM_LOG:-"/var/log/uvm/uvm.log"}
+UVM_GC_LOG=${UVM_GC_LOG:-"/var/log/uvm/gc.log"}
+UVM_WRAPPER_LOG=${UVM_WRAPPER_LOG:-"/var/log/uvm/wrapper.log"}
 UVM_LAUNCH=${UVM_LAUNCH:-"@PREFIX@/usr/share/untangle/bin/untangle-vm"}
 UVM_RUNDIR=${UVM_RUNDIR:-"@PREFIX@/var/run"}
 
@@ -18,7 +18,7 @@ SLEEP_TIME=15
 
 # Used to kill a child with extreme prejudice
 nukeIt() {
-    echo "$NAME: Killing -9 all untangle-vm \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
+    echo "$NAME: Killing -9 all untangle-vm \"$pid\" (`date`)" | logger -t uvmwrapper
     kill -3 $pid
     kill -9 $pid
     kill -9 `ps awwx | grep java | grep untangle-vm | awk '{print $1}'` 2>/dev/null
@@ -30,11 +30,11 @@ reapChildHardest() {
 }
 
 reapChildHarder() {
-    echo "$NAME: Killing -15 all untangle-vm \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
+    echo "$NAME: Killing -15 all untangle-vm \"$pid\" (`date`)" | logger -t uvmwrapper
     kill $pid
     sleep 1
     if [ ! -z "`ps awwx | grep java | grep untangle-vm | awk '{print $1}'`" ] ; then
-        echo "$NAME: Killing -15 all untangle-vm \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
+        echo "$NAME: Killing -15 all untangle-vm \"$pid\" (`date`)" | logger -t uvmwrapper
         for i in `seq 1 5` ; do
             if [ -z "`ps awwx | grep java | grep untangle-vm | awk '{print $1}'`" ] ; then
                 flushIptables ; exit
@@ -53,13 +53,13 @@ getVirtualMemUsage() {
 }
 
 reapChild() {
-    echo "$NAME: shutting down untangle-vm " >> $UVM_WRAPPER_LOG
+    echo "$NAME: shutting down untangle-vm " | logger -t uvmwrapper
     kill -INT $pid
     @PREFIX@/usr/bin/mcli -t 20000 shutdown &> /dev/null
     sleep 1
     kill -INT $pid
     if [ ! -z "`ps awwx | grep java | grep untangle-vm | awk '{print $1}'`" ] ; then
-        echo "$NAME: Killing -INT all untangle-vm \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
+        echo "$NAME: Killing -INT all untangle-vm \"$pid\" (`date`)" | logger -t uvmwrapper
         for i in `seq 1 5` ; do
             if [ -z "`ps awwx | grep java | grep untangle-vm | awk '{print $1}'`" ] ; then
                 flushIptables ; exit
@@ -106,7 +106,7 @@ needToRestart() {
     cmfcount=`tail -50 $UVM_GC_LOG | grep -ci "concurrent mode failure"`
 
     if [ $cmfcount -gt 4 ]; then
-        echo "*** java heap cmf on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG        
+        echo "*** java heap cmf on `date` in `pwd` ***" | logger -t uvmwrapper        
         return 0;
     fi
 
@@ -114,7 +114,7 @@ needToRestart() {
     if [ `date +%H` -eq 1 ]; then
         VIRT="`getVirtualMemUsage $pid`"
         if [ $VIRT -gt $MAX_VIRTUAL_SIZE ] ; then
-            echo "*** Virt Size too high ($VIRT > $MAX_VIRTUAL_SIZE) on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
+            echo "*** Virt Size too high ($VIRT > $MAX_VIRTUAL_SIZE) on `date` in `pwd` ***" | logger -t uvmwrapper
             return 0;
         fi
     fi
@@ -122,7 +122,7 @@ needToRestart() {
     # Tomcat picked the wrong port (read bug #7337 for more info)
     tomcat=`tail -1000 $UVM_UVM_LOG | grep -i "ajp13 listening on /127.0.0.1:8010"`
     if [ ! -z "$tomcat" ] ; then
-            echo "*** Tomcat bound to wrong port on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
+            echo "*** Tomcat bound to wrong port on `date` in `pwd` ***" | logger -t uvmwrapper
             return 0;
     fi
 
@@ -132,17 +132,17 @@ needToRestart() {
 update_monit()
 {
     if [ -n "`find ${UVM_RUNDIR}/unmonitor -mmin -10 2> /dev/null`" ]; then
-        echo "[`date`] Last forced unmmonitor less than 10 minutes ago." >> $UVM_WRAPPER_LOG
+        echo "[`date`] Last forced unmmonitor less than 10 minutes ago." | logger -t uvmwrapper
         return 0
     fi
 
     monit -c /etc/untangle/monit.conf status | grep -q 'monitoring status[ ]*not monitored' && {
         if [ -n "`find ${UVM_RUNDIR}/unmonitor -mmin -10 2> /dev/null`" ]; then
-            echo "[`date`] Last forced unmmonitor less than 10 minutes ago." >> $UVM_WRAPPER_LOG
+            echo "[`date`] Last forced unmmonitor less than 10 minutes ago." | logger -t uvmwrapper
             return 0
         fi
 
-        echo "`date` telling monit to monitor all services." >> $UVM_WRAPPER_LOG
+        echo "`date` telling monit to monitor all services." | logger -t uvmwrapper
         monit -c /etc/untangle/monit.conf monitor all
     }
 }
@@ -152,19 +152,19 @@ trap reapChildHarder 15
 trap reapChild 2
 
 monit -c /etc/untangle/monit.conf unmonitor postgres
-@PREFIX@/usr/share/untangle/bin/ut-migrate-postgres.sh >> $UVM_WRAPPER_LOG
+@PREFIX@/usr/share/untangle/bin/ut-migrate-postgres.sh | logger -t uvmwrapper
 monit -c /etc/untangle/monit.conf monitor postgres
 
 while true; do
     echo > $UVM_CONSOLE_LOG
-    echo "============================" >> $UVM_CONSOLE_LOG
-    echo $UVM_LAUNCH >> $UVM_CONSOLE_LOG
-    echo "============================" >> $UVM_CONSOLE_LOG
+    echo "============================" | logger -t uvmconsole
+    echo $UVM_LAUNCH | logger -t uvmconsole
+    echo "============================" | logger -t uvmconsole
 
-    echo >> $UVM_WRAPPER_LOG
-    echo "============================" >> $UVM_WRAPPER_LOG
-    echo $UVM_LAUNCH >> $UVM_WRAPPER_LOG
-    echo "============================" >> $UVM_WRAPPER_LOG
+    echo | logger -t uvmwrapper
+    echo "============================" | logger -t uvmwrapper
+    echo $UVM_LAUNCH | logger -t uvmwrapper
+    echo "============================" | logger -t uvmwrapper
 
     flushIptables
 
@@ -172,12 +172,12 @@ while true; do
 
     flushConntrack
 
-    $UVM_LAUNCH $* >>$UVM_CONSOLE_LOG 2>&1 &
+    $UVM_LAUNCH $* 2>&1 | logger -t uvmconsole &
 
     flushConntrack
 
     pid=$!
-    echo "Untangle-Vm launched. (pid:$pid) (`date`)" >> $UVM_WRAPPER_LOG
+    echo "Untangle-Vm launched. (pid:$pid) (`date`)" | logger -t uvmwrapper
 
     # Instead of waiting, we now monitor.
     while true; do
@@ -188,17 +188,17 @@ while true; do
             update_monit
 
             if [ ! -d /proc/$pid ] ; then
-                echo "*** restarting missing untangle-vm $? on `date` ***" >> $UVM_WRAPPER_LOG
+                echo "*** restarting missing untangle-vm $? on `date` ***" | logger -t uvmwrapper
                 break
             fi
 
             if needToRestart; then
                 if [ -n "`find ${UVM_RUNDIR}/last_forced_restart -mmin -7 2> /dev/null`" ]; then
-                    echo "*** ignoring restart of $? at `date` ***" >> $UVM_WRAPPER_LOG
+                    echo "*** ignoring restart of $? at `date` ***" | logger -t uvmwrapper
                     continue
                 fi
                 
-                echo "*** need to restart untangle-vm $? on `date` ***" >> $UVM_WRAPPER_LOG
+                echo "*** need to restart untangle-vm $? on `date` ***" | logger -t uvmwrapper
                 ## These file is created so it doesn't continuously restart every 15 seconds
                 touch "${UVM_RUNDIR}/last_forced_restart"
 
@@ -214,10 +214,10 @@ while true; do
 
 # Crash/Kill
     flushIptables
-    echo "*** untangle-vm exited on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
-    echo "*** copied $UVM_CONSOLE_LOG to $UVM_CONSOLE_LOG.crash ***" >> $UVM_WRAPPER_LOG
-    echo "*** copied $UVM_UVM_LOG to $UVM_UVM_LOG.crash ***" >> $UVM_WRAPPER_LOG
-    echo "*** copied $UVM_GC_LOG to $UVM_GC_LOG.crash ***" >> $UVM_WRAPPER_LOG
+    echo "*** untangle-vm exited on `date` in `pwd` ***" | logger -t uvmwrapper
+    echo "*** copied $UVM_CONSOLE_LOG to $UVM_CONSOLE_LOG.crash ***" | logger -t uvmwrapper
+    echo "*** copied $UVM_UVM_LOG to $UVM_UVM_LOG.crash ***" | logger -t uvmwrapper
+    echo "*** copied $UVM_GC_LOG to $UVM_GC_LOG.crash ***" | logger -t uvmwrapper
     cp -fa $UVM_CONSOLE_LOG.crash.1 $UVM_CONSOLE_LOG.crash.2
     cp -fa $UVM_CONSOLE_LOG.crash $UVM_CONSOLE_LOG.crash.1
     cp -fa $UVM_CONSOLE_LOG $UVM_CONSOLE_LOG.crash
@@ -238,5 +238,5 @@ while true; do
     dpkg -l "untangle*" >| $PACKAGES_LOG.crash
 
     sleep 2
-    echo "*** restarting on `date` ***" >> $UVM_WRAPPER_LOG
+    echo "*** restarting on `date` ***" | logger -t uvmwrapper
 done

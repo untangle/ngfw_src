@@ -53,7 +53,7 @@ class Jars
 
   def Jars.findJars
     ## Named groups of jars
-    const_set(:Log4j, [ Jars.downloadTarget('logging-log4j-1.2.14/dist/lib/log4j-1.2.14.jar') ])
+    const_set(:Log4j, [ Jars.downloadTarget('apache-log4j-1.2.16/log4j-1.2.16.jar') ])
     const_set(:Hibernate, %w( hibernate-3.2/hibernate3.jar
                       hibernate-3.2/lib/antlr-2.7.6.jar
                       hibernate-3.2/lib/asm.jar

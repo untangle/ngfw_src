@@ -3,15 +3,13 @@
 require 'logger'
 require 'dbi'
 require 'set'
+require 'syslog'
 
-LOG_FILE = '@UVM_LOG@/schema.log'
-LOG = Logger.new(LOG_FILE, 10, 1048576)
-STDOUT.reopen(LOG_FILE, 'a')
-STDERR.reopen(LOG_FILE, 'a')
+Syslog.open('ut-update-schema', Syslog::LOG_PID | Syslog::LOG_NDELAY, Syslog::LOG_LOCAL3)
 
 class SqlHelper
   def SqlHelper.log_sql_error(msg, e)
-    LOG.warn <<MSG
+    Syslog.warn <<MSG
 #{msg}
 Error code: #{e.err}
 Error message: #{e.errstr}
@@ -152,7 +150,7 @@ end
 
 class SchemaUpdater
   def update_schema(dbh)
-    LOG.warn('update_schema() not implemented')
+    Syslog.warn('update_schema() not implemented')
   end
 
   def initialize(dbh)
@@ -162,8 +160,8 @@ class SchemaUpdater
 end
 
 def bad_args(argv)
-  LOG.error "usage: update-schema [ settings | events ] [ uvm | node ]"
-  LOG.error "(we were called with ARGV='#{argv.join(', ')}')"
+  Syslog.error "usage: update-schema [ settings | events ] [ uvm | node ]"
+  Syslog.error "(we were called with ARGV='#{argv.join(', ')}')"
   Kernel.exit 1
 end
 
@@ -236,12 +234,12 @@ SQL
 end
 
 def run_sql_file(file)
-  LOG.info "Running SQL file: #{file}"
+  Syslog.info "Running SQL file: #{file}"
   Kernel.system "psql -X -U postgres uvm -f #{file} 2>&1| grep -v 'ERROR:.*already exists'"
 end
 
 def run_rb_file(dbh, file)
-  LOG.info "Running RB file: #{file}"
+  Syslog.info "Running RB file: #{file}"
   updater = SchemaUpdater.new(dbh)
   updater.instance_eval(File.readlines(file).join("\n"))
   updater.update_schema()
@@ -253,7 +251,7 @@ def run_file(dbh, file)
   elsif /\.rb$/ =~ file
     run_rb_file(dbh, file)
   else
-    LOG.error("Don't know how to handle: #{file}")
+    Syslog.error("Don't know how to handle: #{file}")
     raise BadFileType
   end
 end
@@ -303,7 +301,7 @@ COMPONENT=ARGV[1]
 SCHEMA_HOME='@UVM_SCHEMA@'
 SCHEMA_DIR="#{SCHEMA_HOME}/#{COMPONENT}"
 
-LOG.info "*** BEGIN update-schema for type: #{TYPE} component: #{COMPONENT}"
+Syslog.info "*** BEGIN update-schema for type: #{TYPE} component: #{COMPONENT}"
 
 begin
   dbh = DBI.connect('DBI:Pg:uvm', 'postgres')
@@ -313,28 +311,29 @@ begin
   latest_version = get_latest_version(SCHEMA_DIR, TYPE)
   inst_version = get_inst_version(dbh, COMPONENT, TYPE)
 
-  LOG.info "Component #{COMPONENT} Type: #{TYPE} Installed schema: #{inst_version} Latest schema version: #{latest_version}"
+  Syslog.info "Component #{COMPONENT} Type: #{TYPE} Installed schema: #{inst_version} Latest schema version: #{latest_version}"
 
   if inst_version.nil?
-    LOG.info 'Initializing schema'
+    Syslog.info 'Initializing schema'
     run_schema_init(dbh, SCHEMA_DIR, TYPE)
     update_schema_ver(dbh, COMPONENT, TYPE, latest_version)
   elsif latest_version.nil?
-    LOG.info 'No schema for this component.'
+    Syslog.info 'No schema for this component.'
   elsif inst_version > latest_version
-    LOG.error 'Installed version greater than latest version'
+    Syslog.error 'Installed version greater than latest version'
   elsif inst_version < latest_version
-    LOG.info "Converting schema from #{inst_version} to #{latest_version}"
+    Syslog.info "Converting schema from #{inst_version} to #{latest_version}"
     (inst_version + 1).upto(latest_version) do |n|
       run_schema_convert(dbh, SCHEMA_DIR, TYPE, n)
       update_schema_ver(dbh, COMPONENT, TYPE, n)
     end
   else
-    LOG.info 'Schema is up-to-date, initializing schema just in case'
+    Syslog.info 'Schema is up-to-date, initializing schema just in case'
     run_schema_init(dbh, SCHEMA_DIR, TYPE)
   end
 
 ensure
   dbh.disconnect if dbh
-  LOG.info "*** END update-schema for type: #{TYPE} component: #{COMPONENT}"
+  Syslog.info "*** END update-schema for type: #{TYPE} component: #{COMPONENT}"
+  Syslog.close
 end

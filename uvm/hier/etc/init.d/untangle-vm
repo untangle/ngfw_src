@@ -16,8 +16,8 @@ if [ -f @PREFIX@/etc/default/untangle-vm ] ; then
 fi
 
 DESC="${OEM_NAME} VM"
-UVM_LOGDIR=${UVM_LOGDIR:-@PREFIX@/var/log/uvm}
-UVM_RUNDIR=${UVM_RUNDIR:-@PREFIX@/var/run}
+UVM_LOGDIR=${UVM_LOGDIR:-/var/log/uvm}
+UVM_RUNDIR=${UVM_RUNDIR:-/var/run}
 UVM_NICENESS=${UVM_NICENESS:-0}
 UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-$UVM_LOGDIR/console.log}
 UVM_WRAPPER_LOG=${UVM_WRAPPER_LOG:-$UVM_LOGDIR/wrapper.log}

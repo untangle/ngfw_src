@@ -1,7 +1,7 @@
 import logging, sys
+from logging.handlers import SysLogHandler
 
 MODULE_NAME = 'reports'
-LOGFILE = "/var/log/uvm/reporter.log"
 
 # line format
 format = '%(asctime)s [%(name)s] %(levelname)s: %(message)s'
@@ -9,7 +9,7 @@ dateFmt = '%Y-%m-%d %H:%M:%S'
 formatter = logging.Formatter(format, dateFmt)
 
 # file logging
-f = logging.FileHandler("%s%s" % ('@PREFIX@', LOGFILE))
+f = SysLogHandler(facility = SysLogHandler.LOG_LOCAL4)
 f.setLevel(logging.DEBUG)
 f.setFormatter(formatter)
 logging.getLogger('').addHandler(f)
