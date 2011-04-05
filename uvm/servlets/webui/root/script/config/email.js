@@ -214,7 +214,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 header : false,
                                 border : false,
                                 items: [{
-                                
                                     xtype : 'fieldset',
                                     height : 300,
                                     items:[{
@@ -239,7 +238,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                         height:100,
                                         id : 'email-test-success',
                                         visible : false
-                                    },] 
+                                    }] 
                                 }]
                             }),
             
