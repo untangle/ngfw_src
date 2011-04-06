@@ -811,7 +811,6 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
     refreshInterfaces : function()
     {
         Ext.MessageBox.wait( i18n._( "Refreshing Network Interfaces" ), i18n._( "Please wait" ));
-
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.arRefreshInterfaces.createDelegate( this ));
     },
 
@@ -837,10 +836,15 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         var interfaceList = this.fixInterfaceList( result.interfaceList );
 
         if ( interfaceList.length != this.interfaceStore.getCount()) {
-            Ext.MessageBox.alert( i18n._( "New interfaces" ), i18n._ ( "There are new interfaces, please restart the wizard." ), exception.message );
+            Ext.MessageBox.alert( i18n._( "New interfaces" ), i18n._ ( "There are new interfaces, please restart the wizard." ), "" );
             return;
         }
 
+        if ( interfaceList.length < 2) {
+            Ext.MessageBox.alert( i18n._( "Missing interfaces" ), i18n._ ( "Untangle requires two or more network cards. Please reinstall with at least two network cards." ), "" );
+            return;
+        }
+        
         var statusHash = {};
         /* XXX This status array is brittle and should be refactored. XXXX */
         for ( var c = 0 ;c < interfaceList.length ; c++ ) {
