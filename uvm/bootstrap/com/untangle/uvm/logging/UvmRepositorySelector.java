@@ -266,7 +266,6 @@ public class UvmRepositorySelector implements RepositorySelector
                     fileStr = fileStr.replace("@NodeLogFileName@", ctx.getFileName());
                     InputStream newInputStream = new ByteArrayInputStream(fileStr.getBytes("UTF-8"));
                     configurator.doConfigure(newInputStream, this);
-                    //                    this.setThrowableRenderer(new UtThrowableRenderer("node#" + ctx.getFileName() + ": "));
                 }
                 catch (java.io.IOException e) {
                     System.err.println("Exceptiong configuring logging exception: " + e);
