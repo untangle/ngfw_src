@@ -114,8 +114,8 @@ public class IPMatcher
     public IPMatcher( IPAddress network, IPAddress netmask )
     {
         this.type = IPMatcherType.SUBNET;
-        this.subnetNetwork = addrToLong(network.getAddr());
         this.subnetNetmask = addrToLong(netmask.getAddr());
+        this.subnetNetwork = (addrToLong(network.getAddr()) & this.subnetNetmask);
     }
 
     /**
@@ -124,8 +124,8 @@ public class IPMatcher
     public IPMatcher( IPNetwork net )
     {
         this.type = IPMatcherType.SUBNET;
-        this.subnetNetwork = addrToLong(net.getNetwork().getAddr());
         this.subnetNetmask = addrToLong(net.getNetmask().getAddr());
+        this.subnetNetwork = (addrToLong(net.getNetwork().getAddr()) & this.subnetNetmask);
     }
     
 

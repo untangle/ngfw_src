@@ -410,9 +410,8 @@ public class NetworkManagerImpl implements NetworkManager
                 if (internalNet == null)
                     internalNet = IPNetwork.parse( "192.168.1.1/24" );
                     
-                IPAddress internalAddr = internalNet.getNetwork();
                 IPMatcher internalMatcher = new IPMatcher( internalNet );
-                
+
                 if ( internalMatcher.isMatch( externalAddress.getAddr() ) ) {
                     return IPNetwork.parse( "172.16.0.1/24" );
                 }
