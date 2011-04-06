@@ -1,24 +1,9 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
+/* $HeadURL: svn://chef/work/src/http-casing/localapi/com/untangle/node/http/BlockPageUtil.java */
 package com.untangle.node.http;
 
 import java.io.IOException;
 import java.util.Map;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -82,8 +67,20 @@ public class BlockPageUtil
         BlockDetails bd = params.getBlockDetails();
         request.setAttribute( "bd", bd );
 
-        /* Everything below here can be moved into a parent class, + i18n should go into an interface */
-        request.setAttribute( "contact", I18nUtil.tr("If you have any questions, Please contact {0}.", bm.getContactHtml(), i18n_map));
+        String contactHtml = I18nUtil.marktr("your network administrator");
+        if (bm.getContactEmail() != null) {
+            String emailSubject = "";
+            String emailBody = "";
+            try {
+                emailSubject = URLEncoder.encode( "site:" + bd.getHost(), "UTF-8" );
+                emailBody = URLEncoder.encode("URL:http://" + bd.getHost() + bd.getUri(), "UTF-8");
+            } catch (java.io.UnsupportedEncodingException exc) {
+                logger.warn("unsupported encoding", exc);
+            }
+            contactHtml = "<a href='mailto:" + bm.getContactEmail() + "?subject=" + emailSubject + "&body=" + emailBody + "'>" + bm.getContactName() + "</a>";
+        }
+
+        request.setAttribute( "contact", I18nUtil.tr("If you have any questions, Please contact {0}.", contactHtml, i18n_map));
 
         UserWhitelistMode mode = params.getUserWhitelistMode();
         if (( UserWhitelistMode.NONE != mode ) && ( null != bd ) && ( null != bd.getWhitelistHost())) {

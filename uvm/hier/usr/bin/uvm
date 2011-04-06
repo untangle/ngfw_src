@@ -183,12 +183,13 @@ while true; do
     while true; do
         sleep $SLEEP_TIME
         
-        if [ "x" = "x@PREFIX@" ] ; then
+        if [ "x" = "x@PREFIX@" ] ; then # in production environment
+
              ## if necessary tell monit to keep monitoring everything.
             update_monit
 
             if [ ! -d /proc/$pid ] ; then
-                echo "*** restarting missing untangle-vm $? on `date` ***" | logger -t uvmwrapper
+                echo "*** restarting missing untangle-vm ($?) on `date` ***" | logger -t uvmwrapper
                 break
             fi
 
@@ -205,6 +206,14 @@ while true; do
                 nukeIt
                 break
             fi
+
+        else #in development environment
+
+            if [ ! -d /proc/$pid ] ; then
+                echo "*** untangle-vm died ($?) on `date` ***" | logger -t uvmwrapper
+                exit
+            fi
+
         fi
 
     done
