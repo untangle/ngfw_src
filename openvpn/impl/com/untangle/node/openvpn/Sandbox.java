@@ -198,9 +198,11 @@ public class Sandbox
             range = AddressRange.makeNetwork( net.getNetwork().getAddr(), net.getNetmask().getAddr() );
             currentNetwork.add(range);
             
-            for ( IPNetwork alias : intf.getAliases() ) {
-                range = AddressRange.makeNetwork( alias.getNetwork().getAddr(), alias.getNetmask().getAddr() );
-                currentNetwork.add(range);
+            if (intf.getAliases() != null) {
+                for ( IPNetwork alias : intf.getAliases() ) {
+                    range = AddressRange.makeNetwork( alias.getNetwork().getAddr(), alias.getNetmask().getAddr() );
+                    currentNetwork.add(range);
+                }
             }
         }
         
