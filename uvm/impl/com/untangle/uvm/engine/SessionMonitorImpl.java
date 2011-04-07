@@ -22,6 +22,7 @@ import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.argon.SessionGlobalState;
 import com.untangle.uvm.argon.ArgonHook;
 import com.untangle.uvm.argon.ArgonSessionTable;
+import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.SessionMonitorEntry;
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.networking.InterfaceConfiguration;
@@ -118,7 +119,17 @@ class SessionMonitorImpl implements SessionMonitor
 
                 try {
                     if ( _matches(clientSide,session) || _matches(serverSide,session) ) {
-                        session.setPolicy(argonSession.argonHook().getPolicy().getName());
+                        
+                        ArgonHook hook = argonSession.argonHook();
+                        if (hook == null)
+                            continue;
+                        
+                        Policy policy = hook.getPolicy();
+                        if (policy == null)
+                            session.setPolicy("");
+                        else
+                            session.setPolicy(argonSession.argonHook().getPolicy().getName());
+
                         session.setBypassed(Boolean.FALSE);
                         session.setLocalTraffic(Boolean.FALSE);
                         session.setClientIntf(new Integer(clientSide.clientIntf()));
@@ -144,8 +155,8 @@ class SessionMonitorImpl implements SessionMonitor
                         break;
                     }
                 } catch (Exception e) {
-                    /* sometimes argonHook or getPolicy return null */
-                    /* if anything weird happens just assume it doesn't match */
+                    logger.warn("Exception while searching for session",e);
+                    foundUvmSession = false;
                 }
             }
 
@@ -155,7 +166,7 @@ class SessionMonitorImpl implements SessionMonitor
              * Remove it and dont show it to the user
              */
             if ( !session.getBypassed() && !foundUvmSession ) {
-                logger.info("Removing: " + session);
+                logger.debug("Ignoring session: " + session);
                 i.remove();
             }
         }

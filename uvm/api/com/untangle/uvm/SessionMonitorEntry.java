@@ -101,5 +101,10 @@ public class SessionMonitorEntry
     public void  setServerKBps( Float serverKBps ) {this.serverKBps = serverKBps;}
     public Float getTotalKBps() {return totalKBps;}
     public void  setTotalKBps( Float totalKBps ) {this.totalKBps = totalKBps;}
+
+    public String toString()
+    {
+        return getProtocol() + "| " + getPreNatClient() + ":" + getPreNatClientPort() + " -> " + getPostNatServer() + ":" + getPostNatServerPort();
+    }
     
 }
