@@ -37,7 +37,6 @@ PREFIX = "@PREFIX@"
 $ERROR = ""
 
 Syslog.open('ut-apt', Syslog::LOG_PID | Syslog::LOG_NDELAY, Syslog::LOG_LOCAL2)
-Syslog.info(Time.new.strftime("%Y/%m/%d %H:%M:%S"))
 
 def printusage()
   puts _('usage:')
@@ -54,7 +53,7 @@ STR
 end
 
 def log(str)
-  Syslog.info(str)
+  Syslog.info(str.gsub(/\%/, ''))
 end
 
 class DevApt
