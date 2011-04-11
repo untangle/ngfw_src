@@ -176,7 +176,7 @@ public class IntfMatcher
 
     private void initialize( String matcher )
     {
-        matcher = matcher.toLowerCase().trim();
+        matcher = matcher.toLowerCase().trim().replaceAll("\s","");
         this.matcher = matcher;
 
         /**
