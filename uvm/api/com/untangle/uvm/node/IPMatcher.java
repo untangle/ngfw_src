@@ -297,7 +297,7 @@ public class IPMatcher
      */
     private void initialize( String matcher )
     {
-        matcher = matcher.toLowerCase().trim().replaceAll("\s","");
+        matcher = matcher.toLowerCase().trim().replaceAll("\\s","");
         this.matcher = matcher;
 
         /**
