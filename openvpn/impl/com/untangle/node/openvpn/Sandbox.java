@@ -195,8 +195,10 @@ public class Sandbox
 
             /* add the primary */
             net = intf.getPrimaryAddress();
-            range = AddressRange.makeNetwork( net.getNetwork().getAddr(), net.getNetmask().getAddr() );
-            currentNetwork.add(range);
+            if (net != null) {
+                range = AddressRange.makeNetwork( net.getNetwork().getAddr(), net.getNetmask().getAddr() );
+                currentNetwork.add(range);
+            }
             
             if (intf.getAliases() != null) {
                 for ( IPNetwork alias : intf.getAliases() ) {
