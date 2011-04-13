@@ -1,23 +1,23 @@
 -- settings conversion for release-8.1
 
 -- interface enumeration changes
-UPDATE settings.u_user_policy_rule SET client_intf_matcher = '1' WHERE client_intf_matcher = '0';
-UPDATE settings.u_user_policy_rule SET client_intf_matcher = '2' WHERE client_intf_matcher = '1';
-UPDATE settings.u_user_policy_rule SET client_intf_matcher = '3' WHERE client_intf_matcher = '2';
-UPDATE settings.u_user_policy_rule SET client_intf_matcher = '4' WHERE client_intf_matcher = '3';
-UPDATE settings.u_user_policy_rule SET client_intf_matcher = '5' WHERE client_intf_matcher = '4';
-UPDATE settings.u_user_policy_rule SET client_intf_matcher = '6' WHERE client_intf_matcher = '5';
-UPDATE settings.u_user_policy_rule SET client_intf_matcher = '7' WHERE client_intf_matcher = '6';
 UPDATE settings.u_user_policy_rule SET client_intf_matcher = '250' WHERE client_intf_matcher = '7';
+UPDATE settings.u_user_policy_rule SET client_intf_matcher = '7' WHERE client_intf_matcher = '6';
+UPDATE settings.u_user_policy_rule SET client_intf_matcher = '6' WHERE client_intf_matcher = '5';
+UPDATE settings.u_user_policy_rule SET client_intf_matcher = '5' WHERE client_intf_matcher = '4';
+UPDATE settings.u_user_policy_rule SET client_intf_matcher = '4' WHERE client_intf_matcher = '3';
+UPDATE settings.u_user_policy_rule SET client_intf_matcher = '3' WHERE client_intf_matcher = '2';
+UPDATE settings.u_user_policy_rule SET client_intf_matcher = '2' WHERE client_intf_matcher = '1';
+UPDATE settings.u_user_policy_rule SET client_intf_matcher = '1' WHERE client_intf_matcher = '0';
 
-UPDATE settings.u_user_policy_rule SET server_intf_matcher = '1' WHERE server_intf_matcher = '0';
-UPDATE settings.u_user_policy_rule SET server_intf_matcher = '2' WHERE server_intf_matcher = '1';
-UPDATE settings.u_user_policy_rule SET server_intf_matcher = '3' WHERE server_intf_matcher = '2';
-UPDATE settings.u_user_policy_rule SET server_intf_matcher = '4' WHERE server_intf_matcher = '3';
-UPDATE settings.u_user_policy_rule SET server_intf_matcher = '5' WHERE server_intf_matcher = '4';
-UPDATE settings.u_user_policy_rule SET server_intf_matcher = '6' WHERE server_intf_matcher = '5';
-UPDATE settings.u_user_policy_rule SET server_intf_matcher = '7' WHERE server_intf_matcher = '6';
 UPDATE settings.u_user_policy_rule SET server_intf_matcher = '250' WHERE server_intf_matcher = '7';
+UPDATE settings.u_user_policy_rule SET server_intf_matcher = '7' WHERE server_intf_matcher = '6';
+UPDATE settings.u_user_policy_rule SET server_intf_matcher = '6' WHERE server_intf_matcher = '5';
+UPDATE settings.u_user_policy_rule SET server_intf_matcher = '5' WHERE server_intf_matcher = '4';
+UPDATE settings.u_user_policy_rule SET server_intf_matcher = '4' WHERE server_intf_matcher = '3';
+UPDATE settings.u_user_policy_rule SET server_intf_matcher = '3' WHERE server_intf_matcher = '2';
+UPDATE settings.u_user_policy_rule SET server_intf_matcher = '2' WHERE server_intf_matcher = '1';
+UPDATE settings.u_user_policy_rule SET server_intf_matcher = '1' WHERE server_intf_matcher = '0';
 
 UPDATE settings.u_user_policy_rule SET client_intf_matcher = 'any' WHERE client_intf_matcher = 'more_trusted';
 UPDATE settings.u_user_policy_rule SET client_intf_matcher = 'any' WHERE client_intf_matcher = 'less_trusted';
