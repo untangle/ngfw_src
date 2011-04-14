@@ -6,7 +6,6 @@ import random
 import getpass
 
 class AdminManager(Manager):
-    __registrationKeys = [ "companyName", "firstName", "lastName", "emailAddr", "numSeats",  "address1", "address2", "city", "state", "zipcode", "phone", ]
     def __init__(self, remoteContext):
         self.__remoteContext = remoteContext
         self.__adminManager = self.__remoteContext.adminManager()

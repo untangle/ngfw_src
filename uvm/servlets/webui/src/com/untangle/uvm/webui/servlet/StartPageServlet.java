@@ -48,8 +48,8 @@ public class StartPageServlet extends HttpServlet
         ServletContext sc = getServletContext();
         RequestDispatcher rd = sc.getRequestDispatcher(url);
         String companyName = LocalUvmContextFactory.context().brandingManager().getCompanyName();
-        boolean isRegistered = LocalUvmContextFactory.context().isRegistered();
-        req.setAttribute( "isRegistered", isRegistered ? "true" : "false" );
+        boolean isActivated = LocalUvmContextFactory.context().isActivated();
+        req.setAttribute( "isActivated", isActivated ? "true" : "false" );
         req.setAttribute( "companyName", companyName );
         req.setAttribute( "storeWindowId", STORE_WINDOW_ID );
         req.setAttribute( "buildStamp", getServletConfig().getInitParameter("buildStamp") );

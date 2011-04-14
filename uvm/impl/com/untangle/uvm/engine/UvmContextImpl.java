@@ -72,7 +72,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private static final String BDB_HOME = System.getProperty("uvm.db.dir");
 
     private static final String ACTIVATE_SCRIPT;
-    private static final String REGISTRATION_INFO_FILE;
     private static final String UID_FILE;
     private static String uid;
 
@@ -504,12 +503,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     {
         File keyFile = new File(UID_FILE);
         return keyFile.exists();
-    }
-
-    public boolean isRegistered()
-    {
-        File regFile = new File(REGISTRATION_INFO_FILE);
-        return regFile.exists();
     }
 
     public boolean isDevel()
@@ -973,7 +966,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     static {
         ACTIVATE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-activate";
-        REGISTRATION_INFO_FILE = System.getProperty("uvm.conf.dir") + "/registration.info";
         UID_FILE = System.getProperty("uvm.conf.dir") + "/uid";
     }
 }

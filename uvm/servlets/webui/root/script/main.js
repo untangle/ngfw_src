@@ -1243,7 +1243,7 @@ Ung.Main=Ext.extend(Object, {
             size = main.viewport.getSize(),
             centerSize = Ext.getCmp('center').getSize(),
             centerPosition = Ext.getCmp('center').getPosition();
-        if(isRegistered===true){
+        if(isActivated===true){
             if(result===true){
                 main.checkForUpgrades(this.upgradeCheckCallback);
                 return;

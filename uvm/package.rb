@@ -125,21 +125,13 @@ if BuildEnv::SRC.isDevel
                                            'pkg-list-main')
 
   uidFile = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/uid"
-  regFile = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/registration.info"
-
   ## Create all-zeros UID file to signal non-production install.
   ## Done here to not include the file inside of packages.
   file uidFile do
     File.open( uidFile, "w" ) { |f| f.puts( "0000-0000-0000-0000" ) }
   end
-  ## Create blank registration info to avoid setup wizard in development.
-  ## Done here to not include the file inside of packages.
-  file regFile do
-    File.open( regFile, "w" ) { |f| f.puts( "" ) }
-  end
 
   BuildEnv::SRC.installTarget.register_dependency(uidFile)
-  BuildEnv::SRC.installTarget.register_dependency(regFile)
 end
 
 BuildEnv::SRC.installTarget.register_dependency(uvm_cacerts)

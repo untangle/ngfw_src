@@ -201,13 +201,6 @@ public interface LocalUvmContext extends RemoteUvmContext
     boolean isActivated();
 
     /**
-     * Returns true if the product has been registered, false otherwise
-     *
-     * @return a <code>boolean</code> value
-     */
-    boolean isRegistered();
-
-    /**
      * Return true if running in a development environment.
      *
      * @return a <code>boolean</code> true if in development.
