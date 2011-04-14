@@ -265,7 +265,10 @@ public class Sandbox
         for (InterfaceConfiguration intf : networkSettings.getInterfaceList()) {
             if (! intf.isWAN() ) {
                 IPNetwork network = intf.getPrimaryAddress();
-            
+
+                if (network == null)
+                    continue;
+                
                 if ( NetworkUtil.getInstance().isBogus( network.getNetwork()) ) continue;
 
                 rangeList.addFirst( AddressRange.makeNetwork( network.getNetwork().getAddr(), network.getNetmask().getAddr()));
