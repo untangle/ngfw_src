@@ -65,6 +65,9 @@ fi
 if [ -f /usr/share/untangle/activation.key ] ; then
     mv /usr/share/untangle/activation.key /usr/share/untangle/conf/uid
 fi
+# 9.0
+rm -f /usr/share/untangle/log
+rm -f /usr/share/untangle/log_link
 
 # set up uvm to start at boot
 if [ -x "/etc/init.d/untangle-vm" ]; then

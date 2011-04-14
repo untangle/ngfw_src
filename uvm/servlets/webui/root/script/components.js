@@ -424,10 +424,10 @@ Ung.Util= {
             this.protocolStore=new Ext.data.SimpleStore({
                 fields : ['key', 'name'],
                 data :[
-                    ["TCP & UDP", i18n._("TCP & UDP")],
-                    ["UDP", i18n._("UDP")],
-                    ["TCP", i18n._("TCP")],
-                    ["ANY", i18n._("ANY")]
+                    ["tcp&udp", i18n._("TCP & UDP")],
+                    ["udp", i18n._("UDP")],
+                    ["tcp", i18n._("TCP")],
+                    ["any", i18n._("ANY")]
                 ]
             });
         }

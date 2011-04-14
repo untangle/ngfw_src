@@ -432,7 +432,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     "policy" : null,
                     "clientIntf" : "any",
                     "serverIntf" : "any",
-                    "protocol" : "TCP & UDP",
+                    "protocol" : "any",
                     "clientAddr" : "any",
                     "serverAddr" : "any",
                     "clientPort" : "any",
