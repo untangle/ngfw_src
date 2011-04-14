@@ -92,13 +92,6 @@ flushIptables() {
     curl "http://localhost:3000/alpaca/uvm/generate_rules?argyle=${t_nonce}"
 }
 
-# Activate if we haven't already
-activate() {
-  if [ ! -f $UID_FILE ] ; then 
-    @UVM_HOME@/bin/ut-activate
-  fi
-}
-
 # Return true (0) when we need to reap and restart the uvm.
 needToRestart() {
     # detect garbage collection failure due to heap full.  Continuous repeat of
@@ -167,8 +160,6 @@ while true; do
     echo "============================" | logger -t uvmwrapper
 
     flushIptables
-
-    activate
 
     flushConntrack
 
