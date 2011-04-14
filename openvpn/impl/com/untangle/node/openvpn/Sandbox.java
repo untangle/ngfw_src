@@ -284,10 +284,10 @@ public class Sandbox
                 ssn.setLive( true );
                 ssn.setName( i18nUtil.tr("internal network") );
                 networkList.add( ssn );
-        
-                setExportList( new ExportList( networkList ));
             }
         }
+
+        setExportList( new ExportList( networkList ));
     }
 
     void setClientList( ClientList parameters ) throws ValidateException
