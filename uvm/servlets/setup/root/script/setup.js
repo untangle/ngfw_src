@@ -352,234 +352,6 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
     }
 });
 
-Ung.SetupWizard.Registration = Ext.extend( Object, {
-    constructor : function( config )
-    {
-        this.form = new Ext.FormPanel({
-            defaultType : 'fieldset',
-            defaults : {
-                autoHeight : true,
-                cls : 'noborder'
-            },
-            items : [{
-                xtype : 'label',
-                html : '<h2 class="wizard-title">'+i18n._( "Registration" )+'</h2>'
-            },{
-                defaultType : 'textfield',
-                defaults : {
-                    validationEvent : 'blur',
-                    msgTarget : 'side'
-                },
-                items : [{
-                    xtype : 'label',
-                    html : '<b>'+i18n._( 'Please provide administrator contact info.' )+'</b>',
-                    border : false
-                },{
-                    fieldLabel : i18n._("First Name"),
-                    name : "firstName",
-                    itemCls : 'small-top-margin'
-                },{
-                    fieldLabel : i18n._("Last Name/Surname"),
-                    name : "lastName"
-                },{
-                    fieldLabel : '<span class="required-star">*</span>'+i18n._('Email'),
-                    name : 'email',
-                    id : 'registration_email',
-                    vtype : 'emailAddressCheck',//ensure its a valid email address                    
-                    width : 200,
-                    allowBlank : false
-                }, new Ung.SetupWizard.TextField({
-                    fieldLabel : i18n._('Organization Name'),
-                    boxLabel: i18n._( "(if applicable)" ),
-                    name : 'companyName'
-                }),new Ung.SetupWizard.NumberField({
-                    minValue : 0,
-                    allowDecimals : false,
-                    width : 60,
-                    fieldLabel : '<span class="required-star">*</span>'+i18n._('Number of PCs on your network'),
-                    name : 'numSeats',
-                    allowBlank : false,
-                    boxLabel : i18n._("(approximate; include Windows, Linux and Mac)")
-                }),{
-                    fieldLabel : '<span class="required-star">*</span>'+String.format(i18n._("Where will you be using {0}?"),oemName),
-                    name : "environment",
-                    xtype : 'radio',
-                    inputValue : "my-business",
-                    boxLabel : i18n._( "My Business" )
-                },{
-                    fieldLabel : "",
-                    labelSeparator : "",
-                    name : "environment",
-                    xtype : "radio",
-                    inputValue : "clients-business",
-                    boxLabel : i18n._( "A Client's Business" )
-                },{
-                    fieldLabel : "",
-                    labelSeparator : "",
-                    name : "environment",
-                    xtype : "radio",
-                    inputValue : "school",
-                    boxLabel : i18n._( "School" )
-                },{
-                    fieldLabel : "",
-                    labelSeparator : "",
-                    name : "environment",
-                    xtype : "radio",
-                    inputValue : "home",
-                    boxLabel : i18n._( "Home" )
-                },{
-                    fieldLabel : "",
-                    labelSeparator : "",
-                    name : "environment",
-                    xtype : "radio",
-                    listeners : {
-                        check : {
-                            fn : this.onSelectOther,
-                            scope : this
-                        }
-                    },
-                    inputValue : "other",
-                    boxLabel : i18n._( "Other" )
-                },this.environmentOther = new Ung.SetupWizard.TextField({
-                    fieldLabel : i18n._("Please Describe"),
-                    name : "environment-other",
-                    itemCls : 'wizard-label-margin-6'
-                })]
-            },{
-                xtype : 'label',
-                html : i18n._( '<span class="required-star">*</span> Required' ),
-                border : false,
-                cls : 'required-info'
-            }]
-        });
-
-        this.card = {
-            title : i18n._( "Registration" ),
-            cardTitle : i18n._( "Registration" ),
-            panel : this.form,
-            onNext : this.saveRegistrationInfo.createDelegate( this ),
-            onValidate : this.validateRegistration.createDelegate(this),
-            onLoad : function( complete )
-            {
-                var field = this.form.find( "name", "environment" )[0];
-                this.onSelectOther( null, field.getGroupValue() == "other" );
-                complete();
-            }.createDelegate( this )
-            
-        };
-    },
-    validateRegistration : function()
-    {
-        
-        var rv = _validate(this.card.panel.items.items);
-        var fieldEnvironment = this.form.find( "name", "environment" )[0];
-        this.clearInvalidEnvironement();
-        this.environmentOther.clearInvalid();
-        if(fieldEnvironment.getGroupValue() == null ) {
-            this.markInvalidEnvironement();
-            rv=false;
-        } else {
-            if(fieldEnvironment.getGroupValue() == "other") {
-                if(this.environmentOther.getValue() == null || this.environmentOther.getValue()=="") {
-                    this.environmentOther.markInvalid();
-                    rv=false;
-                } 
-            }
-        }
-        return rv;
-    },
-    markInvalidEnvironement : function () {
-        Ext.each(this.form.find( "name", "environment" ), function(item) {
-            item.getEl().parent().addClass("x-form-invalid");
-        });
-    },
-    clearInvalidEnvironement:function() {
-        Ext.each(this.form.find( "name", "environment" ), function(item) {
-            item.getEl().parent().removeClass("x-form-invalid");
-        });
-        
-    },
-    onSelectOther: function( checkbox, isChecked )
-    {
-        if ( isChecked ) {
-            this.environmentOther.show();
-            this.environmentOther.enable();
-            this.environmentOther.getEl().up('.x-form-item').setDisplayed( true );
-        } else {
-            this.environmentOther.hide();
-            this.environmentOther.disable();
-            this.environmentOther.getEl().up('.x-form-item').setDisplayed( false );
-        }
-    },
-    saveRegistrationInfo : function( handler )
-    {
-        Ext.MessageBox.wait( i18n._( "Saving Information" ), i18n._( "Please wait" ));
-
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
-    },
-    afterReauthenticate : function( handler )
-    {
-        var info = Ung.SetupWizard.CurrentValues.registrationInfo;
-        this.setRegistrationValue( "firstName", info, false );
-        this.setRegistrationValue( "lastName", info, false );
-        this.setRegistrationValue( "companyName", info, false );
-        this.setRegistrationValue( "email", info, true, "emailAddr" );
-        this.setRegistrationValue( "numSeats", info, true );
-        this.setRegistrationValue( "environment", info, true );
-        if ( info["environment"] == "other" ) {
-            this.setRegistrationValue( "environment-other", info, false, "environment" );
-        }
-
-        rpc.adminManager.activate( this.errorHandler.createDelegate( this, [ handler ], true ), info );
-    },
-
-    errorHandler : function( result, exception, foo, handler )
-    {
-        if(exception) {
-            var message = exception.message;
-            if (message == null || message == "Unknown") {
-                message = i18n._("Please Try Again");
-            }
-            Ext.MessageBox.alert("Failed", message);
-            return;
-        }
-        
-        Ext.MessageBox.hide();
-        handler();
-    },
-
-    setRegistrationValue : function( fieldName, map, isRequired, param )
-    {
-        if ( param == null ) {
-            param = fieldName;
-        }
-
-        var field = this.form.find( "name", fieldName );
-        if ( field == null || field.length == 0 ) {
-            return;
-        }
-        field = field[0];
-        var value = null;
-
-        /* Combo has to use the raw value, otherwise editable does not come through, (country is not editable)*/
-        if (( field.xtype == "combo" ) && ( fieldName != "country" )) {
-            value = field.getRawValue();
-        } else if ( field.xtype == "radio" ) {
-            value = field.getGroupValue();
-        } else {
-            value = field.getValue();
-        }
-
-        if ( value == null ) {
-            return;
-        }
-        if ( value.length == 0 ) {
-            return;
-        }
-        map[param] = "" + value;
-    }
-});
-
 Ung.SetupWizard.Interfaces = Ext.extend( Object, {
     constructor : function()
     {
@@ -646,7 +418,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
 
         
         var panelTitle = i18n._('Identify Network Cards');
-        var panelText = i18n._( "This step can help you identify your external, internal, and other network cards. Plug an active cable into each network card one at a time and hit refresh to determine which network card is which. You can also drag and drop the interfaces to remap them at this time." );
+        var panelText = i18n._( "<b>Important:</b> This step identifies your external, internal, and other network cards. Plug an active cable into each network card one at a time and hit refresh to determine which network card is which. <b>Drag and drop</b> the interfaces to remap them at this time." );
 
         var panel = new Ext.Panel({
             defaults : { cls : 'noborder' },
@@ -1848,7 +1620,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
         settings.smtpPort = 25;
         settings.authUser = "";
         settings.authPass = "";
-        settings.reportEmail = Ext.getCmp('registration_email').getValue();
+        settings.reportEmail = "";
         
         if ( this.isAdvanced ) {
             settings.fromAddress = this.panel.find( "name", "from-address-textfield" )[0].getValue();
@@ -1950,7 +1722,6 @@ Ung.Setup = {
 
         var welcome = new Ung.SetupWizard.Welcome();
         var settings = new Ung.SetupWizard.Settings();
-        var registration = new Ung.SetupWizard.Registration();
         var interfaces = new Ung.SetupWizard.Interfaces();
         var internet = new Ung.SetupWizard.Internet();
         var email = new Ung.SetupWizard.Email();
@@ -1959,7 +1730,6 @@ Ung.Setup = {
         var cards = [];
         cards.push( welcome.card );
         cards.push( settings.card );
-        cards.push( registration.card );
         cards.push( interfaces.card );
         cards.push( internet.card );
         var internal = new Ung.SetupWizard.InternalNetwork();

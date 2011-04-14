@@ -86,27 +86,9 @@ public interface AdminManager
     String getDate();
 
     /*
-     * Activate the box, used during the setup wizard to create the initial pop id.
+     * Activate the box, used during the setup wizard to create the initial UID.
      */
-    public boolean activate(RegistrationInfo regInfo);
-
-    /**
-     * Sets the registration info for the box customer.  The new info
-     * will be transmitted to Untangle automatically by cron.
-     *
-     * @param info a <code>RegistrationInfo</code> giving the new
-     * registration info for the customer
-     */
-    void setRegistrationInfo(RegistrationInfo info)
-        throws TransactionRolledbackException;
-
-    /**
-     * Returns the registration info previously set, or null if
-     * {@link #setRegistrationInfo setRegistrationInfo} has never been set
-     *
-     * @return the reg info
-     */
-    RegistrationInfo getRegistrationInfo();
+    public boolean activate( );
 
     /**
      * Access the singleton responsible for

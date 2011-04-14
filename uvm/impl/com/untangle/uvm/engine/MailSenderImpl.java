@@ -368,7 +368,8 @@ class MailSenderImpl implements MailSender, HasConfigFiles
         }
     }
 
-    void restartMailDaemon() {
+    void restartMailDaemon()
+    {
         File exim_dir = new File(EXIM_CONF_DIR);
         if (exim_dir.isDirectory()) {
 
@@ -381,14 +382,16 @@ class MailSenderImpl implements MailSender, HasConfigFiles
         }
     }
 
-    private void reconfigure() {
+    private void reconfigure()
+    {
         refreshSessions();
         writeConfiguration();
         restartMailDaemon();
     }
 
     // Called when settings updated.
-    private void refreshSessions() {
+    private void refreshSessions()
+    {
         Properties commonProps = new Properties();
         commonProps.put(MAIL_FROM_PROP, mailSettings.getFromAddress());
         commonProps.put(MAIL_ENVELOPE_FROM_PROP, mailSettings.getFromAddress());

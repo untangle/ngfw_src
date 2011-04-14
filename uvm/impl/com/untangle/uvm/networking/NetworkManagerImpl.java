@@ -52,10 +52,6 @@ public class NetworkManagerImpl implements NetworkManager
 
     static final String ALPACA_SCRIPT = "/usr/share/untangle-net-alpaca/scripts/";
 
-    private static final String REGISTRATION_INFO_FILE = System.getProperty("uvm.conf.dir") + "/registration.info";
-    private static final String REGISTRATION_DONE_FILE = System.getProperty("uvm.conf.dir") + "/.regdone-flag";
-    private static final String REGISTRATION_SCRIPT    = System.getProperty("uvm.bin.dir") + "/ut-register";
-
     private static final long ALPACA_RETRY_COUNT = 3;
     private static final long ALPACA_RETRY_DELAY_MS = 6000;
 
@@ -541,6 +537,8 @@ public class NetworkManagerImpl implements NetworkManager
     
     public void refreshNetworkConfig()
     {
+        logger.info("Refreshing Network Configuration...");
+
         this.networkConfiguration = loadNetworkConfiguration( );
 
         if (this.networkConfiguration == null) {
@@ -597,6 +595,8 @@ public class NetworkManagerImpl implements NetworkManager
         } catch ( Exception e ) {
             logger.error( "Exception in a listener", e );
         }
+
+        logger.info("Refreshed  Network Configuration.");
     }
 
     public void refreshIptablesRules()
@@ -768,9 +768,6 @@ public class NetworkManagerImpl implements NetworkManager
 
         /* Update the link status for all of the interfaces */
         updateLinkStatus();
-
-        // Register the built-in listeners
-        registerListener(new TryRegistrationListener());
     }
 
     /* Methods for saving and loading the settings files from the database at startup */
@@ -866,33 +863,5 @@ public class NetworkManagerImpl implements NetworkManager
         }
         
         return settings;
-    }
-
-    class TryRegistrationListener implements NetworkConfigurationListener
-    {
-        public void event( NetworkConfiguration settings )
-        {
-            try {
-                File regDoneFile = new File(REGISTRATION_DONE_FILE);
-                boolean regDone = regDoneFile.exists();
-                File regInfoFile = new File(REGISTRATION_INFO_FILE);
-
-                if (!regInfoFile.exists()) {
-                    logger.warn("Registration info file doesn't exist.");
-                    return;
-                }
-                
-                long regInfoDate = regInfoFile.lastModified();
-                long regDoneDate = regDoneFile.lastModified();
-
-                if ( !regDone || regDoneDate < regInfoDate ) {
-                    //dont need to wait on exit and don't care about return code
-                    LocalUvmContextFactory.context().exec(REGISTRATION_SCRIPT);
-                }
-
-            } catch ( Exception e ) {
-                logger.error( "Error running after reconfigure script", e );
-            }
-        }
     }
 }

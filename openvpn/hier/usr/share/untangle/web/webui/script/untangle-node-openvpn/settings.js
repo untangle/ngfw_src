@@ -426,13 +426,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             }
             return this.rpc.exportedAddressList;
         },
-        getRegistrationInfo : function(forceReload) {
-            if (forceReload || this.rpc.registrationInfo === undefined) {
-                this.rpc.registrationInfo = rpc.adminManager.getRegistrationInfo();
-            }
-            return this.rpc.registrationInfo;
-        },
-
         getGroupsStore : function(force) {
             if (this.groupsStore == null ) {
                 this.groupsStore = new Ext.data.JsonStore({
@@ -1826,30 +1819,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     handler();
                 }
             };
-            var registrationInfo=this.getRegistrationInfo();
             var country="US";
             var companyName="";
             var state="";
             var city="";
 
-            if(registrationInfo!=null) {
-                if(registrationInfo.misc!=null && registrationInfo.misc.map!=null && registrationInfo.misc.map.country!=null) {
-                    country=Ung.Country.getCountryCode(registrationInfo.misc.map.country);
-                    if (country == null) {
-                        country="US";
-                    }
-                }
-                if( registrationInfo.companyName!=null) {
-                    companyName=registrationInfo.companyName;
-                }
-                if( registrationInfo.state!=null) {
-                    state=registrationInfo.state;
-                }
-                if( registrationInfo.city!=null) {
-                    city=registrationInfo.city;
-                }
-
-            }
             var certificateCard = {
                 title : this.i18n._("Step 1 - Certificate"),
                 panel : {

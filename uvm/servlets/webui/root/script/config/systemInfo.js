@@ -3,7 +3,6 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
 
     Ung.SystemInfo = Ext.extend(Ung.ConfigWin, {
         panelVersion : null,
-        panelRegistration : null,
         panelLicenses : null,
         panelLicenseAgreement : null,
         dirty : false,
@@ -17,12 +16,11 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 title : i18n._('System Info')
             }];
             this.buildVersion();
-            this.buildRegistration();
             this.buildLicenses();
             this.buildLicenseAgreement();
             
             // builds the tab panel with the tabs
-            var pageTabs = [this.panelVersion, this.panelRegistration, this.panelLicenses, this.panelLicenseAgreement];
+            var pageTabs = [this.panelVersion, this.panelLicenses, this.panelLicenseAgreement];
             this.buildTabPanel(pageTabs);
             this.tabs.activate(this.panelVersion);
             Ung.SystemInfo.superclass.initComponent.call(this);
@@ -37,17 +35,6 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 
             }
             return this.rpc.systemInfo;
-        },
-        getRegistrationInfo : function(forceReload) {
-            if (forceReload || this.rpc.registrationInfo === undefined) {
-                try {
-                    this.rpc.registrationInfo = rpc.adminManager.getRegistrationInfo();
-                } catch (e) {
-                    Ung.Util.rpcExHandler(e);
-                }
-                    
-            }
-            return this.rpc.registrationInfo;
         },
         buildVersion : function() {
             this.panelVersion = new Ext.Panel({
@@ -75,158 +62,6 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                             this.i18n._('UID')+": "+ this.getSystemInfo().serverUID + "\n" + 
                             this.i18n._('Build') + ": " + this.getSystemInfo().fullVersion + "\n" + 
                             this.i18n._('Java') + ": " + this.getSystemInfo().javaVersion 
-                    })]
-                }]
-            });
-        },
-        buildRegistration : function() {
-            var info = this.getRegistrationInfo();
-            var environment = null;
-            var other = "";
-
-            environment = info.environment;
-            if (( environment != null ) &&
-                ( environment != "" ) &&
-                ( environment != "my-business" ) &&
-                ( environment != "clients-business" ) &&
-                ( environment != "school" ) && 
-                ( environment != "home" )) {
-                other = environment;
-                environment = "other";
-            }
-
-            this.panelRegistration = new Ext.FormPanel({
-                parentId : this.getId(),
-                title : this.i18n._( "Registration" ),
-                helpSource : 'registration',
-                defaultType : 'fieldset',
-                defaults : { 
-                    autoHeight : true,
-                    labelWidth : 220,
-                    cls : 'noborder'
-                },
-                listeners : {
-                    activate : {
-                        fn : function()
-                        {
-                            var g = this.panelRegistration.find( "inputValue", "other" )[0].getValue();
-                            this.onSelectOther( null, g );
-                        },
-                        scope : this
-                    }
-                },
-                    
-                items : [{
-                    title : this.i18n._( "Please provide administrator contact info." ),
-                    defaultType : 'textfield',
-                    defaults : {
-                        validationEvent : "blur",
-                        msgTarget : 'side'
-                    },
-                    items : [{
-                        fieldLabel : this.i18n._("First Name"),
-                        name : "firstName",
-                        value : info.firstName,
-                        listeners : {
-                            "change" : {
-                                fn : this.onFieldChange.createDelegate(this)
-                            }
-                        }
-                    },{
-                        fieldLabel : this.i18n._("Last Name/Surname"),
-                        name : "lastName",
-                        value : info.lastName,
-                        listeners : {
-                            "change" : {
-                                fn : this.onFieldChange.createDelegate(this)
-                            }
-                        }
-                    },{
-                        fieldLabel : this.i18n._('Email'),
-                        name : "emailAddr",
-                        width : 200,
-                        allowBlank : false,
-                        value : info.emailAddr,
-                        listeners : {
-                            "change" : {
-                                fn : this.onFieldChange.createDelegate(this)
-                            }
-                        }
-                    },new Ext.form.TextField({
-                        fieldLabel : i18n._('Organization Name'),
-                        name : 'companyName',
-                        value : info.companyName,
-                        boxLabel : i18n._('(if applicable)'),
-                        listeners : {
-                            "change" : {
-                                fn : this.onFieldChange.createDelegate(this)
-                            }
-                        }
-                    }),new Ext.form.NumberField({
-                        minValue : 0,
-                        width : 60,
-                        allowDecimals : false,
-                        fieldLabel : this.i18n._('Number of PCs on your network'),
-                        name : 'numSeats',
-                        value : info.numSeats,
-                        allowBlank : false,
-                        boxLabel : i18n._('(approximate; include Windows, Linux and Mac)'),
-                        listeners : {
-                            "change" : {
-                                fn : this.onFieldChange.createDelegate(this)
-                            }
-                        }
-                    }),{
-                        fieldLabel : String.format(i18n._("Where will you be using {0}"),main.getBrandingManager().getCompanyName()),
-                        name : "environment",
-                        xtype : 'radio',
-                        inputValue : "my-business",
-                        boxLabel : i18n._( "My Business" ),
-                        checked : environment == "my-business"
-                    },{
-                        fieldLabel : "",
-                        labelSeparator : "",
-                        name : "environment",
-                        xtype : "radio",
-                        inputValue : "clients-business",
-                        checked : environment == "clients-business",
-                        boxLabel : i18n._( "A Client's Business" )
-                        
-                    },{
-                        fieldLabel : "",
-                        labelSeparator : "",
-                        name : "environment",
-                        xtype : "radio",
-                        inputValue : "school",
-                        checked : environment == "school",
-                        boxLabel : i18n._( "School" )
-                    },{
-                        fieldLabel : "",
-                        labelSeparator : "",
-                        name : "environment",
-                        xtype : "radio",
-                        inputValue : "home",
-                        checked : environment == "home",
-                        boxLabel : i18n._( "Home" )
-                    },{
-                        fieldLabel : "",
-                        labelSeparator : "",
-                        name : "environment",
-                        xtype : "radio",
-                        listeners : {
-                            check : {
-                                fn : this.onSelectOther,
-                                scope : this
-                            }
-                        },
-                        inputValue : "other",
-                        checked : environment == "other",
-                        boxLabel : i18n._( "Other" )
-                    },this.environmentOther = new Ext.form.TextField({
-                        fieldLabel : i18n._("Please Describe"),
-                        name : "environment-other",
-                        value : other,
-                        itemCls : "left-indent-5"
                     })]
                 }]
             });
@@ -377,29 +212,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 this.environmentOther.getEl().up('.x-form-item').setDisplayed( false );
             }
         },
-        //validate Registration Info
         validateClient : function() {
-            if ( !_validate( this.panelRegistration.items.items )) {
-                this.tabs.activate(this.panelRegistration);
-
-                Ext.MessageBox.alert( this.i18n._('Warning'),
-                                      this.i18n._('You must complete all required fields.'));
-
-                return false;
-            }
-            
-            var info = this.getRegistrationInfo();
-            info.firstName = this.panelRegistration.find( "name", "firstName" )[0].getValue();
-            info.lastName = this.panelRegistration.find( "name", "lastName" )[0].getValue();
-            info.emailAddr   = this.panelRegistration.find( "name", "emailAddr" )[0].getValue();
-            info.numSeats    = this.panelRegistration.find( "name", "numSeats" )[0].getValue();
-            info.companyName = this.panelRegistration.find( "name", "companyName" )[0].getValue();
-            var value = this.panelRegistration.find( "name", "environment" )[0].getGroupValue();
-            if ( value == "other" ) {
-                value = this.panelRegistration.find( "name", "environment-other" )[0].getValue();
-            }
-            if ( value != null ) info.environment = value;
-
             return true;
         },
         applyAction : function()
@@ -408,7 +221,6 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
         },
         reloadSettings : function()
         {
-            this.getRegistrationInfo(true);
             this.dirty = false;
             Ext.MessageBox.hide();
         },
@@ -428,10 +240,6 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 return;
             }
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-            rpc.adminManager.setRegistrationInfo(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                callback();
-            }.createDelegate(this), this.getRegistrationInfo());
         },
         isDirty : function()
         {

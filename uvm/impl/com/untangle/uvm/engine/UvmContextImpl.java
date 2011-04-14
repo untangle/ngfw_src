@@ -49,7 +49,6 @@ import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.policy.PolicyManagerFactory;
-import com.untangle.uvm.RegistrationInfo;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.UploadManager;
@@ -523,7 +522,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return Boolean.getBoolean(PROPERTY_IS_INSIDE_VM);
     }
 
-    public boolean activate(String uid, RegistrationInfo regInfo)
+    public boolean activate( String uid )
     {
         if (uid != null) {
             // Be nice to the poor user:
@@ -561,21 +560,11 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
             return false;
         }
 
-        // Only register if activation succeeded
-        try {
-            /* If possible, update the admin email */
-            adminManager.setAdminEmail(regInfo);
-            adminManager.setRegistrationInfo(regInfo);
-        } catch (Exception x) {
-            // Shouldn't happen
-            logger.error("unable to set reg info", x);
-        }
         return true;
     }
 
     public void doFullGC()
     {
-        // XXX check access permission
         System.gc();
     }
 

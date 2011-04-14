@@ -50,7 +50,6 @@ import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.reports.RemoteReportingManager;
 import com.untangle.uvm.AdminManager;
-import com.untangle.uvm.RegistrationInfo;
 import com.untangle.uvm.servlet.UploadManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.util.TransactionWork;
@@ -222,16 +221,7 @@ public interface LocalUvmContext extends RemoteUvmContext
      */
     boolean isInsideVM();
 
-    /**
-     * Activates the Untangle Server using the given key and registration info.
-     * Returns true if the activation succeeds, false otherwise (if the key is
-     * bogus).
-     *
-     * @param key a <code>String</code> giving the key to be activated
-     * under
-     * @return a <code>boolean</code> true if the activation succeeded
-     */
-    boolean activate(String key, RegistrationInfo regInfo);
+    boolean activate(String uid);
 
     boolean runTransaction(TransactionWork<?> tw);
 

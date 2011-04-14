@@ -1,21 +1,4 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
+/* $HeadURL$ */
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
@@ -45,7 +28,6 @@ import com.untangle.uvm.MailSender;
 import com.untangle.uvm.MailSettings;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.AdminSettings;
-import com.untangle.uvm.RegistrationInfo;
 import com.untangle.uvm.SystemInfo;
 import com.untangle.uvm.User;
 import com.untangle.uvm.security.UvmPrincipal;
@@ -236,73 +218,11 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
     }
 
     /*
-     * Activate the box, used during the setup wizard to create the initial pop id.
+     * Activate the box, used during the setup wizard to create the initial UID.
      */
-    public boolean activate(RegistrationInfo regInfo)
+    public boolean activate( )
     {
-        return uvmContext.activate(null, regInfo);
-    }
-
-    public void setRegistrationInfo(RegistrationInfo info)
-        throws TransactionRolledbackException
-    {
-        File regFile = new File(REGISTRATION_INFO_FILE);
-        if (regFile.exists()) {
-            if (!regFile.delete()) {
-                String message = "Unable to remove old registration info";
-                logger.error(message);
-                throw new TransactionRolledbackException(message);
-            }
-        }
-
-        String language = null;
-        LanguageSettings languageSettings = uvmContext.languageManager().getLanguageSettings();
-        if ( languageSettings != null ) {
-            language = languageSettings.getLanguage();
-        }
-
-        String oemName = uvmContext.oemManager().getOemName();
-        
-        try {
-            FileWriter writer = new FileWriter(regFile);
-            writer.write("regKey=");
-            writer.write(uvmContext.getServerUID());
-            writer.write("&version=");
-            writer.write(uvmContext.version());
-            writer.write("&brand=");
-            writer.write(this.getBrandNonce());
-            if ( language != null ) {
-                writer.write("&language=");
-                writer.write(URLEncoder.encode(language, "UTF-8"));
-            }
-            if (oemName != null) {
-                writer.write("&oem=");
-                writer.write(oemName);
-            }
-            writer.write("&");
-            writer.write(info.toForm());
-            writer.write("\n");
-            writer.close();
-        } catch (IOException exn) {
-            String message = "Exception during writing registration info: " + info;
-            logger.error(message, exn);
-            throw new TransactionRolledbackException(message);
-        }
-    }
-
-    public RegistrationInfo getRegistrationInfo() {
-        File regFile = new File(REGISTRATION_INFO_FILE);
-
-        /* Just return an empty registration */
-        if (!regFile.exists() || ( regFile.length() == 0 ))
-            return new RegistrationInfo(new Hashtable<String,String[]>());
-        try {
-            Hashtable<String,String[]> entries = FormUtil.parsePostData(regFile);
-            return new RegistrationInfo(entries);
-        } catch (Exception exn) {
-            logger.warn("Exception during parsing registration info: ", exn);
-            return new RegistrationInfo(new Hashtable<String,String[]>());
-        }
+        return uvmContext.activate( null );
     }
 
     public SnmpManager getSnmpManager() {
@@ -395,32 +315,4 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
         return new SystemInfo(UID, fullVersion, javaVersion);
     }
 
-    void setAdminEmail(final RegistrationInfo regInfo) {
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-        {
-            public boolean doWork(Session s)
-            {
-                boolean updateSettings = false;
-                for ( User user : adminSettings.getUsers()) {
-                    if (     user.getLogin() == "admin" ) {
-                        String email = user.getEmail();
-                        if ( email == null || email == "[no email]") {
-                            user.setEmail(regInfo.getEmailAddr());
-                            updateSettings = true;
-                        }
-
-                        break;
-                    }
-                }
-
-                if ( updateSettings ) {
-                    adminSettings = (AdminSettings)s.merge(adminSettings);
-                }
-                
-                return true;
-            }
-        };
-        
-        uvmContext.runTransaction(tw);
-    }
 }

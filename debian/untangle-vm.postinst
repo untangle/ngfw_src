@@ -65,12 +65,6 @@ fi
 if [ -f /usr/share/untangle/activation.key ] ; then
     mv /usr/share/untangle/activation.key /usr/share/untangle/conf/uid
 fi
-if [ -f /usr/share/untangle/.regdone ] ; then
-    mv /usr/share/untangle/.regdone /usr/share/untangle/conf/.regdone-flag
-fi
-if [ -f /usr/share/untangle/registration.info ] ; then
-    mv /usr/share/untangle/registration.info /usr/share/untangle/conf/registration.info
-fi
 
 # set up uvm to start at boot
 if [ -x "/etc/init.d/untangle-vm" ]; then
