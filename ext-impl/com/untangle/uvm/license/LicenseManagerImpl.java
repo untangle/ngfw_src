@@ -401,35 +401,36 @@ public class LicenseManagerImpl implements LicenseManager
         Map<String, License> newMap = new HashMap<String, License>();
         LinkedList<License> newList = new LinkedList<License>();
 
-        for (License lic : this.settings.getLicenses()) {
+        if (this.settings != null) {
+            for (License lic : this.settings.getLicenses()) {
+                /**
+                 * Create a duplicate - we're about to fill in metadata
+                 * But we don't want to mess with the original
+                 */
+                License license = new License(lic);
 
-            /**
-             * Create a duplicate - we're about to fill in metadata
-             * But we don't want to mess with the original
-             */
-            License license = new License(lic);
+                /**
+                 * Complete Meta-data
+                 */
+                if (_isLicenseValid(license)) {
+                    license.setValid(Boolean.TRUE);
+                    license.setStatus("Valid"); /* XXX i18n */
+                } else {
+                    license.setValid(Boolean.FALSE);
+                }
+            
+                String identifier = license.getName();
+                License current = newMap.get(identifier);
 
-            /**
-             * Complete Meta-data
-             */
-            if (_isLicenseValid(license)) {
-                license.setValid(Boolean.TRUE);
-                license.setStatus("Valid"); /* XXX i18n */
-            } else {
-                license.setValid(Boolean.FALSE);
+                /* current license is newer and better */
+                if ((current != null) && (current.getEnd() > license.getEnd()))
+                    continue;
+
+                logger.info("Adding License: " + license.getName() + " to Map. (valid: " + license.getValid() + ")");
+            
+                newMap.put(identifier, license);
+                newList.add(license);
             }
-            
-            String identifier = license.getName();
-            License current = newMap.get(identifier);
-
-            /* current license is newer and better */
-            if ((current != null) && (current.getEnd() > license.getEnd()))
-                continue;
-
-            logger.info("Adding License: " + license.getName() + " to Map. (valid: " + license.getValid() + ")");
-            
-            newMap.put(identifier, license);
-            newList.add(license);
         }
 
         this.licenseMap = newMap;
