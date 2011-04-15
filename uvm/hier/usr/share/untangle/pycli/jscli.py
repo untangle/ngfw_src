@@ -121,13 +121,11 @@ def printUsage():
     ucli sessions [ TID ]
   admin manager:
     ucli who
-    ucli getRegInfo
     ucli passwd [ -a | -d ] login [ password ]
   uvm commands:
     ucli shutdown
     ucli serverStats
     ucli gc
-    ucli setProperty key value
   policy manager:
     ucli addPolicy name [notes]
     ucli listPolicies

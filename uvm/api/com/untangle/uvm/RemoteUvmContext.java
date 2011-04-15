@@ -244,8 +244,6 @@ public interface RemoteUvmContext
     void restoreBackup(String fileName)
         throws IOException, IllegalArgumentException;
 
-    String setProperty(String key, String value);
-
     /**
      * Activate this untangle installation (generate the UID)
      * Called by the setup wizard

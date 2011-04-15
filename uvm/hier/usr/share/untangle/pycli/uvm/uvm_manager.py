@@ -7,13 +7,4 @@ class UvmManager(Manager):
     def api_gc( self ):
         self.__remoteContext.doFullGC()
 
-    def api_setproperty( self, key, value ):
-        self.__remoteContext.setProperty( key, value )
-
-    def api_restartcliserver( self ):
-        self.__remoteContext.restartCliServer()
-
-    def api_stopcliserver( self ):
-        self.__remoteContext.stopCliServer()
-
 Manager.managers.append( UvmManager )

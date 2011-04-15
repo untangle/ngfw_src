@@ -83,7 +83,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     
     private final Object startupWaitLock = new Object();
     private final Logger logger = Logger.getLogger(UvmContextImpl.class);
-    private final BackupManager backupManager;
 
     private UvmState state;
     private AdminManagerImpl adminManager;
@@ -114,7 +113,8 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private SettingsManagerImpl settingsManager;
     private OemManagerImpl oemManager;
     private SessionMonitorImpl sessionMonitor;
-    
+    private BackupManager backupManager;
+
     private Environment bdbEnvironment;
 
     private volatile SessionFactory sessionFactory;
@@ -127,7 +127,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         refreshSessionFactory();
 
         state = UvmState.LOADED;
-        backupManager = new BackupManager();
     }
 
     // static factory ---------------------------------------------------------
@@ -579,6 +578,8 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     {
         this.oemManager = new OemManagerImpl();
 
+        this.backupManager = new BackupManager();
+        
         this.uploadManager = new UploadManagerImpl();
         
         this.settingsManager = new SettingsManagerImpl();
