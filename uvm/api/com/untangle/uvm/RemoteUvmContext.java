@@ -246,4 +246,10 @@ public interface RemoteUvmContext
 
     String setProperty(String key, String value);
 
+    /**
+     * Activate this untangle installation (generate the UID)
+     * Called by the setup wizard
+     */
+    boolean activate();
+    
 }

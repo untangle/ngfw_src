@@ -216,14 +216,6 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
         return (new Date(System.currentTimeMillis())).toString();
     }
 
-    /*
-     * Activate the box, used during the setup wizard to create the initial UID.
-     */
-    public boolean activate( )
-    {
-        return uvmContext.activate( null );
-    }
-
     public SnmpManager getSnmpManager() {
         return snmpManager;
     }

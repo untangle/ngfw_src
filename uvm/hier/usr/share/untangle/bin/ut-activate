@@ -8,15 +8,10 @@
 . @PREFIX@/etc/default/untangle-vm
 
 NAME="$0"
-REG_UID="$1"
-UID_TEMPLATE=XXX_REG_UID_XXX
+UID_TEMPLATE=__UID__
 DEFAULT_UNTANGLE_SOURCE="deb http://${UID_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} stable-9 main premium upstream\ndeb http://${UID_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} navistar main premium upstream"
 
-if [ -n "$REG_UID" ] ; then 
-  echo $REG_UID > $UID_FILE
-fi
-
-if [ ! -f $UID_FILE -o ! -f $UID_FILE ]; then
+if [ ! -f $UID_FILE ]; then
     # we need a UID
     echo "`date` $NAME: about to create UID" >> $UVM_WRAPPER_LOG
     output=`ruby @UVM_HOME@/bin/ut-createUID.rb 2>&1`

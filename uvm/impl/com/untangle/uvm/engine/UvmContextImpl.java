@@ -515,41 +515,24 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return Boolean.getBoolean(PROPERTY_IS_INSIDE_VM);
     }
 
-    public boolean activate( String uid )
+    public boolean activate()
     {
-        if (uid != null) {
-            // Be nice to the poor user:
-            if (uid.length() == 16)
-                uid = uid.substring(0, 4) + "-" + uid.substring(4, 8) + "-" +
-                uid.substring(8, 12) + "-" + uid.substring(12,16);
-            // Fix for bug 1310: Make sure all the hex chars are lower cased.
-            uid = uid.toLowerCase();
-            if (uid.length() != 19) {
-                // Don't even bother if the uid isn't the right length.
-                // Could do other sanity checking here as well. XX
-                logger.error("Unable to activate with wrong length uid: " + uid);
-                return false;
-            }
-        }
         try {
             Process p;
-            if (uid == null)
-                p = exec(new String[] { ACTIVATE_SCRIPT });
-            else
-                p = exec(new String[] { ACTIVATE_SCRIPT, uid });
+            p = exec(new String[] { ACTIVATE_SCRIPT });
             for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
             int exitValue = p.waitFor();
             if (0 != exitValue) {
-                logger.error("Unable to activate (" + exitValue + ") with uid: " + uid);
+                logger.error("Unable to activate (" + exitValue + ")");
                 return false;
             } else {
-                logger.info("Activated with uid: " + uid);
+                logger.info("Activated");
             }
         } catch (InterruptedException exn) {
-            logger.error("Interrupted during activation with uid: " + uid);
+            logger.error("Interrupted during activation", exn);
             return false;
         } catch (IOException exn) {
-            logger.error("Exception during activation with uid: " + uid, exn);
+            logger.error("Exception during activation", exn);
             return false;
         }
 

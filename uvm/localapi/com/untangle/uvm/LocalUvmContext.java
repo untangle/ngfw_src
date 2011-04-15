@@ -214,7 +214,7 @@ public interface LocalUvmContext extends RemoteUvmContext
      */
     boolean isInsideVM();
 
-    boolean activate(String uid);
+    boolean activate();
 
     boolean runTransaction(TransactionWork<?> tw);
 

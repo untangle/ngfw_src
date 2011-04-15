@@ -85,11 +85,6 @@ public interface AdminManager
      */
     String getDate();
 
-    /*
-     * Activate the box, used during the setup wizard to create the initial UID.
-     */
-    public boolean activate( );
-
     /**
      * Access the singleton responsible for
      * managing SNMP in this instance
