@@ -53,13 +53,6 @@
     </layout>
   </appender>
 
-  <!-- Log Emailer -->
-
-  <appender name="EmailAppender"
-            class="com.untangle.uvm.logging.SmtpAppender">
-    <!-- We use the default conversion pattern, so it's omitted. -->
-  </appender>
-
   <!-- ============================================== -->
   <!-- Categories                                     -->
   <!-- ============================================== -->
@@ -155,6 +148,5 @@
   <root>
     <priority value="WARN"/>
     <appender-ref ref="UVMLOG"/>
-    <appender-ref ref="EmailAppender"/>
   </root>
 </log4j:configuration>

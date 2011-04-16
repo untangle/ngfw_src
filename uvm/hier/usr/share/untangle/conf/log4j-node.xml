@@ -46,17 +46,6 @@
     </layout>
   </appender>
 
-  <!-- Log Emailer -->
-
-  <appender name="EmailAppender" class="com.untangle.uvm.logging.SmtpAppender">
-    <!-- Note: We do *not* specify a layout here because we must
-         create it programmatically so that we can get the node
-         name in there.  Instead we provide the Conversion Pattern
-         here at the top level so that the SmtpAppender constructor
-         can create the correct layout. -->
-    <param name="LayoutConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%c{1}] &lt;%X{SessionID}&gt; %-5p %m%n"/>
-  </appender>
-
   <category name="org.apache.catalina">
     <priority value="WARN"/>
   </category>
@@ -226,6 +215,5 @@
   <root>
     <priority value="WARN"/>
     <appender-ref ref="NODELOG"/>
-    <appender-ref ref="EmailAppender"/>
   </root>
 </log4j:configuration>
