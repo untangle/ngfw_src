@@ -245,9 +245,15 @@ public interface RemoteUvmContext
         throws IOException, IllegalArgumentException;
 
     /**
-     * Activate this untangle installation (generate the UID)
+     * create a UID (if one doesn't exist)
      * Called by the setup wizard
      */
-    boolean activate();
+    boolean createUID();
+
+    /**
+     * mark the wizard as complete
+     * Called by the setup wizard
+     */
+    void wizardComplete();
     
 }

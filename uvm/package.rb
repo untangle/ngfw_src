@@ -131,7 +131,13 @@ if BuildEnv::SRC.isDevel
     File.open( uidFile, "w" ) { |f| f.puts( "0000-0000-0000-0000" ) }
   end
 
+  wizardCompleteFile = "#{uvm_lib.distDirectory}/usr/share/untangle/conf/wizard-complete-flag"
+  file wizardCompleteFile do
+    File.open( wizardCompleteFile, "w" ) { |f| f.puts( "true" ) }
+  end
+
   BuildEnv::SRC.installTarget.register_dependency(uidFile)
+  BuildEnv::SRC.installTarget.register_dependency(wizardCompleteFile)
 end
 
 BuildEnv::SRC.installTarget.register_dependency(uvm_cacerts)

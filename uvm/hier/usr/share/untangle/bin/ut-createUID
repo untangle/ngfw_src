@@ -1,8 +1,8 @@
 #! /bin/bash
 
 #
-# This script "activates" an untangle installation
-# By activating it prepares it with the correct sources.list and registers the installation with the untangle update server
+# This script creates a UID if there is not already one
+# it also prepares the correct sources.list 
 #
 
 . @PREFIX@/etc/default/untangle-vm

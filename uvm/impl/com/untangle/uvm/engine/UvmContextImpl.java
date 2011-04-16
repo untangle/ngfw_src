@@ -71,8 +71,9 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private static final String SHUTDOWN_SCRIPT = "/sbin/shutdown";
     private static final String BDB_HOME = System.getProperty("uvm.db.dir");
 
-    private static final String ACTIVATE_SCRIPT;
+    private static final String CREATE_UID_SCRIPT;
     private static final String UID_FILE;
+    private static final String WIZARD_COMPLETE_FLAG_FILE;
     private static String uid;
 
     /* true if running in a development environment */
@@ -498,9 +499,9 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         backupManager.restoreBackup(fileName);
     }
 
-    public boolean isActivated()
+    public boolean isWizardComplete()
     {
-        File keyFile = new File(UID_FILE);
+        File keyFile = new File(WIZARD_COMPLETE_FLAG_FILE);
         return keyFile.exists();
     }
 
@@ -514,11 +515,26 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return Boolean.getBoolean(PROPERTY_IS_INSIDE_VM);
     }
 
-    public boolean activate()
+    public void wizardComplete()
+    {
+        File wizardCompleteFlagFile = new File(WIZARD_COMPLETE_FLAG_FILE);
+
+        try {
+            if (wizardCompleteFlagFile.exists())
+                return;
+            else
+                wizardCompleteFlagFile.createNewFile();
+        } catch (Exception e) {
+            logger.error("Unable to create wizard complete flag",e);
+        }
+            
+    }
+
+    public boolean createUID()
     {
         try {
             Process p;
-            p = exec(new String[] { ACTIVATE_SCRIPT });
+            p = exec(new String[] { CREATE_UID_SCRIPT });
             for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
             int exitValue = p.waitFor();
             if (0 != exitValue) {
@@ -537,7 +553,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
         return true;
     }
-
+    
     public void doFullGC()
     {
         System.gc();
@@ -949,7 +965,8 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     // static initializer -----------------------------------------------------
 
     static {
-        ACTIVATE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-activate";
+        CREATE_UID_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-createUID";
         UID_FILE = System.getProperty("uvm.conf.dir") + "/uid";
+        WIZARD_COMPLETE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/wizard-complete-flag";
     }
 }

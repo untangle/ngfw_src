@@ -20,6 +20,7 @@ tar_files()
         usr/share/untangle/conf/openvpn/pki \
         usr/share/untangle/conf/dirbackup.ldif \
         usr/share/untangle/conf/alpaca-backup.uab \
+        usr/share/untangle/conf/wizard-complete-flag \
         usr/share/untangle/settings \
 
     # Tar exits with non-zero when some files don't exist, which can happen.

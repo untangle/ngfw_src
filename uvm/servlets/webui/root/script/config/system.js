@@ -268,7 +268,7 @@ if (!Ung.hasResource["Ung.System"]) {
                                         } else {
                                             Ext.MessageBox.wait(String.format(this.i18n._("The {0} Server is shutting down."),this.companyName), i18n._("Please wait"));
                                         }
-                                    }.createDelegate(this))    
+                                    }.createDelegate(this));
                                 }
                              }.createDelegate(this));
                         }.createDelegate(this)

@@ -194,11 +194,11 @@ public interface LocalUvmContext extends RemoteUvmContext
     PipelineFoundry pipelineFoundry();
 
     /**
-     * Returns true if the product has been activated, false otherwise
+     * Returns true if the setup wizard has been completed
      *
      * @return a <code>boolean</code> value
      */
-    boolean isActivated();
+    boolean isWizardComplete();
 
     /**
      * Return true if running in a development environment.
@@ -214,7 +214,7 @@ public interface LocalUvmContext extends RemoteUvmContext
      */
     boolean isInsideVM();
 
-    boolean activate();
+    void wizardComplete();
 
     boolean runTransaction(TransactionWork<?> tw);
 

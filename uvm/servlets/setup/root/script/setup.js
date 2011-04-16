@@ -1677,8 +1677,11 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
 
     openUserInterface : function( handler )
     {
-        //now that we are done, activate this untangle installation
-        rpc.jsonrpc.RemoteUvmContext.activate();
+        //now that we are done, create the UID
+        rpc.jsonrpc.RemoteUvmContext.createUID();
+
+        //and set a flag so the wizard wont run again
+        rpc.jsonrpc.RemoteUvmContext.wizardComplete();
 
         //now open the UI
         Ext.MessageBox.wait( i18n._( "Loading User Interface" ), i18n._( "Please wait" ));

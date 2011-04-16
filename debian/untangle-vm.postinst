@@ -65,9 +65,19 @@ fi
 if [ -f /usr/share/untangle/activation.key ] ; then
     mv /usr/share/untangle/activation.key /usr/share/untangle/conf/uid
 fi
-# 9.0
+# 9.0 - obsolete files
 rm -f /usr/share/untangle/log
 rm -f /usr/share/untangle/log_link
+# 9.0 - change activation
+if [ -f /usr/share/untangle/conf/registration.info ] ; then
+    touch /usr/share/untangle/conf/wizard-complete-flag
+    rm -f /usr/share/untangle/conf/registration.info
+fi
+# 9.0 - change activation
+if [ -f /usr/share/untangle/conf/.regdone-flag ] ; then
+    touch /usr/share/untangle/conf/wizard-complete-flag
+    rm -f /usr/share/untangle/conf/.regdone-flag
+fi
 
 # set up uvm to start at boot
 if [ -x "/etc/init.d/untangle-vm" ]; then
