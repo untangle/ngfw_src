@@ -40,7 +40,6 @@ import com.untangle.uvm.license.LicenseManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.LogMailerImpl;
 import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.MessageManager;
@@ -93,7 +92,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private EventLogger<LogEvent> eventLogger;
     private PolicyManagerFactory policyManagerFactory;
     private MailSenderImpl mailSender;
-    private LogMailerImpl logMailer;
     private NetworkManagerImpl networkManager;
     private RemoteReportingManagerImpl reportingManager;
     private RemoteConnectivityTesterImpl connectivityTester;
@@ -644,10 +642,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         this.networkManager = NetworkManagerImpl.getInstance();
 
         this.mailSender = MailSenderImpl.mailSender();
-
-        this.logMailer = new LogMailerImpl();
-
-        repositorySelector.setLogMailer(logMailer);
 
         // Fire up the policy manager.
         this.policyManagerFactory = PolicyManagerFactory.makeInstance();

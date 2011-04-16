@@ -49,21 +49,16 @@ public class UvmRepositorySelector implements RepositorySelector
 {
     private static final UvmLoggingContext UVM_CONTEXT;
     private static final UvmLoggingContextFactory UVM_CONTEXT_FACTORY;
-    private static final LogMailer NULL_LOG_MAILER;
     private static final UvmRepositorySelector SELECTOR;
 
     private final Map<UvmLoggingContext, UvmHierarchy> repositories;
-    private final Set<SmtpAppender> smtpAppenders;
     private final ThreadLocal<UvmLoggingContextFactory> currentContextFactory;
-
-    private LogMailer logMailer = NULL_LOG_MAILER;
 
     // constructors -----------------------------------------------------------
 
     private UvmRepositorySelector()
     {
         repositories = new HashMap<UvmLoggingContext, UvmHierarchy>();
-        smtpAppenders = new HashSet<SmtpAppender>();
         currentContextFactory = new InheritableThreadLocal<UvmLoggingContextFactory>();
         currentContextFactory.set(UVM_CONTEXT_FACTORY);
     }
@@ -96,26 +91,6 @@ public class UvmRepositorySelector implements RepositorySelector
     }
 
     // public methods ---------------------------------------------------------
-
-    /**
-     * Sets the {@link LogMailer} that will be used to email logs.
-     *
-     * @param logMailer the system {@link LogMailer}
-     */
-    public void setLogMailer(LogMailer logMailer)
-    {
-        this.logMailer = logMailer;
-    }
-
-    /**
-     * Gets the system {@link LogMailer}.
-     *
-     * @return the system {@link LogMailer}
-     */
-    public LogMailer getLogMailer()
-    {
-        return logMailer;
-    }
 
     /**
      * Deregister {@link UvmLoggingContext} from the system.
@@ -174,40 +149,6 @@ public class UvmRepositorySelector implements RepositorySelector
             currentContextFactory.set(UVM_CONTEXT_FACTORY);
         }
         return ctx;
-    }
-
-    /**
-     * Get the set of {@link SmtpAppender}s registered.
-     *
-     * @return the set of {@link SmtpAppender}s.
-     */
-    public Set<SmtpAppender> getSmtpAppenders()
-    {
-        return smtpAppenders;
-    }
-
-    // package protected methods ----------------------------------------------
-
-    /**
-     * Adds a {@link SmtpAppender} to the logging system.
-     *
-     * @param appender {@link SmtpAppender} to add.
-     * @return the UvmLoggingContext for this appender.
-     */
-    UvmLoggingContext registerSmtpAppender(SmtpAppender appender)
-    {
-        smtpAppenders.add(appender);
-        return getContextFactory().get();
-    }
-
-    /**
-     * Removes a {@link SmtpAppender} from the logging system.
-     *
-     * @param appender {@link SmtpAppender} to remove.
-     */
-    void deregisterSmtpAppender(SmtpAppender appender)
-    {
-        smtpAppenders.remove(appender);
     }
 
     // private methods --------------------------------------------------------
@@ -289,14 +230,6 @@ public class UvmRepositorySelector implements RepositorySelector
         UVM_CONTEXT_FACTORY = new UvmLoggingContextFactory()
             {
                 public UvmLoggingContext get() { return UVM_CONTEXT; }
-            };
-
-        NULL_LOG_MAILER = new LogMailer()
-            {
-                public void sendBuffer(UvmLoggingContext ctx) { }
-
-                @SuppressWarnings("unused")
-				public void sendMessage(UvmLoggingContext ctx) { }
             };
 
         SELECTOR = new UvmRepositorySelector();
