@@ -208,7 +208,7 @@ public class Main
         System.setProperty("uvm.bin.dir", uvmBin);
         String uvmToolbox = uvmHome + "/toolbox";
         System.setProperty("uvm.toolbox.dir", uvmToolbox);
-        String uvmLog = uvmHome + "/log";
+        String uvmLog = "/var/log/uvm";
         System.setProperty("uvm.log.dir", uvmLog);
         String uvmData = uvmHome + "/data";
         System.setProperty("uvm.data.dir", uvmData);
