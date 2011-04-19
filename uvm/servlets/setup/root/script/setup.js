@@ -1108,11 +1108,14 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             }
         } else {
             /* not configured */
-            this.updateValue( card.find( "name", "ip" )[0] , "" );
-            this.updateValue( card.find( "name", "netmask" )[0] , "" );
-            this.updateValue( card.find( "name", "gateway" )[0], "" );
-            this.updateValue( card.find( "name", "dns1" )[0], "" );
-            this.updateValue( card.find( "name", "dns2" )[0], "" );
+            for ( c = 0; c < this.cards.length ; c++ ) {
+                var card = this.cards[c];
+                this.updateValue( card.find( "name", "ip" )[0] , "" );
+                this.updateValue( card.find( "name", "netmask" )[0] , "" );
+                this.updateValue( card.find( "name", "gateway" )[0], "" );
+                this.updateValue( card.find( "name", "dns1" )[0], "" );
+                this.updateValue( card.find( "name", "dns2" )[0], "" );
+            }
         }
     },
 
