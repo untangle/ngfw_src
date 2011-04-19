@@ -645,6 +645,15 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             });
         },
         // validation
+/*        
+        validateClient: function() {
+            var recipientsList=this.gridRecipients.getFullSaveList();
+            for(var i=0;i<recipientsList.length;i++) {
+            	var recipient = recipientsList[i];
+            }
+            return true;
+        },
+*/        
         validateServer: function() {
             // ipMaddr list must be validated server side
             var ipMapList = this.gridIpMap.getSaveList();
@@ -659,6 +668,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             for ( i = 0; i < ipMapList[2].list.length; i++) {
                 ipMaddrList.push(ipMapList[2].list[i]["ipMaddr"]);
             }
+            
             if (ipMaddrList.length > 0) {
                 try {
                     var result=null;
@@ -795,7 +805,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         if ( recipient.clearPassword != null ) {
                             user.clearPassword = recipient.clearPassword;
                         }
-                    /* Otherwise, create a user iff onlineReports is set or the password is set */
+                    /* Otherwise, create a user if onlineReports is set or the password is set */
                     } else if ( recipient.onlineReports || recipient.clearPassword ) {
                         user = {
                             "login" : recipient.emailAddress,
@@ -809,7 +819,9 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         };
 
                         /* Append the new user */
+                        //TODO: change this seems unsafe!
                         users[Math.round( Math.random() * 1000000 )] = user;
+                        //users[this.genAddedId()]=users;
                     }
                 }
 
