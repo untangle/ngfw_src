@@ -296,8 +296,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     if (!this.getPolicyManagerLicense(true).valid){
                         this.showPolicyManagerRequired();
                     } else {
-                        //this.gridParentRackCombo.setValue(0);
                         this.updateParentRackStore( this.editorRackCombo, new Ext.data.Record([]));
+                        //this.gridParentRackCombo.setValue(0);
                         Ung.EditorGrid.prototype.addHandler.call(this.gridRacks);
                     }
                 }.createDelegate(this),
@@ -1216,6 +1216,9 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             for ( var c = 0 ; c < saveList.length ; c++ ) {
                 if ( saveList[c].parentId != null ) {
                     saveList[c].parentId = parseInt( saveList[c].parentId );
+                    if(isNaN(saveList[c].parentId)) {
+                    	saveList[c].parentId=null;
+                    }
                 }
             }
 
@@ -1309,7 +1312,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         },
         updateParentRackStore : function( combo, record )
         {
-            var storeData = [[0,this.i18n._("None")]], id = record.get( "id" ), c = 0, rack;
+            var storeData = [[null,this.i18n._("None")]], id = record.get( "id" ), c = 0, rack;
 
             /* Default rack can't have a parent. */
             if ( record.get( "default" )) {
