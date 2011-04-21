@@ -201,7 +201,7 @@ def upgrade_70():
 # If it appears messed up it will kill it so the other thread will restart a functioning UVM
 #
 def monitor_uvm(pid):
-    debug("untangle-vm monitoring (pid%i)" % pid);
+    debug("untangle-vm monitoring (pid: %i)" % pid);
 
     while True:
         time.sleep(monitor_interval_seconds)
