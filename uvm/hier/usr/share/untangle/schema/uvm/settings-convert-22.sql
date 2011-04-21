@@ -1,4 +1,9 @@
--- settings conversion for release-8.1
+-- settings conversion for release-9.0
+
+-- syslog changes
+ALTER TABLE settings.u_logging_settings ADD COLUMN syslog_protocol TEXT;
+UPDATE settings.u_logging_settings SET syslog_protocol = 'udp';
+ALTER TABLE settings.u_logging_settings ALTER COLUMN syslog_protocol SET NOT NULL;
 
 -- interface enumeration changes
 UPDATE settings.u_user_policy_rule SET client_intf_matcher = '250' WHERE client_intf_matcher = '7';
