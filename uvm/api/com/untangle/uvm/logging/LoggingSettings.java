@@ -60,6 +60,7 @@ public class LoggingSettings implements Serializable
     private int syslogPort = 514;
     private SyslogFacility syslogFacility = SyslogFacility.LOCAL_0;
     private SyslogPriority syslogThreshold = SyslogPriority.INFORMATIONAL;
+    private String syslogProtocol = "UDP";
 
     // Constructors -----------------------------------------------------------
 
@@ -67,12 +68,14 @@ public class LoggingSettings implements Serializable
 
     public LoggingSettings(String syslogHost, int syslogPort,
                            SyslogFacility syslogFacility,
-                           SyslogPriority syslogThreshold)
+                           SyslogPriority syslogThreshold,
+                           String syslogProtocol)
     {
         this.syslogHost = syslogHost;
         this.syslogPort = syslogPort;
         this.syslogFacility = syslogFacility;
         this.syslogThreshold = syslogThreshold;
+        this.syslogProtocol = syslogProtocol;
     }
 
     // accessors --------------------------------------------------------------
@@ -170,5 +173,21 @@ public class LoggingSettings implements Serializable
     public void setSyslogThreshold(SyslogPriority syslogThreshold)
     {
         this.syslogThreshold = syslogThreshold;
+    }
+
+    /**
+     * Syslog protocol.
+     *
+     * @return the Syslog protocol.
+     */
+    @Column(name="syslog_protocol")
+    public String getSyslogProtocol()
+    {
+        return syslogProtocol;
+    }
+
+    public void setSyslogProtocol(String syslogProtocol)
+    {
+        this.syslogProtocol = syslogProtocol;
     }
 }

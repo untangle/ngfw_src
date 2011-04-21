@@ -18,16 +18,14 @@
 
 package com.untangle.uvm.engine;
 
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.Date;
-import java.util.Formatter;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
+
 import com.untangle.uvm.node.IPAddress;
 
 /**
@@ -38,13 +36,7 @@ import com.untangle.uvm.node.IPAddress;
  */
 class SyslogBuilderImpl implements SyslogBuilder
 {
-    private static final int PACKET_SIZE = 1024;
-    private static final int MAX_VALUE_SIZE = 256;
-    private static final String DATE_FORMAT = "%1$tb %1$2te %1$tH:%1$tM:%1$tS";
-
-    private final byte[] buf = new byte[PACKET_SIZE];
-    private final AsciiCharBuffer sb = AsciiCharBuffer.wrap(buf);
-    private final Formatter dateFormatter = new Formatter(sb);
+    private final StringBuffer sb = new StringBuffer();
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -52,8 +44,14 @@ class SyslogBuilderImpl implements SyslogBuilder
 
     // public methods ---------------------------------------------------------
 
+    public String getString()
+    {
+        return sb.toString();
+    }
+
     public void startSection(String s)
     {
+        sb.delete(0, sb.length());
         sb.append(" # ");
         sb.append(s);
         sb.append(": ");
@@ -64,12 +62,6 @@ class SyslogBuilderImpl implements SyslogBuilder
     {
         if (null == value)
             value = "";
-        int s = key.length() + (first ? 0 : 2) + 1;
-        if (sb.remaining() <= s) {
-            logger.error("could not fit field key: '" + key
-                         + "' value: '" + value + "'");
-            return;
-        }
 
         if (!first) {
             sb.append(", ");
@@ -80,14 +72,7 @@ class SyslogBuilderImpl implements SyslogBuilder
         sb.append(key);
         sb.append("=");
 
-        int i = Math.min(value.length(), MAX_VALUE_SIZE);
-
-        if (sb.remaining() < i) {
-            logger.warn("value too long, truncating");
-            i = sb.remaining();
-        }
-
-        sb.append(value, 0, i);
+        sb.append(value);
     }
 
     public void addField(String key, boolean value)
@@ -123,38 +108,5 @@ class SyslogBuilderImpl implements SyslogBuilder
     public void addField(String key, Date d)
     {
         addField(key, d.toString());
-    }
-
-    DatagramPacket makePacket(LogEvent e, int facility, String host,
-                              String tag)
-    {
-        sb.clear();
-
-        int v = 8 * facility + e.getSyslogPriority().getPriorityValue();
-        sb.append("<");
-        sb.append(Integer.toString(v));
-        sb.append(">");
-
-        // 'TIMESTAMP'
-        dateFormatter.format(DATE_FORMAT, e.getTimeStamp());
-
-        sb.append(' ');
-
-        // 'HOSTNAME'
-        sb.append(host); // XXX use legit hostname
-
-        sb.append(' ');
-
-        // 'TAG[pid]: '
-        sb.append(tag);
-
-        // CONTENT
-        sb.append(e.getSyslogId());
-
-        e.appendSyslog(this);
-
-        sb.append(" #");
-
-        return new DatagramPacket(buf, 0, sb.position());
     }
 }

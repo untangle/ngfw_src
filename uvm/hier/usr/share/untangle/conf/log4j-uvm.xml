@@ -44,6 +44,15 @@
     </layout>
   </appender>
 
+  <appender name="EVENTS" class="org.apache.log4j.net.SyslogAppender">
+    <param name="SyslogHost" value="localhost"/>
+    <param name="Facility" value="LOCAL5"/>
+    <param name="Threshold" value="ALL"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%-5p %m%n"/>
+    </layout>
+  </appender>
+
   <appender name="REPORTER" class="org.apache.log4j.net.SyslogAppender">
     <param name="SyslogHost" value="localhost"/>
     <param name="Facility" value="LOCAL4"/>
@@ -98,15 +107,19 @@
     <priority value="ALL"/>
     <appender-ref ref="REPORTER"/>
   </category>
-
   <category name="com.untangle.uvm.engine.RemoteReportingManagerImpl" additivity="false">
     <priority value="ALL"/>
     <appender-ref ref="REPORTER"/>
   </category>
-
   <category name="com.untangle.uvm.reports" additivity="false">
     <priority value="ALL"/>
     <appender-ref ref="REPORTER"/>
+  </category>
+
+  <!-- event logs need to have a specific facility -->
+  <category name="com.untangle.uvm.engine.SyslogManagerImpl" additivity="false">
+    <priority value="ALL"/>
+    <appender-ref ref="EVENTS"/>
   </category>
 
   <!-- normal level for engine and following is INFO -->

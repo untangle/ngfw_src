@@ -82,6 +82,7 @@ CREATE TABLE settings.u_logging_settings (
     syslog_port int4,
     syslog_facility int4,
     syslog_threshold int4,
+    syslog_protocol text,
     PRIMARY KEY (settings_id));
 
 -- com.untangle.uvm.policy.Policy

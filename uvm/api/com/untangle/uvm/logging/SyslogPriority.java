@@ -33,6 +33,7 @@
 
 package com.untangle.uvm.logging;
 
+import org.apache.log4j.Level;
 
 /**
  * Represents syslog priority levels.
@@ -96,6 +97,31 @@ public enum SyslogPriority
     public boolean inThreshold(SyslogPriority lp)
     {
         return lp.priorityCode <= priorityCode;
+    }
+
+    public Level getLevel()
+    {
+        Level l = null;
+        if (name.equalsIgnoreCase("debug"))
+            l = Level.DEBUG;
+        else if (name.equalsIgnoreCase("informational"))
+            l = Level.INFO;
+        else if (name.equalsIgnoreCase("notice"))
+            l = Level.INFO;
+        else if (name.equalsIgnoreCase("warning"))
+            l = Level.WARN;
+        else if (name.equalsIgnoreCase("error"))
+            l = Level.ERROR;
+        else if (name.equalsIgnoreCase("critical"))
+            l = Level.ERROR;
+        else if (name.equalsIgnoreCase("alert"))
+            l = Level.ERROR;
+        else if (name.equalsIgnoreCase("emergency"))
+            l = Level.ERROR;
+        else
+            l = Level.INFO;
+
+        return l;
     }
 
     // accessors --------------------------------------------------------------

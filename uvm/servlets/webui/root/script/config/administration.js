@@ -1393,6 +1393,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                         Ext.getCmp('administration_syslog_port').disable();
                                         Ext.getCmp('administration_syslog_facility').disable();
                                         Ext.getCmp('administration_syslog_threshold').disable();
+                                        Ext.getCmp('administration_syslog_protocol').disable();
                                     }
                                 }.createDelegate(this)
                             }
@@ -1412,6 +1413,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                         Ext.getCmp('administration_syslog_port').enable();
                                         Ext.getCmp('administration_syslog_facility').enable();
                                         Ext.getCmp('administration_syslog_threshold').enable();
+                                        Ext.getCmp('administration_syslog_protocol').enable();
                                     }
                                 }.createDelegate(this)
                             }
@@ -1509,6 +1511,27 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         displayField : 'name',
                         valueField : 'key',
                         value : this.getLoggingSettings().syslogThreshold,
+                        disabled : !this.getLoggingSettings().syslogEnabled
+                     },{
+                        xtype : 'combo',
+                        name : 'syslogProtocol',
+                        itemCls : 'left-indent-1',
+                        id : 'administration_syslog_protocol',
+                        editable : false,
+                        fieldLabel : this.i18n._('Protocol'),
+                        mode : 'local',
+                        triggerAction : 'all',
+                        listClass : 'x-combo-list-small',
+                        store : new Ext.data.SimpleStore({
+                            fields : ['key', 'name'],
+                            data :[
+                                ["UDP", this.i18n._("UDP")],
+                                ["TCP", this.i18n._("TCP")]
+                            ]
+                        }),
+                        displayField : 'name',
+                        valueField : 'key',
+                        value : this.getLoggingSettings().syslogProtocol,
                         disabled : !this.getLoggingSettings().syslogEnabled
                     }]
                 }]
@@ -1862,11 +1885,13 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 //prepare for save
                 var syslogFacilityCmp = Ext.getCmp('administration_syslog_facility');
                 var syslogThresholdCmp = Ext.getCmp('administration_syslog_threshold');
+                var syslogProtocolCmp = Ext.getCmp('administration_syslog_protocol');
 
                 this.getLoggingSettings().syslogHost = syslogHostCmp.getValue();
                 this.getLoggingSettings().syslogPort = syslogPortCmp.getValue();
                 this.getLoggingSettings().syslogFacility = syslogFacilityCmp.getValue();
                 this.getLoggingSettings().syslogThreshold = syslogThresholdCmp.getValue();
+                this.getLoggingSettings().syslogProtocol = syslogProtocolCmp.getValue();
             }
             return true;
         },
@@ -2021,7 +2046,8 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     (Ext.getCmp('administration_syslog_host').getValue() !=  this.initialLoggingSettings.syslogHost
                     || Ext.getCmp('administration_syslog_port').getValue() !=  this.initialLoggingSettings.syslogPort
                     || Ext.getCmp('administration_syslog_facility').getValue() !=  this.initialLoggingSettings.syslogFacility
-                    || Ext.getCmp('administration_syslog_threshold').getValue() !=  this.initialLoggingSettings.syslogThreshold)
+                    || Ext.getCmp('administration_syslog_threshold').getValue() !=  this.initialLoggingSettings.syslogThreshold
+                    || Ext.getCmp('administration_syslog_protocol').getValue() !=  this.initialLoggingSettings.syslogProtocol)
                 || this.gridAdminAccounts.isDirty()
                 || !Ung.Util.equals(this.getAddressSettings(), this.initialAddressSettings)
                 || !Ung.Util.equals(this.getAccessSettings(), this.initialAccessSettings)
