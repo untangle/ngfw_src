@@ -19,7 +19,7 @@ fi
 DESC="${OEM_NAME} Reports"
 NAME="reports"
 DAEMON="@PREFIX@/usr/share/untangle/bin/reporting-wrapper.sh"
-PID_FILE="@PREFIX@/var/run/reporting-wrapper.pid"
+PID_FILE="@PREFIX@/var/run/untangle-reports-wrapper.pid"
 
 start() {
   log_daemon_msg "Starting $DESC"
