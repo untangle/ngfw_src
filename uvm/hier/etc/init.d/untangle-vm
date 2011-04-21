@@ -96,6 +96,10 @@ case "$1" in
             fi
         fi
 
+        # clear console.log
+        
+        echo >| $UVM_CONSOLE_LOG;
+
         updateStatus "[." "Starting"
 
         start-stop-daemon --start \
