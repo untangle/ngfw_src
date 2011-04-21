@@ -112,7 +112,7 @@ class SyslogManagerImpl implements SyslogManager
 
     void reconfigure(LoggingSettings loggingSettings)
     {
-        if (loggingSettings.isSyslogEnabled()) {
+        if (loggingSettings != null && loggingSettings.isSyslogEnabled()) {
             isOn = true;
             hostname = loggingSettings.getSyslogHost();
             port = loggingSettings.getSyslogPort();
