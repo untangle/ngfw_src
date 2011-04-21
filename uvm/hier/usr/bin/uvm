@@ -39,6 +39,17 @@ def debug(string):
     syslog.syslog(string);
 
 #
+# Set the process name
+#
+def set_proc_name(newname):
+    from ctypes import cdll, byref, create_string_buffer
+    libc = cdll.LoadLibrary('libc.so.6')
+    buff = create_string_buffer(len(newname)+1)
+    buff.value = newname
+    libc.prctl(15, byref(buff), 0, 0, 0)
+
+
+#
 # Flushes the UDP conntrack
 # We need to do this to handle sessions that were initiated before Untangle started
 # This will flush them so they will be recreated with the proper settings using WAN Balancer etc
@@ -289,7 +300,7 @@ def update_monit():
 #
 def sigINThandler(signal, frame):
     global exit_flag;
-    debug("Caught SIGINT: initiating shutdown");
+    debug("Caught SIGINT: initiating shutdown (pid: %i)" % uvm_pid);
     exit_flag = 1;
     if not uvm_pid == 0:
         os.kill(uvm_pid, signal);
@@ -300,7 +311,7 @@ def sigINThandler(signal, frame):
 #
 def sigTERMhandler(signal, frame):
     global exit_flag;
-    debug("Caught SIGTERM: initiating shutdown");
+    debug("Caught SIGTERM: initiating shutdown (pid: %i)" % uvm_pid);
     exit_flag = 1;
     if not uvm_pid == 0:
         os.kill(uvm_pid, signal);
@@ -311,7 +322,7 @@ def sigTERMhandler(signal, frame):
 #
 def sigABRThandler(signal, frame):
     global exit_flag;
-    debug("Caught SIGABRT: initiating shutdown");
+    debug("Caught SIGABRT: initiating shutdown (pid: %i)" % uvm_pid);
     exit_flag = 1;
     if not uvm_pid == 0:
         os.kill(uvm_pid, signal);
@@ -321,6 +332,8 @@ def sigABRThandler(signal, frame):
 ##############################################################
 ##############################################################
 
+
+set_proc_name("uvm");
 
 prepareSystem();
 
