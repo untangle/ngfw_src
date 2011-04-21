@@ -201,13 +201,13 @@ def upgrade_70():
 # If it appears messed up it will kill it so the other thread will restart a functioning UVM
 #
 def monitor_uvm(pid):
-    debug("Monitoring untangle-vm(%i)" % pid);
+    debug("untangle-vm monitoring (pid%i)" % pid);
 
     while True:
         time.sleep(monitor_interval_seconds)
         
         if not os.path.exists("/proc/%i" % pid): 
-            debug("Monitoring untangle-vm(%i) not found, monitoring stopped" % pid);
+            debug("untangle-vm not found (pid: %i), monitoring stopped" % pid);
             return;
 
         if productionEnv:
@@ -335,7 +335,7 @@ signal.signal( signal.SIGABRT , sigABRThandler );
 # loop infinitely (until a signal is received)
 while True:
     debug("==============================");
-    debug("Launching UVM");
+    debug("       UVM Launching");
     debug("==============================");
 
     resetIptables();
@@ -348,7 +348,6 @@ while True:
         signal.signal( signal.SIGINT , signal.SIG_DFL );
         signal.signal( signal.SIGTERM , signal.SIG_DFL );
         signal.signal( signal.SIGABRT , signal.SIG_DFL );
-
 
         p = sub.Popen(['/usr/bin/logger','-t','uvmconsole'],stdin=sub.PIPE)
         os.dup2(p.stdin.fileno(), sys.stdout.fileno())
@@ -395,7 +394,7 @@ while True:
     # if this was expected, clean up and exit
     if exit_flag == 1:
         debug("==============================");
-        debug("UVM Stopped");
+        debug("       UVM Stopped");
         debug("==============================");
         resetIptables();
         sys.exit(0);
