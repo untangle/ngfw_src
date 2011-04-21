@@ -12,8 +12,10 @@
 
 source /lib/lsb/init-functions
 
-if [ -f @PREFIX@/etc/default/untangle-vm ] ; then
-    source @PREFIX@/etc/default/untangle-vm
+if [ -f @PREFIX@/etc/untangle/oem/oem.sh ] ; then
+    source @PREFIX@/etc/untangle/oem/oem.sh
+else
+    OEM_NAME="Untangle"
 fi
 
 DESC="${OEM_NAME} Reports"

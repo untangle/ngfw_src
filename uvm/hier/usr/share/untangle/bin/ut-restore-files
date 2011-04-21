@@ -5,8 +5,6 @@ if [ "$USER" != "root" ] ; then
     exec sudo $0 $*
 fi
 
-. /etc/default/untangle-vm
-
 INST_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
 UPGD_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
 

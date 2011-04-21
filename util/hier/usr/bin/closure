@@ -1,7 +1,5 @@
 #! /bin/bash
 
-source @PREFIX@/etc/default/untangle-vm
-
 CLASSPATH="@THIRDPARTY_UVM_LIB@/bcel-5.2.jar:@UVM_LIB@/buildutil-impl.jar"
 
-$JAVA_HOME/bin/java -cp "$CLASSPATH" com.untangle.buildutil.Closure $@
+/usr/bin/java -cp "$CLASSPATH" com.untangle.buildutil.Closure $@

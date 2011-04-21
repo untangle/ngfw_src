@@ -5,8 +5,6 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-source @PREFIX@/etc/default/untangle-vm
-
 uvm_lib=../output/usr/share/untangle/lib
 third_lib=../output/usr/share/java/uvm
 toolbox=../output/usr/share/untangle/toolbox
@@ -25,6 +23,4 @@ done
 
 hibernate_props=../output/usr/share/untangle/conf/hibernate.properties
 
-$JAVA_HOME/bin/java -cp "$CLASSPATH" \
-    org.hibernate.tool.hbm2ddl.SchemaExport \
-    --properties="$hibernate_props" --text $uvm_hbms $node_hbms
+usr/bin/java -cp "$CLASSPATH" org.hibernate.tool.hbm2ddl.SchemaExport --properties="$hibernate_props" --text $uvm_hbms $node_hbms

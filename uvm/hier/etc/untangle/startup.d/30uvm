@@ -1,6 +1,6 @@
 #! /bin/sh
 
-FILE=/etc/default/untangle-hw
+FILE=/usr/share/untangle/conf/untangle-hw.conf
 
 echo "  Customizing HW-related settings for untangle-vm"
 
@@ -70,10 +70,11 @@ echo "    Maximum virtual size -> ${MAX_VIRTUAL_SIZE}"
 echo "    GC safety factor     -> ${GC_SAFETY_FACTOR}"
 echo "    GC minimum cycle     -> ${GC_MIN_CYCLE}"
 
+mkdir -p `dirname $FILE`
 cat >| $FILE <<EOF
-MAX_HEAP_SIZE=$MAX_HEAP_SIZE
-MAX_BERKDB_MEG=$MAX_BERKDB_MEG
-MAX_VIRTUAL_SIZE=$MAX_VIRTUAL_SIZE
-GC_SAFETY_FACTOR=$GC_SAFETY_FACTOR
-GC_MIN_CYCLE=$GC_MIN_CYCLE
+max_heap_size="$MAX_HEAP_SIZE"
+max_berkdb_meg="$MAX_BERKDB_MEG"
+max_virtual_size="$MAX_VIRTUAL_SIZE"
+gc_safety_factor="$GC_SAFETY_FACTOR"
+gc_min_cycle="$GC_MIN_CYCLE"
 EOF

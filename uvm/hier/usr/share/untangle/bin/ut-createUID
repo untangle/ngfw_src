@@ -5,8 +5,7 @@
 # it also prepares the correct sources.list 
 #
 
-. @PREFIX@/etc/default/untangle-vm
-
+UID_FILE="@PREFIX@/usr/share/untangle/conf/uid/"
 NAME="$0"
 UID_TEMPLATE=__UID__
 DEFAULT_UNTANGLE_SOURCE="deb http://${UID_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} stable-9 main premium upstream\ndeb http://${UID_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} navistar main premium upstream"

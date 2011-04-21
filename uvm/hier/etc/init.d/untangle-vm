@@ -11,8 +11,10 @@
 
 . /lib/lsb/init-functions
 
-if [ -f @PREFIX@/etc/default/untangle-vm ] ; then
-    . @PREFIX@/etc/default/untangle-vm
+if [ -f @PREFIX@/etc/untangle/oem/oem.sh ] ; then
+    source @PREFIX@/etc/untangle/oem/oem.sh
+else
+    OEM_NAME="Untangle"
 fi
 
 DESC="${OEM_NAME} VM"
@@ -173,14 +175,7 @@ case "$1" in
         updateStatus "[." "Stopping"
 
         # Attempt polite kill first
-        start-stop-daemon -s INT --stop \
-            -q \
-            --pidfile ${UVM_RUNDIR}/${UVM_PID}
-        code=$?
-
-        start-stop-daemon -s INT --stop \
-            -q \
-            --pidfile ${UVM_RUNDIR}/${UVM_PID}
+        start-stop-daemon -s INT --stop -q --pidfile ${UVM_RUNDIR}/${UVM_PID}
         code=$?
 
         if [ $code != "0" ] ; then

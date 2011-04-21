@@ -1,239 +1,433 @@
-#! /bin/bash
-# $Id$
+#! /usr/bin/env python
+import sys;
+import os;
+import resource;
+import glob;
+import time;
+import threading;
+import signal;
+import datetime;
+import subprocess as sub
+import syslog
 
-NAME=$0
+# read the configuration
+exec(open("@PREFIX@/usr/share/untangle/conf/untangle-vm.conf"));
 
-# get a bunch of default values
-source @PREFIX@/etc/default/untangle-vm
+#p = sub.Popen(['/usr/bin/logger','-t','uvmconsole'],stdin=sub.PIPE)
+#os.dup2(p.stdin.fileno(), sys.stdout.fileno())
+#os.dup2(p.stdin.fileno(), sys.stderr.fileno())
 
-UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-"/var/log/uvm/console.log"}
-UVM_UVM_LOG=${UVM_UVM_LOG:-"/var/log/uvm/uvm.log"}
-UVM_GC_LOG=${UVM_GC_LOG:-"/var/log/uvm/gc.log"}
-UVM_WRAPPER_LOG=${UVM_WRAPPER_LOG:-"/var/log/uvm/wrapper.log"}
-UVM_LAUNCH=${UVM_LAUNCH:-"@PREFIX@/usr/share/untangle/bin/untangle-vm"}
-UVM_RUNDIR=${UVM_RUNDIR:-"@PREFIX@/var/run"}
+if "@PREFIX@x" == "x":
+    productionEnv = True;
+    developmentEnv = False;
+else:
+    developmentEnv = True;
+    productionEnv = False;
 
-# Short enough to restart services and uvm promptly
-SLEEP_TIME=15
+global exit_flag;
+global uvm_pid;
+global monitor_interval_seconds;
+global syslog_out;
 
-# Used to kill a child with extreme prejudice
-nukeIt() {
-    echo "$NAME: Killing -9 all untangle-vm \"$pid\" (`date`)" | logger -t uvmwrapper
-    kill -3 $pid
-    kill -9 $pid
-    kill -9 `ps awwx | grep java | grep untangle-vm | awk '{print $1}'` 2>/dev/null
-}
+exit_flag = 0;
+uvm_pid = 0;
+monitor_interval_seconds=10;
+syslog_out = syslog.openlog("uvmwrapper");
 
-reapChildHardest() {
-    nukeIt
-    flushIptables ; exit
-}
+def debug(string):
+    print string
+    syslog.syslog(string);
 
-reapChildHarder() {
-    echo "$NAME: Killing -15 all untangle-vm \"$pid\" (`date`)" | logger -t uvmwrapper
-    kill $pid
-    sleep 1
-    if [ ! -z "`ps awwx | grep java | grep untangle-vm | awk '{print $1}'`" ] ; then
-        echo "$NAME: Killing -15 all untangle-vm \"$pid\" (`date`)" | logger -t uvmwrapper
-        for i in `seq 1 5` ; do
-            if [ -z "`ps awwx | grep java | grep untangle-vm | awk '{print $1}'`" ] ; then
-                flushIptables ; exit
-            fi
-            sleep 1
-        done
-        if [ ! -z "`ps awwx | grep java | grep untangle-vm | awk '{print $1}'`" ] ; then
-            reapChildHardest
-        fi
-    fi
-    flushIptables ; exit
-}
-
-getVirtualMemUsage() {
-    awk '/VmSize/ {print $2}' /proc/$1/status
-}
-
-reapChild() {
-    echo "$NAME: shutting down untangle-vm " | logger -t uvmwrapper
-    kill -INT $pid
-    @PREFIX@/usr/bin/mcli -t 20000 shutdown &> /dev/null
-    sleep 1
-    kill -INT $pid
-    if [ ! -z "`ps awwx | grep java | grep untangle-vm | awk '{print $1}'`" ] ; then
-        echo "$NAME: Killing -INT all untangle-vm \"$pid\" (`date`)" | logger -t uvmwrapper
-        for i in `seq 1 5` ; do
-            if [ -z "`ps awwx | grep java | grep untangle-vm | awk '{print $1}'`" ] ; then
-                flushIptables ; exit
-            fi
-            sleep 1
-        done
-        if [ ! -z "`ps awwx | grep java | grep untangle-vm | awk '{print $1}'`" ] ; then
-            reapChildHarder
-        fi
-    fi
-    flushIptables ; exit
-}
-
+#
 # Flushes the UDP conntrack
 # We need to do this to handle sessions that were initiated before Untangle started
 # This will flush them so they will be recreated with the proper settings using WAN Balancer etc
-flushConntrack() {
-    conntrack -D --proto udp
-}
+#
+def flushConntrack():
+    #debug("flushConntrack()")
+    os.system('conntrack -D --proto udp &> /dev/null');
 
-flushIptables() {
-    if [ ! -f /etc/untangle-net-alpaca/nonce ] ; then
-        echo "the nonce doesn't exist, unable to regenerate rules."
-        return
-    fi
-
-    local t_nonce=`head -n 1 /etc/untangle-net-alpaca/nonce`
-
+#
+# Tells alpaca to rewrite the iptables rules
+#
+def resetIptables():
     ## Tell the alpaca to reload the rules
-    curl "http://localhost:3000/alpaca/uvm/generate_rules?argyle=${t_nonce}"
-}
+    #debug("resetIptables()")
+    os.system('curl -s http://localhost:3000/alpaca/uvm/generate_rules?argyle=`head -n 1 /etc/untangle-net-alpaca/nonce` > /dev/null'); # uvmlogger
 
-# Return true (0) when we need to reap and restart the uvm.
-needToRestart() {
-    # detect garbage collection failure due to heap full.  Continuous repeat of
-    # failure necessary, as a few can happen some temporary non-full conditions.
-    cmfcount=`tail -50 $UVM_GC_LOG | grep -ci "concurrent mode failure"`
+#
+# This prepares the system for a running untangle-vm
+# It loads the appropriate kernel modules, sets proc values, and other required system settings
+#
+def prepareSystem():
+    #debug("prepareSystem()")
 
-    if [ $cmfcount -gt 4 ]; then
-        echo "*** java heap cmf on `date` in `pwd` ***" | logger -t uvmwrapper        
-        return 0;
-    fi
+    # load nfnetlink_queue (if not already loaded)
+    os.system('/sbin/modprobe -q nfnetlink_queue');
 
-    # extra nightime checks
-    if [ `date +%H` -eq 1 ]; then
-        VIRT="`getVirtualMemUsage $pid`"
-        if [ $VIRT -gt $MAX_VIRTUAL_SIZE ] ; then
-            echo "*** Virt Size too high ($VIRT > $MAX_VIRTUAL_SIZE) on `date` in `pwd` ***" | logger -t uvmwrapper
-            return 0;
-        fi
-    fi
+    # bring up dummy0
+    os.system('/sbin/ifconfig dummy0 192.0.2.42 netmask 255.255.255.0 up');
 
-    # Tomcat picked the wrong port (read bug #7337 for more info)
-    tomcat=`tail -1000 $UVM_UVM_LOG | grep -i "ajp13 listening on /127.0.0.1:8010"`
-    if [ ! -z "$tomcat" ] ; then
-            echo "*** Tomcat bound to wrong port on `date` in `pwd` ***" | logger -t uvmwrapper
-            return 0;
-    fi
+    # remove ip_queue (if not already removed)
+    os.system('/sbin/modprobe -q -r ip_queue');
 
-    return 1;
-}
+    # Not Optional proc settings
+    procset('/proc/sys/net/ipv4/ip_forward',"1",False);
+    procset('/proc/sys/net/ipv4/ip_nonlocal_bind',"1",False);
+    procset('/proc/sys/net/ipv4/icmp_frag_accept',"1",False);
+    procset('/proc/sys/net/ipv4/ip_local_port_range',"3200   9000",False);
+    procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_loose',"0",False); 
 
-update_monit()
-{
-    if [ -n "`find ${UVM_RUNDIR}/unmonitor -mmin -10 2> /dev/null`" ]; then
-        echo "[`date`] Last forced unmmonitor less than 10 minutes ago." | logger -t uvmwrapper
-        return 0
-    fi
+    # Optional proc settings
+    procset('/proc/sys/vm/swappiness',"60",True);
+    procset('/proc/sys/net/ipv4/tcp_synack_retries',"0",True);
+    procset('/proc/sys/net/ipv4/tcp_syncookies',"1",True);
+    procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait',"30",True);
 
-    monit -c /etc/untangle/monit.conf status | grep -q 'monitoring status[ ]*not monitored' && {
-        if [ -n "`find ${UVM_RUNDIR}/unmonitor -mmin -10 2> /dev/null`" ]; then
-            echo "[`date`] Last forced unmmonitor less than 10 minutes ago." | logger -t uvmwrapper
-            return 0
-        fi
+    # remove tomcat sessions XXX is this needed?
+    os.system("[ -d @UVM_HOME@/work ] && find @UVM_HOME@/work -name SESSIONS.ser -exec rm -f '{}' ';'");
 
-        echo "`date` telling monit to monitor all services." | logger -t uvmwrapper
-        monit -c /etc/untangle/monit.conf monitor all
-    }
-}
+    # create a keystore if one doesnt exists
+    if not os.path.exists("@UVM_CONF@/keystore"): 
+        debug( "Generating keystore...")
+        os.system('/usr/bin/keytool -genkey -keyalg RSA -keystore @UVM_CONF@/keystore -alias tomcat -keypass changeit -storepass changeit -dname "cn=$(hostname), ou=devices"')
+        debug("Generating keystore... done")
 
-trap reapChildHardest 6
-trap reapChildHarder 15
-trap reapChild 2
+    # prepare postgres
+    os.system('createuser -U postgres -dSR untangle 2>/dev/null');
+    os.system('createdb -O postgres -U postgres uvm 2>/dev/null');
+    os.system('createlang -U postgres plpgsql uvm 2>/dev/null');
 
-monit -c /etc/untangle/monit.conf unmonitor postgres
-@PREFIX@/usr/share/untangle/bin/ut-migrate-postgres.sh | logger -t uvmwrapper
-monit -c /etc/untangle/monit.conf monitor postgres
+    # setup environment variables
+    
+    # set path for dev enviroment
+    if developmentEnv:
+        os.environ['PATH'] += "@PREFIX@/usr/bin"
 
-while true; do
-    echo > $UVM_CONSOLE_LOG
-    echo "============================" | logger -t uvmconsole
-    echo $UVM_LAUNCH | logger -t uvmconsole
-    echo "============================" | logger -t uvmconsole
+    os.environ['PATH'] += "/usr/lib/jvm/java-6-sun/bin"; #java6 bin
 
-    echo | logger -t uvmwrapper
-    echo "============================" | logger -t uvmwrapper
-    echo $UVM_LAUNCH | logger -t uvmwrapper
-    echo "============================" | logger -t uvmwrapper
+    # build classpath
+    os.environ['CLASSPATH'] = ""
+    os.environ['CLASSPATH'] += "@UVM_HOME@/conf:@UVM_HOME@/lib/untangle-libuvm-bootstrap/:"
 
-    flushIptables
+    # build the classpath
+    for jarfile in glob.glob( os.path.join('@THIRDPARTY_UVM_LIB@', '*.jar') ):
+        #debug("Adding jarfile: %s"%jarfile)
+        os.environ['CLASSPATH'] += jarfile + ":"
 
-    flushConntrack
+    # build the classpath
+    for jarfile in glob.glob( os.path.join('@THIRDPARTY_REPORTS_LIB@', '*.jar') ):
+        #debug("Adding jarfile: %s"%jarfile)
+        os.environ['CLASSPATH'] += jarfile + ":"
 
-    $UVM_LAUNCH $* 2>&1 | logger -t uvmconsole &
+    os.unsetenv('DISPLAY');
 
-    flushConntrack
-
-    pid=$!
-    echo "Untangle-Vm launched. (pid:$pid) (`date`)" | logger -t uvmwrapper
-
-    # Instead of waiting, we now monitor.
-    while true; do
-        sleep $SLEEP_TIME
+    #if ( lspci | grep -qi VMWare ) then
+    #JAVA_OPTS="-Dcom.untangle.isInsideVM=true $JAVA_OPTS"
         
-        if [ "x" = "x@PREFIX@" ] ; then # in production environment
+    fdlimit=1024
+    for i in range(13):
+        try:
+            #debug("setting fd limit: %i" % fdlimit)
+            resource.setrlimit(resource.RLIMIT_NOFILE, (fdlimit, fdlimit))
+            fdlimit = fdlimit * 2;
+        except ValueError:
+            #debug("Reached limit: %i" % fdlimit)
+            break;
+    #os.system("ulimit -a");
 
-             ## if necessary tell monit to keep monitoring everything.
-            update_monit
+#
+# This checks to verify that the system looks appropriate for running the untangle-vm
+# If the system configuration is not correct, it will print an error and exit with 1 as a exit code
+#
+def checkSystem():
+    #debug("checkSystem()")
 
-            if [ ! -d /proc/$pid ] ; then
-                echo "*** restarting missing untangle-vm ($?) on `date` ***" | logger -t uvmwrapper
-                break
-            fi
+    # check tune is loaded
+    ret = os.system('/sbin/modprobe -q iptable_tune');
+    if ret != 0:
+        debug("ERROR: Incompatible kernel detected (no tune)");
+        sys.exit(1);
 
-            if needToRestart; then
-                if [ -n "`find ${UVM_RUNDIR}/last_forced_restart -mmin -7 2> /dev/null`" ]; then
-                    echo "*** ignoring restart of $? at `date` ***" | logger -t uvmwrapper
-                    continue
-                fi
-                
-                echo "*** need to restart untangle-vm $? on `date` ***" | logger -t uvmwrapper
-                ## These file is created so it doesn't continuously restart every 15 seconds
-                touch "${UVM_RUNDIR}/last_forced_restart"
+    # check nfnetlink_queue is loaded
+    if not os.path.exists("/proc/net/netfilter/nfnetlink_queue"):
+        debug("ERROR: Incompatible kernel detected (no nfnetlink)"); 
+        sys.exit(1);
 
-                nukeIt
-                break
-            fi
+    # check nfnetlink_queue owner
+    p = os.popen("awk -v queue=0 '{ if ( $1 == queue ) print $2 }' /proc/net/netfilter/nfnetlink_queue");
+    queue_owner = p.readline()
+    p.close
+    if not queue_owner == "":
+        debug("ERROR: nfnetlink queue owned by another process: %s" % queue_owner);
+        sys.exit(1);
 
-        else #in development environment
+    # also check that there is no ip_queue.  2.6.24 can't handle.
+    if os.path.exists("/proc/net/ip_queue"):
+        debug("ERROR: Incompatible kernel (incompatible ip_queue module loaded)");
+        sys.exit(1);
 
-            if [ ! -d /proc/$pid ] ; then
-                echo "*** untangle-vm died ($?) on `date` ***" | logger -t uvmwrapper
-                exit
-            fi
+#
+# Utility for setting values in proc files
+#
+def procset(procfile, value, optional):
+    #debug("procset(%s,%s,%s)" % (procfile, value, optional));
+    if not os.path.exists(procfile):
+        debug("ERROR: procfile %s not found" % procfile);
+        return;
 
-        fi
+    try:
+        file = open(procfile,'w');
+        file.write(value);
+        file.close();
+    except IOError:
+        if not optional:
+            debug("ERROR: setting procfile %s to %s" % (procfile, value));
+            sys.exit(1);
 
-    done
+#
+# function called to upgrade old boxes to 7.0 (and later)
+# 10.0 REMOVE ME 
+#
+def upgrade_70():
+    if os.path.exists("/usr/lib/postgresql/7.4/bin/postgres"):
+        os.system("monit -c /etc/untangle/monit.conf unmonitor postgres");
+        os.system("@PREFIX@/usr/share/untangle/bin/ut-migrate-postgres.sh");
+        os.system("monit -c /etc/untangle/monit.conf monitor postgres");
+    return;
 
-# Clean up the zombie.  Risky? XXX
-#    wait $pid
+# 
+# This function monitors the running UVM to make sure it is within operating specs
+# If it appears messed up it will kill it so the other thread will restart a functioning UVM
+#
+def monitor_uvm(pid):
+    debug("Monitoring untangle-vm(%i)" % pid);
 
-# Crash/Kill
-    flushIptables
-    echo "*** untangle-vm exited on `date` in `pwd` ***" | logger -t uvmwrapper
-    echo "*** copied $UVM_CONSOLE_LOG to $UVM_CONSOLE_LOG.crash ***" | logger -t uvmwrapper
-    echo "*** copied $UVM_UVM_LOG to $UVM_UVM_LOG.crash ***" | logger -t uvmwrapper
-    echo "*** copied $UVM_GC_LOG to $UVM_GC_LOG.crash ***" | logger -t uvmwrapper
-    cp -fa $UVM_CONSOLE_LOG.crash.1 $UVM_CONSOLE_LOG.crash.2
-    cp -fa $UVM_CONSOLE_LOG.crash $UVM_CONSOLE_LOG.crash.1
-    cp -fa $UVM_CONSOLE_LOG $UVM_CONSOLE_LOG.crash
-    cp -fa $UVM_UVM_LOG.crash.1 $UVM_UVM_LOG.crash.2
-    cp -fa $UVM_UVM_LOG.crash $UVM_UVM_LOG.crash.1
-    cp -fa $UVM_UVM_LOG $UVM_UVM_LOG.crash
-    cp -fa $UVM_GC_LOG.crash.1 $UVM_GC_LOG.crash.2
-    cp -fa $UVM_GC_LOG.crash $UVM_GC_LOG.crash.1
-    cp -fa $UVM_GC_LOG $UVM_GC_LOG.crash
-    cp -fa $MONIT_LOG.crash.1 $MONIT_LOG.crash.2
-    cp -fa $MONIT_LOG.crash $MONIT_LOG.crash.1
-    cp -fa $MONIT_LOG $MONIT_LOG.crash
-    cp -fa $PACKAGES_LOG.crash.1 $PACKAGES_LOG.crash.2
-    cp -fa $PACKAGES_LOG.crash $PACKAGES_LOG.crash.1
-    dpkg -l "untangle*" >| $PACKAGES_LOG.crash
+    while True:
+        time.sleep(monitor_interval_seconds)
+        
+        if not os.path.exists("/proc/%i" % pid): 
+            debug("Monitoring untangle-vm(%i) not found, monitoring stopped" % pid);
+            return;
 
-    sleep 2
-    echo "*** restarting on `date` ***" | logger -t uvmwrapper
-done
+        if productionEnv:
+            update_monit();
+
+        if needToRestart(pid):
+            debug("*** Killing untangle-vm(%i)." % pid);
+            os.system("kill %i" % pid);
+
+    return;
+
+# Return True if we need to kill the UVM
+# this happens when the UVM is "out-of-spec" and it is determined that killing it
+# and letting it restart is better than continuing in the current state
+def needToRestart(pid): 
+    
+    # If the untangle-vm is having frequent CMF GC failures, kill it
+    p = os.popen('tail -50 %s | grep -ci "concurrent mode failure"' % uvm_gc_log);
+    output = p.readline().rstrip();
+    cmf_count = int(output);
+    if (cmf_count > 4):
+        debug("*** Frequent CMF failures (%i)" % (cmf_count));
+        return True;
+
+    # check Tomcat port is correct (8010 is NOT correct)
+    p = os.popen('tail -150 %s | grep -i "ajp13 listening on /127.0.0.1:8010"' % uvm_uvm_log);
+    output = p.readline();
+    if not (output == ""):
+        debug("*** Tomcat bound to wrong port: %s " % output.rstrip());
+        return True;
+
+    # nighttime only checks
+    if datetime.datetime.now().hour == 1:
+        p = os.popen("awk '/VmSize/ {print $2}' /proc/%i/status" % pid);
+        output = p.readline().rstrip();
+        virt_size = int(output)
+        if (virt_size > int(max_virtual_size)):
+            debug("*** Max virtual size exceeded (%i > %i)" % (virt_size, int(max_virtual_size)));
+            return True;
+
+    return False;
+
+#
+# Starts monit if necessary
+# First checks if it should not be monitoring
+# Then if checks if monit is running, bun not currently monitoring something
+# If so, it tells monit to monitor all services
+#
+def update_monit():
+    # If we aren't supposed to restart monit do nothing
+    p = os.popen("find ${UVM_RUNDIR}/unmonitor -mmin -10 2> /dev/null");
+    output = p.readline()
+    if not output == "":
+        debug("Monit forced unmmonitor less than 10 minutes ago (not monitoring for now).")
+        return 0;
+
+    # check if monit isn't monitoring something
+    result = os.system("monit -c /etc/untangle/monit.conf status 2>/dev/null | grep -q 'monitoring status[ ]*not monitored'");
+    if result == 0:
+        # Print the process that isn't being monitor
+        p = os.popen("monit -c /etc/untangle/monit.conf status 2>/dev/null | grep -B3 'monitoring status[ ]*not monitored' | grep 'Process'");
+        output = p.readline().rstrip()
+        debug("%s not current being monitor by monit." % output);
+
+        # If we aren't supposed to restart monit do nothing
+        p = os.popen("find ${UVM_RUNDIR}/unmonitor -mmin -10 2> /dev/null");
+        output = p.readline()
+        if not output == "":
+            debug("Monit forced unmmonitor less than 10 minutes ago (not monitoring for now).");
+            return 0;
+        else:
+            # otherwise tell monit to monitor everything
+            debug("Telling monit to monitor all services.");
+            os.system("monit -c /etc/untangle/monit.conf monitor all");
+
+#
+# SIGINT handler 
+# Sets the cleanup flag and sends the signal to the untangle-vm
+#
+def sigINThandler(signal, frame):
+    global exit_flag;
+    debug("Caught SIGINT: initiating shutdown");
+    exit_flag = 1;
+    if not uvm_pid == 0:
+        os.kill(uvm_pid, signal);
+
+#
+# SIGTERM handler 
+# Sets the cleanup flag and sends the signal to the untangle-vm
+#
+def sigTERMhandler(signal, frame):
+    global exit_flag;
+    debug("Caught SIGTERM: initiating shutdown");
+    exit_flag = 1;
+    if not uvm_pid == 0:
+        os.kill(uvm_pid, signal);
+
+#
+# SIGARB handler 
+# Sets the cleanup flag and sends the signal to the untangle-vm
+#
+def sigABRThandler(signal, frame):
+    global exit_flag;
+    debug("Caught SIGABRT: initiating shutdown");
+    exit_flag = 1;
+    if not uvm_pid == 0:
+        os.kill(uvm_pid, signal);
+
+
+##############################################################
+##############################################################
+##############################################################
+
+
+prepareSystem();
+
+checkSystem();
+
+upgrade_70();
+
+signal.signal( signal.SIGINT , sigINThandler );
+signal.signal( signal.SIGTERM , sigTERMhandler );
+signal.signal( signal.SIGABRT , sigABRThandler );
+
+# loop infinitely (until a signal is received)
+while True:
+    debug("==============================");
+    debug("Launching UVM");
+    debug("==============================");
+
+    resetIptables();
+
+    flushConntrack();
+
+    pid, exfd = os.forkpty(); # must use forkpty to avoid signals to children
+    if pid == 0:
+        # child
+        signal.signal( signal.SIGINT , signal.SIG_DFL );
+        signal.signal( signal.SIGTERM , signal.SIG_DFL );
+        signal.signal( signal.SIGABRT , signal.SIG_DFL );
+
+
+        p = sub.Popen(['/usr/bin/logger','-t','uvmconsole'],stdin=sub.PIPE)
+        os.dup2(p.stdin.fileno(), sys.stdout.fileno())
+        os.dup2(p.stdin.fileno(), sys.stderr.fileno())
+
+        args = ("/usr/bin/java " + 
+                "-Djavax.net.ssl.trustStore=@UVM_CONF@/cacerts " + 
+                "-Djava.endorsed.dirs=@ENDORSED_LIB@ " +
+                "-Djava.library.path=@SRC_LIB@ " +
+                "-Duvm.home=@UVM_HOME@ " +
+                "-Djdbc.drivers=org.postgresql.Driver " +
+                "-Dcom.untangle.isDevel=@IS_DEVEL@ " +
+                java_opts + " " + uvm_args + 
+                " com.untangle.uvm.engine.Main").split();
+
+        os.execv("/usr/bin/java", args);
+        debug("ERROR: execv returned");
+        #never returns;
+    
+    # parent
+    uvm_pid = pid;        
+    debug("untangle-vm launched (pid: %i)" % uvm_pid);
+
+    # start the monitoring thread
+    thread = threading.Thread(target=monitor_uvm, args=(uvm_pid,))
+    thread.start()
+
+    result = 0;
+    while True:
+        try:
+            result = 0;
+            ppid, result = os.waitpid(uvm_pid, 0);
+            break;
+        except OSError,e :
+            # If its EINTR (interrupted), dont print error
+            if not (e.errno == 4):
+                debug(e); 
+                time.sleep(1);
+
+            continue; #ignore interrupted
+
+    uvm_pid = 0;
+
+    # if this was expected, clean up and exit
+    if exit_flag == 1:
+        debug("==============================");
+        debug("UVM Stopped");
+        debug("==============================");
+        resetIptables();
+        sys.exit(0);
+    
+    debug("*** untangle-vm unexpectedly exited (%i)" % result);
+    
+    # if the untangle-vm returns in the dev env, don't bother restarting it
+    if developmentEnv:
+        time.sleep(10);
+        debug("*** Development environment: not restarting untangle-vm");
+        resetIptables();    
+        sys.exit(1);
+
+    flushConntrack();
+
+    debug("*** copied %s to %s.crash ***" % (uvm_console_log, uvm_console_log))
+    debug("*** copied %s to %s.crash ***" % (uvm_uvm_log, uvm_uvm_log))
+    debug("*** copied %s to %s.crash ***" % (uvm_gc_log, uvm_gc_log))
+    os.system("cp -fa %s.crash.1 %s.crash.2 2>/dev/null" % (uvm_console_log, uvm_console_log));
+    os.system("cp -fa %s.crash   %s.crash.1 2>/dev/null" % (uvm_console_log, uvm_console_log));
+    os.system("cp -fa %s         %s.crash   2>/dev/null" % (uvm_console_log, uvm_console_log));
+    os.system("cp -fa %s.crash.1 %s.crash.2 2>/dev/null" % (uvm_uvm_log, uvm_uvm_log));
+    os.system("cp -fa %s.crash   %s.crash.1 2>/dev/null" % (uvm_uvm_log, uvm_uvm_log));
+    os.system("cp -fa %s         %s.crash   2>/dev/null" % (uvm_uvm_log, uvm_uvm_log));
+    os.system("cp -fa %s.crash.1 %s.crash.2 2>/dev/null" % (uvm_gc_log, uvm_gc_log));
+    os.system("cp -fa %s.crash   %s.crash.1 2>/dev/null" % (uvm_gc_log, uvm_gc_log));
+    os.system("cp -fa %s         %s.crash   2>/dev/null" % (uvm_gc_log, uvm_gc_log));
+    os.system("cp -fa %s.crash.1 %s.crash.2 2>/dev/null" % (uvm_monit_log, uvm_monit_log));
+    os.system("cp -fa %s.crash   %s.crash.1 2>/dev/null" % (uvm_monit_log, uvm_monit_log));
+    os.system("cp -fa %s         %s.crash   2>/dev/null" % (uvm_monit_log, uvm_monit_log));
+    os.system("cp -fa %s.crash.1 %s.crash.2 2>/dev/null" % (uvm_packages_log, uvm_packages_log));
+    os.system("cp -fa %s.crash   %s.crash.1 2>/dev/null" % (uvm_packages_log, uvm_packages_log));
+    os.system("dpkg -l 'untangle*' >| %s.crash" % (uvm_packages_log));
+    
+    # end while loop
