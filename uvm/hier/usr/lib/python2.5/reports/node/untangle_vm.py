@@ -782,7 +782,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
         elif user:
             query += " AND uid = %s"
 
-        query += """\
+        query += """
 GROUP BY c_server_port
 ORDER BY sessions DESC"""
 

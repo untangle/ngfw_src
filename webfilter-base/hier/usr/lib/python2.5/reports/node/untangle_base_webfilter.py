@@ -413,7 +413,7 @@ AND NOT wf_%s_reason = 'I'
             query = query + " AND hname = %s"
         elif user:
             query = query + " AND uid = %s"
-        query += """\
+        query += """
 GROUP BY wf_%s_category ORDER BY blocks_sum DESC
 """ % self.__vendor_name
 
@@ -477,7 +477,7 @@ AND wf_%s_blocks > 0""" % (5 * (self.__vendor_name,))
             query = query + " AND hname = %s"
         elif user:
             query = query + " AND uid = %s"
-        query += """\
+        query += """
 GROUP BY wf_%s_category ORDER BY blocks_sum DESC""" \
             % self.__vendor_name
 
@@ -884,7 +884,7 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
             query += " AND hname = %s"
         elif user:
             query += " AND uid = %s"
-        query += """\
+        query += """
 GROUP BY host ORDER BY size_sum DESC"""
 
         conn = sql_helper.get_connection()
