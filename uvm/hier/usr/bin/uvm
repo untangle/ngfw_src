@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env /usr/bin/python
 import sys;
 import os;
 import resource;
@@ -111,12 +111,6 @@ def prepareSystem():
 
     # setup environment variables
     
-    # set path for dev enviroment
-    if developmentEnv:
-        os.environ['PATH'] += "@PREFIX@/usr/bin"
-
-    os.environ['PATH'] += "/usr/lib/jvm/java-6-sun/bin"; #java6 bin
-
     # build classpath
     os.environ['CLASSPATH'] = ""
     os.environ['CLASSPATH'] += "@UVM_HOME@/conf:@UVM_HOME@/lib/untangle-libuvm-bootstrap/:"
