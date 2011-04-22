@@ -393,6 +393,9 @@ class MailSenderImpl implements MailSender, HasConfigFiles
     private void refreshSessions()
     {
         Properties commonProps = new Properties();
+        if (mailSettings == null)
+            return;
+        
         commonProps.put(MAIL_FROM_PROP, mailSettings.getFromAddress());
         commonProps.put(MAIL_ENVELOPE_FROM_PROP, mailSettings.getFromAddress());
         commonProps.put(MAIL_TRANSPORT_PROTO_PROP, "smtp");
@@ -408,10 +411,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
         }
 
         Properties mvProps = (Properties) commonProps.clone();
-        // This one always uses our SMTP host.
         mvProps.put(MAIL_HOST_PROP, UNTANGLE_SMTP_RELAY);
-        // What we really want here is something that will uniquely identify the customer,
-        // including the serial # stamped on the CD. XXXX
         utSession = Session.getInstance(mvProps);
 
         Properties alertProps = (Properties) commonProps.clone();
