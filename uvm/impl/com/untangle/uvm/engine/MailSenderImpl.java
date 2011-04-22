@@ -213,7 +213,6 @@ class MailSenderImpl implements MailSender, HasConfigFiles
     }
 
     
-
     static MailSenderImpl mailSender() {
         synchronized (LOCK) {
             if (null == MAIL_SENDER) {
@@ -393,8 +392,6 @@ class MailSenderImpl implements MailSender, HasConfigFiles
     private void refreshSessions()
     {
         Properties commonProps = new Properties();
-        if (mailSettings == null)
-            return;
         
         commonProps.put(MAIL_FROM_PROP, mailSettings.getFromAddress());
         commonProps.put(MAIL_ENVELOPE_FROM_PROP, mailSettings.getFromAddress());
