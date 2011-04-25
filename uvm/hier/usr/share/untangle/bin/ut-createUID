@@ -26,6 +26,7 @@ MYUID=`cat $UID_FILE`
 
 # add untangle sources to sources.list; remove the old ones
 echo "Installing sources list"
+SOURCES_LIST=/etc/apt/sources.list.d/untangle.list
 touch $SOURCES_LIST
 perl -i -pe 's/.*untangle\.com.*//' $SOURCES_LIST
 echo -e $DEFAULT_UNTANGLE_SOURCE | sed "s/$UID_TEMPLATE/$MYUID/" >> $SOURCES_LIST
