@@ -1680,6 +1680,8 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
 
     openUserInterface : function( handler )
     {
+        Ext.MessageBox.wait( i18n._( "Completing Setup Wizard" ), i18n._( "Please wait" ));
+
         //now that we are done, create the UID
         rpc.jsonrpc.RemoteUvmContext.createUID();
 
@@ -1687,7 +1689,6 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
         rpc.jsonrpc.RemoteUvmContext.wizardComplete();
 
         //now open the UI
-        Ext.MessageBox.wait( i18n._( "Loading User Interface" ), i18n._( "Please wait" ));
         window.location.href="/webui/startPage.do?firstTimeRun=true";
     }
 });
