@@ -235,7 +235,7 @@ end
 
 def run_sql_file(file)
   Syslog.info "Running SQL file: #{file}"
-  Kernel.system "/usr/bin/psql -X -U postgres uvm -f #{file} 2>&1| grep -v 'ERROR:.*already exists'"
+  Kernel.system "/usr/bin/psql -X -U postgres uvm -f #{file} 2>&1| grep -v 'ERROR:.*already exists' | logger -i -t ut-update-schema -p local3.info"
 end
 
 def run_rb_file(dbh, file)
