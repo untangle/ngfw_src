@@ -19,7 +19,7 @@ $cpd_settings = get_cpd_settings();
             font-weight:bold;
         }
     </style>
-    <script type="text/javascript" src="portal.js"></script>
+    <script type="text/javascript" src="portal.js?nocache=2"></script>
     <script type="text/javascript">
     var endDate = (new Date()).getTime() + ( 1000 * <?= get_time_remaining() ?> );
 

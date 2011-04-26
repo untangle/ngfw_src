@@ -78,7 +78,7 @@ function authenticateUserWrapper(errorfield){
     
     }catch(exn){            
         hidePleaseWait();
-        showError("An error occured. Please try again.")
+        showError("An error occured. Please try again.");
     }
 }
 function authenticateUser( errorField )

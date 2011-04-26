@@ -7,7 +7,7 @@
      var redirectUrl = "<?= get_redirect_url() ?>";
   </script>
   <script src="json2-min.js" type="text/javascript"></script>
-  <script src="portal.js" type="text/javascript"></script>
+  <script src="portal.js?nocache=2" type="text/javascript"></script>
   <title>
     <?= trim( $branding_settings["company_name"] ) ?> | Captive Portal
   </title>
