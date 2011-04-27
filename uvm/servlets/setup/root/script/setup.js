@@ -1680,7 +1680,7 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
 
     openUserInterface : function( handler )
     {
-        Ext.MessageBox.wait( i18n._( "Completing Setup Wizard" ), i18n._( "Please wait" ));
+        Ext.MessageBox.wait( i18n._( "Completing Setup Wizard..." ), i18n._( "Please wait" ));
 
         //now that we are done, create the UID
         rpc.jsonrpc.RemoteUvmContext.createUID();
