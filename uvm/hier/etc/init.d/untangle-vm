@@ -52,7 +52,6 @@ unmonitorAll() {
         touch "${UVM_RUNDIR}/unmonitor"
 
         sleep 1
-
         $MONIT unmonitor all
     }
 }
@@ -100,7 +99,7 @@ case "$1" in
         
         echo >| $UVM_CONSOLE_LOG;
 
-        updateStatus "[." "Starting"
+        updateStatus "[" "Starting"
 
         start-stop-daemon --start \
             --background --make-pidfile -q \
@@ -114,21 +113,21 @@ case "$1" in
             updateStatusExit "x]\n" "Stopped"
         fi
 
-        echo -n "." ; sleep 1 ; echo -n "." ; sleep 1 # time for console.log to be rm'd
+        echo -n "." ; sleep 1 # wait for initial start
 
         pid=$(cat ${UVM_RUNDIR}/${UVM_PID})
 
         # Wait for completion
         for i in `seq 1 $UVM_TIMEOUT` ; do
+            echo -n "."
+
             ps -p $pid >/dev/null
             if [ $? -ne 0 ]; then
                 updateStatusExit "x]\n" "Stopped"
             fi
 
             EXPC="`cat $UVM_CONSOLE_LOG 2>/dev/null | egrep -i '(fatal error|exception)' `"
-            FINI="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i 'vegetables' `"
-            sleep 1
-            echo -n "."
+            FINI="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i 'startup complete' `"
 
             if [ "x" != "x$EXPC" ] ; then
                 if [ ! -z "`echo $EXPC | grep -i \"address already in use\"`" ] ; then
@@ -149,17 +148,22 @@ case "$1" in
             if [ "x" != "x$FINI" ] ; then
                 break
             fi
+
+            sleep 1
         done
 
         # Wait for completion, ignore exceptions because they are node exceptions
+        echo -n "|"
         for i in `seq 1 $UVM_TIMEOUT` ; do
-            FINI="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i 'postInit complete' `"
-            sleep 1
             echo -n "."
+
+            FINI="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i 'postInit complete' `"
             if [ "x" != "x$FINI" ] ; then
 	            monitorAll
                 updateStatusExit "]\n" "Running"
             fi
+
+            sleep 1
         done
 
         echo "x]"
@@ -176,7 +180,7 @@ case "$1" in
             exit
         fi
 
-        updateStatus "[." "Stopping"
+        updateStatus "[" "Stopping"
 
         # Attempt polite kill first
         start-stop-daemon -s INT --stop -q --pidfile ${UVM_RUNDIR}/${UVM_PID}
@@ -191,9 +195,8 @@ case "$1" in
 
         # Wait for completion
         for i in `seq 1 15` ; do
-            FINI="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i 'shutdown complete' `"
-            sleep 1
             echo -n "."
+            FINI="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i 'shutdown complete' `"
             if [ "x" != "x$FINI" ] ; then
                 sleep 1
 		        unmonitorAll
@@ -202,6 +205,7 @@ case "$1" in
             if [ -z "`uvmJavaPid`" ] ; then
                 break
             fi
+            sleep 1
         done
 
         # Attempt more aggressive kill now
@@ -213,9 +217,8 @@ case "$1" in
 
         # Wait for completion
         for i in `seq 1 5` ; do
-            FINI="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i 'shutdown complete' `"
-            sleep 1
             echo -n "."
+            FINI="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i 'shutdown complete' `"
             if [ "x" != "x$FINI" ] ; then
                 sleep 1 
 		        unmonitorAll
@@ -224,6 +227,7 @@ case "$1" in
             if [ -z "`uvmJavaPid`" ] ; then
                 break
             fi
+            sleep 1
         done
 
         # Wait for completion
@@ -232,12 +236,12 @@ case "$1" in
             kill -9 `uvmJavaPid` &>/dev/null
             killall -9 uvm &>/dev/null
 
-            sleep 1
             echo -n "."
             if [ -z "`uvmJavaPid`" ] ; then
     	        unmonitorAll
                 updateStatusExit "]\n" "Stopped"
             fi
+            sleep 1
         done
 
         echo "x]"
@@ -247,7 +251,6 @@ case "$1" in
 
     restart|force-reload)
         $0 stop
-        sleep 1
         $0 start
         ;;
 
