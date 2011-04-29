@@ -22,6 +22,7 @@ import mx
 import os
 import re
 import sets
+import simplejson as json
 import shutil
 import reports.sql_helper as sql_helper
 import string
@@ -40,57 +41,24 @@ USER_DRILLDOWN = 'user-drilldown'
 HOST_DRILLDOWN = 'host-drilldown'
 EMAIL_DRILLDOWN = 'email-drilldown'
 MAIL_REPORT_BLACKLIST = ('untangle-node-boxbackup',)
+JSON_OBJ = json.loads(open('/etc/untangle-net-alpaca/netConfig.js', 'r').read())
 
-# Utility function to return number of WAN interfaces
-# returns a number ex: 1
-# this is a janky way to parse JSON, but python doesn't support json until 3.0
 def get_number_wan_interfaces():
     return len(get_wan_clause().split(','))
 
-# Utility function to return index of WAN interfaces
-# returns a comma separated list ex: "(1,2)"
-# this is a janky way to parse JSON, but python doesn't support json until 3.0
 def get_wan_clause():
-    content = open('/etc/untangle-net-alpaca/netConfig.js', 'r').read()
     wans = []
-
-    for segment in content.split("{"):
-        if re.search(r'WAN"?\s*:\s*"?true"?', segment):
-            m = re.search(r'interfaceId"?\s*:\s*"?(\d+)"?', segment)
-            wans.append(m.group(1))
+    for intf in JSON_OBJ['interfaceList']['list']:
+        if intf['WAN'] is not None and intf['WAN'].lower() == 'true':
+            wans.append(intf['interfaceId'])
 
     return "(" + ','.join(wans) + ")"
 
-# Utility function to return a map from index to interface name
-# returns a map "{1: 'External'}
-# this is a janky way to parse JSON, but python doesn't support json until 3.0
 def get_wan_names_map():
-    f = open('/etc/untangle-net-alpaca/netConfig.js', 'r')
-    str = f.read()
-
     map = {}
-    wans_found = 0
-
-    for segment in str.split("{"):
-        wan = segment.find("WAN")
-        # look for some text about WAN
-        # look for the word true near it
-        if (wan > 0):
-            wan_clause = segment[wan:wan+12]
-            if (wan_clause.find("true") > 0):
-                # OK, we found a WAN
-                # now extract the interfaceId
-                if (wans_found > 0):
-                    wans_str = wans_str+","
-
-                wans_found = wans_found + 1
-                id_idx = segment.find("interfaceId")
-                intf_id = segment[id_idx+13:id_idx+14]
-
-                name_idx = segment.find("name")
-                srch = re.search('\"(.*)\"',segment[name_idx+5:name_idx+20])
-                
-                map[int(intf_id)] = srch.group(1)
+    for intf in JSON_OBJ['interfaceList']['list']:
+        if intf['WAN'] is not None and intf['WAN'].lower() == 'true':
+            map[intf['interfaceId']] = intf['name']
                 
     return map
 
