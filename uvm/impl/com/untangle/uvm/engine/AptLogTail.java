@@ -47,7 +47,7 @@ import com.untangle.uvm.toolbox.PackageDesc;
 class AptLogTail implements Runnable
 {
     private static final String APT_LOG = System.getProperty("uvm.log.dir") + "/apt.log";
-    private static final long TIMEOUT = 500000;
+    private static final long TIMEOUT = 30 * 60 * 1000;
 
     private static final Pattern FETCH_PATTERN;
     private static final Pattern DOWNLOAD_PATTERN;
@@ -223,8 +223,7 @@ class AptLogTail implements Runnable
                     try {
                         if (TIMEOUT < t - lastActivity) {
                             // just end the thread adding TimeoutEvent
-                            logger.warn("AptLogTail timing out: "
-                                        + (t - lastActivity));
+                            logger.warn("AptLogTail timing out: " + (t - lastActivity));
                             mm.submitMessage(new InstallTimeout(t, requestingPackage));
                             throw new RuntimeException("timing out: " + (t - lastActivity));
                         } else {
