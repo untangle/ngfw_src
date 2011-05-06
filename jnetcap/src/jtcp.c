@@ -84,12 +84,7 @@ JNIEXPORT jint JNICALL JF_TCPSession( setServerEndpoint )
     session->srv.srv.host.s_addr = JLONG_TO_UINT( server_addr );
     session->srv.srv.port        = (u_short)server_port;
 
-    if ( netcap_interface_intf_verify( intf ) < 0 ) {
-        /* XXXX Consider making this a warning */
-        debug( 5, "Invalid interface: %d\n", intf );
-    } else {
-        session->srv.intf     = intf;
-    }
+    session->srv.intf     = intf;
 
     return 0;
 }
