@@ -405,8 +405,13 @@ static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr
                 netcap_sess->dead_tcp.type      = ICMP_DEST_UNREACH;
                 netcap_sess->dead_tcp.code      = ICMP_HOST_UNREACH;
             } else if ( errno == ENETUNREACH ) {
-                errlog( ERR_WARNING, "connect to (%s) failed: %s\n",
-                        unet_next_inet_ntoa( dst_addr->sin_addr.s_addr ), errstr );
+                if ( netcap_interface_is_broadcast( dst_addr->sin_addr.s_addr, 0 )) {
+                    debug( 4, "connect to (%s) failed from tcp broadcast: %s\n",
+                           unet_next_inet_ntoa( dst_addr->sin_addr.s_addr ), errstr );
+                } else {
+                    errlog( ERR_WARNING, "connect to (%s) failed: %s\n",
+                            unet_next_inet_ntoa( dst_addr->sin_addr.s_addr ), errstr );
+                }
                 
                 ret = -1;
                 netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_ICMP;

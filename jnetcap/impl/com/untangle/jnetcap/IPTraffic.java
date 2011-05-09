@@ -207,11 +207,7 @@ public class IPTraffic
 
     private String interfaceName( boolean isSrc )
     {
-        // is this used? XXX
-        // I think this should be removed
-        // netcap/argon should only deal with interface IDs - dmorris
-        System.err.println("IMPLEMENT ME IPTraffic.java\n");
-        return "";
+        return getStringValue( buildMask( isSrc, FLAG_INTERFACE ));
     }
 
     private byte interfaceId( boolean isSrc )
@@ -219,12 +215,8 @@ public class IPTraffic
         return (byte)getIntValue( buildMask( isSrc, FLAG_INTERFACE ));
     }
     
-    private void interfaceName( boolean isSrc, String name )
-    {
-        // is this used? XXX
-        // I think this should be removed
-        // netcap/argon should only deal with interface IDs - dmorris
-        return;
+    private void interfaceName( boolean isSrc, String name ) {
+        setStringValue( buildMask( isSrc, FLAG_INTERFACE ), name );
     }
     
     private void interfaceId( boolean isSrc, byte id )
@@ -267,6 +259,13 @@ public class IPTraffic
         return temp;
     }
 
+    protected String getStringValue       ( int req )
+    { 
+        String temp = getStringValue( pointer.value(), req );
+        if ( temp == null ) Netcap.error( "getStringValue: " + req );
+        return temp;
+    }
+
     protected void setLongValue ( int req, long value ) 
     {
         checkLock( req );
@@ -277,6 +276,12 @@ public class IPTraffic
     {
         checkLock( req );
         if ( setIntValue( pointer.value(), req, value ) < 0 ) Netcap.error( "setIntValue: " + req );
+    }
+
+    protected void setStringValue ( int req, String value ) 
+    {
+        checkLock( req );
+        if ( setStringValue( pointer.value(), req, value ) < 0 ) Netcap.error( "setStringValue: " + req );
     }
 
     protected void checkLock( int req )
@@ -301,8 +306,10 @@ public class IPTraffic
     private static native long   createIPTraffic ( long src, int srcPort, long dst, int dstPort );
     private static native long   getLongValue    ( long packetPointer, int req );
     private static native int    getIntValue     ( long packetPointer, int req );
+    private static native String getStringValue  ( long packetPointer, int req );
     private static native int    setLongValue    ( long packetPointer, int req, long value );
     private static native int    setIntValue     ( long packetPointer, int req, int value );
+    private static native int    setStringValue  ( long packetPointer, int req, String value );
     private static native int    send            ( long packetPointer, byte[] data );
     private static native void   raze            ( long packetPointer );
     

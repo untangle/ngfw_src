@@ -28,6 +28,7 @@
 #include <mvutil/uthread.h>
 
 #include "netcap_globals.h"
+#include "netcap_arp.h"
 #include "netcap_server.h"
 #include "netcap_queue.h"
 #include "netcap_hook.h"
@@ -99,6 +100,10 @@ static int _netcap_init()
     if ( pthread_key_create( &_init.tls_key, uthread_tls_free ) != 0 )
         return perrlog( "pthread_key_create\n" );
 
+    if (netcap_arp_init()<0)
+        return errlog(ERR_CRITICAL,"netcap_arp_init\n");
+    if (netcap_interface_init()<0) 
+        return perrlog("netcap_interface_init");
     if (netcap_sesstable_init()<0)
         return perrlog("netcap_sesstable_init");
     if (netcap_sessions_init()<0)
@@ -164,6 +169,10 @@ int netcap_cleanup()
         perrlog("netcap_sessions_cleanup");
     if (netcap_sesstable_cleanup()<0)
         perrlog("netcap_sesstable_cleanup");
+    if (netcap_interface_cleanup()<0) 
+        perrlog("netcap_interface_cleanup");
+    if (netcap_arp_cleanup()<0)
+        return errlog(ERR_CRITICAL,"netcap_arp_init\n");
     if (netcap_sched_cleanup_z ( NULL ) < 0 )
         perrlog("netcap_sched_cleanup");
     netcap_virtual_interface_destroy();
@@ -193,6 +202,18 @@ int netcap_is_initialized()
         return perrlog( "pthread_mutex_unlock" );
 
     return ret;
+}
+
+int netcap_update_address( void )
+{
+    if ( _init.status == STATUS_INITIALIZED ) {
+        if ( netcap_interface_update_address() < 0 )
+            return errlog( ERR_CRITICAL, "netcap_interface_update_address\n" );
+    } else {
+        debug( 1, "NETCAP: Not updating address because netcap is not initialized\n" );
+    }
+
+    return 0;
 }
 
 netcap_tls_t* netcap_tls_get( void )
