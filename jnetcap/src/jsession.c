@@ -172,6 +172,36 @@ JNIEXPORT jint JNICALL JF_Session( getIntValue )
 
 /*
  * Class:     com_untangle_jnetcap_NetcapSession
+ * Method:    getStringValue
+ * Signature: (IJ)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL JF_Session( getStringValue )
+  (JNIEnv* env, jclass _this, jint req_id, jlong session_ptr )
+{
+    netcap_session_t* session;
+    netcap_endpoints_t* endpoints;
+    char buf[NETCAP_MAX_IF_NAME_LEN]; /* XXX Update to the longest possible string returned */
+    JLONG_TO_SESSION_NULL( session, session_ptr );
+    
+    endpoints = _get_endpoints( session, req_id );
+    if ( endpoints == NULL ) return (jstring)errlog_null( ERR_CRITICAL, "_get_endpoints" );
+
+    switch( req_id & JN_Session( FLAG_MASK )) {
+    case JN_Session( FLAG_INTERFACE ):
+        if ( endpoints->intf == NF_INTF_UNKNOWN ) return (*env)->NewStringUTF( env, "" );
+        
+        if ( netcap_interface_intf_to_string( endpoints->intf, buf, sizeof( buf )) < 0 ) {
+            return errlog_null( ERR_CRITICAL, "netcap_intf_to_string\n" );
+        }
+        
+        return (*env)->NewStringUTF( env, buf );
+    }
+
+    return (jstring)errlogargs_null();
+}
+
+/*
+ * Class:     com_untangle_jnetcap_NetcapSession
  * Method:    getClientMark
  * Signature: (J)I
  */
@@ -266,6 +296,24 @@ JNIEXPORT void JNICALL JF_Session( setServerMark )
     }
 
     return;
+}
+
+/*
+ * Class:     com_untangle_jnetcap_NetcapSession
+ * Method:    raze
+ * Signature: (J)I
+ */
+JNIEXPORT void JNICALL JF_Session( determineServerIntf )
+(JNIEnv* env, jclass _this, jlong session_ptr )
+{
+    netcap_session_t* session;
+
+    JLONG_TO_SESSION_VOID( session, session_ptr );
+    
+    if ( netcap_interface_dst_intf( session ) < 0 ) {
+        jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "netcap_interface_dst_intf\n" );
+        return;
+    }
 }
 
 /*
