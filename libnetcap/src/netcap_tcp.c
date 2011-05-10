@@ -416,7 +416,7 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
      */
     if ( getsockopt(cli_sock, SOL_IP, IP_FIRSTNFMARK, &nfmark, &nfmark_len) < 0 )
         return perrlog("getsockopt");
-    if ( netcap_interface_mark_to_intf(nfmark,&cli_intf_idx) < 0 )
+    if ( netcap_interface_mark_to_cli_intf(nfmark,&cli_intf_idx) < 0 )
         return perrlog("netcap_interface_mark_to_intf");
 
     /**

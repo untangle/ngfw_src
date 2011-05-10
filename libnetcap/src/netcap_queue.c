@@ -451,7 +451,7 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
       return errlog( ERR_WARNING, "Queued a REINJECTED or ANTISUBSCRIBED packet\n");
     }
 
-    if ( netcap_interface_mark_to_intf( pkt->nfmark, &pkt->src_intf ) < 0 ) {
+    if ( netcap_interface_mark_to_cli_intf( pkt->nfmark, &pkt->src_intf ) < 0 ) {
         errlog( ERR_WARNING, "Unable to determine the source interface from mark[%s:%d -> %s:%d]\n",
                 unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
                 unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port );
@@ -459,19 +459,14 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
         debug( 10, "NFQUEUE Input device %d\n", pkt->src_intf );
     }    
 
-    /* First lookup the physdev_out */
-    /* if that fails, check the out_dev */
-    u_int32_t out_dev = nfq_get_physoutdev( nfa );
-    if ( out_dev == 0 ) out_dev = nfq_get_outdev( nfa );
-    if ( out_dev == 0 ) {
-        errlog( ERR_WARNING, "Unable to determine the destination interface with nfq_get_physoutdev\n");
-    }
-    if (( pkt->dst_intf = netcap_interface_index_to_intf( out_dev )) == 0 ) {
-        /* This occurs when the interface is a bridge */
-        pkt->dst_intf = NF_INTF_UNKNOWN;
-    }
-
-    debug( 10, "NFQUEUE Output device %d\n", pkt->dst_intf );
+    if ( netcap_interface_mark_to_srv_intf( pkt->nfmark, &pkt->dst_intf ) < 0 ) {
+        /* this is best effort - the session may not be marked. don't complain if it isnt */
+        /*         errlog( ERR_WARNING, "Unable to determine the dest interface from mark[%s:%d -> %s:%d]\n", */
+        /*                 unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port, */
+        /*                 unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port ); */
+    } else {
+        debug( 10, "NFQUEUE Output device %d\n", pkt->dst_intf );
+    }    
 
     return 0;
 }
