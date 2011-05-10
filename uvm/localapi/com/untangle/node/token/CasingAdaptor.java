@@ -459,7 +459,8 @@ public class CasingAdaptor extends AbstractEventHandler
                  * Some Special handling for semi-common parse exceptions
                  * Otherwise just print the full stack trace
                  */
-                if (exn.getMessage().contains("no digits found")) {
+                String message = exn.getMessage();
+                if (message != null && message.contains("no digits found")) {
                     logger.warn("parse exception (no digits found), releasing session: " + sessionEndpoints);
                 } else {
                     logger.warn("parse exception, releasing session: " + sessionEndpoints, exn);
