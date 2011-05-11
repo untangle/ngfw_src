@@ -140,6 +140,8 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                                 main.getLicenseManager().reloadLicenses();
                                 //reload grid
                                 this.gridLicenses.store.reload();
+                                //reload licenses for each node in rack
+                                main.loadLicenses();
                             }.createDelegate(this)
                         }
                     ]

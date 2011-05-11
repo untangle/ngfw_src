@@ -796,6 +796,8 @@ Ung.Main=Ext.extend(Object, {
                                      [ rpc.currentPolicy ], callback, 1500, 10 );
     },
     loadLicenses: function() {
+        //force re-sync with server
+        main.getLicenseManager().reloadLicenses();    	
         var callback = function(result,exception)
         {
             if(Ung.Util.handleException(exception)) return;
