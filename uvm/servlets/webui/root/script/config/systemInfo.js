@@ -136,8 +136,6 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                             tooltip : i18n._('Refresh'),
                             iconCls : 'icon-refresh',
                             handler : function() {
-                                //force re-sync with server
-                                main.getLicenseManager().reloadLicenses();
                                 //reload grid
                                 this.gridLicenses.store.reload();
                             }.createDelegate(this)
