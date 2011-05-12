@@ -1,21 +1,4 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
+/* $HeadURL$ */
 package com.untangle.uvm.argon;
 
 import java.util.ArrayList;
@@ -43,6 +26,7 @@ import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
 import com.untangle.uvm.node.LocalADConnector;
+import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.security.NodeId;
 
 
@@ -109,24 +93,44 @@ public abstract class ArgonHook implements Runnable
 
             NetworkManager lnm = LocalUvmContextFactory.context().networkManager();
 	    
-            /* Update the server interface */
-            netcapSession.determineServerIntf( );
+            byte clientIntf = netcapSession.clientSide().interfaceId();
+            byte serverIntf = netcapSession.serverSide().interfaceId();
 
             /**
-             * If the server interface is still unknown, drop the session
+             * If the interface is not known immediately (from the marks)
+             * We must calculate it the hard way.
+             * This is often true if its destined to one of the interfaces of a bridge
+             * We must use a bunch of ARP and custom kernel calls to figure out which device its going out.
+             * Once that is complete we must find the interfaceID and set that on the netcap session
              */
-            byte serverIntf = netcapSession.serverSide().interfaceId();
-            byte clientIntf = netcapSession.clientSide().interfaceId();
-            if ( IntfConstants.UNKNOWN_INTF == serverIntf ) {
-                if ( logger.isInfoEnabled()) {
-                    logger.info( "" + netcapSession + " destined to unknown interface, raze." );
+            if ( serverIntf == IntfConstants.UNKNOWN_INTF ) {
+                /* Update the server interface */
+                String serverIntfName = netcapSession.determineServerIntf();
+                InterfaceConfiguration intfConf = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findBySystemName(serverIntfName);
+
+                if ( intfConf != null ) {
+                    Integer i = intfConf.getInterfaceId();
+                    if (i != null) {
+                        serverIntf = i.byteValue();
+                        netcapSession.setServerIntf(i.intValue());
+                    }
                 }
-                raze();
-                return;
+
+                if ( IntfConstants.UNKNOWN_INTF == serverIntf ) {
+                    logger.warn( "" + netcapSession + " destined to unknown interface, raze." );
+                    raze();
+                    return;
+                }
+
+                //logger.warn("NEW SESSION: " + clientIntf + " -> " + serverIntf + " (determined by route/arp)");
+            } else {
+                //logger.warn("NEW SESSION: " + clientIntf + " -> " + serverIntf + " (determined by mark)");
+                netcapSession.setServerIntf(serverIntf);
             }
 
+
             /**
-             * we dont want to watch internal traffic that is redirected back to the internal network
+             * we dont want to watch traffic that is destined back to the same interface
              */
             if (serverIntf == clientIntf) {
                 liberate();

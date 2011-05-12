@@ -18,15 +18,11 @@
 
 package com.untangle.jnetcap;
 
-public interface Endpoints {
+public interface Endpoints
+{
     public Endpoint client();
 
     public Endpoint server();
-
-    /** 
-     * Retrieve the name of an interface of an empty string if the interface is unknown.
-     */
-    public String interfaceName();
 
     /**
      * Retrieve a unique interface identifier, or 0 if the interface is unknown

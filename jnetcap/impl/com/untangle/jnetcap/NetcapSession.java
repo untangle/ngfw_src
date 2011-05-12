@@ -187,9 +187,14 @@ public abstract class NetcapSession
         this.serverMark(server_mark);
     }
     
-    public void determineServerIntf( )
+    public void setServerIntf(int intf)
     {
-        determineServerIntf( pointer.value() );
+        setServerIntf( pointer.value(), intf );
+    }
+
+    public String determineServerIntf( )
+    {
+        return determineServerIntf( pointer.value() );
     }
 
     public void raze()
@@ -215,16 +220,17 @@ public abstract class NetcapSession
 
     private static native long getSession( int id, short protocol );
     private static native void raze( long session );
-    private static native void determineServerIntf( long session );
+    private static native String determineServerIntf( long session );
 
     private static native int  getClientMark( long session );
     private static native void setClientMark( long session, int mark );
     private static native int  getServerMark( long session );
     private static native void setServerMark( long session, int mark );
 
+    private static native void setServerIntf( long session, int mark );
+    
     protected static native long   getLongValue  ( int id, long session );
     protected static native int    getIntValue   ( int id, long session );
-    protected static native String getStringValue( int id, long session );
     protected static native String toString( long session, boolean ifClient );
 
     static
@@ -255,11 +261,6 @@ public abstract class NetcapSession
         public Endpoint client() { return client; }
         public Endpoint server() { return server; }
 
-        public String interfaceName()
-        {
-            return getStringValue( buildMask( FLAG_INTERFACE ), pointer.value());
-        }
-        
         public byte interfaceId()
         {
             return (byte)getIntValue( buildMask( FLAG_INTERFACE ), pointer.value());

@@ -201,36 +201,6 @@ JNIEXPORT jint JNICALL JF_IPTraffic( getIntValue )
 
 /*
  * Class:     com_untangle_jnetcap_IPTraffic
- * Method:    getStringValue
- * Signature: (JI)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL JF_IPTraffic( getStringValue )
-  (JNIEnv* env, jclass _class, jlong pkt_ptr, jint req )
-{
-    netcap_pkt_t* pkt;
-    char buf[NETCAP_MAX_IF_NAME_LEN]; /* XXX Update to the longest possible string returned */
-    netcap_intf_t intf;
-
-    JLONG_TO_PACKET_NULL( pkt, pkt_ptr );
-    
-    switch( req & JN_IPTraffic( FLAG_MASK )) {
-    case JN_IPTraffic( FLAG_INTERFACE ): 
-        intf = (( req & JN_IPTraffic( FLAG_SRC_MASK )) == JN_IPTraffic( FLAG_SRC )) ? pkt->src_intf : pkt->dst_intf;
-        break;
-    default: return errlogargs_null();
-    }
-    
-    if ( intf == NF_INTF_UNKNOWN ) return (*env)->NewStringUTF( env, "" );
-        
-    if ( netcap_interface_intf_to_string( intf, buf, sizeof( buf )) < 0 ) {
-        return errlog_null( ERR_CRITICAL, "netcap_intf_to_string\n" );
-    }
-
-    return (*env)->NewStringUTF( env, buf );
-}
-
-/*
- * Class:     com_untangle_jnetcap_IPTraffic
  * Method:    setLongValue
  * Signature: (JIJ)I
  */
@@ -274,10 +244,6 @@ JNIEXPORT jint JNICALL JF_IPTraffic( setIntValue )
     case JN_IPTraffic( FLAG_MARK_EN ): pkt->is_marked = value; break;
     case JN_IPTraffic( FLAG_MARK ): pkt->nfmark = value; break;
     case JN_IPTraffic( FLAG_INTERFACE ): 
-        /* Verify that this is a valid interface */
-        if ( netcap_interface_intf_verify( value ) < 0 ) {
-            return errlog( ERR_CRITICAL, "netcap_interface_intf_verify\n" );
-        }
         if (( req & JN_IPTraffic( FLAG_SRC_MASK )) == JN_IPTraffic( FLAG_SRC )) {
             pkt->src_intf = value;
         } else {
@@ -289,47 +255,6 @@ JNIEXPORT jint JNICALL JF_IPTraffic( setIntValue )
     }
 
     return 0;
-}
-
-/*
- * Class:     com_untangle_jnetcap_IPTraffic
- * Method:    setStringValue
- * Signature: (JILjava/lang/String;)I
- */
-JNIEXPORT jint JNICALL JF_IPTraffic( setStringValue )
-  (JNIEnv* env, jclass _class, jlong pkt_ptr, jint req, jstring value )
-{
-    netcap_pkt_t* pkt;
-    const char* str;
-    netcap_intf_t* intf;
-    int ret = 0;
-
-    JLONG_TO_PACKET( pkt, pkt_ptr );
-    if (( req & JN_IPTraffic( FLAG_SRC_MASK )) == JN_IPTraffic( FLAG_SRC )) {
-        intf = &pkt->src_intf;
-    } else {
-        intf = &pkt->dst_intf;
-    }
-    
-    switch( req & JN_IPTraffic( FLAG_MASK ) ) {
-    case JN_IPTraffic( FLAG_INTERFACE ): break;
-    default: 
-        return errlogargs();
-    }
-    
-    if (( str = (*env)->GetStringUTFChars( env, value, NULL )) == NULL ) {
-        return errlogmalloc();
-    };
-    
-    do {
-        if ( netcap_interface_string_to_intf( (char*)str, intf ) < 0 ) {
-            ret = errlog( ERR_CRITICAL, "netcap_string_to_intf\n" );
-        }
-    } while ( 0 );
-    
-    (*env)->ReleaseStringUTFChars( env, value, str );
-    
-    return ret;
 }
 
 /*

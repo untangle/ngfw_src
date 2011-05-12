@@ -25,9 +25,6 @@
 /* 10 Seconds, just to make sure it is not iterating through nothing */
 #define NETCAP_ARP_MAX_DELAY 10000000L
 
-/* Flag to indicate that an ARP should be forced even if it is in the ARP cache */
-#define NETCAP_ARP_FORCE     0xD0DAB
-
 // A port that is never actually used, it is just so there is a known value inside of the fake
 // connect socket
 #define NULL_PORT            59999
@@ -81,15 +78,17 @@ static struct
 
 static int  _is_initialized    ( void );
 
-static int  _issue_arp_request ( struct in_addr* src_ip, struct in_addr* dst_ip, netcap_intf_info_t* info );
+static int  _netcap_arp_dst_intf_delay ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, struct in_addr* dst_ip, unsigned long* delay_array );
 
-static int  _build_arp_packet  ( struct ether_arp* pkt, struct in_addr* src_ip, struct in_addr* dst_ip, netcap_intf_bridge_info_t* info );
+static int  _issue_arp_request ( struct in_addr* src_ip, struct in_addr* dst_ip, char* intf_name );
 
-static int  _arp_dst_intf      ( netcap_intf_db_t* db, netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, struct in_addr* dst_ip, unsigned long* delay_array );
+static int  _build_arp_packet  ( struct ether_arp* pkt, struct in_addr* src_ip, struct in_addr* dst_ip, char* intf_name );
 
-static int  _arp_address       ( netcap_intf_db_t* db, struct in_addr* dst_ip, struct ether_addr* mac, netcap_intf_info_t* intf_info, unsigned long* delays, int force_request );
+static int  _arp_dst_intf      ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, struct in_addr* dst_ip, unsigned long* delay_array );
 
-static int  _arp_bridge_intf   ( netcap_intf_db_t* db, netcap_intf_t* out_intf, struct ether_addr* mac_address, netcap_intf_info_t* intf_info );
+static int  _arp_address       ( struct in_addr* dst_ip, struct ether_addr* mac, char* intf_name, unsigned long* delays, int force_request );
+
+static int  _arp_bridge_intf   ( netcap_intf_t* out_intf, struct ether_addr* mac_address, char* intf_name );
 
 /**
  * Perform the ioctl to determine which interface a packet is going to go out on.
@@ -105,13 +104,12 @@ static int  _out_interface     ( int* index, struct in_addr* src_ip, struct in_a
  * A fake connection is required in order to make the kernel care about the ARP response that comes 
  * back from the machine.  Otherwise, the kernel will ignore the ARP response from dst_ip.
  **/
-static int  _fake_connect      ( struct in_addr* src_ip, struct in_addr* dst_ip, netcap_intf_info_t* intf_info );
+static int  _fake_connect      ( struct in_addr* src_ip, struct in_addr* dst_ip, char* intf_name );
 
-static int  _get_arp_entry     ( struct in_addr* ip, struct ether_addr* mac, netcap_intf_info_t* intf_info );
+static int  _get_arp_entry     ( struct in_addr* ip, struct ether_addr* mac, char* intf_name );
 
 static void _mac_to_string     ( char *mac_string, int len, struct ether_addr* mac );
 
-static netcap_intf_info_t* _get_bridge_info ( netcap_intf_db_t* db, int index );
 
 
 int netcap_arp_init           ( void )
@@ -147,155 +145,55 @@ int netcap_arp_cleanup        ( void )
     return 0;
 }
 
-int netcap_arp_configure_bridge( netcap_intf_db_t* db, netcap_intf_info_t* intf_info )
-{
-    netcap_intf_bridge_info_t* bridge_info = NULL;
-    int ret = 0;
-
-    if ( intf_info == NULL || !intf_info->is_valid ) return errlogargs();
-
-    if ( intf_info->bridge_info != NULL ) {
-        errlog( ERR_WARNING, "Bridge already has configuration data, freeing\n" );
-        free( intf_info->bridge_info );
-        intf_info->bridge_info = NULL;
-    }
-    
-    int index = intf_info->index;
-        
-    int _critical_section() {
-        struct ifreq ifr;
-        struct sockaddr_ll broadcast = {
-            .sll_family   = AF_PACKET,
-            .sll_protocol = htons( ETH_P_ARP ),
-            .sll_ifindex  = 6, // SETME WITH SOMETHING
-            .sll_hatype   = htons( ARPHRD_ETHER ),
-            .sll_pkttype  = PACKET_BROADCAST, 
-            .sll_halen    = ETH_ALEN,
-            .sll_addr = {
-                0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
-            }
-        };
-
-#ifdef DEBUG_ON
-        char mac_string[MAC_STRING_LENGTH];
-#endif
-        
-        /* Set the index */
-        broadcast.sll_ifindex = index;
-
-        strncpy( ifr.ifr_name, intf_info->name.s, IFNAMSIZ );
-        
-        if ( ioctl( _netcap_arp.sock, SIOCGIFHWADDR, &ifr ) < 0 ) return perrlog( "ioctl" );
-        
-        memcpy( &bridge_info->mac, ifr.ifr_hwaddr.sa_data, sizeof( bridge_info->mac ));
-        memcpy( &bridge_info->broadcast, &broadcast, sizeof( bridge_info->broadcast ));        
-        
-#ifdef DEBUG_ON
-        _mac_to_string( mac_string, sizeof( mac_string ), &bridge_info->mac );
-
-        debug( 4, "ROUTE: Bridge[%s] configuration MAC: %s index: %d\n", intf_info->name.s, mac_string, 
-               intf_info->index );
-#endif
-        
-        return 0;
-    }
-
-    if ( !_is_initialized()) return errlog( ERR_CRITICAL, "netcap_arp is not initialized\n" );
-        
-    if (( bridge_info = calloc( 1, sizeof( *bridge_info ))) == NULL ) return errlogmalloc();
-    
-    if (( ret = _critical_section()) < 0 ) {
-        intf_info->bridge_info = NULL;
-        free( bridge_info );
-    } else {
-        intf_info->bridge_info = bridge_info;
-    }
-
-    return ret;
-}
-
 int netcap_arp_dst_intf       ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, struct in_addr* dst_ip )
 {
-    return netcap_arp_dst_intf_delay( intf, src_intf, src_ip, dst_ip, _netcap_arp.delay_array );
+    return _netcap_arp_dst_intf_delay( intf, src_intf, src_ip, dst_ip, _netcap_arp.delay_array );
 }
 
-int netcap_arp_dst_intf_delay ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, struct in_addr* dst_ip, unsigned long* delay_array )
-{
-    netcap_intf_db_t* db = NULL;
 
+
+static int _netcap_arp_dst_intf_delay ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, struct in_addr* dst_ip, unsigned long* delay_array )
+{
     if ( !_is_initialized()) return errlog( ERR_CRITICAL, "netcap_arp is not initialized\n" );
     
     if ( intf == NULL || dst_ip == NULL || delay_array == NULL ) return errlogargs();
 
-    if (( db = netcap_interface_get_db()) == NULL ) {
-        return errlog( ERR_CRITICAL, "netcap_interface_get_db\n" );
-    }
-
-    /* XXX Don't really need this one since it is only called from here */
-    return _arp_dst_intf( db, intf, src_intf, src_ip, dst_ip, delay_array );
+    return _arp_dst_intf( intf, src_intf, src_ip, dst_ip, delay_array );
 }
 
-int netcap_arp_address        ( struct in_addr* dst_ip, struct ether_addr* mac, int bridge_intf_index, unsigned long* delays )
-{
-    netcap_intf_db_t* db = NULL;
-    netcap_intf_info_t* intf_info = NULL;
-
-    if ( !_is_initialized())  return errlog( ERR_CRITICAL, "netcap_arp is not initialized\n" );
-
-    if (( dst_ip == NULL ) || ( mac == NULL ) || ( delays == NULL )) return errlogargs();
-
-    if (( db = netcap_interface_get_db()) == NULL ) {
-        return errlog( ERR_CRITICAL, "netcap_interface_get_db\n" );
-    }
-    
-    if (( intf_info = _get_bridge_info( db, bridge_intf_index )) == NULL ) {
-        return errlog( ERR_CRITICAL, "Device index %d is not a bridge\n", bridge_intf_index );
-    } 
-    
-    return _arp_address( db, dst_ip, mac, intf_info, delays, ~NETCAP_ARP_FORCE );
-}
-
-int netcap_arp_bridge_intf    ( netcap_intf_t* out_intf, struct ether_addr* mac_address, int bridge_intf_index )
-{
-    if ( !_is_initialized()) return errlog( ERR_CRITICAL, "netcap_arp is not initialized\n" );
-
-    if ( out_intf == NULL || mac_address == NULL ) return errlogargs();
-
-    netcap_intf_db_t* db = NULL;
-    netcap_intf_info_t* intf_info = NULL;
-    
-    if (( db = netcap_interface_get_db()) == NULL ) {
-        return errlog( ERR_CRITICAL, "netcap_interface_get_db\n" );
-    }
-    
-    if (( intf_info = _get_bridge_info( db, bridge_intf_index )) == NULL ) {
-        return errlog( ERR_CRITICAL, "Device index %d is not a bridge\n", bridge_intf_index );
-    } 
-    
-    return _arp_bridge_intf( db, out_intf, mac_address, intf_info );
-}
-
-
-
-static int  _issue_arp_request ( struct in_addr* src_ip, struct in_addr* dst_ip, netcap_intf_info_t* intf_info )
+static int  _issue_arp_request ( struct in_addr* src_ip, struct in_addr* dst_ip, char* intf_name )
 {
     struct ether_arp pkt;
-    
+    struct sockaddr_ll broadcast = {
+        .sll_family   = AF_PACKET,
+        .sll_protocol = htons( ETH_P_ARP ),
+        .sll_ifindex  = 0, // set me 
+        .sll_hatype   = htons( ARPHRD_ETHER ),
+        .sll_pkttype  = PACKET_BROADCAST, 
+        .sll_halen    = ETH_ALEN,
+        .sll_addr = {
+            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+        }
+    };
     int size;
 
-    netcap_intf_bridge_info_t* bridge_info;
-    if (( bridge_info = intf_info->bridge_info ) == NULL ) {
-        return errlog( ERR_CRITICAL, "Interface %s is not a bridge\n", intf_info->name.s );
-    }
+    /* Set the index */
+    broadcast.sll_ifindex = if_nametoindex(intf_name);
 
-    if ( _build_arp_packet( &pkt, src_ip, dst_ip, bridge_info ) < 0 ) {
+    if (broadcast.sll_ifindex == 0) {
+        return errlog( ERR_CRITICAL, "failed to find index of \"%s\"\n", intf_name);
+    }
+    
+    if ( _build_arp_packet( &pkt, src_ip, dst_ip, intf_name ) < 0 ) {
         return errlog( ERR_CRITICAL, "_build_arp_packet\n" );
     }
     
-    size = sendto( _netcap_arp.pkt_sock, &pkt, sizeof( pkt ), 0, (struct sockaddr*)&bridge_info->broadcast, 
-                   sizeof( bridge_info->broadcast ));
+    size = sendto( _netcap_arp.pkt_sock, &pkt, sizeof( pkt ), 0, (struct sockaddr*)&broadcast, sizeof( broadcast ));
 
-    if ( size < 0 ) return perrlog( "sendto" );
+    if ( size < 0 ) {
+        errlog(ERR_CRITICAL,"sendto( %i , %08x , %i, %i, %08x, %i )\n", _netcap_arp.pkt_sock, &pkt, sizeof( pkt ), 0, (struct sockaddr*)&broadcast, sizeof( broadcast ));
+        return perrlog( "sendto" );
+    }
     
     if ( size != sizeof( pkt )) {
         return errlog( ERR_WARNING, "Transmitted truncated ARP packet %d < %d", size, sizeof( pkt ));
@@ -304,12 +202,13 @@ static int  _issue_arp_request ( struct in_addr* src_ip, struct in_addr* dst_ip,
     return 0;
 }
 
-static int  _arp_dst_intf      ( netcap_intf_db_t* db, netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, struct in_addr* dst_ip, unsigned long* delay_array )
+static int  _arp_dst_intf      ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, struct in_addr* dst_ip, unsigned long* delay_array )
 {
     int intf_index;
     struct in_addr next_hop;
-    netcap_intf_info_t* intf_info;
-
+    char intf_name[IF_NAMESIZE];
+    int is_bridge = 0;
+    
     /* Indicate the interface is unknown in case there is an error */
     *intf = NF_INTF_UNKNOWN;
 
@@ -320,20 +219,23 @@ static int  _arp_dst_intf      ( netcap_intf_db_t* db, netcap_intf_t* intf, netc
     /* unable to determine the destination interface(but not an error eg default route unset), return. */    
     if ( intf_index < 0 ) return 0;
 
-    if (( intf_info = netcap_intf_db_index_to_info( db, intf_index )) == NULL ) {
-        return errlog( ERR_CRITICAL, "netcap_intf_db_index_to_info %d\n", intf_index );
+    if ( if_indextoname(intf_index, intf_name) == NULL) {
+        return perrlog("if_indextoname");
     }
 
-    if ( intf_info->bridge_info != NULL ) {
+    /* ghetto way to check that an interface is a bridge */
+    if (intf_name[0] == 'b' && intf_name[1] == 'r')
+        is_bridge = 1;
+
+    if ( is_bridge ) {
         int ret;
         struct ether_addr mac_address;
         // int src_intf_index = 0;
-        // netcap_intf_info_t* src_intf_info = NULL;
 
-        int force = ~NETCAP_ARP_FORCE;
+        int force = 1;
         
         while ( 1 ) {
-            if (( ret = _arp_address( db, &next_hop, &mac_address, intf_info, delay_array, force )) < 0 ) {
+            if (( ret = _arp_address( &next_hop, &mac_address, intf_name, delay_array, force )) < 0 ) {
                 return errlog( ERR_CRITICAL, "_arp_address\n" );
             }
             
@@ -343,10 +245,10 @@ static int  _arp_dst_intf      ( netcap_intf_db_t* db, netcap_intf_t* intf, netc
                 return NETCAP_ARP_NOERROR;
             }
             
-            if (( ret = _arp_bridge_intf( db, intf, &mac_address, intf_info )) < 0 ) {
-                if (( force == ~NETCAP_ARP_FORCE ) && ( errno == EINVAL )) {
+            if (( ret = _arp_bridge_intf( intf, &mac_address, intf_name )) < 0 ) {
+                if (( force == 1 ) && ( errno == EINVAL )) {
                     debug( 10, "ROUTE: Forcing ARP for cached MAC Address.\n" );
-                    force = NETCAP_ARP_FORCE;
+                    force = 0;
                     continue;
                 }
                 return errlog( ERR_CRITICAL, "_arp_bridge_interface\n" );
@@ -355,48 +257,13 @@ static int  _arp_dst_intf      ( netcap_intf_db_t* db, netcap_intf_t* intf, netc
             break;
         }
 
-        /* Convert the source interface from a netcap index to a linux index, not necessary,
-         * just use the bridge it is going out on. */
-        // if (( src_intf_info = netcap_intf_db_info_to_info( db, src_intf )) == NULL ) {
-        // errlog( ERR_WARNING, "netcap_intf_db_info_to_info[%d]\n", src_intf );
-        // } else {
-        // src_intf_index = src_intf_info->index;
-        // }
-
-        /* XXXX should pass in the db rather than the default one to avoid synchronization issues */
-        /* If the packet is multicast or broadcast, you have to force it out the other
-         * interface */
-        if ((( ret = netcap_interface_is_multicast( dst_ip->s_addr )) != 1 ) &&
-            ( ret = netcap_interface_is_broadcast( dst_ip->s_addr, intf_info->index )) < 0 ) {
-            errlog( ERR_CRITICAL, "netcap_inetface_is_broadcast\n" );
-        } else if ( ret == 1 ) {
-            netcap_intf_bridge_info_t* bridge_info = intf_info->bridge_info;
-            int c;
-            /* Find the first interface in the bridge that is not the source interface */
-            for ( c = 0 ; c < bridge_info->intf_count && c < NETCAP_MAX_INTERFACES ; c++ ) {
-                if (( bridge_info->ports[c] != NULL ) && 
-                    ( bridge_info->ports[c]->netcap_intf != src_intf )) {
-                    *intf = bridge_info->ports[c]->netcap_intf;
-                    break;
-                }
-            }
-        }
-        
         return NETCAP_ARP_SUCCESS;
-    }
-
-    /* Don't have to do anything special here for broadcasts  *
-     * because they will be going out the same interface they *
-     * came in on, and those will be dropped.                 */
-
-    if ( NF_INTF_UNKNOWN == ( *intf = intf_info->netcap_intf )) {
-        return errlog( ERR_CRITICAL, "netcap_intf_db_index_to_info %d\n", intf_index );
     }
     
     return NETCAP_ARP_SUCCESS;
 }
 
-static int  _arp_address       ( netcap_intf_db_t* db, struct in_addr* dst_ip, struct ether_addr* mac, netcap_intf_info_t* intf_info, unsigned long* delay_array, int force_request )
+static int  _arp_address       ( struct in_addr* dst_ip, struct ether_addr* mac, char* intf_name, unsigned long* delay_array, int force_request )
 {
     int c;
     unsigned long delay;
@@ -405,18 +272,18 @@ static int  _arp_address       ( netcap_intf_db_t* db, struct in_addr* dst_ip, s
 
     for ( c = 0 ; c < NETCAP_ARP_MAX ; c++ ) {
         /* Check the cache before issuing the request */
-        if (( ret = _get_arp_entry( dst_ip, mac, intf_info )) < 0 ) {
+        if (( ret = _get_arp_entry( dst_ip, mac, intf_name )) < 0 ) {
             return errlog( ERR_CRITICAL, "_get_arp_entry\n" );
         }
         
         /* If C is nonzero, then at least one ARP request is sent.  If force_request isn't sent
          * then it doesn't matter if the response comes from the cache */
-        if ((( c != 0 ) || ( force_request != NETCAP_ARP_FORCE )) && ( ret == NETCAP_ARP_SUCCESS )) {
+        if ((( c != 0 ) || ( force_request != 0 )) && ( ret == NETCAP_ARP_SUCCESS )) {
             return NETCAP_ARP_SUCCESS;
         }
 
         /* Connect and close so the kernel grabs the source address */
-        if (( c == 0 ) && ( _fake_connect( &src_ip, dst_ip, intf_info ) < 0 )) {
+        if (( c == 0 ) && ( _fake_connect( &src_ip, dst_ip, intf_name ) < 0 )) {
             return errlog( ERR_CRITICAL, "_fake_connect\n" );
         }
 
@@ -427,7 +294,7 @@ static int  _arp_address       ( netcap_intf_db_t* db, struct in_addr* dst_ip, s
         }
 
         /* Issue the arp request */
-        if ( _issue_arp_request( &src_ip, dst_ip, intf_info ) < 0 ) {
+        if ( _issue_arp_request( &src_ip, dst_ip, intf_name ) < 0 ) {
             return errlog( ERR_CRITICAL, "_issue_arp_request\n" );
         }
 
@@ -439,31 +306,17 @@ static int  _arp_address       ( netcap_intf_db_t* db, struct in_addr* dst_ip, s
     return NETCAP_ARP_NOERROR;
 }
 
-static int  _arp_bridge_intf   ( netcap_intf_db_t* db, netcap_intf_t* out_intf, struct ether_addr* mac_address, netcap_intf_info_t* intf_info )
+static int  _arp_bridge_intf   ( netcap_intf_t* out_intf, struct ether_addr* mac_address, char* intf_name )
 {
     struct ifreq ifr;
 	int ret;
     netcap_intf_string_t buffer;
     
-/*     struct  */
-/*     { */
-/*         int command; */
-/*         // This is read as the bridge, and overwritten with outgoing interface. */
-/*         netcap_intf_string_t* bridge; */
-/*         struct ether_addr* mac_address; */
-/*         void* unused; */
-/*     } args = { */
-/*         .command     = BRCTL_GET_DEVNAME, */
-/*         .bridge      = &buffer, */
-/*         .mac_address = mac_address, */
-/*         .unused      = NULL */
-/*     }; */
-
     /* this way is more 32/64-bit compatible */
     unsigned long args[4] = {BRCTL_GET_DEVNAME, (unsigned long)&buffer, (unsigned long)mac_address, 0};
     
-	strncpy( buffer.s, intf_info->name.s, sizeof( buffer ));
-	strncpy( ifr.ifr_name, intf_info->name.s, sizeof( ifr.ifr_name ));
+	strncpy( buffer.s, intf_name, sizeof( buffer ));
+	strncpy( ifr.ifr_name, intf_name, sizeof( ifr.ifr_name ));
 	ifr.ifr_data = (char*)&args;
         
 	if (( ret = ioctl( _netcap_arp.sock, SIOCDEVPRIVATE, &ifr )) < 0 ) {
@@ -478,30 +331,43 @@ static int  _arp_bridge_intf   ( netcap_intf_db_t* db, netcap_intf_t* out_intf, 
         }
     }
         
-    netcap_intf_info_t* out_intf_info = NULL;
-    if (( out_intf_info = netcap_intf_db_index_to_info( db, ret )) == NULL ) {
-        /* XXX What to do here */
-        errlog( ERR_WARNING, "Nothing is known about the outgoing interface index %d\n", ret );
-        *out_intf = NF_INTF_UNKNOWN;
-    } else {
-        *out_intf = out_intf_info->netcap_intf;
-    }
+    *out_intf = ret;
 
-    debug( 8, "ROUTE[%s]: Outgoing interface index is %s,%d\n", intf_info->name.s, buffer.s, *out_intf );
+    debug( 8, "ROUTE[%s]: Outgoing interface index is %s,%d\n", intf_name, buffer.s, *out_intf );
     
 	return 0;
 }
 
-static int  _build_arp_packet  ( struct ether_arp* pkt, struct in_addr* src_ip, struct in_addr* dst_ip, netcap_intf_bridge_info_t* bridge_info )
+static int  _build_arp_packet  ( struct ether_arp* pkt, struct in_addr* src_ip, struct in_addr* dst_ip, char* intf_name )
 {    
+    struct ifreq ifr;
+    struct ether_addr mac;
+    struct sockaddr_ll broadcast = {
+        .sll_family   = AF_PACKET,
+        .sll_protocol = htons( ETH_P_ARP ),
+        .sll_ifindex  = 6, // SETME WITH SOMETHING
+        .sll_hatype   = htons( ARPHRD_ETHER ),
+        .sll_pkttype  = PACKET_BROADCAST, 
+        .sll_halen    = ETH_ALEN,
+        .sll_addr = {
+            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+        }
+    };
+
+    strncpy( ifr.ifr_name, intf_name, IFNAMSIZ );
+
+    if ( ioctl( _netcap_arp.sock, SIOCGIFHWADDR, &ifr ) < 0 ) return perrlog( "ioctl" );
+
+    memcpy( &mac, ifr.ifr_hwaddr.sa_data, sizeof( mac ));
+    
     pkt->ea_hdr.ar_hrd = htons( ARPHRD_ETHER );
     pkt->ea_hdr.ar_pro = htons( ETH_P_IP );
     pkt->ea_hdr.ar_hln = ETH_ALEN;
 	pkt->ea_hdr.ar_pln = sizeof( *dst_ip );
 	pkt->ea_hdr.ar_op  = htons( ARPOP_REQUEST );
-    memcpy( &pkt->arp_sha, &bridge_info->mac, sizeof( pkt->arp_sha ));
+    memcpy( &pkt->arp_sha, &mac, sizeof( pkt->arp_sha ));
     memcpy( &pkt->arp_spa, src_ip, sizeof( pkt->arp_spa ));
-    memcpy( &pkt->arp_tha, &bridge_info->broadcast.sll_addr, sizeof( pkt->arp_tha ));
+    memcpy( &pkt->arp_tha, &broadcast.sll_addr, sizeof( pkt->arp_tha ));
     memcpy( &pkt->arp_tpa, dst_ip, sizeof( pkt->arp_tpa ));
 
     return 0;
@@ -554,7 +420,7 @@ static int  _out_interface     ( int* index, struct in_addr* src_ip, struct in_a
     return 0;
 }
 
-static int  _fake_connect      ( struct in_addr* src_ip, struct in_addr* dst_ip, netcap_intf_info_t* intf_info )
+static int  _fake_connect      ( struct in_addr* src_ip, struct in_addr* dst_ip, char* intf_name )
 {
     struct sockaddr_in dst_addr;
     int fake_fd;
@@ -563,9 +429,9 @@ static int  _fake_connect      ( struct in_addr* src_ip, struct in_addr* dst_ip,
     int _critical_section( void ) {
         int one = 1;
         u_int addr_len = sizeof( dst_addr );
-        int name_len = strnlen( intf_info->name.s, sizeof( intf_info->name )) + 1;
+        int name_len = strnlen( intf_name, sizeof( intf_name )) + 1;
 
-        if ( setsockopt( fake_fd, SOL_SOCKET, SO_BINDTODEVICE, intf_info->name.s, name_len ) < 0 ) {
+        if ( setsockopt( fake_fd, SOL_SOCKET, SO_BINDTODEVICE, intf_name, name_len ) < 0 ) {
             perrlog( "setsockopt(SO_BINDTODEVICE)" );
         }
 
@@ -602,7 +468,7 @@ static int  _fake_connect      ( struct in_addr* src_ip, struct in_addr* dst_ip,
     return ret;
 }
 
-static int  _get_arp_entry     ( struct in_addr* ip, struct ether_addr* mac, netcap_intf_info_t* intf_info )
+static int  _get_arp_entry     ( struct in_addr* ip, struct ether_addr* mac, char* intf_name )
 {
     struct arpreq request;
     struct sockaddr_in* sin = (struct sockaddr_in*)&request.arp_pa;
@@ -620,7 +486,7 @@ static int  _get_arp_entry     ( struct in_addr* ip, struct ether_addr* mac, net
 
     request.arp_ha.sa_family = ARPHRD_ETHER;
     
-    strncpy( request.arp_dev, intf_info->name.s, sizeof( request.arp_dev ));
+    strncpy( request.arp_dev, intf_name, sizeof( request.arp_dev ));
 
     request.arp_flags = 0;
     
@@ -666,13 +532,4 @@ static int  _is_initialized    ( void )
     return ( _netcap_arp.sock > 0 ) && ( _netcap_arp.pkt_sock > 0 );
 }
 
-static netcap_intf_info_t* _get_bridge_info ( netcap_intf_db_t* db, int index )
-{
-    netcap_intf_info_t* intf_info = netcap_intf_db_index_to_info ( db, index );
-    if ( intf_info == NULL ) return errlog_null( ERR_CRITICAL, "netcap_intf_db_index_to_info\n" );
-    if ( intf_info->bridge_info == NULL ) {
-        return errlog_null( ERR_CRITICAL, "Interface is not  a bridge %d\n", index );
-    }
-    
-    return intf_info;
-}
+

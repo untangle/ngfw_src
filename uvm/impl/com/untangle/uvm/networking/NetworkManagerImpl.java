@@ -570,26 +570,6 @@ public class NetworkManagerImpl implements NetworkManager
             logger.warn( "Error committing the networking.sh file", e );
         }
 
-        /**
-         * Update Netcap
-         */
-        int numInterfaces = this.networkConfiguration.getInterfaceList().size();
-        int[] idArray   = new int[numInterfaces];
-        String[] nameArray = new String[numInterfaces];
-        int i = 0;
-        for ( InterfaceConfiguration intfConf : this.networkConfiguration.getInterfaceList() ) {
-            idArray[i] = intfConf.getInterfaceId();
-            nameArray[i] = intfConf.getSystemName();
-            i++;
-        }
-        try {
-            Netcap.getInstance().configureInterfaceArray(idArray, nameArray);
-            /* Update the address database in netcap */
-            Netcap.refreshNetworkConfig();
-        } catch ( Exception e ) {
-            logger.error( "Exception updating address.", e );
-        }
-        
         try {
             callNetworkListeners();
         } catch ( Exception e ) {
