@@ -752,6 +752,13 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             labelWidth : Ung.SetupWizard.LabelWidth2,
             defaultType : 'textfield',
             items : [{
+                xtype : 'label',
+                cls : 'noborder',
+                border : false,
+                html : String.format( i18n._( 'Using PPPoE on {0} is <b>NOT</b> recommended.' ), oemName) + "<br/>" +
+                    i18n._("It is recommended to use the ISP-supplied modem in bridge mode to handle PPPoE.") + "<br/>" +
+                    "&nbsp;<br/>"
+                }, {
                 xtype : 'fieldset',
                 title : i18n._( "PPPoE Settings" ),
                 defaultType : 'textfield',
