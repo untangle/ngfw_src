@@ -4,8 +4,9 @@ require 'logger'
 require 'dbi'
 require 'set'
 require 'syslog'
+require 'socket'
 
-Syslog.open('ut-update-schema', Syslog::LOG_PID | Syslog::LOG_NDELAY, Syslog::LOG_LOCAL3)
+PORT = 2345
 
 class SqlHelper
   def SqlHelper.log_sql_error(msg, e)
@@ -160,9 +161,8 @@ class SchemaUpdater
 end
 
 def bad_args(argv)
-  Syslog.error "usage: update-schema [ settings | events ] [ uvm | node ]"
-  Syslog.error "(we were called with ARGV='#{argv.join(', ')}')"
-  Kernel.exit 1
+  Syslog.err "usage: update-schema [ settings | events ] [ uvm | node ]"
+  Syslog.err "(we were called with ARGV='#{argv.join(', ')}')"
 end
 
 def get_column(type)
@@ -172,7 +172,7 @@ def get_column(type)
   when 'events'
     'events_version'
   else
-    raise UnsupportedFileType
+    Syslog.err "Wrong type: '#{type}'"
   end
 end
 
@@ -291,49 +291,76 @@ SQL
   end
 end
 
-bad_args(ARGV) unless 2 == ARGV.length
-
-TYPE=ARGV[0]
-bad_args(ARGV) unless 'settings' == TYPE || 'events' == TYPE
-
-COMPONENT=ARGV[1]
-
+Syslog.open('ut-update-schema', Syslog::LOG_PID | Syslog::LOG_NDELAY, Syslog::LOG_LOCAL3)
 SCHEMA_HOME='@UVM_SCHEMA@'
-SCHEMA_DIR="#{SCHEMA_HOME}/#{COMPONENT}"
 
-Syslog.info "*** BEGIN update-schema for type: #{TYPE} component: #{COMPONENT}"
+server = TCPServer.open(PORT)
+Syslog.info("Server started on port #{PORT}")
+client = server.accept
 
-begin
-  dbh = DBI.connect('DBI:Pg:uvm', 'postgres')
-
-  setup_schema(dbh)
-
-  latest_version = get_latest_version(SCHEMA_DIR, TYPE)
-  inst_version = get_inst_version(dbh, COMPONENT, TYPE)
-
-  Syslog.info "Component #{COMPONENT} Type: #{TYPE} Installed schema: #{inst_version} Latest schema version: #{latest_version}"
-
-  if inst_version.nil?
-    Syslog.info 'Initializing schema'
-    run_schema_init(dbh, SCHEMA_DIR, TYPE)
-    update_schema_ver(dbh, COMPONENT, TYPE, latest_version)
-  elsif latest_version.nil?
-    Syslog.info 'No schema for this component.'
-  elsif inst_version > latest_version
-    Syslog.error 'Installed version greater than latest version'
-  elsif inst_version < latest_version
-    Syslog.info "Converting schema from #{inst_version} to #{latest_version}"
-    (inst_version + 1).upto(latest_version) do |n|
-      run_schema_convert(dbh, SCHEMA_DIR, TYPE, n)
-      update_schema_ver(dbh, COMPONENT, TYPE, n)
-    end
-  else
-    Syslog.info 'Schema is up-to-date, initializing schema just in case'
-    run_schema_init(dbh, SCHEMA_DIR, TYPE)
+loop {
+  begin
+    Syslog.open('ut-update-schema', Syslog::LOG_PID | Syslog::LOG_NDELAY, Syslog::LOG_LOCAL3)
+  rescue
   end
 
-ensure
-  dbh.disconnect if dbh
-  Syslog.info "*** END update-schema for type: #{TYPE} component: #{COMPONENT}"
-  Syslog.close
-end
+  str = client.gets
+  next if str.nil? or str.empty?
+  str.chop!
+  array = str.split(/\s+/)
+  if array.length == 1 then
+    if array[0].downcase == 'quit' then
+      exit 0
+    else
+      client.puts "error"
+      next
+    end
+  elsif array.length == 2 then
+    type, component = array
+    if not (type == 'settings' or type == 'events') then
+      bad_args(array)
+      client.puts "error"
+      next
+    end
+  end
+  
+  schema_dir="#{SCHEMA_HOME}/#{component}"
+
+  Syslog.info "*** BEGIN update-schema for type: #{type} component: #{component}"
+
+  begin
+    dbh = DBI.connect('DBI:Pg:uvm', 'postgres')
+
+    setup_schema(dbh)
+
+    latest_version = get_latest_version(schema_dir, type)
+    inst_version = get_inst_version(dbh, component, type)
+
+    Syslog.info "Component #{component} Type: #{type} Installed schema: #{inst_version} Latest schema version: #{latest_version}"
+
+    if inst_version.nil?
+      Syslog.info 'Initializing schema'
+      run_schema_init(dbh, schema_dir, type)
+      update_schema_ver(dbh, component, type, latest_version)
+    elsif latest_version.nil?
+      Syslog.info 'No schema for this component.'
+    elsif inst_version > latest_version
+      Syslog.error 'Installed version greater than latest version'
+    elsif inst_version < latest_version
+      Syslog.info "Converting schema from #{inst_version} to #{latest_version}"
+      (inst_version + 1).upto(latest_version) do |n|
+        run_schema_convert(dbh, schema_dir, type, n)
+        update_schema_ver(dbh, component, type, n)
+      end
+    else
+      Syslog.info 'Schema is up-to-date, initializing schema just in case'
+      run_schema_init(dbh, schema_dir, type)
+    end
+
+  ensure
+    dbh.disconnect if dbh
+    client.puts "done"
+    Syslog.info "*** END update-schema for type: #{type} component: #{component}"
+    Syslog.close
+  end
+}
