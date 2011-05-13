@@ -622,7 +622,6 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         InterfaceConfiguration intfConf = netConf.findById(session.clientIntf());
-        logger.warn("getInternalHttpAddress(): intfConf: " + intfConf );
         if ( intfConf == null ) {
             logger.warn("Failed to fetch interface configuration");
             return null;
@@ -630,7 +629,6 @@ public class NetworkManagerImpl implements NetworkManager
 
         /* WAN ports never have HTTP open */
         boolean isWan = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.clientIntf()).isWAN();
-        logger.warn("getInternalHttpAddress(): isWanInterface(): " + isWan );
         if ( isWan ) {
             //this is normal no error logged
             return null;
