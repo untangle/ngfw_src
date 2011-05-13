@@ -47,6 +47,7 @@
 #include "netcap_interface.h"
 #include "netcap_sesstable.h"
 #include "netcap_nfconntrack.h"
+
 /* The number of sockets to listen on for TCP */
 #define RDR_TCP_LOCALS_SOCKS 128
 
