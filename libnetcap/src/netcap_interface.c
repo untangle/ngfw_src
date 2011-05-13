@@ -119,7 +119,7 @@ int  netcap_interface_dst_intf       ( netcap_session_t* session, char* intf_nam
            session->session_id, unet_next_inet_ntoa( src.s_addr ), unet_next_inet_ntoa( dst.s_addr ), server_intf_index );
 
     if (if_indextoname(server_intf_index, intf_name) == NULL) {
-        return errlog(ERR_WARNING,"if_indextoname(%i) = %s", server_intf_index, strerror(errno));
+        return errlog(ERR_WARNING,"if_indextoname(%i) = \"%s\"\n", server_intf_index, strerror(errno));
     }
         
     return 0;
