@@ -22,6 +22,7 @@ import reports.engine
 import reports.sql_helper as sql_helper
 
 from psycopg2.extensions import DateFromMx
+from psycopg2.extensions import TimestampFromMx
 from psycopg2.extensions import QuotedString
 from reports import Chart
 from reports import ColumnDesc
@@ -119,9 +120,9 @@ DELETE FROM events.n_spyware_evt_cookie
 ALTER TABLE reports.sessions ADD COLUMN sw_access_ident text""")
         except: pass
 
-        sd = DateFromMx(sql_helper.get_update_info('sessions[spyware-access]',
-                                                   start_date))
-        ed = DateFromMx(end_date)
+        sd = TimestampFromMx(sql_helper.get_update_info('sessions[spyware-access]',
+                                                        start_date))
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:
@@ -154,9 +155,9 @@ WHERE reports.sessions.time_stamp >= %s
 ALTER TABLE reports.n_http_events ADD COLUMN sw_blacklisted boolean""")
         except: pass
 
-        sd = DateFromMx(sql_helper.get_update_info('n_http_events[spyware-blacklist]',
+        sd = TimestampFromMx(sql_helper.get_update_info('n_http_events[spyware-blacklist]',
                                                    start_date))
-        ed = DateFromMx(end_date)
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:
@@ -188,9 +189,9 @@ WHERE reports.n_http_events.time_stamp >= %s
 ALTER TABLE reports.n_http_events ADD COLUMN sw_cookie_ident text""")
         except: pass
 
-        sd = DateFromMx(sql_helper.get_update_info('n_http_events[spyware-cookie]',
+        sd = TimestampFromMx(sql_helper.get_update_info('n_http_events[spyware-cookie]',
                                                    start_date))
-        ed = DateFromMx(end_date)
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:

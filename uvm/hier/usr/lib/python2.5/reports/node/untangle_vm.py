@@ -195,8 +195,8 @@ CREATE TABLE reports.users (
         PRIMARY KEY (date, username));
 """, 'date', start_date, end_date)
 
-        sd = DateFromMx(sql_helper.get_update_info('reports.users', start_date))
-        ed = DateFromMx(end_date)
+        sd = TimestampFromMx(sql_helper.get_update_info('reports.users', start_date))
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:
@@ -225,9 +225,9 @@ CREATE TABLE reports.hnames (
         PRIMARY KEY (date, hname));
 """, 'date', start_date, end_date)
 
-        sd = DateFromMx(sql_helper.get_update_info('reports.hnames',
+        sd = TimestampFromMx(sql_helper.get_update_info('reports.hnames',
                                                    start_date))
-        ed = DateFromMx(end_date)
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:
@@ -274,9 +274,9 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports.sessions', 'policy_id', 'bigint')
         sql_helper.add_column('reports.sessions', 'server_intf', 'int2')
 
-        sd = DateFromMx(sql_helper.get_update_info('reports.sessions',
+        sd = TimestampFromMx(sql_helper.get_update_info('reports.sessions',
                                                    start_date))
-        ed = DateFromMx(end_date)
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:
@@ -330,9 +330,9 @@ CREATE TABLE reports.session_counts (
         sql_helper.add_column('reports.session_counts', 'server_intf',
                               'smallint')
 
-        sd = DateFromMx(sql_helper.get_update_info('reports.session_counts',
+        sd = TimestampFromMx(sql_helper.get_update_info('reports.session_counts',
                                                    start_date))
-        ed = DateFromMx(end_date)
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:

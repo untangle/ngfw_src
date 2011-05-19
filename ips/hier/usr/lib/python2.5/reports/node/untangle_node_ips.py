@@ -24,6 +24,7 @@ import sys
 
 from psycopg2.extensions import DateFromMx
 from psycopg2.extensions import QuotedString
+from psycopg2.extensions import TimestampFromMx
 from reports import Chart
 from reports import ColumnDesc
 from reports import DATE_FORMATTER
@@ -116,9 +117,9 @@ ALTER TABLE reports.sessions ADD COLUMN ips_name text""")
 ALTER TABLE reports.sessions ADD COLUMN ips_description text""")
         except: pass
 
-        sd = DateFromMx(sql_helper.get_update_info('sessions[ips]',
+        sd = TimestampFromMx(sql_helper.get_update_info('sessions[ips]',
                                                    start_date))
-        ed = DateFromMx(end_date)
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:

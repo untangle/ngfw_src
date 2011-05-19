@@ -137,11 +137,11 @@ def run_sql(sql, args=None, connection=None,
         curs = connection.cursor()
         if args:
             if debug:
-                logger.debug("Executing: %s" % (sql % args,))
+                logger.debug("Executing: %s" % re.sub(r'\#012\s*', ' ', curs.mogrify(sql, args)))
             curs.execute(sql, args)
         else:
             if debug:
-                logger.debug("Executing: %s" % (sql,))            
+                logger.debug("Executing: %s" % (sql,))
             curs.execute(sql)
 
         if auto_commit:

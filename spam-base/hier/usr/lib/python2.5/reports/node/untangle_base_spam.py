@@ -24,6 +24,7 @@ import reports.sql_helper as sql_helper
 
 from psycopg2.extensions import DateFromMx
 from psycopg2.extensions import QuotedString
+from psycopg2.extensions import TimestampFromMx
 from reports import Chart
 from reports import ColumnDesc
 from reports import DATE_FORMATTER
@@ -150,11 +151,11 @@ DELETE FROM events.n_spam_smtp_rbl_evt WHERE time_stamp < %s""", (cutoff,))
                                    % (target_table, self.__short_name))
         except: pass
 
-        sd = DateFromMx(sql_helper.get_update_info('%s[%s.%s]' % (target_table,
-                                                                  self.name,
-                                                                  protocol),
-                                                   start_date))
-        ed = DateFromMx(end_date)
+        sd = TimestampFromMx(sql_helper.get_update_info('%s[%s.%s]' % (target_table,
+                                                                       self.name,
+                                                                       protocol),
+                                                        start_date))
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:

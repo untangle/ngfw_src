@@ -25,6 +25,7 @@ import sys
 
 from psycopg2.extensions import DateFromMx
 from psycopg2.extensions import QuotedString
+from psycopg2.extensions import TimestampFromMx
 from reports import Chart
 from reports import ColumnDesc
 from reports import DATE_FORMATTER
@@ -108,9 +109,9 @@ ALTER TABLE reports.sessions ADD COLUMN pf_protocol text""")
 ALTER TABLE reports.sessions ADD COLUMN pf_blocked boolean""")
         except: pass
 
-        sd = DateFromMx(sql_helper.get_update_info('sessions[protofilter]',
+        sd = TimestampFromMx(sql_helper.get_update_info('sessions[protofilter]',
                                                    start_date))
-        ed = DateFromMx(end_date)
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:

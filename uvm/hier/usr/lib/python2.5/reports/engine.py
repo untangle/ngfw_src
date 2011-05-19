@@ -30,6 +30,7 @@ import sys
 
 from mx.DateTime import DateTimeDelta
 from psycopg2.extensions import DateFromMx
+from psycopg2.extensions import TimestampFromMx
 from reports.sql_helper import print_timing
 from reports.log import *
 logger = getLogger(__name__)
@@ -152,8 +153,8 @@ class FactTable:
         for c in (self.measures + self.dimensions):
             sql_helper.add_column(self.__name, c.name, c.type)
 
-        sd = DateFromMx(sql_helper.get_update_info(self.__name, start_date))
-        ed = DateFromMx(end_date)
+        sd = TimestampFromMx(sql_helper.get_update_info(self.__name, start_date))
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
 
@@ -363,7 +364,6 @@ def events_cleanup(cutoff):
 
 @print_timing
 def reports_cleanup(cutoff):
-#    co = DateFromMx(cutoff)
     logger.info("Cleaning-up reports data for all dates < %s" % (cutoff,))
 
     for name in __get_node_partial_order():

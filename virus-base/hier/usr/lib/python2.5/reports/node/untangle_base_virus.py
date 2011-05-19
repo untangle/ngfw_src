@@ -26,6 +26,7 @@ import sys
 
 from psycopg2.extensions import DateFromMx
 from psycopg2.extensions import QuotedString
+from psycopg2.extensions import TimestampFromMx
 from reports import Chart
 from reports import ColumnDesc
 from reports import DATE_FORMATTER
@@ -162,8 +163,8 @@ ALTER TABLE reports.n_http_events ADD COLUMN virus_%s_name text""" \
                                    % self.__vendor_name)
         except: pass
 
-        sd = DateFromMx(sql_helper.get_update_info('n_http_events[%s]' % self.name, start_date))
-        ed = DateFromMx(end_date)
+        sd = TimestampFromMx(sql_helper.get_update_info('n_http_events[%s]' % self.name, start_date))
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:
@@ -196,8 +197,8 @@ ALTER TABLE reports.%s ADD COLUMN virus_%s_name text""" % (tablename, self.__ven
         except: pass
 
         update_name = 'report.%s-mail[%s]' % (tablename, self.name)
-        sd = DateFromMx(sql_helper.get_update_info(update_name, start_date))
-        ed = DateFromMx(end_date)
+        sd = TimestampFromMx(sql_helper.get_update_info(update_name, start_date))
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:
@@ -225,7 +226,7 @@ WHERE reports.%s.time_stamp >= %%s
 
         try:
             update_name = 'report.%s-smtp[%s]' % (tablename, self.name)
-            sd = DateFromMx(sql_helper.get_update_info(update_name, start_date))
+            sd = TimestampFromMx(sql_helper.get_update_info(update_name, start_date))
 
             sql_helper.run_sql("""\
 UPDATE reports.%s

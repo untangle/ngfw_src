@@ -16,9 +16,12 @@
 
 import reports.engine
 import reports.sql_helper as sql_helper
+
+import mx
 import sys
 
 from psycopg2.extensions import DateFromMx
+from psycopg2.extensions import TimestampFromMx
 from reports.engine import Column
 from reports.engine import FactTable
 from reports.engine import Node
@@ -77,7 +80,6 @@ class MailCasing(Node):
 
     @print_timing
     def __create_n_mail_addrs(self, start_date, end_date):
-
         sql_helper.create_partitioned_table("""\
 CREATE TABLE reports.n_mail_addrs (
     time_stamp timestamp without time zone,
@@ -104,8 +106,8 @@ CREATE TABLE reports.n_mail_addrs (
 )""",
                                             'time_stamp', start_date, end_date)
 
-        sd = DateFromMx(sql_helper.get_update_info('reports.n_mail_addrs', start_date))
-        ed = DateFromMx(end_date)
+        sd = TimestampFromMx(sql_helper.get_update_info('reports.n_mail_addrs', start_date))
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:
@@ -167,9 +169,9 @@ CREATE TABLE reports.email (
         PRIMARY KEY (date, email));
 """, 'date', start_date, end_date)
 
-        sd = DateFromMx(sql_helper.get_update_info('reports.email',
+        sd = TimestampFromMx(sql_helper.get_update_info('reports.email',
                                                    start_date))
-        ed = DateFromMx(end_date)
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:
@@ -216,8 +218,8 @@ CREATE TABLE reports.n_mail_msgs (
 )""",
                                             'time_stamp', start_date, end_date)
 
-        sd = DateFromMx(sql_helper.get_update_info('reports.n_mail_msgs', start_date))
-        ed = DateFromMx(end_date)
+        sd = TimestampFromMx(sql_helper.get_update_info('reports.n_mail_msgs', start_date))
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:

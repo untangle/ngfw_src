@@ -26,6 +26,7 @@ import reports.sql_helper as sql_helper
 
 from psycopg2.extensions import DateFromMx
 from psycopg2.extensions import QuotedString
+from psycopg2.extensions import TimestampFromMx
 from reports import Chart
 from reports import ColumnDesc
 from reports import DATE_FORMATTER
@@ -140,9 +141,9 @@ ALTER TABLE reports.n_http_events ADD COLUMN wf_%s_category text"""
                                % self.__vendor_name)
         except: pass
 
-        sd = DateFromMx(sql_helper.get_update_info('n_http_events[%s]'
-                                                   % self.name, start_date))
-        ed = DateFromMx(end_date)
+        sd = TimestampFromMx(sql_helper.get_update_info('n_http_events[%s]'
+                                                        % self.name, start_date))
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:

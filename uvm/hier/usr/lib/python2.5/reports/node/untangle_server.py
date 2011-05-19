@@ -131,9 +131,9 @@ CREATE TABLE reports.n_server_events (
     swap_total 	INT8,
     swap_free 	INT8)""", 'time_stamp', start_date, end_date)
 
-        sd = DateFromMx(sql_helper.get_update_info('reports.n_server_events',
+        sd = TimestampFromMx(sql_helper.get_update_info('reports.n_server_events',
                                                    start_date))
-        ed = DateFromMx(end_date)
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:

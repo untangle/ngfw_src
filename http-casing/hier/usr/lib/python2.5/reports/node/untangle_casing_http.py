@@ -16,9 +16,12 @@
 
 import reports.engine
 import reports.sql_helper as sql_helper
+
+import mx
 import sys
 
 from psycopg2.extensions import DateFromMx
+from psycopg2.extensions import TimestampFromMx
 from reports.engine import Column
 from reports.engine import FactTable
 from reports.engine import Node
@@ -71,8 +74,8 @@ CREATE TABLE reports.n_http_events (
 )""",
                                             'time_stamp', start_date, end_date)
 
-        sd = DateFromMx(sql_helper.get_update_info('reports.n_http_events', start_date))
-        ed = DateFromMx(end_date)
+        sd = TimestampFromMx(sql_helper.get_update_info('reports.n_http_events', start_date))
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:
