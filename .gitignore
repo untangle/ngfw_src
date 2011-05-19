@@ -5,3 +5,9 @@ taskstamps.txt
 *~
 \#*#
 .#*
+build-arch-stamp
+build-indep-stamp
+configure-stamp
+debian/untangle-libuvmcore.debhelper.log
+debian/untangle-reports.init
+debian/untangle-vm.init
