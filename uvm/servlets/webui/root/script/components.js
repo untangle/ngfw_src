@@ -1821,8 +1821,8 @@ Ung.MessageManager = {
                                     startUpgradeMode="stop";
                                     this.stop();
                                     Ext.MessageBox.alert(
-                                       i18n._("Upgrade Timeout"),
-                                       i18n._("The Upgrade failed. You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
+                                        i18n._("Upgrade"),
+                                        i18n._("You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
                                        Ung.Util.goToStartPage);
                                 }
                             }
