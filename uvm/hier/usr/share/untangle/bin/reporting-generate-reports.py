@@ -39,6 +39,7 @@ Options:
   -g | --no-data-gen          skip graph data processing
   -p | --no-plot-gen          skip graph image processing
   -m | --no-mail              skip mailing
+  -i | --incremental          only update fact tables, do not generate reports themselves
   -a | --attach-csv           attach events as csv
   -t | --trial-report         only report on given trial
   -e | --events-retention     number of days in events schema to keep
@@ -51,12 +52,12 @@ Options:
 # main
 
 try:
-     opts, args = getopt.getopt(sys.argv[1:], "hncgpmave:r:d:l:t:s:",
+     opts, args = getopt.getopt(sys.argv[1:], "hncgpmiave:r:d:l:t:s:",
                                 ['help', 'no-migration', 'no-cleanup',
-                                 'no-data-gen', 'no-mail', 'no-plot-gen',
-                                 'verbose', 'attach-csv', 'events-retention',
-                                 'report-length', 'date=', 'locale=',
-                                 'simulate='
+                                 'no-data-gen', 'no-mail', 'incremental',
+                                 'no-plot-gen', 'verbose', 'attach-csv',
+                                 'events-retention', 'report-length',
+                                 'date=', 'locale=', 'simulate='
                                  'trial-report'])
 
 except getopt.GetoptError, err:
@@ -81,6 +82,7 @@ no_cleanup = False
 no_data_gen = False
 no_plot_gen = False
 no_mail = False
+incremental = False
 attach_csv = False
 attachment_size_limit = 10
 events_retention = 3
@@ -106,6 +108,8 @@ for opt in opts:
           no_plot_gen = True
      elif k == '-m' or k == '--no-mail':
           no_mail = True
+     elif k == '-i' or k == '--incremental':
+          incremental = True
      elif k == '-a' or k == '--attach-csv':
           attach_csv = True
      elif k == '-t' or k == '--trial-report':
@@ -356,7 +360,11 @@ if not no_migration:
      reports.engine.setup(init_date, end_date)
      reports.engine.process_fact_tables(init_date, end_date)
      reports.engine.post_facttable_setup(init_date, end_date)
-     
+
+if incremental:
+     logger.info("Incremental mode, not generating reports themselves")
+     sys.exit(0)
+
 mail_reports = []
 
 try:
