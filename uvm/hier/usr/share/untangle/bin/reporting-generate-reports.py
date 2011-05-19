@@ -119,7 +119,6 @@ for opt in opts:
      elif k == '-v' or k == '--verbose':
           setConsoleLogLevel(logging.DEBUG)
      elif k == '-d' or k == '--date':
-          end_date_forced = True
           end_date = mx.DateTime.DateFrom(v)
      elif k == '-s' or k == '--simulate':
           simulate = v
@@ -354,8 +353,6 @@ if trial_report:
 
 if not no_migration:
      init_date = end_date - mx.DateTime.DateTimeDelta(max(report_lengths))
-     if end_date_forced:
-          sql_helper.clear_partitioned_tables(init_date, end_date)
      reports.engine.setup(init_date, end_date)
      reports.engine.process_fact_tables(init_date, end_date)
      reports.engine.post_facttable_setup(init_date, end_date)

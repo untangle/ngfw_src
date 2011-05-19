@@ -107,13 +107,11 @@ CREATE TABLE reports.n_admin_logins (
     local boolean,
     client_addr inet,
     succeeded boolean,
-    reason char(1)
-)""",
-                                            'time_stamp', start_date, end_date)
+    reason char(1) )""", 'time_stamp', start_date, end_date)
 
-        sd = DateFromMx(sql_helper.get_update_info('reports.n_admin_logins',
-                                                   start_date))
-        ed = DateFromMx(end_date)
+        sd = TimestampFromMx(sql_helper.get_update_info('reports.n_admin_logins',
+                                                        start_date))
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:

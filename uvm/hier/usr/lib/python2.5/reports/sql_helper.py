@@ -201,7 +201,7 @@ def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
     existing_dates = Set()
 
     for t, date in find_partitioned_tables(tablename):
-        if date >= start_date and date < end_date:
+        if date >= start_date and date <= end_date:
             existing_dates.add(date)
         elif clear_tables:
             drop_table(t, schema=SCHEMA)
@@ -351,8 +351,8 @@ def find_partitioned_tables(tablename=None):
     return tables
     
 def get_date_range(start_date, end_date):
-    l = int(round((end_date - start_date).days))
-    return [end_date - mx.DateTime.DateTimeDelta(i + 1) for i in range(l)]
+    l = int(round((end_date - start_date).days+1))
+    return [end_date - mx.DateTime.DateTimeDelta(i) for i in range(l)]
 
 def get_required_points(start, end, interval):
     a = []
