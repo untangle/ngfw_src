@@ -1,11 +1,11 @@
 package com.untangle.node.cpd;
 
 import com.untangle.uvm.logging.RepositoryDesc;
-import com.untangle.uvm.logging.UncachedEventFilter;
+import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.util.I18nUtil;
 
-class BlockEventFilter implements UncachedEventFilter<BlockEvent>
+class BlockEventFilter implements SimpleEventFilter<BlockEvent>
 {
     private final CPDImpl cpd;
     
@@ -18,19 +18,22 @@ class BlockEventFilter implements UncachedEventFilter<BlockEvent>
         this.cpd = cpd;
     }
     
-    @Override
+    // FIXME: unused ?
     public NodeContext getNodeContext()
     {
         return this.cpd.getNodeContext();
     }
 
-    @Override
-    public String getQuery()
+    public String[] getQueries()
     {
-        return QUERY; 
+        return new String[] { QUERY };
     }
 
-    @Override
+    public boolean accept(BlockEvent e)
+    {
+        return true;
+    }
+
     public RepositoryDesc getRepositoryDesc()
     {
         return REPO_DESC;

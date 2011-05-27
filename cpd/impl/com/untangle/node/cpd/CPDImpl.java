@@ -29,7 +29,6 @@ import com.untangle.uvm.license.License;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
-import com.untangle.uvm.logging.UncachedEventManager;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -58,7 +57,7 @@ public class CPDImpl extends AbstractNode implements CPD
     private final PipeSpec[] pipeSpecs;
     
     private final EventLogger<CPDLoginEvent> loginEventLogger;
-    private final UncachedEventManager<BlockEvent> blockEventLogger;
+    private final EventLogger<BlockEvent> blockEventLogger;
     
     private final CPDManager manager = new CPDManager(this);
     
@@ -76,8 +75,8 @@ public class CPDImpl extends AbstractNode implements CPD
         NodeContext nodeContext = getNodeContext();
         this.loginEventLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
         this.loginEventLogger.addSimpleEventFilter(new LoginEventFilter());
-        this.blockEventLogger = new UncachedEventManager<BlockEvent>();
-        this.blockEventLogger.makeRepository(new BlockEventFilter(this));
+        this.blockEventLogger = EventLoggerFactory.factory().getEventLogger();
+        this.blockEventLogger.addSimpleEventFilter(new BlockEventFilter(this));
         
         this.settings = new CPDSettings();
         this.pipeSpecs = new PipeSpec[0];
