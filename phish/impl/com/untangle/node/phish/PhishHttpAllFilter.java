@@ -48,7 +48,7 @@ public class PhishHttpAllFilter implements ListEventFilter<PhishHttpEvent>
     }
 
     @SuppressWarnings("unchecked") //Query
-    public void warm(Session s, List<PhishHttpEvent> l, int limit,
+    public void doGetEvents(Session s, List<PhishHttpEvent> l, int limit,
                      Map<String, Object> params)
     {
         Query q = s.createQuery(RL_QUERY);

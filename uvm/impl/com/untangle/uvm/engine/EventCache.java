@@ -30,8 +30,6 @@ import com.untangle.uvm.logging.LogEvent;
  */
 abstract class EventCache<E extends LogEvent> implements EventRepository<E>
 {
-    public abstract void log(E e);
-
     /**
      * Sets a reference to the EventLogger as soon
      * as this cache is added to an EventLogger

@@ -135,9 +135,6 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
 
     void doLog(E e)
     {
-        for (EventCache<E> ec : caches) {
-            ec.log(e);
-        }
     }
 
     NodeContext getNodeContext()
@@ -155,7 +152,6 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
         {
             this.eventRepository = eventRepository;
         }
-
 
         // EventRepository methods --------------------------------------------
         public RepositoryDesc getRepositoryDesc() {

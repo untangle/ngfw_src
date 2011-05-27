@@ -68,7 +68,7 @@ public class WebFilterPassedFilter implements ListEventFilter<WebFilterEvent>
     }
 
     @SuppressWarnings("unchecked") //Query
-    public void warm(Session s, List<WebFilterEvent> l, int limit, Map<String, Object> params)
+    public void doGetEvents(Session s, List<WebFilterEvent> l, int limit, Map<String, Object> params)
     {
         Query q = s.createQuery(RL_QUERY);
         for (String param : q.getNamedParameters()) {

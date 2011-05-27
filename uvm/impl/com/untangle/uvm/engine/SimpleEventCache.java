@@ -39,7 +39,7 @@ import com.untangle.uvm.util.TransactionWork;
 
 /**
  * Implements a <code>EventCache</code> cache using a
- * <Code>ListEventFilter</code> for filtering and warming.
+ * <Code>ListEventFilter</code> for filtering and doGetEventsing.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
@@ -49,9 +49,7 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
     private EventLoggerImpl<E> eventLogger;
     private final ListEventFilter<E> eventFilter;
 
-    private final LinkedList<E> cache = new LinkedList<E>();
-
-    private boolean cold = true;
+    private final LinkedList<E> list = new LinkedList<E>();
 
     // constructors ----------------------------------------------------------
 
@@ -71,12 +69,9 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
     {
         RemoteLoggingManagerImpl lm = UvmContextImpl.getInstance().loggingManager();
 
-        synchronized (cache) {
-            if (cold && lm.isConversionComplete()) {
-                warm();
-            }
-            return new ArrayList<E>(cache);
-        }
+        doGetEvents();
+
+        return new ArrayList<E>(list);
     }
 
     public List<E> getEvents(int limit)
@@ -99,66 +94,55 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
 
     public void log(E e)
     {
-        if (eventFilter.accept(e)) {
-            synchronized (cache) {
-                while (cache.size() >= CACHE_SIZE) {
-                    cache.removeLast();
-                }
-                cache.add(0, e);
-            }
-        }
     }
 
     // private methods -------------------------------------------------------
 
-    private void warm()
+    private void doGetEvents()
     {
-        synchronized (cache) {
-            if (cache.size() < CACHE_SIZE) {
-                final NodeContext tctx = eventLogger.getNodeContext();
+        synchronized (list) {
+            final NodeContext tctx = eventLogger.getNodeContext();
 
-                TransactionWork<Void> tw = new TransactionWork<Void>()
+            TransactionWork<Void> tw = new TransactionWork<Void>()
+                {
+                    public boolean doWork(Session s) throws SQLException
                     {
-                        public boolean doWork(Session s) throws SQLException
-                        {
-                            Map<String,Object> params;
-                            if (null != tctx) {
-                                Policy policy = tctx.getNodeId().getPolicy();
-                                params = Collections.singletonMap("policy", (Object)policy);
-                            } else {
-                                params = Collections.emptyMap();
-                            }
-
-                            eventFilter.warm(s, cache, CACHE_SIZE, params);
-
-                            return true;
+                        Map<String,Object> params;
+                        if (null != tctx) {
+                            Policy policy = tctx.getNodeId().getPolicy();
+                            params = Collections.singletonMap("policy", (Object)policy);
+                        } else {
+                            params = Collections.emptyMap();
                         }
-                    };
 
-                if (null == tctx) {
-                    LocalUvmContextFactory.context().runTransaction(tw);
+                        eventFilter.doGetEvents(s, list, CACHE_SIZE, params);
+
+                        return true;
+                    }
+                };
+
+            if (null == tctx) {
+                LocalUvmContextFactory.context().runTransaction(tw);
+            } else {
+                tctx.runTransaction(tw);
+            }
+
+            Collections.sort(list);
+            Long last = null;
+            for (Iterator<E> i = list.iterator(); i.hasNext(); ) {
+                E e = i.next();
+                Long id = e.getId();
+                if (null == id) {
+                    id = new Long(System.identityHashCode(e));
+                }
+
+                if (null == last ? last == id : last.equals(id)) {
+                    // XXX we usually use linked lists, otherwise
+                    // this is bad, probably better to make a new list
+                    i.remove();
                 } else {
-                    tctx.runTransaction(tw);
+                    last = id;
                 }
-
-                Collections.sort(cache);
-                Long last = null;
-                for (Iterator<E> i = cache.iterator(); i.hasNext(); ) {
-                    E e = i.next();
-                    Long id = e.getId();
-                    if (null == id) {
-                        id = new Long(System.identityHashCode(e));
-                    }
-
-                    if (null == last ? last == id : last.equals(id)) {
-                        // XXX we usually use linked lists, otherwise
-                        // this is bad, probably better to make a new list
-                        i.remove();
-                    } else {
-                        last = id;
-                    }
-                }
-                cold = false;
             }
         }
     }

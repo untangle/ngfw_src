@@ -63,7 +63,7 @@ class SimpleEventFilterAdaptor<E extends LogEvent>
     }
 
 
-    public void warm(Session s, List<E> l, int limit, Map<String, Object> params)
+    public void doGetEvents(Session s, List<E> l, int limit, Map<String, Object> params)
     {
         for (String q : simpleEventFilter.getQueries()) {
             runQuery(q, s, l, limit, params);
