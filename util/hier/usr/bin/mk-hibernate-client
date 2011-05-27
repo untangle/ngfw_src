@@ -10,11 +10,9 @@ closure=$(mktemp)
 
 (cd $unpacked && jar xf @THIRDPARTY_UVM_LIB@/hibernate3.jar)
 
-cat @UVM_HOME@/buildutils/hibernate-client.list \
-    | xargs @USR_BIN@/closure -cp $unpacked compute-closure \
-    | grep hibernate \
-    | sed -e 's|\.|/|g' -e 's/^\(.*\)$/\1.class/' \
-    | sort | uniq >$closure
+xargs @USR_BIN@/closure -cp $unpacked compute-closure < @UVM_HOME@/buildutils/hibernate-client.list \
+ | awk '/hibernate/ {gsub(/\./, "/", $1) ; print $1 . ".class"}' \
+ | sort -u > $closure
 
 outdir=$PWD
 
