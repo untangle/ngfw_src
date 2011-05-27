@@ -44,7 +44,7 @@ import com.untangle.uvm.util.TransactionWork;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class SimpleEventCache<E extends LogEvent> extends EventCache<E>
+class SimpleEvent<E extends LogEvent> implements EventRepository<E>
 {
     private EventLoggerImpl<E> eventLogger;
     private final ListEventFilter<E> eventFilter;
@@ -53,7 +53,7 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
 
     // constructors ----------------------------------------------------------
 
-    SimpleEventCache(ListEventFilter<E> eventFilter)
+    SimpleEvent(ListEventFilter<E> eventFilter)
     {
         this.eventFilter = eventFilter;
     }
@@ -77,7 +77,7 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
     public List<E> getEvents(int limit)
     {
         List<E> events = getEvents();
-        int maxLen = Math.min(limit, EventRepository.CACHE_SIZE);
+        int maxLen = Math.min(limit, EventRepository.MAX_SIZE);
         if(events.size() > maxLen) {
             events = events.subList(0, maxLen);
         }
@@ -88,12 +88,6 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
     public RepositoryDesc getRepositoryDesc()
     {
         return eventFilter.getRepositoryDesc();
-    }
-
-    // EventCache methods ----------------------------------------------------
-
-    public void log(E e)
-    {
     }
 
     // private methods -------------------------------------------------------
@@ -115,7 +109,7 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
                             params = Collections.emptyMap();
                         }
 
-                        eventFilter.doGetEvents(s, list, CACHE_SIZE, params);
+                        eventFilter.doGetEvents(s, list, MAX_SIZE, params);
 
                         return true;
                     }

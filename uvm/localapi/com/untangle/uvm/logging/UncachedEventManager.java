@@ -84,7 +84,7 @@ public class UncachedEventManager<E extends LogEvent> implements EventManager<E>
         @Override
         public List<T> getEvents()
         {
-            return getEvents(CACHE_SIZE);
+            return getEvents(MAX_SIZE);
         }
         
         @Override
@@ -106,7 +106,7 @@ public class UncachedEventManager<E extends LogEvent> implements EventManager<E>
                             params = Collections.emptyMap();
                         }
                         
-                        runQuery( query, s, events, CACHE_SIZE, params);
+                        runQuery( query, s, events, MAX_SIZE, params);
                         return true;
                     }
                 };
