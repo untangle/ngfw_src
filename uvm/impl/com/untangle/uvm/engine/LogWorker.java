@@ -155,8 +155,6 @@ class LogWorker implements Runnable
             }
         }
 
-        event.getEventLogger().doLog(e);
-
         return true;
     }
 

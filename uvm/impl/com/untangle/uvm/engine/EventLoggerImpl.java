@@ -133,10 +133,6 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
 
     // package private methods ------------------------------------------------
 
-    void doLog(E e)
-    {
-    }
-
     NodeContext getNodeContext()
     {
         return nodeContext;
