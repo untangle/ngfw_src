@@ -18,6 +18,9 @@
 
 package com.untangle.uvm.engine;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,10 +44,26 @@ import com.untangle.uvm.util.TransactionWork;
  */
 class LogWorker implements Runnable
 {
+    private static final int MAX_LOAD = 2;
+
     private static final int QUEUE_SIZE = 10000;
     private static final int BATCH_SIZE = QUEUE_SIZE;
-    private static final int DEFAULT_SYNC_TIME = 120000; /* 2 minutes */
-    private static final int SYNC_TIME;
+    private static final int LONG_SYNC_TIME = 120000; /* 2 minutes */
+    private static final int SHORT_SYNC_TIME = 15000; /* 15 seconds */
+    private static int RUNTIME_SYNC_TIME;
+
+    static { // initialize RUNTIME_SYNC_TIME
+        String p = System.getProperty("uvm.logging.synctime");
+        int i = -1;
+        if (null != p) {
+            try {
+                i = Integer.parseInt(p);
+            } catch (NumberFormatException exn) {
+                Logger.getLogger(LogWorker.class).warn("ignoring invalid sync time: " + p);
+            }
+        }
+        RUNTIME_SYNC_TIME = i < 0 ? 0 : i;
+    }
 
     private final RemoteLoggingManagerImpl loggingManager;
 
@@ -65,11 +84,16 @@ class LogWorker implements Runnable
     private volatile Thread thread;
     private boolean interruptable;
 
+    private long lastLoadGet;
+    private long syncTime;
+
     // constructors -------------------------------------------------------
 
     LogWorker(RemoteLoggingManagerImpl loggingManager)
     {
         this.loggingManager = loggingManager;
+        this.lastLoadGet = 0;
+        this.syncTime = 0;
     }
 
     // Runnable methods ---------------------------------------------------
@@ -79,7 +103,7 @@ class LogWorker implements Runnable
         thread = Thread.currentThread();
 
         long lastSync = System.currentTimeMillis();
-        long nextSync = lastSync + SYNC_TIME;
+        long nextSync = lastSync + getSyncTime();
 
         while (thread != null) {
             long t = System.currentTimeMillis();
@@ -122,7 +146,7 @@ class LogWorker implements Runnable
                 }
 
                 lastSync = System.currentTimeMillis();
-                nextSync = lastSync + SYNC_TIME;
+                nextSync = lastSync + getSyncTime();
             }
         }
 
@@ -131,6 +155,55 @@ class LogWorker implements Runnable
         if (0 < logQueue.size()) {
             persist();
         }
+    }
+
+    /*
+     * Only calculate the load every LONG_SYNC_TIME
+     */
+    private Double getLoad()
+    {
+        Double load =  Double.parseDouble("0");
+
+        if ((lastLoadGet == 0)
+            || ((System.currentTimeMillis() - lastLoadGet) > LONG_SYNC_TIME)) {
+            BufferedReader br = null;
+            try {
+                br = new BufferedReader(new FileReader("/proc/loadavg"));
+                String l = br.readLine();
+                if (null != l)
+                    load = Double.parseDouble(l.split(" ")[0]);
+            } catch (Exception e) {
+                logger.warn("could not get loadavg", e);
+            }
+            lastLoadGet = System.currentTimeMillis();
+        }
+        
+        return load;
+    }
+
+    private long getSyncTime()
+    {
+        if (RUNTIME_SYNC_TIME != 0)
+            return RUNTIME_SYNC_TIME;
+
+        long oldSyncTime = syncTime;
+
+        Double load = getLoad();
+        if (load > MAX_LOAD) {
+            syncTime = LONG_SYNC_TIME;
+            if (syncTime != oldSyncTime)
+                logger.warn("Current load (" + load + ") is higher than " +
+                            MAX_LOAD + ", logging events only every " +
+                            syncTime/1000 + " seconds");
+        } else {
+            syncTime = SHORT_SYNC_TIME;
+            if (syncTime != oldSyncTime)
+                logger.info("Current load (" + load + ") is lower than " +
+                            MAX_LOAD + ", now logging events every " +
+                            syncTime/1000 + " seconds");
+        }
+        
+        return syncTime;
     }
 
     private boolean accept(LogEventDesc event)
@@ -220,21 +293,5 @@ class LogWorker implements Runnable
     BlockingQueue<LogEventDesc> getInputQueue()
     {
         return inputQueue;
-    }
-
-    static {
-        String p = System.getProperty("uvm.logging.synctime");
-        if (null == p) {
-            SYNC_TIME = DEFAULT_SYNC_TIME;
-        } else {
-            int i = -1;
-            try {
-                i = Integer.parseInt(p);
-            } catch (NumberFormatException exn) {
-                Logger.getLogger(LogWorker.class).warn("ignoring invalid sync time: " + p);
-            }
-
-            SYNC_TIME = i < 0 ? DEFAULT_SYNC_TIME : i;
-        }
     }
 }
