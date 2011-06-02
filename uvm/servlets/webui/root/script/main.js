@@ -26,6 +26,8 @@ Ung.Main=Ext.extend(Object, {
     upgradeStatus:null,
     upgradeLastCheckTime: null,
     firstTimeRun: null,
+    companyName: document.title,
+    hostName: null,
     // init function
     constructor: function(config) {
         Ext.apply(this, config);
@@ -132,7 +134,12 @@ Ung.Main=Ext.extend(Object, {
         rpc.jsonrpc.RemoteUvmContext.networkManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.networkManager=result;
-            this.postinit();// 9
+            rpc.networkManager.getHostname(function (result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                this.hostName=result;
+                this.setDocumentTitle();
+                this.postinit();// 9
+            }.createDelegate(this));
         }.createDelegate(this));
         // get message manager & message key
         rpc.jsonrpc.RemoteUvmContext.messageManager(function (result, exception) {
@@ -150,7 +157,8 @@ Ung.Main=Ext.extend(Object, {
             rpc.brandingManager=result;
             rpc.brandingManager.getCompanyName(function (result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                document.title=result;
+                this.companyName=result;
+                this.setDocumentTitle();
                 this.postinit();// 11
             }.createDelegate(this));
         }.createDelegate(this));
@@ -161,6 +169,9 @@ Ung.Main=Ext.extend(Object, {
             return;
         }
       this.startApplication();
+    },
+    setDocumentTitle: function() {
+    	document.title=main.companyName + ((main.hostName!=null)?(" - " + main.hostName):"");
     },
     warnOnUpgrades : function(handler) {
         if(main.upgradeStatus!=null && main.upgradeStatus.upgradesAvailable ) {
