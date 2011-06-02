@@ -134,9 +134,9 @@ Ung.Main=Ext.extend(Object, {
         rpc.jsonrpc.RemoteUvmContext.networkManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.networkManager=result;
-            rpc.networkManager.getHostname(function (result, exception) {
+            rpc.networkManager.getNetworkConfiguration(function (result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                this.hostName=result;
+                this.hostName=result.hostname;
                 this.setDocumentTitle();
                 this.postinit();// 9
             }.createDelegate(this));
