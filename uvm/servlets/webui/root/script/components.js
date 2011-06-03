@@ -3278,7 +3278,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     // check if the form is valid;
     // this is the default functionality which can be overwritten
     isFormValid : function() {
-    	var validResult = true;
+        var validResult = true;
         for (var i = 0; i < this.inputLines.length; i++) {
             var item = null;
             if ( this.inputLines.get != null ) {
@@ -3299,7 +3299,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
             	break;
             }
         }
-        if(this.validate!=null) {
+        if(validResult==true && this.validate!=null) {
         	validResult = this.validate(this.inputLines);
         }
         if(validResult!=true) {

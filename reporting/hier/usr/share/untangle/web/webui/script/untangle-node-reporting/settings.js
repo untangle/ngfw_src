@@ -196,14 +196,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 header : this.i18n._("Online Reports"),
                 dataIndex : "onlineReports",
                 width : 100,
-                fixed : true,
-                listeners : {
-                    "check" : {
-                        fn : function(elem, checked) {
-                        	alert("ha:"+checked);
-                        }.createDelegate(this)
-                    }
-                }
+                fixed : true
             });
 
             // online reports is a check column
