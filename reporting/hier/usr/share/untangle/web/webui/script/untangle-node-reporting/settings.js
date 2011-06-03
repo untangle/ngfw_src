@@ -196,7 +196,14 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 header : this.i18n._("Online Reports"),
                 dataIndex : "onlineReports",
                 width : 100,
-                fixed : true
+                fixed : true,
+                listeners : {
+                    "check" : {
+                        fn : function(elem, checked) {
+                        	alert("ha:"+checked);
+                        }.createDelegate(this)
+                    }
+                }
             });
 
             // online reports is a check column
@@ -295,6 +302,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             width : 200
                         }), new Ext.form.Checkbox({
                             dataIndex : "onlineReports",
+                            id : "add_reporting_online_reports_" + fieldID,
                             fieldLabel : this.i18n._("Online Reports"),
                             width : 200
                         }), new Ext.form.TextField({
@@ -302,6 +310,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             name : "Password",
                             dataIndex : "clearPassword",
                             id : "add_reporting_user_password_" + fieldID,
+                            msgTarget : "title",
                             fieldLabel : this.i18n._("Password"),
                             boxLabel : this.i18n._("(required for 'Online Reports')"),
                             width : 200,
@@ -311,11 +320,26 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             inputType: "password",
                             name : "Confirm Password",
                             dataIndex : "clearPassword",
-                            vtype: "password",
-                            initialPassField: "add_reporting_user_password_" + fieldID,
+                            id : "add_reporting_confirm_password_" + fieldID,
                             fieldLabel : this.i18n._("Confirm Password"),
                             width : 200
-                        })]
+                        })],
+                        rowEditorValidate: function (inputLines) {
+                        	//validate password match
+                        	var pwd = Ext.getCmp("add_reporting_user_password_" + fieldID);
+                        	var confirmPwd = Ext.getCmp("add_reporting_confirm_password_" + fieldID);
+                        	if(pwd.getValue() != confirmPwd.getValue()) {
+                        		pwd.markInvalid();
+                        		return this.i18n._('Passwords do not match');
+                        	}
+                        	// validate password not empty if onlineReports checked
+                        	var onlineReports=Ext.getCmp("add_reporting_online_reports_" + fieldID);
+                        	if(onlineReports.getValue() &&  pwd.getValue().length==0) {
+                        		return this.i18n._("A password must be set to enable Online Reports!");
+                        	} else {
+                        		return true;
+                        	}
+                        }.createDelegate(this)
                     })]
                 },{
                     title : this.i18n._("Email Attachment Settings"),
@@ -575,11 +599,27 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     inputType: "password",
                     name : "Confirm Password",
                     dataIndex : "clearPassword",
-                    vtype: "password",
-                    initialPassField: "edit_reporting_user_password_" + fieldID,
+                    id : "edit_reporting_confirm_password_"  + fieldID,
                     fieldLabel : this.i18n._("Confirm Password"),
                     width : 200
-                })]
+                })],
+                validate: function(inputLines) {
+                	//validate password match
+                	var pwd = Ext.getCmp("edit_reporting_user_password_" + fieldID);
+                	var confirmPwd = Ext.getCmp("edit_reporting_confirm_password_" + fieldID);
+                	if(pwd.getValue() != confirmPwd.getValue()) {
+                		pwd.markInvalid();
+                		return this.i18n._('Passwords do not match');
+                	}
+                	// validate password not empty if onlineReports checked
+                	var onlineReports=Ext.getCmp("add_reporting_online_reports_" + fieldID);
+                	if(onlineReports.getValue() &&  pwd.getValue().length==0) {
+                		return this.i18n._("A password must be set to enable Online Reports!");
+                	} else {
+                		return true;
+                	}
+                	
+                }.createDelegate(this)
             });
 
             this.gridRecipients.rowEditorChangePassword.render("containter");

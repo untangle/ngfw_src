@@ -3137,6 +3137,8 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     grid : null,
     // input lines for standard input lines (text, checkbox, textarea, ..)
     inputLines : null,
+    // extra validate function for row editor
+    validate: null,
     // label width for row editor input lines
     rowEditorLabelWidth: null,
     // the record currently edit
@@ -3276,6 +3278,7 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
     // check if the form is valid;
     // this is the default functionality which can be overwritten
     isFormValid : function() {
+    	var validResult = true;
         for (var i = 0; i < this.inputLines.length; i++) {
             var item = null;
             if ( this.inputLines.get != null ) {
@@ -3292,43 +3295,52 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
             }
             
             if (!item.isValid()) {
-                return false;
+            	validResult=false;
+            	break;
             }
         }
-        return true;
+        if(this.validate!=null) {
+        	validResult = this.validate(this.inputLines);
+        }
+        if(validResult!=true) {
+        	var errMsg = i18n._("The form is not valid!");
+        	if(validResult!=false) {
+        		errMsg = validResult;
+        	}
+        	Ext.MessageBox.alert(i18n._('Warning'), errMsg);
+        }
+        return (validResult == true);
     },
     // updateAction is called to update the record after the edit
     updateAction : function() {
-        if (this.isFormValid()) {
-            if (this.record !== null) {
-                if (this.inputLines) {
-                    for (var i = 0; i < this.inputLines.length; i++) {
-                        var inputLine = this.inputLines[i];
-                        if(inputLine.dataIndex!=null) {
-                            // this.record.data[inputLine.dataIndex] = inputLine.getValue();
-                            this.record.set(inputLine.dataIndex, inputLine.getValue());
-                        }
+        if (!this.isFormValid()) {
+            return;
+        }
+    	
+        if (this.record !== null) {
+            if (this.inputLines) {
+                for (var i = 0; i < this.inputLines.length; i++) {
+                    var inputLine = this.inputLines[i];
+                    if(inputLine.dataIndex!=null) {
+                        // this.record.data[inputLine.dataIndex] = inputLine.getValue();
+                        this.record.set(inputLine.dataIndex, inputLine.getValue());
                     }
-                }
-                if(this.addMode) {
-                    this.grid.getStore().insert(0, [this.record]);
-                    if(this.grid.hasReorder) {
-                        this.grid.startEditing(0,0);
-                        this.grid.stopEditing();
-                    }
-                    this.grid.updateChangedData(this.record, "added");
                 }
             }
-            this.hide();
-        } else {
-            Ext.MessageBox.alert(i18n._('Warning'), i18n._("The form is not valid!"));
+            if(this.addMode) {
+                this.grid.getStore().insert(0, [this.record]);
+                if(this.grid.hasReorder) {
+                    this.grid.startEditing(0,0);
+                    this.grid.stopEditing();
+                }
+                this.grid.updateChangedData(this.record, "added");
+            }
         }
+        this.hide();
     },
 
-    updateActionTree : function()
-    {
+    updateActionTree : function() {
         if (!this.isFormValid()) {
-            Ext.MessageBox.alert(i18n._('Warning'), i18n._("The form is not valid!"));
             return;
         }
 
@@ -3713,6 +3725,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     emptyRow : null,
     // input lines used by the row editor
     rowEditorInputLines : null,
+    // extra validate function for row editor
+    rowEditorValidate: null,
     // label width for row editor input lines
     rowEditorLabelWidth: null,
     // the default sort field
@@ -3873,6 +3887,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             this.rowEditor = new Ung.RowEditorWindow({
                 grid : this,
                 inputLines : this.rowEditorInputLines,
+                validate: this.rowEditorValidate,
                 rowEditorLabelWidth : this.rowEditorLabelWidth
             });
         }
