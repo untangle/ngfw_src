@@ -41,7 +41,7 @@ public class UtThrowableRenderer implements ThrowableRenderer {
         List<String> l = new LinkedList<String>();
         l.add(this.prefix + t.toString());
         for (StackTraceElement ste: t.getStackTrace()) {
-            l.add(this.prefix + ste.toString());
+            l.add(this.prefix + '\t' + ste.toString());
         }
         return l.toArray(new String[0]);
     }
