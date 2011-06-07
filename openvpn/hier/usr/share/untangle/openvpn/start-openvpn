@@ -26,12 +26,6 @@ if [ ! -c ${TUN_DEVICE} ]; then
     mknod ${TUN_DEVICE} c 10 200
 fi
 
-start_vpn_server()
-{
-    ## This will print fail if the script returns non-zero
-    /etc/init.d/openvpn start || echo fail
-}
-
 ## This is always disabled so the server never starts at system startup.
 disableOpenVPNStartup
 
@@ -75,12 +69,14 @@ fi
 
 ## This is required or else openvpn won't restart properly (sometimes the UDP port is still bound)
 for (( t = 0 ; t < ${RETRY_ATTEMPTS} ; t++ )); do
-    ## These script don't return a non-zero value
-    start_vpn_server 2>&1 | grep fail > /dev/null 2>&1 || {
+
+    /etc/init.d/openvpn start
+
+    if [ $? -eq 0 ] ; then 
         echo "[`date`,start-openvpn] Successfully started openvpn daemon"
-	touch /etc/untangle/monit-to-restart
+	    touch /etc/untangle/monit-to-restart
         exit 0
-    }
+    fi
 
     echo "[`date`,start-openvpn] Unable to start openvpn daemon, waiting ${RESTART_DELAY} seconds"
 

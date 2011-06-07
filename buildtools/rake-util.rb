@@ -167,7 +167,7 @@ class BuildEnv
       /@UVM_DUMP@/ => "#{@prefix}/usr/share/untangle/dump",
       /@UVM_CONF@/ => "#{@prefix}/usr/share/untangle/conf",
       /@UVM_LIB@/ => "#{@prefix}/usr/share/untangle/lib",
-      /@UVM_LOG@/ => "#{@prefix}/usr/share/untangle/log",
+      /@UVM_LOG@/ => "#{@prefix}/var/log/uvm",
       /@UVM_TOOLBOX@/ => "#{@prefix}/usr/share/untangle/toolbox",
       /@UVM_SCHEMA@/ => "#{@prefix}/usr/share/untangle/schema",
       /@UVM_WEB@/ => "#{@prefix}/usr/share/untangle/web",
