@@ -68,8 +68,8 @@ public class PipelineEndpoints extends LogEvent
 
     private short protocol;
 
-    private byte clientIntf;
-    private byte serverIntf;
+    private int clientIntf;
+    private int serverIntf;
 
     private InetAddress cClientAddr;
     private InetAddress sClientAddr;
@@ -189,18 +189,18 @@ public class PipelineEndpoints extends LogEvent
      * @return the number of the interface of the client
      */
     @Column(name="client_intf", nullable=false)
-    public byte getClientIntf()
+    public int getClientIntf()
     {
         return clientIntf;
     }
 
-    public void setClientIntf(byte clientIntf)
+    public void setClientIntf(int clientIntf)
     {
         this.clientIntf = clientIntf;
     }
 
     @Transient
-    public String getClientIntf(byte clientInf)
+    public String getClientIntf(int clientInf)
     {
         return 0 == clientIntf ? "outside" : "inside";
     }
@@ -211,18 +211,18 @@ public class PipelineEndpoints extends LogEvent
      * @return the number of the interface of the server
      */
     @Column(name="server_intf", nullable=false)
-    public byte getServerIntf()
+    public int getServerIntf()
     {
         return serverIntf;
     }
 
-    public void setServerIntf(byte serverIntf)
+    public void setServerIntf(int serverIntf)
     {
         this.serverIntf = serverIntf;
     }
 
     @Transient
-    public String getServerIntf(byte serverIntf)
+    public String getServerIntf(int serverIntf)
     {
         return 0 == serverIntf ? "outside" : "inside";
     }
