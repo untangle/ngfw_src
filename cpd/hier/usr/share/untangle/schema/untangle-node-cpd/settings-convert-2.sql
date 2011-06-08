@@ -10,6 +10,11 @@ UPDATE settings.n_cpd_capture_rule SET client_interface = '3' WHERE client_inter
 UPDATE settings.n_cpd_capture_rule SET client_interface = '2' WHERE client_interface = '1';
 UPDATE settings.n_cpd_capture_rule SET client_interface = '1' WHERE client_interface = '0';
 
+UPDATE settings.n_cpd_capture_rule SET client_interface = '1' WHERE client_interface = 'O';
+UPDATE settings.n_cpd_capture_rule SET client_interface = '2' WHERE client_interface = 'I';
+UPDATE settings.n_cpd_capture_rule SET client_interface = '3' WHERE client_interface = 'D';
+UPDATE settings.n_cpd_capture_rule SET client_interface = '250' WHERE client_interface = 'V';
+
 UPDATE settings.n_cpd_capture_rule SET client_interface = 'any' WHERE client_interface = 'more_trusted';
 UPDATE settings.n_cpd_capture_rule SET client_interface = 'any' WHERE client_interface = 'less_trusted';
 
