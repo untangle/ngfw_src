@@ -27,5 +27,5 @@ public interface Endpoints
     /**
      * Retrieve a unique interface identifier, or 0 if the interface is unknown
      */
-    public byte interfaceId();
+    public int interfaceId();
 }
