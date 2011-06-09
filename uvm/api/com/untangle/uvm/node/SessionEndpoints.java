@@ -55,16 +55,16 @@ public interface SessionEndpoints
     /**
      * Returns an argon interface for the client.</p>
      *
-     * @return a <code>byte</code> giving the client interface of the session.
+     * @return a <code>int</code> giving the client interface of the session.
      */
-    byte clientIntf();
+    int clientIntf();
 
     /**
      * Returns an argon interface for the server.</p>
      *
-     * @return a <code>byte</code> giving the server interface of the session.
+     * @return a <code>int</code> giving the server interface of the session.
      */
-    byte serverIntf();
+    int serverIntf();
 
     /**
      * Gets the Client Address of this session. </p>

@@ -37,8 +37,8 @@ class NetcapIPSessionDescImpl implements ArgonIPSessionDesc
     protected final int serverPort;
     /* XXXXXXXX Get rid of the server and client interface,
        there should just be one interface for the side */
-    protected final byte clientIntf;
-    protected final byte serverIntf;
+    protected final int clientIntf;
+    protected final int serverIntf;
 
     NetcapIPSessionDescImpl( SessionGlobalState sessionGlobalState, boolean ifClientSide )
     {
@@ -95,7 +95,7 @@ class NetcapIPSessionDescImpl implements ArgonIPSessionDesc
      *
      * @return a <code>byte</code> giving the client interface of the session.
      */
-    public byte clientIntf()
+    public int clientIntf()
     {
         return clientIntf;
     }
@@ -105,7 +105,7 @@ class NetcapIPSessionDescImpl implements ArgonIPSessionDesc
      *
      * @return a <code>byte</code> giving the server interface of the session.
      */
-    public byte serverIntf()
+    public int serverIntf()
     {
         return serverIntf;
     }

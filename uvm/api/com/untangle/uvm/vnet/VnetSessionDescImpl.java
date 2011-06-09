@@ -60,8 +60,8 @@ public class VnetSessionDescImpl implements VnetSessionDesc
 
     protected final short protocol;
 
-    protected final byte clientIntf;
-    protected final byte serverIntf;
+    protected final int clientIntf;
+    protected final int serverIntf;
 
     protected final InetAddress clientAddr;
     protected final InetAddress serverAddr;
@@ -71,7 +71,7 @@ public class VnetSessionDescImpl implements VnetSessionDesc
 
     public VnetSessionDescImpl(int id, short protocol, SessionStats stats,
                                byte clientState, byte serverState,
-                               byte clientIntf, byte serverIntf,
+                               int clientIntf, int serverIntf,
                                InetAddress clientAddr, InetAddress serverAddr,
                                int clientPort, int serverPort)
     {
@@ -186,13 +186,13 @@ public class VnetSessionDescImpl implements VnetSessionDesc
     }
 
     @JSONBean.Getter()
-    public byte clientIntf()
+    public int clientIntf()
     {
         return clientIntf;
     }
 
     @JSONBean.Getter()
-    public byte serverIntf()
+    public int serverIntf()
     {
         return serverIntf;
     }

@@ -193,8 +193,8 @@ class EventHandler extends AbstractEventHandler
     }
 
     protected FirewallMatcher findMatchingRule( Protocol protocol,
-                                                byte clientIntf, InetAddress clientAddr, int clientPort,
-                                                byte serverIntf, InetAddress serverAddr, int serverPort)
+                                                int clientIntf, InetAddress clientAddr, int clientPort,
+                                                int serverIntf, InetAddress serverAddr, int serverPort)
     {
         for (FirewallMatcher matcher : firewallRuleList) {
 

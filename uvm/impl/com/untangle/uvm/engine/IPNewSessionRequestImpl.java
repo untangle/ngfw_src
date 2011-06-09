@@ -88,12 +88,12 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
         return argonRequest.serverPort();
     }
 
-    public byte clientIntf()
+    public int clientIntf()
     {
         return argonRequest.clientIntf();
     }
 
-    public byte serverIntf()
+    public int serverIntf()
     {
         return argonRequest.serverIntf();
     }
