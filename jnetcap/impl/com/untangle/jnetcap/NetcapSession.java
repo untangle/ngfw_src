@@ -261,9 +261,9 @@ public abstract class NetcapSession
         public Endpoint client() { return client; }
         public Endpoint server() { return server; }
 
-        public byte interfaceId()
+        public int interfaceId()
         {
-            return (byte)getIntValue( buildMask( FLAG_INTERFACE ), pointer.value());
+            return getIntValue( buildMask( FLAG_INTERFACE ), pointer.value());
         }
 
         protected int buildMask( int type )

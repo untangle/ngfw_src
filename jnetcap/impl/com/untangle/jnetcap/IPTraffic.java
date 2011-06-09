@@ -165,12 +165,12 @@ public class IPTraffic
         setIntValue( FLAG_MARK, value );
     }
 
-    public byte srcInterfaceId()
+    public int srcInterfaceId()
     {
         return interfaceId( true );
     }
 
-    public byte dstInterfaceId()
+    public int dstInterfaceId()
     {
         return interfaceId( false );
     }
@@ -185,9 +185,9 @@ public class IPTraffic
         interfaceId( false, id );
     }
 
-    private byte interfaceId( boolean isSrc )
+    private int interfaceId( boolean isSrc )
     {
-        return (byte)getIntValue( buildMask( isSrc, FLAG_INTERFACE ));
+        return getIntValue( buildMask( isSrc, FLAG_INTERFACE ));
     }
     
     private void interfaceId( boolean isSrc, byte id )

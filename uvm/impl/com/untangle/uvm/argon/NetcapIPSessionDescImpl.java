@@ -83,7 +83,7 @@ class NetcapIPSessionDescImpl implements ArgonIPSessionDesc
 
     /**
      * Returns the protocol for the session.</p>
-     * @return a <code>byte</code> giving one of the protocols (see Netcap.IPPROTO_*)
+     * @return a <code>short</code> giving one of the protocols (see Netcap.IPPROTO_*)
      */
     public short protocol()
     {
@@ -93,7 +93,7 @@ class NetcapIPSessionDescImpl implements ArgonIPSessionDesc
     /**
      * Returns an argon interface for the client.</p>
      *
-     * @return a <code>byte</code> giving the client interface of the session.
+     * @return a <code>int</code> giving the client interface of the session.
      */
     public int clientIntf()
     {
@@ -103,7 +103,7 @@ class NetcapIPSessionDescImpl implements ArgonIPSessionDesc
     /**
      * Returns an argon interface for the server.</p>
      *
-     * @return a <code>byte</code> giving the server interface of the session.
+     * @return a <code>int</code> giving the server interface of the session.
      */
     public int serverIntf()
     {
