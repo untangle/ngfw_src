@@ -88,11 +88,6 @@ class NetworkUtilPriv extends NetworkUtil
         return dnsServers;
     }
 
-//     byte[] getArgonIntfArray()
-//     {
-//         return LocalUvmContextFactory.context().localIntfManager().getArgonIntfArray();
-//     }
-
     /* Get the hostname of the box from the /etc/hostname file */
     HostName loadHostname()
     {

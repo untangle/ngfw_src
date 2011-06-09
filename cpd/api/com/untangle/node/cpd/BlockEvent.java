@@ -30,7 +30,7 @@ public class BlockEvent extends LogEvent implements Serializable
 
     private short protocol;
 
-    private byte clientIntf;
+    private int clientIntf;
 
     private InetAddress clientAddress;
     private InetAddress serverAddress;
@@ -79,12 +79,12 @@ public class BlockEvent extends LogEvent implements Serializable
      * @return the number of the interface of the client
      */
     @Column(name="client_intf", nullable=false)
-    public byte getClientIntf()
+    public int getClientIntf()
     {
         return clientIntf;
     }
 
-    public void setClientIntf(byte clientIntf)
+    public void setClientIntf(int clientIntf)
     {
         this.clientIntf = clientIntf;
     }
