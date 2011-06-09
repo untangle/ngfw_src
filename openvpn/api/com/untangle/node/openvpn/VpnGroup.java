@@ -43,7 +43,7 @@ public class VpnGroup extends Rule implements Validatable
 {
 
     /* The interface that clients from the client pool are associated with */
-    private byte intf;
+    private int intf;
 
     private IPAddress address;
     private IPAddress netmask;
@@ -105,12 +105,12 @@ public class VpnGroup extends Rule implements Validatable
      * @return Default interface to associate VPN traffic with.
      */
     @Transient
-    public byte getIntf()
+    public int getIntf()
     {
         return this.intf;
     }
 
-    public void setIntf( byte intf )
+    public void setIntf( int intf )
     {
         this.intf = intf;
     }
