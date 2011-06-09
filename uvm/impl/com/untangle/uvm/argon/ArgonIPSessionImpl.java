@@ -27,8 +27,8 @@ public abstract class ArgonIPSessionImpl extends ArgonSessionImpl implements Arg
     protected final InetAddress serverAddr;
     protected final int clientPort;
     protected final int serverPort;
-    protected final byte clientIntf;
-    protected final byte serverIntf;
+    protected final int clientIntf;
+    protected final int serverIntf;
 
     public ArgonIPSessionImpl( ArgonIPNewSessionRequest request )
     {
@@ -70,12 +70,12 @@ public abstract class ArgonIPSessionImpl extends ArgonSessionImpl implements Arg
         return serverPort;
     }
 
-    public byte clientIntf()
+    public int clientIntf()
     {     
         return clientIntf;
     }
     
-    public byte serverIntf()
+    public int serverIntf()
     {
         return serverIntf;
     }

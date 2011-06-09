@@ -113,7 +113,7 @@ public class FirewallMatcher
 
 
     public boolean isMatch( Protocol protocol,
-                            byte srcIntf, byte dstIntf,
+                            int srcIntf, int dstIntf,
                             InetAddress srcAddress, InetAddress dstAddress,
                             int srcPort, int dstPort)
     {
@@ -125,7 +125,7 @@ public class FirewallMatcher
 
     }
 
-    public boolean isMatchIntf(byte src, byte dst)
+    public boolean isMatchIntf(int src, int dst)
     {
         return this.srcIntf.isMatch(src) && this.dstIntf.isMatch(dst);
     }

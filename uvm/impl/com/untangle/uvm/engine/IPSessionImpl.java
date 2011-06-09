@@ -147,12 +147,12 @@ abstract class IPSessionImpl
         this.needsFinalization = needsFinalization;
     }
 
-    public byte clientIntf()
+    public int clientIntf()
     {
         return ((ArgonIPSession)argonSession).clientIntf();
     }
 
-    public byte serverIntf()
+    public int serverIntf()
     {
         return ((ArgonIPSession)argonSession).serverIntf();
     }

@@ -11,11 +11,11 @@ public abstract class ArgonIPNewSessionRequestImpl extends ArgonNewSessionReques
 {
     protected InetAddress clientAddr;
     protected int clientPort;
-    protected byte clientIntf;
+    protected int clientIntf;
 
     protected InetAddress serverAddr;
     protected int serverPort;
-    protected byte serverIntf;
+    protected int serverIntf;
 
     protected final InetAddress natFromHost;
     protected final int natFromPort;
@@ -108,7 +108,7 @@ public abstract class ArgonIPNewSessionRequestImpl extends ArgonNewSessionReques
         clientPort = port;
     }
 
-    public byte clientIntf()
+    public int clientIntf()
     {
         return clientIntf;
     }
@@ -133,7 +133,7 @@ public abstract class ArgonIPNewSessionRequestImpl extends ArgonNewSessionReques
         serverPort = port;
     }
 
-    public byte serverIntf()
+    public int serverIntf()
     {
         return serverIntf;
     }
