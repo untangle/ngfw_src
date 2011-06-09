@@ -23,16 +23,16 @@ package com.untangle.uvm.argon;
  */
 class NodeInterface
 {
-    private final byte   argonIntf;
+    private final int   argonIntf;
     private final String deviceName;
     
-    NodeInterface( byte argonIntf, String deviceName )
+    NodeInterface( int argonIntf, String deviceName )
     {
         this.argonIntf = argonIntf;
         this.deviceName = deviceName;
     }
 
-    public byte argonIntf()
+    public int argonIntf()
     {
         return this.argonIntf;
     }

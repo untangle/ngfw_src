@@ -95,7 +95,7 @@ import com.untangle.uvm.logging.SyslogPriority;
             return this.clientIntf;
         }
 
-        public void setClientIntf( byte clientIntf )
+        public void setClientIntf( int clientIntf )
         {
             this.clientIntf = clientIntf;
         }

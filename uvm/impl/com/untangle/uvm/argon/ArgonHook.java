@@ -93,8 +93,8 @@ public abstract class ArgonHook implements Runnable
 
             NetworkManager lnm = LocalUvmContextFactory.context().networkManager();
 	    
-            byte clientIntf = netcapSession.clientSide().interfaceId();
-            byte serverIntf = netcapSession.serverSide().interfaceId();
+            int clientIntf = netcapSession.clientSide().interfaceId();
+            int serverIntf = netcapSession.serverSide().interfaceId();
 
             /**
              * If the interface is not known immediately (from the marks)
@@ -111,7 +111,7 @@ public abstract class ArgonHook implements Runnable
                 if ( intfConf != null ) {
                     Integer i = intfConf.getInterfaceId();
                     if (i != null) {
-                        serverIntf = i.byteValue();
+                        serverIntf = i.intValue();
                         netcapSession.setServerIntf(i.intValue());
                     }
                 }
