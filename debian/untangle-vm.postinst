@@ -78,6 +78,11 @@ if [ -f /usr/share/untangle/conf/.regdone-flag ] ; then
     touch /usr/share/untangle/conf/wizard-complete-flag
     rm -f /usr/share/untangle/conf/.regdone-flag
 fi
+# 10.0 change sources.list to point to stable-10
+if [ -f /etc/apt/sources.list.d/untangle.list ] ; then
+    sed -i 's/\sstable\s/ stable-10 /' /etc/apt/sources.list.d/untangle.list
+    sed -i 's/\sstable-9\s/ stable-10 /' /etc/apt/sources.list.d/untangle.list
+fi
 
 # set up uvm to start at boot
 if [ -x "/etc/init.d/untangle-vm" ]; then
