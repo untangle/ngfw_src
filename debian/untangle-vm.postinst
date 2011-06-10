@@ -79,7 +79,9 @@ if [ -f /usr/share/untangle/conf/.regdone-flag ] ; then
     rm -f /usr/share/untangle/conf/.regdone-flag
 fi
 # 9.0 change sources.list to point to stable-9
-sed -i 's/\sstable\s/ stable-9 /' /etc/apt/sources.list.d/untangle.list
+if [ -f /etc/apt/sources.list.d/untangle.list ] ; then
+    sed -i 's/\sstable\s/ stable-9 /' /etc/apt/sources.list.d/untangle.list
+fi
 
 # set up uvm to start at boot
 if [ -x "/etc/init.d/untangle-vm" ]; then
