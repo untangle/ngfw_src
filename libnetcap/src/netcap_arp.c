@@ -432,7 +432,7 @@ static int  _fake_connect      ( struct in_addr* src_ip, struct in_addr* dst_ip,
         int name_len = strnlen( intf_name, sizeof( intf_name )) + 1;
 
         if ( setsockopt( fake_fd, SOL_SOCKET, SO_BINDTODEVICE, intf_name, name_len ) < 0 ) {
-            perrlog( "setsockopt(SO_BINDTODEVICE) \"%s\"", intf_name );
+            errlog( ERR_WARNING, "setsockopt(SO_BINDTODEVICE,%s): %s\n", intf_name, strerror(errno) );
         }
 
         if ( setsockopt( fake_fd, SOL_SOCKET, SO_BROADCAST,  &one, sizeof(one)) < 0 ) {
