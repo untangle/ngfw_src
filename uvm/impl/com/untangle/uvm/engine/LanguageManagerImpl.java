@@ -441,6 +441,13 @@ class LanguageManagerImpl implements LanguageManager
             {
                 public boolean doWork(Session s)
                 {
+                    /* delete old settings */
+                    Query q = s.createQuery( "from " + "LanguageSettings" );
+                    for ( Iterator<LanguageSettings> iter = q.iterate() ; iter.hasNext() ; ) {
+                        LanguageSettings oldSettings = iter.next();
+                        s.delete( oldSettings );
+                    }
+
                     languageSettings = (LanguageSettings)s.merge(settings);
                     return true;
                 }

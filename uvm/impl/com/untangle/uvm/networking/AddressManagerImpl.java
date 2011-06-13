@@ -78,6 +78,13 @@ class AddressManagerImpl implements LocalAddressManager
             {
                 public boolean doWork(Session s)
                 {
+                    /* delete old settings */
+                    Query q = s.createQuery( "from " + "AddressSettings" );
+                    for ( Iterator<AddressSettings> iter = q.iterate() ; iter.hasNext() ; ) {
+                        AddressSettings oldSettings = iter.next();
+                        s.delete( oldSettings );
+                    }
+
                     addressSettings = (AddressSettings)s.merge(settings);
                     return true;
                 }

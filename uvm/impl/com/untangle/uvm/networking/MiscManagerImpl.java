@@ -35,6 +35,13 @@ class MiscManagerImpl implements LocalMiscManager
             {
                 public boolean doWork(Session s)
                 {
+                    /* delete old settings */
+                    Query q = s.createQuery( "from " + "MiscSettings" );
+                    for ( Iterator<MiscSettings> iter = q.iterate() ; iter.hasNext() ; ) {
+                        MiscSettings oldSettings = iter.next();
+                        s.delete( oldSettings );
+                    }
+
                     miscSettings = (MiscSettings)s.merge(settings);
                     return true;
                 }
