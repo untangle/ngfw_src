@@ -77,7 +77,7 @@ rm -rf /usr/share/untangle/work/tomcat
 if [ -z "$2" ]; then
     if uname -r | grep -iq "untangle"; then
         echo "**************************************************************"
-        echo "Untangle installed.  Start with: ourInit untangle-vm start"
+        echo "Untangle installed.  Start with: /etc/init.d/untangle-vm start"
         echo "**************************************************************"
     else
         echo "********************************************************"
