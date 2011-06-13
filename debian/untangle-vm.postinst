@@ -53,31 +53,6 @@ fi
 
 /usr/share/untangle/bin/ut-update-schema uvm
 
-# 8.1 - remove obsolete file
-if [ -f /usr/share/untangle/popid ] ; then
-    rm -f /usr/share/untangle/popid
-fi
-# 8.1 - transform to consistent UID format
-if [ -f /etc/apt/sources.list.d/untangle.list ] ; then
-    sed -i 's/\([0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}-[0-9a-f]\{4\}\)-[0-9a-f]\{7\}-[0-9a-f]\{7\}-[0-9a-f]\{7\}-[0-9a-f]\{7\}/\1/g' /etc/apt/sources.list.d/untangle.list
-fi
-# 8.1 - move files to new locations
-if [ -f /usr/share/untangle/activation.key ] ; then
-    mv /usr/share/untangle/activation.key /usr/share/untangle/conf/uid
-fi
-# 9.0 - obsolete files
-rm -f /usr/share/untangle/log
-rm -f /usr/share/untangle/log_link
-# 9.0 - change activation
-if [ -f /usr/share/untangle/conf/registration.info ] ; then
-    touch /usr/share/untangle/conf/wizard-complete-flag
-    rm -f /usr/share/untangle/conf/registration.info
-fi
-# 9.0 - change activation
-if [ -f /usr/share/untangle/conf/.regdone-flag ] ; then
-    touch /usr/share/untangle/conf/wizard-complete-flag
-    rm -f /usr/share/untangle/conf/.regdone-flag
-fi
 # 10.0 change sources.list to point to stable-10
 if [ -f /etc/apt/sources.list.d/untangle.list ] ; then
     sed -i 's/\sstable\s/ stable-10 /' /etc/apt/sources.list.d/untangle.list
