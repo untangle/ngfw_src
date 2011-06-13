@@ -423,11 +423,13 @@ class LanguageManagerImpl implements LanguageManager
     private Locale getLocale()
     {
         Locale locale = new Locale(DEFAULT_LANGUAGE);
-        String tokens[] = languageSettings.getLanguage().split("_");
-        if (tokens.length == 1) {
-            locale = new Locale(tokens[0]);
-        } else if (tokens.length == 2) {
-            locale = new Locale(tokens[0], tokens[1]);
+        if (languageSettings != null && languageSettings.getLanguage() != null) {
+            String tokens[] = languageSettings.getLanguage().split("_");
+            if (tokens.length == 1) {
+                locale = new Locale(tokens[0]);
+            } else if (tokens.length == 2) {
+                locale = new Locale(tokens[0], tokens[1]);
+            }
         }
         return locale;
     }
