@@ -56,11 +56,15 @@ class AccessManagerImpl implements LocalAccessManager
                     Query q = s.createQuery( "from " + "AccessSettings" );
                     for ( Iterator<AccessSettings> iter = q.iterate() ; iter.hasNext() ; ) {
                         AccessSettings oldSettings = iter.next();
-                        if (((long)settings.getId()) != ((long)oldSettings.getId())) 
-                            s.delete( oldSettings );
+                        s.delete( oldSettings );
                     }
 
-                    accessSettings = (AccessSettings)s.merge(settings);
+                    try {
+                        accessSettings = (AccessSettings)s.merge(settings);
+                    } catch (org.hibernate.ObjectNotFoundException exc) {
+                        s.save(settings);
+                        accessSettings = settings;
+                    }
                     return true;
                 }
             };
