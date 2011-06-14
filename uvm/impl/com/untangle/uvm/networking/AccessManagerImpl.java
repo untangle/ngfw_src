@@ -56,7 +56,8 @@ class AccessManagerImpl implements LocalAccessManager
                     Query q = s.createQuery( "from " + "AccessSettings" );
                     for ( Iterator<AccessSettings> iter = q.iterate() ; iter.hasNext() ; ) {
                         AccessSettings oldSettings = iter.next();
-                        s.delete( oldSettings );
+                        if (((long)settings.getId()) != ((long)oldSettings.getId())) 
+                            s.delete( oldSettings );
                     }
 
                     accessSettings = (AccessSettings)s.merge(settings);
