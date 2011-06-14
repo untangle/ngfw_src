@@ -82,7 +82,8 @@ class AddressManagerImpl implements LocalAddressManager
                     Query q = s.createQuery( "from " + "AddressSettings" );
                     for ( Iterator<AddressSettings> iter = q.iterate() ; iter.hasNext() ; ) {
                         AddressSettings oldSettings = iter.next();
-                        s.delete( oldSettings );
+                        if (((long)settings.getId()) != ((long)oldSettings.getId())) 
+                            s.delete( oldSettings );
                     }
 
                     addressSettings = (AddressSettings)s.merge(settings);
