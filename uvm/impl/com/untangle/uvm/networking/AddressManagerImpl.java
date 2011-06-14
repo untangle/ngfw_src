@@ -82,11 +82,15 @@ class AddressManagerImpl implements LocalAddressManager
                     Query q = s.createQuery( "from " + "AddressSettings" );
                     for ( Iterator<AddressSettings> iter = q.iterate() ; iter.hasNext() ; ) {
                         AddressSettings oldSettings = iter.next();
-                        if (((long)settings.getId()) != ((long)oldSettings.getId())) 
-                            s.delete( oldSettings );
+                        s.delete( oldSettings );
                     }
 
-                    addressSettings = (AddressSettings)s.merge(settings);
+                    try{
+                        addressSettings = (AddressSettings)s.merge(settings);
+                    } catch (org.hibernate.ObjectNotFoundException exc) {
+                        s.save(settings);
+                        addressSettings = settings;
+                    }
                     return true;
                 }
             };
