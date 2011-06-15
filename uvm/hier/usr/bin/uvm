@@ -275,7 +275,7 @@ def update_monit():
         # Print the process that isn't being monitor
         p = os.popen("monit -c /etc/untangle/monit.conf status 2>/dev/null | grep -B3 'monitoring status[ ]*not monitored' | grep 'Process'");
         output = p.readline().rstrip()
-        debug("%s not current being monitor by monit." % output);
+        debug("%s not currenting being monitored by monit." % output);
 
         # If we aren't supposed to restart monit do nothing
         p = os.popen("find ${UVM_RUNDIR}/unmonitor -mmin -10 2> /dev/null");
