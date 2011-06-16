@@ -44,6 +44,15 @@
     </layout>
   </appender>
 
+  <appender name="SCHEMA" class="org.apache.log4j.net.SyslogAppender">
+    <param name="SyslogHost" value="localhost"/>
+    <param name="Facility" value="LOCAL3"/>
+    <param name="Threshold" value="ALL"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="[%c{1}] %-5p %m%n"/>
+    </layout>
+  </appender>
+
   <appender name="EVENTS" class="org.apache.log4j.net.SyslogAppender">
     <param name="SyslogHost" value="localhost"/>
     <param name="Facility" value="LOCAL5"/>
@@ -120,6 +129,12 @@
   <category name="com.untangle.uvm.engine.SyslogManagerImpl" additivity="false">
     <priority value="ALL"/>
     <appender-ref ref="EVENTS"/>
+  </category>
+
+  <!-- so do schema-related logs -->
+  <category name="com.untangle.uvm.engine.SchemaUtil" additivity="false">
+    <priority value="ALL"/>
+    <appender-ref ref="SCHEMA"/>
   </category>
 
   <!-- normal level for engine and following is INFO -->
