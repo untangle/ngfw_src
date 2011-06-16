@@ -35,8 +35,7 @@ import javax.persistence.Transient;
 @SuppressWarnings("serial")
     public class SystemStatEvent extends LogEvent
     {
-    
-    private long memFree;
+        private long memFree;
 	private long memCache;
 	private long memBuffers;
 
@@ -290,6 +289,11 @@ import javax.persistence.Transient;
         public void appendSyslog(SyslogBuilder sb)
         {
             sb.startSection("info");
+            sb.addField("cpuUser", String.format("%.2f", cpuUser));
+            sb.addField("load", String.format("%.2f", load1));
+            sb.addField("memFree", String.format("%dMB", memFree / 1000000));
+            sb.addField("swapFree", String.format("%dGB", swapFree / 1000000000));
+            sb.addField("diskFree", String.format("%dGB", diskFree / 1000000000));
         }
 
         @Transient
