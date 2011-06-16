@@ -115,7 +115,7 @@ public class IPMatcher
     {
         this.type = IPMatcherType.SUBNET;
         this.subnetNetmask = addrToLong(netmask.getAddr());
-        this.subnetNetwork = (addrToLong(network.getAddr()) & this.subnetNetmask);
+        this.subnetNetwork = addrToLong(network.getAddr());
     }
 
     /**
@@ -125,7 +125,7 @@ public class IPMatcher
     {
         this.type = IPMatcherType.SUBNET;
         this.subnetNetmask = addrToLong(net.getNetmask().getAddr());
-        this.subnetNetwork = (addrToLong(net.getNetwork().getAddr()) & this.subnetNetmask);
+        this.subnetNetwork = addrToLong(net.getNetwork().getAddr());
     }
     
 
@@ -158,8 +158,11 @@ public class IPMatcher
             return (( this.rangeMin <= tmp ) && ( tmp <= this.rangeMax ));
 
         case SUBNET:
+            //logger.error("CHECK: " + address + " inside? " + Long.toHexString(this.subnetNetwork) + "/" + Long.toHexString(this.subnetNetmask) );
             tmp = addrToLong( address );
-            return (( tmp & this.subnetNetmask ) == this.subnetNetwork );
+            boolean match = (( tmp & this.subnetNetmask ) == ( this.subnetNetwork & this.subnetNetmask ));
+            //logger.error("CHECK: " + address + " inside? " + Long.toHexString(this.subnetNetwork) + "/" + Long.toHexString(this.subnetNetmask) + " = " + match);
+            return match;
             
         case INTERNAL:
             initializeListerner();
@@ -393,11 +396,11 @@ public class IPMatcher
             try {
                 InetAddress addrNetwork = IPAddress.parse(results[0]).getAddr();
                 this.subnetNetwork = addrToLong(addrNetwork);
-
+                
                 /**
                  * The netmask can be a IP (255.255.0.0) or a number (16)
                  */
-                this.subnetNetwork = -1;
+                this.subnetNetmask = -1;
 
                 /* First try to see if its a number */
                 try {
