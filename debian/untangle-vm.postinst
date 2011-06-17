@@ -14,9 +14,6 @@ UVM_CACHEDIR="/var/lib/uvm"
 USER=root
 GROUP=adm
 
-# shouldn't here in the first place (old bug)
-rm -f /tmp/uvm.log
-
 # modify limit to support many file descriptors
 LIMITS_FILE=/etc/security/limits.conf
 LIMITS_LINE="${USER}    soft    nofile  128000"
@@ -50,8 +47,6 @@ fi
 # right permissions for all those dirs
 /bin/chown -R $USER:$GROUP ${UVM_LOGDIR} ${UVM_CACHEDIR}
 /bin/chmod 775 ${UVM_LOGDIR} ${UVM_CACHEDIR}
-
-/usr/share/untangle/bin/ut-update-schema uvm
 
 # 10.0 change sources.list to point to stable-10
 if [ -f /etc/apt/sources.list.d/untangle.list ] ; then
