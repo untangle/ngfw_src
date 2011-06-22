@@ -72,7 +72,7 @@ class AddressManagerImpl implements LocalAddressManager
     @SuppressWarnings("unchecked")
     public void setSettings( final AddressSettings settings, boolean forceSave, boolean updateSuffix )
     {
-        logger.debug( "Got the settings: " + settings.toString());
+        logger.warn( "Got the settings: " + settings.getPublicAddress() + ":" + settings.getHttpsPort());
 
         TransactionWork<Void> tw = new TransactionWork<Void>()
             {
@@ -199,9 +199,9 @@ class AddressManagerImpl implements LocalAddressManager
         int port = address.getHttpsPort();
 
         try {
-            logger.warn("Setting port");
+            logger.info("Rebinding HTTPS port ...");
             LocalUvmContextFactory.context().localAppServerManager().rebindExternalHttpsPort( port );
-            logger.warn("Done Setting port");
+            logger.info("Rebinding HTTPS port done.");
         } catch ( Exception e ) {
             if ( !LocalUvmContextFactory.context().state().equals( UvmState.RUNNING )) {
                 logger.info( "unable to rebind port at startup, expected. " + e );
