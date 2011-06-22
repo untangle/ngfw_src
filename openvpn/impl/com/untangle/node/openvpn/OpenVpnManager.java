@@ -366,8 +366,8 @@ public class OpenVpnManager
     /*
      * Write a client configuration file (unix or windows)
      */
-    private void writeClientConfigurationFile( VpnSettings settings, VpnClientBase client,
-                                               String[] defaults, String extension )
+    private void writeClientConfigurationFile( VpnSettings settings, VpnClientBase client, String[] defaults, String extension )
+        throws Exception
     {
         ScriptWriter sw = new VpnScriptWriter();
 

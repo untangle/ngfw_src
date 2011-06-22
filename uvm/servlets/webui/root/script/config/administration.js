@@ -545,7 +545,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
 
         },
         buildPublicAddress : function() {
-            var hostname = this.getAddressSettings().hostName;
+            var hostname = this.getHostname(true);
 
             var message = String.format( this.i18n._( 'Current Hostname: {0}'), '<i>' + hostname + '</i>' );
             if ( hostname.indexOf( "." ) < 0 ) {
