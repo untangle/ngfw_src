@@ -65,7 +65,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         {
             var name = this.record.data.name;
 
-            return this.node.getAdminDownloadLink( name, format );
+            try {
+                return this.node.getAdminDownloadLink( name, format );
+            } catch (x) {
+                Ext.MessageBox.alert( this.i18n._("Error creating client."), x);
+                throw "Error";
+            }
+
+            return null;
         },
 
         show : function()
@@ -73,83 +80,88 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var download = null;
             var email = null;
             var items = null;
-            
-            if ( this.config.isVpnSite == true ) {
-                download = new Ext.form.FieldSet({
-                    title : this.i18n._('Download Client Config'),
-                    autoHeight : true,
-                    labelWidth: 150,
-                    items: [{
-                        html : this.i18n._('This configuration file can be used to configure the remote VPN Site.'),
-                        border: false,
-                        cls : "description"
-                    }, {
-                        html :  "<a href=\"" + this.configurationFiles() + "\" target=\"_blank\">" + this.i18n._('Download VPN Site configuration.') + "</a>",
-                        border: false,
-                        cls : "description"
-                    }]
-                });
-                email = new Ext.form.FieldSet({});
-                items = [download];
-            } else {
-                download = new Ext.form.FieldSet({
-                    title : this.i18n._('Download Client Config'),
-                    autoHeight : true,
-                    labelWidth: 150,
-                    items: [{
-                        html : this.i18n._('These files can be used to configure your remote VPN Clients.'),
-                        border: false,
-                        cls : "description"
-                    }, {
-                        html :  "<a href=\"" + this.windowsInstaller() + "\" target=\"_blank\">" + this.i18n._('Click here to download an installer for Windows clients.') + "</a>",
-                        border: false,
-                        cls : "description"
-                    },{
-                        html : "<a href=\"" + this.configurationFiles() + "\" target=\"_blank\">" + this.i18n._('Click here to download a configuration file for all OSs.') + "</a>",
-                        border: false,
-                        cls : "description"
-                    }]
-                });
-                email = new Ext.form.FieldSet({
-                    title : this.i18n._('or Distribute Client Config via Email'),
-                    autoHeight : true,
-                    labelWidth: 150,
-                    items: [{
-                        html : this.i18n._('Click "Send Email" to send an email to "Email Address" with information to retrieve the OpenVPN Client.'),
-                        border: false,
-                        cls : "description"
-                    },{
-                        html : this.i18n._('Note: Clients can only download the client linked in the email if HTTPS remote administration is enabled!'),
-                        border: false,
-                        bodyStyle : 'paddingBottom:10px',
-                        cls: 'description warning'
-                    },{
-                        xtype : 'textfield',
-                        fieldLabel : this.i18n._('Email Address'),
+
+            try {
+                if ( this.config.isVpnSite == true ) {
+                    download = new Ext.form.FieldSet({
+                        title : this.i18n._('Download Client Config'),
+                        autoHeight : true,
                         labelWidth: 150,
-                        width: 200,
-                        name : 'emailAddress'
-                    },{
-                        xtype : 'button',
-                        text : this.i18n._( "Send Email" ),
-                        name : 'sendEmail',
-                        handler : this.sendEmail.createDelegate( this )
+                        items: [{
+                            html : this.i18n._('This configuration file can be used to configure the remote VPN Site.'),
+                            border: false,
+                            cls : "description"
+                        }, {
+                            html :  "<a href=\"" + this.configurationFiles() + "\" target=\"_blank\">" + this.i18n._('Download VPN Site configuration.') + "</a>",
+                            border: false,
+                            cls : "description"
+                        }]
+                    });
+                    email = new Ext.form.FieldSet({});
+                    items = [download];
+                } else {
+                    download = new Ext.form.FieldSet({
+                        title : this.i18n._('Download Client Config'),
+                        autoHeight : true,
+                        labelWidth: 150,
+                        items: [{
+                            html : this.i18n._('These files can be used to configure your remote VPN Clients.'),
+                            border: false,
+                            cls : "description"
+                        }, {
+                            html :  "<a href=\"" + this.windowsInstaller() + "\" target=\"_blank\">" + this.i18n._('Click here to download an installer for Windows clients.') + "</a>",
+                            border: false,
+                            cls : "description"
+                        },{
+                            html : "<a href=\"" + this.configurationFiles() + "\" target=\"_blank\">" + this.i18n._('Click here to download a configuration file for all OSs.') + "</a>",
+                            border: false,
+                            cls : "description"
+                        }]
+                    });
+                    email = new Ext.form.FieldSet({
+                        title : this.i18n._('or Distribute Client Config via Email'),
+                        autoHeight : true,
+                        labelWidth: 150,
+                        items: [{
+                            html : this.i18n._('Click "Send Email" to send an email to "Email Address" with information to retrieve the OpenVPN Client.'),
+                            border: false,
+                            cls : "description"
+                        },{
+                            html : this.i18n._('Note: Clients can only download the client linked in the email if HTTPS remote administration is enabled!'),
+                            border: false,
+                            bodyStyle : 'paddingBottom:10px',
+                            cls: 'description warning'
+                        },{
+                            xtype : 'textfield',
+                            fieldLabel : this.i18n._('Email Address'),
+                            labelWidth: 150,
+                            width: 200,
+                            name : 'emailAddress'
+                        },{
+                            xtype : 'button',
+                            text : this.i18n._( "Send Email" ),
+                            name : 'sendEmail',
+                            handler : this.sendEmail.createDelegate( this )
+                        }]
+                    });
+                    items = [download, email];
+                }
+
+                this.panel = new Ext.FormPanel({
+                    cls: 'ung-panel',
+                    items : [{
+                        cls : 'u-form-panel',
+                        xtype : 'fieldset',
+                        autoHeight : true,
+                        labelWidth: 150,
+                        items: items
                     }]
                 });
-                items = [download, email];
             }
-
-            this.panel = new Ext.FormPanel({
-                cls: 'ung-panel',
-                items : [{
-                    cls : 'u-form-panel',
-                    xtype : 'fieldset',
-                    autoHeight : true,
-                    labelWidth: 150,
-                    items: items
-                }]
-            });
-
+            catch (e) {
+                return;
+            }
+            
             this.window = new Ung.Window({
                 title : this.i18n._('Distribute VPN Client'),
                 bbar : [

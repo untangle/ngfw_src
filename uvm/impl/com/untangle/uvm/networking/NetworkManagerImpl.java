@@ -284,7 +284,12 @@ public class NetworkManagerImpl implements NetworkManager
     /* Get the current hostname */
     public HostName getHostname()
     {
-        return this.addressManager.getSettings().getHostName();
+        try {
+            return HostName.parse(this.networkConfiguration.getHostname());
+        } catch (com.untangle.uvm.node.ParseException e) {
+            logger.warn("Invalid hostname",e);
+            return null;
+        }
     }
 
     public String getPublicAddress()

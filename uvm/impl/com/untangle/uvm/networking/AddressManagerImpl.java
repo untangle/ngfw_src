@@ -126,7 +126,6 @@ class AddressManagerImpl implements LocalAddressManager
             settings.setHttpsPort( NetworkUtil.DEF_HTTPS_PORT );
             settings.setIsHostNamePublic( false );
             settings.setIsPublicAddressEnabled( false );
-            settings.setHostName( NetworkUtil.DEFAULT_HOSTNAME );
             /* try to retrieve the settings from the configuration files */
 
             setSettings( settings, true );

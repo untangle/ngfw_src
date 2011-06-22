@@ -136,23 +136,6 @@ public class AddressSettings implements Serializable, Validatable
         this.httpsPort = newValue;
     }
 
-    /*
-     * Retrieve the hostname for the box (this is the hostname that
-     * goes into certificates). */
-    @Column(name="hostname")
-    @Type(type="com.untangle.uvm.type.HostNameUserType")
-    public HostName getHostName()
-    {
-        return this.hostname;
-    }
-
-    public void setHostName( HostName newValue )
-    {
-        if ( newValue == null ) newValue = NetworkUtil.DEFAULT_HOSTNAME;
-
-        this.hostname = newValue;
-    }
-
     /**
      * Returns if the hostname for this box is publicly resolvable to
      * this box */
@@ -314,7 +297,7 @@ public class AddressSettings implements Serializable, Validatable
             
         } else if ( this.getIsHostNamePublic() )  {
             /* no public address, use the primary address, and the hostname */
-            HostName name = this.getHostName();
+            HostName name = com.untangle.uvm.RemoteUvmContextFactory.context().networkManager().getHostname();
             
             /* If a hostname is available, and qualified, then use the hostname */
             if (( name != null ) && !name.isEmpty() && name.isQualified()) {
