@@ -177,7 +177,6 @@ public class NetworkManagerImpl implements NetworkManager
     @Override
     public void setAddressSettings( AddressSettings address )
     {
-        logger.warn("setAddressSettings(" + address.getHttpsPort() + ")" );
         this.addressManager.setSettings( address );
 
         refreshNetworkConfig();

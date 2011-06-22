@@ -591,7 +591,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                             "check" : {
                                 fn : function(elem, checked) {
                                     if (checked) {
-                                        Ext.getCmp('administration_publicIPaddr').disable();
+                                        Ext.getCmp('administration_publicIPAddress').disable();
                                         Ext.getCmp('administration_publicPort').disable();
                                     }
                                 }.createDelegate(this)
@@ -614,7 +614,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 fn : function(elem, checked) {
                                     this.getAddressSettings().isHostNamePublic = checked;
                                     if (checked) {
-                                        Ext.getCmp('administration_publicIPaddr').disable();
+                                        Ext.getCmp('administration_publicIPAddress').disable();
                                         Ext.getCmp('administration_publicPort').disable();
                                     }
                                 }.createDelegate(this)
@@ -637,7 +637,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                                 fn : function(elem, checked) {
                                     this.getAddressSettings().isPublicAddressEnabled = checked;
                                     if (checked) {
-                                        Ext.getCmp('administration_publicIPaddr').enable();
+                                        Ext.getCmp('administration_publicIPAddress').enable();
                                         Ext.getCmp('administration_publicPort').enable();
                                     }
                                 }.createDelegate(this)
@@ -657,9 +657,9 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         items : [{
                             xtype : 'textfield',
                             fieldLabel : this.i18n._('Address'),
-                            name : 'publicIPaddr',
-                            id: 'administration_publicIPaddr',
-                            value : this.getAddressSettings().publicIPaddr,
+                            name : 'publicIPAddress',
+                            id: 'administration_publicIPAddress',
+                            value : this.getAddressSettings().publicIPAddress,
                             allowBlank : false,
                             blankText : this.i18n._("You must provide a valid IP Address."),
                             vtype : 'ipAddress',
@@ -1760,12 +1760,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
         validatePublicAddress : function() {
             var isPublicAddressEnabled = this.getAddressSettings().isPublicAddressEnabled;
             if (isPublicAddressEnabled) {
-                var publicIPaddrCmp = Ext.getCmp('administration_publicIPaddr');
-                if (!publicIPaddrCmp.isValid()) {
+                var publicIPAddressCmp = Ext.getCmp('administration_publicIPAddress');
+                if (!publicIPAddressCmp.isValid()) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("You must provide a valid IP Address."),
                         function () {
                             this.tabs.activate(this.panelPublicAddress);
-                            publicIPaddrCmp.focus(true);
+                            publicIPAddressCmp.focus(true);
                         }.createDelegate(this)
                     );
                     return false;
@@ -1781,7 +1781,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     return false;
                 }
                 //prepare for save
-                this.getAddressSettings().publicIPaddr = publicIPaddrCmp.getValue();
+                this.getAddressSettings().publicIPAddress = publicIPAddressCmp.getValue();
                 this.getAddressSettings().publicPort = publicPortCmp.getValue();
             }
 
@@ -2032,7 +2032,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             return Ext.getCmp('administration_outsideNetwork').getValue() !=  this.initialAccessSettings.outsideNetwork
                 || Ext.getCmp('administration_outsideNetmask').getValue() !=  this.initialAccessSettings.outsideNetmask
                 || this.getAddressSettings().isPublicAddressEnabled &&
-                    (Ext.getCmp('administration_publicIPaddr').getValue() !=  this.initialAddressSettings.publicIPaddr
+                    (Ext.getCmp('administration_publicIPAddress').getValue() !=  this.initialAddressSettings.publicIPAddress
                     || Ext.getCmp('administration_publicPort').getValue() !=  this.initialAddressSettings.publicPort)
                 || this.getSnmpSettings().enabled &&
                     (Ext.getCmp('administration_snmp_communityString').getValue() !=  this.initialSnmpSettings.communityString
@@ -2053,7 +2053,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 || !Ung.Util.equals(this.getAccessSettings(), this.initialAccessSettings)
                 || !Ung.Util.equals(this.getSnmpSettings(), this.initialSnmpSettings)
                 || !Ung.Util.equals(this.getLoggingSettings(), this.initialLoggingSettings)
-                || !Ung.Util.equals(this.getSkinSettings(), this.initialSkinSettings)               
+                || !Ung.Util.equals(this.getSkinSettings(), this.initialSkinSettings);
         },
 
         buildUserList : function(forceReload)
