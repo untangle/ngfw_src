@@ -50,7 +50,6 @@ public class UserMatcher
      */
     private LinkedList<UserMatcher> children = null;
 
-
     
     /**
      * Create a user matcher from the given string
@@ -126,7 +125,7 @@ public class UserMatcher
      */
     private void initialize( String matcher )
     {
-        matcher = matcher.toLowerCase().trim().replaceAll("\\s","");
+        matcher = matcher.toLowerCase().trim();
         this.matcher = matcher;
 
         /**

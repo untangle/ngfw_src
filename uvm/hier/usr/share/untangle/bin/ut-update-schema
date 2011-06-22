@@ -160,8 +160,8 @@ class SchemaUpdater
 end
 
 def bad_args(argv)
-  Syslog.error "usage: update-schema [ settings | events ] [ uvm | node ]"
-  Syslog.error "(we were called with ARGV='#{argv.join(', ')}')"
+  Syslog.err("usage: update-schema [ settings | events ] [ uvm | node ]")
+  Syslog.err("(we were called with ARGV='#{argv.join(', ')}')")
   Kernel.exit 1
 end
 
