@@ -301,7 +301,6 @@ public class CPDManager
         return json;
     }
 
-    
     private void serializeCaptureRule(JSONArray rules, CaptureRule captureRule) throws JSONException
     {
         List<Integer> interfaceList = splitInterfaceList(captureRule.getClientInterface());
@@ -343,7 +342,6 @@ public class CPDManager
     private List<Integer> splitInterfaceList(IntfMatcher matcher)
     {
         List<Integer> clientInterfaceList = new ArrayList<Integer>(1);
-        clientInterfaceList.add(-1);
 
         int index = 0;
         String matcherStr = matcher.toString();
@@ -369,6 +367,7 @@ public class CPDManager
             return clientInterfaceList;
 
         case ANY:
+            clientInterfaceList.add(-1);
             return clientInterfaceList;
 
         default:
