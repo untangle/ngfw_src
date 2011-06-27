@@ -18,6 +18,6 @@
 -->
 
 <uvm-node>
-  <node-desc classname="com.untangle.node.ips.IpsNodeImpl"/>
+  <node-desc classname="com.untangle.node.ips.IpsNodeImpl" no-start="true"/>
   <parent>untangle-casing-http</parent>
 </uvm-node>
