@@ -137,7 +137,7 @@ class FileLoader {
     private static void processRuleFile(IpsRuleManager manager, File file,
                                         Set<IpsRule> result) {
         try {
-            String category = file.getName().repl]aceAll(".rules",""); //Should move this to script land
+            String category = file.getName().replaceAll(".rules",""); //Should move this to script land
             category = category.replace("bleeding-",""); //Should move this to script land
             BufferedReader in = new BufferedReader(new FileReader(file));
             String str;
