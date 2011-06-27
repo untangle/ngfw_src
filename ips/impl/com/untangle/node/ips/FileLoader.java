@@ -48,7 +48,7 @@ class FileLoader {
         2001090, 2001091, 2001092, 2001102, 2001101, 2001103, 2001401, 2001727, 2001537, 2002387 };
     public static final int[] VERY_STUPID_RULES = {
         // These are rules that have lots of false positives
-        2229 };
+        2229, 2250, 2441 };
 
     // The default Snort priority for some classifications is stupid.
     public static final String[] FORCED_LOW_PRIORITY_CLASSIFICATIONS = {
