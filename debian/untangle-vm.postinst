@@ -91,4 +91,8 @@ if [ -x "/etc/init.d/untangle-hardware-config" ]; then
     ourInit untangle-hardware-config restart
 fi
 
+# 9.1 upgrade
+# remove obsolete stuff
+rm -rf /usr/share/untangle/autodump
+
 exit 0
