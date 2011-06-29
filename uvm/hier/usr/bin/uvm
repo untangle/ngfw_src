@@ -190,17 +190,6 @@ def procset(procfile, value, optional):
             debug("ERROR: setting procfile %s to %s" % (procfile, value));
             sys.exit(1);
 
-#
-# function called to upgrade old boxes to 7.0 (and later)
-# 10.0 REMOVE ME 
-#
-def upgrade_70():
-    if os.path.exists("/usr/lib/postgresql/7.4/bin/postgres"):
-        os.system("monit -c /etc/untangle/monit.conf unmonitor postgres");
-        os.system("@PREFIX@/usr/share/untangle/bin/ut-migrate-postgres.sh");
-        os.system("monit -c /etc/untangle/monit.conf monitor postgres");
-    return;
-
 # 
 # This function monitors the running UVM to make sure it is within operating specs
 # If it appears messed up it will kill it so the other thread will restart a functioning UVM
@@ -332,8 +321,6 @@ set_proc_name("uvm");
 prepareSystem();
 
 checkSystem();
-
-upgrade_70();
 
 signal.signal( signal.SIGINT , sigINThandler );
 signal.signal( signal.SIGTERM , sigTERMhandler );
