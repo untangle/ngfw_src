@@ -19,13 +19,6 @@ if [ -f "@UVM_HOME@/conf/uid" ]; then
     # for trial in $(/usr/share/untangle/bin/ut-expiring_packages $yesterday) ; do
     #   @UVM_HOME@/bin/reporting-generate-reports.py -t $trial
     # done
-
-    @UVM_HOME@/bin/ut-register
-
-    ## Ignore errors here.
-    if [ -x "@UVM_HOME@/bin/ut-update_blockpage" ]; then
-        @UVM_HOME@/bin/ut-update_blockpage || true
-    fi
 fi
 
 exit 0
