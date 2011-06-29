@@ -3,12 +3,11 @@
 exec > /dev/null 2>&1
 
 if [ -f "@UVM_HOME@/conf/uid" ]; then
-    mkdir -p @UVM_HOME@/autodump @UVM_HOME@/tmp
 
-    @UVM_HOME@/bin/ut-uvmdb-backup @UVM_HOME@/autodump
-    /usr/bin/find @UVM_HOME@/autodump -type f -mtime +31 | /usr/bin/xargs -r /bin/rm
-
+    # remove old temp files? XXX
     /usr/bin/find /tmp -mtime +31 -name "*.tmp" | /usr/bin/xargs -r /bin/rm
+
+    # remove old "velocity" files? XXX
     /usr/bin/find @UVM_HOME@/tmp -name velocity -prune -o -type f -mtime +15 -print | /usr/bin/xargs -r /bin/rm
 
     @UVM_HOME@/bin/reporting-generate-reports.py
