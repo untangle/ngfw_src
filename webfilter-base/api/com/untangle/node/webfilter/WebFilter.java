@@ -22,11 +22,11 @@ public interface WebFilter extends Node
     WebFilterSettings getSettings();
     void setSettings(WebFilterSettings settings);
 
-    List<IPMaskedAddressRule> getPassedClients(int start, int limit, String... sortColumns);
+    List<GenericRule> getPassedUrls(int start, int limit, String... sortColumns);
     void setPassedUrls(List<GenericRule> passedUrls);
 
-    List<GenericRule> getPassedUrls(int start, int limit, String... sortColumns);
-    void setPassedClients(List<IPMaskedAddressRule> passedClients);
+    List<GenericRule> getPassedClients(int start, int limit, String... sortColumns);
+    void setPassedClients(List<GenericRule> passedClients);
 
     List<GenericRule> getBlockedUrls(int start, int limit, String... sortColumns);
     void setBlockedUrls(List<GenericRule> blockedUrls);

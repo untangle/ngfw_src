@@ -3,9 +3,120 @@ import conversion.sql_helper as sql_helper
 import sys
 import os
 
+def get_passed_clients_settings(tid, settings_id, debug=False):
+    if (debug):
+        print "Getting passed_clients for TID: ",tid, " settings_id: ",settings_id
+
+    settings_list = sql_helper.run_sql("select ipmaddr, live, description from u_ipmaddr_rule join n_webfilter_passed_clients using (rule_id) where setting_id = '%s'" % settings_id, debug=debug)
+
+    str = '\t{\n'
+    str += '\t\t"javaClass": "java.util.LinkedList",\n'
+    str += '\t\t"list": [\n'
+    
+    first = True
+    for settings in settings_list:
+        string = settings[0]
+        enabled = settings[1]
+        description = settings[2]
+    
+        if not first:
+            str += ',\n'
+        str += '\t\t\t{\n'
+        str += '\t\t\t"javaClass": "com.untangle.uvm.node.GenericRule",\n'
+        str += '\t\t\t"string": "%s",\n' % string
+        str += '\t\t\t"enabled": "%s",\n' % enabled
+        str += '\t\t\t"description": "%s"\n' % description
+        str += '\t\t\t}'
+
+        first = False
+
+    str += '\n\t\t]\n'
+    str += '\t\t}'
+    
+    return str
+
+
+def get_mimetypes_settings(tid, settings_id, debug=False):
+    if (debug):
+        print "Getting blocked_mimetypes for TID: ",tid, " settings_id: ",settings_id
+
+    settings_list = sql_helper.run_sql("select mime_type, name, description, category, live, log from u_mimetype_rule join n_webfilter_mime_types using (rule_id) where setting_id = '%s'" % settings_id, debug=debug)
+
+    str = '\t{\n'
+    str += '\t\t"javaClass": "java.util.LinkedList",\n'
+    str += '\t\t"list": [\n'
+    
+    first = True
+    for settings in settings_list:
+        string = settings[0]
+        name = settings[1]
+        description = settings[2]
+        category = settings[3]
+        blocked = settings[4]
+        flagged = settings[5]
+
+        if not first:
+            str += ',\n'
+        str += '\t\t\t{\n'
+        str += '\t\t\t"javaClass": "com.untangle.uvm.node.GenericRule",\n'
+        str += '\t\t\t"string": "%s",\n' % string
+        str += '\t\t\t"blocked": "%s",\n' % blocked
+        str += '\t\t\t"flagged": "%s",\n' % flagged
+        str += '\t\t\t"name": "%s",\n' % name
+        str += '\t\t\t"description": "%s",\n' % description
+        str += '\t\t\t"category": "%s"\n' % category
+        str += '\t\t\t}'
+
+        first = False
+
+    str += '\n\t\t]\n'
+    str += '\t\t}'
+    
+    return str
+
+
+def get_extensions_settings(tid, settings_id, debug=False):
+    if (debug):
+        print "Getting blocked_extensions for TID: ",tid, " settings_id: ",settings_id
+
+    settings_list = sql_helper.run_sql("select string, name, description, category, live, log from u_string_rule join n_webfilter_extensions using (rule_id) where setting_id = '%s'" % settings_id, debug=debug)
+
+    str = '\t{\n'
+    str += '\t\t"javaClass": "java.util.LinkedList",\n'
+    str += '\t\t"list": [\n'
+    
+    first = True
+    for settings in settings_list:
+        string = settings[0]
+        name = settings[1]
+        description = settings[2]
+        category = settings[3]
+        blocked = settings[4]
+        flagged = settings[5]
+
+        if not first:
+            str += ',\n'
+        str += '\t\t\t{\n'
+        str += '\t\t\t"javaClass": "com.untangle.uvm.node.GenericRule",\n'
+        str += '\t\t\t"string": "%s",\n' % string
+        str += '\t\t\t"blocked": "%s",\n' % blocked
+        str += '\t\t\t"flagged": "%s",\n' % flagged
+        str += '\t\t\t"name": "%s",\n' % name
+        str += '\t\t\t"description": "%s",\n' % description
+        str += '\t\t\t"category": "%s"\n' % category
+        str += '\t\t\t}'
+
+        first = False
+
+    str += '\n\t\t]\n'
+    str += '\t\t}'
+    
+    return str
+
+
 def get_category_settings(tid, settings_id, debug=False):
     if (debug):
-        print "Getting blocked_URL for TID: ",tid, " settings_id: ",settings_id
+        print "Getting categories for TID: ",tid, " settings_id: ",settings_id
 
     settings_list = sql_helper.run_sql("select name, display_name, block, log, description from n_webfilter_blcat where setting_id = '%s'" % settings_id, debug=debug)
 
@@ -77,6 +188,39 @@ def get_blocked_urls_settings(tid, settings_id, debug=False):
     str += '\t\t}'
     
     return str
+
+
+def get_passed_urls_settings(tid, settings_id, debug=False):
+    if (debug):
+        print "Getting passed_urls for TID: ",tid, " settings_id: ",settings_id
+
+    settings_list = sql_helper.run_sql("select string, live, description from u_string_rule join n_webfilter_passed_urls using (rule_id) where setting_id = '%s'" % settings_id, debug=debug)
+
+    str = '\t{\n'
+    str += '\t\t"javaClass": "java.util.LinkedList",\n'
+    str += '\t\t"list": [\n'
+    
+    first = True
+    for settings in settings_list:
+        string = settings[0]
+        enabled = settings[1]
+        description = settings[2]
+    
+        if not first:
+            str += ',\n'
+        str += '\t\t\t{\n'
+        str += '\t\t\t"javaClass": "com.untangle.uvm.node.GenericRule",\n'
+        str += '\t\t\t"string": "%s",\n' % string
+        str += '\t\t\t"enabled": "%s",\n' % enabled
+        str += '\t\t\t"description": "%s"\n' % description
+        str += '\t\t\t}'
+
+        first = False
+
+    str += '\n\t\t]\n'
+    str += '\t\t}'
+    
+    return str
     
 
 def get_settings(tid, debug=False):
@@ -119,8 +263,12 @@ def get_settings(tid, debug=False):
     str += '\t"unblockPasswordRequired": "%s",\n' % unblock_password_enabled
     str += '\t"unblockPasswordAdmin": "%s",\n' % unblock_password_admin
     str += '\t"unblockPassword": "%s",\n' % unblock_password
+    str += '\t"categories": %s,\n' % get_category_settings(tid, settings_id, debug=debug)
     str += '\t"blockedUrls": %s,\n' % get_blocked_urls_settings(tid, settings_id, debug=debug)
-    str += '\t"categories": %s\n' % get_category_settings(tid, settings_id, debug=debug)
+    str += '\t"blockedExtensions": %s,\n' % get_extensions_settings(tid, settings_id, debug=debug)
+    str += '\t"blockedMimetypes": %s,\n' % get_mimetypes_settings(tid, settings_id, debug=debug)
+    str += '\t"passedUrls": %s,\n' % get_passed_urls_settings(tid, settings_id, debug=debug)
+    str += '\t"passedClients": %s\n' % get_passed_clients_settings(tid, settings_id, debug=debug)
     str += '}\n'
     
     return str

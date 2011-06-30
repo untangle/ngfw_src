@@ -214,7 +214,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         return settings.getBlockedUrls();
     }
 
-    public List<IPMaskedAddressRule> getPassedClients(int start, int limit, String... sortColumns) 
+    public List<GenericRule> getPassedClients(int start, int limit, String... sortColumns) 
     {
         return settings.getPassedClients();
     }
@@ -253,7 +253,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         //XXX save & reconfigure
     }
 
-    public void setPassedClients(List<IPMaskedAddressRule> passedClients)
+    public void setPassedClients(List<GenericRule> passedClients)
     {
         this.settings.setPassedClients(passedClients);
         //XXX save & reconfigure

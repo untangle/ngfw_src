@@ -23,6 +23,7 @@ import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.token.Header;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.IPMaskedAddressRule;
+import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.util.I18nUtil;
@@ -381,8 +382,9 @@ public abstract class DecisionEngine
      */
     private String     checkClientPassList( InetAddress clientIp )
     {
-        for (IPMaskedAddressRule rule : node.getSettings().getPassedClients()) {
-            if (rule.getIpMaddr().contains(clientIp) && rule.isLive()) {
+        for (GenericRule rule : node.getSettings().getPassedClients()) {
+            IPMaskedAddress addr = new IPMaskedAddress(rule.getString());
+            if (addr.contains(clientIp) && rule.getEnabled()) {
                 logger.debug("LOG: "+clientIp+" in client pass list");
                 return rule.getDescription();
             }

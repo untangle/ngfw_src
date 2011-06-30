@@ -33,7 +33,7 @@ public class WebFilterSettings implements Serializable
     private boolean enforceSafeSearch = true;
     private boolean blockAllIpHosts = true;
 
-    private List<IPMaskedAddressRule> passedClients = new LinkedList<IPMaskedAddressRule>();
+    private List<GenericRule> passedClients = new LinkedList<GenericRule>();
     private List<GenericRule> passedUrls = new LinkedList<GenericRule>();
     private List<GenericRule> blockedUrls = new LinkedList<GenericRule>();
     private List<GenericRule> blockedMimeTypes = new LinkedList<GenericRule>();
@@ -46,12 +46,12 @@ public class WebFilterSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    public List<IPMaskedAddressRule> getPassedClients()
+    public List<GenericRule> getPassedClients()
     {
         return passedClients;
     }
 
-    public void setPassedClients(List<IPMaskedAddressRule> passedClients)
+    public void setPassedClients(List<GenericRule> passedClients)
     {
         this.passedClients = passedClients;
     }
