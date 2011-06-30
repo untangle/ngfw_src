@@ -20,7 +20,6 @@ package com.untangle.node.spyware;
 
 import java.util.List;
 
-import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.IPMaddrRule;
 import com.untangle.uvm.node.Node;
@@ -54,7 +53,7 @@ public interface Spyware extends Node
     SpywareBlockDetails getBlockDetails(String nonce);
     boolean unblockSite(String nonce, boolean global);
 
-    UserWhitelistMode getUserWhitelistMode();
+    String getUnblockMode();
 
     /**
      * Update all settings once, in a single transaction

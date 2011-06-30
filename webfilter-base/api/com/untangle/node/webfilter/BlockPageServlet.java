@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.node.http.BlockPageUtil;
-import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -39,7 +38,6 @@ public class BlockPageServlet extends HttpServlet
         }
 
         WebFilterBlockDetails blockDetails = null;
-        UserWhitelistMode whitelistMode = null;
 
         Object oNode = nodeContext.node();
         if ( !(oNode instanceof WebFilter) || ( oNode == null )) {
@@ -55,28 +53,28 @@ public class BlockPageServlet extends HttpServlet
             return;
         }
 
-        whitelistMode = node.getUserWhitelistMode();
+        String unblockMode = node.getSettings().getUnblockMode();
 
         request.setAttribute( "reason", blockDetails.getReason());
-        BlockPageUtil.BlockPageParameters params = this.buildBlockPageParameters(blockDetails, whitelistMode);
+        BlockPageUtil.BlockPageParameters params = this.buildBlockPageParameters(blockDetails, unblockMode);
 
         BlockPageUtil.getInstance().handle(request, response, this, params);
     }
 
-    protected BlockPageUtil.BlockPageParameters buildBlockPageParameters( WebFilterBlockDetails blockDetails, UserWhitelistMode userWhitelistMode )
+    protected BlockPageUtil.BlockPageParameters buildBlockPageParameters( WebFilterBlockDetails blockDetails, String unblockMode )
     {
-        return new WebFilterBlockPageParameters(blockDetails,userWhitelistMode);
+        return new WebFilterBlockPageParameters(blockDetails,unblockMode);
     }
 
     protected static class WebFilterBlockPageParameters implements BlockPageUtil.BlockPageParameters
     {
         private final WebFilterBlockDetails blockDetails;
-        private final UserWhitelistMode userWhitelistMode;
+        private final String unblockMode;
 
-        public WebFilterBlockPageParameters( WebFilterBlockDetails blockDetails, UserWhitelistMode userWhitelistMode )
+        public WebFilterBlockPageParameters( WebFilterBlockDetails blockDetails, String unblockMode )
         {
             this.blockDetails = blockDetails;
-            this.userWhitelistMode = userWhitelistMode;
+            this.unblockMode = unblockMode;
         }
 
         /* This is the name of the node to use when retrieving the I18N bundle */
@@ -124,9 +122,9 @@ public class BlockPageServlet extends HttpServlet
             return this.blockDetails;
         }
 
-        public UserWhitelistMode getUserWhitelistMode()
+        public String getUnblockMode()
         {
-            return this.userWhitelistMode;
+            return this.unblockMode;
         }
     }
 }

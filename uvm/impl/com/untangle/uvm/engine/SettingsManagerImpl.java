@@ -192,8 +192,10 @@ public class SettingsManagerImpl implements SettingsManager
             return (T) serializer.fromJSON(jsonString.toString());
 
         } catch (IOException e) {
+            logger.warn("IOException: ",e);
             throw new SettingsException("Unable to the settings: '" + is + "'", e);
         } catch (UnmarshallException e) {
+            logger.warn("UnmarshallException: ",e);
             throw new SettingsException("Unable to unmarshal the settings: '" + is + "'", e);
         } finally {
             try {

@@ -82,19 +82,16 @@ public class BlockPageUtil
 
         request.setAttribute( "contact", I18nUtil.tr("If you have any questions, Please contact {0}.", contactHtml, i18n_map));
 
-        UserWhitelistMode mode = params.getUserWhitelistMode();
-        if (( UserWhitelistMode.NONE != mode ) && ( null != bd ) && ( null != bd.getWhitelistHost())) {
+        String mode = params.getUnblockMode();
+        if (( BlockPageParameters.UNBLOCK_MODE_NONE != mode ) && ( null != bd ) && ( null != bd.getWhitelistHost())) {
             request.setAttribute( "showUnblockNow", true );
-            if (UserWhitelistMode.USER_AND_GLOBAL == mode) {
+            if (BlockPageParameters.UNBLOCK_MODE_GLOBAL == mode) {
                 request.setAttribute( "showUnblockGlobal", true );
             }
         }
 
         try {
-            servlet.getServletConfig().getServletContext()
-                .getContext("/blockpage")
-                .getRequestDispatcher("/blockpage_template.jspx")
-                .forward(request, response);
+            servlet.getServletConfig().getServletContext().getContext("/blockpage").getRequestDispatcher("/blockpage_template.jspx").forward(request, response);
         } catch ( IOException e ) {
             throw new ServletException( "Unable to render blockpage template.", e );
         }
@@ -125,7 +122,10 @@ public class BlockPageUtil
 
         public BlockDetails getBlockDetails();
 
-        public UserWhitelistMode getUserWhitelistMode();
+        public static final String UNBLOCK_MODE_NONE   = "None";
+        public static final String UNBLOCK_MODE_HOST   = "Host";
+        public static final String UNBLOCK_MODE_GLOBAL = "Global";
+        public String getUnblockMode();
     }
 
     public static BlockPageUtil getInstance()

@@ -38,7 +38,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import com.sleepycat.je.DatabaseException;
-import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
@@ -316,9 +315,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
         getNodeContext().runTransaction(tw);
     }
 
-    public UserWhitelistMode getUserWhitelistMode()
+    public String getUnblockMode()
     {
-        return settings.getBaseSettings().getUserWhitelistMode();
+        return settings.getBaseSettings().getUnblockMode();
     }
 
     public SpywareBlockDetails getBlockDetails(String nonce)
@@ -330,22 +329,18 @@ public class SpywareImpl extends AbstractNode implements Spyware
     {
         SpywareBlockDetails bd = replacementGenerator.removeNonce(nonce);
 
-        switch (settings.getBaseSettings().getUserWhitelistMode()) {
-        case NONE:
-            logger.debug("attempting to unblock in UserWhitelistMode.NONE");
+        if (SpywareBaseSettings.UNBLOCK_MODE_NONE.equals(getUnblockMode())) {
+            logger.debug("attempting to unblock in NONE");
             return false;
-        case USER_ONLY:
+        } else if (SpywareBaseSettings.UNBLOCK_MODE_HOST.equals(getUnblockMode())) {
             if (global) {
-                logger.debug("attempting to unblock global in UserWhitelistMode.USER_ONLY");
+                logger.debug("attempting to unblock global in HOST");
                 return false;
             }
-            break;
-        case USER_AND_GLOBAL:
+        } else if (SpywareBaseSettings.UNBLOCK_MODE_GLOBAL.equals(getUnblockMode())) {
             // its all good
-            break;
-        default:
-            logger.error("missing case: " + settings.getBaseSettings().getUserWhitelistMode());
-            break;
+        } else {
+            logger.error("missing case: " + getUnblockMode());
         }
 
         if (null == bd) {

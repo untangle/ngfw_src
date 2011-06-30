@@ -39,7 +39,7 @@ public class UtThrowableRenderer implements ThrowableRenderer {
 
     public String[] doRender(Throwable t) {
         List<String> l = new LinkedList<String>();
-        l.add(this.prefix + t.toString());
+        l.add(this.prefix + "      " + t.toString());
         for (StackTraceElement ste: t.getStackTrace()) {
             l.add(this.prefix + "      " + ste.toString());
         }

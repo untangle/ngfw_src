@@ -62,7 +62,7 @@ CREATE TABLE settings.n_webfilter_blocked_urls (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL);
 
--- com.untangle.tran.httpblocker.BlacklistCategory
+-- com.untangle.tran.httpblocker.Category
 CREATE TABLE settings.n_webfilter_blcat (
     category_id int8 NOT NULL,
     name varchar(255),

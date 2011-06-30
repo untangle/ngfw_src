@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.node.http.BlockPageUtil;
-import com.untangle.node.http.UserWhitelistMode;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -55,7 +54,7 @@ public class BlockPageServlet extends HttpServlet
 
         Object oNode = nodeContext.node();
         PhishBlockDetails blockDetails = null;
-        UserWhitelistMode whitelistMode = null;
+        String unblockMode = null;
 
         if ( !(oNode instanceof Phish) || ( oNode == null )) {
             response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
@@ -72,9 +71,9 @@ public class BlockPageServlet extends HttpServlet
             return;
         }
 
-        whitelistMode = node.getUserWhitelistMode();
+        unblockMode = node.getUnblockMode();
 
-        PhishBlockPageParameters params = new PhishBlockPageParameters(blockDetails, whitelistMode);
+        PhishBlockPageParameters params = new PhishBlockPageParameters(blockDetails, unblockMode);
 
         BlockPageUtil.getInstance().handle(request, response, this, params);
     }
@@ -82,12 +81,12 @@ public class BlockPageServlet extends HttpServlet
     private static class PhishBlockPageParameters implements BlockPageUtil.BlockPageParameters
     {
         private final PhishBlockDetails blockDetails;
-        private final UserWhitelistMode userWhitelistMode;
+        private final String unblockMode;
 
-        public PhishBlockPageParameters( PhishBlockDetails blockDetails, UserWhitelistMode userWhitelistMode )
+        public PhishBlockPageParameters( PhishBlockDetails blockDetails, String unblockMode )
         {
             this.blockDetails = blockDetails;
-            this.userWhitelistMode = userWhitelistMode;
+            this.unblockMode = unblockMode;
         }
 
         /* This is the name of the node to use when retrieving the I18N bundle */
@@ -135,9 +134,9 @@ public class BlockPageServlet extends HttpServlet
             return this.blockDetails;
         }
     
-        public UserWhitelistMode getUserWhitelistMode()
+        public String getUnblockMode()
         {
-            return this.userWhitelistMode;
+            return this.unblockMode;
         }
     }
 }

@@ -1,15 +1,10 @@
 ## Install python-codespeak-lib in order to run tests.
 
 import logging
-
 import pycurl
 from StringIO import StringIO
-
-
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
-
-
 
 class CurlRequestHandler(object):
     def __init__( self, timeout=30 ):

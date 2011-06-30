@@ -1,16 +1,16 @@
+/**
+ * $Id$
+ */
 package com.untangle.node.webfilter;
 
 import java.net.InetAddress;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.LinkedList;
+import org.json.JSONString;
 
-import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
-import com.untangle.node.http.UserWhitelistMode;
+import com.untangle.uvm.SettingsManager;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
@@ -31,11 +31,10 @@ import com.untangle.uvm.node.IPMaddrValidator;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.Rule;
-import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.Affinity;
@@ -68,7 +67,6 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     protected volatile WebFilterSettings settings;
 
     protected final PartialListUtil listUtil = new PartialListUtil();
-    protected final BlacklistCategoryHandler categoryHandler = new BlacklistCategoryHandler();
 
     protected final BlingBlinger scanBlinger;
     protected final BlingBlinger passBlinger;
@@ -110,33 +108,6 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     // WebFilter methods ------------------------------------------------------
 
-    public WebFilterSettings getWebFilterSettings()
-    {
-        if (settings == null)
-            logger.error("Settings not yet initialized. State: "
-                         + getNodeContext().getRunState());
-        return settings;
-    }
-
-    public void setWebFilterSettings(final WebFilterSettings settings)
-    {
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-            {
-                public boolean doWork(Session s)
-                {
-                    s.saveOrUpdate(settings);
-                    WebFilterBase.this.settings = settings;
-                    return true;
-                }
-
-                public Void getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
-
-        getBlacklist().configure(settings);
-        reconfigure();
-    }
-
     public EventManager<WebFilterEvent> getEventManager()
     {
         return eventLogger;
@@ -147,14 +118,14 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         return unblockEventLogger;
     }
 
-    public UserWhitelistMode getUserWhitelistMode()
+    public String getUnblockMode()
     {
-        return settings.getBaseSettings().getUserWhitelistMode();
+        return settings.getUnblockMode();
     }
 
     public boolean isHttpsEnabled()
     {
-        return settings.getBaseSettings().getEnableHttps();
+        return settings.getEnableHttps();
     }
 
     public WebFilterBlockDetails getDetails(String nonce)
@@ -162,28 +133,23 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         return replacementGenerator.getNonceData(nonce);
     }
 
-    // XXX factor with SpywareImpl.unblockSite
     public boolean unblockSite(String nonce, boolean global)
     {
         WebFilterBlockDetails bd = replacementGenerator.removeNonce(nonce);
 
-        switch (settings.getBaseSettings().getUserWhitelistMode()) {
-        case NONE:
-            logger.debug("attempting to unblock in UserWhitelistMode.NONE");
+        if (WebFilterSettings.UNBLOCK_MODE_NONE.equals(settings.getUnblockMode())) {
+            logger.debug("attempting to unblock in WebFilterSettings.UNBLOCK_MODE_NONE");
             return false;
-        case USER_ONLY:
+        } else if (WebFilterSettings.UNBLOCK_MODE_HOST.equals(settings.getUnblockMode())) {
             if (global) {
-                logger.debug("attempting to unblock global in UserWhitelistMode.USER_ONLY");
+                logger.debug("attempting to unblock global in WebFilterSettings.UNBLOCK_MODE_HOST");
                 return false;
             }
-            break;
-        case USER_AND_GLOBAL:
+        } else if (WebFilterSettings.UNBLOCK_MODE_GLOBAL.equals(settings.getUnblockMode())) {
             // its all good
-            break;
-        default:
-            logger.error("missing case: "
-                         + settings.getBaseSettings().getUserWhitelistMode());
-            break;
+        }
+        else  {
+            logger.error("missing case: " + settings.getUnblockMode());
         }
 
         if (null == bd) {
@@ -196,16 +162,15 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 return false;
             } else {
                 logger.warn("permanently unblocking site: " + site);
-                StringRule sr = new StringRule(site, site, "user unblocked",
-                                               "unblocked by user", true);
+                GenericRule sr = new GenericRule(site, site, "user unblocked", "unblocked by user", true);
                 settings.getPassedUrls().add(sr);
-                setWebFilterSettings(settings);
+                _setSettings(settings);
 
-        UnblockEvent ue = new UnblockEvent(bd.getClientAddress(), true,
-                                           bd.getFormattedUrl(),
-                                           getVendor(), getNodeId().getPolicy(),
-                                           bd.getUid());
-        unblockEventLogger.log(ue);
+                UnblockEvent ue = new UnblockEvent(bd.getClientAddress(), true,
+                                                   bd.getFormattedUrl(),
+                                                   getVendor(), getNodeId().getPolicy(),
+                                                   bd.getUid());
+                unblockEventLogger.log(ue);
                 return true;
             }
         } else {
@@ -217,8 +182,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 logger.warn("temporarily unblocking site: " + site);
                 InetAddress addr = bd.getClientAddress();
 
-                bypassMonitor.addBypassedSite(addr, site);
-                getBlacklist().addWhitelistHost(addr, site);
+                bypassMonitor.addUnblockedSite(addr, site);
+                getDecisionEngine().addUnblockedSite(addr, site);
 
                 UnblockEvent ue = new UnblockEvent(addr, false,
                                                    bd.getFormattedUrl(),
@@ -229,161 +194,94 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         }
     }
 
-    /**
-     * Causes the blacklist to populate its arrays.
-     */
-    public void reconfigure()
+    public List<GenericRule> getCategories(int start, int limit, String... sortColumns)
     {
-        LocalUvmContextFactory.context().newThread(new Runnable() {
-                public void run() {
-                    getBlacklist().reconfigure();
-                }
-            }).start();
+        return settings.getCategories();
     }
 
-    public WebFilterBaseSettings getBaseSettings() {
-        if (settings == null) {
-            return null;
-        } else {
-            return settings.getBaseSettings();
-        }
-    }
-
-    public void setBaseSettings(final WebFilterBaseSettings baseSettings) {
-        TransactionWork<Void> tw = new TransactionWork<Void>() {
-                public boolean doWork(Session s) {
-                    settings.setBaseSettings(baseSettings);
-                    s.merge(settings);
-                    return true;
-                }
-
-                public Void getResult() {
-                    return null;
-                }
-            };
-        getNodeContext().runTransaction(tw);
-    }
-
-    @SuppressWarnings("unchecked") //getItems
-    public List<BlacklistCategory> getBlacklistCategories(int start, int limit, String... sortColumns)
+    public List<GenericRule> getBlockedExtensions(int start, int limit, String... sortColumns)
     {
-        return listUtil.getItems("select blacklistCategory from WebFilterSettings hbs " +
-                                 "join hbs.blacklistCategories as blacklistCategory where hbs.tid = :tid ",
-                                 getNodeContext(), getNodeId(), "blacklistCategory", start, limit, sortColumns);
+        return settings.getBlockedExtensions();
     }
 
-    @SuppressWarnings("unchecked") //getItems
-    public List<StringRule> getBlockedExtensions(int start, int limit, String... sortColumns)
+    public List<GenericRule> getBlockedMimeTypes(int start, int limit, String... sortColumns)
     {
-        return listUtil.getItems("select hbs.blockedExtensions from WebFilterSettings hbs where hbs.tid = :tid ",
-                                 getNodeContext(), getNodeId(), start, limit, sortColumns);
+        return settings.getBlockedMimeTypes();
     }
 
-    @SuppressWarnings("unchecked") //getItems
-    public List<MimeTypeRule> getBlockedMimeTypes(int start, int limit, String... sortColumns)
+    public List<GenericRule> getBlockedUrls(int start, int limit, String... sortColumns)
     {
-        return listUtil.getItems("select blockedMimeType from WebFilterSettings hbs " +
-                                 "join hbs.blockedMimeTypes as blockedMimeType where hbs.tid = :tid ",
-                                 getNodeContext(), getNodeId(), "blockedMimeType", start, limit, sortColumns);
+        return settings.getBlockedUrls();
     }
 
-    @SuppressWarnings("unchecked") //getItems
-    public List<StringRule> getBlockedUrls(int start, int limit, String... sortColumns)
-    {
-        return listUtil.getItems("select hbs.blockedUrls from WebFilterSettings hbs where hbs.tid = :tid ",
-                                 getNodeContext(), getNodeId(), start, limit, sortColumns);
-    }
-
-    @SuppressWarnings("unchecked") //getItems
     public List<IPMaddrRule> getPassedClients(int start, int limit, String... sortColumns) 
     {
-        return listUtil.getItems("select hbs.passedClients from WebFilterSettings hbs where hbs.tid = :tid ",
-                                 getNodeContext(), getNodeId(), start, limit, sortColumns);
+        return settings.getPassedClients();
     }
 
-    @SuppressWarnings("unchecked") //getItems
-    public List<StringRule> getPassedUrls(int start, int limit, String... sortColumns)
+    public List<GenericRule> getPassedUrls(int start, int limit, String... sortColumns)
     {
-        return listUtil.getItems("select hbs.passedUrls from WebFilterSettings hbs where hbs.tid = :tid ",
-                                 getNodeContext(), getNodeId(), start, limit, sortColumns);
+        return settings.getPassedUrls();
     }
 
-    public void updateBlacklistCategories(List<BlacklistCategory> added, List<Long> deleted, List<BlacklistCategory> modified)
+    public WebFilterSettings getSettings()
     {
-        updateCategories(getWebFilterSettings().getBlacklistCategories(), added, deleted, modified);
+        return this.settings;
     }
-
-    public void updateBlockedExtensions(List<StringRule> added, List<Long> deleted, List<StringRule> modified)
+    
+    public void setCategories(List<GenericRule> newCategories)
     {
-        updateRules(getWebFilterSettings().getBlockedExtensions(), added,
-                    deleted, modified);
+        this.settings.setCategories(newCategories);
+        //XXX save & reconfigure
     }
 
-    public void updateBlockedMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified)
+    public void setBlockedExtensions(List<GenericRule> blockedExtensions)
     {
-        updateRules(getWebFilterSettings().getBlockedMimeTypes(), added, deleted, modified);
+        this.settings.setBlockedExtensions(blockedExtensions);
+        //XXX save & reconfigure
     }
 
-    public void updateBlockedUrls(List<StringRule> added, List<Long> deleted, List<StringRule> modified)
+    public void setBlockedMimeTypes(List<GenericRule> blockedMimeTypes)
     {
-        updateRules(getWebFilterSettings().getBlockedUrls(), added, deleted, modified);
+        this.settings.setBlockedMimeTypes(blockedMimeTypes);
+        //XXX save & reconfigure
     }
 
-    public void updatePassedClients(List<IPMaddrRule> added, List<Long> deleted, List<IPMaddrRule> modified)
+    public void setBlockedUrls(List<GenericRule> blockedUrls)
     {
-        updateRules(getWebFilterSettings().getPassedClients(), added, deleted, modified);
+        this.settings.setBlockedUrls(blockedUrls);
+        //XXX save & reconfigure
     }
 
-    public void updatePassedUrls(List<StringRule> added, List<Long> deleted, List<StringRule> modified)
+    public void setPassedClients(List<IPMaddrRule> passedClients)
     {
-        updateRules(getWebFilterSettings().getPassedUrls(), added, deleted, modified);
+        this.settings.setPassedClients(passedClients);
+        //XXX save & reconfigure
     }
 
-    @SuppressWarnings("unchecked")
-	public void updateAll(final WebFilterBaseSettings baseSettings,
-                          final List[] passedClients, final List[] passedUrls, final List[] blockedUrls,
-                          final List[] blockedMimeTypes, final List[] blockedExtensions,
-                          final List[] blacklistCategories) {
-
-        TransactionWork<Void> tw = new TransactionWork<Void>() {
-                public boolean doWork(Session s) {
-                    if (baseSettings != null) {
-                        settings.setBaseSettings(baseSettings);
-                    }
-
-                    listUtil.updateCachedItems(getWebFilterSettings().getPassedClients(), passedClients);
-                    listUtil.updateCachedItems(getWebFilterSettings().getPassedUrls(), passedUrls);
-                    listUtil.updateCachedItems(getWebFilterSettings().getBlockedUrls(), blockedUrls);
-                    listUtil.updateCachedItems(getWebFilterSettings().getBlockedMimeTypes(), blockedMimeTypes);
-                    listUtil.updateCachedItems(getWebFilterSettings().getBlockedExtensions(), blockedExtensions);
-                    listUtil.updateCachedItems(getWebFilterSettings().getBlacklistCategories(), categoryHandler, blacklistCategories);
-
-                    settings = (WebFilterSettings)s.merge(settings);
-
-                    return true;
-                }
-
-                public Void getResult() {
-                    return null;
-                }
-            };
-        getNodeContext().runTransaction(tw);
-
-
-        getBlacklist().configure(settings);
-        reconfigure();
+    public void setPassedUrls(List<GenericRule> passedUrls)
+    {
+        this.settings.setPassedUrls(passedUrls);
+        //XXX save & reconfigure
     }
 
+    public void setSettings(WebFilterSettings settings)
+    {
+        _setSettings(settings);
+    }
+    
     public Validator getValidator()
     {
         return new IPMaddrValidator();
     }
 
-    public abstract Blacklist getBlacklist();
+    public abstract DecisionEngine getDecisionEngine();
 
-    protected abstract String getVendor();
+    public abstract String getVendor();
 
     public abstract String getNodeTitle();
+
+    public abstract String getName();
 
     protected WebFilterReplacementGenerator buildReplacementGenerator()
     {
@@ -404,223 +302,205 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
             logger.debug(getNodeId() + " init settings");
         }
 
-        WebFilterSettings settings = new WebFilterSettings(getNodeId());
+        WebFilterSettings settings = new WebFilterSettings();
 
-        Set<StringRule> s = new HashSet<StringRule>();
+        List<GenericRule> s = new LinkedList<GenericRule>();
 
         // this third column is more of a description than a category, the way the client is using it
         // the second column is being used as the "category"
-        s.add(new StringRule("exe", "executable", "an executable file format" , false));
-        s.add(new StringRule("ocx", "executable", "an executable file format", false));
-        s.add(new StringRule("dll", "executable", "an executable file format", false));
-        s.add(new StringRule("cab", "executable", "an ActiveX executable file format", false));
-        s.add(new StringRule("bin", "executable", "an executable file format", false));
-        s.add(new StringRule("com", "executable", "an executable file format", false));
-        s.add(new StringRule("jpg", "image", "an image file format", false));
-        s.add(new StringRule("png", "image", "an image file format", false));
-        s.add(new StringRule("gif", "image", "an image file format", false));
-        s.add(new StringRule("jar", "java", "a Java file format", false));
-        s.add(new StringRule("class", "java", "a Java file format", false));
-        s.add(new StringRule("swf", "flash", "the flash file format", false));
-        s.add(new StringRule("mp3", "audio", "an audio file format", false));
-        s.add(new StringRule("wav", "audio", "an audio file format", false));
-        s.add(new StringRule("wmf", "audio", "an audio file format", false));
-        s.add(new StringRule("mpg", "video", "a video file format", false));
-        s.add(new StringRule("mov", "video", "a video file format", false));
-        s.add(new StringRule("avi", "video", "a video file format", false));
-        s.add(new StringRule("hqx", "archive", "an archived file format", false));
-        s.add(new StringRule("cpt", "compression", "a compressed file format", false));
+        s.add(new GenericRule("exe", "executable", "an executable file format" , false));
+        s.add(new GenericRule("ocx", "executable", "an executable file format", false));
+        s.add(new GenericRule("dll", "executable", "an executable file format", false));
+        s.add(new GenericRule("cab", "executable", "an ActiveX executable file format", false));
+        s.add(new GenericRule("bin", "executable", "an executable file format", false));
+        s.add(new GenericRule("com", "executable", "an executable file format", false));
+        s.add(new GenericRule("jpg", "image", "an image file format", false));
+        s.add(new GenericRule("png", "image", "an image file format", false));
+        s.add(new GenericRule("gif", "image", "an image file format", false));
+        s.add(new GenericRule("jar", "java", "a Java file format", false));
+        s.add(new GenericRule("class", "java", "a Java file format", false));
+        s.add(new GenericRule("swf", "flash", "the flash file format", false));
+        s.add(new GenericRule("mp3", "audio", "an audio file format", false));
+        s.add(new GenericRule("wav", "audio", "an audio file format", false));
+        s.add(new GenericRule("wmf", "audio", "an audio file format", false));
+        s.add(new GenericRule("mpg", "video", "a video file format", false));
+        s.add(new GenericRule("mov", "video", "a video file format", false));
+        s.add(new GenericRule("avi", "video", "a video file format", false));
+        s.add(new GenericRule("hqx", "archive", "an archived file format", false));
+        s.add(new GenericRule("cpt", "compression", "a compressed file format", false));
 
         settings.setBlockedExtensions(s);
 
-        Set<MimeTypeRule> m = new HashSet<MimeTypeRule>();
-        m.add(new MimeTypeRule(new MimeType("application/octet-stream"), "unspecified data", "byte stream", false));
+        List<GenericRule> m = new LinkedList<GenericRule>();
+        m.add(new GenericRule("application/octet-stream", "unspecified data", "byte stream", false));
 
-        m.add(new MimeTypeRule(new MimeType("application/x-msdownload"), "Microsoft download", "executable", false));
-        m.add(new MimeTypeRule(new MimeType("application/exe"), "executable", "executable", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-exe"), "executable", "executable", false));
-        m.add(new MimeTypeRule(new MimeType("application/dos-exe"), "DOS executable", "executable", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-winexe"), "Windows executable", "executable", false));
-        m.add(new MimeTypeRule(new MimeType("application/msdos-windows"), "MS-DOS executable", "executable", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-msdos-program"), "MS-DOS program", "executable", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-oleobject"), "Microsoft OLE Object", "executable", false));
+        m.add(new GenericRule("application/x-msdownload", "Microsoft download", "executable", false));
+        m.add(new GenericRule("application/exe", "executable", "executable", false));
+        m.add(new GenericRule("application/x-exe", "executable", "executable", false));
+        m.add(new GenericRule("application/dos-exe", "DOS executable", "executable", false));
+        m.add(new GenericRule("application/x-winexe", "Windows executable", "executable", false));
+        m.add(new GenericRule("application/msdos-windows", "MS-DOS executable", "executable", false));
+        m.add(new GenericRule("application/x-msdos-program", "MS-DOS program", "executable", false));
+        m.add(new GenericRule("application/x-oleobject", "Microsoft OLE Object", "executable", false));
 
-        m.add(new MimeTypeRule(new MimeType("application/x-java-applet"), "Java Applet", "executable", false));
+        m.add(new GenericRule("application/x-java-applet", "Java Applet", "executable", false));
 
-        m.add(new MimeTypeRule(new MimeType("audio/mpegurl"), "MPEG audio URLs", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-mpegurl"), "MPEG audio URLs", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/mp3"), "MP3 audio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-mp3"), "MP3 audio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/mpeg"), "MPEG audio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/mpg"), "MPEG audio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-mpeg"), "MPEG audio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-mpg"), "MPEG audio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-ogg"), "Ogg Vorbis", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/m4a"), "MPEG 4 audio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/mp2"), "MP2 audio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/mp1"), "MP1 audio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("application/ogg"), "Ogg Vorbis", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/wav"), "Microsoft WAV", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-wav"), "Microsoft WAV", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-pn-wav"), "Microsoft WAV", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/aac"), "Advanced Audio Coding", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/midi"), "MIDI audio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/mpeg"), "MPEG audio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/aiff"), "AIFF audio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-aiff"), "AIFF audio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-pn-aiff"), "AIFF audio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-pn-windows-acm"), "Windows ACM", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-pn-windows-pcm"), "Windows PCM", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/basic"), "8-bit u-law PCM", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-pn-au"), "Sun audio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/3gpp"), "3GPP", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/3gpp-encrypted"), "encrypted 3GPP", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/scpls"), "streaming mp3 playlists", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-scpls"), "streaming mp3 playlists", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("application/smil"), "SMIL", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("application/sdp"), "Streaming Download Project", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-sdp"), "Streaming Download Project", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/amr"), "AMR codec", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/amr-encrypted"), "AMR encrypted codec", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/amr-wb"), "AMR-WB codec", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/amr-wb-encrypted"), "AMR-WB encrypted codec", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-rn-3gpp-amr"), "3GPP codec", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-rn-3gpp-amr-encrypted"), "3GPP-AMR encrypted codec", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-rn-3gpp-amr-wb"), "3gpp-AMR-WB codec", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-rn-3gpp-amr-wb-encrypted"), "3gpp-AMR_WB encrypted codec", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("application/streamingmedia"), "Streaming Media", "audio", false));
+        m.add(new GenericRule("audio/mpegurl", "MPEG audio URLs", "audio", false));
+        m.add(new GenericRule("audio/x-mpegurl", "MPEG audio URLs", "audio", false));
+        m.add(new GenericRule("audio/mp3", "MP3 audio", "audio", false));
+        m.add(new GenericRule("audio/x-mp3", "MP3 audio", "audio", false));
+        m.add(new GenericRule("audio/mpeg", "MPEG audio", "audio", false));
+        m.add(new GenericRule("audio/mpg", "MPEG audio", "audio", false));
+        m.add(new GenericRule("audio/x-mpeg", "MPEG audio", "audio", false));
+        m.add(new GenericRule("audio/x-mpg", "MPEG audio", "audio", false));
+        m.add(new GenericRule("application/x-ogg", "Ogg Vorbis", "audio", false));
+        m.add(new GenericRule("audio/m4a", "MPEG 4 audio", "audio", false));
+        m.add(new GenericRule("audio/mp2", "MP2 audio", "audio", false));
+        m.add(new GenericRule("audio/mp1", "MP1 audio", "audio", false));
+        m.add(new GenericRule("application/ogg", "Ogg Vorbis", "audio", false));
+        m.add(new GenericRule("audio/wav", "Microsoft WAV", "audio", false));
+        m.add(new GenericRule("audio/x-wav", "Microsoft WAV", "audio", false));
+        m.add(new GenericRule("audio/x-pn-wav", "Microsoft WAV", "audio", false));
+        m.add(new GenericRule("audio/aac", "Advanced Audio Coding", "audio", false));
+        m.add(new GenericRule("audio/midi", "MIDI audio", "audio", false));
+        m.add(new GenericRule("audio/mpeg", "MPEG audio", "audio", false));
+        m.add(new GenericRule("audio/aiff", "AIFF audio", "audio", false));
+        m.add(new GenericRule("audio/x-aiff", "AIFF audio", "audio", false));
+        m.add(new GenericRule("audio/x-pn-aiff", "AIFF audio", "audio", false));
+        m.add(new GenericRule("audio/x-pn-windows-acm", "Windows ACM", "audio", false));
+        m.add(new GenericRule("audio/x-pn-windows-pcm", "Windows PCM", "audio", false));
+        m.add(new GenericRule("audio/basic", "8-bit u-law PCM", "audio", false));
+        m.add(new GenericRule("audio/x-pn-au", "Sun audio", "audio", false));
+        m.add(new GenericRule("audio/3gpp", "3GPP", "audio", false));
+        m.add(new GenericRule("audio/3gpp-encrypted", "encrypted 3GPP", "audio", false));
+        m.add(new GenericRule("audio/scpls", "streaming mp3 playlists", "audio", false));
+        m.add(new GenericRule("audio/x-scpls", "streaming mp3 playlists", "audio", false));
+        m.add(new GenericRule("application/smil", "SMIL", "audio", false));
+        m.add(new GenericRule("application/sdp", "Streaming Download Project", "audio", false));
+        m.add(new GenericRule("application/x-sdp", "Streaming Download Project", "audio", false));
+        m.add(new GenericRule("audio/amr", "AMR codec", "audio", false));
+        m.add(new GenericRule("audio/amr-encrypted", "AMR encrypted codec", "audio", false));
+        m.add(new GenericRule("audio/amr-wb", "AMR-WB codec", "audio", false));
+        m.add(new GenericRule("audio/amr-wb-encrypted", "AMR-WB encrypted codec", "audio", false));
+        m.add(new GenericRule("audio/x-rn-3gpp-amr", "3GPP codec", "audio", false));
+        m.add(new GenericRule("audio/x-rn-3gpp-amr-encrypted", "3GPP-AMR encrypted codec", "audio", false));
+        m.add(new GenericRule("audio/x-rn-3gpp-amr-wb", "3gpp-AMR-WB codec", "audio", false));
+        m.add(new GenericRule("audio/x-rn-3gpp-amr-wb-encrypted", "3gpp-AMR_WB encrypted codec", "audio", false));
+        m.add(new GenericRule("application/streamingmedia", "Streaming Media", "audio", false));
 
-        m.add(new MimeTypeRule(new MimeType("video/mpeg"), "MPEG video", "video", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-ms-wma"), "Windows Media", "video", false));
-        m.add(new MimeTypeRule(new MimeType("video/quicktime"), "QuickTime", "video", false));
-        m.add(new MimeTypeRule(new MimeType("video/x-ms-asf"), "Microsoft ASF", "video", false));
-        m.add(new MimeTypeRule(new MimeType("video/x-msvideo"), "Microsoft AVI", "video", false));
-        m.add(new MimeTypeRule(new MimeType("video/x-sgi-mov"), "SGI movie", "video", false));
-        m.add(new MimeTypeRule(new MimeType("video/3gpp"), "3GPP video", "video", false));
-        m.add(new MimeTypeRule(new MimeType("video/3gpp-encrypted"), "3GPP encrypted video", "video", false));
-        m.add(new MimeTypeRule(new MimeType("video/3gpp2"), "3GPP2 video", "video", false));
+        m.add(new GenericRule("video/mpeg", "MPEG video", "video", false));
+        m.add(new GenericRule("audio/x-ms-wma", "Windows Media", "video", false));
+        m.add(new GenericRule("video/quicktime", "QuickTime", "video", false));
+        m.add(new GenericRule("video/x-ms-asf", "Microsoft ASF", "video", false));
+        m.add(new GenericRule("video/x-msvideo", "Microsoft AVI", "video", false));
+        m.add(new GenericRule("video/x-sgi-mov", "SGI movie", "video", false));
+        m.add(new GenericRule("video/3gpp", "3GPP video", "video", false));
+        m.add(new GenericRule("video/3gpp-encrypted", "3GPP encrypted video", "video", false));
+        m.add(new GenericRule("video/3gpp2", "3GPP2 video", "video", false));
 
-        m.add(new MimeTypeRule(new MimeType("audio/x-realaudio"), "RealAudio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("text/vnd.rn-realtext"), "RealText", "text", false));
-        m.add(new MimeTypeRule(new MimeType("audio/vnd.rn-realaudio"), "RealAudio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-pn-realaudio"), "RealAudio plug-in", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("image/vnd.rn-realpix"), "RealPix", "image", false));
-        m.add(new MimeTypeRule(new MimeType("application/vnd.rn-realmedia"), "RealMedia", "video", false));
-        m.add(new MimeTypeRule(new MimeType("application/vnd.rn-realmedia-vbr"), "RealMedia VBR", "video", false));
-        m.add(new MimeTypeRule(new MimeType("application/vnd.rn-realmedia-secure"), "secure RealMedia", "video", false));
-        m.add(new MimeTypeRule(new MimeType("application/vnd.rn-realaudio-secure"), "secure RealAudio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("audio/x-realaudio-secure"), "secure RealAudio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("video/vnd.rn-realvideo-secure"), "secure RealVideo", "video", false));
-        m.add(new MimeTypeRule(new MimeType("video/vnd.rn-realvideo"), "RealVideo", "video", false));
-        m.add(new MimeTypeRule(new MimeType("application/vnd.rn-realsystem-rmj"), "RealSystem media", "video", false));
-        m.add(new MimeTypeRule(new MimeType("application/vnd.rn-realsystem-rmx"), "RealSystem secure media", "video", false));
-        m.add(new MimeTypeRule(new MimeType("audio/rn-mpeg"), "MPEG audio", "audio", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-shockwave-flash"), "Macromedia Shockwave", "multimedia", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-director"), "Macromedia Shockwave", "multimedia", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-authorware-bin"), "Macromedia Authorware binary", "multimedia", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-authorware-map"), "Macromedia Authorware shocked file", "multimedia", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-authorware-seg"), "Macromedia Authorware shocked packet", "multimedia", false));
-        m.add(new MimeTypeRule(new MimeType("application/futuresplash"), "Macromedia FutureSplash", "multimedia", false));
+        m.add(new GenericRule("audio/x-realaudio", "RealAudio", "audio", false));
+        m.add(new GenericRule("text/vnd.rn-realtext", "RealText", "text", false));
+        m.add(new GenericRule("audio/vnd.rn-realaudio", "RealAudio", "audio", false));
+        m.add(new GenericRule("audio/x-pn-realaudio", "RealAudio plug-in", "audio", false));
+        m.add(new GenericRule("image/vnd.rn-realpix", "RealPix", "image", false));
+        m.add(new GenericRule("application/vnd.rn-realmedia", "RealMedia", "video", false));
+        m.add(new GenericRule("application/vnd.rn-realmedia-vbr", "RealMedia VBR", "video", false));
+        m.add(new GenericRule("application/vnd.rn-realmedia-secure", "secure RealMedia", "video", false));
+        m.add(new GenericRule("application/vnd.rn-realaudio-secure", "secure RealAudio", "audio", false));
+        m.add(new GenericRule("audio/x-realaudio-secure", "secure RealAudio", "audio", false));
+        m.add(new GenericRule("video/vnd.rn-realvideo-secure", "secure RealVideo", "video", false));
+        m.add(new GenericRule("video/vnd.rn-realvideo", "RealVideo", "video", false));
+        m.add(new GenericRule("application/vnd.rn-realsystem-rmj", "RealSystem media", "video", false));
+        m.add(new GenericRule("application/vnd.rn-realsystem-rmx", "RealSystem secure media", "video", false));
+        m.add(new GenericRule("audio/rn-mpeg", "MPEG audio", "audio", false));
+        m.add(new GenericRule("application/x-shockwave-flash", "Macromedia Shockwave", "multimedia", false));
+        m.add(new GenericRule("application/x-director", "Macromedia Shockwave", "multimedia", false));
+        m.add(new GenericRule("application/x-authorware-bin", "Macromedia Authorware binary", "multimedia", false));
+        m.add(new GenericRule("application/x-authorware-map", "Macromedia Authorware shocked file", "multimedia", false));
+        m.add(new GenericRule("application/x-authorware-seg", "Macromedia Authorware shocked packet", "multimedia", false));
+        m.add(new GenericRule("application/futuresplash", "Macromedia FutureSplash", "multimedia", false));
 
-        m.add(new MimeTypeRule(new MimeType("application/zip"), "ZIP", "archive", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-lzh"), "LZH archive", "archive", false));
+        m.add(new GenericRule("application/zip", "ZIP", "archive", false));
+        m.add(new GenericRule("application/x-lzh", "LZH archive", "archive", false));
 
-        m.add(new MimeTypeRule(new MimeType("image/gif"), "Graphics Interchange Format", "image", false));
-        m.add(new MimeTypeRule(new MimeType("image/png"), "Portable Network Graphics", "image", false));
-        m.add(new MimeTypeRule(new MimeType("image/jpeg"), "JPEG", "image", false));
-        m.add(new MimeTypeRule(new MimeType("image/bmp"), "Microsoft BMP", "image", false));
-        m.add(new MimeTypeRule(new MimeType("image/tiff"), "Tagged Image File Format", "image", false));
-        m.add(new MimeTypeRule(new MimeType("image/x-freehand"), "Macromedia Freehand", "image", false));
-        m.add(new MimeTypeRule(new MimeType("image/x-cmu-raster"), "CMU Raster", "image", false));
-        m.add(new MimeTypeRule(new MimeType("image/x-rgb"), "RGB image", "image", false));
+        m.add(new GenericRule("image/gif", "Graphics Interchange Format", "image", false));
+        m.add(new GenericRule("image/png", "Portable Network Graphics", "image", false));
+        m.add(new GenericRule("image/jpeg", "JPEG", "image", false));
+        m.add(new GenericRule("image/bmp", "Microsoft BMP", "image", false));
+        m.add(new GenericRule("image/tiff", "Tagged Image File Format", "image", false));
+        m.add(new GenericRule("image/x-freehand", "Macromedia Freehand", "image", false));
+        m.add(new GenericRule("image/x-cmu-raster", "CMU Raster", "image", false));
+        m.add(new GenericRule("image/x-rgb", "RGB image", "image", false));
 
-        m.add(new MimeTypeRule(new MimeType("text/css"), "cascading style sheet", "text", false));
-        m.add(new MimeTypeRule(new MimeType("text/html"), "HTML", "text", false));
-        m.add(new MimeTypeRule(new MimeType("text/plain"), "plain text", "text", false));
-        m.add(new MimeTypeRule(new MimeType("text/richtext"), "rich text", "text", false));
-        m.add(new MimeTypeRule(new MimeType("text/tab-separated-values"), "tab separated values", "text", false));
-        m.add(new MimeTypeRule(new MimeType("text/xml"), "XML", "text", false));
-        m.add(new MimeTypeRule(new MimeType("text/xsl"), "XSL", "text", false));
-        m.add(new MimeTypeRule(new MimeType("text/x-sgml"), "SGML", "text", false));
-        m.add(new MimeTypeRule(new MimeType("text/x-vcard"), "vCard", "text", false));
+        m.add(new GenericRule("text/css", "cascading style sheet", "text", false));
+        m.add(new GenericRule("text/html", "HTML", "text", false));
+        m.add(new GenericRule("text/plain", "plain text", "text", false));
+        m.add(new GenericRule("text/richtext", "rich text", "text", false));
+        m.add(new GenericRule("text/tab-separated-values", "tab separated values", "text", false));
+        m.add(new GenericRule("text/xml", "XML", "text", false));
+        m.add(new GenericRule("text/xsl", "XSL", "text", false));
+        m.add(new GenericRule("text/x-sgml", "SGML", "text", false));
+        m.add(new GenericRule("text/x-vcard", "vCard", "text", false));
 
-        m.add(new MimeTypeRule(new MimeType("application/mac-binhex40"), "Macintosh BinHex", "archive", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-stuffit"), "Macintosh Stuffit archive", "archive", false));
-        m.add(new MimeTypeRule(new MimeType("application/macwriteii"), "MacWrite Document", "document", false));
-        m.add(new MimeTypeRule(new MimeType("application/applefile"), "Macintosh File", "archive", false));
-        m.add(new MimeTypeRule(new MimeType("application/mac-compactpro"), "Macintosh Compact Pro", "archive", false));
+        m.add(new GenericRule("application/mac-binhex40", "Macintosh BinHex", "archive", false));
+        m.add(new GenericRule("application/x-stuffit", "Macintosh Stuffit archive", "archive", false));
+        m.add(new GenericRule("application/macwriteii", "MacWrite Document", "document", false));
+        m.add(new GenericRule("application/applefile", "Macintosh File", "archive", false));
+        m.add(new GenericRule("application/mac-compactpro", "Macintosh Compact Pro", "archive", false));
 
-        m.add(new MimeTypeRule(new MimeType("application/x-bzip2"), "block compressed", "compressed", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-shar"), "shell archive", "archive", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-gtar"), "gzipped tar archive", "archive", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-gzip"), "gzip compressed", "compressed", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-tar"), "4.3BSD tar archive", "archive", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-ustar"), "POSIX tar archive", "archive", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-cpio"), "old cpio archive", "archive", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-bcpio"), "POSIX cpio archive", "archive", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-sv4crc"), "System V cpio with CRC", "archive", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-compress"), "UNIX compressed", "compressed", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-sv4cpio"), "System V cpio", "archive", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-sh"), "UNIX shell script", "executable", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-csh"), "UNIX csh script", "executable", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-tcl"), "Tcl script", "executable", false));
-        m.add(new MimeTypeRule(new MimeType("application/x-javascript"), "JavaScript", "executable", false));
+        m.add(new GenericRule("application/x-bzip2", "block compressed", "compressed", false));
+        m.add(new GenericRule("application/x-shar", "shell archive", "archive", false));
+        m.add(new GenericRule("application/x-gtar", "gzipped tar archive", "archive", false));
+        m.add(new GenericRule("application/x-gzip", "gzip compressed", "compressed", false));
+        m.add(new GenericRule("application/x-tar", "4.3BSD tar archive", "archive", false));
+        m.add(new GenericRule("application/x-ustar", "POSIX tar archive", "archive", false));
+        m.add(new GenericRule("application/x-cpio", "old cpio archive", "archive", false));
+        m.add(new GenericRule("application/x-bcpio", "POSIX cpio archive", "archive", false));
+        m.add(new GenericRule("application/x-sv4crc", "System V cpio with CRC", "archive", false));
+        m.add(new GenericRule("application/x-compress", "UNIX compressed", "compressed", false));
+        m.add(new GenericRule("application/x-sv4cpio", "System V cpio", "archive", false));
+        m.add(new GenericRule("application/x-sh", "UNIX shell script", "executable", false));
+        m.add(new GenericRule("application/x-csh", "UNIX csh script", "executable", false));
+        m.add(new GenericRule("application/x-tcl", "Tcl script", "executable", false));
+        m.add(new GenericRule("application/x-javascript", "JavaScript", "executable", false));
 
-        m.add(new MimeTypeRule(new MimeType("application/x-excel"), "Microsoft Excel", "document", false));
-        m.add(new MimeTypeRule(new MimeType("application/mspowerpoint"), "Microsoft Powerpoint", "document", false));
-        m.add(new MimeTypeRule(new MimeType("application/msword"), "Microsoft Word", "document", false));
-        m.add(new MimeTypeRule(new MimeType("application/wordperfect5.1"), "Word Perfect", "document", false));
-        m.add(new MimeTypeRule(new MimeType("application/rtf"), "Rich Text Format", "document", false));
-        m.add(new MimeTypeRule(new MimeType("application/pdf"), "Adobe Acrobat", "document", false));
-        m.add(new MimeTypeRule(new MimeType("application/postscript"), "Postscript", "document", false));
+        m.add(new GenericRule("application/x-excel", "Microsoft Excel", "document", false));
+        m.add(new GenericRule("application/mspowerpoint", "Microsoft Powerpoint", "document", false));
+        m.add(new GenericRule("application/msword", "Microsoft Word", "document", false));
+        m.add(new GenericRule("application/wordperfect5.1", "Word Perfect", "document", false));
+        m.add(new GenericRule("application/rtf", "Rich Text Format", "document", false));
+        m.add(new GenericRule("application/pdf", "Adobe Acrobat", "document", false));
+        m.add(new GenericRule("application/postscript", "Postscript", "document", false));
 
         settings.setBlockedMimeTypes(m);
 
-        getBlacklist().updateToCurrentCategories(settings);
-
-        setWebFilterSettings(settings);
+        _setSettings(settings);
     }
 
     @Override
     protected void postInit(String[] args)
     {
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery
-                        ("from WebFilterSettings hbs where hbs.tid = :tid");
-                    q.setParameter("tid", getNodeId());
-                    settings = (WebFilterSettings)q.uniqueResult();
-
-                    getBlacklist().updateToCurrentCategories(settings);
-
-                    boolean found = false;
-                    for (BlacklistCategory bc : settings.getBlacklistCategories()) {
-                        if (BlacklistCategory.UNCATEGORIZED.equals(bc.getName())) {
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (!found) {
-                        BlacklistCategory bc = new BlacklistCategory(BlacklistCategory.UNCATEGORIZED, "Uncategorized", "Uncategorized");
-                        settings.addBlacklistCategory(bc);
-                    }
-
-                    return true;
-                }
-
-                public Void getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("IN POSTINIT SET BLACKLIST " + settings);
+        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeId().getId().toString();
+        WebFilterSettings readSettings = null;
+        try {
+            readSettings = settingsManager.load( WebFilterSettings.class, System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getName() + "/" + "settings_" + nodeID );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:",e);
         }
-        getBlacklist().configure(settings);
-        getBlacklist().open();
-        reconfigure();
+
+        if (readSettings == null) {
+            logger.warn("Initializing new settings (no settings found)...");
+            this.initializeSettings();
+        }
+        else {
+            logger.info("Loading Settings...");
+
+            // UPDATE settings if necessary
+            
+            this.settings = readSettings;
+            logger.warn("Setting: " + this.settings.toJSONString());
+        }
 
         deployWebAppIfRequired(logger);
     }
@@ -629,26 +509,25 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     protected void postDestroy()
     {
         unDeployWebAppIfRequired(logger);
-        getBlacklist().close();
     }
 
     @Override
     protected void preStart() throws Exception
     {
-        getBlacklist().removeAllUnblockedSites();
+        getDecisionEngine().removeAllUnblockedSites();
         bypassMonitor.start();
     }
 
     @Override
     protected void postStop()
     {
-    bypassMonitor.stop();
-    getBlacklist().removeAllUnblockedSites();
+        bypassMonitor.stop();
+        getDecisionEngine().removeAllUnblockedSites();
     }
 
     // package protected methods ----------------------------------------------
 
-    void log(WebFilterEvent se)
+    protected void log(WebFilterEvent se)
     {
         eventLogger.log(se);
     }
@@ -663,7 +542,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         }
     }
 
-    String generateNonce(WebFilterBlockDetails details)
+    protected String generateNonce(WebFilterBlockDetails details)
     {
         return replacementGenerator.generateNonce(details);
     }
@@ -673,7 +552,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         return replacementGenerator.generateResponse(nonce, session, uri,header, persistent);
     }
 
-    Token[] generateResponse(String nonce, TCPSession session,boolean persistent)
+    protected Token[] generateResponse(String nonce, TCPSession session, boolean persistent)
     {
         return replacementGenerator.generateResponse(nonce, session, persistent);
     }
@@ -700,6 +579,30 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     // private methods --------------------------------------------------------
 
+    /**
+     * Set the current settings to new Settings
+     * And save the settings to disk
+     */
+    private void _setSettings( WebFilterSettings newSettings )
+    {
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeId().getId().toString();
+        try {
+            settingsManager.save(WebFilterSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-" + this.getName() + "/" + "settings_" + nodeID, newSettings);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.info("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+    }
+    
     protected static synchronized void deployWebAppIfRequired(Logger logger)
     {
         if (0 != deployCount++) {
@@ -709,7 +612,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         LocalUvmContext mctx = LocalUvmContextFactory.context();
         LocalAppServerManager asm = mctx.localAppServerManager();
 
-        Valve v = new OutsideValve()
+        org.apache.catalina.Valve v = new com.untangle.uvm.util.OutsideValve()
             {
                 protected boolean isInsecureAccessAllowed()
                 {
@@ -742,60 +645,6 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
             logger.debug("Unloaded WebFilter WebApp");
         } else {
             logger.warn("Unable to unload WebFilter WebApp");
-        }
-    }
-
-    protected <T extends Rule> void updateRules(final Set<T> rules, final List<T> added, final List<Long> deleted, final List<T> modified)
-    {
-        TransactionWork<Void> tw = new TransactionWork<Void>() {
-                public boolean doWork(Session s) {
-                    listUtil.updateCachedItems(rules, added, deleted, modified);
-
-                    settings = (WebFilterSettings)s.merge(settings);
-
-                    return true;
-                }
-
-                public Void getResult() {
-                    return null;
-                }
-            };
-        getNodeContext().runTransaction(tw);
-
-        getBlacklist().configure(settings);
-        reconfigure();
-    }
-
-    protected void updateCategories(final Set<BlacklistCategory> categories, final List<BlacklistCategory> added, final List<Long> deleted, final List<BlacklistCategory> modified)
-    {
-        TransactionWork<Void> tw = new TransactionWork<Void>() {
-                public boolean doWork(Session s) {
-                    listUtil.updateCachedItems(categories, categoryHandler, added, deleted, modified);
-
-                    settings = (WebFilterSettings)s.merge(settings);
-
-                    return true;
-                }
-
-                public Void getResult() {
-                    return null;
-                }
-            };
-        getNodeContext().runTransaction(tw);
-
-        getBlacklist().configure(settings);
-    }
-
-    protected static class BlacklistCategoryHandler implements PartialListUtil.Handler<BlacklistCategory>
-    {
-        public Long getId(BlacklistCategory rule)
-        {
-            return rule.getId();
-        }
-
-        public void update(BlacklistCategory current, BlacklistCategory newRule)
-        {
-            current.update(newRule);
         }
     }
 }

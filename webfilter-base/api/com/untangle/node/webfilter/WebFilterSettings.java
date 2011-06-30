@@ -1,273 +1,249 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id$
  */
-
 package com.untangle.node.webfilter;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.Cascade;
+import java.util.List;
+import java.util.LinkedList;
+import org.json.JSONObject;
+import org.json.JSONString;
 
 import com.untangle.uvm.node.IPMaddrRule;
-import com.untangle.uvm.node.MimeTypeRule;
-import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.security.NodeId;
 
 /**
  * WebFilter settings.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
-@Entity
-@Table(name="n_webfilter_settings", schema="settings")
 @SuppressWarnings("serial")
 public class WebFilterSettings implements Serializable
 {
+    public static final String UNBLOCK_MODE_NONE   = "None";
+    public static final String UNBLOCK_MODE_HOST   = "Host";
+    public static final String UNBLOCK_MODE_GLOBAL = "Global";
 
-    private Long id;
-    private NodeId tid;
+    private BlockTemplate blockTemplate = new BlockTemplate();
 
-    private WebFilterBaseSettings baseSettings = new WebFilterBaseSettings();
+    private boolean enableHttps = false;
+    private boolean unblockPasswordEnabled = false;
+    private boolean unblockPasswordAdmin = false;
+    private String  unblockPassword = "";
+    private String  unblockMode = UNBLOCK_MODE_NONE;
+    private boolean enforceSafeSearch = true;
+    private boolean blockAllIpHosts = true;
 
-    private Set<IPMaddrRule> passedClients = new HashSet<IPMaddrRule>();
-    private Set<StringRule> passedUrls = new HashSet<StringRule>();
-
-    private Set<StringRule> blockedUrls = new HashSet<StringRule>();
-    private Set<MimeTypeRule> blockedMimeTypes = new HashSet<MimeTypeRule>();
-    private Set<StringRule> blockedExtensions = new HashSet<StringRule>();
-    private Set<BlacklistCategory> blacklistCategories = new HashSet<BlacklistCategory>();
+    private List<IPMaddrRule> passedClients = new LinkedList<IPMaddrRule>();
+    private List<GenericRule> passedUrls = new LinkedList<GenericRule>();
+    private List<GenericRule> blockedUrls = new LinkedList<GenericRule>();
+    private List<GenericRule> blockedMimeTypes = new LinkedList<GenericRule>();
+    private List<GenericRule> blockedExtensions = new LinkedList<GenericRule>();
+    private List<GenericRule> categories = new LinkedList<GenericRule>();
 
     // constructors -----------------------------------------------------------
 
     public WebFilterSettings() { }
 
-    public WebFilterSettings(NodeId tid)
-    {
-        this.tid = tid;
-    }
-
-    // business methods ------------------------------------------------------
-
-    public void addBlacklistCategory(BlacklistCategory category)
-    {
-        blacklistCategories.add(category);
-    }
-
-    public BlacklistCategory getBlacklistCategory(String name)
-    {
-        for (Iterator<BlacklistCategory> i = blacklistCategories.iterator(); i.hasNext(); ) {
-            BlacklistCategory bc = i.next();
-            if (name.equals(bc.getName())) {
-                return bc;
-            }
-        }
-
-        return null;
-    }
-
     // accessors --------------------------------------------------------------
 
-    @SuppressWarnings("unused")
-	@Id
-    @Column(name="settings_id")
-    @GeneratedValue
-    private Long getId()
-    {
-        return id;
-    }
-
-    @SuppressWarnings("unused")
-	private void setId(Long id)
-    {
-        this.id = id;
-    }
-
-    /**
-     * Node id for these settings.
-     *
-     * @return tid for these settings.
-     */
-    @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="tid", nullable=false)
-    public NodeId getTid()
-    {
-        return tid;
-    }
-
-    public void setTid(NodeId tid)
-    {
-        this.tid = tid;
-    }
-
-    /**
-     * Clients not subject to blacklisting.
-     *
-     * @return the set of passed clients.
-     */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="n_webfilter_passed_clients",
-               joinColumns=@JoinColumn(name="setting_id"),
-               inverseJoinColumns=@JoinColumn(name="rule_id"))
-    public Set<IPMaddrRule> getPassedClients()
+    public List<IPMaddrRule> getPassedClients()
     {
         return passedClients;
     }
 
-    public void setPassedClients(Set<IPMaddrRule> passedClients)
+    public void setPassedClients(List<IPMaddrRule> passedClients)
     {
         this.passedClients = passedClients;
     }
 
-    /**
-     * URLs not subject to blacklist checking.
-     *
-     * @return the set of passed URLs.
-     */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="n_webfilter_passed_urls",
-               joinColumns=@JoinColumn(name="setting_id"),
-               inverseJoinColumns=@JoinColumn(name="rule_id"))
-    public Set<StringRule> getPassedUrls()
+    public List<GenericRule> getPassedUrls()
     {
         return passedUrls;
     }
 
-    public void setPassedUrls(Set<StringRule> passedUrls)
+    public void setPassedUrls(List<GenericRule> passedUrls)
     {
         this.passedUrls = passedUrls;
     }
 
-    /**
-     * URLs not subject to blacklist checking.
-     *
-     * @return the set of blocked URLs.
-     */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="n_webfilter_blocked_urls",
-               joinColumns=@JoinColumn(name="setting_id"),
-               inverseJoinColumns=@JoinColumn(name="rule_id"))
-    public Set<StringRule> getBlockedUrls()
+    public List<GenericRule> getBlockedUrls()
     {
         return blockedUrls;
     }
 
-    public void setBlockedUrls(Set<StringRule> blockedUrls)
+    public void setBlockedUrls(List<GenericRule> blockedUrls)
     {
         this.blockedUrls = blockedUrls;
     }
 
-    /**
-     * Mime-Types to be blocked.
-     *
-     * @return the set of blocked MIME types.
-     */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="n_webfilter_mime_types",
-               joinColumns=@JoinColumn(name="setting_id"),
-               inverseJoinColumns=@JoinColumn(name="rule_id"))
-    public Set<MimeTypeRule> getBlockedMimeTypes()
+    public List<GenericRule> getBlockedMimeTypes()
     {
         return blockedMimeTypes;
     }
 
-    public void setBlockedMimeTypes(Set<MimeTypeRule> blockedMimeTypes)
+    public void setBlockedMimeTypes(List<GenericRule> blockedMimeTypes)
     {
         this.blockedMimeTypes = blockedMimeTypes;
     }
 
-    /**
-     * Extensions to be blocked.
-     *
-     * @return the set of blocked extensions.
-     */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="n_webfilter_extensions",
-               joinColumns=@JoinColumn(name="setting_id"),
-               inverseJoinColumns=@JoinColumn(name="rule_id"))
-    public Set<StringRule> getBlockedExtensions()
+    public List<GenericRule> getBlockedExtensions()
     {
         return blockedExtensions;
     }
 
-    public void setBlockedExtensions(Set<StringRule> blockedExtensions)
+    public void setBlockedExtensions(List<GenericRule> blockedExtensions)
     {
         this.blockedExtensions = blockedExtensions;
     }
 
-    /**
-     * Blacklist blocking options.
-     *
-     * @return the set of blacklist categories.
-     */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinColumn(name="setting_id")
-    public Set<BlacklistCategory> getBlacklistCategories()
+    public List<GenericRule> getCategories()
     {
-        return blacklistCategories;
+        return this.categories;
     }
 
-    public void setBlacklistCategories(Set<BlacklistCategory> blacklistCategories)
+    public void setCategories(List<GenericRule> categories)
     {
-        this.blacklistCategories = blacklistCategories;
+        this.categories = categories;
     }
 
-    @Embedded
-    public WebFilterBaseSettings getBaseSettings() {
-        if (null != baseSettings) {
-            baseSettings.setPassedClientsLength(null == passedClients ? 0 : passedClients.size());
-            baseSettings.setPassedUrlsLength(null == passedUrls ? 0 : passedUrls.size());
-            baseSettings.setBlockedUrlsLength(null == blockedUrls ? 0 : blockedUrls.size());
-            baseSettings.setBlockedMimeTypesLength(null == blockedMimeTypes ? 0 : blockedMimeTypes.size());
-            baseSettings.setBlockedExtensionsLength(null == blockedExtensions ? 0 : blockedExtensions.size());
-            baseSettings.setBlacklistCategoriesLength(null == blacklistCategories ? 0 : blacklistCategories.size());
+    public GenericRule getCategory(String name)
+    {
+        if (name == null)
+            return null;
+        
+        for (GenericRule cat : getCategories()) {
+            if (name.equals(cat.getDescription()))
+                return cat;
         }
 
-        return baseSettings;
+            return null;
     }
 
-    public void setBaseSettings(WebFilterBaseSettings baseSettings) {
-        this.baseSettings = baseSettings;
+    /**
+     * Template for block messages.
+     *
+     * @return the block message.
+     */
+    public BlockTemplate getBlockTemplate()
+    {
+        return blockTemplate;
     }
+
+    public void setBlockTemplate(BlockTemplate blockTemplate)
+    {
+        this.blockTemplate = blockTemplate;
+    }
+
+    /**
+     * Block all requests to hosts identified only by an IP address.
+     *
+     * @return true when IP requests are blocked.
+     */
+    public boolean getBlockAllIpHosts()
+    {
+        return blockAllIpHosts;
+    }
+
+    public void setBlockAllIpHosts(boolean blockAllIpHosts)
+    {
+        this.blockAllIpHosts = blockAllIpHosts;
+    }
+
+    /**
+     * If true, enables checking of HTTPS traffic.
+     *
+     * @return true to block.
+     */
+    public boolean getEnableHttps()
+    {
+        return enableHttps;
+    }
+
+    public void setEnableHttps(boolean enableHttps)
+    {
+        this.enableHttps = enableHttps;
+    }
+
+    /**
+     * If true, enforces safe search on popular search engines.
+     *
+     * @return true to block.
+     */
+    public boolean getEnforceSafeSearch()
+    {
+        return enforceSafeSearch;
+    }
+
+    public void setEnforceSafeSearch(boolean enforceSafeSearch)
+    {
+        this.enforceSafeSearch = enforceSafeSearch;
+    }
+
+    /**
+     * If true, ask for a password to unblock a site.
+     *
+     * @return true to block.
+     */
+    public boolean getUnblockPasswordEnabled()
+    {
+        return this.unblockPasswordEnabled;
+    }
+
+    public void setUnblockPasswordEnabled(boolean newValue)
+    {
+        this.unblockPasswordEnabled = newValue;
+    }
+
+    /**
+     * If true, ask for a password to unblock a site.
+     *
+     * @return true to block.
+     */
+    public boolean getUnblockPasswordAdmin()
+    {
+        return this.unblockPasswordAdmin;
+    }
+
+    public void setUnblockPasswordAdmin(boolean newValue)
+    {
+        this.unblockPasswordAdmin = newValue;
+    }
+    
+    /**
+     * String to use for the unblock password
+     *
+     * @return Unblock password for this node..
+     */
+    public String getUnblockPassword()
+    {
+        return this.unblockPassword;
+    }
+
+    public void setUnblockPassword(String newValue)
+    {
+        this.unblockPassword = newValue;
+    }
+
+    /**
+     * The mode for bypass
+     *
+     * @return The bypass settings
+     */
+    public String getUnblockMode()
+    {
+        return this.unblockMode;
+    }
+
+    public void setUnblockMode(String unblockMode)
+    {
+        this.unblockMode = unblockMode;
+    }
+
+
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
+    }
+
 }

@@ -116,7 +116,7 @@ ALTER TABLE settings.tr_httpblk_blocked_urls
 ALTER TABLE settings.tr_httpblk_blocked_urls
     ALTER COLUMN position SET NOT NULL;
 
--- com.untangle.tran.httpblocker.BlacklistCategory
+-- com.untangle.tran.httpblocker.Category
 CREATE TABLE settings.tr_httpblk_blcat
     AS SELECT * FROM public.tr_httpblk_blcat;
 

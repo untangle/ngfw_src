@@ -49,7 +49,6 @@ import org.hibernate.annotations.Cascade;
 @SuppressWarnings("serial")
 public class SpywareSettings implements Serializable
 {
-
     private Long id;
     private NodeId tid;
 

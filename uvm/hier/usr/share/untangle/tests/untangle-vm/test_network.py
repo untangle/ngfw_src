@@ -1,7 +1,7 @@
 import commands
 import sets
 
-from untangle.ats.uvm_setup import UvmSetup
+from untangle.uvm_setup import UvmSetup
 
 ## For py.test to recongize the test it must be prefixed with Test in the class name
 class TestNetwork(UvmSetup):

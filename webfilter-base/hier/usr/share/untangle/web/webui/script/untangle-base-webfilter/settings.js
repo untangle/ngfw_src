@@ -25,7 +25,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 name : 'Block Lists',
                 helpSource : 'block_lists',
                 // private fields
-                winBlacklistCategories : null,
+                winCategories : null,
                 winBlockedUrls : null,
                 winBlockedExtensions : null,
                 winBlockedMimeTypes : null,
@@ -47,7 +47,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         name : "manage_categories",
                         text : this.i18n._("Edit Categories"),
                         handler : function() {
-                            this.panelBlockLists.onManageBlacklistCategories();
+                            this.panelBlockLists.onManageCategories();
                         }.createDelegate(this)
                     }]
                 },{
@@ -96,7 +96,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         xtype : "combo",
                         editable : false,
                         mode : "local",
-                        fieldLabel : this.i18n._("User Bypass"),
+                        fieldLabel : this.i18n._("Bypass"),
                         name : "user_bypass",
                         store : new Ext.data.SimpleStore({
                             fields : ['userWhitelistValue', 'userWhitelistName'],
@@ -118,18 +118,18 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     }]
                 }],
 
-                onManageBlacklistCategories : function() {
-                    if (!this.winBlacklistCategories) {
+                onManageCategories : function() {
+                    if (!this.winCategories) {
                         var settingsCmp = Ext.getCmp(this.parentId);
-                        settingsCmp.buildBlacklistCategories();
-                        this.winBlacklistCategories = new Ung.ManageListWindow({
+                        settingsCmp.buildCategories();
+                        this.winCategories = new Ung.ManageListWindow({
                             breadcrumbs : [{
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
                                     Ung.Window.cancelAction(
-                                       this.gridBlacklistCategories.isDirty() || this.isDirty(),
+                                       this.gridCategories.isDirty() || this.isDirty(),
                                        function() {
-                                            this.panelBlockLists.winBlacklistCategories.closeWindow();
+                                            this.panelBlockLists.winCategories.closeWindow();
                                             this.closeWindow();
                                        }.createDelegate(this)
                                     );
@@ -137,26 +137,26 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             }, {
                                 title : settingsCmp.node.md.displayName,
                                 action : function() {
-                                    this.panelBlockLists.winBlacklistCategories.cancelAction();
+                                    this.panelBlockLists.winCategories.cancelAction();
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.i18n._("Categories")
                             }],
-                            grid : settingsCmp.gridBlacklistCategories,
+                            grid : settingsCmp.gridCategories,
                             applyAction : function(forceLoad){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = settingsCmp.gridBlacklistCategories.getSaveList();
-                                settingsCmp.getRpcNode().updateBlacklistCategories(function(result, exception) {
+                                var saveList = settingsCmp.gridCategories.getSaveList();
+                                settingsCmp.getRpcNode().saveCategories(function(result, exception) {
                                     Ext.MessageBox.hide();
                                     if(Ung.Util.handleException(exception)) return;
                                     if(forceLoad===true){                                                
-                                        this.gridBlacklistCategories.reloadGrid();
+                                        this.gridCategories.reloadGrid();
                                     }
-                                }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                                }.createDelegate(settingsCmp), settingsCmp.gridCategories.getFullSaveList());
                             }                                                        
                         });
                     }
-                    this.winBlacklistCategories.show();
+                    this.winCategories.show();
                 },
                 onManageBlockedUrls : function() {
                     if (!this.winBlockedUrls) {
@@ -172,7 +172,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                             this.panelBlockLists.winBlockedUrls.closeWindow();
                                             this.closeWindow();
                                        }.createDelegate(this)
-                                    )
+                                    );
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
@@ -222,7 +222,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                             this.panelBlockLists.winBlockedExtensions.closeWindow();
                                             this.closeWindow();
                                        }.createDelegate(this)
-                                    )
+                                    );
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
@@ -271,7 +271,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                             this.panelBlockLists.winBlockedMimeTypes.closeWindow();
                                             this.closeWindow();
                                        }.createDelegate(this)
-                                    )
+                                    );
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
@@ -307,13 +307,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     this.winBlockedMimeTypes.show();
                 },
                 beforeDestroy : function() {
-                    Ext.destroy(this.winBlacklistCategories, this.winBlockedUrls, this.winBlockedExtensions, this.winBlockedMimeTypes);
+                    Ext.destroy(this.winCategories, this.winBlockedUrls, this.winBlockedExtensions, this.winBlockedMimeTypes);
                     Ext.Panel.prototype.beforeDestroy.call(this);
                 }
             });
         },
         // Block Categories
-        buildBlacklistCategories : function() {
+        buildCategories : function() {
             var liveColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("Block"),
                 dataIndex : 'block',
@@ -333,15 +333,15 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 tooltip : this.i18n._("Flag as Violation")
             });
 
-            this.gridBlacklistCategories = new Ung.EditorGrid({
+            this.gridCategories = new Ung.EditorGrid({
                 name : 'Categories',
                 settingsCmp : this,
                 totalRecords : this.getBaseSettings().blacklistCategoriesLength,
                 hasAdd : false,
                 hasDelete : false,
                 title : this.i18n._("Categories"),
-                recordJavaClass : "com.untangle.node.webfilter.BlacklistCategory",
-                proxyRpcFn : this.getRpcNode().getBlacklistCategories,
+                recordJavaClass : "com.untangle.node.webfilter.Category",
+                proxyRpcFn : this.getRpcNode().getCategories,
                 fields : [{
                     name : 'id'
                 }, {
@@ -397,7 +397,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     listeners : {
                         "check" : {
                             fn : function(elem, checked) {
-                                var rowEditor = this.gridBlacklistCategories.rowEditor;
+                                var rowEditor = this.gridCategories.rowEditor;
                                 if (checked) {
                                     rowEditor.inputLines[2].setValue(true);
                                 }
@@ -746,7 +746,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                             this.panelPassLists.winPassedUrls.closeWindow();
                                             this.closeWindow();
                                        }.createDelegate(this)
-                                    )
+                                    );
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,
@@ -796,7 +796,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                             this.panelPassLists.winPassedClients.closeWindow();
                                             this.closeWindow();
                                        }.createDelegate(this)
-                                    )
+                                    );
                                 }.createDelegate(settingsCmp)
                             }, {
                                 title : settingsCmp.node.md.displayName,

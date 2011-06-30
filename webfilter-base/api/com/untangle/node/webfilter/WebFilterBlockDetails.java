@@ -1,3 +1,6 @@
+/*
+ * $HeadURL$
+ */
 package com.untangle.node.webfilter;
 
 import java.net.InetAddress;
@@ -35,7 +38,7 @@ public class WebFilterBlockDetails extends BlockDetails
 
     public String getHeader()
     {
-        return settings.getBaseSettings().getBlockTemplate().getHeader();
+        return settings.getBlockTemplate().getHeader();
     }
 
     public String getReason()

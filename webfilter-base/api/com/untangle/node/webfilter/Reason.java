@@ -35,7 +35,7 @@ public enum Reason
     BLOCK_IP_HOST('H', "hostname is an IP address"),
     PASS_URL('I', "in URLs Pass list"),
     PASS_CLIENT('C', "in Clients Pass list"),
-    PASS_BYPASS('B', "in ByPass list"),
+    PASS_UNBLOCK('B', "in Bypass list"),
 
     /**
      * None is to help the GUI deal with the concept of none. Don't

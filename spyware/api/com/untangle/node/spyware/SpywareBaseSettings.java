@@ -1,21 +1,6 @@
 /*
  * $HeadURL: svn://chef/branch/prod/web-ui/work/src/spyware/api/com/untangle/node/spyware/SpywareSettings.java $
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 package com.untangle.node.spyware;
 
 import java.io.Serializable;
@@ -25,8 +10,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
-
-import com.untangle.node.http.UserWhitelistMode;
 
 /**
  * Base Settings for the Spyware node.
@@ -38,7 +21,11 @@ import com.untangle.node.http.UserWhitelistMode;
 @SuppressWarnings("serial")
 public class SpywareBaseSettings implements Serializable
 {
-    private UserWhitelistMode userWhitelistMode = UserWhitelistMode.USER_ONLY;
+    public static final String UNBLOCK_MODE_NONE   = "None";
+    public static final String UNBLOCK_MODE_HOST   = "Host";
+    public static final String UNBLOCK_MODE_GLOBAL = "Global";
+
+    private String unblockMode = UNBLOCK_MODE_NONE;
     private boolean activeXEnabled = true;
     private boolean cookieBlockerEnabled = true;
     private boolean spywareEnabled = true;
@@ -67,14 +54,14 @@ public class SpywareBaseSettings implements Serializable
 
     @Enumerated(EnumType.STRING)
     @Column(name="user_whitelist_mode", nullable=false)
-    public UserWhitelistMode getUserWhitelistMode()
+    public String getUnblockMode()
     {
-        return userWhitelistMode;
+        return unblockMode;
     }
 
-    public void setUserWhitelistMode(UserWhitelistMode userWhitelistMode)
+    public void setUnblockMode(String unblockMode)
     {
-        this.userWhitelistMode = userWhitelistMode;
+        this.unblockMode = unblockMode;
     }
 
     /**

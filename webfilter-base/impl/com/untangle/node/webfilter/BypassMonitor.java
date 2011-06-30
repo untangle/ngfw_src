@@ -1,21 +1,6 @@
 /*
  * $HeadURL: svn://chef/work/src/webfilter-base/impl/com/untangle/node/webfilter/BypassMonitor.java $
- * Copyright (c) 2003-2009 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 package com.untangle.node.webfilter;
 
 import java.net.InetAddress;
@@ -40,7 +25,8 @@ import com.untangle.uvm.util.WorkerRunner;
  * @author <a href="mailto:seb@untangle.com">Sebastien Delafond</a>
  * @version 1.0
  */
-class BypassMonitor {
+class BypassMonitor
+{
 
     // static variables ---------------------------------------------------------
     private static long BYPASS_TIMEOUT_MS = 60l * 60l * 1000l;
@@ -60,21 +46,25 @@ class BypassMonitor {
     private final WorkerRunner workerRunner = new WorkerRunner(monitor, LocalUvmContextFactory.context());
 
     // constructors -----------------------------------------------
-    public BypassMonitor(WebFilterBase myWfb) {
+    public BypassMonitor(WebFilterBase myWfb)
+    {
         logger.info("BypassMonitor initializing");
         wfb = myWfb;
     }
 
     // class protected methods -----------------------------------------------
-    void addBypassedSite(InetAddress addr, String site) {
-        monitor.addBypassedSite(addr, site);
+    void addUnblockedSite(InetAddress addr, String site)
+    {
+        monitor.addUnblockedSite(addr, site);
     }
 
-    void start() {
+    void start()
+    {
         workerRunner.start();
     }
 
-    void stop()  {
+    void stop()
+    {
         workerRunner.stop();
     }
 
@@ -83,10 +73,12 @@ class BypassMonitor {
      * The Monitor class actually takes care of periodically checking
      * host-bypassed sites, and removing them if they are expired.
      */
-    private final class Monitor implements Worker {
+    private final class Monitor implements Worker
+    {
         private SortedSet<BypassedSite> bypassedSites = new TreeSet<BypassedSite>();
 	
-        public synchronized void addBypassedSite(InetAddress addr, String site) {
+        public synchronized void addUnblockedSite(InetAddress addr, String site)
+        {
             BypassedSite bs = new BypassedSite(addr, site);
             if (bypassedSites.contains(bs))
                 bypassedSites.remove(bs);  // to make sure creation time is the latest...
@@ -95,13 +87,12 @@ class BypassMonitor {
             logger.warn("added " + bs);
         }
 
-        public void start() { // nothing special to run
-        }
+        public void start() {}
 
-        public void stop() { // nothing special to run
-        }
+        public void stop() {}
 
-        public void work() throws InterruptedException {
+        public void work() throws InterruptedException
+        {
             Thread.sleep(BYPASS_SLEEP_DELAY_MS);
 
             if (bypassedSites.isEmpty())
@@ -140,7 +131,7 @@ class BypassMonitor {
                         }
                     }
                 }
-                wfb.getBlacklist().removeUnblockedSites(sitesToDelete);
+                wfb.getDecisionEngine().removeUnblockedSites(sitesToDelete);
             } catch (Exception e) {
                 logger.warn("Problem in BypassMonitor: '" + e.getMessage() + "'", e);
             }
@@ -159,21 +150,25 @@ class BypassMonitor {
         private InetAddress addr;
         private long creationTimeMillis;
 	
-        public BypassedSite(InetAddress myAddr, String mySite) {
+        public BypassedSite(InetAddress myAddr, String mySite)
+        {
             site = mySite;
             addr = myAddr;
             creationTimeMillis = System.nanoTime() / 1000000L;
         }
 
-        public int hashCode() {
+        public int hashCode()
+        {
             return (17 + 37 * (site.hashCode() + addr.hashCode()));
         }
 	
-        public int compareTo(BypassedSite other) {
+        public int compareTo(BypassedSite other)
+        {
             return (int)(creationTimeMillis - other.creationTimeMillis);
         }
 	
-        public String toString() {
+        public String toString()
+        {
             return "Host-bypassed site {" + addr + ", " + site + "}";
         }
 

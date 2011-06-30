@@ -56,7 +56,7 @@ public class WebFilterReplacementGenerator extends ReplacementGenerator<WebFilte
         try {
             WebFilterBase wf = (WebFilterBase)LocalUvmContextFactory.context().nodeManager().nodeContext(getNodeId()).node();
 
-            return new WebFilterBlockDetails( wf.getWebFilterSettings(),
+            return new WebFilterBlockDetails( wf.getSettings(),
                                               "test-host.example.com", 
                                               "/sample-webfilter", 
                                               "testing",

@@ -1,4 +1,4 @@
-from untangle.ats.uvm_setup import UvmSetup
+from untangle.uvm_setup import UvmSetup
 
 """
 Still to do:

@@ -122,12 +122,18 @@ public interface Session
     public final String KEY_SITEFILTER_BEST_CATEGORY_DESCRIPTION = "esoft-best-category-description"; /* String */
     public final String KEY_SITEFILTER_BEST_CATEGORY_FLAGGED = "esoft-best-category-flagged"; /* Boolean */
     public final String KEY_SITEFILTER_BEST_CATEGORY_BLOCKED = "esoft-best-category-blocked"; /* String */
+    public final String KEY_SITEFILTER_CATEGORY_FLAGGED = "esoft-category-flagged"; /* Boolean */
+    public final String KEY_SITEFILTER_CATEGORY_BLOCKED = "esoft-category-blocked"; /* String */
+    public final String KEY_SITEFILTER_CATEGORIES = "esoft-categories"; /* List<String> */
 
     //public final String KEY_WEBFILTER_BEST_CATEGORY_ID = "untangle-best-category-id"; /* String */
     //public final String KEY_WEBFILTER_BEST_CATEGORY_NAME = "untangle-best-category-name"; /* String */
     //public final String KEY_WEBFILTER_BEST_CATEGORY_DESCRIPTION = "untangle-best-category-description"; /* String */
     //public final String KEY_WEBFILTER_BEST_CATEGORY_FLAGGED = "untangle-best-category-flagged"; /* Boolean */
     //public final String KEY_WEBFILTER_BEST_CATEGORY_BLOCKED = "untangle-best-category-blocked"; /* String */
+    //public final String KEY_WEBFILTER_CATEGORY_FLAGGED = "untangle-category-flagged"; /* Boolean */
+    //public final String KEY_WEBFILTER_CATEGORY_BLOCKED = "untangle-category-blocked"; /* String */
+    //public final String KEY_WEBFILTER_CATEGORIES = "untangle-categories"; /* List<String> */
 
 
 }
