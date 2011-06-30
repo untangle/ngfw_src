@@ -32,13 +32,13 @@
  */
 package com.untangle.node.util;
 
-import com.untangle.uvm.node.IPMaddr;
+import com.untangle.uvm.node.IPMaskedAddress;
 
 public interface IPSet {
 
-    public void add (IPMaddr mask, Object result);
+    public void add (IPMaskedAddress mask, Object result);
 
-    public Object getMostSpecific  (IPMaddr mask);
-    public Object getLeastSpecific (IPMaddr mask);
+    public Object getMostSpecific  (IPMaskedAddress mask);
+    public Object getLeastSpecific (IPMaskedAddress mask);
 
 }

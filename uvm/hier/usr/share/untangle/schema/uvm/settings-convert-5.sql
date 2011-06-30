@@ -186,7 +186,7 @@ ALTER TABLE settings.transform_persistent_state ALTER COLUMN public_key SET NOT 
 ALTER TABLE settings.transform_persistent_state ALTER COLUMN target_state SET NOT NULL;
 ALTER TABLE settings.transform_persistent_state ADD PRIMARY KEY (id);
 
--- com.untangle.mvvm.tran.IPMaddrDirectory
+-- com.untangle.mvvm.tran.IPMaskedAddressDirectory
 ALTER TABLE settings.ipmaddr_dir ADD COLUMN tmp text;
 UPDATE settings.ipmaddr_dir SET tmp = notes;
 ALTER TABLE settings.ipmaddr_dir DROP COLUMN notes;
@@ -213,7 +213,7 @@ UPDATE settings.mimetype_rule SET tmp = description;
 ALTER TABLE settings.mimetype_rule DROP COLUMN description;
 ALTER TABLE settings.mimetype_rule RENAME COLUMN tmp TO description;
 
--- com.untangle.mvvm.tran.IPMaddrRule
+-- com.untangle.mvvm.tran.IPMaskedAddressRule
 ALTER TABLE settings.ipmaddr_rule ADD COLUMN tmp text;
 UPDATE settings.ipmaddr_rule SET tmp = name;
 ALTER TABLE settings.ipmaddr_rule DROP COLUMN name;

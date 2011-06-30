@@ -33,7 +33,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.uvm.node.IPMaddrRule;
+import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.security.NodeId;
 import org.hibernate.annotations.Cascade;
@@ -56,7 +56,7 @@ public class SpywareSettings implements Serializable
 
     private Set<StringRule> activeXRules;
     private Set<StringRule> cookieRules;
-    private Set<IPMaddrRule> subnetRules;
+    private Set<IPMaskedAddressRule> subnetRules;
     private Set<StringRule> domainWhitelist = new HashSet<StringRule>();
 
     private int accessVersion = -1;
@@ -167,7 +167,7 @@ public class SpywareSettings implements Serializable
     }
 
     /**
-     * IPMaddr rules.
+     * IPMaskedAddress rules.
      *
      * @return the set of Subnet Rules.
      */
@@ -177,12 +177,12 @@ public class SpywareSettings implements Serializable
     @JoinTable(name="n_spyware_sr",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
-    public Set<IPMaddrRule> getSubnetRules()
+    public Set<IPMaskedAddressRule> getSubnetRules()
     {
         return subnetRules;
     }
 
-    public void setSubnetRules(Set<IPMaddrRule> subnetRules)
+    public void setSubnetRules(Set<IPMaskedAddressRule> subnetRules)
     {
         this.subnetRules = subnetRules;
     }

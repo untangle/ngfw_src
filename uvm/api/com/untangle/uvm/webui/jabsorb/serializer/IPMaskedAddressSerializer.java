@@ -6,14 +6,14 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-import com.untangle.uvm.node.IPMaddr;
+import com.untangle.uvm.node.IPMaskedAddress;
 
 @SuppressWarnings({"serial","unchecked"})
-public class IPMaddrSerializer extends AbstractSerializer {
+public class IPMaskedAddressSerializer extends AbstractSerializer {
 	/**
 	 * Classes that this can serialise.
 	 */
-	private static Class[] _serializableClasses = new Class[] { IPMaddr.class };
+	private static Class[] _serializableClasses = new Class[] { IPMaskedAddress.class };
 
 	/**
 	 * Classes that this can serialise to.
@@ -39,7 +39,7 @@ public class IPMaddrSerializer extends AbstractSerializer {
 		
         if( o == null ) {
             return "";
-        } else if (o instanceof IPMaddr) {
+        } else if (o instanceof IPMaskedAddress) {
 			return o.toString();
 		}
         
@@ -70,7 +70,7 @@ public class IPMaddrSerializer extends AbstractSerializer {
 		Object returnValue = null;
 		String val = json instanceof String ? (String) json : json.toString();
 		try {
-			returnValue = IPMaddr.parse(val);
+			returnValue = IPMaskedAddress.parse(val);
 		} catch (Exception e) {
 			throw new UnmarshallException("Invalid \"subnet\" specified:"
 					+ val);

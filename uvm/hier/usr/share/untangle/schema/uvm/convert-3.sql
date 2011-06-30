@@ -165,7 +165,7 @@ ALTER TABLE settings.transform_persistent_state
 ALTER TABLE settings.transform_persistent_state
     ALTER COLUMN target_state SET NOT NULL;
 
--- com.untangle.mvvm.tran.IPMaddrDirectory
+-- com.untangle.mvvm.tran.IPMaskedAddressDirectory
 CREATE TABLE settings.ipmaddr_dir AS SELECT * FROM public.ipmaddr_dir;
 
 ALTER TABLE settings.ipmaddr_dir
@@ -181,7 +181,7 @@ ALTER TABLE settings.mimetype_rule
 ALTER TABLE settings.mimetype_rule
     ALTER COLUMN rule_id SET NOT NULL;
 
--- com.untangle.mvvm.tran.IPMaddrDirectory.entries
+-- com.untangle.mvvm.tran.IPMaskedAddressDirectory.entries
 CREATE TABLE settings.ipmaddr_dir_entries
     AS SELECT * FROM public.ipmaddr_dir_entries;
 
@@ -194,7 +194,7 @@ ALTER TABLE settings.ipmaddr_dir_entries
 ALTER TABLE settings.ipmaddr_dir_entries
     ALTER COLUMN position SET NOT NULL;
 
--- com.untangle.mvvm.tran.IPMaddrRule
+-- com.untangle.mvvm.tran.IPMaskedAddressRule
 CREATE TABLE settings.ipmaddr_rule AS SELECT * FROM public.ipmaddr_rule;
 
 ALTER TABLE settings.ipmaddr_rule

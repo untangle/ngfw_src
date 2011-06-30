@@ -631,7 +631,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 },
                 // the column is autoexpanded if the grid width permits
                 autoExpandColumn: 'name',
-                recordJavaClass: "com.untangle.uvm.node.IPMaddrRule",
+                recordJavaClass: "com.untangle.uvm.node.IPMaskedAddressRule",
 
                 data: this.getReportingSettings().networkDirectory.entries,
                 dataRoot: 'list',

@@ -10,7 +10,7 @@ import com.untangle.uvm.webui.jabsorb.serializer.ExtendedListSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.ExtendedSetSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.HostAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.HostNameSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.IPMaddrSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.IPMaskedAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.InetAddressSerializer;
@@ -62,7 +62,7 @@ public class ServletUtils
         registrator.registerSerializer(root, new TimeSerializer());
         
         // uvm related serializers
-        registrator.registerSerializer(root, new IPMaddrSerializer());
+        registrator.registerSerializer(root, new IPMaskedAddressSerializer());
         registrator.registerSerializer(root, new IPAddressSerializer());
         registrator.registerSerializer(root, new HostNameSerializer());
         registrator.registerSerializer(root, new HostAddressSerializer());

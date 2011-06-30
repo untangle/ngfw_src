@@ -19,7 +19,7 @@ package com.untangle.uvm.node;
 
 import java.util.List;
 
-public class IPMaddrValidator implements Validator
+public class IPMaskedAddressValidator implements Validator
 {
     public static final String ERR_CODE_INVALID_IPMADDR = "INVALID_IPMADDR";
 
@@ -30,7 +30,7 @@ public class IPMaddrValidator implements Validator
             if (data != null) {
                 for (String ipMaddrString : (List<String>) data) {
                     try {
-                        IPMaddr.parse(ipMaddrString);
+                        IPMaskedAddress.parse(ipMaddrString);
                     } catch (Exception e) {
                         return new ValidationResult(false,
                                                     ERR_CODE_INVALID_IPMADDR, ipMaddrString);

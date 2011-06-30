@@ -32,7 +32,7 @@
  */
 package com.untangle.node.util;
 
-import com.untangle.uvm.node.IPMaddr;
+import com.untangle.uvm.node.IPMaskedAddress;
 
 public class IPSetTest {
 
@@ -41,13 +41,13 @@ public class IPSetTest {
         Integer result;
 
         IPSet set = new IPSetTrie();
-        IPMaddr tendot    = new IPMaddr("10.0.0.0","255.0.0.0");
-        IPMaddr tentendot = new IPMaddr("10.10.0.0","255.255.0.0");
-        IPMaddr a         = new IPMaddr("10.10.0.1");
-        IPMaddr b         = new IPMaddr("10.9.0.1");
-        IPMaddr c         = new IPMaddr("192.168.0.1");
-        IPMaddr d         = new IPMaddr("192.168.0.2");
-        IPMaddr gator      = new IPMaddr("66.35.248.0","255.255.254.0");
+        IPMaskedAddress tendot    = new IPMaskedAddress("10.0.0.0","255.0.0.0");
+        IPMaskedAddress tentendot = new IPMaskedAddress("10.10.0.0","255.255.0.0");
+        IPMaskedAddress a         = new IPMaskedAddress("10.10.0.1");
+        IPMaskedAddress b         = new IPMaskedAddress("10.9.0.1");
+        IPMaskedAddress c         = new IPMaskedAddress("192.168.0.1");
+        IPMaskedAddress d         = new IPMaskedAddress("192.168.0.2");
+        IPMaskedAddress gator      = new IPMaskedAddress("66.35.248.0","255.255.254.0");
 
         Integer uno = new Integer(1);
         Integer dos = new Integer(2);
@@ -77,10 +77,10 @@ public class IPSetTest {
         result = (Integer)set.getLeastSpecific(d);
         if (result != null)
             System.err.println("6 Wrong result:" + result);
-        result = (Integer)set.getLeastSpecific(new IPMaddr("255.255.255.255"));
+        result = (Integer)set.getLeastSpecific(new IPMaskedAddress("255.255.255.255"));
         if (result != null)
             System.err.println("7 Wrong result:" + result);
-        result = (Integer)set.getLeastSpecific(new IPMaddr("0.0.0.0"));
+        result = (Integer)set.getLeastSpecific(new IPMaskedAddress("0.0.0.0"));
         if (result != null)
             System.err.println("8 Wrong result:" + result);
     }

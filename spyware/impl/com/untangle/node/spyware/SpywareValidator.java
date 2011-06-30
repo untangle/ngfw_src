@@ -17,13 +17,13 @@
  */
 package com.untangle.node.spyware;
 
-import com.untangle.uvm.node.IPMaddrValidator;
+import com.untangle.uvm.node.IPMaskedAddressValidator;
 import com.untangle.uvm.node.ValidationResult;
 
-public class SpywareValidator extends IPMaddrValidator {
+public class SpywareValidator extends IPMaskedAddressValidator {
 
 	public ValidationResult validate(Object data) {
-        // for now we only validate IPMaddr data
+        // for now we only validate IPMaskedAddress data
 	    return super.validate(data);
 	}
 }

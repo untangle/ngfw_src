@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.node.IPMaddrRule;
+import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.security.NodeId;
 
@@ -33,7 +33,7 @@ public class WebFilterSettings implements Serializable
     private boolean enforceSafeSearch = true;
     private boolean blockAllIpHosts = true;
 
-    private List<IPMaddrRule> passedClients = new LinkedList<IPMaddrRule>();
+    private List<IPMaskedAddressRule> passedClients = new LinkedList<IPMaskedAddressRule>();
     private List<GenericRule> passedUrls = new LinkedList<GenericRule>();
     private List<GenericRule> blockedUrls = new LinkedList<GenericRule>();
     private List<GenericRule> blockedMimeTypes = new LinkedList<GenericRule>();
@@ -46,12 +46,12 @@ public class WebFilterSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    public List<IPMaddrRule> getPassedClients()
+    public List<IPMaskedAddressRule> getPassedClients()
     {
         return passedClients;
     }
 
-    public void setPassedClients(List<IPMaddrRule> passedClients)
+    public void setPassedClients(List<IPMaskedAddressRule> passedClients)
     {
         this.passedClients = passedClients;
     }

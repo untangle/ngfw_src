@@ -26,8 +26,8 @@ import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
-import com.untangle.uvm.node.IPMaddrRule;
-import com.untangle.uvm.node.IPMaddrValidator;
+import com.untangle.uvm.node.IPMaskedAddressRule;
+import com.untangle.uvm.node.IPMaskedAddressValidator;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.NodeContext;
@@ -214,7 +214,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         return settings.getBlockedUrls();
     }
 
-    public List<IPMaddrRule> getPassedClients(int start, int limit, String... sortColumns) 
+    public List<IPMaskedAddressRule> getPassedClients(int start, int limit, String... sortColumns) 
     {
         return settings.getPassedClients();
     }
@@ -253,7 +253,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         //XXX save & reconfigure
     }
 
-    public void setPassedClients(List<IPMaddrRule> passedClients)
+    public void setPassedClients(List<IPMaskedAddressRule> passedClients)
     {
         this.settings.setPassedClients(passedClients);
         //XXX save & reconfigure
@@ -272,7 +272,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     
     public Validator getValidator()
     {
-        return new IPMaddrValidator();
+        return new IPMaskedAddressValidator();
     }
 
     public abstract DecisionEngine getDecisionEngine();

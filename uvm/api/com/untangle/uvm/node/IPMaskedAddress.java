@@ -53,9 +53,9 @@ import org.apache.log4j.Logger;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class IPMaddr implements Serializable, Comparable<IPMaddr>
+public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress>
 {
-    private static final Logger logger = Logger.getLogger(IPMaddr.class);
+    private static final Logger logger = Logger.getLogger(IPMaskedAddress.class);
 
     // This is the canonical printed representation of the ANY_ADDRESS
     public static final String ANY = "any";
@@ -65,14 +65,14 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
 
     // XXX why isn't this all caps, I think this should be ANY and the
     // above ANY should be ANY_STRING or something like that.
-    public static IPMaddr anyAddr = new IPMaddr(ANY_ADDRESS,ANY_ADDRESS);
+    public static IPMaskedAddress anyAddr = new IPMaskedAddress(ANY_ADDRESS,ANY_ADDRESS);
 
     private final String addr;
     private final String mask;
 
 
     /**
-     * Creates a new <code>IPMaddr</code> for a specific host.
+     * Creates a new <code>IPMaskedAddress</code> for a specific host.
      * Assumes values are legal.  Use parse() if unsure.
      *
      * addr     = host-num "." host-num [ "." host-num [ "." host-num ] ]
@@ -80,7 +80,7 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
      *
      * @param addr a <code>String</code> of the form addr
      */
-    public IPMaddr(String addr)
+    public IPMaskedAddress(String addr)
     {
         this.addr = addr;
         this.mask = SPECIFIC_NODE_MASK;
@@ -88,23 +88,23 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
 
 
     /**
-     * Creates a new <code>IPMaddr</code> which is a copy of the input IPMaddr.
+     * Creates a new <code>IPMaskedAddress</code> which is a copy of the input IPMaskedAddress.
      *
-     * @param originalIPMaddr an <code>IPMAddr</code> to be replicated
+     * @param originalIPMaskedAddress an <code>IPMAddr</code> to be replicated
      */
-    public IPMaddr(IPMaddr originalIPMaddr){
-        if(originalIPMaddr == null) {
+    public IPMaskedAddress(IPMaskedAddress originalIPMaskedAddress){
+        if(originalIPMaskedAddress == null) {
             this.addr = null;
             this.mask = null;
         } else {
-            this.addr = originalIPMaddr.getAddr();
-            this.mask = originalIPMaddr.getMask();
+            this.addr = originalIPMaskedAddress.getAddr();
+            this.mask = originalIPMaskedAddress.getMask();
         }
     }
 
 
     /**
-     * Creates a new <code>IPMaddr</code> given an address & number of network bits
+     * Creates a new <code>IPMaskedAddress</code> given an address & number of network bits
      * Assumes values are legal.  Use parse() if unsure.
      *
      * addr     = host-num "." host-num [ "." host-num [ "." host-num ] ]
@@ -114,14 +114,14 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
      * @param addr a <code>String</code> of the form addr
      * @param numbits an <code>int</code> of the form maskbits
      */
-    public IPMaddr(String addr, int numbits)
+    public IPMaskedAddress(String addr, int numbits)
     {
         this.addr = addr;
         this.mask = longToMask(numbits == 0 ? 0 : 0xffffffff << (32 - numbits));;
     }
 
     /**
-     * Creates a new <code>IPMaddr</code> given the canonical representations for
+     * Creates a new <code>IPMaskedAddress</code> given the canonical representations for
      * address and mask (3 dot addresses).
      * Assumes values are legal.  Use parse() if unsure.
      *
@@ -131,31 +131,31 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
      * @param addr a <code>String</code> of the form addr
      * @param mask a <code>String</code> of the form mask
      */
-    public IPMaddr(String addr, String mask)
+    public IPMaskedAddress(String addr, String mask)
     {
         this.addr = addr;
         this.mask = mask;
     }
 
     /**
-     * Creates a new <code>IPMaddr</code> given the the address and netmask
+     * Creates a new <code>IPMaskedAddress</code> given the the address and netmask
      *
      * @param addr a <code>String</code> of the form addr
      * @param mask a <code>String</code> of the form mask
      */
-    public IPMaddr(InetAddress addr, InetAddress mask)
+    public IPMaskedAddress(InetAddress addr, InetAddress mask)
     {
         this(addr.getHostAddress(),mask.getHostAddress());
     }
 
     /**
-     * Creates a new <code>IPMaddr</code> given the the address with a
+     * Creates a new <code>IPMaskedAddress</code> given the the address with a
      * mask of 255.255.255.255
      *
      * @param addr a <code>String</code> of the form addr
      * @param mask a <code>String</code> of the form mask
      */
-    public IPMaddr(InetAddress addr)
+    public IPMaskedAddress(InetAddress addr)
     {
         this(addr.getHostAddress());
     }
@@ -224,13 +224,13 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
     }
 
     /**
-     * <code>isIntersecting</code> returns true if the current IPMaddr has at least one address
+     * <code>isIntersecting</code> returns true if the current IPMaskedAddress has at least one address
      * that is also present in the provided otherMaddr argument.
      *
-     * @param otherMaddr an <code>IPMaddr</code> to see if the current IPMaddr has address(es) in common with
+     * @param otherMaddr an <code>IPMaskedAddress</code> to see if the current IPMaskedAddress has address(es) in common with
      * @return a <code>boolean</code> value
      */
-    public boolean isIntersecting(IPMaddr otherMaddr)
+    public boolean isIntersecting(IPMaskedAddress otherMaddr)
     {
         // shortcuts
         if (addr.equals(otherMaddr.addr) && mask.equals(otherMaddr.mask) ||
@@ -246,7 +246,7 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
      * <code>isIntersecting</code> returns true if the given address falls inside the
      * IPMAddr.
      *
-     * @param testAddr an <code>InetAddress</code> giving the address to test for membership in this IPMaddr
+     * @param testAddr an <code>InetAddress</code> giving the address to test for membership in this IPMaskedAddress
      * @return a <code>boolean</code> true if the given testAddr falls inside us
      */
     public boolean contains(InetAddress testAddr)
@@ -328,24 +328,24 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
      * hexnumber = "0" "x" hexstring
      * </code>
      *
-     * and returns an IPMaddr having a numeric address in dotted form and a numeric
+     * and returns an IPMaskedAddress having a numeric address in dotted form and a numeric
      * netmask in dotted form, both as Strings.
      *
      * No IPV6 handling here.  XX
      *
      * @param addrString a <code>String</code> giving an host, address, host/mask, or address/mask
-     * @return an <code>IPMaddr</code> value
+     * @return an <code>IPMaskedAddress</code> value
      * @exception IllegalArgumentException if the addrString is illegal in any way
      */
-    public static IPMaddr parse(String addrString)
+    public static IPMaskedAddress parse(String addrString)
         throws IllegalArgumentException
     {
         String addr;
 
         if (addrString == null)
-            throw new IllegalArgumentException("IPMaddr.parse(null)");
+            throw new IllegalArgumentException("IPMaskedAddress.parse(null)");
         if (addrString.equalsIgnoreCase("any"))
-            return new IPMaddr(ANY_ADDRESS, ANY_ADDRESS);
+            return new IPMaskedAddress(ANY_ADDRESS, ANY_ADDRESS);
 
         addrString = addrString.trim();
 
@@ -355,20 +355,20 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
         if (sl > 0) {
             // Looks like ipaddr/maskbits
             if (sl == (addrString.length() - 1))
-                throw new IllegalArgumentException("IPMaddr.parse(): empty maskbits");
+                throw new IllegalArgumentException("IPMaskedAddress.parse(): empty maskbits");
             String maskbits = addrString.substring(sl + 1).trim();
             try {
                 int numbits = Integer.parseInt(maskbits);
                 if (numbits < 0 || numbits > 32)
-                    throw new IllegalArgumentException("IPMaddr.parse(): out of range maskbits: " + maskbits);
+                    throw new IllegalArgumentException("IPMaskedAddress.parse(): out of range maskbits: " + maskbits);
                 long lmask = 0xffffffff << (32 - numbits);
 
                 String ipaddr = addrString.substring(0, sl).trim();
                 addr = canonicalizeHostAddress(ipaddr);
 
-                return new IPMaddr(addr, longToMask(lmask));
+                return new IPMaskedAddress(addr, longToMask(lmask));
             } catch (NumberFormatException x) {
-                throw new IllegalArgumentException("IPMaddr.parse(): non-decimal maskbits: " + maskbits);
+                throw new IllegalArgumentException("IPMaskedAddress.parse(): non-decimal maskbits: " + maskbits);
             }
         }
 
@@ -381,19 +381,19 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
                     /* Parse long doesn't want the 0x */
                     long lmask = Long.parseLong(maskstr.substring( 2 ), 16);
                     if (lmask > 0xffffffffl)
-                        throw new IllegalArgumentException("IPMaddr.parse(): out of range mask: " + maskstr);
+                        throw new IllegalArgumentException("IPMaskedAddress.parse(): out of range mask: " + maskstr);
                     String ipaddr = addrString.substring(0, ma).trim();
                     addr = canonicalizeHostAddress(ipaddr);
-                    return new IPMaddr(addr, longToMask(lmask));
+                    return new IPMaskedAddress(addr, longToMask(lmask));
                 } catch (NumberFormatException x) {
-                    throw new IllegalArgumentException("IPMaddr.parse(): non-hex mask: " + maskstr);
+                    throw new IllegalArgumentException("IPMaskedAddress.parse(): non-hex mask: " + maskstr);
                 }
             } else {
                 // Dotted mask.  Currently must have three dots. XXX
                 String mask = canonicalizeHostAddress(maskstr);
                 String ipaddr = addrString.substring(0, ma).trim();
                 addr = canonicalizeHostAddress(ipaddr);
-                return new IPMaddr(addr, mask);
+                return new IPMaskedAddress(addr, mask);
             }
         }
 
@@ -401,10 +401,10 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
         if (ra > 0) {
             String ipArray[] = addrString.split("\\s*-\\s*");
             if ( ipArray.length != 2 )
-                throw new IllegalArgumentException( "IPMaddr.parse(): illegal range does not contain two components: " + addrString );
+                throw new IllegalArgumentException( "IPMaskedAddress.parse(): illegal range does not contain two components: " + addrString );
 
-            IPMaddr ip1 = new IPMaddr(canonicalizeHostAddress(ipArray[0]));
-            IPMaddr ip2 = new IPMaddr(canonicalizeHostAddress(ipArray[1]));
+            IPMaskedAddress ip1 = new IPMaskedAddress(canonicalizeHostAddress(ipArray[0]));
+            IPMaskedAddress ip2 = new IPMaskedAddress(canonicalizeHostAddress(ipArray[1]));
             long hosts = ip2.toLong() - ip1.toLong();
             int mask = 32 - (int)(Math.floor(Math.log(hosts) / Math.log(2)));
             logger.debug(ip1 + " -> " + ip2 + " (" + hosts + " hosts -> mask=" + mask + ")");
@@ -412,7 +412,7 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
         } else {
             // Just an address, no netmask.
             addr = canonicalizeHostAddress(addrString);
-            return new IPMaddr(addr, SPECIFIC_NODE_MASK);
+            return new IPMaskedAddress(addr, SPECIFIC_NODE_MASK);
         }
     }
 
@@ -423,10 +423,10 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
 
     public boolean equals(Object o)
     {
-        if (!(o instanceof IPMaddr)) {
+        if (!(o instanceof IPMaskedAddress)) {
             return false;
         }
-        IPMaddr m = (IPMaddr)o;
+        IPMaskedAddress m = (IPMaskedAddress)o;
 
         if (!(null != m.addr && null != addr && m.addr.equals(addr))) {
             return false;
@@ -439,7 +439,7 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
         return true;
     }
 
-    public int compareTo(IPMaddr other)
+    public int compareTo(IPMaskedAddress other)
     {
         long oper1 = toLong();
         long oper2 = other.toLong();
@@ -458,7 +458,7 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
         }
     }
 
-    /** Convert an IPMaddr to a long */
+    /** Convert an IPMaskedAddress to a long */
     private long toLong( )
     {
         long val = 0;
@@ -543,7 +543,7 @@ public class IPMaddr implements Serializable, Comparable<IPMaddr>
     {
         byte[] result = textToNumericFormat(ipaddr);
         if (result == null)
-            throw new IllegalArgumentException("IPMaddr.parse(): ipaddr not legal: " +
+            throw new IllegalArgumentException("IPMaskedAddress.parse(): ipaddr not legal: " +
                                                ipaddr);
         else
             return numericToTextFormat(result);

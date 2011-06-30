@@ -27,21 +27,21 @@ import java.sql.Types;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 
-import com.untangle.uvm.node.IPMaddr;
+import com.untangle.uvm.node.IPMaskedAddress;
 
 /**
  * Hibernate <code>UserType</code> for persisting
- * <code>IPMaddr</code> objects.
+ * <code>IPMaskedAddress</code> objects.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class IPMaddrUserType implements UserType
+public class IPMaskedAddressUserType implements UserType
 {
     private static final int[] SQL_TYPES = { Types.VARCHAR };
 
     public int[] sqlTypes() { return SQL_TYPES; }
-    public Class<IPMaddr> returnedClass() { return IPMaddr.class; }
+    public Class<IPMaskedAddress> returnedClass() { return IPMaskedAddress.class; }
 
     public boolean equals(Object x, Object y)
     {
@@ -59,7 +59,7 @@ public class IPMaddrUserType implements UserType
         if (rs.wasNull()) { return null; }
 
         String name = rs.getString(names[0]);
-        return IPMaddr.parse(name);
+        return IPMaskedAddress.parse(name);
     }
 
     public void nullSafeSet(PreparedStatement ps, Object v, int i)
@@ -68,7 +68,7 @@ public class IPMaddrUserType implements UserType
         if (null == v) {
             ps.setNull(i, Types.VARCHAR);
         } else {
-            IPMaddr addr = (IPMaddr)v;
+            IPMaskedAddress addr = (IPMaskedAddress)v;
             ps.setString(i, addr.toString());
         }
     }

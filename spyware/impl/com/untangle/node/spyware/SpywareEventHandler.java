@@ -22,8 +22,8 @@ import java.util.Set;
 
 import com.untangle.node.util.IPSet;
 import com.untangle.node.util.IPSetTrie;
-import com.untangle.uvm.node.IPMaddr;
-import com.untangle.uvm.node.IPMaddrRule;
+import com.untangle.uvm.node.IPMaskedAddress;
+import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.Session;
@@ -50,16 +50,16 @@ public class SpywareEventHandler extends AbstractEventHandler
         this.node = node;
     }
 
-    public void subnetList(Set<IPMaddrRule> list)
+    public void subnetList(Set<IPMaskedAddressRule> list)
     {
         if (null == list) {
             subnetSet = null;
         } else {
             IPSetTrie set = new IPSetTrie();
 
-            for (Iterator<IPMaddrRule> i = list.iterator(); i.hasNext(); ) {
-                IPMaddrRule se = i.next();
-                IPMaddr ipm = se.getIpMaddr();
+            for (Iterator<IPMaskedAddressRule> i = list.iterator(); i.hasNext(); ) {
+                IPMaskedAddressRule se = i.next();
+                IPMaskedAddress ipm = se.getIpMaddr();
                 set.add(ipm,se);
             }
 
@@ -113,9 +113,9 @@ public class SpywareEventHandler extends AbstractEventHandler
 
     void detectSpyware(IPNewSessionRequest ipr, boolean release)
     {
-        IPMaddr ipm = new IPMaddr(ipr.serverAddr().getHostAddress());
+        IPMaskedAddress ipm = new IPMaskedAddress(ipr.serverAddr().getHostAddress());
 
-        IPMaddrRule ir = (IPMaddrRule)this.subnetSet.getMostSpecific(ipm);
+        IPMaskedAddressRule ir = (IPMaskedAddressRule)this.subnetSet.getMostSpecific(ipm);
 
         if (ir == null) {
             node.statisticManager.incrPass(); // pass subnet access

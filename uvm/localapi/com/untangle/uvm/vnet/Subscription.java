@@ -36,7 +36,7 @@ package com.untangle.uvm.vnet;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.IPMaddr;
+import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.SessionEndpoints;
@@ -56,16 +56,16 @@ public class Subscription
     private final Logger logger = Logger.getLogger(getClass());
 
     private final Protocol protocol;
-    private final IPMaddr serverAddress;
-    private final IPMaddr clientAddress;
+    private final IPMaskedAddress serverAddress;
+    private final IPMaskedAddress clientAddress;
     private final PortRange serverRange;
     private final PortRange clientRange;
 
     // constructors -----------------------------------------------------------
 
     public Subscription(Protocol protocol,
-                        IPMaddr clientAddress, PortRange clientRange,
-                        IPMaddr serverAddress, PortRange serverRange)
+                        IPMaskedAddress clientAddress, PortRange clientRange,
+                        IPMaskedAddress serverAddress, PortRange serverRange)
     {
         this.protocol = protocol;
         this.clientAddress = clientAddress;
@@ -77,8 +77,8 @@ public class Subscription
     public Subscription(Protocol protocol)
     {
         this.protocol = protocol;
-        this.serverAddress = IPMaddr.anyAddr;
-        this.clientAddress = IPMaddr.anyAddr;
+        this.serverAddress = IPMaskedAddress.anyAddr;
+        this.clientAddress = IPMaskedAddress.anyAddr;
         this.serverRange = PortRange.ANY;
         this.clientRange = PortRange.ANY;
     }
@@ -131,7 +131,7 @@ public class Subscription
      *
      * @return server address.
      */
-    public IPMaddr getServerAddress()
+    public IPMaskedAddress getServerAddress()
     {
         return serverAddress;
     }
@@ -141,7 +141,7 @@ public class Subscription
      *
      * @return client address.
      */
-    public IPMaddr getClientAddress()
+    public IPMaskedAddress getClientAddress()
     {
         return clientAddress;
     }

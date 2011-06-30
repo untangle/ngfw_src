@@ -13,8 +13,8 @@ com.untangle.uvm.logging.SystemStatEvent
 com.untangle.uvm.networking.AccessSettings
 com.untangle.uvm.networking.AddressSettings
 com.untangle.uvm.networking.MiscSettings
-com.untangle.uvm.node.IPMaddrDirectory
-com.untangle.uvm.node.IPMaddrRule
+com.untangle.uvm.node.IPMaskedAddressDirectory
+com.untangle.uvm.node.IPMaskedAddressRule
 com.untangle.uvm.node.MimeTypeRule
 com.untangle.uvm.node.NodePreferences
 com.untangle.uvm.node.PipelineEndpoints

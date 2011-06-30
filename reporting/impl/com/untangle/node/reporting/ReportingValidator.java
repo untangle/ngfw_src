@@ -17,13 +17,13 @@
  */
 package com.untangle.node.reporting;
 
-import com.untangle.uvm.node.IPMaddrValidator;
+import com.untangle.uvm.node.IPMaskedAddressValidator;
 import com.untangle.uvm.node.ValidationResult;
 
-public class ReportingValidator extends IPMaddrValidator {
+public class ReportingValidator extends IPMaskedAddressValidator {
 
 	public ValidationResult validate(Object data) {
-        // for now we only validate IPMaddr data
+        // for now we only validate IPMaskedAddress data
 	    return super.validate(data);
 	}
 }

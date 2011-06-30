@@ -197,7 +197,7 @@ CREATE TABLE settings.u_node_persistent_state (
     target_state text NOT NULL,
     PRIMARY KEY (id));
 
--- com.untangle.uvm.tran.IPMaddrDirectory
+-- com.untangle.uvm.tran.IPMaskedAddressDirectory
 CREATE TABLE settings.u_ipmaddr_dir (
     id int8 NOT NULL,
     notes text,
@@ -215,14 +215,14 @@ CREATE TABLE settings.u_mimetype_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.untangle.uvm.tran.IPMaddrDirectory.entries
+-- com.untangle.uvm.tran.IPMaskedAddressDirectory.entries
 CREATE TABLE settings.u_ipmaddr_dir_entries (
     ipmaddr_dir_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (ipmaddr_dir_id, position));
 
--- com.untangle.uvm.tran.IPMaddrRule
+-- com.untangle.uvm.tran.IPMaskedAddressRule
 CREATE TABLE settings.u_ipmaddr_rule (
     rule_id int8 NOT NULL,
     ipmaddr inet,

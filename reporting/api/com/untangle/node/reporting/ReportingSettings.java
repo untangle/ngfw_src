@@ -30,7 +30,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.untangle.uvm.node.IPMaddrDirectory;
+import com.untangle.uvm.node.IPMaskedAddressDirectory;
 import com.untangle.uvm.security.NodeId;
 
 /**
@@ -48,7 +48,7 @@ public class ReportingSettings implements Serializable
     private Long id;
     private NodeId tid;
 
-    private IPMaddrDirectory networkDirectory = new IPMaddrDirectory();
+    private IPMaskedAddressDirectory networkDirectory = new IPMaskedAddressDirectory();
     private int dbRetention = 7; // days
     private int fileRetention = 30; // days
     private boolean emailDetail = false;
@@ -98,12 +98,12 @@ public class ReportingSettings implements Serializable
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinColumn(name="network_directory", nullable=false)
-    public IPMaddrDirectory getNetworkDirectory()
+    public IPMaskedAddressDirectory getNetworkDirectory()
     {
         return networkDirectory;
     }
 
-    public void setNetworkDirectory(IPMaddrDirectory networkDirectory)
+    public void setNetworkDirectory(IPMaskedAddressDirectory networkDirectory)
     {
         this.networkDirectory = networkDirectory;
     }

@@ -27,7 +27,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.uvm.node.IPMaddr;
+import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.PipelineEndpoints;
 import org.hibernate.annotations.Type;
 
@@ -45,7 +45,7 @@ import org.hibernate.annotations.Type;
     {
         private PipelineEndpoints pipelineEndpoints;
         private String identification;
-        private IPMaddr ipMaddr; // location
+        private IPMaskedAddress ipMaddr; // location
         private boolean blocked;
 
         // constructors -----------------------------------------------------------
@@ -54,7 +54,7 @@ import org.hibernate.annotations.Type;
 
         public SpywareAccessEvent(PipelineEndpoints pe,
                                   String identification,
-                                  IPMaddr ipMaddr,
+                                  IPMaskedAddress ipMaddr,
                                   boolean blocked)
         {
             this.pipelineEndpoints = pe;
@@ -105,15 +105,15 @@ import org.hibernate.annotations.Type;
         /**
          * An address or subnet.
          *
-         * @return the IPMaddr.
+         * @return the IPMaskedAddress.
          */
-        @Type(type="com.untangle.uvm.type.IPMaddrUserType")
-        public IPMaddr getIpMaddr()
+        @Type(type="com.untangle.uvm.type.IPMaskedAddressUserType")
+        public IPMaskedAddress getIpMaddr()
         {
             return ipMaddr;
         }
 
-        public void setIpMaddr(IPMaddr ipMaddr)
+        public void setIpMaddr(IPMaskedAddress ipMaddr)
         {
             this.ipMaddr = ipMaddr;
         }

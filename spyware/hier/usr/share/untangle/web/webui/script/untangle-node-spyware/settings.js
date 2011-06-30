@@ -473,7 +473,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     description : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Subnet List"),
-                recordJavaClass : "com.untangle.uvm.node.IPMaddrRule",
+                recordJavaClass : "com.untangle.uvm.node.IPMaskedAddressRule",
                 proxyRpcFn : this.getRpcNode().getSubnetRules,
                 fields : [{
                     name : 'id'

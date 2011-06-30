@@ -32,7 +32,7 @@
  */
 package com.untangle.node.util;
 
-import com.untangle.uvm.node.IPMaddr;
+import com.untangle.uvm.node.IPMaskedAddress;
 
 public class IPSetTrie implements IPSet {
 
@@ -43,17 +43,17 @@ public class IPSetTrie implements IPSet {
         _root = new IPSetTrieNode();
     }
 
-    public void add (IPMaddr mask, Object result)
+    public void add (IPMaskedAddress mask, Object result)
     {
         _root.add(mask.bitString(),result);
     }
 
-    public Object getMostSpecific  (IPMaddr mask)
+    public Object getMostSpecific  (IPMaskedAddress mask)
     {
         return _root.getMostSpecific(mask.bitString(),0);
     }
 
-    public Object getLeastSpecific (IPMaddr mask)
+    public Object getLeastSpecific (IPMaskedAddress mask)
     {
         return _root.getLeastSpecific(mask.bitString(),0);
     }

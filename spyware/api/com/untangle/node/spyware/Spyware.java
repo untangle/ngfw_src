@@ -21,7 +21,7 @@ package com.untangle.node.spyware;
 import java.util.List;
 
 import com.untangle.uvm.logging.EventManager;
-import com.untangle.uvm.node.IPMaddrRule;
+import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.node.Validator;
@@ -38,10 +38,10 @@ public interface Spyware extends Node
     void updateCookieRules(List<StringRule> added, List<Long> deleted,
                            List<StringRule> modified);
 
-    List<IPMaddrRule> getSubnetRules(int start, int limit,
+    List<IPMaskedAddressRule> getSubnetRules(int start, int limit,
                                      String... sortColumns);
-    void updateSubnetRules(List<IPMaddrRule> added, List<Long> deleted,
-                           List<IPMaddrRule> modified);
+    void updateSubnetRules(List<IPMaskedAddressRule> added, List<Long> deleted,
+                           List<IPMaskedAddressRule> modified);
 
     List<StringRule> getDomainWhitelist(int start, int limit,
                                         String... sortColumns);

@@ -51,7 +51,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
- * A sorted list of IPMaddrRules, used as a directory
+ * A sorted list of IPMaskedAddressRules, used as a directory
  *
  * @author
  * @version 1.0
@@ -59,21 +59,21 @@ import org.hibernate.annotations.IndexColumn;
 @Entity
 @Table(name="u_ipmaddr_dir", schema="settings")
 @SuppressWarnings("serial")
-public class IPMaddrDirectory implements Serializable
+public class IPMaskedAddressDirectory implements Serializable
 {
 
     private Long id;
-    private List<IPMaddrRule> entries;
+    private List<IPMaskedAddressRule> entries;
     private String notes;
 
-    public IPMaddrDirectory() {
-        entries = new ArrayList<IPMaddrRule>();
+    public IPMaskedAddressDirectory() {
+        entries = new ArrayList<IPMaskedAddressRule>();
     }
 
     /**
      * Use this to add an entry to the end of the list.
      */
-    public void addEntry(IPMaddrRule entry) {
+    public void addEntry(IPMaskedAddressRule entry) {
         entries.add(entry);
     }
 
@@ -91,7 +91,7 @@ public class IPMaddrDirectory implements Serializable
     }
 
     /**
-     * The sorted list of IPMaddrRules -- a client IP matches against
+     * The sorted list of IPMaskedAddressRules -- a client IP matches against
      * each in turn, first one to match is the winner.
      *
      * @return dictionary entries
@@ -103,13 +103,13 @@ public class IPMaddrDirectory implements Serializable
                joinColumns=@JoinColumn(name="ipmaddr_dir_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
-    public List<IPMaddrRule> getEntries()
+    public List<IPMaskedAddressRule> getEntries()
     {
         if (entries != null) entries.removeAll(java.util.Collections.singleton(null));
         return entries;
     }
 
-    public void setEntries(List<IPMaddrRule> entries)
+    public void setEntries(List<IPMaskedAddressRule> entries)
     {
         this.entries = entries;
     }

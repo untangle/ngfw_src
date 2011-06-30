@@ -970,7 +970,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Client IP addresses"),
-                recordJavaClass : "com.untangle.uvm.node.IPMaddrRule",
+                recordJavaClass : "com.untangle.uvm.node.IPMaskedAddressRule",
                 proxyRpcFn : this.getRpcNode().getPassedClients,
                 fields : [{
                     name : 'id'

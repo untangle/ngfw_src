@@ -56,8 +56,8 @@ import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
-import com.untangle.uvm.node.IPMaddr;
-import com.untangle.uvm.node.IPMaddrRule;
+import com.untangle.uvm.node.IPMaskedAddress;
+import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.node.Validator;
@@ -261,15 +261,15 @@ public class SpywareImpl extends AbstractNode implements Spyware
     }
 
     @SuppressWarnings("unchecked") //getItems
-    public List<IPMaddrRule> getSubnetRules(int start, int limit, String... sortColumns)
+    public List<IPMaskedAddressRule> getSubnetRules(int start, int limit, String... sortColumns)
     {
         return listUtil.getItems("select s.subnetRules from SpywareSettings s where s.tid = :tid ",
                                  getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
     }
 
-    public void updateSubnetRules(List<IPMaddrRule> added, List<Long> deleted,
-                                  List<IPMaddrRule> modified)
+    public void updateSubnetRules(List<IPMaskedAddressRule> added, List<Long> deleted,
+                                  List<IPMaskedAddressRule> modified)
     {
         updateRules(settings.getSubnetRules(), added, deleted, modified);
     }
@@ -810,7 +810,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         int ver = settings.getSubnetVersion();
 
         if (0 > ver || null == settings.getSubnetRules()) {
-            Set<IPMaddrRule> l = settings.getSubnetRules();
+            Set<IPMaskedAddressRule> l = settings.getSubnetRules();
             if (null != l) {
                 l.clear();
             }
@@ -830,22 +830,22 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     private void updateSubnet(SpywareSettings settings, Set<String> add, Set<String> rem)
     {
-        Set<IPMaddrRule> remove = new HashSet<IPMaddrRule>();
+        Set<IPMaskedAddressRule> remove = new HashSet<IPMaskedAddressRule>();
         for (String s : rem) {
-            IPMaddrRule imr = makeIPMAddrRule(s);
+            IPMaskedAddressRule imr = makeIPMAddrRule(s);
             if (null != imr) {
                 remove.add(imr);
             }
         }
 
-        Set<IPMaddrRule> rules = settings.getSubnetRules();
+        Set<IPMaskedAddressRule> rules = settings.getSubnetRules();
         if (null == rules) {
-            rules = new HashSet<IPMaddrRule>();
+            rules = new HashSet<IPMaskedAddressRule>();
             settings.setSubnetRules(rules);
         }
 
-        for (Iterator<IPMaddrRule> i = rules.iterator(); i.hasNext(); ) {
-            IPMaddrRule imr = i.next();
+        for (Iterator<IPMaskedAddressRule> i = rules.iterator(); i.hasNext(); ) {
+            IPMaskedAddressRule imr = i.next();
 
             if (remove.contains(imr)) {
                 i.remove();
@@ -861,7 +861,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
 
         for (String s : add) {
-            IPMaddrRule imr = makeIPMAddrRule(s);
+            IPMaskedAddressRule imr = makeIPMAddrRule(s);
             if (null != imr) {
                 rules.add(imr);
                 if (logger.isDebugEnabled()) {
@@ -888,7 +888,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         return s;
     }
 
-    private IPMaddrRule makeIPMAddrRule(String line)
+    private IPMaskedAddressRule makeIPMAddrRule(String line)
     {
         StringTokenizer tok = new StringTokenizer(line, ":,");
 
@@ -896,9 +896,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
         String description = tok.nextToken();
         String name = tok.hasMoreTokens() ? tok.nextToken() : "[no name]";
 
-        IPMaddr maddr;
+        IPMaskedAddress maddr;
         try {
-            maddr = IPMaddr.parse(addr);
+            maddr = IPMaskedAddress.parse(addr);
             @SuppressWarnings("unused")
 			int i = maddr.maskNumBits(); /* if bad subnet throws exception */
         } catch (Exception e) {
@@ -908,7 +908,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         if (logger.isDebugEnabled()) {
             logger.debug("ADDING subnet Rule: " + addr);
         }
-        IPMaddrRule rule = new IPMaddrRule(maddr, name, "[no category]", description);
+        IPMaskedAddressRule rule = new IPMaskedAddressRule(maddr, name, "[no category]", description);
         rule.setLog(true);
         rule.setLive(false);
 

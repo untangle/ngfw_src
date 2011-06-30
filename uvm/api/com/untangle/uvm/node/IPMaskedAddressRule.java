@@ -47,19 +47,19 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name="u_ipmaddr_rule", schema="settings")
 @SuppressWarnings("serial")
-public class IPMaddrRule extends Rule
+public class IPMaskedAddressRule extends Rule
 {
-    private IPMaddr ipMaddr;
+    private IPMaskedAddress ipMaddr;
 
     // constructors -----------------------------------------------------------
 
     /**
      * Hibernate constructor.
      */
-    public IPMaddrRule() { }
+    public IPMaskedAddressRule() { }
 
     // XXX inconstant constuctor
-    public IPMaddrRule(IPMaddr ipMaddr, String name, String category,
+    public IPMaskedAddressRule(IPMaskedAddress ipMaddr, String name, String category,
                        String description)
     {
         super(name, category, description);
@@ -71,15 +71,15 @@ public class IPMaddrRule extends Rule
     /**
      * An address or subnet.
      *
-     * @return the IPMaddr.
+     * @return the IPMaskedAddress.
      */
-    @Type(type="com.untangle.uvm.type.IPMaddrUserType")
-    public IPMaddr getIpMaddr()
+    @Type(type="com.untangle.uvm.type.IPMaskedAddressUserType")
+    public IPMaskedAddress getIpMaddr()
     {
         return ipMaddr;
     }
 
-    public void setIpMaddr(IPMaddr ipMaddr)
+    public void setIpMaddr(IPMaskedAddress ipMaddr)
     {
         this.ipMaddr = ipMaddr;
     }
@@ -88,11 +88,11 @@ public class IPMaddrRule extends Rule
 
 //    public boolean equals(Object o)
 //    {
-//        if (!(o instanceof IPMaddrRule)) {
+//        if (!(o instanceof IPMaskedAddressRule)) {
 //            return false;
 //        }
 //
-//        IPMaddrRule ir = (IPMaddrRule)o;
+//        IPMaskedAddressRule ir = (IPMaskedAddressRule)o;
 //        return ipMaddr.equals(ir.ipMaddr);
 //    }
 //
@@ -104,8 +104,8 @@ public class IPMaddrRule extends Rule
     @Override
     public void update(Rule rule) {
     	super.update(rule);
-    	if (rule instanceof IPMaddrRule) {
-    		IPMaddrRule ipMaddrRule = (IPMaddrRule) rule;
+    	if (rule instanceof IPMaskedAddressRule) {
+    		IPMaskedAddressRule ipMaddrRule = (IPMaskedAddressRule) rule;
 			this.ipMaddr = ipMaddrRule.ipMaddr;
 		}
     }    

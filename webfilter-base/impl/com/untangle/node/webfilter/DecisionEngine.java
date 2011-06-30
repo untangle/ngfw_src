@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.token.Header;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.node.IPMaddrRule;
+import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.util.I18nUtil;
@@ -381,7 +381,7 @@ public abstract class DecisionEngine
      */
     private String     checkClientPassList( InetAddress clientIp )
     {
-        for (IPMaddrRule rule : node.getSettings().getPassedClients()) {
+        for (IPMaskedAddressRule rule : node.getSettings().getPassedClients()) {
             if (rule.getIpMaddr().contains(clientIp) && rule.isLive()) {
                 logger.debug("LOG: "+clientIp+" in client pass list");
                 return rule.getDescription();
