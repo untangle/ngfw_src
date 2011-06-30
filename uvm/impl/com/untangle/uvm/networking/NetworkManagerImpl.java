@@ -840,9 +840,7 @@ public class NetworkManagerImpl implements NetworkManager
 
         if (settings == null) {
             logger.error("Failed to read network settings");
-        } else {
-            logger.info("New Network Settings: " + settings.toJSONString());
-        }
+        } 
         
         return settings;
     }

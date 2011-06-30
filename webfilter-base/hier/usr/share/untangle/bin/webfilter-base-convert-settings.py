@@ -274,6 +274,18 @@ def get_settings(tid, debug=False):
     return str
     
 
+filename = None
+if len(sys.argv) < 2:
+    print "usage: %s TID [filename]" % sys.argv[0]
+    sys.exit(1)
+
+
+if len(sys.argv) > 1:
+    tid = sys.argv[1]
+
+if len(sys.argv) > 2:
+    filename = sys.argv[2]
+
 try:
     dir = "/usr/share/untangle/settings/untangle-node-webfilter/"
     if not os.path.exists(dir):
@@ -282,28 +294,13 @@ try:
     if not os.path.exists(dir):
         os.makedirs(dir)
 
-
-    webfilter_nodes = sql_helper.run_sql("select tid from u_node_persistent_state where name = 'untangle-node-webfilter'")
-    print "Web Filter Lite:"
-    for webfilter_node in webfilter_nodes:
-        tid = webfilter_node[0]
-        settings_str = get_settings(tid, debug=True)
-        print settings_str
+    settings_str = get_settings(tid, debug=True)
+    print settings_str
+    if filename == None:
         filename = "/usr/share/untangle/settings/untangle-node-webfilter/settings_%s.js" % tid
-        file = open(filename, 'w')
-        file.write(settings_str)
-        file.close()
-
-    sitefilter_nodes = sql_helper.run_sql("select tid from u_node_persistent_state where name = 'untangle-node-sitefilter'")
-    print "Web Filter:"
-    for sitefilter_node in sitefilter_nodes:
-        tid = sitefilter_node[0]
-        settings_str = get_settings(tid, debug=True)
-        print settings_str
-        filename = "/usr/share/untangle/settings/untangle-node-sitefilter/settings_%s.js" % tid
-        file = open(filename, 'w')
-        file.write(settings_str)
-        file.close()
+    file = open(filename, 'w')
+    file.write(settings_str)
+    file.close()
 
 except Exception, e:
     print("could not get result",e);

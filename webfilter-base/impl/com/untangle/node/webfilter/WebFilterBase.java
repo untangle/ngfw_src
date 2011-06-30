@@ -43,6 +43,7 @@ import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
+import com.untangle.node.util.SimpleExec;
 
 /**
  * The base implementation of the Web Filter.
@@ -50,10 +51,12 @@ import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
  */
 public abstract class WebFilterBase extends AbstractNode implements WebFilter
 {
+    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/webfilter-base-convert-settings.py";
+
     protected static int deployCount = 0;
 
     protected final Logger logger = Logger.getLogger(getClass());
-
+    
     protected final WebFilterFactory factory = new WebFilterFactory(this);
 
     protected final PipeSpec httpPipeSpec = new SoloPipeSpec("http-blocker", this, new TokenAdaptor(this, factory), Fitting.HTTP_TOKENS, Affinity.CLIENT, 0);
@@ -483,14 +486,40 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeId().getId().toString();
         WebFilterSettings readSettings = null;
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getName() + "/" + "settings_" + nodeID;
+        
         try {
-            readSettings = settingsManager.load( WebFilterSettings.class, System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getName() + "/" + "settings_" + nodeID );
+            readSettings = settingsManager.load( WebFilterSettings.class, settingsFileName );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
         }
 
+        /**
+         * If there are no settings, run the conversion script to see if there are any in the database
+         * Then check again for the file
+         */
         if (readSettings == null) {
-            logger.warn("Initializing new settings (no settings found)...");
+            logger.warn("No settings found - Running conversion script to check DB");
+            try {
+                SimpleExec.SimpleExecResult result = null;
+                result = SimpleExec.exec(SETTINGS_CONVERSION_SCRIPT,new String[] {nodeID.toString(),settingsFileName + ".js",},null,null,true,true,1000*60,logger,true);
+            } catch ( Exception e ) {
+                logger.warn( "Conversion script failed.", e );
+            } 
+
+            try {
+                readSettings = settingsManager.load( WebFilterSettings.class, settingsFileName );
+            } catch (SettingsManager.SettingsException e) {
+                logger.warn("Failed to load settings:",e);
+            }
+        }
+
+        /**
+         * If there are still no settings, just initialize
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Initializing new settings.");
+
             this.initializeSettings();
         }
         else {
