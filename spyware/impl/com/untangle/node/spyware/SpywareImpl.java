@@ -80,30 +80,14 @@ import org.hibernate.Session;
 
 public class SpywareImpl extends AbstractNode implements Spyware
 {
-    private static final String ACTIVEX_LIST
-        = "com/untangle/node/spyware/activex.txt";
-    private static final String ACTIVEX_DIFF_BASE
-        = "com/untangle/node/spyware/activex-diff-";
-    private static final String COOKIE_LIST
-        = "com/untangle/node/spyware/cookie.txt";
-    private static final String COOKIE_DIFF_BASE
-        = "com/untangle/node/spyware/cookie-diff-";
-    private static final String SUBNET_LIST
-        = "com/untangle/node/spyware/subnet.txt";
-    private static final String SUBNET_DIFF_BASE
-        = "com/untangle/node/spyware/subnet-diff-";
-
-    private static final URL BLACKLIST_HOME;
+    private static final String ACTIVEX_LIST = "com/untangle/node/spyware/activex.txt";
+    private static final String ACTIVEX_DIFF_BASE = "com/untangle/node/spyware/activex-diff-";
+    private static final String COOKIE_LIST = "com/untangle/node/spyware/cookie.txt";
+    private static final String COOKIE_DIFF_BASE = "com/untangle/node/spyware/cookie-diff-";
+    private static final String SUBNET_LIST = "com/untangle/node/spyware/subnet.txt";
+    private static final String SUBNET_DIFF_BASE = "com/untangle/node/spyware/subnet-diff-";
 
     private static int deployCount = 0;
-
-    static {
-        try {
-            BLACKLIST_HOME = new URL("http://webupdates.untangle.com/diffserver");
-        } catch (MalformedURLException exn) {
-            throw new RuntimeException(exn);
-        }
-    }
 
     private final SpywareHttpFactory factory = new SpywareHttpFactory(this);
     private final TokenAdaptor tokenAdaptor = new TokenAdaptor(this, factory);
@@ -164,25 +148,21 @@ public class SpywareImpl extends AbstractNode implements Spyware
                         m.put("key", uvm.getServerUID());
                         m.put("client-version", uvm.getFullVersion());
 
-                        try {
-                            for (String list : getSpywareLists()) {
-                                if (list.startsWith("spyware-")
-                                    && (list.endsWith("dom")
-                                        || list.endsWith("url"))) {
-                                    UrlList l
-                                        = new PrefixUrlList(BLACKLIST_HOME,
-                                                            "spyware", list, m,
-                                                            null);
-                                    urlDatabase.addBlacklist(list, l);
-                                }
-                            }
-                            urlDatabase.updateAll(false);
-                            fail = false;
-                        } catch (IOException exn) {
-                            logger.warn("could not set up database", exn);
-                        } catch (DatabaseException exn) {
-                            logger.warn("could not set up database", exn);
-                        }
+                        //                        try {
+                            /* FIXME */
+//                             for (String list : getSpywareLists()) {
+//                                 if (list.startsWith("spyware-") && (list.endsWith("dom") || list.endsWith("url"))) {
+//                                     UrlList l = new PrefixUrlList(BLACKLIST_HOME, "spyware", list, m, null);
+//                                     urlDatabase.addBlacklist(list, l);
+//                                 }
+//                             }
+//                             urlDatabase.updateAll(false);
+//                             fail = false;
+//                         } catch (IOException exn) {
+//                             logger.warn("could not set up database", exn);
+//                         } catch (DatabaseException exn) {
+//                             logger.warn("could not set up database", exn);
+//                         }
 
                         if (fail) {
                             logger.info("failed to update lists, retrying in 15 minutes");
@@ -688,7 +668,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
         return false;
     }
 
-    // XXX factor this shit out!
     private String nextHost(String host)
     {
         int i = host.indexOf('.');
@@ -955,8 +934,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
     }
 
-    // XXX factor out this shit
-    private static synchronized void deployWebAppIfRequired(Logger logger) {
+    private static synchronized void deployWebAppIfRequired(Logger logger)
+    {
         if (0 != deployCount++) {
             return;
         }
@@ -985,8 +964,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
     }
 
-    // XXX factor out this shit
-    private static synchronized void unDeployWebAppIfRequired(Logger logger) {
+    private static synchronized void unDeployWebAppIfRequired(Logger logger)
+    {
         if (0 != --deployCount) {
             return;
         }
@@ -1080,28 +1059,5 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
 
         return uri;
-    }
-
-    private List<String> getSpywareLists()
-    {
-        List<String> l = new ArrayList<String>();
-
-        try {
-            HttpClient hc = new HttpClient();
-            String url = BLACKLIST_HOME.toString() + "/list";
-            HttpMethod get = new GetMethod(url);
-            @SuppressWarnings("unused")
-			int rc = hc.executeMethod(get);
-            InputStream is = get.getResponseBodyAsStream();
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-            for (String s = br.readLine(); null != s; s = br.readLine()) {
-                l.add(s);
-            }
-        } catch (IOException exn) {
-            logger.warn("could not get listing", exn);
-        }
-
-        return l;
     }
 }
