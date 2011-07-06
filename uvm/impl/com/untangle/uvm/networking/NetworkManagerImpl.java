@@ -294,8 +294,17 @@ public class NetworkManagerImpl implements NetworkManager
 
     public String getPublicAddress()
     {
-        //return this.addressManager.getSettings().getPublicAddress();
-        return this.addressManager.getSettings().getCurrentURL();
+        String publicAddr = this.addressManager.getSettings().getCurrentURL();
+
+        //try never to return null
+        if (publicAddr == null) {
+            publicAddr = this.networkConfiguration.getHostname();
+        }
+        if (publicAddr == null) {
+            logger.warn("Unable to determine public address\n");
+        }
+
+        return publicAddr;
     }
 
     /* Get the external HTTPS port */
