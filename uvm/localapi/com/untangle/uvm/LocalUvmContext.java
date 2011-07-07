@@ -37,7 +37,6 @@ import java.io.File;
 
 import java.io.IOException;
 
-import com.sleepycat.je.Environment;
 import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.RemoteUvmContext;
 import com.untangle.uvm.logging.EventLogger;
@@ -272,8 +271,6 @@ public interface LocalUvmContext extends RemoteUvmContext
      * work right.
      */
     void loadLibrary(String libname);
-
-    Environment getBdbEnvironment();
 
     /**
      * Returns the UID of the server

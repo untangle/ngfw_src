@@ -17,9 +17,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.jabsorb.JSONSerializer;
 
-import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.Environment;
-import com.sleepycat.je.EnvironmentConfig;
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.LocalUvmContext;
@@ -68,7 +65,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     private static final String REBOOT_SCRIPT = "/sbin/reboot";
     private static final String SHUTDOWN_SCRIPT = "/sbin/shutdown";
-    private static final String BDB_HOME = System.getProperty("uvm.db.dir");
 
     private static final String CREATE_UID_SCRIPT;
     private static final String UID_FILE;
@@ -113,8 +109,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private OemManagerImpl oemManager;
     private SessionMonitorImpl sessionMonitor;
     private BackupManager backupManager;
-
-    private Environment bdbEnvironment;
 
     private volatile SessionFactory sessionFactory;
     private volatile TransactionRunner transactionRunner;
@@ -264,45 +258,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
                 }
             }
         }
-    }
-
-    public Environment getBdbEnvironment()
-    {
-        if (null == bdbEnvironment) {
-            synchronized (this) {
-                if (null == bdbEnvironment) {
-                    EnvironmentConfig envCfg = new EnvironmentConfig();
-                    envCfg.setAllowCreate(true);
-
-                    Integer maxMegs = Integer.getInteger("je.maxMemory");
-                    int maxMem;
-                    if (maxMegs == null) {
-                        maxMem = 16 * 1024 * 1024;
-                        logger.warn("No je.maxMemory property, using 16MB");
-                    } else {
-                        maxMem = maxMegs * 1024 * 1024;
-                        logger.info("Setting max bdb memory to " + maxMegs + "MB");
-                    }
-                    envCfg.setCacheSize(maxMem);
-
-                    File dbHome = new File(BDB_HOME);
-
-                    int tries = 0;
-                    while (null == bdbEnvironment && 3 > tries++) {
-                        try {
-                            bdbEnvironment = new Environment(dbHome, envCfg);
-                        } catch (DatabaseException exn) {
-                            logger.warn("couldn't load environment, try: " + tries, exn);
-                            for (File f : dbHome.listFiles()) {
-                                f.delete();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return bdbEnvironment;
     }
 
     // service methods --------------------------------------------------------

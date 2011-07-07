@@ -1,25 +1,11 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id$
  */
-
 package com.untangle.node.phish;
 
 import java.net.InetAddress;
 import java.net.URI;
+import org.apache.log4j.Logger;
 
 import com.untangle.node.http.HttpStateMachine;
 import com.untangle.node.http.RequestLineToken;
@@ -27,11 +13,12 @@ import com.untangle.node.http.StatusLine;
 import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
-import com.untangle.node.util.UrlDatabaseResult;
 import com.untangle.uvm.vnet.TCPSession;
 
 public class PhishHttpHandler extends HttpStateMachine
 {
+    private final Logger logger = Logger.getLogger(getClass());
+
     private final PhishNode node;
 
     // constructors -----------------------------------------------------------
@@ -58,45 +45,45 @@ public class PhishHttpHandler extends HttpStateMachine
         
         RequestLineToken rlToken = getRequestLine();
         URI uri = rlToken.getRequestUri();
+        boolean isBlocked = false;
 
-        // XXX this code should be factored out
         String host = uri.getHost();
-        if (null == host) {
+        if (host == null) {
             host = requestHeader.getValue("host");
-            if (null == host) {
+            if (host == null) {
                 InetAddress clientIp = getSession().clientAddr();
                 host = clientIp.getHostAddress();
             }
         }
         host = host.toLowerCase();
 
-        UrlDatabaseResult result;
-        if (!node.getPhishSettings().getEnableGooglePhishList()
-            || node.isWhitelistedDomain(host, getSession().clientAddr())) {
-            result = null;
-        } else {
-            result = node.getUrlDatabase()
-                .search(getSession(), uri, requestHeader);
+        String url = "http://" + host + "/" + uri.toString();
+        logger.error("LOOKUP: " + url); // XXX FIXME just for testing
+        
+        if (!node.getPhishSettings().getEnableGooglePhishList() || node.isWhitelistedDomain(host, getSession().clientAddr())) {
+            isBlocked = false;
+        } else if(node.getMalwareList().contains(url)) { // FIXME needs to check for hash not URL?
+            isBlocked = true;
+        } else if(node.getPhishList().contains(url)) { // FIXME needs to check for hash not URL?
+            isBlocked = true;
         }
 
-        if (null != result) {
-            if (result.blacklisted()) {
-                node.incrementBlockCount();
+        if (isBlocked) {
+            node.incrementBlockCount();
                 
-                // XXX change this category value
-                node.logHttp(new PhishHttpEvent(rlToken.getRequestLine(), Action.BLOCK, "Google Safe Browsing"));
+            // XXX change this category value
+            node.logHttp(new PhishHttpEvent(rlToken.getRequestLine(), Action.BLOCK, "Google Safe Browsing"));
 
-                InetAddress clientIp = getSession().clientAddr();
+            InetAddress clientIp = getSession().clientAddr();
 
-                PhishBlockDetails bd = new PhishBlockDetails
-                    (host, uri.toString(), clientIp);
+            PhishBlockDetails bd = new PhishBlockDetails
+                (host, uri.toString(), clientIp);
 
-                Token[] r = node.generateResponse(bd, getSession(),
-                                                       isRequestPersistent());
+            Token[] r = node.generateResponse(bd, getSession(),
+                                              isRequestPersistent());
 
-                blockRequest(r);
-                return requestHeader;
-            }
+            blockRequest(r);
+            return requestHeader;
         }
         
         node.incrementPassCount();

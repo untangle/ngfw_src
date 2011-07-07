@@ -1,5 +1,5 @@
 /*
- * $HeadURL: svn://chef/branch/prod/mawk/work/src/webfilter/impl/com/untangle/node/webfilter/WebFilterDecisionEngine.java $
+ * $Id: WebFilterDecisionEngine.java,v 1.00 2011/07/07 12:12:27 dmorris Exp $
  */
 package com.untangle.node.webfilter;
 
@@ -14,14 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.sleepycat.je.DatabaseException;
-import com.untangle.node.util.PrefixUrlList;
-import com.untangle.node.util.UrlDatabase;
-import com.untangle.node.util.UrlList;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
 import org.apache.log4j.Logger;
-import com.untangle.uvm.vnet.TCPSession;
 
 /**
  * This class has the Web Filter Lite (webfilter) specifics for the decision engine
@@ -36,7 +29,7 @@ class WebFilterDecisionEngine extends DecisionEngine
 
     private static final File INIT_HOME = new File("/usr/share/untangle-webfilter-init/");
 
-    private final UrlDatabase<String> urlDatabase = new UrlDatabase<String>();
+    private final HashMap<String,List<String>> urlDatabase = new HashMap<String,List<String>>();
 
     public WebFilterDecisionEngine(WebFilterBase node)
     {
@@ -52,7 +45,10 @@ class WebFilterDecisionEngine extends DecisionEngine
 
     protected List<String> categorizeSite(String dom, int port, String uri)
     {
-        List<String> all = urlDatabase.findAllBlacklisted("http", dom, uri);
+        String url = "http://" + dom + "/" + uri;
+        logger.error("LOOKUP: " + url); // FIXME for debugging
+        List<String> all = urlDatabase.get(url);
+        logger.error("LOOKUP: " + url + " = " + all); // FIXME for debugging
 
         if (null == all || 0 == all.size()) {
             all = Collections.singletonList("Uncategorized");

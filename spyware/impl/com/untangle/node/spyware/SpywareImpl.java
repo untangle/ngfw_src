@@ -37,15 +37,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import com.sleepycat.je.DatabaseException;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.PartialListUtil;
-import com.untangle.node.util.PrefixUrlList;
-import com.untangle.node.util.UrlDatabase;
-import com.untangle.node.util.UrlDatabaseResult;
-import com.untangle.node.util.UrlList;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -95,7 +90,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     private final EventLogger<SpywareEvent> eventLogger;
 
-    private final UrlDatabase<String> urlDatabase = new UrlDatabase<String>();
+    private final HashSet<String> urlDatabase = new HashSet<String>();
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
         { new SoloPipeSpec("spyware-http", this, tokenAdaptor,
@@ -103,8 +98,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
           new SoloPipeSpec("spyware-byte", this, streamHandler,
                            Fitting.OCTET_STREAM, Affinity.SERVER, 0) };
 
-    private final Map<InetAddress, Set<String>> hostWhitelists
-        = new HashMap<InetAddress, Set<String>>();
+    private final Map<InetAddress, Set<String>> hostWhitelists = new HashMap<InetAddress, Set<String>>();
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -420,14 +414,12 @@ public class SpywareImpl extends AbstractNode implements Spyware
     protected void preStart()
     {
         statisticManager.start();
-        urlDatabase.startUpdateTimer();
     }
 
     @Override
     protected void postStop()
     {
         statisticManager.stop();
-        urlDatabase.stopUpdateTimer();
     }
 
     @Override
@@ -538,8 +530,11 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
         domain = null == domain ? null : domain.toLowerCase();
         for (String d = domain; !match && null != d; d = nextHost(d)) {
-            UrlDatabaseResult udr = urlDatabase.search("http", d, "/");
-            match = null != udr && udr.blacklisted();
+            String url = "http://" + d + "/";
+
+            logger.error("Searching for " + url); //XXX REMOVE ME just for debugging
+            if (urlDatabase.contains(url))
+                return true;
         }
 
         return match;

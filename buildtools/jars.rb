@@ -133,7 +133,6 @@ class Jars
 
     ## Jars required to run/compile unit tests
     const_set(:Junit, [ Jars.downloadTarget('junit4.1/junit-4.1.jar') ])
-    const_set(:Bdb, [ Jars.downloadTarget('je-4.0.92/lib/je-4.0.92.jar') ])
     const_set(:DnsJava, [ Jars.downloadTarget('dnsjava-2.0.6/dnsjava-2.0.6.jar') ])
 
     const_set(:HttpClient, [ Jars.downloadTarget('commons-httpclient-3.0/commons-httpclient-3.0.jar'),
@@ -150,7 +149,7 @@ class Jars
                                    Activation, C3p0, 
                                    JavaMailApi,
                                    GetText, JavaMail, TomcatEmb, Velocity, 
-                                   Bdb, HttpClient, XmlRpc,
+                                   HttpClient, XmlRpc,
                                    Jstl, XStream, Json, Jabsorb, Slf4j, DnsJava,
                                    JFreeChart, Ant))
 

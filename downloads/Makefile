@@ -22,7 +22,7 @@ tarballs_gz=apache-ant-1.6.5.tar.gz \
 	commons-fileupload-1.1.tar.gz commons-io-1.1.tar.gz \
 	commons-httpclient-3.0.tar.gz AjaxTK-3.1.1_GA_394-src.tar.gz \
 	commons-codec-1.3.tar.gz \
-	je-4.0.92.tar.gz xmlrpc-current-bin.tar.gz slf4j-1.4.3.tar.gz \
+	xmlrpc-current-bin.tar.gz slf4j-1.4.3.tar.gz \
 	python-jsonrpc-r19.tar.gz dnsjava-2.0.6.tar.gz \
 	jradius-1.1.0-client.tar.gz
 
