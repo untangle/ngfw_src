@@ -126,7 +126,7 @@ def get_category_settings(tid, settings_id, debug=False):
     
     first = True
     for settings in settings_list:
-        id = settings[0]
+        string = settings[0]
         display_name = settings[1]
         blocked = settings[2]
         flagged = settings[3]
@@ -140,8 +140,8 @@ def get_category_settings(tid, settings_id, debug=False):
             str += ',\n'
         str += '\t\t\t{\n'
         str += '\t\t\t"javaClass": "com.untangle.uvm.node.GenericRule",\n'
-        str += '\t\t\t"id": "%s",\n' % id
-        str += '\t\t\t"string": "%s",\n' % display_name
+        str += '\t\t\t"string": "%s",\n' % string
+        str += '\t\t\t"name": "%s",\n' % display_name
         str += '\t\t\t"blocked": "%s",\n' % blocked
         str += '\t\t\t"flagged": "%s",\n' % flagged
         str += '\t\t\t"description": "%s"\n' % description

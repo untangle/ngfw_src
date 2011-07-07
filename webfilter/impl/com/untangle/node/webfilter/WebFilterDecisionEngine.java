@@ -5,10 +5,13 @@ package com.untangle.node.webfilter;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,11 +32,14 @@ class WebFilterDecisionEngine extends DecisionEngine
 
     private static final File INIT_HOME = new File("/usr/share/untangle-webfilter-init/");
 
-    private final HashMap<String,List<String>> urlDatabase = new HashMap<String,List<String>>();
-
-    public WebFilterDecisionEngine(WebFilterBase node)
+    private static HashMap<String,List<Integer>> urlDatabase = null;
+    private static HashMap<Integer, String> idToCategoryName = null;
+        
+    public WebFilterDecisionEngine( WebFilterBase node )
     {
         super(node);
+
+        initializeDB();
     }
 
     protected boolean getLookupSubdomains()
@@ -45,31 +51,141 @@ class WebFilterDecisionEngine extends DecisionEngine
 
     protected List<String> categorizeSite(String dom, int port, String uri)
     {
-        String url = "http://" + dom + "/" + uri;
-        logger.error("LOOKUP: " + url); // FIXME for debugging
-        List<String> all = urlDatabase.get(url);
-        logger.error("LOOKUP: " + url + " = " + all); // FIXME for debugging
+        String url = "http://" + dom + uri;
 
-        if (null == all || 0 == all.size()) {
-            all = Collections.singletonList("Uncategorized");
+        logger.info("Web Filter Category Lookup: " + url); 
+
+        List<Integer> categories = urlDatabase.get(url);
+        List<String> results = null;
+
+        if (categories == null || categories.size() == 0) {
+            results = Collections.singletonList("Uncategorized");
         } else {
-            for (int ai = 0; ai < all.size(); ai++) {
-                String dbName = all.get(ai);
+            results = new LinkedList<String>();
 
-                int i = dbName.indexOf('-');
-                if (0 < i) {
-                    i++;
-                    if (dbName.length() > i) {
-                        int j = dbName.indexOf('-', i);
-                        if (i < j) {
-                            all.set(ai, dbName.substring(i, j));
-                        }
+            for (Integer categoryId : categories) {
+                String categoryName = idToCategoryName.get(categoryId);
+                if (categoryName == null)
+                    logger.warn("Unknown category: " + categoryId);
+                else {
+                    logger.info("Web Filter Category Lookup: " + url + " -> " + categoryName); 
+                    results.add(categoryName);
+                }
+            }
+        }
+
+        return results;
+    }
+
+    private synchronized void initializeDB()
+    {
+        if (urlDatabase != null)
+            return;
+        if (idToCategoryName != null)
+            return;
+
+        logger.info("Initializing urlDatabase...");
+
+        this.urlDatabase = new HashMap<String,List<Integer>>();
+        this.idToCategoryName = new HashMap<Integer,String>();
+        
+        List<String>  fileNames = new LinkedList<String>();
+        List<String>  categoryNames = new LinkedList<String>();
+        List<Integer> categoryIDs = new LinkedList<Integer>();
+        
+        fileNames.add("/usr/share/untangle-webfilter-init/aggressive-url");
+        fileNames.add("/usr/share/untangle-webfilter-init/dating-url");
+        fileNames.add("/usr/share/untangle-webfilter-init/drugs-url");
+        fileNames.add("/usr/share/untangle-webfilter-init/ecommerce-url");
+        fileNames.add("/usr/share/untangle-webfilter-init/gambling-url");
+        fileNames.add("/usr/share/untangle-webfilter-init/hacking-url");
+        fileNames.add("/usr/share/untangle-webfilter-init/jobsearch-url");
+        fileNames.add("/usr/share/untangle-webfilter-init/mail-url");
+        fileNames.add("/usr/share/untangle-webfilter-init/porn-url");
+        fileNames.add("/usr/share/untangle-webfilter-init/proxy-url");
+        fileNames.add("/usr/share/untangle-webfilter-init/socialnetworking-url");
+        fileNames.add("/usr/share/untangle-webfilter-init/sports-url");
+        fileNames.add("/usr/share/untangle-webfilter-init/vacation-url");
+        fileNames.add("/usr/share/untangle-webfilter-init/violence-url");
+
+        categoryNames.add("Hate and Aggression");
+        categoryNames.add("Dating");
+        categoryNames.add("Illegal Drugs");
+        categoryNames.add("Shopping");
+        categoryNames.add("Gambling");
+        categoryNames.add("Hacking");
+        categoryNames.add("Job Search");
+        categoryNames.add("Web Mail");
+        categoryNames.add("Pornography");
+        categoryNames.add("Proxy Sites");
+        categoryNames.add("Social Networking");
+        categoryNames.add("Sports");
+        categoryNames.add("Vacation");
+        categoryNames.add("Violence");
+
+        categoryIDs.add(1);
+        categoryIDs.add(2);
+        categoryIDs.add(3);
+        categoryIDs.add(4);
+        categoryIDs.add(5);
+        categoryIDs.add(6);
+        categoryIDs.add(7);
+        categoryIDs.add(8);
+        categoryIDs.add(9);
+        categoryIDs.add(10);
+        categoryIDs.add(11);
+        categoryIDs.add(12);
+        categoryIDs.add(13);
+        categoryIDs.add(14);
+
+        idToCategoryName.put(1,"aggression");
+        idToCategoryName.put(2,"dating");
+        idToCategoryName.put(3,"drugs");
+        idToCategoryName.put(4,"ecommerce");
+        idToCategoryName.put(5,"gambling");
+        idToCategoryName.put(6,"hacking");
+        idToCategoryName.put(7,"jobsearch");
+        idToCategoryName.put(8,"mail");
+        idToCategoryName.put(9,"porn");
+        idToCategoryName.put(10,"proxy");
+        idToCategoryName.put(11,"socialnetworking");
+        idToCategoryName.put(12,"sports");
+        idToCategoryName.put(13,"vacation");
+        idToCategoryName.put(14,"violence");
+        
+        Integer categoryId;
+        String fileName;
+        int i = 0;
+
+        for ( String categoryName : categoryNames ) {
+            categoryId = categoryIDs.get(i);
+            fileName = fileNames.get(i);
+
+            logger.debug("Loading Category \"" + categoryName + "\" from \"" + fileName + "\"");
+            try {
+                BufferedReader in = new BufferedReader(new FileReader(fileName));
+                String url;
+                while ((url = in.readLine()) != null) {
+                    List<Integer> currentCategorization = urlDatabase.get(url);
+
+                    if (currentCategorization != null) {
+                        //logger.debug("Adding   categorization for " + url + " -> " + categoryName + "(" + categoryId + ")");
+                        currentCategorization.add(categoryId);
+                    } else {
+                        //logger.debug("Creating categorization for " + url + " -> " + categoryName + "(" + categoryId + ")");
+                        List<Integer> newCategorization = new LinkedList<Integer>();
+                        newCategorization.add(categoryId);
+                        urlDatabase.put(url, newCategorization);
                     }
                 }
             }
+            catch (IOException e) {
+                logger.error("Error loading category from file: " + fileName, e);
+            }
 
+            i++;
         }
 
-        return all;
+        logger.info("Initializing urlDatabase... done.");
     }
 }

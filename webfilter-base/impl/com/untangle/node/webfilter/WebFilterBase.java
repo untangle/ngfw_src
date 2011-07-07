@@ -299,13 +299,14 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         return pipeSpecs;
     }
 
-    public void initializeSettings()
+    public abstract void initializeSettings(WebFilterSettings settings);
+
+    public void initializeCommonSettings(WebFilterSettings settings)
     {
         if (logger.isDebugEnabled()) {
             logger.debug(getNodeId() + " init settings");
         }
 
-        WebFilterSettings settings = new WebFilterSettings();
 
         List<GenericRule> s = new LinkedList<GenericRule>();
 
@@ -476,8 +477,6 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         m.add(new GenericRule("application/postscript", "Postscript", "document", false));
 
         settings.setBlockedMimeTypes(m);
-
-        _setSettings(settings);
     }
 
     @Override
@@ -520,7 +519,13 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         if (readSettings == null) {
             logger.warn("No settings found - Initializing new settings.");
 
-            this.initializeSettings();
+            WebFilterSettings settings = new WebFilterSettings();
+
+            this.initializeCommonSettings(settings);
+            this.initializeSettings(settings);
+
+            _setSettings(settings);
+
         }
         else {
             logger.info("Loading Settings...");
@@ -528,7 +533,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
             // UPDATE settings if necessary
             
             this.settings = readSettings;
-            logger.warn("Setting: " + this.settings.toJSONString());
+            logger.info("Settings: " + this.settings.toJSONString());
         }
 
         deployWebAppIfRequired(logger);

@@ -6,6 +6,7 @@ package com.untangle.node.webfilter;
 import java.io.Serializable;
 import java.util.List;
 import java.util.LinkedList;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -19,6 +20,8 @@ import com.untangle.uvm.security.NodeId;
 @SuppressWarnings("serial")
 public class WebFilterSettings implements Serializable
 {
+    private final Logger logger = Logger.getLogger(DecisionEngine.class);
+
     public static final String UNBLOCK_MODE_NONE   = "None";
     public static final String UNBLOCK_MODE_HOST   = "Host";
     public static final String UNBLOCK_MODE_GLOBAL = "Global";
@@ -106,13 +109,13 @@ public class WebFilterSettings implements Serializable
         this.categories = categories;
     }
 
-    public GenericRule getCategory(String name)
+    public GenericRule getCategory(String idString)
     {
-        if (name == null)
+        if (idString == null)
             return null;
         
         for (GenericRule cat : getCategories()) {
-            if (name.equals(cat.getDescription()))
+            if (idString.equals(cat.getString()))
                 return cat;
         }
 

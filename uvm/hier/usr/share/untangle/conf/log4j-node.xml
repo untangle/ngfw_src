@@ -115,10 +115,6 @@
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.node.webfilter.BlackList">
-    <priority value="WARN"/>
-  </category>
-
   <category name="com.untangle.node.bandwidth">
     <priority value="WARN"/>
   </category>
@@ -168,7 +164,7 @@
   </category>
 
   <category name="com.untangle.node.webfilter">
-    <priority value="WARN"/>
+    <priority value="INFO"/>
   </category>
 
   <category name="com.untangle.node.ips">

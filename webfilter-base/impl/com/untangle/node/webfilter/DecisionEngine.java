@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
 import org.apache.log4j.Logger;
 
 import com.untangle.node.http.RequestLineToken;
