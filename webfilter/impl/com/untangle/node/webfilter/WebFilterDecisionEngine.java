@@ -51,7 +51,7 @@ class WebFilterDecisionEngine extends DecisionEngine
 
     protected List<String> categorizeSite(String dom, int port, String uri)
     {
-        String url = "http://" + dom + uri;
+        String url = dom + uri;
 
         logger.info("Web Filter Category Lookup: " + url); 
 
