@@ -59,8 +59,8 @@ def get_wan_names_map():
     map = {}
     for intf in JSON_OBJ['interfaceList']['list']:
         if intf['WAN'] is not None and intf['WAN'].lower() == 'true':
-            map[intf['interfaceId']] = intf['name']
-                
+            map[int(intf['interfaceId'])] = intf['name']
+
     return map
 
 class Node:
