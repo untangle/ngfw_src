@@ -94,5 +94,6 @@ fi
 # 9.1 upgrade
 # remove obsolete stuff
 rm -rf /usr/share/untangle/autodump
+rm -rf /usr/share/untangle/db
 
 exit 0
