@@ -32,7 +32,7 @@ UVM_TIMEOUT=300
 MONIT="monit -c /etc/untangle/monit.conf"
 
 # if in the build
-if [ "x" != "x@PREFIX@" ] ; then
+if [ -n "@PREFIX@" ] ; then
     UVM_CHUSER=""
     UVM_NICENESS="0"
     if [ "$USER" != "root" ] ; then
@@ -42,7 +42,7 @@ if [ "x" != "x@PREFIX@" ] ; then
 fi
 
 monitorAll() {
-    [ "x" = "x@PREFIX@" ] && $MONIT monitor all
+    [ -z "@PREFIX@" ] && $MONIT monitor all
 }
 
 unmonitorAll() {
@@ -68,7 +68,7 @@ updateStatusExit() {
 
 # Finds the actual java uvm process
 uvmJavaPid() {
-    ps awwx | fgrep java | fgrep com.untangle.uvm.engine.Main | awk '{print $1}'
+    ps awwx | awk '/[j]ava.*com.untangle.uvm.engine.Main/ {print $1}'
 }
 
 case "$1" in
@@ -76,7 +76,7 @@ case "$1" in
         log_daemon_msg "Starting $DESC"
 
         # This is a hack to not start during install phase
-        if [ ! -z "`cat /proc/cmdline | grep mv_install`" ] ; then
+        if grep -q mv_install /proc/cmdline ; then
             echo "Skipping."
             log_end_msg 0
             exit
@@ -84,7 +84,7 @@ case "$1" in
 
         if [ -f ${UVM_RUNDIR}/${UVM_PID} ] ; then
             pid=`cat ${UVM_RUNDIR}/${UVM_PID}`
-            if [ -z "`ps ax | awk '{print $1}' | grep \"^$pid$\"`" ] ; then
+            if ! ps ax | grep -qE '^'$pid'$' ; then
                 echo -n "Removing Stale PIDfile  (file:`cat ${UVM_RUNDIR}/${UVM_PID}` pid:$pid) "
                 rm -f ${UVM_RUNDIR}/${UVM_PID}
             else
@@ -126,15 +126,15 @@ case "$1" in
                 updateStatusExit "x]\n" "Stopped"
             fi
 
-            EXPC="`cat $UVM_CONSOLE_LOG 2>/dev/null | egrep -i '(fatal error|exception)' `"
-            FINI="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i 'startup complete' `"
+            EXPC="$(egrep -i '(fatal error|exception)' $UVM_CONSOLE_LOG 2> /dev/null)"
+            FINI="$(grep -i 'startup complete' $UVM_CONSOLE_LOG 2>/dev/null)"
 
-            if [ "x" != "x$EXPC" ] ; then
-                if [ ! -z "`echo $EXPC | grep -i \"address already in use\"`" ] ; then
+            if [ -n "$EXPC" ] ; then
+                if ! echo $EXPC | grep -qi "address already in use" ; then
                     echo -e "x]\nAddress already in use. Will attempt to rebind for five minutes."
                 else
                     echo -e "x]\nException in $UVM_CONSOLE_LOG"
-                    if [ "x" != "x@PREFIX@" ] ; then
+                    if [ -n "@PREFIX@" ] ; then
                         $0 stop
 			            log_end_msg 0
                         exit
@@ -145,7 +145,7 @@ case "$1" in
                 fi
             fi
 
-            if [ "x" != "x$FINI" ] ; then
+            if [ -n "$FINI" ] ; then
                 break
             fi
 
@@ -157,9 +157,8 @@ case "$1" in
         for i in `seq 1 $UVM_TIMEOUT` ; do
             echo -n "."
 
-            FINI="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i 'postInit complete' `"
-            if [ "x" != "x$FINI" ] ; then
-	            monitorAll
+            if grep -qi 'postInit complete' $UVM_CONSOLE_LOG 2>/dev/null ; then
+	        monitorAll
                 updateStatusExit "]\n" "Running"
             fi
 
@@ -196,10 +195,9 @@ case "$1" in
         # Wait for completion
         for i in `seq 1 15` ; do
             echo -n "."
-            FINI="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i 'shutdown complete' `"
-            if [ "x" != "x$FINI" ] ; then
+            if grep -qi 'shutdown complete' $UVM_CONSOLE_LOG 2>/dev/null ; then
                 sleep 1
-		        unmonitorAll
+		unmonitorAll
                 updateStatusExit "]\n" "Stopped"
             fi
             if [ -z "`uvmJavaPid`" ] ; then
@@ -218,10 +216,9 @@ case "$1" in
         # Wait for completion
         for i in `seq 1 5` ; do
             echo -n "."
-            FINI="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i 'shutdown complete' `"
-            if [ "x" != "x$FINI" ] ; then
+            if grep -qi 'shutdown complete' $UVM_CONSOLE_LOG 2>/dev/null ; then
                 sleep 1 
-		        unmonitorAll
+		unmonitorAll
                 updateStatusExit "]\n" "Stopped"
             fi
             if [ -z "`uvmJavaPid`" ] ; then
