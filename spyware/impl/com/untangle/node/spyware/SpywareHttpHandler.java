@@ -97,13 +97,13 @@ public class SpywareHttpHandler extends HttpStateMachine
         host = host.toLowerCase();
 
         node.incrementHttpScan();
-        if (node.isWhitelistedDomain(host, session.clientAddr())) {
+        if (node.isDomainPasslisted(host, session.clientAddr())) {
             node.incrementHttpWhitelisted();
             node.statisticManager.incrPass(); // pass URL
             getSession().release();
             releaseRequest();
             return requestHeader;
-        } else if (node.isBlacklistDomain(host, uri)) {
+        } else if (node.isUrlBlocked(host, uri)) {
             node.incrementHttpBlockedDomain();
             node.statisticManager.incrURL();
             node.log(new SpywareBlacklistEvent(requestLine.getRequestLine()));
@@ -196,7 +196,7 @@ public class SpywareHttpHandler extends HttpStateMachine
                 domain = host;
             }
 
-            boolean badDomain = node.isBlockedCookie(domain);
+            boolean badDomain = node.isCookieBlocked(domain);
 
             if (badDomain) {
                 if (logger.isDebugEnabled()) {
@@ -263,7 +263,7 @@ public class SpywareHttpHandler extends HttpStateMachine
                 }
             }
 
-            boolean badDomain = node.isBlockedCookie(domain);
+            boolean badDomain = node.isCookieBlocked(domain);
 
             if (badDomain) {
                 if (logger.isDebugEnabled()) {
@@ -476,4 +476,5 @@ public class SpywareHttpHandler extends HttpStateMachine
 
         return -1;
     }
+
 }

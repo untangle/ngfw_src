@@ -192,6 +192,7 @@ class WebFilterDecisionEngine extends DecisionEngine
                         urlDatabase.put(url, newCategorization);
                     }
                 }
+                in.close();
             }
             catch (IOException e) {
                 logger.error("Error loading category from file: " + fileName, e);

@@ -20,8 +20,11 @@ package com.untangle.node.spyware;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.IOException;
+import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.FileReader;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -76,11 +79,9 @@ import org.hibernate.Session;
 public class SpywareImpl extends AbstractNode implements Spyware
 {
     private static final String ACTIVEX_LIST = "com/untangle/node/spyware/activex.txt";
-    private static final String ACTIVEX_DIFF_BASE = "com/untangle/node/spyware/activex-diff-";
     private static final String COOKIE_LIST = "com/untangle/node/spyware/cookie.txt";
-    private static final String COOKIE_DIFF_BASE = "com/untangle/node/spyware/cookie-diff-";
     private static final String SUBNET_LIST = "com/untangle/node/spyware/subnet.txt";
-    private static final String SUBNET_DIFF_BASE = "com/untangle/node/spyware/subnet-diff-";
+    private static final String MALWARE_SITE_DB_FILE  = "/usr/share/untangle-webfilter-init/spyware-url";
 
     private static int deployCount = 0;
 
@@ -90,7 +91,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     private final EventLogger<SpywareEvent> eventLogger;
 
-    private final HashSet<String> urlDatabase = new HashSet<String>();
+    private static HashSet<String> urlDatabase = null;
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
         { new SoloPipeSpec("spyware-http", this, tokenAdaptor,
@@ -141,22 +142,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
                         Map<String,String> m = new HashMap<String,String>();
                         m.put("key", uvm.getServerUID());
                         m.put("client-version", uvm.getFullVersion());
-
-                        //                        try {
-                            /* FIXME */
-//                             for (String list : getSpywareLists()) {
-//                                 if (list.startsWith("spyware-") && (list.endsWith("dom") || list.endsWith("url"))) {
-//                                     UrlList l = new PrefixUrlList(BLACKLIST_HOME, "spyware", list, m, null);
-//                                     urlDatabase.addBlacklist(list, l);
-//                                 }
-//                             }
-//                             urlDatabase.updateAll(false);
-//                             fail = false;
-//                         } catch (IOException exn) {
-//                             logger.warn("could not set up database", exn);
-//                         } catch (DatabaseException exn) {
-//                             logger.warn("could not set up database", exn);
-//                         }
 
                         if (fail) {
                             logger.info("failed to update lists, retrying in 15 minutes");
@@ -413,6 +398,10 @@ public class SpywareImpl extends AbstractNode implements Spyware
     @Override
     protected void preStart()
     {
+        if (urlDatabase == null) {
+            initializeMalwareUrlList();
+        }
+
         statisticManager.start();
     }
 
@@ -509,8 +498,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
                              String uri, Header header, boolean persistent)
     {
         String n = replacementGenerator.generateNonce(bd);
-        return replacementGenerator.generateResponse(n, sess, uri, header,
-                                                     persistent);
+        return replacementGenerator.generateResponse(n, sess, uri, header, persistent);
     }
 
     String generateNonce(String host, String uri, InetAddress addr)
@@ -520,27 +508,30 @@ public class SpywareImpl extends AbstractNode implements Spyware
         return replacementGenerator.generateNonce(bd);
     }
 
-    boolean isBlacklistDomain(String domain, URI uri)
+    boolean isUrlBlocked(String domain, URI uri)
     {
         if (!settings.getBaseSettings().getUrlBlacklistEnabled()) {
             return false;
         }
 
-        boolean match = false;
-
         domain = null == domain ? null : domain.toLowerCase();
-        for (String d = domain; !match && null != d; d = nextHost(d)) {
-            String url = "http://" + d + "/";
 
-            logger.error("Searching for " + url); //XXX REMOVE ME just for debugging
-            if (urlDatabase.contains(url))
+        if (urlDatabase.contains(domain + uri))
+            return true;
+
+        /**
+         * Also check to see if the entire domain (or subdomain) is blocked
+         */
+        for ( String dom = domain ; dom != null ; dom = nextHost(dom) ) {
+            logger.error("Searching for: \"" + dom + "/" + "\""); 
+            if (urlDatabase.contains(dom + "/"))
                 return true;
         }
 
-        return match;
+        return false;
     }
 
-    boolean isWhitelistedDomain(String domain, InetAddress clientAddr)
+    boolean isDomainPasslisted(String domain, InetAddress clientAddr)
     {
         if (null == domain) {
             return false;
@@ -560,7 +551,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
     }
 
-    boolean isBlockedCookie(String domain)
+    boolean isCookieBlocked(String domain)
     {
         if (null == domain) {
             logger.warn("null domain for cookie");
@@ -606,13 +597,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
                     }
 
                     listUtil.updateCachedItems(settings.getActiveXRules(), activeXRules);
-
                     listUtil.updateCachedItems(settings.getCookieRules(), cookieRules);
-
                     listUtil.updateCachedItems(settings.getSubnetRules(), subnetRules);
-
                     listUtil.updateCachedItems(settings.getDomainWhitelist(), domainWhitelist);
-
                     settings = (SpywareSettings)s.merge(settings);
 
                     return true;
@@ -633,8 +620,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     // private methods ---------------------------------------------------------
 
-    private void updateRules(final Set<?> rules, final List<?> added,
-                             final List<Long> deleted, final List<?> modified)
+    private void updateRules(final Set<?> rules, final List<?> added, final List<Long> deleted, final List<?> modified)
     {
         TransactionWork<Object> tw = new TransactionWork<Object>()
             {
@@ -687,11 +673,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
             Set<String> add = initList(ACTIVEX_LIST);
             Set<String> remove = Collections.emptySet();
             updateActiveX(settings, add, remove);
-            settings.setActiveXVersion(latestVer(ACTIVEX_DIFF_BASE));
         } else {
             Set<String> add = new HashSet<String>();
             Set<String> remove = new HashSet<String>();
-            ver = diffSets(ACTIVEX_DIFF_BASE, ver, add, remove);
             updateActiveX(settings, add, remove);
             settings.setActiveXVersion(ver);
         }
@@ -738,11 +722,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
             Set<String> add = initList(COOKIE_LIST);
             Set<String> remove = Collections.emptySet();
             updateCookie(settings, add, remove);
-            settings.setCookieVersion(latestVer(COOKIE_DIFF_BASE));
         } else {
             Set<String> add = new HashSet<String>();
             Set<String> remove = new HashSet<String>();
-            ver = diffSets(COOKIE_DIFF_BASE, ver, add, remove);
             updateCookie(settings, add, remove);
             settings.setCookieVersion(ver);
         }
@@ -792,11 +774,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
             Set<String> add = initList(SUBNET_LIST);
             Set<String> remove = Collections.emptySet();
             updateSubnet(settings, add, remove);
-            settings.setSubnetVersion(latestVer(SUBNET_DIFF_BASE));
         } else {
             Set<String> add = new HashSet<String>();
             Set<String> remove = new HashSet<String>();
-            ver = diffSets(SUBNET_DIFF_BASE, ver, add, remove);
             updateSubnet(settings, add, remove);
             settings.setSubnetVersion(ver);
         }
@@ -1055,4 +1035,28 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
         return uri;
     }
+
+    private void initializeMalwareUrlList()
+    {
+        synchronized(this) {
+            if (this.urlDatabase != null)
+                return;
+            else
+                this.urlDatabase = new HashSet<String>();
+        }
+        
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(MALWARE_SITE_DB_FILE));
+            String url;
+            while ((url = in.readLine()) != null) {
+                urlDatabase.add(url); //ignore return value (false if already present)
+            }
+            in.close();
+        }
+        catch (IOException e) {
+            logger.error("Error loading category from file: " + MALWARE_SITE_DB_FILE, e);
+        }
+        
+    }
+    
 }

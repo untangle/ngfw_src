@@ -9,11 +9,18 @@ import com.untangle.uvm.node.GenericRule;
 
 public class WebFilterImpl extends WebFilterBase
 {
-    private final WebFilterDecisionEngine engine = new WebFilterDecisionEngine(this);
-
+    /**
+     * The WebFilterDecisionEngine is rather big as it loads the database
+     * It is lazily initialized in case there are no running Web Filter apps
+     */
+    private static WebFilterDecisionEngine engine = null; 
+    
     @Override
-    public DecisionEngine getDecisionEngine()
+    public synchronized DecisionEngine getDecisionEngine()
     {
+        if (engine == null) {
+            engine = new WebFilterDecisionEngine(this);
+        }
         return engine;
     }
 
