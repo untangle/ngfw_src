@@ -1,4 +1,6 @@
-/* $Id$ */
+/*
+ * $Id$
+ */
 package com.untangle.uvm.engine;
 
 import java.util.ArrayList;
@@ -42,7 +44,7 @@ import com.untangle.uvm.addrbook.UserEntry;
 abstract class LdapAdapter
 {
 
-    private final Logger m_logger = Logger.getLogger(LdapAdapter.class);
+    private final Logger logger = Logger.getLogger(LdapAdapter.class);
 
     /**
      * For subclasses to define the type of repository
@@ -172,7 +174,7 @@ abstract class LdapAdapter
             return ret;
         }
         catch(NamingException ex) {
-            m_logger.warn("Exception listing entries");
+            logger.warn("Exception listing entries");
             throw new ServiceUnavailableException(ex.toString());
         }
     }
@@ -401,7 +403,7 @@ abstract class LdapAdapter
             return createSuperuserContext();
         }
         catch(AuthenticationException ex) {
-            m_logger.warn("Unable to create superuser context with settings: " +
+            logger.warn("Unable to create superuser context with settings: " +
                           "Host: \"" + settings.getLDAPHost() + "\", " +
                           "Port: \"" + settings.getLDAPPort() + "\", " +
                           "Superuser DN: \"" + getSuperuserDN() + "\", " +
@@ -410,7 +412,7 @@ abstract class LdapAdapter
             return null;
         }
         catch(CommunicationException ex) {
-            m_logger.warn("Unable to create superuser context with settings: " +
+            logger.warn("Unable to create superuser context with settings: " +
                           "Host: \"" + settings.getLDAPHost() + "\", " +
                           "Port: \"" + settings.getLDAPPort() + "\", " +
                           "Superuser DN: \"" + getSuperuserDN() + "\", " +
@@ -419,7 +421,7 @@ abstract class LdapAdapter
             return null;
         }
         catch(Exception ex) {
-            m_logger.error("Unable to create superuser context with settings: " +
+            logger.error("Unable to create superuser context with settings: " +
                            "Host: \"" + settings.getLDAPHost() + "\", " +
                            "Port: \"" + settings.getLDAPPort() + "\", " +
                            "Superuser DN: \"" + getSuperuserDN() + "\", " +
@@ -606,7 +608,7 @@ abstract class LdapAdapter
                     try {
                         map.put( "dn=", new String[] { sr.getNameInNamespace()});
                     } catch ( UnsupportedOperationException e ) {
-                        m_logger.warn( "Unable to determine fully qualified DN for a result", e);
+                        logger.warn( "Unable to determine fully qualified DN for a result", e);
                     }
                     ret.add(map);
                 }

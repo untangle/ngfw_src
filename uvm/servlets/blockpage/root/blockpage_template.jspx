@@ -31,9 +31,6 @@
     <title><c:out value="${pageTitle}"/></title>
 
     <uvm:skin src="user.css" name="${ss.userPagesSkin}"/>
-    <c:if test="${!untangle_plus}">
-      <script type="text/javascript" ><!-- --></script>
-    </c:if>
 
     <uvm:inlineScript>
       <![CDATA[
@@ -100,16 +97,12 @@
         <p><span><c:out value="${footer}"/></span></p>
       </div>
       
-      <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
       <div id="extra-div-1"><span></span></div>
       <div id="extra-div-2"><span></span></div>
       <div id="extra-div-3"><span></span></div>
       <div id="extra-div-4"><span></span></div>
       <div id="extra-div-5"><span></span></div>
       <div id="extra-div-6"><span></span></div>
-      <c:if test="${!untangle_plus}">
-        <script type="text/javascript" src="http://guide.untangle.com/bp/get-status-3.php?${urlParams}"><!-- --></script>
-      </c:if>         
     </div>
 
   </body>

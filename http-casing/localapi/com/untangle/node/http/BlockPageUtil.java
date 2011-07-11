@@ -45,18 +45,6 @@ public class BlockPageUtil
         request.setAttribute( "title", params.getTitle( bm, i18n_map ));
         request.setAttribute( "footer", params.getFooter( bm, i18n_map ));
         
-        if ( request.getAttribute( "untangle_plus") == null ) {
-            boolean untanglePlus = false;
-            try {
-                untanglePlus = uvm.licenseManager().hasPremiumLicense();
-            } catch ( Exception e ) {
-                logger.warn( "Unable to load license manager.", e );
-                untanglePlus = false;
-            }
-
-            request.setAttribute( "untangle_plus", untanglePlus );
-        }
-
         String value = params.getScriptFile();
         if ( value != null ) request.setAttribute( "javascript_file", value );
         value = params.getAdditionalFields( i18n_map );

@@ -35,6 +35,7 @@ public class WebFilterImpl extends WebFilterBase
         return "webfilter";
     }
 
+    @Override
     public void initializeSettings(WebFilterSettings settings)
     {
         LinkedList<GenericRule> categories = new LinkedList<GenericRule>();

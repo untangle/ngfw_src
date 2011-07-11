@@ -171,19 +171,15 @@ class DefaultAddressBookImpl implements RemoteAddressBook
     public static class ABStatus implements RemoteAddressBook.Status, Serializable
     {
         private final boolean isLocalWorking;
-        private final String localDetail;
 
         private ABStatus(boolean isLocalWorking, String localDetail)
         {
             this.isLocalWorking = isLocalWorking;
-            this.localDetail = localDetail;
         }
 
         public boolean isLocalWorking() { return this.isLocalWorking; }
         public boolean isADWorking() { return false; }
         public boolean isRadiusWorking() { return false; }
-        public String localDetail() { return localDetail; }
-        public String adDetail() { return "unconfigured"; }
     }
 
     public Status getStatus()

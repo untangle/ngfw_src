@@ -52,8 +52,6 @@ import javax.persistence.Table;
 @SuppressWarnings("serial")
 public class HttpSettings implements Serializable
 {
-    public static final int MIN_HEADER_LENGTH = 1024;
-    public static final int MAX_HEADER_LENGTH = 8192;
     public static final int MIN_URI_LENGTH = 1024;
     public static final int MAX_URI_LENGTH = 4096;
 
@@ -62,7 +60,6 @@ public class HttpSettings implements Serializable
 
     private boolean enabled = true;
     private boolean nonHttpBlocked = false;
-    private int maxHeaderLength = MAX_HEADER_LENGTH;
     private boolean blockLongHeaders = false;
     private int maxUriLength = MAX_URI_LENGTH;
     private boolean blockLongUris = false;
@@ -126,17 +123,12 @@ public class HttpSettings implements Serializable
     @Column(name="max_header_length", nullable=false)
     public int getMaxHeaderLength()
     {
-        return maxHeaderLength;
+        return 8192;
     }
 
     public void setMaxHeaderLength(int maxHeaderLength)
     {
-        if (MIN_HEADER_LENGTH > maxHeaderLength
-            || MAX_HEADER_LENGTH < maxHeaderLength) {
-            throw new IllegalArgumentException("out of bounds: "
-                                               + maxHeaderLength);
-        }
-        this.maxHeaderLength = maxHeaderLength;
+        return;
     }
 
     /**

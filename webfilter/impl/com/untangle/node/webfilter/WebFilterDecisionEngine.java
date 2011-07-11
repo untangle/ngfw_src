@@ -49,17 +49,30 @@ class WebFilterDecisionEngine extends DecisionEngine
 
     // protected methods ------------------------------------------------------
 
-    protected List<String> categorizeSite(String dom, int port, String uri)
+    protected List<String> categorizeSite(String domain, int port, String uri)
     {
-        String url = dom + uri;
+        String url = domain + uri;
 
         logger.info("Web Filter Category Lookup: " + url); 
-
         List<Integer> categories = urlDatabase.get(url);
         List<String> results = null;
 
+        /**
+         * Lookup just the domain (no URI)
+         * For example example.com is categorized as a whole
+         * So example.com/foo won't be in the database specifically
+         */
         if (categories == null || categories.size() == 0) {
-            results = Collections.singletonList("Uncategorized");
+            String dom;
+            for ( dom = domain ; null != dom ; dom = nextHost(dom) ) {
+                categories = urlDatabase.get(dom + "/");
+                if (categories != null)
+                    break;
+            }
+        }
+
+        if (categories == null || categories.size() == 0) {
+            results = Collections.singletonList("uncategorized");
         } else {
             results = new LinkedList<String>();
 
@@ -74,6 +87,7 @@ class WebFilterDecisionEngine extends DecisionEngine
             }
         }
 
+        logger.info("Web Filter Category Lookup: " + url + " = " + results); 
         return results;
     }
 
@@ -188,4 +202,30 @@ class WebFilterDecisionEngine extends DecisionEngine
 
         logger.info("Initializing urlDatabase... done.");
     }
+
+    /**
+     * Gets the next domain stripping off the lowest level domain from
+     * host. Does not return the top level domain. Returns null when
+     * no more domains are left.
+     *
+     * <b>This method assumes trailing dots are stripped from host.</b>
+     *
+     * @param host a <code>String</code> value
+     * @return a <code>String</code> value
+     */
+    private String     nextHost( String host )
+    {
+        int i = host.indexOf('.');
+        if (-1 == i) {
+            return null;
+        } else {
+            int j = host.indexOf('.', i + 1);
+            if (-1 == j) { // skip tld
+                return null;
+            }
+
+            return host.substring(i + 1);
+        }
+    }
+    
 }

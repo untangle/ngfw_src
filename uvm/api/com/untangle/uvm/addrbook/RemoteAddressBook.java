@@ -112,10 +112,6 @@ public interface RemoteAddressBook
         boolean isADWorking();
 
         boolean isRadiusWorking();
-
-        String localDetail();
-
-        String adDetail();
     }
 
     /**
