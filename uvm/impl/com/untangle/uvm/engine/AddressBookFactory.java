@@ -44,6 +44,10 @@ class AddressBookFactory
 
     public RemoteAddressBook getAddressBook()
     {
+        if (this.premium == null) {
+            refresh();
+        }
+        
         return ( this.premium == null ) ? this.limited : this.premium;
     }
 
