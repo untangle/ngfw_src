@@ -73,9 +73,6 @@ public class AddressSettings implements Serializable, Validatable
     /* An additional HTTPS port that the web server will bind to */
     private int httpsPort;
 
-    /* The hostname of the box */
-    private HostName hostname;
-
     /* True if the hostname is resolvable on the internet */
     private boolean isHostnamePublic;
 
@@ -102,7 +99,6 @@ public class AddressSettings implements Serializable, Validatable
     public AddressSettings( AddressSettings settings )
     {
         this.httpsPort = settings.httpsPort;
-        this.hostname = settings.hostname;
         this.isHostnamePublic = settings.isHostnamePublic;
         this.isPublicAddressEnabled = settings.isPublicAddressEnabled;
         this.publicIPAddress = settings.publicIPAddress;
