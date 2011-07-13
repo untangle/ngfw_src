@@ -32,7 +32,8 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-class FileLoader {
+class FileLoader
+{
     public static final String SNORT_RULES_HOME = "/usr/share/untangle-snort-rules";
 
     public static final String[] IGNORED_RULE_FILES = {
