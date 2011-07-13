@@ -44,7 +44,8 @@ import com.untangle.uvm.logging.UvmRepositorySelector;
  * <li>uvm.data.dir - data files.</li>
  * <li>uvm.db.dir - database files.</li>
  * <li>uvm.web.dir - servlet directories.</li>
- * <li>uvm.conf.dir - configuration files, added to classpath.</li>
+ * <li>uvm.conf.dir - configuration files.</li>
+ * <li>uvm.settings.dir - settings files</li>
  * <li>uvm.tmp.dir - temporary files.</li>
  * <li>uvm.skins.dir - skins files.</li>
  * <li>uvm.lang.dir - languages resources files.</li>
