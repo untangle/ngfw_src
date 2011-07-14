@@ -246,13 +246,14 @@ public class Main
     private void startUvm() throws Exception
     {
         List<URL> urls = new ArrayList<URL>();
-        String uvmLib = System.getProperty("uvm.lib.dir");
-        urls.add(new URL("file://" + uvmLib + "/untangle-libuvm-impl/"));
-        urls.add(new URL("file://" + uvmLib + "/untangle-libuvm-api/"));
-        urls.add(new URL("file://" + uvmLib + "/untangle-libuvm-localapi/"));
-        urls.add(new URL("file://" + uvmLib + "/untangle-libuvm-reporting/"));
-        urls.add(new URL("file://" + uvmLib + "/jvector-impl/"));
-        urls.add(new URL("file://" + uvmLib + "/jnetcap-impl/"));
+
+        /* Add everything in lib */
+        File uvmLibDir = new File(System.getProperty("uvm.lib.dir"));
+        for (File f : uvmLibDir.listFiles()) {
+            URL url = f.toURI().toURL();
+            urls.add(url);
+        }
+
         String uvmLang = System.getProperty("uvm.lang.dir");
         urls.add(new URL("file://" + uvmLang + "/"));
 
