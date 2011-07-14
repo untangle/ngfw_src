@@ -649,7 +649,6 @@ public class NetworkManagerImpl implements NetworkManager
          */
         if (InterfaceConfiguration.CONFIG_BRIDGE.equals(intfConf.getConfigType())) {
             String bridgedTo = intfConf.getBridgedTo();
-            logger.warn("getInternalHttpAddress(): bridged to   : " + bridgedTo );
             intfConf = netConf.findByName( bridgedTo );
 
             if ( intfConf == null ) {
