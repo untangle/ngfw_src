@@ -67,7 +67,7 @@ static int  _retrieve_and_reject( netcap_session_t* netcap_sess, netcap_callback
 static int  _send_icmp_response ( netcap_session_t* netcap_sess, netcap_pkt_t* syn );
 static int  _forward_rejection  ( netcap_session_t* netcap_sess, netcap_pkt_t* syn );
 
-int _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_callback_action_t action, netcap_callback_flag_t flags )
+int  _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_callback_action_t action, netcap_callback_flag_t flags )
 {
     int fd;
     tcp_msg_t* msg;
@@ -152,6 +152,7 @@ int _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_cal
     /**
      * Reinject the SYN packet
      */
+    u_int nfmark = msg->pkt->nfmark;
     netcap_virtual_interface_send_pkt( msg->pkt );
     netcap_pkt_action_raze( msg->pkt, NF_DROP );
     msg->pkt = NULL;
@@ -212,6 +213,8 @@ int _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_cal
     netcap_sess->cli_state = CONN_STATE_COMPLETE;
     netcap_sess->client_sock = fd;
 
+    netcap_nfconntrack_update_mark( netcap_sess, nfmark & 0x00ffffff ); // first two bytes unused in connmark currently
+                                    
     if (_netcap_tcp_setsockopt_cli(fd)<0)
         perrlog("_netcap_tcp_setsockopt_cli");
 
