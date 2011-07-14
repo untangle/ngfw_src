@@ -1,21 +1,6 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id$
  */
-
 package com.untangle.uvm.engine;
 
 import java.io.File;
@@ -41,8 +26,6 @@ import com.untangle.uvm.logging.UvmRepositorySelector;
  * <li>uvm.lib.dir - uvm libraries.</li>
  * <li>uvm.toolbox.dir - node jars.</li>
  * <li>uvm.log.dir - log files.</li>
- * <li>uvm.data.dir - data files.</li>
- * <li>uvm.db.dir - database files.</li>
  * <li>uvm.web.dir - servlet directories.</li>
  * <li>uvm.conf.dir - configuration files.</li>
  * <li>uvm.settings.dir - settings files</li>
@@ -63,7 +46,7 @@ public class Main
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private UvmClassLoader mcl;
+    private UvmClassLoader uvmCl;
     private UvmContextBase uvmContext;
 
     // constructor -------------------------------------------------------------
@@ -104,7 +87,7 @@ public class Main
      */
     public boolean refreshToolbox()
     {
-        return mcl.refreshToolbox();
+        return uvmCl.refreshToolbox();
     }
 
     /**
@@ -143,7 +126,7 @@ public class Main
 
     public boolean loadUvmResource(String name)
     {
-        return mcl.loadUvmResource(name);
+        return uvmCl.loadUvmResource(name);
     }
 
     public Map<String, String> getTranslations(String module)
@@ -205,17 +188,13 @@ public class Main
         System.setProperty("uvm.toolbox.dir", uvmToolbox);
         String uvmLog = "/var/log/uvm";
         System.setProperty("uvm.log.dir", uvmLog);
-        String uvmData = uvmHome + "/data";
-        System.setProperty("uvm.data.dir", uvmData);
-        String uvmDb = uvmHome + "/db";
-        System.setProperty("uvm.db.dir", uvmDb);
         String uvmWeb = uvmHome + "/web";
         System.setProperty("uvm.web.dir", uvmWeb);
         String uvmConf = uvmHome + "/conf";
         System.setProperty("uvm.conf.dir", uvmConf);
         String uvmSettings = uvmHome + "/settings";
         System.setProperty("uvm.settings.dir", uvmSettings);
-        String uvmTmp = uvmHome + "/tmp";
+        String uvmTmp = "/tmp";
         System.setProperty("uvm.tmp.dir", uvmTmp);
         String uvmSkins = "/var/www/skins";
         System.setProperty("uvm.skins.dir", uvmSkins);
@@ -226,8 +205,6 @@ public class Main
         logger.info("uvm.lib.dir      " + uvmLib);
         logger.info("uvm.toolbox.dir  " + uvmToolbox);
         logger.info("uvm.log.dir      " + uvmLog);
-        logger.info("uvm.data.dir     " + uvmData);
-        logger.info("uvm.db.dir       " + uvmData);
         logger.info("uvm.web.dir      " + uvmWeb);
         logger.info("uvm.conf.dir     " + uvmConf);
         logger.info("uvm.settings.dir " + uvmSettings);
@@ -250,14 +227,14 @@ public class Main
         urls.add(new URL("file://" + uvmLang + "/"));
 
         String uvmToolbox = System.getProperty("uvm.toolbox.dir");
-        mcl = new UvmClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader(), new File(uvmToolbox));
+        uvmCl = new UvmClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader(), new File(uvmToolbox));
 
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
             // Entering UVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            Thread.currentThread().setContextClassLoader(mcl);
+            Thread.currentThread().setContextClassLoader(uvmCl);
 
-            uvmContext = (UvmContextBase)mcl.loadClass(UVM_LOCAL_CONTEXT_CLASSNAME).getMethod("context").invoke(null);
+            uvmContext = (UvmContextBase)uvmCl.loadClass(UVM_LOCAL_CONTEXT_CLASSNAME).getMethod("context").invoke(null);
 
             uvmContext.doInit(this);
         } finally {
@@ -271,7 +248,7 @@ public class Main
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
             // Entering UVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            Thread.currentThread().setContextClassLoader(mcl);
+            Thread.currentThread().setContextClassLoader(uvmCl);
 
             uvmContext.doPostInit();
 
