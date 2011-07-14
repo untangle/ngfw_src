@@ -79,19 +79,6 @@ class UvmClassLoader extends URLClassLoader
         return changed;
     }
 
-    boolean loadRup()
-    {
-        String uvmLib = System.getProperty("uvm.lib.dir");
-
-        boolean r = false;
-
-        r |= addFile(uvmLib + "/untangle-professional-core-impl/");
-        r |= addFile(uvmLib + "/untangle-professional-core-api/");
-        r |= addFile(uvmLib + "/untangle-professional-core-localapi/");
-
-        return r;
-    }
-
     boolean loadUvmResource(String name)
     {
         String uvmLib = System.getProperty("uvm.lib.dir");

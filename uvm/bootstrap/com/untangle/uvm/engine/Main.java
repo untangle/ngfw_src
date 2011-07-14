@@ -141,14 +141,6 @@ public class Main
         return schemaUtil;
     }
 
-    /**
-     * Attempt to load premium libraries.
-     */
-    public boolean loadRup()
-    {
-        return mcl.loadRup();
-    }
-
     public boolean loadUvmResource(String name)
     {
         return mcl.loadUvmResource(name);
