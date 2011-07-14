@@ -25,7 +25,6 @@ import com.untangle.uvm.addrbook.RemoteAddressBook;
 
 class AddressBookFactory
 {
-    private static final String PROPERTY_ADDRESSBOOK_IMPL = "com.untangle.uvm.addrbook";
     private static final String PREMIUM_ADDRESSBOOK_IMPL = "com.untangle.uvm.engine.PremiumAddressBookImpl";
 
     private final UtLogger logger = new UtLogger(getClass());
@@ -65,19 +64,15 @@ class AddressBookFactory
             return;
         }
 
-        String className = System.getProperty(PROPERTY_ADDRESSBOOK_IMPL);
-        if (null == className) {
-            className = PREMIUM_ADDRESSBOOK_IMPL;
-        }
         try {
-            Constructor<PremiumAddressBook> constructor = (Constructor<PremiumAddressBook>)Class.forName( className ).getDeclaredConstructor(DefaultAddressBookImpl.class);
+            Constructor<PremiumAddressBook> constructor = (Constructor<PremiumAddressBook>)Class.forName( PREMIUM_ADDRESSBOOK_IMPL ).getDeclaredConstructor(DefaultAddressBookImpl.class);
 
             this.premium = constructor.newInstance( this.limited );
             this.premium.init();
             //this.remote = new RemoteAddressBookAdaptor(this.premium);
             this.remote = this.premium;
         } catch ( Exception e ) {
-            logger.debug( "Could not load premium AddressBook: " + className);
+            logger.info( "Could not load premium AddressBook: " + PREMIUM_ADDRESSBOOK_IMPL, e);
             this.premium = null;
             //this.remote = new RemoteAddressBookAdaptor(this.limited);
             this.remote = this.limited;
