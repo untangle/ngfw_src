@@ -78,6 +78,10 @@ if [ -f /usr/share/untangle/conf/.regdone-flag ] ; then
     touch /usr/share/untangle/conf/wizard-complete-flag
     rm -f /usr/share/untangle/conf/.regdone-flag
 fi
+if [ -f /usr/share/untangle/.regdone ] ; then
+    touch /usr/share/untangle/conf/wizard-complete-flag
+    rm -f /usr/share/untangle/.regdone
+fi
 # 9.0 change sources.list to point to stable-9
 if [ -f /etc/apt/sources.list.d/untangle.list ] ; then
     sed -i 's/\sstable\s/ stable-9 /' /etc/apt/sources.list.d/untangle.list
