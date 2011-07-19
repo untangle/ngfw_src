@@ -46,10 +46,6 @@ class SpywareStatisticManager extends StatisticManager {
         this.statisticEvent.incrCookie();
     }
 
-    void incrActiveX() {
-        this.statisticEvent.incrActiveX();
-    }
-
     void incrURL() {
         this.statisticEvent.incrURL();
     }

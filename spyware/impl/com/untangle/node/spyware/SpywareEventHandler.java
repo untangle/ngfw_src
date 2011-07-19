@@ -1,29 +1,16 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id$
  */
 package com.untangle.node.spyware;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.List;
 
 import com.untangle.node.util.IPSet;
 import com.untangle.node.util.IPSetTrie;
+import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.IPMaskedAddress;
-import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.Session;
@@ -50,17 +37,17 @@ public class SpywareEventHandler extends AbstractEventHandler
         this.node = node;
     }
 
-    public void subnetList(Set<IPMaskedAddressRule> list)
+    public void subnetList(List<GenericRule> list)
     {
         if (null == list) {
             subnetSet = null;
         } else {
             IPSetTrie set = new IPSetTrie();
 
-            for (Iterator<IPMaskedAddressRule> i = list.iterator(); i.hasNext(); ) {
-                IPMaskedAddressRule se = i.next();
-                IPMaskedAddress ipm = se.getIpMaddr();
-                set.add(ipm,se);
+            for (Iterator<GenericRule> i = list.iterator(); i.hasNext(); ) {
+                GenericRule rule = i.next();
+                IPMaskedAddress ipm = new IPMaskedAddress(rule.getString());
+                set.add(ipm,rule);
             }
 
             this.subnetSet = set;
@@ -115,7 +102,7 @@ public class SpywareEventHandler extends AbstractEventHandler
     {
         IPMaskedAddress ipm = new IPMaskedAddress(ipr.serverAddr().getHostAddress());
 
-        IPMaskedAddressRule ir = (IPMaskedAddressRule)this.subnetSet.getMostSpecific(ipm);
+        GenericRule ir = (GenericRule)this.subnetSet.getMostSpecific(ipm);
 
         if (ir == null) {
             node.statisticManager.incrPass(); // pass subnet access
@@ -133,11 +120,11 @@ public class SpywareEventHandler extends AbstractEventHandler
         node.incrementSubnetScan();
 
         if (logger.isInfoEnabled()) {
-            logger.info("-------------------- Detected Spyware --------------------");
-            logger.info("Spyware Name  : " + ir.getName());
+            logger.info("-------------------- Detected Subnet --------------------");
+            logger.info("Subnet Name  : " + ir.getName());
             logger.info("Host          : " + ipr.clientAddr().getHostAddress() + ":" + ipr.clientPort());
             logger.info("Suspicious IP : " + ipr.serverAddr().getHostAddress() + ":" + ipr.serverPort());
-            logger.info("Matches       : " + ir.getIpMaddr());
+            logger.info("Matches       : " + ir.getString());
             if (ipr instanceof TCPNewSessionRequest)
                 logger.info("Protocol      : TCP");
             if (ipr instanceof UDPNewSessionRequest)
@@ -145,9 +132,13 @@ public class SpywareEventHandler extends AbstractEventHandler
             logger.info("----------------------------------------------------------");
         }
 
-        ipr.attach(new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
+        ipr.attach(new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), new IPMaskedAddress(ir.getString()), ir.getEnabled()));
 
-        if (ir.isLive()) {
+        /**
+         * Blocking has been disabled due to the poor quality of the list and support headaches associated with it.
+         */
+        /**
+        if (ir.getEnabled()) {
             node.incrementSubnetBlock();
             if (ipr instanceof TCPNewSessionRequest) {
                 ((TCPNewSessionRequest)ipr).rejectReturnRst(true);
@@ -157,6 +148,7 @@ public class SpywareEventHandler extends AbstractEventHandler
             }
             return;
         }
+        */
 
         if (release) { ipr.release(true); }
     }

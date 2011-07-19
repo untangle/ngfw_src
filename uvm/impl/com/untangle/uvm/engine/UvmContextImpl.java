@@ -234,7 +234,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     public LicenseManager licenseManager()
     {
-        return this.licenseManagerFactory.getLicenseManager();
+        return null;
     }
 
     public PipelineFoundryImpl pipelineFoundry()
@@ -609,6 +609,8 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         //Start AddressBookImpl
         this.addressBookFactory = AddressBookFactory.makeInstance();
 
+        this.licenseManagerFactory = LicenseManagerFactory.makeInstance();
+        
         this.brandingManager = new BrandingManagerImpl();
 
         //Skins and Language managers
@@ -630,8 +632,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         this.argonManager = ArgonManagerImpl.getInstance();
 
         this.appServerManager = new AppServerManagerImpl(this);
-
-        this.licenseManagerFactory = LicenseManagerFactory.makeInstance();
 
         // start vectoring:
         Argon.getInstance().run( networkManager );

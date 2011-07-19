@@ -157,11 +157,6 @@ public class SpywareHttpHandler extends HttpStateMachine
     @Override
     protected Chunk doResponseBody(Chunk chunk)
     {
-        logger.debug("got response body");
-        if (null != mimeType && mimeType.equalsIgnoreCase("text/html")) {
-            chunk = activeXChunk(getResponseRequest(), chunk);
-        }
-
         return chunk;
     }
 
@@ -354,127 +349,6 @@ public class SpywareHttpHandler extends HttpStateMachine
             int j = c.indexOf(';', i);
             return c.substring(0, i) + c.substring(j + 1, c.length());
         }
-    }
-
-    // ActiveX stuff ----------------------------------------------------------
-
-    private Chunk activeXChunk(RequestLineToken rl, Chunk c)
-    {
-        logger.debug("scanning activeX chunk");
-
-        ByteBuffer b = c.getData();
-        AsciiCharBuffer cb = AsciiCharBuffer.wrap(b);
-        Matcher m = OBJECT_PATTERN.matcher(cb);
-        if (m.find()) {
-            logger.debug("found activex tag");
-            int os = m.start();
-            m = CLSID_PATTERN.matcher(cb);
-
-            if (!m.find(os)) {
-                return c; // not a match
-            }
-
-            @SuppressWarnings("unused")
-			int cs = m.start();
-
-            boolean block = node.getBaseSettings().getBlockAllActiveX();
-            String ident = null;
-            if (!block) {
-                String clsid = m.group(1);
-                long t0 = System.currentTimeMillis();
-                StringRule rule = node.getBlockedActiveX(clsid);
-                long t1 = System.currentTimeMillis();
-                if (logger.isDebugEnabled()) {
-                    logger.debug("looked up activeX in: " + (t1 - t0) + " ms");
-                }
-
-                if (null != rule) {
-                    node.incrementHttpActiveXScan();
-                    block = rule.isLive();
-                    ident = rule.getString();
-                }
-
-                if (logger.isDebugEnabled()) {
-                    if (block) {
-                        logger.debug("blacklisted classid: " + clsid);
-                    } else {
-                        logger.debug("not blacklisted classid: " + clsid);
-                    }
-                }
-            } else {
-                ident = "All ActiveX Blocked";
-            }
-
-            if (block) {
-                logger.debug("blocking activeX");
-                node.incrementHttpActiveXBlock();
-                node.statisticManager.incrActiveX();
-                node.log(new SpywareActiveXEvent(rl.getRequestLine(), ident));
-                int len = findEnd(cb, os);
-                if (-1 == len) {
-                    logger.warn("chunk does not contain entire tag");
-                    // XXX cut & buffer from start
-                } else {
-                    for (int i = 0; i < len; i++) {
-                        cb.put(os + i, ' ');
-                    }
-                }
-            } else {
-                node.incrementHttpActiveXPass();
-                node.statisticManager.incrPass(); // pass activeX
-            }
-
-            return c;
-        } else {
-            // no activex
-            return c;
-        }
-    }
-
-    private int findEnd(AsciiCharBuffer cb, int start)
-    {
-        AsciiCharBuffer dup = cb.duplicate();
-        dup.position(dup.position() + start);
-        int level = 0;
-        while (dup.hasRemaining()) {
-            assert 0 <= level;
-            char c = dup.get();
-            switch (c) {
-            case '<':
-                if (!dup.hasRemaining()) {
-                    return -1;
-                } else if ('/' == dup.get(dup.position())) {
-                    dup.get();
-                    level--;
-                    if (0 == level) {
-                        while (dup.hasRemaining()) {
-                            c = dup.get();
-                            if (c == '>') {
-                                return dup.position() - (cb.position() + start);
-                            }
-                        }
-                        return -1;
-                    }
-                } else {
-                    level++;
-                }
-                break;
-            case '/':
-                if (!dup.hasRemaining()) {
-                    return -1;
-                } else if ('>' == dup.get(dup.position())) {
-                    dup.get();
-                    level--;
-                }
-                break;
-            }
-
-            if (0 == level) {
-                return dup.position() - (cb.position() + start);
-            }
-        }
-
-        return -1;
     }
 
 }
