@@ -460,10 +460,10 @@ ORDER BY evt.time_stamp""", start_date, end_date)
 SELECT addr, name
 FROM (SELECT addr, min(position) AS min_idx
       FROM (SELECT c_client_addr AS addr
-            FROM events.pl_endp WHERE pl_endp.client_intf + 1 NOT IN %s
+            FROM events.pl_endp WHERE pl_endp.client_intf NOT IN %s
             UNION
             SELECT c_server_addr AS addr
-            FROM events.pl_endp WHERE pl_endp.server_intf + 1 NOT IN %s
+            FROM events.pl_endp WHERE pl_endp.server_intf NOT IN %s
             UNION
             SELECT client_addr AS addr
             FROM events.u_login_evt) AS addrs
