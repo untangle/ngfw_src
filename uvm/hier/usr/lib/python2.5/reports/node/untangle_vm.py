@@ -458,10 +458,10 @@ ORDER BY evt.time_stamp""", start_date, end_date)
 SELECT addr, name
 FROM (SELECT addr, min(position) AS min_idx
       FROM (SELECT c_client_addr AS addr
-            FROM events.pl_endp WHERE pl_endp.client_intf = 1
+            FROM events.pl_endp WHERE pl_endp.client_intf + 1 NOT IN %s
             UNION
             SELECT c_server_addr AS addr
-            FROM events.pl_endp WHERE pl_endp.server_intf = 1
+            FROM events.pl_endp WHERE pl_endp.server_intf + 1 NOT IN %s
             UNION
             SELECT client_addr AS addr
             FROM events.u_login_evt) AS addrs
@@ -472,7 +472,7 @@ FROM (SELECT addr, min(position) AS min_idx
       GROUP BY addr) AS pos_idxs
 LEFT OUTER JOIN settings.u_ipmaddr_dir_entries entry
 JOIN settings.u_ipmaddr_rule rule USING (rule_id)
-ON min_idx = position""")
+ON min_idx = position""" % (2*(reports.engine.get_wan_clause(),)))
 
             while 1:
                 r = curs.fetchone()
