@@ -234,7 +234,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     public LicenseManager licenseManager()
     {
-        return null;
+        return this.licenseManagerFactory.getLicenseManager();
     }
 
     public PipelineFoundryImpl pipelineFoundry()
