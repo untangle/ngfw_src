@@ -10,7 +10,7 @@ if [ -f "@UVM_HOME@/conf/uid" ]; then
     # remove old "velocity" files? XXX
     /usr/bin/find @UVM_HOME@/tmp -name velocity -prune -o -type f -mtime +15 -print | /usr/bin/xargs -r /bin/rm
 
-    @UVM_HOME@/bin/reporting-generate-reports.py
+    @UVM_HOME@/bin/reporting-generate-reports.py -d "+%y-%m-%d"
 
     # end-of-trial reports never worked properly 
     # removing this section for now
