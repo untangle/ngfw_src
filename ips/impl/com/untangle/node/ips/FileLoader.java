@@ -1,21 +1,6 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id$
  */
-
 package com.untangle.node.ips;
 
 import java.io.BufferedReader;
@@ -38,22 +23,32 @@ class FileLoader
 
     public static final String[] IGNORED_RULE_FILES = {
         "deleted.rules", "experimental.rules",
-        "icmp-info.rules", "local.rules", "porn.rules", "shellcode.rules" };
+        "icmp-info.rules", "local.rules",
+        "porn.rules", "shellcode.rules"
+    };
 
     public static final Pattern[] IGNORED_RULE_PATTERNS = {
-        Pattern.compile("clsid", Pattern.CASE_INSENSITIVE) };
+        Pattern.compile("clsid", Pattern.CASE_INSENSITIVE)
+    };
 
-
-    // This should be elsewhere.  XXX
+    // These are slow-matching rules that aren't worth running
     public static final int[] VERY_SLOW_RULES = {
-        2001090, 2001091, 2001092, 2001102, 2001101, 2001103, 2001401, 2001727, 2001537, 2002387 };
+        2001090, 2001091,
+        2001092, 2001102,
+        2001101, 2001103,
+        2001401, 2001727,
+        2001537, 2002387
+    };
+
+    // These are rules that have lots of false positives
     public static final int[] VERY_STUPID_RULES = {
-        // These are rules that have lots of false positives
-        2229, 2250, 2441, 8734 };
+        2229, 2250, 2441, 8734
+    };
 
     // The default Snort priority for some classifications is stupid.
     public static final String[] FORCED_LOW_PRIORITY_CLASSIFICATIONS = {
-        "policy-violation" };
+        "policy-violation"
+    };
 
     private static final Logger logger = Logger.getLogger(FileLoader.class);
 
@@ -114,8 +109,7 @@ class FileLoader
         return ruleSet;
     }
 
-    private static void loadRuleFiles(IpsRuleManager manager, File file,
-                                      Set<IpsRule> result)
+    private static void loadRuleFiles(IpsRuleManager manager, File file, Set<IpsRule> result)
     {
         if (file.isDirectory()) {
             String[] children = file.list();
@@ -135,8 +129,8 @@ class FileLoader
 
     /** Temp subroutines for loading local snort rules.
      */
-    private static void processRuleFile(IpsRuleManager manager, File file,
-                                        Set<IpsRule> result) {
+    private static void processRuleFile(IpsRuleManager manager, File file, Set<IpsRule> result)
+    {
         try {
             String category = file.getName().replaceAll(".rules",""); //Should move this to script land
             category = category.replace("bleeding-",""); //Should move this to script land
