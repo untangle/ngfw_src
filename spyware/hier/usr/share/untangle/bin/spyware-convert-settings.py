@@ -137,6 +137,7 @@ def get_settings(tid, debug=False):
 
     str = '{\n'
     str += '\t"javaClass": "com.untangle.node.spyware.SpywareSettings",\n'
+    str += '\t"version": "1",\n' 
     str += '\t"scanCookies": "%s",\n' % scan_cookies
     str += '\t"scanSubnets": "%s",\n' % scan_subnets
     str += '\t"scanUrls": "%s",\n' % scan_urls

@@ -23,6 +23,8 @@ public class SpywareSettings implements Serializable
     public static final String UNBLOCK_MODE_HOST   = "Host";
     public static final String UNBLOCK_MODE_GLOBAL = "Global";
 
+    private Integer version = new Integer(1);
+
     private Boolean scanCookies = Boolean.TRUE;
     private Boolean scanSubnets = Boolean.TRUE;
     private Boolean scanUrls  = Boolean.TRUE;
@@ -35,6 +37,16 @@ public class SpywareSettings implements Serializable
     
     public SpywareSettings() { }
 
+    public Integer getVersion()
+    {
+        return this.version;
+    }
+
+    public void setVersion(Integer version)
+    {
+        this.version = version;
+    }
+    
     public Boolean getScanCookies()
     {
         return this.scanCookies;

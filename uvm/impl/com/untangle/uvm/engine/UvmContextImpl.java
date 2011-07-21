@@ -596,6 +596,8 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         // initialize the network Manager
         this.networkManager = NetworkManagerImpl.getInstance();
 
+        this.licenseManagerFactory = LicenseManagerFactory.makeInstance();
+
         this.mailSender = MailSenderImpl.mailSender();
 
         // Fire up the policy manager.
@@ -609,8 +611,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         //Start AddressBookImpl
         this.addressBookFactory = AddressBookFactory.makeInstance();
 
-        this.licenseManagerFactory = LicenseManagerFactory.makeInstance();
-        
         this.brandingManager = new BrandingManagerImpl();
 
         //Skins and Language managers

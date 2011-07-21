@@ -501,13 +501,17 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
             logger.warn("No settings found - Running conversion script to check DB");
             try {
                 SimpleExec.SimpleExecResult result = null;
-                result = SimpleExec.exec(SETTINGS_CONVERSION_SCRIPT,new String[] {nodeID.toString(),settingsFileName + ".js",},null,null,true,true,1000*60,logger,true);
+                logger.warn("Running: " + SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + this.getName() + " " + settingsFileName + ".js");
+                result = SimpleExec.exec( SETTINGS_CONVERSION_SCRIPT, new String[] { nodeID.toString(), this.getName(), settingsFileName + ".js"} , null, null, true, true, 1000*60, logger, true);
             } catch ( Exception e ) {
                 logger.warn( "Conversion script failed.", e );
             } 
 
             try {
                 readSettings = settingsManager.load( WebFilterSettings.class, settingsFileName );
+                if (readSettings != null) {
+                    logger.warn("Found settings imported from database");
+                }
             } catch (SettingsManager.SettingsException e) {
                 logger.warn("Failed to load settings:",e);
             }

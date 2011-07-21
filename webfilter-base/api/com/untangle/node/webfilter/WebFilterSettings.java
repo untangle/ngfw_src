@@ -20,13 +20,15 @@ import com.untangle.uvm.security.NodeId;
 @SuppressWarnings("serial")
 public class WebFilterSettings implements Serializable
 {
-    private final Logger logger = Logger.getLogger(DecisionEngine.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     public static final String UNBLOCK_MODE_NONE   = "None";
     public static final String UNBLOCK_MODE_HOST   = "Host";
     public static final String UNBLOCK_MODE_GLOBAL = "Global";
 
     private BlockTemplate blockTemplate = new BlockTemplate();
+
+    private Integer version = new Integer(1);
 
     private boolean enableHttps = false;
     private boolean unblockPasswordEnabled = false;
@@ -48,6 +50,16 @@ public class WebFilterSettings implements Serializable
     public WebFilterSettings() { }
 
     // accessors --------------------------------------------------------------
+
+    public Integer getVersion()
+    {
+        return this.version;
+    }
+
+    public void setVersion(Integer version)
+    {
+        this.version = version;
+    }
 
     public List<GenericRule> getPassedClients()
     {

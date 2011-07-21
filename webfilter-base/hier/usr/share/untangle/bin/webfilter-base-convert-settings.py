@@ -3,6 +3,8 @@ import conversion.sql_helper as sql_helper
 import sys
 import os
 
+global nodeName
+
 def get_passed_clients_settings(tid, settings_id, debug=False):
     if (debug):
         print "Getting passed_clients for TID: ",tid, " settings_id: ",settings_id
@@ -132,9 +134,13 @@ def get_category_settings(tid, settings_id, debug=False):
         flagged = settings[3]
         description = settings[4]
 
-        # adjust settings to sanity
-        if id == "Uncategorized":
-            id = 0
+        # for consistency
+        if (nodeName == "webfilter"):
+            if string == "Uncategorized":
+                string = "uncategorized"
+        if (nodeName == "sitefilter"):
+            if string == "Uncategorized":
+                string = "0"
 
         if not first:
             str += ',\n'
@@ -257,6 +263,7 @@ def get_settings(tid, debug=False):
 
     str = '{\n'
     str += '\t"javaClass": "com.untangle.node.webfilter.WebFilterSettings",\n'
+    str += '\t"version": "1",\n' 
     str += '\t"scanHttps": "%s",\n' % enable_https
     str += '\t"blockIpHosts": "%s",\n' % block_all_ip_hosts
     str += '\t"unblockMode": "%s",\n' % user_whitelist_mode
@@ -275,8 +282,8 @@ def get_settings(tid, debug=False):
     
 
 filename = None
-if len(sys.argv) < 2:
-    print "usage: %s TID [filename]" % sys.argv[0]
+if len(sys.argv) < 3:
+    print "usage: %s TID [sitefilter|webfilter] [filename]" % sys.argv[0]
     sys.exit(1)
 
 
@@ -284,7 +291,10 @@ if len(sys.argv) > 1:
     tid = sys.argv[1]
 
 if len(sys.argv) > 2:
-    filename = sys.argv[2]
+    nodeName = sys.argv[2]
+
+if len(sys.argv) > 3:
+    filename = sys.argv[3]
 
 try:
     dir = "/usr/share/untangle/settings/untangle-node-webfilter/"
