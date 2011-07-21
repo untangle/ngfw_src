@@ -35,7 +35,6 @@ import com.untangle.uvm.toolbox.DownloadComplete;
 import com.untangle.uvm.toolbox.DownloadProgress;
 import com.untangle.uvm.toolbox.DownloadSummary;
 import com.untangle.uvm.toolbox.InstallComplete;
-import com.untangle.uvm.toolbox.InstallTimeout;
 import com.untangle.uvm.toolbox.PackageDesc;
 
 /**
@@ -224,7 +223,6 @@ class AptLogTail implements Runnable
                         if (TIMEOUT < t - lastActivity) {
                             // just end the thread adding TimeoutEvent
                             logger.warn("AptLogTail timing out: " + (t - lastActivity));
-                            mm.submitMessage(new InstallTimeout(t, requestingPackage));
                             throw new RuntimeException("timing out: " + (t - lastActivity));
                         } else {
                             Thread.sleep(100);

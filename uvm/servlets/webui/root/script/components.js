@@ -1771,9 +1771,7 @@ Ung.MessageManager = {
                                         Ext.MessageBox.alert(i18n._("Warning"), Sting.format(i18n._("Error installing package {0}: Aborted."),appItemDisplayName));
                                         Ung.AppItem.updateState(appItemDisplayName);
                                     }
-                                } else if(msg.javaClass.indexOf("InstallTimeout") != -1) {
-                                    Ung.AppItem.updateState(appItemDisplayName, "activate_timeout");
-                                }
+                                } 
                             } else if(msg.upgrade==true) {
                                 if(startUpgradeMode!="stop" && !this.upgradeMode) {
                                     startUpgradeMode=true;
@@ -1816,15 +1814,7 @@ Ung.MessageManager = {
                                            i18n._("You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
                                            Ung.Util.goToStartPage);
                                     }
-                                } else if(msg.javaClass.indexOf("InstallTimeout") != -1) {
-                                    lastUpgradeDownloadProgressMsg="stop";
-                                    startUpgradeMode="stop";
-                                    this.stop();
-                                    Ext.MessageBox.alert(
-                                        i18n._("Upgrade"),
-                                        i18n._("You will be redirected to the start page now. After an upgrade the UVM may restart making the console temporary unavailable. So you might have to wait a few minutes before you can log in again."),
-                                       Ung.Util.goToStartPage);
-                                }
+                                } 
                             }
                         }
                     }
