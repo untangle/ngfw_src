@@ -218,7 +218,7 @@ Description: Attack Blocker
 
 Package: untangle-node-spyware
 Architecture: all
-Depends: untangle-vm, untangle-casing-http
+Depends: untangle-vm, untangle-casing-http, untangle-google-safebrowsing
 XB-Display-Name: Spyware Blocker
 XB-View-Position: 20
 XB-Untangle-Pkg-Type: node
@@ -647,7 +647,7 @@ Description: Spam Blocker
 
 Package: untangle-node-phish
 Architecture: all
-Depends: untangle-vm, untangle-base-spam, untangle-clamav-config, untangle-casing-mail, untangle-casing-http
+Depends: untangle-vm, untangle-base-spam, untangle-clamav-config, untangle-casing-mail, untangle-casing-http, untangle-google-safebrowsing
 XB-Display-Name: Phish Blocker
 XB-View-Position: 17
 XB-Untangle-Pkg-Type: node
