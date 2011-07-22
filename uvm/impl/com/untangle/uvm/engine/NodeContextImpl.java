@@ -202,12 +202,16 @@ class NodeContextImpl implements NodeContext
                 node.resumeState(persistentState.getTargetState(), args);
             }
         } catch (ClassNotFoundException exn) {
+            logger.error("Exception during node initialization", exn);
             throw new DeployException(exn);
         } catch (InstantiationException exn) {
+            logger.error("Exception during node initialization", exn);
             throw new DeployException(exn);
         } catch (IllegalAccessException exn) {
+            logger.error("Exception during node initialization", exn);
             throw new DeployException(exn);
         } catch (Exception exn) {
+            logger.error("Exception during node initialization", exn);
             throw new DeployException(exn);
         } finally {
             nodeManager.deregisterThreadContext();
