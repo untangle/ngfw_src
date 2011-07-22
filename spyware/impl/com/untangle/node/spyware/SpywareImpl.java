@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.LocalAppServerManager;
@@ -69,6 +71,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     private static final String COOKIE_LIST = "com/untangle/node/spyware/cookie.txt";
     private static final String SUBNET_LIST = "com/untangle/node/spyware/subnet.txt";
     private static final String MALWARE_SITE_DB_FILE  = "/usr/share/untangle-webfilter-init/spyware-url";
+    private static final String GOOGLE_HASH_DB_FILE  = "/usr/share/untangle-google-safebrowsing/lib/goog-malware-hash";
 
     private static int deployCount = 0;
 
@@ -79,6 +82,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     private final EventLogger<SpywareEvent> eventLogger;
 
     private static HashSet<String> urlDatabase = null;
+    private static HashSet<String> googleMalwareHashList = null;
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
         { new SoloPipeSpec("spyware-http", this, tokenAdaptor,
@@ -309,6 +313,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
             logger.info("Settings: " + this.settings.toJSONString());
         }
 
+        this.reconfigure();
+        
         deployWebAppIfRequired(logger);
     }
 
@@ -317,6 +323,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
     {
         if (urlDatabase == null) {
             initializeMalwareUrlList();
+        }
+        if (googleMalwareHashList == null) {
+            initializeGoogleHashList();
         }
 
         statisticManager.start();
@@ -424,9 +433,53 @@ public class SpywareImpl extends AbstractNode implements Spyware
          * Also check to see if the entire domain (or subdomain) is blocked
          */
         for ( String dom = domain ; dom != null ; dom = nextHost(dom) ) {
-            logger.error("Searching for: \"" + dom + "/" + "\""); 
             if (urlDatabase.contains(dom + "/"))
                 return true;
+        }
+
+        /**
+         * Check the google DB
+         */
+        try {
+            String canonicalUrl = GoogleUrlUtils.canonicalizeURL("http://" + domain + "/" + uri);
+            logger.warn("Google lookup master: " + canonicalUrl);
+            ArrayList<String> urlsToLookup = GoogleUrlUtils.getLookupURLs(canonicalUrl);
+            if (urlsToLookup != null) {
+                for (String url : urlsToLookup) {
+                    logger.warn("Google lookup: " + url);
+                    String md5 = null;
+                    try {
+                        MessageDigest md5Hasher = MessageDigest.getInstance("MD5");
+                        String hashString;
+                        md5Hasher.update(url.getBytes());
+                        byte[] digest = md5Hasher.digest();
+                        StringBuffer hexString = new StringBuffer();
+                        for (int i = 0; i < digest.length; i++) {
+                            hashString = Integer.toHexString(0xFF & digest[i]);
+                            if (hashString.length() < 2)
+                                hashString = "0" + hashString;
+                            hexString.append(hashString);
+                        }
+                        md5 = hexString.toString();
+                    } catch (NoSuchAlgorithmException e) {
+                        logger.warn("Unable to find MD5 Algorithm", e);
+                    }
+
+                    if (md5 != null) {
+                        if (googleMalwareHashList.contains(md5)) {
+                            logger.info("Google lookup: " + url + " hash: " + md5 + " HIT!");
+                            return true;
+                        } else {
+                        }
+                        
+                    } else {
+                        logger.warn("Unable to compute hash");
+                    }
+
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Google lookup failed", e);
         }
 
         return false;
@@ -485,6 +538,10 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     private boolean findMatch(Set<String> rules, String domain)
     {
+        if (rules == null) {
+            return false;
+        }
+        
         for (String d = domain; null != d; d = nextHost(d)) {
             if (rules.contains(d)) {
                 return true;
@@ -645,6 +702,30 @@ public class SpywareImpl extends AbstractNode implements Spyware
         
     }
 
+    private void initializeGoogleHashList()
+    {
+        synchronized(this) {
+            if (this.googleMalwareHashList != null)
+                return;
+            else
+                this.googleMalwareHashList = new HashSet<String>();
+        }
+        
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(GOOGLE_HASH_DB_FILE));
+            String hash;
+            while ((hash = in.readLine()) != null) {
+                googleMalwareHashList.add(hash); //ignore return value (false if already present)
+            }
+            in.close();
+        }
+        catch (IOException e) {
+            logger.error("Error loading category from file: " + GOOGLE_HASH_DB_FILE, e);
+        }
+        
+    }
+
+    
     // private methods --------------------------------------------------------
 
     /**
@@ -670,5 +751,4 @@ public class SpywareImpl extends AbstractNode implements Spyware
         this.settings = newSettings;
         try {logger.info("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
     }
-    
 }

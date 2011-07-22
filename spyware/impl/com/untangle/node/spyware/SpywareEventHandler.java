@@ -47,6 +47,11 @@ public class SpywareEventHandler extends AbstractEventHandler
             for (Iterator<GenericRule> i = list.iterator(); i.hasNext(); ) {
                 GenericRule rule = i.next();
                 IPMaskedAddress ipm = new IPMaskedAddress(rule.getString());
+                try {
+                    ipm.bitString();
+                } catch (Exception e) {
+                    logger.error("BAD RULE: " + rule.getString(), e);
+                }
                 set.add(ipm,rule);
             }
 
