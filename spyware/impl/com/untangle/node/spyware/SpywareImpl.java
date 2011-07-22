@@ -442,11 +442,11 @@ public class SpywareImpl extends AbstractNode implements Spyware
          */
         try {
             String canonicalUrl = GoogleUrlUtils.canonicalizeURL("http://" + domain + "/" + uri);
-            logger.warn("Google lookup master: " + canonicalUrl);
+            logger.debug("Google lookup master: " + canonicalUrl);
             ArrayList<String> urlsToLookup = GoogleUrlUtils.getLookupURLs(canonicalUrl);
             if (urlsToLookup != null) {
                 for (String url : urlsToLookup) {
-                    logger.warn("Google lookup: " + url);
+                    logger.debug("Google lookup: " + url);
                     String md5 = null;
                     try {
                         MessageDigest md5Hasher = MessageDigest.getInstance("MD5");
