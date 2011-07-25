@@ -4,6 +4,7 @@
 package com.untangle.node.spyware;
 
 import java.util.List;
+import java.util.Date;
 
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.IPMaskedAddressRule;
