@@ -384,9 +384,9 @@ public class SpywareHttpHandler extends HttpStateMachine
             if (this.googleMalwareHashList == null) {
                 synchronized(this) {
                     if (this.googleMalwareHashList == null) {
-                        logger.info("Loading Google Safe Browsing malware DB...");
+                        logger.info("Loading Google SafeBrowsing malware DB...");
                         this.googleMalwareHashList = new GoogleSafeBrowsingHashSet(GOOGLE_HASH_DB_FILE);
-                        logger.info("Loading Google Safe Browsing malware DB... done");
+                        logger.info("Loading Google SafeBrowsing malware DB... done");
                     }
                 }
             }

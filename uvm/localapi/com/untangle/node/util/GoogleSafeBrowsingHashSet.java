@@ -9,12 +9,15 @@ import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.HashSet;
 import java.util.ArrayList;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import org.apache.log4j.Logger;
+
+import com.untangle.uvm.util.Pulse;
 
 /**
  * This is a google safe browsing set of hashes
@@ -24,13 +27,27 @@ import org.apache.log4j.Logger;
  */
 public class GoogleSafeBrowsingHashSet
 {
+    private int REFRESH_TIME = 1000 * 60 * 60 * 12; /* 12 hours */
+    //private int REFRESH_TIME = 1000 * 60 * 10; /* 10 minutes */
+
     private final Logger logger = Logger.getLogger(getClass());
 
-    private HashSet<String> md5HashSet = null;
-
-    public GoogleSafeBrowsingHashSet( String filename )
+    private HashSet<String> md5HashSet = null; 
+    private long loadDate = 0; /* the date of the file that was last loaded */
+    
+    private Pulse pulse = null;
+    
+    public GoogleSafeBrowsingHashSet( final String filename )
     {
         initializeGoogleHashList(filename);
+        pulse = new Pulse("Google SafeBrowsing updater for " + filename, true,
+                          new Runnable() {
+                              public void run()
+                              {
+                                  initializeGoogleHashList(filename);
+                              }
+                          });
+        this.pulse.start(REFRESH_TIME);
     }
 
     public boolean contains( String domain, String uri )
@@ -65,7 +82,7 @@ public class GoogleSafeBrowsingHashSet
                     if (md5 != null) {
                         logger.debug("Google SafeBrowsing lookup: " + url + " md5: \"" + md5 + "\" size: " + md5HashSet.size());
                         if (md5HashSet.contains(md5)) {
-                            logger.info("Google SafeBrowsing Lookup: " + url + " hash: " + md5 + " HIT!");
+                            logger.info("Google SafeBrowsing Lookup: " + url + " HIT! (hash: " + md5 + ")");
                             return true;
                         }
                     } else {
@@ -84,11 +101,17 @@ public class GoogleSafeBrowsingHashSet
 
     private void initializeGoogleHashList( String filename )
     {
-        if (this.md5HashSet != null)
+        File hashFile = new File(filename);
+        long newDate = hashFile.lastModified();
+        if (md5HashSet != null && loadDate != 0 && (newDate == loadDate)) {
+            logger.info("Google SafeBrowsing (" + filename + ") already up to date. Skipping...");
             return;
-        
+        }
+
         this.md5HashSet = new HashSet<String>();
+        this.loadDate = newDate;
         
+        logger.info("Google SafeBrowsing (" + filename + ") updating...");
         try {
             BufferedReader in = new BufferedReader( new FileReader( filename ) );
             String hash;
@@ -100,6 +123,8 @@ public class GoogleSafeBrowsingHashSet
         catch (IOException e) {
             logger.error("Error loading category from file: " + filename, e);
         }
+        logger.info("Google SafeBrowsing (" + filename + ") updating... done");
+
         
     }
 

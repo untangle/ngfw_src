@@ -71,9 +71,9 @@ public class PhishHttpHandler extends HttpStateMachine
             if (googlePhishHashList == null) {
                 synchronized(this) {
                     if (googlePhishHashList == null) {
-                        logger.info("Loading Google Safe Browsing phish DB...");
+                        logger.info("Loading Google SafeBrowsing phish DB...");
                         googlePhishHashList = new GoogleSafeBrowsingHashSet(GOOGLE_HASH_DB_FILE);
-                        logger.info("Loading Google Safe Browsing phish DB... done");
+                        logger.info("Loading Google SafeBrowsing phish DB... done");
                     }
                 }
             }
