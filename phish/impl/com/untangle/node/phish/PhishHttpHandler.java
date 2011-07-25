@@ -14,13 +14,18 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.node.util.GoogleSafeBrowsingHashSet;
 
 public class PhishHttpHandler extends HttpStateMachine
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    private static final String GOOGLE_HASH_DB_FILE  = "/usr/share/untangle-google-safebrowsing/lib/goog-black-hash";
+    
     private final PhishNode node;
 
+    private static GoogleSafeBrowsingHashSet googlePhishHashList = null;
+    
     // constructors -----------------------------------------------------------
 
     PhishHttpHandler(TCPSession session, PhishNode node)
@@ -28,6 +33,12 @@ public class PhishHttpHandler extends HttpStateMachine
         super(session);
 
         this.node = node;
+
+        synchronized(this) {
+            if (googlePhishHashList == null) 
+                googlePhishHashList = new GoogleSafeBrowsingHashSet(GOOGLE_HASH_DB_FILE);
+        }
+        
     }
 
     // HttpStateMachine methods -----------------------------------------------
@@ -57,16 +68,12 @@ public class PhishHttpHandler extends HttpStateMachine
         }
         host = host.toLowerCase();
 
-        String url = "http://" + host + "/" + uri.toString();
-        logger.error("LOOKUP: " + url); // XXX FIXME just for testing
-        
-        if (!node.getPhishSettings().getEnableGooglePhishList() || node.isWhitelistedDomain(host, getSession().clientAddr())) {
+        if (!node.getPhishSettings().getEnableGooglePhishList())
             isBlocked = false;
-        } else if(node.getMalwareList().contains(url)) { // FIXME needs to check for hash not URL?
+        else if (node.isDomainUnblocked(host, getSession().clientAddr())) 
+            isBlocked = false;
+        else if( googlePhishHashList.contains(host, uri.toString()) ) 
             isBlocked = true;
-        } else if(node.getPhishList().contains(url)) { // FIXME needs to check for hash not URL?
-            isBlocked = true;
-        }
 
         if (isBlocked) {
             node.incrementBlockCount();

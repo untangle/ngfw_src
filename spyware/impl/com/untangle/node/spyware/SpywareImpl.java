@@ -61,13 +61,12 @@ import com.untangle.node.util.SimpleExec;
 public class SpywareImpl extends AbstractNode implements Spyware
 {
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/spyware-convert-settings.py";
+    private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/spyware-get-last-update";
 
     private static final String COOKIE_LIST = "com/untangle/node/spyware/cookie.txt";
     private static final String SUBNET_LIST = "com/untangle/node/spyware/subnet.txt";
-    private static final String MALWARE_SITE_DB_FILE  = "/usr/share/untangle-webfilter-init/spyware-url";
-    private static final String GOOGLE_HASH_DB_FILE  = "/usr/share/untangle-google-safebrowsing/lib/goog-malware-hash";
 
-    private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/spyware-get-last-update";
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static int deployCount = 0;
 
@@ -83,9 +82,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         new SoloPipeSpec("spyware-byte", this, streamHandler,
                          Fitting.OCTET_STREAM, Affinity.SERVER, 0) };
 
-    private final Map<InetAddress, Set<String>> hostWhitelists = new HashMap<InetAddress, Set<String>>();
-
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Map<InetAddress, Set<String>> unblockedSites = new HashMap<InetAddress, Set<String>>();
 
     private final BlingBlinger scanBlinger;
     private final BlingBlinger passBlinger;
@@ -199,10 +196,10 @@ public class SpywareImpl extends AbstractNode implements Spyware
                 InetAddress addr = bd.getClientAddress();
 
                 synchronized (this) {
-                    Set<String> wl = hostWhitelists.get(addr);
+                    Set<String> wl = unblockedSites.get(addr);
                     if (null == wl) {
                         wl = new HashSet<String>();
-                        hostWhitelists.put(addr, wl);
+                        unblockedSites.put(addr, wl);
                     }
                     wl.add(site);
                 }
@@ -425,7 +422,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             if (findMatch(passedUrls, domain)) {
                 return true;
             } else {
-                Set<String> l = hostWhitelists.get(clientAddr);
+                Set<String> l = unblockedSites.get(clientAddr);
                 if (null == l) {
                     return false;
                 } else {

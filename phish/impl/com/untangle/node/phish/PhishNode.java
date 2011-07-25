@@ -71,7 +71,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
         new SoloPipeSpec("phish-http", this, new TokenAdaptor(this, new PhishHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.CLIENT, 12)
     };
 
-    private final Map<InetAddress, Set<String>> hostWhitelists = new HashMap<InetAddress, Set<String>>();
+    private final Map<InetAddress, Set<String>> unblockedSites = new HashMap<InetAddress, Set<String>>();
     private final PhishReplacementGenerator replacementGenerator;
 
     private final EventLogger<PhishHttpEvent> phishHttpEventLogger;
@@ -159,10 +159,10 @@ public class PhishNode extends SpamNodeImpl implements Phish
             InetAddress addr = bd.getClientAddress();
 
             synchronized (this) {
-                Set<String> wl = hostWhitelists.get(addr);
+                Set<String> wl = unblockedSites.get(addr);
                 if (null == wl) {
                     wl = new HashSet<String>();
-                    hostWhitelists.put(addr, wl);
+                    unblockedSites.put(addr, wl);
                 }
                 wl.add(site);
             }
@@ -242,9 +242,9 @@ public class PhishNode extends SpamNodeImpl implements Phish
         return replacementGenerator.generateResponse(bd, session, persistent);
     }
 
-    boolean isWhitelistedDomain(String host, InetAddress clientAddr)
+    boolean isDomainUnblocked(String host, InetAddress clientAddr)
     {
-        Set<String> l = hostWhitelists.get(clientAddr);
+        Set<String> l = unblockedSites.get(clientAddr);
         if (null != l) {
             for (String d = host; null != d; d = nextHost(d)) {
                 if (l.contains(d)) {
