@@ -73,6 +73,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
     private static final String MALWARE_SITE_DB_FILE  = "/usr/share/untangle-webfilter-init/spyware-url";
     private static final String GOOGLE_HASH_DB_FILE  = "/usr/share/untangle-google-safebrowsing/lib/goog-malware-hash";
 
+    private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/spyware-get-last-update";
+
     private static int deployCount = 0;
 
     private final SpywareHttpFactory factory = new SpywareHttpFactory(this);
@@ -224,6 +226,19 @@ public class SpywareImpl extends AbstractNode implements Spyware
     public EventManager<SpywareEvent> getEventManager()
     {
         return eventLogger;
+    }
+
+    public Date getLastSignatureUpdate()
+    {
+        try {
+            String result = ScriptRunner.getInstance().exec( GET_LAST_SIGNATURE_UPDATE );
+            long timeSeconds = Long.parseLong( result.trim());
+
+            return new Date( timeSeconds * 1000l );
+        } catch ( Exception e ) {
+            logger.warn( "Unable to get last update.", e );
+            return null;
+        } 
     }
 
     // Node methods ------------------------------------------------------------

@@ -24,4 +24,6 @@ public interface Spyware extends Node
     String getUnblockMode();
 
     EventManager<SpywareEvent> getEventManager();
+
+    public Date getLastSignatureUpdate();
 }

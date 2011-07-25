@@ -165,7 +165,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }, {
                     cls: 'description',
                     html : this.i18n._("Spyware Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) :
+                            + ((this.getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getLastSignatureUpdate()) :
                             this.i18n._("Unknown"))
                 }],
 

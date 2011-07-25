@@ -1,9 +1,9 @@
 #!/bin/dash
 
-SIGNATURE_DIRECTORY=$1
+FILES="$1"
 
 ## Helper script so that all of the last updates have a common place to call.  
-if [ -n "${SIGNATURE_DIRECTORY}" ]; then
+if [ -n "${FILES}" ]; then
     ## Ignore errors
-    find "${SIGNATURE_DIRECTORY}" -type f -printf "%T@\n" 2>/dev/null | sed -e 's/\..*$//' | sort -n | tail -n 1
+    find ${FILES} -type f -printf "%T@\n" 2>/dev/null | sed -e 's/\..*$//' | sort -n | tail -n 1
 fi
