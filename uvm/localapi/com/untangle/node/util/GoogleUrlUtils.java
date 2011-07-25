@@ -1,7 +1,7 @@
 /*
  * $Id: GoogleUrlUtils.java,v 1.00 2011/07/21 15:28:13 dmorris Exp $
  */
-package com.untangle.node.spyware;
+package com.untangle.node.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;

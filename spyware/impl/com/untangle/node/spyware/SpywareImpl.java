@@ -3,13 +3,10 @@
  */
 package com.untangle.node.spyware;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.FileReader;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -24,9 +21,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import org.apache.catalina.Valve;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.LocalAppServerManager;
@@ -57,13 +56,7 @@ import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
-import com.untangle.node.util.PartialListUtil;
 import com.untangle.node.util.SimpleExec;
-import org.apache.catalina.Valve;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.log4j.Logger;
 
 public class SpywareImpl extends AbstractNode implements Spyware
 {
@@ -84,20 +77,15 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     private final EventLogger<SpywareEvent> eventLogger;
 
-    private static HashSet<String> urlDatabase = null;
-    private static HashSet<String> googleMalwareHashList = null;
-
-    private final PipeSpec[] pipeSpecs = new PipeSpec[]
-        { new SoloPipeSpec("spyware-http", this, tokenAdaptor,
-                           Fitting.HTTP_TOKENS, Affinity.SERVER, 0),
-          new SoloPipeSpec("spyware-byte", this, streamHandler,
-                           Fitting.OCTET_STREAM, Affinity.SERVER, 0) };
+    private final PipeSpec[] pipeSpecs = new PipeSpec[] {
+        new SoloPipeSpec("spyware-http", this, tokenAdaptor,
+                         Fitting.HTTP_TOKENS, Affinity.SERVER, 0),
+        new SoloPipeSpec("spyware-byte", this, streamHandler,
+                         Fitting.OCTET_STREAM, Affinity.SERVER, 0) };
 
     private final Map<InetAddress, Set<String>> hostWhitelists = new HashMap<InetAddress, Set<String>>();
 
     private final Logger logger = Logger.getLogger(getClass());
-
-    private final PartialListUtil listUtil = new PartialListUtil();
 
     private final BlingBlinger scanBlinger;
     private final BlingBlinger passBlinger;
@@ -337,13 +325,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
     @Override
     protected void preStart()
     {
-        if (urlDatabase == null) {
-            initializeMalwareUrlList();
-        }
-        if (googleMalwareHashList == null) {
-            initializeGoogleHashList();
-        }
-
         statisticManager.start();
     }
 
@@ -432,73 +413,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
         SpywareBlockDetails bd = new SpywareBlockDetails(host, uri, addr);
 
         return replacementGenerator.generateNonce(bd);
-    }
-
-    boolean isUrlBlocked(String domain, URI uri)
-    {
-        if (!settings.getScanUrls()) {
-            return false;
-        }
-
-        domain = null == domain ? null : domain.toLowerCase();
-
-        if (urlDatabase.contains(domain + uri))
-            return true;
-
-        /**
-         * Also check to see if the entire domain (or subdomain) is blocked
-         */
-        for ( String dom = domain ; dom != null ; dom = nextHost(dom) ) {
-            if (urlDatabase.contains(dom + "/"))
-                return true;
-        }
-
-        /**
-         * Check the google DB
-         */
-        try {
-            String canonicalUrl = GoogleUrlUtils.canonicalizeURL("http://" + domain + "/" + uri);
-            logger.debug("Google lookup master: " + canonicalUrl);
-            ArrayList<String> urlsToLookup = GoogleUrlUtils.getLookupURLs(canonicalUrl);
-            if (urlsToLookup != null) {
-                for (String url : urlsToLookup) {
-                    logger.debug("Google lookup: " + url);
-                    String md5 = null;
-                    try {
-                        MessageDigest md5Hasher = MessageDigest.getInstance("MD5");
-                        String hashString;
-                        md5Hasher.update(url.getBytes());
-                        byte[] digest = md5Hasher.digest();
-                        StringBuffer hexString = new StringBuffer();
-                        for (int i = 0; i < digest.length; i++) {
-                            hashString = Integer.toHexString(0xFF & digest[i]);
-                            if (hashString.length() < 2)
-                                hashString = "0" + hashString;
-                            hexString.append(hashString);
-                        }
-                        md5 = hexString.toString();
-                    } catch (NoSuchAlgorithmException e) {
-                        logger.warn("Unable to find MD5 Algorithm", e);
-                    }
-
-                    if (md5 != null) {
-                        if (googleMalwareHashList.contains(md5)) {
-                            logger.info("Google lookup: " + url + " hash: " + md5 + " HIT!");
-                            return true;
-                        } else {
-                        }
-                        
-                    } else {
-                        logger.warn("Unable to compute hash");
-                    }
-
-                }
-            }
-        } catch (Exception e) {
-            logger.warn("Google lookup failed", e);
-        }
-
-        return false;
     }
 
     boolean isDomainPasslisted(String domain, InetAddress clientAddr)
@@ -694,53 +608,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
         return uri;
     }
-
-    private void initializeMalwareUrlList()
-    {
-        synchronized(this) {
-            if (this.urlDatabase != null)
-                return;
-            else
-                this.urlDatabase = new HashSet<String>();
-        }
-        
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(MALWARE_SITE_DB_FILE));
-            String url;
-            while ((url = in.readLine()) != null) {
-                urlDatabase.add(url); //ignore return value (false if already present)
-            }
-            in.close();
-        }
-        catch (IOException e) {
-            logger.error("Error loading category from file: " + MALWARE_SITE_DB_FILE, e);
-        }
-        
-    }
-
-    private void initializeGoogleHashList()
-    {
-        synchronized(this) {
-            if (this.googleMalwareHashList != null)
-                return;
-            else
-                this.googleMalwareHashList = new HashSet<String>();
-        }
-        
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(GOOGLE_HASH_DB_FILE));
-            String hash;
-            while ((hash = in.readLine()) != null) {
-                googleMalwareHashList.add(hash); //ignore return value (false if already present)
-            }
-            in.close();
-        }
-        catch (IOException e) {
-            logger.error("Error loading category from file: " + GOOGLE_HASH_DB_FILE, e);
-        }
-        
-    }
-
     
     // private methods --------------------------------------------------------
 

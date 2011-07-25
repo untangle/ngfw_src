@@ -1,21 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 package com.untangle.node.spyware;
 
 import java.net.InetAddress;
@@ -28,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.log4j.Logger;
 
 import com.untangle.node.http.HttpStateMachine;
 import com.untangle.node.http.RequestLineToken;
@@ -38,19 +24,25 @@ import com.untangle.node.token.Token;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.vnet.TCPSession;
-import org.apache.log4j.Logger;
-
+import com.untangle.node.util.UrlHashSet;
+import com.untangle.node.util.GoogleSafeBrowsingHashSet;
 
 public class SpywareHttpHandler extends HttpStateMachine
 {
     private static final Pattern OBJECT_PATTERN = Pattern.compile("<object", Pattern.CASE_INSENSITIVE);
     private static final Pattern CLSID_PATTERN  = Pattern.compile("clsid:([0-9\\-]*)", Pattern.CASE_INSENSITIVE);
 
+    private static final String MALWARE_SITE_DB_FILE  = "/usr/share/untangle-webfilter-init/spyware-url";
+    private static final String GOOGLE_HASH_DB_FILE  = "/usr/share/untangle-google-safebrowsing/lib/goog-malware-hash";
+
     private final TCPSession session;
 
     private final Map<RequestLineToken, List<String>> killers = new HashMap<RequestLineToken, List<String>>();
 
     private final Logger logger = Logger.getLogger(getClass());
+
+    private static UrlHashSet urlDatabase = null;
+    private static GoogleSafeBrowsingHashSet googleMalwareHashList = null;
 
     private final SpywareImpl node;
 
@@ -64,6 +56,13 @@ public class SpywareHttpHandler extends HttpStateMachine
 
         this.node = node;
         this.session = session;
+
+        synchronized(this) {
+            if (urlDatabase == null)
+                urlDatabase = new UrlHashSet(MALWARE_SITE_DB_FILE);
+            if (googleMalwareHashList == null) 
+                googleMalwareHashList = new GoogleSafeBrowsingHashSet(GOOGLE_HASH_DB_FILE);
+        }
     }
 
     // HttpStateMachine methods -----------------------------------------------
@@ -103,7 +102,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             getSession().release();
             releaseRequest();
             return requestHeader;
-        } else if (node.isUrlBlocked(host, uri)) {
+        } else if (isUrlBlocked(host, uri)) {
             node.incrementHttpBlockedDomain();
             node.statisticManager.incrURL();
             node.log(new SpywareBlacklistEvent(requestLine.getRequestLine()));
@@ -351,4 +350,32 @@ public class SpywareHttpHandler extends HttpStateMachine
         }
     }
 
+    private boolean isUrlBlocked(String domain, URI uri)
+    {
+        if (domain == null || uri == null ) {
+            logger.warn("Invalid argument(s): domain: " + domain + " uri: " + uri);
+        }
+        if ( ! (node.getSettings().getScanUrls()) ) {
+            return false;
+        }
+
+        domain = domain.toLowerCase();
+
+        /**
+         * Check community list
+         */
+        if (urlDatabase.contains(domain, uri.toString())) {
+            return true;
+        }
+        
+        /**
+         * Check the google DB
+         */
+        if (googleMalwareHashList.contains(domain, uri.toString())) {
+            return true;
+        }
+        
+        return false;
+    }
+    
 }
