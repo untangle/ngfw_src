@@ -29,9 +29,6 @@ import com.untangle.node.util.GoogleSafeBrowsingHashSet;
 
 public class SpywareHttpHandler extends HttpStateMachine
 {
-    private static final Pattern OBJECT_PATTERN = Pattern.compile("<object", Pattern.CASE_INSENSITIVE);
-    private static final Pattern CLSID_PATTERN  = Pattern.compile("clsid:([0-9\\-]*)", Pattern.CASE_INSENSITIVE);
-
     private static final String MALWARE_SITE_DB_FILE  = "/usr/share/untangle-webfilter-init/spyware-url";
     private static final String GOOGLE_HASH_DB_FILE  = "/usr/share/untangle-google-safebrowsing/lib/goog-malware-hash";
 
@@ -56,13 +53,6 @@ public class SpywareHttpHandler extends HttpStateMachine
 
         this.node = node;
         this.session = session;
-
-        synchronized(this) {
-            if (urlDatabase == null)
-                urlDatabase = new UrlHashSet(MALWARE_SITE_DB_FILE);
-            if (googleMalwareHashList == null) 
-                googleMalwareHashList = new GoogleSafeBrowsingHashSet(GOOGLE_HASH_DB_FILE);
-        }
     }
 
     // HttpStateMachine methods -----------------------------------------------
@@ -355,24 +345,55 @@ public class SpywareHttpHandler extends HttpStateMachine
         if (domain == null || uri == null ) {
             logger.warn("Invalid argument(s): domain: " + domain + " uri: " + uri);
         }
-        if ( ! (node.getSettings().getScanUrls()) ) {
-            return false;
-        }
 
         domain = domain.toLowerCase();
 
         /**
          * Check community list
          */
-        if (urlDatabase.contains(domain, uri.toString())) {
-            return true;
+        if (node.getSettings().getScanUrls()) {
+
+            /**
+             * The list is initialized here so that if this settings is not enabled
+             * the list is never loaded into memory
+             */
+            if (this.urlDatabase == null) {
+                synchronized(this) {
+                    if (this.urlDatabase == null) {
+                        logger.info("Loading Community malware DB...");
+                        this.urlDatabase = new UrlHashSet(MALWARE_SITE_DB_FILE);
+                        logger.info("Loading Community malware DB... done");
+                    }
+                }
+            }
+
+            if (urlDatabase.contains(domain, uri.toString())) {
+                return true;
+            }
         }
         
         /**
          * Check the google DB
          */
-        if (googleMalwareHashList.contains(domain, uri.toString())) {
-            return true;
+        if (node.getSettings().getScanGoogleSafeBrowsing()) {
+            
+            /**
+             * The list is initialized here so that if this settings is not enabled
+             * the list is never loaded into memory
+             */
+            if (this.googleMalwareHashList == null) {
+                synchronized(this) {
+                    if (this.googleMalwareHashList == null) {
+                        logger.info("Loading Google Safe Browsing malware DB...");
+                        this.googleMalwareHashList = new GoogleSafeBrowsingHashSet(GOOGLE_HASH_DB_FILE);
+                        logger.info("Loading Google Safe Browsing malware DB... done");
+                    }
+                }
+            }
+
+            if (googleMalwareHashList.contains(domain, uri.toString())) {
+                return true;
+            }
         }
         
         return false;

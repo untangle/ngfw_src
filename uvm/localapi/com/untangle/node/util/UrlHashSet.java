@@ -26,7 +26,7 @@ public class UrlHashSet
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static HashSet<String> urlHashSet = null;
+    private HashSet<String> urlHashSet = null;
 
     public UrlHashSet( String filename )
     {

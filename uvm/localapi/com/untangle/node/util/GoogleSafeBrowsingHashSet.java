@@ -26,7 +26,7 @@ public class GoogleSafeBrowsingHashSet
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static HashSet<String> md5HashSet = null;
+    private HashSet<String> md5HashSet = null;
 
     public GoogleSafeBrowsingHashSet( String filename )
     {
@@ -37,11 +37,13 @@ public class GoogleSafeBrowsingHashSet
     {
         try {
             String canonicalUrl = GoogleUrlUtils.canonicalizeURL("http://" + domain + "/" + uri);
-            logger.debug("Google lookup master: " + canonicalUrl);
+            logger.debug("Google SafeBrowsing lookup master: " + canonicalUrl);
+
             ArrayList<String> urlsToLookup = GoogleUrlUtils.getLookupURLs(canonicalUrl);
             if (urlsToLookup != null) {
+
                 for (String url : urlsToLookup) {
-                    logger.debug("Google lookup: " + url);
+                    logger.debug("Google SafeBrowsing lookup: " + url);
                     String md5 = null;
                     try {
                         MessageDigest md5Hasher = MessageDigest.getInstance("MD5");
@@ -61,15 +63,16 @@ public class GoogleSafeBrowsingHashSet
                     }
 
                     if (md5 != null) {
+                        logger.debug("Google SafeBrowsing lookup: " + url + " md5: \"" + md5 + "\" size: " + md5HashSet.size());
                         if (md5HashSet.contains(md5)) {
-                            logger.info("Google lookup: " + url + " hash: " + md5 + " HIT!");
+                            logger.info("Google SafeBrowsing Lookup: " + url + " hash: " + md5 + " HIT!");
                             return true;
                         }
                     } else {
                         logger.warn("Unable to compute hash: http://" + domain + "/" + uri);
                     }
-
                 }
+
             }
         } catch (Exception e) {
             logger.warn("Google lookup failed", e);

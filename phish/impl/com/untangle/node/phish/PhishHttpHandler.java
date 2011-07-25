@@ -18,9 +18,9 @@ import com.untangle.node.util.GoogleSafeBrowsingHashSet;
 
 public class PhishHttpHandler extends HttpStateMachine
 {
-    private final Logger logger = Logger.getLogger(getClass());
-
     private static final String GOOGLE_HASH_DB_FILE  = "/usr/share/untangle-google-safebrowsing/lib/goog-black-hash";
+
+    private final Logger logger = Logger.getLogger(getClass());
     
     private final PhishNode node;
 
@@ -33,12 +33,6 @@ public class PhishHttpHandler extends HttpStateMachine
         super(session);
 
         this.node = node;
-
-        synchronized(this) {
-            if (googlePhishHashList == null) 
-                googlePhishHashList = new GoogleSafeBrowsingHashSet(GOOGLE_HASH_DB_FILE);
-        }
-        
     }
 
     // HttpStateMachine methods -----------------------------------------------
@@ -68,12 +62,25 @@ public class PhishHttpHandler extends HttpStateMachine
         }
         host = host.toLowerCase();
 
-        if (!node.getPhishSettings().getEnableGooglePhishList())
+        if (!node.getPhishSettings().getEnableGooglePhishList() || node.isDomainUnblocked(host, getSession().clientAddr())) 
             isBlocked = false;
-        else if (node.isDomainUnblocked(host, getSession().clientAddr())) 
-            isBlocked = false;
-        else if( googlePhishHashList.contains(host, uri.toString()) ) 
-            isBlocked = true;
+        else {
+            /**
+             * We load the list here if its null so that if google phishing is not enabled we never load the list
+             */
+            if (googlePhishHashList == null) {
+                synchronized(this) {
+                    if (googlePhishHashList == null) {
+                        logger.info("Loading Google Safe Browsing phish DB...");
+                        googlePhishHashList = new GoogleSafeBrowsingHashSet(GOOGLE_HASH_DB_FILE);
+                        logger.info("Loading Google Safe Browsing phish DB... done");
+                    }
+                }
+            }
+             
+            if( googlePhishHashList.contains(host, uri.toString()) ) 
+                isBlocked = true;
+        }
 
         if (isBlocked) {
             node.incrementBlockCount();

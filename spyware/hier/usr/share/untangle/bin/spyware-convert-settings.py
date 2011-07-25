@@ -141,6 +141,7 @@ def get_settings(tid, debug=False):
     str += '\t"scanCookies": "%s",\n' % scan_cookies
     str += '\t"scanSubnets": "%s",\n' % scan_subnets
     str += '\t"scanUrls": "%s",\n' % scan_urls
+    str += '\t"scanGoogleSafeBrowsing": "false",\n' # always false on upgrade (memory consideration)
     str += '\t"unblockMode": "%s",\n' % user_unblock_mode
     str += '\t"cookies": %s,\n' % get_cookie_settings(tid, settings_id, debug=debug)
     str += '\t"subnets": %s,\n' % get_subnet_settings(tid, settings_id, debug=debug)
