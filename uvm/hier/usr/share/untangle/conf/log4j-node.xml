@@ -212,6 +212,10 @@
     <priority value="WARN"/>
   </category>
 
+  <category name="com.untangle.uvm.vnet.NodeBase">
+    <priority value="INFO"/>
+  </category>
+
   <!-- #                         -->
   <!-- #  misc debug levels      -->
   <!-- #                         -->
