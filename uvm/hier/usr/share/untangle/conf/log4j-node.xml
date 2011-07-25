@@ -46,10 +46,149 @@
     </layout>
   </appender>
 
-  <category name="org.apache.catalina">
+  <!-- #                         -->
+  <!-- #  node/app debug levels  -->
+  <!-- #                         -->
+
+  <category name="com.untangle.uvm.node">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.util">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.token">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.router">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.adblocker">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.adconnector">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.bandwidth">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.boxbackup">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.branding">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.clam">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.commtouch">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.cpd">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.firewall">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.ftp">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.http">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.ips">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.ipsec">
+    <priority value="INFO"/>
+  </category>
+ 
+  <category name="com.untangle.node.kav">
+    <priority value="INFO"/>
+  </category>
+ 
+  <category name="com.untangle.node.license">
     <priority value="WARN"/>
   </category>
 
+  <category name="com.untangle.node.mail">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.openvpn">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.phish">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.policy">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.protofilter">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.shield">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.sitefilter">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.spam">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.spamassassin">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.spyware">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.support">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.virus">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.webcache">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.webfilter">
+    <priority value="INFO"/>
+  </category>
+
+
+  <category name="com.untangle.node">
+    <priority value="INFO"/>
+  </category>
+
+
+  <!-- #      VNET debug levels  -->
   <!-- #      DEBUG           new session debugging -->
   <!-- #      INFO            each new session -->
   <!-- #      WARN            exceptions -->
@@ -58,23 +197,6 @@
   </category>
 
   <category name="com.untangle.uvm.vnet.Dispatcher">
-    <priority value="WARN"/>
-  </category>
-
-  <!-- # Session Event messages: all events delivered to node,
-       logged just before delivery the delivery/execution thread. -->
-  <!-- #      DEBUG          Data events -->
-  <!-- #      INFO           shutdown, close, other session events. -->
-  <!-- #      WARN           New session, new session request events -->
-  <category name="com.untangle.uvm.vnet.SessionEvent">
-    <priority value="ERROR"/> <!-- No logging by default -->
-  </category>
-
-  <!-- # Internal Session messages, -->
-  <!-- #      DEBUG           session r/w state change, r/w statistics -->
-  <!-- #      INFO            (currently same as WARN) -->
-  <!-- #      WARN            exceptions or unusual conditions  -->
-  <category name="com.untangle.uvm.vnet.Session">
     <priority value="WARN"/>
   </category>
 
@@ -90,116 +212,11 @@
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.node.util">
-    <priority value="INFO"/>
-  </category>
+  <!-- #                         -->
+  <!-- #  misc debug levels      -->
+  <!-- #                         -->
 
-  <category name="com.untangle.node.token">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.router">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.node.license">
-    <priority value="WARN"/>
-  </category>
-
-  <!-- for ext-impl -->
-  <category name="com.untangle.uvm.license">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.adconnector">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.bandwidth">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.virus">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.clam">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.kav">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.webcache">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.ipsec">
-    <priority value="DEBUG"/>
-  </category>
-
-  <category name="com.untangle.node.spam">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.spamassassin">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.phish">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.ftp">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.http">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.mail">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.webfilter">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.node.ips">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.protofilter">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.sitefilter">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.branding">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.spyware">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.firewall">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node.cpd">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.uvm.node">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.node">
+  <category name="org.apache.catalina">
     <priority value="WARN"/>
   </category>
 
