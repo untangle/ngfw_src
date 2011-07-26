@@ -39,6 +39,7 @@ public class License implements Serializable
     public static final String BOXBACKUP = "untangle-node-boxbackup";
     public static final String WEBCACHE = "untangle-node-webcache";
     public static final String IPSEC = "untangle-node-ipsec";
+    public static final String DATAVAULT = "untangle-node-datavault";
     
     /** Identifier for the product this license is for */
     private String name;
