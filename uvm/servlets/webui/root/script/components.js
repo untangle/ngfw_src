@@ -1115,7 +1115,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     isNodeEditable : true,
     constructor : function(config) {
         this.id = "node_" + config.tid;
-        config.helpSource=config.md.displayName.toLowerCase().replace(/ /g,"_");
+        config.helpSource=config.displayName.toLowerCase().replace(/ /g,"_");
         if(config.runState==null) {
             config.runState="INITIALIZED";
         }
@@ -1142,10 +1142,10 @@ Ung.Node = Ext.extend(Ext.Component, {
 
         this.getEl().addClass("node");
         this.getEl().set({
-            'viewPosition' : this.md.viewPosition
+            'viewPosition' : this.viewPosition
         });
         this.getEl().set({
-            'name' : this.md.displayName
+            'name' : this.displayName
         });
         if(this.fadeIn) {
             this.getEl().scrollIntoView(Ext.getCmp("center").body);
@@ -1183,7 +1183,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             'id' : this.getId(),
             'image' : this.image,
             'isNodeEditable' : this.isNodeEditable === true ? "none" : "",
-            'displayName' : this.md.displayName,
+            'displayName' : this.displayName,
             'nodePowerCls': this.hasPowerButton?((this.license && !this.license.valid)?"node-power-expired":"node-power"):"",
             'licenseMessage' : this.getLicenseMessage()
         });
@@ -1326,7 +1326,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     //on Buy Now Action
     onBuyNowAction :function(){
-        var appItem=Ung.AppItem.getApp(this.md.displayName);
+        var appItem=Ung.AppItem.getApp(this.displayName);
         if(appItem!=null) {
             appItem.linkToStoreFn(null,"buy");
         }
@@ -1430,7 +1430,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     completeRemoveAction : function()
     {
         var message = String.format(
-                i18n._("{0} is about to be removed from the rack.\nIts settings will be lost and it will stop processing network traffic.\n\nWould you like to continue removing?"),this.md.displayName);
+                i18n._("{0} is about to be removed from the rack.\nIts settings will be lost and it will stop processing network traffic.\n\nWould you like to continue removing?"),this.displayName);
         Ext.Msg.confirm(i18n._("Warning:"), message, function(btn, text) {
             if (btn == 'yes') {
                 if (this.settingsWin) {
@@ -2859,7 +2859,7 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
                 this.cancelAction(); // TODO check if we need more checking
             }.createDelegate(this)
         }, {
-            title : this.node.md.displayName
+            title : this.node.displayName
         }];
         if(this.bbar==null) {
             this.bbar=["-",{

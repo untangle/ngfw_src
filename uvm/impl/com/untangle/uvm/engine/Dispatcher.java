@@ -89,6 +89,9 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
      */
     public static final int MAX_CONNECT_BACKOFF_TIME = 8000;
 
+    public static final int TCP_READ_BUFFER_SIZE = 8192;
+    public static final int UDP_MAX_PACKET_SIZE  = 16384;
+    
     /**
      * Set to true to disable use of the session and newSession thread
      * pools and run everything in the command/session dispatchers.
@@ -344,9 +347,8 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
             // Create the session, client and server channels
             ArgonTCPSession argonSession = new ArgonTCPSessionImpl(request);
-            TCPSessionImpl session = new TCPSessionImpl(this, argonSession, request.pipelineEndpoints(),
-                                                        td.getTcpClientReadBufferSize(),
-                                                        td.getTcpServerReadBufferSize());
+            TCPSessionImpl session = new TCPSessionImpl(this, argonSession, request.pipelineEndpoints(), TCP_READ_BUFFER_SIZE, TCP_READ_BUFFER_SIZE);
+            
             session.attach(treq.attachment());
             registerPipelineListener(argonSession, session);
             if (RWSessionStats.DoDetailedTimes)
@@ -458,11 +460,9 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             }
 
             // Create the session, client and server channels
-            ArgonUDPSession argonSession =
-                new ArgonUDPSessionImpl(request);
-            UDPSessionImpl session = new UDPSessionImpl(this, argonSession, request.pipelineEndpoints(),
-                                                        td.getUdpMaxPacketSize(),
-                                                        td.getUdpMaxPacketSize());
+            ArgonUDPSession argonSession = new ArgonUDPSessionImpl(request);
+            UDPSessionImpl session = new UDPSessionImpl(this, argonSession, request.pipelineEndpoints(), UDP_MAX_PACKET_SIZE, UDP_MAX_PACKET_SIZE);
+            
             session.attach(ureq.attachment());
             registerPipelineListener(argonSession, session);
             if (RWSessionStats.DoDetailedTimes)

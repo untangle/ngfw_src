@@ -160,7 +160,7 @@ public class PackageDesc implements Serializable
         return displayName;
     }
 
-    public Type getType()
+    public Type   getType()
     {
         return type;
     }

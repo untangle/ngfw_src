@@ -230,7 +230,7 @@ class ToolboxManagerImpl implements ToolboxManager
         Map<String, License> licenseMap = new HashMap<String, License>();
         LicenseManager lm = LocalUvmContextFactory.context().licenseManager();
         for (NodeDesc nd : instances) {
-            String n = nd.getPackageDesc().getName();
+            String n = nd.getName();
             licenseMap.put(n, lm.getLicense(n));
         }
         Map<NodeId, NodeState> runStates=nm.allNodeStates();

@@ -702,10 +702,10 @@ Ung.Main=Ext.extend(Object, {
         var node={};
         node.tid=nodeDesc.tid.id;
         node.Tid=nodeDesc.tid;
-        node.md=nodeDesc.packageDesc;
+        node.type=nodeDesc.type;
         node.hasPowerButton=nodeDesc.hasPowerButton;
-        node.name=nodeDesc.packageDesc.name;
-        node.displayName=nodeDesc.packageDesc.displayName;
+        node.name=nodeDesc.name;
+        node.displayName=nodeDesc.displayName;
         node.license=license;
         node.image='image?name='+node.name;
         node.blingers=statDesc;
@@ -755,7 +755,7 @@ Ung.Main=Ext.extend(Object, {
             var nodeDesc=rpc.rackView.instances.list[i];
             var node=this.createNode(nodeDesc,
                 rpc.rackView.statDescs.map[nodeDesc.tid.id],
-                rpc.rackView.licenseMap.map[nodeDesc.packageDesc.name],
+                rpc.rackView.licenseMap.map[nodeDesc.name],
                 rpc.rackView.runStates.map[nodeDesc.tid.id]);
             this.nodes.push(node);
         }
@@ -988,8 +988,8 @@ Ung.Main=Ext.extend(Object, {
         main.removeNodePreview(this.name);
         var nodeWidget=new Ung.Node(node);
         nodeWidget.fadeIn=fadeIn;
-        var place=(node.md.type=="NODE")?'security_nodes':'other_nodes';
-        var position=this.getNodePosition(place,node.md.viewPosition);
+        var place=(node.type=="NODE")?'security_nodes':'other_nodes';
+        var position=this.getNodePosition(place,node.viewPosition);
         nodeWidget.render(place,position);
         Ung.AppItem.updateState(node.displayName, null);
     },
@@ -1102,9 +1102,9 @@ Ung.Main=Ext.extend(Object, {
             var hasUtil=false;
             var hasService=false;
             for(var i=0;i<this.nodes.length;i++) {
-                if(this.nodes[i].md.type!="NODE") {
+                if(this.nodes[i].type != "NODE") {
                    hasService=true;
-                   if(this.nodes[i].md.type!="SERVICE") {
+                   if(this.nodes[i].type != "SERVICE") {
                      hasUtil=true;
                    }
                 }

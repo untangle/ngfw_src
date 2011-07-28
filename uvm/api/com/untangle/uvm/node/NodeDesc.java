@@ -50,38 +50,33 @@ import com.untangle.uvm.toolbox.PackageDesc;
 @SuppressWarnings("serial")
 public class NodeDesc implements Serializable
 {
+    private NodeId nodeId = null; /* XXX */
 
-    private final NodeId tid;
+    private String name = null;
+    private String displayName = null;
+    private String className = null;
+    private String nodeBase = null;
+    private String syslogName = null;
+    private String type = null;
+    
+    private boolean hasPowerButton;
+    private boolean noStart;
 
-    private final PackageDesc packageDesc;
+    private List<String> exports;
+    private List<String> parents;
+    private List<String> uvmResources;
+    private boolean singleInstance;
 
-    private final String className;
-    private final String reportsClassName;
-    private final String nodeBase;
-    private final String syslogName;
-
-    private final boolean hasPowerButton;
-    private final boolean noStart;
-
-    private final List<String> exports;
-    private final List<String> parents;
-    private final List<String> uvmResources;
-    private final boolean singleInstance;
-
-    private final int tcpClientReadBufferSize = 8192;
-    private final int tcpServerReadBufferSize = 8192;
-    private final int udpMaxPacketSize = 16384;
-
-    public NodeDesc(NodeId tid, PackageDesc packageDesc, String className,
-                    String reportsClassName, String nodeBase,
+    private Integer viewPosition;
+    
+    public NodeDesc(NodeId nodeId, PackageDesc packageDesc, String className,
+                    String nodeBase,
                     List<String> exports, List<String> parents,
                     List<String> uvmResources, boolean singleInstance,
                     boolean hasPowerButton, boolean noStart)
     {
-        this.tid = tid;
-        this.packageDesc = packageDesc;
+        this.nodeId = nodeId;
         this.className = className;
-        this.reportsClassName = reportsClassName;
         this.nodeBase = nodeBase;
         List<String> l = null == exports ? new LinkedList<String>() : exports;
         this.exports = Collections.unmodifiableList(l);
@@ -90,10 +85,13 @@ public class NodeDesc implements Serializable
         l = null == uvmResources ? new LinkedList<String>() : uvmResources;
         this.uvmResources = Collections.unmodifiableList(l);
         this.singleInstance = singleInstance;
-        String n = packageDesc.getDisplayName();
-        this.syslogName = null == n ? null : n.replaceAll("\\p{Space}", "_");
+        this.name = packageDesc.getName();
+        this.displayName = packageDesc.getDisplayName();
+        this.syslogName = this.displayName == null ? null : this.displayName.replaceAll("\\p{Space}", "_");
         this.hasPowerButton = hasPowerButton;
         this.noStart = noStart;
+        this.type = packageDesc.getType().toString();
+        this.viewPosition = new Integer(packageDesc.getViewPosition());
     }
 
     // accessors --------------------------------------------------------------
@@ -101,16 +99,11 @@ public class NodeDesc implements Serializable
     /**
      * Node id.
      *
-     * @return tid for this instance.
+     * @return nodeId for this instance.
      */
     public NodeId getTid()
     {
-        return tid;
-    }
-
-    public PackageDesc getPackageDesc()
-    {
-        return packageDesc;
+        return nodeId;
     }
 
     /**
@@ -120,7 +113,7 @@ public class NodeDesc implements Serializable
      */
     public String getName()
     {
-        return packageDesc.getName();
+        return name;
     }
 
     /**
@@ -174,43 +167,13 @@ public class NodeDesc implements Serializable
     }
 
     /**
-     * TCP client read BufferSize is between 1 and 65536 bytes.
-     *
-     * @return the TCP client read bufferSize.
-     */
-    public int getTcpClientReadBufferSize()
-    {
-        return tcpClientReadBufferSize;
-    }
-
-    /**
-     * TCP server read bufferSize is between 1 and 65536 bytes.
-     *
-     * @return the TCP server read bufferSize.
-     */
-    public int getTcpServerReadBufferSize()
-    {
-        return tcpServerReadBufferSize;
-    }
-
-    /**
-     * UDP max packet size, between 1 and 65536 bytes, defaults to 16384.
-     *
-     * @return UDP max packet size.
-     */
-    public int getUdpMaxPacketSize()
-    {
-        return udpMaxPacketSize;
-    }
-
-    /**
      * The name of the node, for display purposes.
      *
      * @return display name.
      */
     public String getDisplayName()
     {
-        return packageDesc.getDisplayName();
+        return displayName;
     }
 
     /**
@@ -224,16 +187,6 @@ public class NodeDesc implements Serializable
     }
 
     /**
-     * The class name of the reports module.
-     *
-     * @return class name of reports component.
-     */
-    public String getReportsClassName()
-    {
-        return reportsClassName;
-    }
-
-    /**
      * The nodeBase is the name of the base node. For example
      * clam-node's nodeBase is untangle-base-virus.
      *
@@ -244,6 +197,28 @@ public class NodeDesc implements Serializable
         return nodeBase;
     }
 
+    /**
+     * The type is the type of node
+     * "NODE|CASING|SERVICE|LIBRARY|BASE|LIB_ITEM|TRIAL|UNKNOW"
+     *
+     * @return the type, null if node does not have a type.
+     */
+    public String getType()
+    {
+        return type;
+    }
+
+    /**
+     * The type is the type of node
+     * "NODE|CASING|SERVICE|LIBRARY|BASE|LIB_ITEM|TRIAL|UNKNOW"
+     *
+     * @return the type, null if node does not have a type.
+     */
+    public Integer getViewPosition()
+    {
+        return viewPosition;
+    }
+    
     /**
      * True if this node can be turned on and off.  False, otherwise.
      */
@@ -263,7 +238,7 @@ public class NodeDesc implements Serializable
     // Object methods ---------------------------------------------------------
 
     /**
-     * Equality based on the business key (tid).
+     * Equality based on the business key (nodeId).
      *
      * @param o the object to compare to.
      * @return true if equal.
@@ -276,7 +251,7 @@ public class NodeDesc implements Serializable
 
         NodeDesc td = (NodeDesc)o;
 
-        return tid.equals(td.getTid());
+        return nodeId.equals(td.getTid());
     }
 
     @Override

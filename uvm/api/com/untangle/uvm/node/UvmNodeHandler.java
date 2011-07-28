@@ -61,7 +61,6 @@ public class UvmNodeHandler extends DefaultHandler
     private final List<String> uvmResources = new LinkedList<String>();
 
     private String className = null;
-    private String reportsClassName = null;
     private String nodeBase = null;
     private boolean singleInstance = false;
     private boolean hasPowerButton = true;
@@ -80,7 +79,7 @@ public class UvmNodeHandler extends DefaultHandler
 
     public NodeDesc getNodeDesc(NodeId tid)
     {
-        return new NodeDesc(tid, packageDesc, className, reportsClassName,
+        return new NodeDesc(tid, packageDesc, className, 
                             nodeBase, exports, parents, uvmResources,
                             singleInstance, hasPowerButton, noStart);
     }
@@ -146,8 +145,6 @@ public class UvmNodeHandler extends DefaultHandler
                 singleInstance = Boolean.parseBoolean(v);
             } else if (n.equals("classname")) {
                 className = v;
-            } else if (n.equals("reports-classname")) {
-                reportsClassName = v;
             } else if (n.equals("node-base")) {
                 nodeBase = v;
             } else if (n.equals("power-button")) {
