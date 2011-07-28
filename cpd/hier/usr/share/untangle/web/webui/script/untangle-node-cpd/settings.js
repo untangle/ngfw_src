@@ -1384,7 +1384,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
         {
             var node = main.getNode("untangle-node-adconnector");
             if (node != null) {
-                var nodeCmp = Ung.Node.getCmp(node.tid);
+                var nodeCmp = Ung.Node.getCmp(node.nodeId);
                 if (nodeCmp != null) {
                     nodeCmp.onSettingsAction();
                 }
@@ -1395,7 +1395,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
         {
             var node = main.getNode("untangle-node-adconnector");
             if (node != null) {
-                var nodeCmp = Ung.Node.getCmp(node.tid);
+                var nodeCmp = Ung.Node.getCmp(node.nodeId);
                 if (nodeCmp != null) {
                     nodeCmp.onSettingsAction();
                 }

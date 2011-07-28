@@ -87,12 +87,12 @@ public class FirewallSettings implements Serializable
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    public NodeId getTid()
+    public NodeId getNodeId()
     {
         return tid;
     }
 
-    public void setTid( NodeId tid )
+    public void setNodeId( NodeId tid )
     {
         this.tid = tid;
     }

@@ -76,12 +76,12 @@ class StatSettings implements Serializable
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", unique=true)
-    public NodeId getTid()
+    public NodeId getNodeId()
     {
         return tid;
     }
 
-    public void setTid(NodeId tid)
+    public void setNodeId(NodeId tid)
     {
         this.tid = tid;
     }

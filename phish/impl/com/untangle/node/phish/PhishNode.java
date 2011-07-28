@@ -210,8 +210,8 @@ public class PhishNode extends SpamNodeImpl implements Phish
     @Override
     protected Query getSettingsQuery(Session s)
     {
-        Query q = s.createQuery("from PhishSettings ss where ss.tid = :tid");
-        q.setParameter("tid", getNodeId());
+        Query q = s.createQuery("from PhishSettings ss where ss.nodeId = :nodeId");
+        q.setParameter("nodeId", getNodeId());
         return q;
     }
 

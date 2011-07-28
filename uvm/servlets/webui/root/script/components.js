@@ -1114,7 +1114,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     //can the node be edited on the gui
     isNodeEditable : true,
     constructor : function(config) {
-        this.id = "node_" + config.tid;
+        this.id = "node_" + config.nodeId;
         config.helpSource=config.displayName.toLowerCase().replace(/ /g,"_");
         if(config.runState==null) {
             config.runState="INITIALIZED";
@@ -1225,7 +1225,7 @@ Ung.Node = Ext.extend(Ext.Component, {
             if(this.isNodeEditable==false){
                 this.subCmps.push(new Ext.ToolTip({
                     html : Ung.Node.getNonEditableNodeTip(),
-                    target : 'node_' + this.tid,
+                    target : 'node_' + this.nodeId,
                     autoWidth : true,
                     autoHeight : true,
                     showDelay : 20,
@@ -1399,7 +1399,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     openSettings : function() {
         var items=null;
         if (this.settingsClassName !== null) {
-            eval('this.settingsWin=new ' + this.settingsClassName + '({\'node\':this,\'tid\':this.tid,\'name\':this.name});');
+            eval('this.settingsWin=new ' + this.settingsClassName + '({\'node\':this,\'tid\':this.nodeId,\'name\':this.name});');
         } else {
             this.settingsWin = new Ung.NodeWin({
                 node : this,
@@ -1687,7 +1687,7 @@ Ung.MessageManager = {
                     for(var i=0;i<messageQueue.messages.list.length;i++) {
                         var msg=messageQueue.messages.list[i];
                         if(msg.javaClass.indexOf("NodeStateChange") >= 0) {
-                            var node=Ung.Node.getCmp(msg.nodeDesc.tid.id);
+                            var node=Ung.Node.getCmp(msg.nodeDesc.nodeId.id);
                             if(node!=null) {
                                 node.updateRunState(msg.nodeState);
                             }
@@ -1730,12 +1730,12 @@ Ung.MessageManager = {
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
                             if(msg.policy==null || msg.policy.id == rpc.currentPolicy.id) {
                                 refreshApps=true;
-                                var node=main.getNode(msg.nodeDesc.packageDesc.name,msg.nodeDesc.tid.policy);
+                                var node=main.getNode(msg.nodeDesc.packageDesc.name,msg.nodeDesc.nodeId.policy);
                                 if(!node) {
                                     node=main.createNode(msg.nodeDesc, msg.statDescs, msg.license,"INITIALIZED");
                                     main.nodes.push(node);
                                     main.addNode(node,true);
-                                    main.removeParentNode(node,msg.nodeDesc.tid.policy);
+                                    main.removeParentNode(node,msg.nodeDesc.nodeId.policy);
                                 } else {
                                     main.loadLicenses();
                                 }
@@ -1844,9 +1844,9 @@ Ung.MessageManager = {
                   main.systemStats.update(messageQueue.systemStats);
                   // upgrade nodes blingers
                   for (var i = 0; i < main.nodes.length; i++) {
-                    var nodeCmp = Ung.Node.getCmp(main.nodes[i].tid);
+                    var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
                     if (nodeCmp && nodeCmp.isRunning()) {
-                      nodeCmp.stats = messageQueue.stats.map[main.nodes[i].tid];
+                      nodeCmp.stats = messageQueue.stats.map[main.nodes[i].nodeId];
                       nodeCmp.updateBlingers();
                     }
                   }
@@ -2454,7 +2454,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 
         this.bbar = [{
             xtype : 'tbtext',
-            text : '<span id="boxRepository_' + this.getId() + '_' + this.settingsCmp.node.tid + '"></span>'
+            text : '<span id="boxRepository_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '"></span>'
         }, {
             xtype : 'tbbutton',
             id: "refresh_"+this.getId(),
@@ -2588,7 +2588,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                         displayStyle="display:none;";
                     }
                     var out = [];
-                    out.push('<select name="Event Type" id="selectRepository_' + this.getId() + '_' + this.settingsCmp.node.tid
+                    out.push('<select name="Event Type" id="selectRepository_' + this.getId() + '_' + this.settingsCmp.node.nodeId
                             + '" style="'+displayStyle+'">');
 
                     for (var i = 0; i < repList.length; i++) {
@@ -2599,7 +2599,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                     }
                     out.push('</select>');
                     var boxRepositoryDescEventLog = document.getElementById('boxRepository_' + this.getId() + '_'
-                            + this.settingsCmp.node.tid);
+                            + this.settingsCmp.node.nodeId);
                     boxRepositoryDescEventLog.innerHTML = out.join("");
                 }
             }.createDelegate(this));
@@ -2607,7 +2607,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     },
     // get selected repository
     getSelectedRepository : function() {
-        var selObj = document.getElementById('selectRepository_' + this.getId() + '_' + this.settingsCmp.node.tid);
+        var selObj = document.getElementById('selectRepository_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
         var result = null;
         if (selObj !== null && selObj.selectedIndex >= 0) {
             result = selObj.options[selObj.selectedIndex].value;
@@ -4754,7 +4754,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         handler : function() {
                             var node = main.getNode('untangle-node-adconnector');
                             if (node != null) {
-                                var nodeCmp = Ung.Node.getCmp(node.tid);
+                                var nodeCmp = Ung.Node.getCmp(node.nodeId);
                                 if (nodeCmp != null) {
                                     nodeCmp.onSettingsAction(function() {
                                         this.populate(this.record,this.fnCallback);

@@ -395,14 +395,14 @@ public abstract class NodeBase implements Node
 
         try {
             nodeManager.registerThreadContext(nodeContext);
-            logger.info("Starting   node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getTid() + ")" + " ...");
+            logger.info("Starting   node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeId() + ")" + " ...");
             preStart();
 
             connectArgonConnector();
 
             changeState(NodeState.RUNNING, syncState);
             postStart(); // XXX if exception, state == ?
-            logger.info("Started    node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getTid() + ")" + " ...");
+            logger.info("Started    node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeId() + ")" + " ...");
         } finally {
             nodeManager.deregisterThreadContext();
         }
@@ -418,7 +418,7 @@ public abstract class NodeBase implements Node
 
         try {
             nodeManager.registerThreadContext(nodeContext);
-            logger.info("Stopping   node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getTid() + ")" + " ...");
+            logger.info("Stopping   node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeId() + ")" + " ...");
             preStop();
             disconnectArgonConnector();
             changeState(NodeState.INITIALIZED, syncState);
@@ -441,7 +441,7 @@ public abstract class NodeBase implements Node
         try {
             nodeManager.registerThreadContext(nodeContext);
             postStop(); // XXX if exception, state == ?
-            logger.info("Stopped    node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getTid() + ")" + " ...");
+            logger.info("Stopped    node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeId() + ")" + " ...");
         } finally {
             nodeManager.deregisterThreadContext();
         }
@@ -458,7 +458,7 @@ public abstract class NodeBase implements Node
 
         try {
             nodeManager.registerThreadContext(nodeContext);
-            logger.info("Destroying node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getTid() + ")" + " ...");
+            logger.info("Destroying node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeId() + ")" + " ...");
             preDestroy();
             for (NodeBase p : parents) {
                 p.removeChild(this);
@@ -467,7 +467,7 @@ public abstract class NodeBase implements Node
             changeState(NodeState.DESTROYED, syncState);
 
             postDestroy(); // XXX if exception, state == ?
-            logger.info("Destroyed  node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getTid() + ")" + " ...");
+            logger.info("Destroyed  node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeId() + ")" + " ...");
         } finally {
             nodeManager.deregisterThreadContext();
         }

@@ -188,7 +188,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         this.nodeManager = UvmContextImpl.getInstance().nodeManager();
         sessionEventListener = null;
         NodeDesc td = node.getNodeDesc();
-        String tidn = td.getTid().getName();
+        String tidn = td.getNodeId().getName();
 
         sessionEventLogger = argonConnector.sessionEventLogger();
         releasedHandler = new ReleasedEventHandler(node);

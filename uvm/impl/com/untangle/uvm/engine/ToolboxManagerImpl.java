@@ -199,7 +199,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
         Map<NodeId, StatDescs> statDescs = new HashMap<NodeId, StatDescs>(instances.size());
         for (NodeDesc nd : instances) {
-            NodeId t = nd.getTid();
+            NodeId t = nd.getNodeId();
             MessageManager lmm = LocalUvmContextFactory.context().messageManager();
             Counters c = lmm.getCounters(t);
             StatDescs sd = c.getStatDescs();
@@ -444,7 +444,7 @@ class ToolboxManagerImpl implements ToolboxManager
                     register(node);
                     NodeDesc nd = nm.instantiate(node, p);
                     if (nd != null && !nd.getNoStart()) {
-                        NodeContext nc = nm.nodeContext(nd.getTid());
+                        NodeContext nc = nm.nodeContext(nd.getNodeId());
                         nc.node().start();
                     }
                 } catch (DeployException exn) {

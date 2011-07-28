@@ -700,8 +700,8 @@ Ung.Main=Ext.extend(Object, {
     },
     createNode: function (nodeDesc, statDesc, license, runState) {
         var node={};
-        node.tid=nodeDesc.tid.id;
-        node.Tid=nodeDesc.tid;
+        node.nodeId=nodeDesc.nodeId.id;
+        node.Tid=nodeDesc.nodeId;
         node.type=nodeDesc.type;
         node.hasPowerButton=nodeDesc.hasPowerButton;
         node.name=nodeDesc.name;
@@ -754,9 +754,9 @@ Ung.Main=Ext.extend(Object, {
         for(var i=0;i<rpc.rackView.instances.list.length;i++) {
             var nodeDesc=rpc.rackView.instances.list[i];
             var node=this.createNode(nodeDesc,
-                rpc.rackView.statDescs.map[nodeDesc.tid.id],
+                rpc.rackView.statDescs.map[nodeDesc.nodeId.id],
                 rpc.rackView.licenseMap.map[nodeDesc.name],
-                rpc.rackView.runStates.map[nodeDesc.tid.id]);
+                rpc.rackView.runStates.map[nodeDesc.nodeId.id]);
             this.nodes.push(node);
         }
         this.updateSeparator();
@@ -814,7 +814,7 @@ Ung.Main=Ext.extend(Object, {
             if(Ung.Util.handleException(exception)) return;
             rpc.rackView=result;
             for (var i = 0; i < main.nodes.length; i++) {
-                var nodeCmp = Ung.Node.getCmp(main.nodes[i].tid);
+                var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
                 if (nodeCmp && nodeCmp.license) {
                     nodeCmp.updateLicense(rpc.rackView.licenses.map[nodeCmp.name]);
                 }
@@ -958,7 +958,7 @@ Ung.Main=Ext.extend(Object, {
         if(this.nodes!==null) {
             for(var i=0;i<this.nodes.length;i++) {
                 var node=this.nodes[i];
-                var cmp=Ung.Node.getCmp(this.nodes[i].tid);
+                var cmp=Ung.Node.getCmp(this.nodes[i].nodeId);
                 if(cmp) {
                     cmp.destroy();
                     cmp=null;
@@ -1009,7 +1009,7 @@ Ung.Main=Ext.extend(Object, {
         }
     },
     removeNode : function(index) {
-        var tid = main.nodes[index].tid,
+        var tid = main.nodes[index].nodeId,
         nd,
         nodeUI = tid != null ? Ext.getCmp('node_'+tid) : null;
         nd = main.nodes.splice(index, 1);
@@ -1083,7 +1083,7 @@ Ung.Main=Ext.extend(Object, {
     isNodeRunning : function(nodeName) {
         var node = main.getNode(nodeName);
         if (node != null) {
-             var nodeCmp = Ung.Node.getCmp(node.tid);
+             var nodeCmp = Ung.Node.getCmp(node.nodeId);
              if (nodeCmp != null && nodeCmp.isRunning()){
                 return true;
              }

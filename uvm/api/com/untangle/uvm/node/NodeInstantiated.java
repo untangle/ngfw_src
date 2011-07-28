@@ -54,7 +54,7 @@ public class NodeInstantiated extends Message
 
     public Policy getPolicy()
     {
-        return nodeDesc.getTid().getPolicy();
+        return nodeDesc.getNodeId().getPolicy();
     }
 
     public NodeDesc getNodeDesc()

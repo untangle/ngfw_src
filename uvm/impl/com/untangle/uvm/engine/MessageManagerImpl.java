@@ -131,9 +131,9 @@ class MessageManagerImpl implements MessageManager
     public MessageQueue getMessageQueue(Integer key)
     {
         NodeManager lm = UvmContextImpl.getInstance().nodeManager();
-        List<NodeId> tids = lm.nodeInstances();
-        tids.add(new NodeId(0L));
-        Map<NodeId, Stats> stats = getStats(lm, tids);
+        List<NodeId> nodeIds = lm.nodeInstances();
+        nodeIds.add(new NodeId(0L));
+        Map<NodeId, Stats> stats = getStats(lm, nodeIds);
         List<Message> messages = getMessages(key);
         return new MessageQueue(messages, stats, systemStats);
     }
@@ -141,10 +141,10 @@ class MessageManagerImpl implements MessageManager
     public MessageQueue getMessageQueue(Integer key, Policy p)
     {
         NodeManager lm = UvmContextImpl.getInstance().nodeManager();
-        List<NodeId> tids = lm.nodeInstances(p);
+        List<NodeId> nodeIds = lm.nodeInstances(p);
         /* Add in the nodes with the null policy */
-        tids.addAll( lm.nodeInstances((Policy)null));
-        Map<NodeId, Stats> stats = getStats(lm, tids);
+        nodeIds.addAll( lm.nodeInstances((Policy)null));
+        Map<NodeId, Stats> stats = getStats(lm, nodeIds);
         List<Message> messages = getMessages(key);
 
         return new MessageQueue(messages, stats, systemStats);
@@ -166,12 +166,12 @@ class MessageManagerImpl implements MessageManager
         return this.systemStats;
     }
 
-    public List<ActiveStat> getActiveMetrics(final NodeId tid)
+    public List<ActiveStat> getActiveMetrics(final NodeId nodeId)
     {
         List<ActiveStat> l = null;
 
         synchronized (activeMetrics) {
-            l = activeMetrics.get(tid);
+            l = activeMetrics.get(nodeId);
         }
 
         if (null == l) {
@@ -182,8 +182,8 @@ class MessageManagerImpl implements MessageManager
                     public boolean doWork(Session s)
                     {
                         Query q = s.createQuery
-                            ("from StatSettings bs where bs.tid = :tid");
-                        q.setParameter("tid", tid);
+                            ("from StatSettings bs where bs.nodeId = :nodeId");
+                        q.setParameter("nodeId", nodeId);
                         StatSettings bs = (StatSettings)q.uniqueResult();
                         if (null == bs) {
                             result = null;
@@ -203,17 +203,17 @@ class MessageManagerImpl implements MessageManager
             UvmContextImpl.getInstance().runTransaction(tw);
             l = tw.getResult();
             synchronized (activeMetrics) {
-                activeMetrics.put(tid, l);
+                activeMetrics.put(nodeId, l);
             }
         }
 
         return l;
     }
 
-    public void setActiveMetrics(final NodeId tid, final List<ActiveStat> activeMetrics)
+    public void setActiveMetrics(final NodeId nodeId, final List<ActiveStat> activeMetrics)
     {
         synchronized (this.activeMetrics) {
-            this.activeMetrics.put(tid, activeMetrics);
+            this.activeMetrics.put(nodeId, activeMetrics);
         }
 
         TransactionWork<List<ActiveStat>> tw = new TransactionWork<List<ActiveStat>>()
@@ -221,11 +221,11 @@ class MessageManagerImpl implements MessageManager
                 public boolean doWork(Session s)
                 {
                     Query q = s.createQuery
-                    ("from StatSettings bs where bs.tid = :tid");
-                    q.setParameter("tid", tid);
+                    ("from StatSettings bs where bs.nodeId = :nodeId");
+                    q.setParameter("nodeId", nodeId);
                     StatSettings bs = (StatSettings)q.uniqueResult();
                     if (null == bs) {
-                        bs = new StatSettings(tid, activeMetrics);
+                        bs = new StatSettings(nodeId, activeMetrics);
                         s.save(bs);
                     } else {
                         List<ActiveStat> l = bs.getActiveMetrics();
@@ -312,19 +312,19 @@ class MessageManagerImpl implements MessageManager
         }
     }
 
-    public void setActiveMetricsIfNotSet(final NodeId tid, final BlingBlinger... blingers)
+    public void setActiveMetricsIfNotSet(final NodeId nodeId, final BlingBlinger... blingers)
     {
         TransactionWork<List<ActiveStat>> tw = new TransactionWork<List<ActiveStat>>()
             {
                 public boolean doWork(Session s)
                 {
                     Query q = s.createQuery
-                    ("from StatSettings bs where bs.tid = :tid");
-                    q.setParameter("tid", tid);
+                    ("from StatSettings bs where bs.nodeId = :nodeId");
+                    q.setParameter("nodeId", nodeId);
                     StatSettings bs = (StatSettings)q.uniqueResult();
                     if (null == bs) {
                         List<ActiveStat> l = getActiveStats(blingers);
-                        bs = new StatSettings(tid, l);
+                        bs = new StatSettings(nodeId, l);
                         s.save(bs);
                     } else {
                         List<ActiveStat> as = bs.getActiveMetrics();
@@ -383,11 +383,11 @@ class MessageManagerImpl implements MessageManager
 
     // private methods --------------------------------------------------------
 
-    private Map<NodeId, Stats> getStats(NodeManager lm, List<NodeId> tids)
+    private Map<NodeId, Stats> getStats(NodeManager lm, List<NodeId> nodeIds)
     {
-        Map<NodeId, Stats> stats = new HashMap<NodeId, Stats>(tids.size());
+        Map<NodeId, Stats> stats = new HashMap<NodeId, Stats>(nodeIds.size());
 
-        for (NodeId t : tids) {
+        for (NodeId t : nodeIds) {
             List<ActiveStat> as = getActiveMetrics(t);
             Counters c = getCounters(t);
             stats.put(t, c.getAllStats(as));

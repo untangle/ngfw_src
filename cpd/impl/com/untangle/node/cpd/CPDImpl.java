@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/*
+ * $Id$
+ */
 package com.untangle.node.cpd;
 
 import java.io.File;
@@ -460,9 +462,8 @@ public class CPDImpl extends AbstractNode implements CPD
     protected void postInit(final String[] args) {
         TransactionWork<Object> tw = new TransactionWork<Object>() {
             public boolean doWork(Session s) {
-                Query q = s
-                        .createQuery("from CPDSettings cs where cs.tid = :tid");
-                q.setParameter("tid", getNodeId());
+                Query q = s.createQuery("from CPDSettings cs where cs.nodeId = :nodeId");
+                q.setParameter("nodeId", getNodeId());
 
                 CPDImpl.this.settings = (CPDSettings) q.uniqueResult();
                 return true;

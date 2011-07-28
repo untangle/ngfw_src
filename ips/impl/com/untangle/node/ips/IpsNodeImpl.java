@@ -1,21 +1,6 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id$
  */
-
 package com.untangle.node.ips;
 
 import java.util.List;
@@ -157,7 +142,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
     @SuppressWarnings("unchecked") //getItems
     public List<IpsRule> getRules(final int start, final int limit, final String... sortColumns)
     {
-        List<IpsRule> rules = listUtil.getItems("select s.rules from IpsSettings s where s.tid = :tid ",
+        List<IpsRule> rules = listUtil.getItems("select s.rules from IpsSettings s where s.nodeId = :nodeId ",
                                  getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
         for(IpsRule rule : rules) {
@@ -174,7 +159,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
     @SuppressWarnings("unchecked") //getItems
     public List<IpsVariable> getVariables(final int start, final int limit, final String... sortColumns)
     {
-        return listUtil.getItems("select s.variables from IpsSettings s where s.tid = :tid ",
+        return listUtil.getItems("select s.variables from IpsSettings s where s.nodeId = :nodeId ",
                                  getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
     }
@@ -187,7 +172,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
     @SuppressWarnings("unchecked") //getItems
     public List<IpsVariable> getImmutableVariables(final int start, final int limit, final String... sortColumns)
     {
-        return listUtil.getItems("select s.immutableVariables from IpsSettings s where s.tid = :tid ",
+        return listUtil.getItems("select s.immutableVariables from IpsSettings s where s.nodeId = :nodeId ",
                                  getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
     }
@@ -335,8 +320,8 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
             {
                 public boolean doWork(Session s)
                 {
-                    Query q = s.createQuery("from IpsSettings ips where ips.tid = :tid");
-                    q.setParameter("tid", getNodeId());
+                    Query q = s.createQuery("from IpsSettings ips where ips.nodeId = :nodeId");
+                    q.setParameter("nodeId", getNodeId());
                     IpsNodeImpl.this.settings = (IpsSettings)q.uniqueResult();
                     return true;
                 }

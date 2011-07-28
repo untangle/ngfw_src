@@ -101,7 +101,7 @@ public class NodeDesc implements Serializable
      *
      * @return nodeId for this instance.
      */
-    public NodeId getTid()
+    public NodeId getNodeId()
     {
         return nodeId;
     }
@@ -251,7 +251,7 @@ public class NodeDesc implements Serializable
 
         NodeDesc td = (NodeDesc)o;
 
-        return nodeId.equals(td.getTid());
+        return nodeId.equals(td.getNodeId());
     }
 
     @Override

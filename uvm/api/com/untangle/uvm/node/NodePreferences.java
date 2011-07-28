@@ -99,13 +99,13 @@ public class NodePreferences implements Serializable
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    public NodeId getTid()
+    public NodeId getNodeId()
     {
         return tid;
     }
 
     @SuppressWarnings("unused")
-    private void setTid(NodeId tid)
+    private void setNodeId(NodeId tid)
     {
         this.tid = tid;
     }

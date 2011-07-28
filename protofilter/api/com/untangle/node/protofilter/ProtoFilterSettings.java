@@ -87,10 +87,10 @@ public class ProtoFilterSettings implements java.io.Serializable
 
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    public NodeId getTid()
+    public NodeId getNodeId()
     { return tid; }
 
-    public void setTid(NodeId tid)
+    public void setNodeId(NodeId tid)
     { this.tid = tid; }
 
     public int getByteLimit()

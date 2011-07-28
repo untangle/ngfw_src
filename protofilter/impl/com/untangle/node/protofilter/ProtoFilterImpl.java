@@ -1,19 +1,5 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id$
  */
 package com.untangle.node.protofilter;
 
@@ -140,7 +126,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     @SuppressWarnings("unchecked") //getItems
     public List<ProtoFilterPattern> getPatterns(final int start, final int limit, final String... sortColumns)
     {
-        return listUtil.getItems( "select hbs.patterns from ProtoFilterSettings hbs where hbs.tid = :tid ",
+        return listUtil.getItems( "select hbs.patterns from ProtoFilterSettings hbs where hbs.nodeId = :nodeId ",
                                   getNodeContext(), getNodeId(), start, limit, sortColumns );
     }
     
@@ -210,8 +196,8 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
             {
                 public boolean doWork(Session s)
                 {
-                    Query q = s.createQuery("from ProtoFilterSettings hbs where hbs.tid = :tid");
-                    q.setParameter("tid", getNodeId());
+                    Query q = s.createQuery("from ProtoFilterSettings hbs where hbs.nodeId = :nodeId");
+                    q.setParameter("nodeId", getNodeId());
                     ProtoFilterImpl.this.cachedSettings = (ProtoFilterSettings)q.uniqueResult();
 
                     return true;

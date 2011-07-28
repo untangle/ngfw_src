@@ -337,7 +337,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
     {
         NodeDesc nd = instantiate(nodeName, p);
         if (!nd.getNoStart()) {
-            NodeContext nc = nodeContext(nd.getTid());
+            NodeContext nc = nodeContext(nd.getNodeId());
             try {
                 nc.node().start();
             } catch (Exception e) {
@@ -585,7 +585,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             if (0 == l.size()) {
                 try {
                     logger.info("instantiating new: " + md.getName());
-                    t = instantiate(md.getName()).getTid();
+                    t = instantiate(md.getName()).getNodeId();
                 } catch (DeployException exn) {
                     logger.warn("could not deploy: " + md.getName(), exn);
                     continue;
@@ -673,8 +673,8 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         List<Runnable> restarters = new ArrayList<Runnable>(startQueue.size());
 
         for (NodePersistentState tps : startQueue) {
-            final NodeDesc tDesc = tDescs.get(tps.getTid());
-            final NodeId nodeId = tps.getTid();
+            final NodeDesc tDesc = tDescs.get(tps.getNodeId());
+            final NodeId nodeId = tps.getNodeId();
             final String name = tps.getName();
             loadedParents.add(name);
             final String[] args = tps.getArgArray();
@@ -751,7 +751,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
         for (Iterator<NodePersistentState> i = unloaded.iterator(); i.hasNext(); ) {
             NodePersistentState tps = i.next();
-            NodeId nodeId = tps.getTid();
+            NodeId nodeId = tps.getNodeId();
             NodeDesc tDesc = tDescs.get(nodeId);
             if (null == tDesc) {
                 logger.warn("no NodeDesc for: " + nodeId);
@@ -801,7 +801,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             }
 
             URL[] urls = new URL[] { tbm.getResourceDir(md) };
-            NodeId nodeId = tps.getTid();
+            NodeId nodeId = tps.getNodeId();
             nodeId.setNodeName(name);
 
             try {
@@ -830,7 +830,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
                     List<NodePersistentState> result = q.list();
 
                     for (NodePersistentState persistentState : result) {
-                        if (!nodeIds.containsKey(persistentState.getTid())) {
+                        if (!nodeIds.containsKey(persistentState.getNodeId())) {
                             unloaded.add(persistentState);
                         }
                     }

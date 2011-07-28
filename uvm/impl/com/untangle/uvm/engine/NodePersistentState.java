@@ -92,12 +92,12 @@ class NodePersistentState
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    NodeId getTid()
+    NodeId getNodeId()
     {
         return tid;
     }
 
-    void setTid(NodeId tid)
+    void setNodeId(NodeId tid)
     {
         this.tid = tid;
     }

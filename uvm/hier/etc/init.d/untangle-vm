@@ -130,7 +130,7 @@ case "$1" in
             FINI="$(grep -i 'startup complete' $UVM_CONSOLE_LOG 2>/dev/null)"
 
             if [ -n "$EXPC" ] ; then
-                if ! echo $EXPC | grep -qi "address already in use" ; then
+                if echo $EXPC | grep -qi "address already in use" ; then
                     echo -e "x]\nAddress already in use. Will attempt to rebind for five minutes."
                 else
                     echo -e "x]\nException in $UVM_CONSOLE_LOG"
