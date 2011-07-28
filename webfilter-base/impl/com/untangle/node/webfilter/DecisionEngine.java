@@ -502,7 +502,9 @@ public abstract class DecisionEngine
 
             WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri, bestCategory.getDescription(), clientIp, node.getNodeTitle(), username);
             return node.generateNonce(bd);
-        } else {
+        } else if (isFlagged) {
+            /* FIXME log an event XXX bug #8876 */
+        }
             return null;
         }
     }
