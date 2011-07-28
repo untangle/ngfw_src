@@ -6,6 +6,17 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         gridExceptions : null,
         gridEventLog : null,
         // called when the component is rendered
+        // override get base settings object
+        getBaseSettings : function(forceReload) {
+            if (forceReload || this.rpc.baseSettings === undefined) {
+                try {
+                   this.rpc.baseSettings = this.getRpcNode().getSettings();
+                } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+            }
+            return this.rpc.baseSettings;
+        },
         initComponent : function() {
             // keep initial base settings
             this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
@@ -146,7 +157,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             applyAction : function(forceLoad){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 var saveList = settingsCmp.gridCategories.getSaveList();
-                                settingsCmp.getRpcNode().saveCategories(function(result, exception) {
+                                settingsCmp.getRpcNode().setCategories(function(result, exception) {
                                     Ext.MessageBox.hide();
                                     if(Ung.Util.handleException(exception)) return;
                                     if(forceLoad===true){                                                
@@ -340,7 +351,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 hasAdd : false,
                 hasDelete : false,
                 title : this.i18n._("Categories"),
-                recordJavaClass : "com.untangle.node.webfilter.Category",
+                recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 proxyRpcFn : this.getRpcNode().getCategories,
                 fields : [{
                     name : 'id'
@@ -351,7 +362,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name : 'displayName',
                     type : 'string',
                     convert : function(v) {
-                        return this.i18n._(v)
+                        return this.i18n._(v);
                     }.createDelegate(this)
                 }, {
                     name : 'block'
@@ -361,7 +372,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name : 'description',
                     type : 'string',
                     convert : function(v) {
-                        return this.i18n._(v)
+                        return this.i18n._(v);
                     }.createDelegate(this)
                 }],
                 columns : [{
