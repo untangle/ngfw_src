@@ -179,19 +179,15 @@ public abstract class DecisionEngine
         }
 
         // Check Block lists
-        GenericRule stringRule = checkBlockedURLs(host, uri.toString(), port, requestLine, event);
-        if (stringRule != null) {
-            Action a = Action.BLOCK;
-            Reason reason = Reason.BLOCK_URL;
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), a, reason, stringRule.getDescription(), node.getVendor());
-            node.log(hbe, host, port, event);
-            WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), stringRule.getDescription(), clientIp, node.getNodeTitle(), username);
+        GenericRule urlRule = checkUrlList(host, uri.toString(), port, requestLine, event);
+        if (urlRule != null) {
+            WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, node.getNodeTitle(), username);
             return node.generateNonce(bd);
         }
         
         // Check Extensions
         // If this extension is blocked, block the request
-        for (GenericRule rule : node.getSettings().getBlockedExtensions()) {
+        for ( GenericRule rule : node.getSettings().getBlockedExtensions()) {
             String exn = "."+rule.getString().toLowerCase();
             if (rule.getEnabled() && path.endsWith(exn)) {
                 if (logger.isDebugEnabled()) {
@@ -416,17 +412,30 @@ public abstract class DecisionEngine
     /**
      * Checks the given URL against sites in the block list
      */
-    private GenericRule checkBlockedURLs( String host, String uri, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event )
+    private GenericRule checkUrlList( String host, String uri, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event )
     {
         String dom;
-
+        GenericRule rule = null;
+        
         //iterate through domains & subdomains
         for ( dom = host ; dom != null ; dom = nextHost(dom) ) {
             String url = dom + uri;
-            GenericRule stringRule = findMatchingRule(node.getSettings().getBlockedUrls(), url);
-            if (stringRule != null)
-                return stringRule;
+            rule = findMatchingRule(node.getSettings().getBlockedUrls(), url);
+            if (rule != null)
+                break;
         }
+
+        if (rule == null)
+            return null;
+        
+        if (rule.getBlocked()) {
+            Action a = Action.BLOCK;
+            Reason reason = Reason.BLOCK_URL;
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), a, reason, rule.getDescription(), node.getVendor());
+            node.log(hbe, host, port, event);
+        } else if (rule.getFlagged()) {
+            /* FIXME log an event XXX bug #8876 */
+        } 
 
         return null;
     }
@@ -505,9 +514,10 @@ public abstract class DecisionEngine
         } else if (isFlagged) {
             /* FIXME log an event XXX bug #8876 */
         }
-            return null;
-        }
+
+        return null;
     }
+
     
     /**
      * Finds a matching active rule from the ruleset that matches the given value
