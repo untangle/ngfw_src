@@ -1730,7 +1730,7 @@ Ung.MessageManager = {
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
                             if(msg.policy==null || msg.policy.id == rpc.currentPolicy.id) {
                                 refreshApps=true;
-                                var node=main.getNode(msg.nodeDesc.packageDesc.name,msg.nodeDesc.nodeId.policy);
+                                var node=main.getNode(msg.nodeDesc.name,msg.nodeDesc.nodeId.policy);
                                 if(!node) {
                                     node=main.createNode(msg.nodeDesc, msg.statDescs, msg.license,"INITIALIZED");
                                     main.nodes.push(node);
