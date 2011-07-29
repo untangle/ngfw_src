@@ -156,14 +156,14 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             grid : settingsCmp.gridCategories,
                             applyAction : function(forceLoad){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = settingsCmp.gridCategories.getSaveList();
+                                var saveList = settingsCmp.gridCategories.getFullSaveList();
                                 settingsCmp.getRpcNode().setCategories(function(result, exception) {
                                     Ext.MessageBox.hide();
                                     if(Ung.Util.handleException(exception)) return;
                                     if(forceLoad===true){                                                
                                         this.gridCategories.reloadGrid();
                                     }
-                                }.createDelegate(settingsCmp), settingsCmp.gridCategories.getFullSaveList());
+                                }.createDelegate(settingsCmp), saveList);
                             }                                                        
                         });
                     }
@@ -198,11 +198,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 var saveList = settingsCmp.gridBlockedUrls.getSaveList();
                                 settingsCmp.alterUrls(saveList);
-                                settingsCmp.getRpcNode().updateBlockedUrls(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)){
-                                        Ext.MessageBox.hide();
-                                        return;
-                                    }
+                                settingsCmp.getRpcNode().setBlockedUrls(function(result, exception) {
+                                    Ext.MessageBox.hide();
+                                    if(Ung.Util.handleException(exception)) return;
                                     this.getRpcNode().getBaseSettings(function(result2,exception2){
                                         Ext.MessageBox.hide();                                                
                                         if(Ung.Util.handleException(exception2)){
@@ -213,7 +211,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                             this.gridBlockedUrls.reloadGrid();
                                         }                                                    
                                     }.createDelegate(this));
-                                }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                                }.createDelegate(settingsCmp), settingsCmp.gridBlockedUrls.getFullSaveList());
                             }                                                        
                         });
                     }
@@ -325,9 +323,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         },
         // Block Categories
         buildCategories : function() {
-            var liveColumn = new Ext.grid.CheckColumn({
+            var blockColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("Block"),
-                dataIndex : 'block',
+                dataIndex : 'blocked',
                 fixed : true,
                 changeRecord : function(record) {
                     Ext.grid.CheckColumn.prototype.changeRecord.call(this, record);
@@ -337,9 +335,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     }
                 }
             });
-            var logColumn = new Ext.grid.CheckColumn({
+            var flagColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("Flag"),
-                dataIndex : 'log',
+                dataIndex : 'flagged',
                 fixed : true,
                 tooltip : this.i18n._("Flag as Violation")
             });
@@ -357,30 +355,35 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name : 'id'
                 }, {
                     name : 'name',
-                    type : 'string'
-                }, {
-                    name : 'displayName',
                     type : 'string',
                     convert : function(v) {
                         return this.i18n._(v);
                     }.createDelegate(this)
                 }, {
-                    name : 'block'
-                }, {
-                    name : 'log'
+                    name : 'string',
+                    type : 'string'
                 }, {
                     name : 'description',
                     type : 'string',
                     convert : function(v) {
                         return this.i18n._(v);
                     }.createDelegate(this)
+                }, {
+                    name : 'category',
+                    type : 'string'
+                }, {
+                    name : 'enabled'
+                }, {
+                    name : 'blocked'
+                }, {
+                    name : 'flagged'
                 }],
                 columns : [{
-                    id : 'displayName',
+                    id : 'name',
                     header : this.i18n._("category"),
                     width : 200,
-                    dataIndex : 'displayName'
-                }, liveColumn, logColumn, {
+                    dataIndex : 'name'
+                }, blockColumn, flagColumn, {
                     id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
@@ -389,13 +392,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         allowBlank : false
                     })
                 }],
-                sortField : 'displayName',
+                sortField : 'description',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'description',
-                plugins : [liveColumn, logColumn],
+                plugins : [blockColumn, flagColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
                     name : "Category",
-                    dataIndex : "displayName",
+                    dataIndex : "name",
                     fieldLabel : this.i18n._("Category"),
                     allowBlank : false,
                     width : 200,
@@ -403,7 +406,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     ctCls: "fixed-pos"
                 }), new Ext.form.Checkbox({
                     name : "Block",
-                    dataIndex : "block",
+                    dataIndex : "blocked",
                     fieldLabel : this.i18n._("Block"),
                     listeners : {
                         "check" : {
@@ -417,7 +420,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     }
                 }), new Ext.form.Checkbox({
                     name : "Flag",
-                    dataIndex : "log",
+                    dataIndex : "flagged",
                     fieldLabel : this.i18n._("Flag"),
                     tooltip : this.i18n._("Flag as Violation")
                 }), new Ext.form.TextArea({
@@ -449,14 +452,14 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 }
                 return true;
             }.createDelegate(this);
-            var liveColumn = new Ext.grid.CheckColumn({
+            var blockColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("Block"),
-                dataIndex : 'live',
+                dataIndex : 'blocked',
                 fixed : true
             });
-            var logColumn = new Ext.grid.CheckColumn({
+            var flagColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("Flag"),
-                dataIndex : 'log',
+                dataIndex : 'flagged',
                 fixed : true,
                 tooltip : this.i18n._("Flag as Violation")
             });
@@ -467,25 +470,39 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 totalRecords : this.getBaseSettings().blockedUrlsLength,
                 emptyRow : {
                     "string" : this.i18n._("[no site]"),
-                    "live" : true,
-                    "log" : true,
+                    "blocked" : true,
+                    "flagged" : true,
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Sites"),
-                recordJavaClass : "com.untangle.uvm.node.StringRule",
+                recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 proxyRpcFn : this.getRpcNode().getBlockedUrls,
                 fields : [{
                     name : 'id'
                 }, {
+                    name : 'name',
+                    type : 'string',
+                    convert : function(v) {
+                        return this.i18n._(v);
+                    }.createDelegate(this)
+                }, {
                     name : 'string',
                     type : 'string'
                 }, {
-                    name : 'live'
-                }, {
-                    name : 'log'
-                }, {
                     name : 'description',
+                    type : 'string',
+                    convert : function(v) {
+                        return this.i18n._(v);
+                    }.createDelegate(this)
+                }, {
+                    name : 'category',
                     type : 'string'
+                }, {
+                    name : 'enabled'
+                }, {
+                    name : 'blocked'
+                }, {
+                    name : 'flagged'
                 }],
                 columns : [{
                     id : 'string',
@@ -497,7 +514,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         validator : urlValidator,
                         blankText : this.i18n._("Invalid \"URL\" specified")
                     })
-                }, liveColumn, logColumn, {
+                }, blockColumn, flagColumn, {
                     id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
@@ -509,7 +526,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 sortField : 'string',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'description',
-                plugins : [liveColumn, logColumn],
+                plugins : [blockColumn, flagColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
                     name : "Site",
                     dataIndex : "string",
@@ -520,11 +537,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     blankText : this.i18n._("Invalid \"URL\" specified")
                 }), new Ext.form.Checkbox({
                     name : "Block",
-                    dataIndex : "live",
+                    dataIndex : "blocked",
                     fieldLabel : this.i18n._("Block")
                 }), new Ext.form.Checkbox({
                     name : "Flag",
-                    dataIndex : "log",
+                    dataIndex : "flagged",
                     fieldLabel : this.i18n._("Flag"),
                     tooltip : this.i18n._("Flag as Violation")
                 }), new Ext.form.TextArea({
@@ -538,12 +555,12 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         },
         // Block File Types
         buildBlockedExtensions : function() {
-            var liveColumn = new Ext.grid.CheckColumn({
+            var blockColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("Block"),
                 dataIndex : 'live',
                 fixed : true
             });
-            var logColumn = new Ext.grid.CheckColumn({
+            var flagColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("Flag"),
                 dataIndex : 'log',
                 fixed : true,
@@ -584,7 +601,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                }, liveColumn, logColumn, {
+                }, blockColumn, flagColumn, {
                     id : 'name',
                     header : this.i18n._("description"),
                     width : 200,
@@ -596,7 +613,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 sortField : 'string',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'name',
-                plugins : [liveColumn, logColumn],
+                plugins : [blockColumn, flagColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
                     name : "File Type",
                     dataIndex : "string",
@@ -623,12 +640,12 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         },
         // Block MIME Types
         buildBlockedMimeTypes : function() {
-            var liveColumn = new Ext.grid.CheckColumn({
+            var blockColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("Block"),
                 dataIndex : 'live',
                 fixed : true
             });
-            var logColumn = new Ext.grid.CheckColumn({
+            var flagColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("Flag"),
                 dataIndex : 'log',
                 fixed : true,
@@ -669,7 +686,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                }, liveColumn, logColumn, {
+                }, blockColumn, flagColumn, {
                     id : 'name',
                     header : this.i18n._("description"),
                     width : 200,
@@ -681,7 +698,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 sortField : 'mimeType',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'name',
-                plugins : [liveColumn, logColumn],
+                plugins : [blockColumn, flagColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
                     name : "MIME Type",
                     dataIndex : "mimeType",
@@ -889,7 +906,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 return true;
             }.createDelegate(this);
 
-            var liveColumn = new Ext.grid.CheckColumn({
+            var blockColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("pass"),
                 dataIndex : 'live',
                 fixed : true
@@ -928,7 +945,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         validator : urlValidator,
                         blankText : this.i18n._("Invalid \"URL\" specified")
                     })
-                }, liveColumn, {
+                }, blockColumn, {
                     id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
@@ -940,7 +957,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 sortField : 'string',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'description',
-                plugins : [liveColumn],
+                plugins : [blockColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
                     name : "Site",
                     dataIndex : "string",
@@ -965,7 +982,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         },
         // Passed IP Addresses
         buildPassedClients : function() {
-            var liveColumn = new Ext.grid.CheckColumn({
+            var blockColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("pass"),
                 dataIndex : 'live',
                 fixed : true
@@ -1001,7 +1018,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                }, liveColumn, {
+                }, blockColumn, {
                     id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
@@ -1013,7 +1030,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 sortField : 'ipMaddr',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'description',
-                plugins : [liveColumn],
+                plugins : [blockColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
                     name : "IP address/range",
                     dataIndex : "ipMaddr",
