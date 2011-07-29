@@ -45,6 +45,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.untangle.uvm.ArgonManager;
+import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.license.LicenseManager;
 import com.untangle.uvm.localapi.SessionMatcher;
@@ -667,8 +668,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
     private void startUnloaded(List<NodePersistentState> startQueue, Map<NodeId, NodeDesc> tDescs, Set<String> loadedParents)
     {
-        ToolboxManager tbm = LocalUvmContextFactory
-            .context().toolboxManager();
+        ToolboxManager tbm = LocalUvmContextFactory.context().toolboxManager();
 
         List<Runnable> restarters = new ArrayList<Runnable>(startQueue.size());
 
@@ -856,6 +856,24 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
      */
     private NodeDesc initNodeDesc(PackageDesc packageDesc, URL[] urls, NodeId nodeId) throws DeployException
     {
+        logger.warn("XXX Trying to load NodeDesc from file...");
+        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        NodeDesc nodeDesc = null;
+        try {
+            String fileName = System.getProperty("uvm.lib.dir") + "/" + packageDesc.getName() + "/" + "nodeDesc";
+            nodeDesc = settingsManager.load( NodeDesc.class, fileName );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:",e);
+        }
+        logger.warn("XXX Trying to load NodeDesc from file:" + nodeDesc);
+
+        if (nodeDesc != null) {
+            nodeDesc.setNodeId(nodeId);
+            return nodeDesc;
+        }
+
+
+        
         // XXX assumes no parent cl has this file.
         InputStream is = new URLClassLoader(urls).getResourceAsStream(DESC_PATH);
         if (null == is) {
@@ -878,9 +896,9 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             throw new DeployException(exn);
         }
 
-        NodeDesc nodeDesc = mth.getNodeDesc(nodeId);;
+        NodeDesc nodeDesc2 = mth.getNodeDesc(nodeId);;
 
-        return nodeDesc;
+        return nodeDesc2;
     }
 
     private Policy getDefaultPolicyForNode(String nodeName) throws DeployException
