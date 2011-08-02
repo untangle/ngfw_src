@@ -460,7 +460,6 @@ Architecture: all
 Depends: untangle-vm, dnsmasq, untangle-casing-ftp
 XB-Display-Name: Router
 XB-View-Position: 1000
-XB-Auto-Start: true
 XB-Invisible: true
 XB-Untangle-Pkg-Type: service
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY

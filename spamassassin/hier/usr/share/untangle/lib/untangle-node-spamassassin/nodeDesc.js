@@ -1,16 +1,15 @@
 {
         "javaClass": "com.untangle.uvm.node.NodeDesc",
-        "className" : "com.untangle.node.phish.PhishNode",
+        "className" : "com.untangle.node.spamassassin.SpamAssassinNode",
         "baseNode" : "untangle-base-spam",
-        "name" : "untangle-node-phish",
-        "displayName" : "Phish Blocker",
-        "syslogName" : "Phish_Blocker",
+        "name" : "untangle-node-spamassassin",
+        "displayName" : "Spam Blocker",
+        "syslogName" : "Spam_Blocker",
         "type" : "NODE",
-        "viewPosition" : 17,
+        "viewPosition" : 15,
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [
-                "untangle-casing-http",
                 "untangle-casing-mail"
             ]
         }

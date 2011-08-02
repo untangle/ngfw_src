@@ -275,7 +275,7 @@ public class NodeDesc implements Serializable
         return noStart;
     }
 
-    public void setNodeStart(Boolean noStart)
+    public void setNoStart(Boolean noStart)
     {
         this.noStart = noStart;
     }

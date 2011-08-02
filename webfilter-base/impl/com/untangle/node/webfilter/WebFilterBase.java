@@ -121,6 +121,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         return unblockEventLogger;
     }
 
+
     public String getUnblockMode()
     {
         return settings.getUnblockMode();
@@ -131,12 +132,12 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         return settings.getEnableHttps();
     }
 
-    public WebFilterBlockDetails getDetails(String nonce)
+    public WebFilterBlockDetails getDetails( String nonce )
     {
         return replacementGenerator.getNonceData(nonce);
     }
 
-    public boolean unblockSite(String nonce, boolean global)
+    public boolean unblockSite( String nonce, boolean global )
     {
         WebFilterBlockDetails bd = replacementGenerator.removeNonce(nonce);
 
@@ -197,9 +198,26 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         }
     }
 
+
+    public WebFilterSettings getSettings()
+    {
+        return this.settings;
+    }
+    
+    public void setSettings( WebFilterSettings settings )
+    {
+        _setSettings(settings);
+    }
+
     public List<GenericRule> getCategories()
     {
         return settings.getCategories();
+    }
+
+    public void setCategories( List<GenericRule> newCategories )
+    {
+        this.settings.setCategories(newCategories);
+        //XXX save & reconfigure
     }
 
     public List<GenericRule> getBlockedExtensions()
@@ -207,9 +225,21 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         return settings.getBlockedExtensions();
     }
 
+    public void setBlockedExtensions( List<GenericRule> blockedExtensions )
+    {
+        this.settings.setBlockedExtensions(blockedExtensions);
+        //XXX save & reconfigure
+    }
+
     public List<GenericRule> getBlockedMimeTypes()
     {
         return settings.getBlockedMimeTypes();
+    }
+
+    public void setBlockedMimeTypes( List<GenericRule> blockedMimeTypes )
+    {
+        this.settings.setBlockedMimeTypes(blockedMimeTypes);
+        //XXX save & reconfigure
     }
 
     public List<GenericRule> getBlockedUrls()
@@ -217,9 +247,21 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         return settings.getBlockedUrls();
     }
 
+    public void setBlockedUrls( List<GenericRule> blockedUrls )
+    {
+        this.settings.setBlockedUrls(blockedUrls);
+        //XXX save & reconfigure
+    }
+
     public List<GenericRule> getPassedClients() 
     {
         return settings.getPassedClients();
+    }
+
+    public void setPassedClients( List<GenericRule> passedClients )
+    {
+        this.settings.setPassedClients(passedClients);
+        //XXX save & reconfigure
     }
 
     public List<GenericRule> getPassedUrls()
@@ -227,51 +269,12 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         return settings.getPassedUrls();
     }
 
-    public WebFilterSettings getSettings()
-    {
-        return this.settings;
-    }
-    
-    public void setCategories(List<GenericRule> newCategories)
-    {
-        this.settings.setCategories(newCategories);
-        //XXX save & reconfigure
-    }
-
-    public void setBlockedExtensions(List<GenericRule> blockedExtensions)
-    {
-        this.settings.setBlockedExtensions(blockedExtensions);
-        //XXX save & reconfigure
-    }
-
-    public void setBlockedMimeTypes(List<GenericRule> blockedMimeTypes)
-    {
-        this.settings.setBlockedMimeTypes(blockedMimeTypes);
-        //XXX save & reconfigure
-    }
-
-    public void setBlockedUrls(List<GenericRule> blockedUrls)
-    {
-        this.settings.setBlockedUrls(blockedUrls);
-        //XXX save & reconfigure
-    }
-
-    public void setPassedClients(List<GenericRule> passedClients)
-    {
-        this.settings.setPassedClients(passedClients);
-        //XXX save & reconfigure
-    }
-
-    public void setPassedUrls(List<GenericRule> passedUrls)
+    public void setPassedUrls( List<GenericRule> passedUrls )
     {
         this.settings.setPassedUrls(passedUrls);
         //XXX save & reconfigure
     }
 
-    public void setSettings(WebFilterSettings settings)
-    {
-        _setSettings(settings);
-    }
     
     public Validator getValidator()
     {
@@ -286,22 +289,14 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     public abstract String getName();
 
-    protected WebFilterReplacementGenerator buildReplacementGenerator()
+    public Token[] generateResponse( String nonce, TCPSession session, String uri, Header header, boolean persistent )
     {
-        return new WebFilterReplacementGenerator(getNodeId());
+        return replacementGenerator.generateResponse(nonce, session, uri,header, persistent);
     }
 
-    // Node methods ------------------------------------------------------
+    public abstract void initializeSettings( WebFilterSettings settings );
 
-    @Override
-    protected PipeSpec[] getPipeSpecs()
-    {
-        return pipeSpecs;
-    }
-
-    public abstract void initializeSettings(WebFilterSettings settings);
-
-    public void initializeCommonSettings(WebFilterSettings settings)
+    public void initializeCommonSettings( WebFilterSettings settings )
     {
         if (logger.isDebugEnabled()) {
             logger.debug(getNodeId() + " init settings");
@@ -479,6 +474,37 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         settings.setBlockedMimeTypes(m);
     }
 
+    public void incrementScanCount()
+    {
+        scanBlinger.increment();
+    }
+
+    public void incrementBlockCount()
+    {
+        blockBlinger.increment();
+    }
+
+    public void incrementPassCount()
+    {
+        passBlinger.increment();
+    }
+
+    public void incrementPassLogCount()
+    {
+        passLogBlinger.increment();
+    }
+
+    protected WebFilterReplacementGenerator buildReplacementGenerator()
+    {
+        return new WebFilterReplacementGenerator(getNodeId());
+    }
+
+    @Override
+    protected PipeSpec[] getPipeSpecs()
+    {
+        return pipeSpecs;
+    }
+
     @Override
     protected void postInit(String[] args)
     {
@@ -563,14 +589,12 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         getDecisionEngine().removeAllUnblockedSites();
     }
 
-    // package protected methods ----------------------------------------------
-
-    protected void log(WebFilterEvent se)
+    protected void log( WebFilterEvent se )
     {
         eventLogger.log(se);
     }
 
-    protected void log(WebFilterEvent se, String host, int port, TCPNewSessionRequestEvent event)
+    protected void log( WebFilterEvent se, String host, int port, TCPNewSessionRequestEvent event )
     {
         /* only pass in the event if you don't want to log immediately. */
         if (event == null) {
@@ -580,68 +604,17 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         }
     }
 
-    protected String generateNonce(WebFilterBlockDetails details)
+    protected String generateNonce( WebFilterBlockDetails details )
     {
         return replacementGenerator.generateNonce(details);
     }
 
-    public Token[] generateResponse(String nonce, TCPSession session, String uri, Header header, boolean persistent)
-    {
-        return replacementGenerator.generateResponse(nonce, session, uri,header, persistent);
-    }
-
-    protected Token[] generateResponse(String nonce, TCPSession session, boolean persistent)
+    protected Token[] generateResponse( String nonce, TCPSession session, boolean persistent )
     {
         return replacementGenerator.generateResponse(nonce, session, persistent);
     }
 
-    public void incrementScanCount()
-    {
-        scanBlinger.increment();
-    }
-
-    public void incrementBlockCount()
-    {
-        blockBlinger.increment();
-    }
-
-    public void incrementPassCount()
-    {
-        passBlinger.increment();
-    }
-
-    public void incrementPassLogCount()
-    {
-        passLogBlinger.increment();
-    }
-
-    // private methods --------------------------------------------------------
-
-    /**
-     * Set the current settings to new Settings
-     * And save the settings to disk
-     */
-    private void _setSettings( WebFilterSettings newSettings )
-    {
-        /**
-         * Save the settings
-         */
-        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
-        try {
-            settingsManager.save(WebFilterSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-" + this.getName() + "/" + "settings_" + nodeID, newSettings);
-        } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to save settings.",e);
-        }
-
-        /**
-         * Change current settings
-         */
-        this.settings = newSettings;
-        try {logger.info("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
-    }
-    
-    protected static synchronized void deployWebAppIfRequired(Logger logger)
+    protected static synchronized void deployWebAppIfRequired( Logger logger )
     {
         if (0 != deployCount++) {
             return;
@@ -671,7 +644,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         }
     }
 
-    protected static synchronized void unDeployWebAppIfRequired(Logger logger) {
+    protected static synchronized void unDeployWebAppIfRequired( Logger logger )
+    {
         if (0 != --deployCount) {
             return;
         }
@@ -685,4 +659,29 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
             logger.warn("Unable to unload WebFilter WebApp");
         }
     }
+
+    /**
+     * Set the current settings to new Settings
+     * And save the settings to disk
+     */
+    private void _setSettings( WebFilterSettings newSettings )
+    {
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeId().getId().toString();
+        try {
+            settingsManager.save(WebFilterSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-" + this.getName() + "/" + "settings_" + nodeID, newSettings);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.info("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+    }
+
 }
