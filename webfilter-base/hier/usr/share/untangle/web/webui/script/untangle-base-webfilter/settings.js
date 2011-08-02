@@ -19,6 +19,33 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         },
         initComponent : function() {
             // keep initial base settings
+            this.genericRuleFields=[{
+                    name : 'id'
+                }, {
+                    name : 'name',
+                    type : 'string',
+                    convert : function(v) {
+                        return this.i18n._(v);
+                    }.createDelegate(this)
+                }, {
+                    name : 'string',
+                    type : 'string'
+                }, {
+                    name : 'description',
+                    type : 'string',
+                    convert : function(v) {
+                        return this.i18n._(v);
+                    }.createDelegate(this)
+                }, {
+                    name : 'category',
+                    type : 'string'
+                }, {
+                    name : 'enabled'
+                }, {
+                    name : 'blocked'
+                }, {
+                    name : 'flagged'
+                }];
             this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
 
             this.buildBlockLists();
@@ -156,11 +183,14 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             grid : settingsCmp.gridCategories,
                             applyAction : function(forceLoad){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = settingsCmp.gridCategories.getFullSaveList();
+                                var saveList = {
+                                    javaClass : "java.util.ArrayList",
+                                    list : settingsCmp.gridCategories.getFullSaveList()
+                                };
                                 settingsCmp.getRpcNode().setCategories(function(result, exception) {
                                     Ext.MessageBox.hide();
                                     if(Ung.Util.handleException(exception)) return;
-                                    if(forceLoad===true){                                                
+                                    if(forceLoad===true){
                                         this.gridCategories.reloadGrid();
                                     }
                                 }.createDelegate(settingsCmp), saveList);
@@ -196,22 +226,19 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             grid : settingsCmp.gridBlockedUrls,
                             applyAction : function(forceLoad){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = settingsCmp.gridBlockedUrls.getSaveList();
+                                var saveList = {
+                                    javaClass : "java.util.ArrayList",
+                                    list : settingsCmp.gridBlockedUrls.getFullSaveList()
+                                };
                                 settingsCmp.alterUrls(saveList);
                                 settingsCmp.getRpcNode().setBlockedUrls(function(result, exception) {
                                     Ext.MessageBox.hide();
                                     if(Ung.Util.handleException(exception)) return;
-                                    this.getRpcNode().getBaseSettings(function(result2,exception2){
-                                        Ext.MessageBox.hide();                                                
-                                        if(Ung.Util.handleException(exception2)){
-                                            return;
-                                        }
-                                        this.gridBlockedUrls.setTotalRecords(result2.blockedUrlsLength);
-                                        if(forceLoad===true){                                                
-                                            this.gridBlockedUrls.reloadGrid();
-                                        }                                                    
-                                    }.createDelegate(this));
-                                }.createDelegate(settingsCmp), settingsCmp.gridBlockedUrls.getFullSaveList());
+                                    this.gridBlockedUrls.setTotalRecords(this.getBaseSettings(true).blockedUrls.length);
+                                    if(forceLoad===true){                                                
+                                        this.gridBlockedUrls.reloadGrid();
+                                    }                                                    
+                                }.createDelegate(settingsCmp), saveList);
                             }                                                        
                         });
                     }
@@ -244,23 +271,18 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             grid : settingsCmp.gridBlockedExtensions,
                             applyAction : function(forceLoad){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = settingsCmp.gridBlockedExtensions.getSaveList();
-                                settingsCmp.getRpcNode().updateBlockedExtensions(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)){
-                                        Ext.MessageBox.hide();
-                                        return;
-                                    }
-                                    this.getRpcNode().getBaseSettings(function(result2,exception2){
-                                        Ext.MessageBox.hide();                                                
-                                        if(Ung.Util.handleException(exception2)){
-                                            return;
-                                        }
-                                        this.gridBlockedExtensions.setTotalRecords(result2.blockedExtensionsLength);
-                                        if(forceLoad===true){                                                
-                                            this.gridBlockedExtensions.reloadGrid();
-                                        }                                                    
-                                    }.createDelegate(this));
-                                }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                                var saveList = {
+                                        javaClass : "java.util.ArrayList",
+                                        list : settingsCmp.gridBlockedExtensions.getFullSaveList()
+                                    };
+                                settingsCmp.getRpcNode().setBlockedExtensions(function(result, exception) {
+                                    Ext.MessageBox.hide();
+                                    if(Ung.Util.handleException(exception)) return;
+                                    this.gridBlockedExtensions.setTotalRecords(this.getBaseSettings(true).blockedExtensions.length);
+                                    if(forceLoad===true){                                                
+                                        this.gridBlockedExtensions.reloadGrid();
+                                    }                                                    
+                                }.createDelegate(settingsCmp), saveList);
                             }                                                        
                         });
                     }
@@ -292,24 +314,19 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             }],
                             grid : settingsCmp.gridBlockedMimeTypes,
                             applyAction : function(forceLoad){
-                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                            var saveList = settingsCmp.gridBlockedMimeTypes.getSaveList();
-                                            settingsCmp.getRpcNode().updateBlockedMimeTypes(function(result, exception) {
-                                                if(Ung.Util.handleException(exception)){
-                                                    Ext.MessageBox.hide();
-                                                    return;
-                                                }
-                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
-                                                    Ext.MessageBox.hide();                                                
-                                                    if(Ung.Util.handleException(exception2)){
-                                                        return;
-                                                    }
-                                                    this.gridBlockedMimeTypes.setTotalRecords(result2.blockedMimeTypesLength);
-                                                    if(forceLoad===true){                                                
-                                                        this.gridBlockedMimeTypes.reloadGrid();
-                                                    }                                                    
-                                                }.createDelegate(this));
-                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                var saveList = {
+                                        javaClass : "java.util.ArrayList",
+                                        list : settingsCmp.gridBlockedMimeTypes.getFullSaveList()
+                                    };
+                                settingsCmp.getRpcNode().setBlockedMimeTypes(function(result, exception) {
+                                    Ext.MessageBox.hide();
+                                    if(Ung.Util.handleException(exception)) return;
+                                    this.gridBlockedMimeTypes.setTotalRecords(this.getBaseSettings(true).blockedMimeTypes.length);
+                                    if(forceLoad===true){                                                
+                                        this.gridBlockedMimeTypes.reloadGrid();
+                                    }                                                    
+                                }.createDelegate(settingsCmp), saveList);
                             }
                         });
                     }
@@ -331,7 +348,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     Ext.grid.CheckColumn.prototype.changeRecord.call(this, record);
                     var blocked = record.get(this.dataIndex);
                     if (blocked) {
-                        record.set('log', true);
+                        record.set('flagged', true);
                     }
                 }
             });
@@ -341,43 +358,16 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 fixed : true,
                 tooltip : this.i18n._("Flag as Violation")
             });
-
             this.gridCategories = new Ung.EditorGrid({
                 name : 'Categories',
                 settingsCmp : this,
-                totalRecords : this.getBaseSettings().blacklistCategoriesLength,
                 hasAdd : false,
                 hasDelete : false,
                 title : this.i18n._("Categories"),
+                proxyRpcFn: this.getRpcNode().getCategories,
+                totalRecords: this.getBaseSettings().categories.length,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
-                proxyRpcFn : this.getRpcNode().getCategories,
-                fields : [{
-                    name : 'id'
-                }, {
-                    name : 'name',
-                    type : 'string',
-                    convert : function(v) {
-                        return this.i18n._(v);
-                    }.createDelegate(this)
-                }, {
-                    name : 'string',
-                    type : 'string'
-                }, {
-                    name : 'description',
-                    type : 'string',
-                    convert : function(v) {
-                        return this.i18n._(v);
-                    }.createDelegate(this)
-                }, {
-                    name : 'category',
-                    type : 'string'
-                }, {
-                    name : 'enabled'
-                }, {
-                    name : 'blocked'
-                }, {
-                    name : 'flagged'
-                }],
+                fields : this.genericRuleFields,
                 columns : [{
                     id : 'name',
                     header : this.i18n._("category"),
@@ -467,7 +457,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             this.gridBlockedUrls = new Ung.EditorGrid({
                 name : 'Sites',
                 settingsCmp : this,
-                totalRecords : this.getBaseSettings().blockedUrlsLength,
                 emptyRow : {
                     "string" : this.i18n._("[no site]"),
                     "blocked" : true,
@@ -475,35 +464,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Sites"),
-                recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 proxyRpcFn : this.getRpcNode().getBlockedUrls,
-                fields : [{
-                    name : 'id'
-                }, {
-                    name : 'name',
-                    type : 'string',
-                    convert : function(v) {
-                        return this.i18n._(v);
-                    }.createDelegate(this)
-                }, {
-                    name : 'string',
-                    type : 'string'
-                }, {
-                    name : 'description',
-                    type : 'string',
-                    convert : function(v) {
-                        return this.i18n._(v);
-                    }.createDelegate(this)
-                }, {
-                    name : 'category',
-                    type : 'string'
-                }, {
-                    name : 'enabled'
-                }, {
-                    name : 'blocked'
-                }, {
-                    name : 'flagged'
-                }],
+                totalRecords: this.getBaseSettings().blockedUrls.length,
+                recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                fields : this.genericRuleFields,
                 columns : [{
                     id : 'string',
                     header : this.i18n._("site"),
@@ -557,12 +521,12 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         buildBlockedExtensions : function() {
             var blockColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("Block"),
-                dataIndex : 'live',
+                dataIndex : 'blocked',
                 fixed : true
             });
             var flagColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("Flag"),
-                dataIndex : 'log',
+                dataIndex : 'flagged',
                 fixed : true,
                 tooltip : this.i18n._("Flag as Violation")
             });
@@ -570,29 +534,17 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             this.gridBlockedExtensions = new Ung.EditorGrid({
                 name : 'File Types',
                 settingsCmp : this,
-                totalRecords : this.getBaseSettings().blockedExtensionsLength,
                 emptyRow : {
-                    "string" : "[no extension]",
-                    "live" : true,
-                    "log" : true,
-                    "name" : this.i18n._("[no description]")
+                    "string" : this.i18n._("[no extension]"),
+                    "blocked" : true,
+                    "flagged" : true,
+                    "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("File Types"),
-                recordJavaClass : "com.untangle.uvm.node.StringRule",
                 proxyRpcFn : this.getRpcNode().getBlockedExtensions,
-                fields : [{
-                    name : 'id'
-                }, {
-                    name : 'string',
-                    type : 'string'
-                }, {
-                    name : 'live'
-                }, {
-                    name : 'log'
-                }, {
-                    name : 'name',
-                    type : 'string'
-                }],
+                totalRecords : this.getBaseSettings().blockedExtensions.length,
+                recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                fields : this.genericRuleFields,
                 columns : [{
                     id : 'string',
                     header : this.i18n._("file type"),
@@ -602,17 +554,17 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         allowBlank : false
                     })
                 }, blockColumn, flagColumn, {
-                    id : 'name',
+                    id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
-                    dataIndex : 'name',
+                    dataIndex : 'description',
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
                 }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'name',
+                autoExpandColumn : 'description',
                 plugins : [blockColumn, flagColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
                     name : "File Type",
@@ -622,16 +574,16 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     width : 200
                 }), new Ext.form.Checkbox({
                     name : "Block",
-                    dataIndex : "live",
+                    dataIndex : "blocked",
                     fieldLabel : this.i18n._("Block")
                 }), new Ext.form.Checkbox({
                     name : "Flag",
-                    dataIndex : "log",
+                    dataIndex : "flagged",
                     fieldLabel : this.i18n._("Flag"),
                     tooltip : this.i18n._("Flag as Violation")
                 }), new Ext.form.TextArea({
                     name : "Description",
-                    dataIndex : "name",
+                    dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
                     width : 200,
                     height : 60
@@ -642,12 +594,12 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         buildBlockedMimeTypes : function() {
             var blockColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("Block"),
-                dataIndex : 'live',
+                dataIndex : 'blocked',
                 fixed : true
             });
             var flagColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("Flag"),
-                dataIndex : 'log',
+                dataIndex : 'flagged',
                 fixed : true,
                 tooltip : this.i18n._("Flag as Violation")
             });
@@ -655,68 +607,56 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             this.gridBlockedMimeTypes = new Ung.EditorGrid({
                 name : 'MIME Types',
                 settingsCmp : this,
-                totalRecords : this.getBaseSettings().blockedMimeTypesLength,
                 emptyRow : {
-                    "mimeType" : this.i18n._("[no mime type]"),
-                    "live" : true,
-                    "log" : true,
-                    "name" : this.i18n._("[no description]")
+                    "string" : this.i18n._("[no mime type]"),
+                    "blocked" : true,
+                    "flagged" : true,
+                    "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("MIME Types"),
-                recordJavaClass : "com.untangle.uvm.node.MimeTypeRule",
+                recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                fields : this.genericRuleFields,
                 proxyRpcFn : this.getRpcNode().getBlockedMimeTypes,
-                fields : [{
-                    name : 'id'
-                }, {
-                    name : 'mimeType',
-                    type : 'string'
-                }, {
-                    name : 'live'
-                }, {
-                    name : 'log'
-                }, {
-                    name : 'name',
-                    type : 'string'
-                }],
+                totalRecords : this.getBaseSettings().blockedMimeTypesLength,
                 columns : [{
-                    id : 'mimeType',
+                    id : 'string',
                     header : this.i18n._("MIME type"),
                     width : 200,
-                    dataIndex : 'mimeType',
+                    dataIndex : 'string',
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
                 }, blockColumn, flagColumn, {
-                    id : 'name',
+                    id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
-                    dataIndex : 'name',
+                    dataIndex : 'description',
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
                 }],
-                sortField : 'mimeType',
+                sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'name',
+                autoExpandColumn : 'description',
                 plugins : [blockColumn, flagColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
                     name : "MIME Type",
-                    dataIndex : "mimeType",
+                    dataIndex : "string",
                     fieldLabel : this.i18n._("MIME Type"),
                     allowBlank : false,
                     width : 200
                 }), new Ext.form.Checkbox({
                     name : "Block",
-                    dataIndex : "live",
+                    dataIndex : "blocked",
                     fieldLabel : this.i18n._("Block")
                 }), new Ext.form.Checkbox({
                     name : "Flag",
-                    dataIndex : "log",
+                    dataIndex : "flagged",
                     fieldLabel : this.i18n._("Flag"),
                     tooltip : this.i18n._("Flag as Violation")
                 }), new Ext.form.TextArea({
                     name : "Description",
-                    dataIndex : "name",
+                    dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
                     width : 200,
                     height : 60
@@ -1226,15 +1166,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             });
         },
         // private method
-        alterUrls : function(list) {
-            if (list != null) {
-                // added
-                for (var i = 0; i < list[0].list.length; i++) {
-                    list[0].list[i]["string"] = this.alterUrl(list[0].list[i]["string"]);
-                }
-                // modified
-                for (var i = 0; i < list[2].list.length; i++) {
-                    list[2].list[i]["string"] = this.alterUrl(list[2].list[i]["string"]);
+        alterUrls : function(saveList) {
+            if (saveList != null) {
+                var list = saveList.list;
+                for (var i = 0; i < list.length; i++) {
+                    list[i]["string"] = this.alterUrl(list[i]["string"]);
                 }
             }
         },
