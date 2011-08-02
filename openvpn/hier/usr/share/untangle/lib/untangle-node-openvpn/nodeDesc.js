@@ -6,7 +6,7 @@
         "syslogName" : "OpenVPN",
         "type" : "SERVICE",
         "viewPosition" : 1019,
-        "noStart" : "true",
+        "autoStart" : "false",
         "singleInstance" : "true"
 }
 

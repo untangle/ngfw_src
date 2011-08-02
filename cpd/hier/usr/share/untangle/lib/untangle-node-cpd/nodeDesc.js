@@ -7,6 +7,6 @@
         "type" : "SERVICE",
         "viewPosition" : 90,
         "singleInstance" : true,
-        "noStart" : true
+        "autoStart" : false
 }
 

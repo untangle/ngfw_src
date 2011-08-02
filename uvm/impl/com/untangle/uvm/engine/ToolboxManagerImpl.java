@@ -443,7 +443,7 @@ class ToolboxManagerImpl implements ToolboxManager
                     logger.info("instantiate( " + node + ")");
                     register(node);
                     NodeDesc nd = nm.instantiate(node, p);
-                    if (nd != null && !nd.getNoStart()) {
+                    if (nd != null && nd.getAutoStart()) {
                         NodeContext nc = nm.nodeContext(nd.getNodeId());
                         nc.node().start();
                     }

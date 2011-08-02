@@ -30,7 +30,7 @@ public class NodeDesc implements Serializable
     private String type = null;
     
     private Boolean hasPowerButton = true;
-    private Boolean noStart = false;
+    private Boolean autoStart = false;
     private Boolean singleInstance = false;
 
     private List<String> exports = new LinkedList<String>();
@@ -45,7 +45,7 @@ public class NodeDesc implements Serializable
                     String nodeBase,
                     List<String> exports, List<String> parents,
                     List<String> uvmResources, Boolean singleInstance,
-                    Boolean hasPowerButton, Boolean noStart)
+                    Boolean hasPowerButton, Boolean autoStart)
     {
         this.nodeId = nodeId;
         this.className = className;
@@ -61,7 +61,7 @@ public class NodeDesc implements Serializable
         this.displayName = packageDesc.getDisplayName();
         this.syslogName = this.displayName == null ? null : this.displayName.replaceAll("\\p{Space}", "_");
         this.hasPowerButton = hasPowerButton;
-        this.noStart = noStart;
+        this.autoStart = autoStart;
         this.type = packageDesc.getType().toString();
         this.viewPosition = new Integer(packageDesc.getViewPosition());
     }
@@ -270,14 +270,14 @@ public class NodeDesc implements Serializable
     /**
      * True if this node should be started automatically.
      */
-    public Boolean getNoStart()
+    public Boolean getAutoStart()
     {
-        return noStart;
+        return autoStart;
     }
 
-    public void setNoStart(Boolean noStart)
+    public void setAutoStart(Boolean autoStart)
     {
-        this.noStart = noStart;
+        this.autoStart = autoStart;
     }
 
     // Object methods ---------------------------------------------------------

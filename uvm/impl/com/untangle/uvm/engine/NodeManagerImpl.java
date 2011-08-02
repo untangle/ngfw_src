@@ -1,21 +1,6 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id$
  */
-
 package com.untangle.uvm.engine;
 
 import java.io.IOException;
@@ -62,7 +47,6 @@ import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeInstantiated;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.UvmNodeHandler;
 import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
@@ -337,7 +321,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
     public NodeDesc instantiateAndStart(String nodeName, Policy p) throws DeployException
     {
         NodeDesc nd = instantiate(nodeName, p);
-        if (!nd.getNoStart()) {
+        if (nd.getAutoStart()) {
             NodeContext nc = nodeContext(nd.getNodeId());
             try {
                 nc.node().start();
@@ -878,38 +862,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             return nodeDesc;
         }
 
-
-
-        /* XXX REMOVE AFTER THIS */
-        /* XXX REMOVE AFTER THIS */
-        /* XXX REMOVE AFTER THIS */
-        /* XXX REMOVE AFTER THIS */
-        
-        // XXX assumes no parent cl has this file.
-        InputStream is = new URLClassLoader(urls).getResourceAsStream(DESC_PATH);
-        if (null == is) {
-            List<URL> ul = new ArrayList<URL>(urls.length);
-            for (URL u : urls) {
-                ul.add(u);
-            }
-            throw new DeployException(packageDesc.getName() + " desc " + DESC_PATH + " not found in urls: " + ul);
-        }
-
-        UvmNodeHandler mth = new UvmNodeHandler(packageDesc);
-
-        try {
-            XMLReader xr = XMLReaderFactory.createXMLReader();
-            xr.setContentHandler(mth);
-            xr.parse(new InputSource(is));
-        } catch (SAXException exn) {
-            throw new DeployException(exn);
-        } catch (IOException exn) {
-            throw new DeployException(exn);
-        }
-
-        NodeDesc nodeDesc2 = mth.getNodeDesc(nodeId);;
-
-        return nodeDesc2;
+        return null;
     }
 
     private Policy getDefaultPolicyForNode(String nodeName) throws DeployException
