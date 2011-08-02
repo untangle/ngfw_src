@@ -680,28 +680,36 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             final String[] args = tps.getArgArray();
             final PackageDesc packageDesc = tbm.packageDesc(name);
 
-            Runnable r = new Runnable()
-                {
-                    public void run()
+            if (packageDesc != null) {
+                Runnable r = new Runnable()
                     {
-                        logger.info("Restarting: " + nodeId + " (" + name + ")");
-                        NodeContextImpl tc = null;
-                        try {
-                            tc = new NodeContextImpl((URLClassLoader)getClass().getClassLoader(), tDesc, packageDesc.getName(), false);
-                            nodeIds.put(nodeId, tc);
-                            tc.init(args);
-                            logger.info("Restarted: " + nodeId);
-                        } catch (Exception exn) {
-                            logger.error("Could not restart: " + nodeId, exn);
-                        } catch (LinkageError err) {
-                            logger.error("Could not restart: " + nodeId, err);
+                        public void run()
+                        {
+                            logger.info("Restarting: " + nodeId + " (" + name + ")");
+                            NodeContextImpl tc = null;
+                            try {
+                                tc = new NodeContextImpl(
+                                                         (URLClassLoader)getClass().getClassLoader(),
+                                                         tDesc,
+                                                         packageDesc.getName(),
+                                                         false);
+                                nodeIds.put(nodeId, tc);
+                                tc.init(args);
+                                logger.info("Restarted: " + nodeId);
+                            } catch (Exception exn) {
+                                logger.error("Could not restart: " + nodeId, exn);
+                            } catch (LinkageError err) {
+                                logger.error("Could not restart: " + nodeId, err);
+                            }
+                            if (null != tc && null == tc.node()) {
+                                nodeIds.remove(nodeId);
+                            }
                         }
-                        if (null != tc && null == tc.node()) {
-                            nodeIds.remove(nodeId);
-                        }
-                    }
-                };
-            restarters.add(r);
+                    };
+                restarters.add(r);
+            } else {
+                logger.error("Unable to find node \"" + name + "\" - Skipping");
+            }
         }
 
         Set<Thread> threads = new HashSet<Thread>(restarters.size());
@@ -754,7 +762,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             NodeId nodeId = tps.getNodeId();
             NodeDesc tDesc = tDescs.get(nodeId);
             if (null == tDesc) {
-                logger.warn("no NodeDesc for: " + nodeId);
+                logger.warn("Missing NodeDesc for: " + nodeId);
                 continue;
             }
 
@@ -856,7 +864,6 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
      */
     private NodeDesc initNodeDesc(PackageDesc packageDesc, URL[] urls, NodeId nodeId) throws DeployException
     {
-        logger.warn("XXX Trying to load NodeDesc from file...");
         SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
         NodeDesc nodeDesc = null;
         try {
@@ -865,7 +872,6 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
         }
-        logger.warn("XXX Trying to load NodeDesc from file:" + nodeDesc);
 
         if (nodeDesc != null) {
             nodeDesc.setNodeId(nodeId);
@@ -873,6 +879,11 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         }
 
 
+
+        /* XXX REMOVE AFTER THIS */
+        /* XXX REMOVE AFTER THIS */
+        /* XXX REMOVE AFTER THIS */
+        /* XXX REMOVE AFTER THIS */
         
         // XXX assumes no parent cl has this file.
         InputStream is = new URLClassLoader(urls).getResourceAsStream(DESC_PATH);
