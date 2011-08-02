@@ -197,32 +197,32 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         }
     }
 
-    public List<GenericRule> getCategories(int start, int limit, String... sortColumns)
+    public List<GenericRule> getCategories()
     {
         return settings.getCategories();
     }
 
-    public List<GenericRule> getBlockedExtensions(int start, int limit, String... sortColumns)
+    public List<GenericRule> getBlockedExtensions()
     {
         return settings.getBlockedExtensions();
     }
 
-    public List<GenericRule> getBlockedMimeTypes(int start, int limit, String... sortColumns)
+    public List<GenericRule> getBlockedMimeTypes()
     {
         return settings.getBlockedMimeTypes();
     }
 
-    public List<GenericRule> getBlockedUrls(int start, int limit, String... sortColumns)
+    public List<GenericRule> getBlockedUrls()
     {
         return settings.getBlockedUrls();
     }
 
-    public List<GenericRule> getPassedClients(int start, int limit, String... sortColumns) 
+    public List<GenericRule> getPassedClients() 
     {
         return settings.getPassedClients();
     }
 
-    public List<GenericRule> getPassedUrls(int start, int limit, String... sortColumns)
+    public List<GenericRule> getPassedUrls()
     {
         return settings.getPassedUrls();
     }

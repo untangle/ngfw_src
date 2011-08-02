@@ -22,22 +22,22 @@ public interface WebFilter extends Node
     WebFilterSettings getSettings();
     void setSettings(WebFilterSettings settings);
 
-    List<GenericRule> getPassedUrls(int start, int limit, String... sortColumns);
+    List<GenericRule> getPassedUrls();
     void setPassedUrls(List<GenericRule> passedUrls);
 
-    List<GenericRule> getPassedClients(int start, int limit, String... sortColumns);
+    List<GenericRule> getPassedClients();
     void setPassedClients(List<GenericRule> passedClients);
 
-    List<GenericRule> getBlockedUrls(int start, int limit, String... sortColumns);
+    List<GenericRule> getBlockedUrls();
     void setBlockedUrls(List<GenericRule> blockedUrls);
 
-    List<GenericRule> getBlockedMimeTypes(int start, int limit, String... sortColumns);
+    List<GenericRule> getBlockedMimeTypes();
     void setBlockedMimeTypes(List<GenericRule> blockedMimeTypes);
 
-    List<GenericRule> getBlockedExtensions(int start, int limit, String... sortColumns);
+    List<GenericRule> getBlockedExtensions();
     void setBlockedExtensions(List<GenericRule> blockedExtensions);
 
-    List<GenericRule> getCategories(int start, int limit, String... sortColumns);
+    List<GenericRule> getCategories();
     void setCategories(List<GenericRule> newCategories);
 
     Validator getValidator();
