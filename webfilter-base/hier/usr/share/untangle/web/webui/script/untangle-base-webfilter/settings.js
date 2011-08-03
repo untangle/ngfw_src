@@ -6,17 +6,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         gridExceptions : null,
         gridEventLog : null,
         // called when the component is rendered
-        // override get base settings object
-        getBaseSettings : function(forceReload) {
-            if (forceReload || this.rpc.baseSettings === undefined) {
-                try {
-                   this.rpc.baseSettings = this.getRpcNode().getSettings();
-                } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
-            }
-            return this.rpc.baseSettings;
-        },
         initComponent : function() {
             // keep initial base settings
             this.genericRuleFields=[{
@@ -46,7 +35,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 }, {
                     name : 'flagged'
                 }];
-            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
 
             this.buildBlockLists();
             this.buildPassLists();
@@ -122,11 +110,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         boxLabel : this.i18n._("Block pages from IP only hosts"),
                         hideLabel : true,
                         name : 'Block IPHost',
-                        checked : this.getBaseSettings().blockAllIpHosts,
+                        checked : this.getSettings().blockAllIpHosts,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getBaseSettings().blockAllIpHosts = checked;
+                                    this.getSettings().blockAllIpHosts = checked;
                                 }.createDelegate(this)
                             }
                         }
@@ -137,19 +125,19 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         fieldLabel : this.i18n._("Bypass"),
                         name : "user_bypass",
                         store : new Ext.data.SimpleStore({
-                            fields : ['userWhitelistValue', 'userWhitelistName'],
+                            fields : ['unblockModeValue', 'unblockModeName'],
                             data : [["NONE", this.i18n._("None")], ["USER_ONLY", this.i18n._("Temporary")],
                                     ["USER_AND_GLOBAL", this.i18n._("Permanent and Global")]]
                         }),
-                        displayField : "userWhitelistName",
-                        valueField : "userWhitelistValue",
-                        value : this.getBaseSettings().userWhitelistMode,
+                        displayField : "unblockModeName",
+                        valueField : "unblockModeValue",
+                        value : this.getSettings().unblockMode,
                         triggerAction : "all",
                         listClass : 'x-combo-list-small',
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getBaseSettings().userWhitelistMode = newValue;
+                                    this.getSettings().unblockMode = newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -173,7 +161,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     );
                                 }.createDelegate(settingsCmp)
                             }, {
-                                title : settingsCmp.node.md.displayName,
+                                title : settingsCmp.node.displayName,
                                 action : function() {
                                     this.panelBlockLists.winCategories.cancelAction();
                                 }.createDelegate(settingsCmp)
@@ -188,11 +176,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     list : settingsCmp.gridCategories.getFullSaveList()
                                 };
                                 settingsCmp.getRpcNode().setCategories(function(result, exception) {
-                                    Ext.MessageBox.hide();
                                     if(Ung.Util.handleException(exception)) return;
-                                    if(forceLoad===true){
-                                        this.gridCategories.reloadGrid();
-                                    }
+                                    this.getRpcNode().getCategories(function(result, exception) {
+                                        Ext.MessageBox.hide();
+                                        if(Ung.Util.handleException(exception)) return;
+                                        this.gridCategories.reloadGrid({data:result.list});
+                                        this.getSettings().categories = result;
+                                    }.createDelegate(this));
                                 }.createDelegate(settingsCmp), saveList);
                             }                                                        
                         });
@@ -216,7 +206,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     );
                                 }.createDelegate(settingsCmp)
                             }, {
-                                title : settingsCmp.node.md.displayName,
+                                title : settingsCmp.node.displayName,
                                 action : function() {
                                     this.panelBlockLists.winBlockedUrls.cancelAction();
                                 }.createDelegate(settingsCmp)
@@ -232,12 +222,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 };
                                 settingsCmp.alterUrls(saveList);
                                 settingsCmp.getRpcNode().setBlockedUrls(function(result, exception) {
-                                    Ext.MessageBox.hide();
                                     if(Ung.Util.handleException(exception)) return;
-                                    this.gridBlockedUrls.setTotalRecords(this.getBaseSettings(true).blockedUrls.length);
-                                    if(forceLoad===true){                                                
-                                        this.gridBlockedUrls.reloadGrid();
-                                    }                                                    
+                                    this.getRpcNode().getBlockedUrls(function(result, exception) {
+                                        Ext.MessageBox.hide();
+                                        if(Ung.Util.handleException(exception)) return;
+                                        this.gridBlockedUrls.reloadGrid({data:result.list});
+                                        this.getSettings().blockedUrls = result;
+                                    }.createDelegate(this));
                                 }.createDelegate(settingsCmp), saveList);
                             }                                                        
                         });
@@ -261,7 +252,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     );
                                 }.createDelegate(settingsCmp)
                             }, {
-                                title : settingsCmp.node.md.displayName,
+                                title : settingsCmp.node.displayName,
                                 action : function() {
                                     this.panelBlockLists.winBlockedExtensions.cancelAction();
                                 }.createDelegate(settingsCmp)
@@ -278,10 +269,12 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 settingsCmp.getRpcNode().setBlockedExtensions(function(result, exception) {
                                     Ext.MessageBox.hide();
                                     if(Ung.Util.handleException(exception)) return;
-                                    this.gridBlockedExtensions.setTotalRecords(this.getBaseSettings(true).blockedExtensions.length);
-                                    if(forceLoad===true){                                                
-                                        this.gridBlockedExtensions.reloadGrid();
-                                    }                                                    
+                                    this.getRpcNode().getBlockedExtensions(function(result, exception) {
+                                        Ext.MessageBox.hide();
+                                        if(Ung.Util.handleException(exception)) return;
+                                        this.gridBlockedExtensions.reloadGrid({data:result.list});
+                                        this.getSettings().blockedExtensions = result;
+                                    }.createDelegate(this));
                                 }.createDelegate(settingsCmp), saveList);
                             }                                                        
                         });
@@ -305,7 +298,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     );
                                 }.createDelegate(settingsCmp)
                             }, {
-                                title : settingsCmp.node.md.displayName,
+                                title : settingsCmp.node.displayName,
                                 action : function() {
                                     this.panelBlockLists.winBlockedMimeTypes.cancelAction();
                                 }.createDelegate(settingsCmp)
@@ -322,10 +315,12 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 settingsCmp.getRpcNode().setBlockedMimeTypes(function(result, exception) {
                                     Ext.MessageBox.hide();
                                     if(Ung.Util.handleException(exception)) return;
-                                    this.gridBlockedMimeTypes.setTotalRecords(this.getBaseSettings(true).blockedMimeTypes.length);
-                                    if(forceLoad===true){                                                
-                                        this.gridBlockedMimeTypes.reloadGrid();
-                                    }                                                    
+                                    this.getRpcNode().getBlockedMimeTypes(function(result, exception) {
+                                        Ext.MessageBox.hide();
+                                        if(Ung.Util.handleException(exception)) return;
+                                        this.gridBlockedMimeTypes.reloadGrid({data:result.list});
+                                        this.getSettings().blockedMimeTypes = result;
+                                    }.createDelegate(this));
                                 }.createDelegate(settingsCmp), saveList);
                             }
                         });
@@ -364,8 +359,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 hasAdd : false,
                 hasDelete : false,
                 title : this.i18n._("Categories"),
-                proxyRpcFn: this.getRpcNode().getCategories,
-                totalRecords: this.getBaseSettings().categories.length,
+                data: this.getSettings().categories.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
@@ -464,8 +458,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Sites"),
-                proxyRpcFn : this.getRpcNode().getBlockedUrls,
-                totalRecords: this.getBaseSettings().blockedUrls.length,
+                data: this.getSettings().blockedUrls.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
@@ -541,8 +534,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("File Types"),
-                proxyRpcFn : this.getRpcNode().getBlockedExtensions,
-                totalRecords : this.getBaseSettings().blockedExtensions.length,
+                data : this.getSettings().blockedExtensions.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
@@ -616,8 +608,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 title : this.i18n._("MIME Types"),
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
-                proxyRpcFn : this.getRpcNode().getBlockedMimeTypes,
-                totalRecords : this.getBaseSettings().blockedMimeTypesLength,
+                data : this.getSettings().blockedMimeTypes.list,
                 columns : [{
                     id : 'string',
                     header : this.i18n._("MIME type"),
@@ -717,7 +708,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     );
                                 }.createDelegate(settingsCmp)
                             }, {
-                                title : settingsCmp.node.md.displayName,
+                                title : settingsCmp.node.displayName,
                                 action : function() {
                                     this.panelPassLists.winPassedUrls.cancelAction();
                                 }.createDelegate(settingsCmp)
@@ -727,24 +718,21 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             grid : settingsCmp.gridPassedUrls,
                             applyAction : function(forceLoad){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = settingsCmp.gridPassedUrls.getSaveList();
+                                var saveList = {
+                                        javaClass : "java.util.ArrayList",
+                                        list : settingsCmp.gridPassedUrls.getFullSaveList()
+                                    };
                                 settingsCmp.alterUrls(saveList);
-                                settingsCmp.getRpcNode().updatePassedUrls(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)){
+                                settingsCmp.getRpcNode().setPassedUrls(function(result, exception) {
+                                    Ext.MessageBox.hide();
+                                    if(Ung.Util.handleException(exception)) return;
+                                    this.getRpcNode().getPassedUrls(function(result, exception) {
                                         Ext.MessageBox.hide();
-                                        return;
-                                    }
-                                    this.getRpcNode().getBaseSettings(function(result2,exception2){
-                                        Ext.MessageBox.hide();                                                
-                                        if(Ung.Util.handleException(exception2)){
-                                            return;
-                                        }
-                                        this.gridPassedUrls.setTotalRecords(result2.passedUrlsLength);
-                                        if(forceLoad===true){                                                
-                                            this.gridPassedUrls.reloadGrid();
-                                        }                                                    
+                                        if(Ung.Util.handleException(exception)) return;
+                                        this.gridPassedUrls.reloadGrid({data:result.list});
+                                        this.getSettings().passedUrls = result;
                                     }.createDelegate(this));
-                                }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                                }.createDelegate(settingsCmp), saveList);
                             }                            
                         });
                     }
@@ -767,7 +755,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     );
                                 }.createDelegate(settingsCmp)
                             }, {
-                                title : settingsCmp.node.md.displayName,
+                                title : settingsCmp.node.displayName,
                                 action : function() {
                                     this.panelPassLists.winPassedClients.cancelAction();
                                 }.createDelegate(settingsCmp)
@@ -794,26 +782,27 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 Ext.MessageBox.hide();
                             },
                             commitSettings : function(callback){
-                                var saveList = settingsCmp.gridPassedClients.getSaveList();
-                                if ( !settingsCmp.validateServer(saveList)) {
+                                var validateSaveList = settingsCmp.gridPassedClients.getSaveList();
+                                if ( !settingsCmp.validateServer(validateSaveList)) {
                                     return;
                                 }
                                 
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                
-                                settingsCmp.getRpcNode().updatePassedClients(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)){
-                                        return;
-                                    }
-                                    this.getRpcNode().getBaseSettings(function(result2,exception2){
-                                        
-                                        if(Ung.Util.handleException(exception2)){
-                                            return;
-                                        }
-                                        this.gridPassedClients.setTotalRecords(result2.passedClientsLength);
+                                var saveList = {
+                                        javaClass : "java.util.ArrayList",
+                                        list : settingsCmp.gridPassedClients.getFullSaveList()
+                                    };
+                                settingsCmp.getRpcNode().setPassedClients(function(result, exception) {
+                                    Ext.MessageBox.hide();
+                                    if(Ung.Util.handleException(exception)) return;
+                                    this.getRpcNode().getPassedClients(function(result, exception) {
+                                        Ext.MessageBox.hide();
+                                        if(Ung.Util.handleException(exception)) return;
+                                        this.gridPassedClients.reloadGrid({data:result.list});
+                                        this.getSettings().passedClients = result;
                                         callback();
                                     }.createDelegate(this));
-                                }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                                }.createDelegate(settingsCmp), saveList);
                             }                                                 
                         });
                     }
@@ -846,35 +835,24 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 return true;
             }.createDelegate(this);
 
-            var blockColumn = new Ext.grid.CheckColumn({
+            var enabledColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("pass"),
-                dataIndex : 'live',
+                dataIndex : 'enabled',
                 fixed : true
             });
 
             this.gridPassedUrls = new Ung.EditorGrid({
                 name : 'Sites',
                 settingsCmp : this,
-                totalRecords : this.getBaseSettings().passedUrlsLength,
                 emptyRow : {
                     "string" : this.i18n._("[no site]"),
-                    "live" : true,
+                    "enabled" : true,
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Sites"),
-                recordJavaClass : "com.untangle.uvm.node.StringRule",
-                proxyRpcFn : this.getRpcNode().getPassedUrls,
-                fields : [{
-                    name : 'id'
-                }, {
-                    name : 'string',
-                    type : 'string'
-                }, {
-                    name : 'live'
-                }, {
-                    name : 'description',
-                    type : 'string'
-                }],
+                data: this.getSettings().passedUrls.list,
+                recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                fields : this.genericRuleFields,
                 columns : [{
                     id : 'string',
                     header : this.i18n._("site"),
@@ -885,7 +863,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         validator : urlValidator,
                         blankText : this.i18n._("Invalid \"URL\" specified")
                     })
-                }, blockColumn, {
+                }, enabledColumn, {
                     id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
@@ -897,7 +875,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 sortField : 'string',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'description',
-                plugins : [blockColumn],
+                plugins : [enabledColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
                     name : "Site",
                     dataIndex : "string",
@@ -908,7 +886,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     blankText : this.i18n._("Invalid \"URL\" specified")
                 }), new Ext.form.Checkbox({
                     name : "Pass",
-                    dataIndex : "live",
+                    dataIndex : "enabled",
                     fieldLabel : this.i18n._("Pass")
                 }), new Ext.form.TextArea({
                     name : "Description",
@@ -922,43 +900,33 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         },
         // Passed IP Addresses
         buildPassedClients : function() {
-            var blockColumn = new Ext.grid.CheckColumn({
+            var enabledColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("pass"),
-                dataIndex : 'live',
+                dataIndex : 'enabled',
                 fixed : true
             });
 
             this.gridPassedClients = new Ung.EditorGrid({
                 name : 'Client IP addresses',
                 settingsCmp : this,
-                totalRecords : this.getBaseSettings().passedClientsLength,
                 emptyRow : {
-                    "ipMaddr" : "1.2.3.4",
-                    "live" : true,
+                    "string" : "1.2.3.4",
+                    "enabled" : true,
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Client IP addresses"),
-                recordJavaClass : "com.untangle.uvm.node.IPMaskedAddressRule",
-                proxyRpcFn : this.getRpcNode().getPassedClients,
-                fields : [{
-                    name : 'id'
-                }, {
-                    name : 'ipMaddr'
-                }, {
-                    name : 'live'
-                }, {
-                    name : 'description',
-                    type : 'string'
-                }],
+                data: this.getSettings().passedClients.list,
+                recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                fields : this.genericRuleFields,
                 columns : [{
-                    id : 'ipMaddr',
+                    id : 'string',
                     header : this.i18n._("IP address/range"),
                     width : 200,
-                    dataIndex : 'ipMaddr',
+                    dataIndex : 'string',
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                }, blockColumn, {
+                }, enabledColumn, {
                     id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
@@ -967,19 +935,19 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         allowBlank : false
                     })
                 }],
-                sortField : 'ipMaddr',
+                sortField : 'string',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'description',
-                plugins : [blockColumn],
+                plugins : [enabledColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
                     name : "IP address/range",
-                    dataIndex : "ipMaddr",
+                    dataIndex : "string",
                     fieldLabel : this.i18n._("IP address/range"),
                     allowBlank : false,
                     width : 200
                 }), new Ext.form.Checkbox({
                     name : "Pass",
-                    dataIndex : "live",
+                    dataIndex : "enabled",
                     fieldLabel : this.i18n._("Pass")
                 }), new Ext.form.TextArea({
                     name : "Description",
@@ -1194,11 +1162,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 var ipMaddrList = [];
                 // added
                 for (var i = 0; i < passedClientsSaveList[0].list.length; i++) {
-                    ipMaddrList.push(passedClientsSaveList[0].list[i]["ipMaddr"]);
+                    ipMaddrList.push(passedClientsSaveList[0].list[i]["string"]);
                 }
                 // modified
                 for (var i = 0; i < passedClientsSaveList[2].list.length; i++) {
-                    ipMaddrList.push(passedClientsSaveList[2].list[i]["ipMaddr"]);
+                    ipMaddrList.push(passedClientsSaveList[2].list[i]["string"]);
                 }
                 if (ipMaddrList.length > 0) {
                     try {
@@ -1222,14 +1190,14 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             }
 
                             this.panelPassLists.onManagePassedClients();
-                            this.gridPassedClients.focusFirstChangedDataByFieldValue("ipMaddr", result.cause);
+                            this.gridPassedClients.focusFirstChangedDataByFieldValue("string", result.cause);
                             Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);
                             return false;
                         }
                     } catch (e) {
                         var message = e.message;
                         if (message == null || message == "Unknown") {
-                            message = i18n._("Please Try Again");
+                            message = this.i18n._("Please Try Again");
                         }
                         
                         Ext.MessageBox.alert(i18n._("Failed"), message);
@@ -1261,16 +1229,16 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             }
             
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-            this.getRpcNode().setBaseSettings(function(result, exception) {
+            this.getRpcNode().setSettings(function(result, exception) {
                 if(Ung.Util.handleException(exception)) {
                     return;
                 }
                 
                 callback();
-            }.createDelegate(this), this.getBaseSettings());
+            }.createDelegate(this), this.getSettings());
         },
         isDirty : function() {
-            return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings);
+            return true;
         }
     });
 }

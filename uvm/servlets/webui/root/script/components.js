@@ -2931,6 +2931,17 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
         }
         return this.rpc.baseSettings;
     },
+    // get node settings object
+    getSettings : function(forceReload) {
+        if (forceReload || this.rpc.settings === undefined) {
+            try {
+                this.rpc.settings = this.getRpcNode().getSettings();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return this.rpc.settings;
+    },
     // get Validator object
     getValidator : function() {
         if (this.node.nodeContext.rpcNode.validator === undefined) {
