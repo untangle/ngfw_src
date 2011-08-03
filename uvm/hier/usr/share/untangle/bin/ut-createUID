@@ -14,24 +14,25 @@ DEFAULT_UNTANGLE_SOURCE="deb http://${UID_TEMPLATE}:untangle@updates.untangle.co
 
 if [ ! -f $UID_FILE ]; then
     # we need a UID
-    echo "`date` $NAME: about to create UID" >> $UVM_WRAPPER_LOG
+    echo "`date` $NAME: creating UID..."
     output=`ruby @UVM_HOME@/bin/ut-createUID.rb 2>&1`
     if [ $? = 0 ] ; then
-	echo "`date` $NAME: created UID" >> $UVM_WRAPPER_LOG
+	    echo "`date` $NAME: created  UID."
     else
-	echo "`date` $NAME: failed to create UID; output was: '$output'"
-	exit 1
+	    echo "`date` $NAME: failed to create UID; output was: '$output'"
+	    exit 1
     fi
 fi
 
 MYUID=`cat $UID_FILE`
 
 # add untangle sources to sources.list; remove the old ones
-echo "Installing sources list"
+echo "`date` $NAME: Creating sources list..."
 SOURCES_LIST=/etc/apt/sources.list.d/untangle.list
 touch $SOURCES_LIST
 perl -i -pe 's/.*untangle\.com.*//' $SOURCES_LIST
 echo -e $DEFAULT_UNTANGLE_SOURCE | sed "s/$UID_TEMPLATE/$MYUID/" >> $SOURCES_LIST
 nohup apt-get update >& /dev/null &
+echo "`date` $NAME: Created  sources list..."
 
 exit 0
