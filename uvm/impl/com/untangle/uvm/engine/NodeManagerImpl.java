@@ -508,9 +508,14 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
     void restart(String name)
     {
-        ToolboxManager tbm = LocalUvmContextFactory .context().toolboxManager();
+        ToolboxManager tbm = LocalUvmContextFactory.context().toolboxManager();
 
-        String availVer = tbm.packageDesc(name).getInstalledVersion();
+        PackageDesc pd = tbm.packageDesc(name);
+        if (pd == null) {
+            logger.warn("Failed to restart: Unable to find package \"" + name + "\"");
+            return;
+        }
+        String availVer = pd.getInstalledVersion();
 
         synchronized (this) {
             List<NodeId> nNodeIds = nodeInstances(name);
@@ -518,7 +523,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
                 NodeId t = nNodeIds.get(0);
                 NodeContext tc = nodeIds.get(t);
 
-                if (0 < tc.getNodeDesc().getExports().size()) {
+                if ( tc.getNodeDesc().getExports().size() > 0 ) {
                     // exported resources, must restart everything
                     for (NodeId nodeId : nodeIds.keySet()) {
                         PackageDesc md = nodeIds.get(nodeId).getPackageDesc();
