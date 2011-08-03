@@ -33,7 +33,6 @@ public class NodeDesc implements Serializable
     private Boolean autoStart = false;
     private Boolean singleInstance = false;
 
-    private List<String> exports = new LinkedList<String>();
     private List<String> parents = new LinkedList<String>();
     private List<String> uvmResources = new LinkedList<String>();
 
@@ -41,31 +40,6 @@ public class NodeDesc implements Serializable
 
     public NodeDesc() {}
     
-    public NodeDesc(NodeId nodeId, PackageDesc packageDesc, String className,
-                    String nodeBase,
-                    List<String> exports, List<String> parents,
-                    List<String> uvmResources, Boolean singleInstance,
-                    Boolean hasPowerButton, Boolean autoStart)
-    {
-        this.nodeId = nodeId;
-        this.className = className;
-        this.nodeBase = nodeBase;
-        List<String> l = null == exports ? new LinkedList<String>() : exports;
-        this.exports = Collections.unmodifiableList(l);
-        l = null == parents ? new LinkedList<String>() : parents;
-        this.parents = Collections.unmodifiableList(l);
-        l = null == uvmResources ? new LinkedList<String>() : uvmResources;
-        this.uvmResources = Collections.unmodifiableList(l);
-        this.singleInstance = singleInstance;
-        this.name = packageDesc.getName();
-        this.displayName = packageDesc.getDisplayName();
-        this.syslogName = this.displayName == null ? null : this.displayName.replaceAll("\\p{Space}", "_");
-        this.hasPowerButton = hasPowerButton;
-        this.autoStart = autoStart;
-        this.type = packageDesc.getType().toString();
-        this.viewPosition = new Integer(packageDesc.getViewPosition());
-    }
-
     /**
      * Node id.
      *
@@ -109,21 +83,6 @@ public class NodeDesc implements Serializable
     public void setClassName(String className)
     {
         this.className = className;
-    }
-
-    /**
-     * Names of shared jars.
-     *
-     * @return names of shared jars.
-     */
-    public List<String> getExports()
-    {
-        return exports;
-    }
-
-    public void setExports(List<String> exports)
-    {
-        this.exports = exports;
     }
 
     /**

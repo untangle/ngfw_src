@@ -523,26 +523,13 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
                 NodeId t = nNodeIds.get(0);
                 NodeContext tc = nodeIds.get(t);
 
-                if ( tc.getNodeDesc().getExports().size() > 0 ) {
-                    // exported resources, must restart everything
-                    for (NodeId nodeId : nodeIds.keySet()) {
-                        PackageDesc md = nodeIds.get(nodeId).getPackageDesc();
-                        if (!md.getInstalledVersion().equals(availVer)) {
-                            logger.info("new version available: " + name);
-                            unload(nodeId);
-                        } else {
-                            logger.info("have latest version: " + name);
-                        }
-                    }
-                } else {
-                    for (NodeId nodeId : nNodeIds) {
-                        PackageDesc md = nodeIds.get(nodeId).getPackageDesc();
-                        if (!md.getInstalledVersion().equals(availVer)) {
-                            logger.info("new version available: " + name);
-                            unload(nodeId);
-                        } else {
-                            logger.info("have latest version: " + name);
-                        }
+                for (NodeId nodeId : nNodeIds) {
+                    PackageDesc md = nodeIds.get(nodeId).getPackageDesc();
+                    if (!md.getInstalledVersion().equals(availVer)) {
+                        logger.info("Restarting \"" + name + "\" - new version available. (" + availVer + " > " + md.getInstalledVersion() + ")");
+                        unload(nodeId);
+                    } else {
+                        logger.info("Skipping Restart \"" + name + "\" - no new version available. (" + availVer + " = " + md.getInstalledVersion() + ")");
                     }
                 }
                 restartUnloaded();
@@ -629,9 +616,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         Set<String> loadedParents = new HashSet<String>(unloaded.size());
 
         while (0 < unloaded.size()) {
-            List<NodePersistentState> startQueue = getLoadable(unloaded,
-                                                               tDescs,
-                                                               loadedParents);
+            List<NodePersistentState> startQueue = getLoadable(unloaded, tDescs, loadedParents);
             logger.info("loadable in this pass: " + startQueue);
             if (0 == startQueue.size()) {
                 logger.info("not all parents loaded, proceeding");
@@ -646,7 +631,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         }
 
         long t1 = System.currentTimeMillis();
-        logger.info("time to restart nodes: " + (t1 - t0));
+        logger.info("Time to restart nodes: " + (t1 - t0) + " millis");
 
         startAutoStart(null);
         
