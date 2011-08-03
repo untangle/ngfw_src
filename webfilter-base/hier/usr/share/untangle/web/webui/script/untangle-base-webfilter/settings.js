@@ -774,12 +774,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             },
                             applyAction : function()
                             {
-                                this.commitSettings(this.reloadSettings.createDelegate(this));
-                            },
-                            reloadSettings : function()
-                            {
-                                this.grid.reloadGrid();
-                                Ext.MessageBox.hide();
+                                this.commitSettings();
                             },
                             commitSettings : function(callback){
                                 var validateSaveList = settingsCmp.gridPassedClients.getSaveList();
@@ -800,7 +795,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                         if(Ung.Util.handleException(exception)) return;
                                         this.gridPassedClients.reloadGrid({data:result.list});
                                         this.getSettings().passedClients = result;
-                                        callback();
+                                        if(callback != null) {
+                                            callback();
+                                        }
                                     }.createDelegate(this));
                                 }.createDelegate(settingsCmp), saveList);
                             }                                                 
