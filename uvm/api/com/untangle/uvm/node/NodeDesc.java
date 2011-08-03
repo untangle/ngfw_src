@@ -13,14 +13,11 @@ import com.untangle.uvm.toolbox.PackageDesc;
 
 /**
  * Node settings and properties.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class NodeDesc implements Serializable
 {
-    private NodeId nodeId = null; /* XXX */
+    private NodeId nodeId = null; 
 
     private String name = null;
     private String displayName = null;
