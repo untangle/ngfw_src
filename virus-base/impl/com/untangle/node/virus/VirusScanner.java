@@ -25,12 +25,6 @@ import com.untangle.uvm.node.Scanner;
 public interface VirusScanner extends Scanner
 {
     /**
-     * Gets the version information for the signatures, usually this is a single string containing
-     * the version #, if any, and a timestamp for the version.
-     */
-    String getSigVersion();
-
-    /**
      * Scans the file for viruses, producing a virus report.  Note that the contract for this
      * requires that a report always be generated, for any problems or exceptions an
      * "clean" report is generated (and the error/warning should be logged).

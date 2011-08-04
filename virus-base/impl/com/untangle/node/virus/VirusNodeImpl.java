@@ -166,7 +166,6 @@ public abstract class VirusNodeImpl extends AbstractNode
     {
         this.scanner = scanner;
         this.pipeSpecs = initialPipeSpecs();
-
         this.replacementGenerator = new VirusReplacementGenerator(getNodeId());
 
         eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
@@ -179,26 +178,15 @@ public abstract class VirusNodeImpl extends AbstractNode
         ListEventFilter lef = new VirusSmtpInfectedFilter(vendor);
         eventLogger.addListEventFilter(lef);
 
-        MessageManager lmm = LocalUvmContextFactory.context()
-            .messageManager();
+        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
-        scanBlinger = c.addActivity("scan",
-                                    I18nUtil.marktr("Documents scanned"), null,
-                                    I18nUtil.marktr("SCAN !!!"));
-        blockBlinger = c.addActivity("block",
-                                     I18nUtil.marktr("Documents blocked"),
-                                     null, I18nUtil.marktr("BLOCK"));
-        passBlinger = c.addActivity("pass",
-                                    I18nUtil.marktr("Documents passed"),
-                                    null, I18nUtil.marktr("PASS"));
-        removeBlinger = c.addActivity("remove",
-                                      I18nUtil.marktr("Infections removed"),
-                                      null, I18nUtil.marktr("REMOVE"));
-        passedInfectedMessageBlinger = c.addMetric("infected",
-                                                   I18nUtil.marktr("Passed by policy"),
-                                                   null);
-        lmm.setActiveMetricsIfNotSet(getNodeId(), scanBlinger, blockBlinger,
-                                     passBlinger, removeBlinger);
+        scanBlinger   = c.addActivity("scan",   I18nUtil.marktr("Documents scanned"),  null, I18nUtil.marktr("SCAN"));
+        blockBlinger  = c.addActivity("block",  I18nUtil.marktr("Documents blocked"),  null, I18nUtil.marktr("BLOCK"));
+        passBlinger   = c.addActivity("pass",   I18nUtil.marktr("Documents passed"),   null, I18nUtil.marktr("PASS"));
+        removeBlinger = c.addActivity("remove", I18nUtil.marktr("Infections removed"), null, I18nUtil.marktr("REMOVE"));
+        passedInfectedMessageBlinger = c.addMetric("infected", I18nUtil.marktr("Passed by policy"), null);
+
+        lmm.setActiveMetricsIfNotSet(getNodeId(), scanBlinger, blockBlinger, passBlinger, removeBlinger);
     }
 
     // VirusNode methods -------------------------------------------------
@@ -216,14 +204,9 @@ public abstract class VirusNodeImpl extends AbstractNode
             if (lastSignatureUpdate != null) {
                 this.lastSignatureUpdate = lastSignatureUpdate;
             }
-            String signatureVersion = getSigVersion();
-            if (signatureVersion != null) {
-                this.signatureVersion = signatureVersion;
-            }
         }
 
         baseSettings.setLastUpdate(this.lastSignatureUpdate);
-        baseSettings.setSignatureVersion(this.signatureVersion);
 
         return baseSettings;
     }
@@ -321,11 +304,6 @@ public abstract class VirusNodeImpl extends AbstractNode
         getNodeContext().runTransaction(tw);
 
         reconfigure();
-    }
-
-    public String getSigVersion()
-    {
-        return this.scanner.getSigVersion();
     }
 
     public EventManager<VirusEvent> getEventManager()

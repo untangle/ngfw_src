@@ -67,9 +67,6 @@ public interface VirusNode extends Node
     @SuppressWarnings("unchecked")
 	void updateAll(VirusBaseSettings baseSettings, List[] httpMimeTypes, List[] extensions);
 
-    /* Get the current version of the virus signatures. */
-    String getSigVersion();
-
     /**
      * Reconfigure node. This method should be called after some
      * settings are updated in order to reconfigure the node
