@@ -25,7 +25,7 @@ public class NodeDesc implements Serializable
     private String type = null;
     
     private Boolean hasPowerButton = true;
-    private Boolean autoStart = false;
+    private Boolean autoStart = true;
     private Boolean singleInstance = false;
 
     private List<String> parents = new LinkedList<String>();
