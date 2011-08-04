@@ -108,16 +108,6 @@ class NodeBuilder
       jsl = JsLintTarget.new(f)
       buildEnv.jsLintTarget.register_dependency(jsl)
     end
-
-    script_dir = "#{home}/#{dirName}/hier/usr/share/untangle/web/webui/script"
-    if File.exist? script_dir
-      
-      YuiCompressorTarget.make_min_targets(node, script_dir,
-                                       "#{node.distDirectory}/usr/share/untangle/web/webui/script",
-                                       "js").each do |t|
-        buildEnv.installTarget.register_dependency(t)
-      end
-    end
   end
 
   ## Helper to retrieve the standard dependencies for an impl

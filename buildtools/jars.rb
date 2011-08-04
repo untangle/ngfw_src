@@ -76,9 +76,8 @@ class Jars
     const_set(:Jabsorb, [ Jars.downloadTarget('jabsorb-1.2.2/jabsorb-1.2.2.jar')])
     const_set(:Json, [ Jars.downloadTarget('jabsorb-1.2.2/json.jar')])
     const_set(:GetText, [ Jars.downloadTarget('gettext-commons-0.9.1/gettext-commons-0.9.1.jar') ])
-    const_set(:Slf4j, [ Jars.downloadTarget( 'slf4j-1.4.3/slf4j-log4j12-1.4.3.jar'),
-                   Jars.downloadTarget( 'slf4j-1.4.3/slf4j-api-1.4.3.jar' ) ])
-    const_set(:YUICompressor, [ Jars.downloadTarget('yuicompressor-2.4.2/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar') ])
+    const_set(:Slf4j, [ Jars.downloadTarget( 'slf4j-1.4.3/slf4j-log4j12-1.4.3.jar'), 
+                        Jars.downloadTarget( 'slf4j-1.4.3/slf4j-api-1.4.3.jar' ) ])
 
     const_set(:TomcatCommon, [ 'commons-el.jar',
                               'jasper-compiler.jar',

@@ -16,8 +16,8 @@
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc-min.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/components-min.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/main-min.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/components.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/main.js?s=${buildStamp}"></script>
 
     <!-- todo, move this to a place where it is loaded dynamically. -->
     <script type="text/javascript" src="/script/timezone.js?s=${buildStamp}"></script>

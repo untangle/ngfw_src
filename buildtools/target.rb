@@ -388,15 +388,6 @@ class ServletBuilder < Target
       end
     end
 
-    script_dir = "#{path}/root/script"
-    if File.exist? script_dir
-      YuiCompressorTarget.make_min_targets(package, script_dir,
-                                           "#{@destRoot}/script",
-                                           "js").each do |t|
-        @srcJar.register_dependency(t)
-      end
-    end
-
     super(package, deps + jardeps, suffix)
   end
 
@@ -621,75 +612,6 @@ class JavaMsgFmtTarget
     ensureDirectory "#{@dest}/official/#{@lang}"
     raise "msgfmt failed" unless Kernel.system command
   end
-end
-
-# Compresses js and css files
-class YuiCompressorTarget
-  def initialize(package, script_file, src, dest, type)
-    @script_file = "#{src}/#{script_file}"
-    @dest = dest
-    @type = type
-
-    @filename = "#{dest}/#{script_file.sub(/\.#{type}/, '-min.'+type)}"
-
-    file @filename => @script_file do
-      build
-    end
-    task self => @filename
-  end
-
-  def YuiCompressorTarget.make_min_targets(package, src, dest, type)
-    ts = []
-    YuiCompressorTarget.listFiles(src, type).each do |f|
-      ts << YuiCompressorTarget.new(package, "#{f}", src, dest, type)
-    end
-
-    ts
-  end
-
-  def file?
-    true
-  end
-
-  def filename
-    @filename
-  end
-
-  def to_s
-    "yui-compressor:#{@filename}"
-  end
-
-  protected
-
-  def build()
-    info "[compress] #{@filename}"
-
-    ensureDirectory(File.dirname(@filename))
-    args = [@script_file, "--type", @type, "-o", @filename]
-    yuiCompressorJar = Jars.downloadTarget('yuicompressor-2.4.2/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar').filename
-    raise "YUI compress failed" unless
-      JavaCompiler.runJar([], yuiCompressorJar, *args )
-  end
-
-  private
-
-  def YuiCompressorTarget.listFiles(src, type, relative_path = nil)
-    files = []
-    Dir.new("#{src}").each do |f|
-      
-      if not f =~ /^\./ and File.directory?("#{src}/#{f}")
-        files = files + YuiCompressorTarget.listFiles("#{src}/#{f}", type, (relative_path ? "#{relative_path}/#{f}" : f))
-        next
-      end
-
-      file_path = "#{src}/#{f}"
-      if ( /\.#{type}$/ =~ f )
-        files << (relative_path ? "#{relative_path}/#{f}" : f) 
-      end
-    end
-    files
-  end
-
 end
 
 ## This is a JAR that must be built from Java Files

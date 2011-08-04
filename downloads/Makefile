@@ -31,7 +31,7 @@ tarballs_bz2=jaf-1.0.2.tar.bz2 \
 	postgres-jdbc-7.4_215.tar.bz2 
 
 zips=javamail-1_3_3_01.zip xstream-distribution-1.3-bin.zip \
-	jabsorb-1.2.2-src.zip yuicompressor-2.4.2.zip 
+	jabsorb-1.2.2-src.zip 
 
 jars=hibernate-client.jar gettext-commons-0.9.1.jar
 
