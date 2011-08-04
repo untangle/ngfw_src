@@ -1193,7 +1193,6 @@ Description: WebFilter Base
 Package: untangle-libuvmthirdparty
 Architecture: all
 Depends: sun-java6-jre
-Conflicts: mvvm (<< 5.0), libuvm-thirdparty, libmvvm-thirdparty
 Provides: libuvm-thirdparty
 Replaces: libuvm-thirdparty
 XB-Display-Name: Platform Thirdparty Libraries
@@ -1235,7 +1234,7 @@ Architecture: all
 Depends: conntrack, untangle-keyring, sun-java6-jdk, untangle-libuvm, untangle-libuvmcore, untangle-libuvmthirdparty, sudo, iptables (> 1.4.2-6), db4.2-util, untangle-ujac2pdf, at, ebtables, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, iputils-ping, curl, wget, sg3-utils, pciutils, libdbd-pg-ruby, ruby1.8, ruby, untangle-linux-image, exim4-daemon-light | mail-transport-agent, gettext, libgettext-ruby, ethtool, net-tools, dnsutils, untangle-net-alpaca, untangle-node-router, untangle-ldap-server, libgpgme-ruby, dash, untangle-apache2-config (>> 6.2), python-pycurl | python2.3-pycurl, libwww-mechanize-ruby, perl, untangle-vm-shell, zip, unzip, tofrodos, python-psycopg, python-psycopg2, python-egenix-mxdatetime, python-lxml, python-simplejson, tidy, dpkg-dev, python-codespeak-lib, python-reportlab, python-imaging, rsyslog, untangle-hardware-config, untangle-monit-config, untangle-php-config
 Recommends: untangle-postgresql-config, untangle-gateway-light
 Provides: mvvm
-Conflicts: mvvm, untangle-restore-tools (<< 5.1), untangle-linux-image-2.6.16-ck11-untangle-prod-486, untangle-linux-image-2.6.16-ck11-untangle-prod-xd-486, untangle-linux-image-2.6.16-ck11-untangle-cd-486, untangle-slapd, untangle-libldap-2.2-7, untangle-ldap-utils, untangle-client, untangle-arp-eater, untangle-cli-client, untangle-cli-server
+Conflicts: untangle-slapd, untangle-libldap-2.2-7, untangle-ldap-utils, untangle-client, untangle-arp-eater, untangle-cli-client, untangle-cli-server
 Replaces: mvvm
 XB-Display-Name: Platform
 XB-Untangle-Pkg-Type: library
@@ -1273,7 +1272,6 @@ Description: Platform
 
 Package: untangle-libuvm
 Architecture: all
-Conflicts: untangle-vm (<< 5.1)
 Depends: sun-java6-jre
 XB-Display-Name: Platform Libraries
 XB-Untangle-Pkg-Type: library
