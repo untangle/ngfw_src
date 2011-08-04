@@ -4,12 +4,10 @@
 package com.untangle.uvm.node;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import com.untangle.uvm.security.NodeId;
-import com.untangle.uvm.toolbox.PackageDesc;
 
 /**
  * Node settings and properties.
