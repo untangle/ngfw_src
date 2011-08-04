@@ -9,8 +9,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         initComponent : function() {
             // keep initial base settings
             this.genericRuleFields=[{
-                    name : 'id'
-                }, {
                     name : 'name',
                     type : 'string',
                     convert : function(v) {
@@ -35,11 +33,12 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 }, {
                     name : 'flagged'
                 }];
+            this.initialSettings = Ung.Util.clone(this.getSettings());
 
             this.buildBlockLists();
             this.buildPassLists();
             this.buildEventLog();
-        this.buildUnblockEventLog();
+            this.buildUnblockEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelBlockLists, this.panelPassLists, 
                 this.gridEventLog, this.gridUnblockEventLog]);
@@ -361,6 +360,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 title : this.i18n._("Categories"),
                 data: this.getSettings().categories.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                autoGenerateId: true,
                 fields : this.genericRuleFields,
                 columns : [{
                     id : 'name',
@@ -460,6 +460,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 title : this.i18n._("Sites"),
                 data: this.getSettings().blockedUrls.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                autoGenerateId: true,
                 fields : this.genericRuleFields,
                 columns : [{
                     id : 'string',
@@ -536,6 +537,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 title : this.i18n._("File Types"),
                 data : this.getSettings().blockedExtensions.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                autoGenerateId: true,
                 fields : this.genericRuleFields,
                 columns : [{
                     id : 'string',
@@ -607,6 +609,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 },
                 title : this.i18n._("MIME Types"),
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                autoGenerateId: true,
                 fields : this.genericRuleFields,
                 data : this.getSettings().blockedMimeTypes.list,
                 columns : [{
@@ -849,6 +852,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 title : this.i18n._("Sites"),
                 data: this.getSettings().passedUrls.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                autoGenerateId: true,
                 fields : this.genericRuleFields,
                 columns : [{
                     id : 'string',
@@ -914,6 +918,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 title : this.i18n._("Client IP addresses"),
                 data: this.getSettings().passedClients.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                autoGenerateId: true,
                 fields : this.genericRuleFields,
                 columns : [{
                     id : 'string',
@@ -1216,7 +1221,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             }.createDelegate(this), this.getSettings());
         },
         isDirty : function() {
-            return true;
+            return !Ung.Util.equals(this.getSettings(), this.initialSettings);
         }
     });
 }
