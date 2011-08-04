@@ -9,6 +9,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         initComponent : function() {
             // keep initial base settings
             this.genericRuleFields=[{
+                    name : 'id'
+                }, {
                     name : 'name',
                     type : 'string',
                     convert : function(v) {
@@ -34,7 +36,12 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name : 'flagged'
                 }];
             this.initialSettings = Ung.Util.clone(this.getSettings());
-
+            Ung.Util.generateListIds(this.getSettings().categories.list);
+            Ung.Util.generateListIds(this.getSettings().blockedUrls.list);
+            Ung.Util.generateListIds(this.getSettings().blockedExtensions.list);
+            Ung.Util.generateListIds(this.getSettings().blockedMimeTypes.list);
+            Ung.Util.generateListIds(this.getSettings().passedUrls.list);
+            Ung.Util.generateListIds(this.getSettings().passedClients.list);
             this.buildBlockLists();
             this.buildPassLists();
             this.buildEventLog();
@@ -179,6 +186,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     this.getRpcNode().getCategories(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
+                                        Ung.Util.generateListIds(result.list);
                                         this.gridCategories.reloadGrid({data:result.list});
                                         this.getSettings().categories = result;
                                     }.createDelegate(this));
@@ -225,6 +233,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     this.getRpcNode().getBlockedUrls(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
+                                        Ung.Util.generateListIds(result.list);
                                         this.gridBlockedUrls.reloadGrid({data:result.list});
                                         this.getSettings().blockedUrls = result;
                                     }.createDelegate(this));
@@ -271,6 +280,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     this.getRpcNode().getBlockedExtensions(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
+                                        Ung.Util.generateListIds(result.list);
                                         this.gridBlockedExtensions.reloadGrid({data:result.list});
                                         this.getSettings().blockedExtensions = result;
                                     }.createDelegate(this));
@@ -317,6 +327,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     this.getRpcNode().getBlockedMimeTypes(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
+                                        Ung.Util.generateListIds(result.list);
                                         this.gridBlockedMimeTypes.reloadGrid({data:result.list});
                                         this.getSettings().blockedMimeTypes = result;
                                     }.createDelegate(this));
@@ -360,7 +371,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 title : this.i18n._("Categories"),
                 data: this.getSettings().categories.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
-                autoGenerateId: true,
                 fields : this.genericRuleFields,
                 columns : [{
                     id : 'name',
@@ -460,7 +470,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 title : this.i18n._("Sites"),
                 data: this.getSettings().blockedUrls.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
-                autoGenerateId: true,
                 fields : this.genericRuleFields,
                 columns : [{
                     id : 'string',
@@ -537,7 +546,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 title : this.i18n._("File Types"),
                 data : this.getSettings().blockedExtensions.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
-                autoGenerateId: true,
                 fields : this.genericRuleFields,
                 columns : [{
                     id : 'string',
@@ -609,7 +617,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 },
                 title : this.i18n._("MIME Types"),
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
-                autoGenerateId: true,
                 fields : this.genericRuleFields,
                 data : this.getSettings().blockedMimeTypes.list,
                 columns : [{
@@ -732,6 +739,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     this.getRpcNode().getPassedUrls(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
+                                        Ung.Util.generateListIds(result.list);
                                         this.gridPassedUrls.reloadGrid({data:result.list});
                                         this.getSettings().passedUrls = result;
                                     }.createDelegate(this));
@@ -796,6 +804,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     this.getRpcNode().getPassedClients(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
+                                        Ung.Util.generateListIds(result.list);
                                         this.gridPassedClients.reloadGrid({data:result.list});
                                         this.getSettings().passedClients = result;
                                         if(callback != null) {
@@ -852,7 +861,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 title : this.i18n._("Sites"),
                 data: this.getSettings().passedUrls.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
-                autoGenerateId: true,
                 fields : this.genericRuleFields,
                 columns : [{
                     id : 'string',
@@ -918,7 +926,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 title : this.i18n._("Client IP addresses"),
                 data: this.getSettings().passedClients.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
-                autoGenerateId: true,
                 fields : this.genericRuleFields,
                 columns : [{
                     id : 'string',

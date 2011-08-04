@@ -589,7 +589,14 @@ Ung.Util= {
 
         }
     },
+    generateListIds: function(list) {
+        if(list == null) return;
+        for(var i=0; i<list.length; i++) {
+            list[i]["id"]=i+1;
+        }
+    },
     maxRowCount : 2147483647
+    
 };
 
 Ung.Util.RetryHandler = {
@@ -3805,7 +3812,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 name: 'id',
                 mapping: null,
                 convert : function(val, rec) {
-                    return this.generatedId++;
+                    return (rec.id !=null)?rec.id:this.generatedId++;
                 }.createDelegate(this)
             });
         }
