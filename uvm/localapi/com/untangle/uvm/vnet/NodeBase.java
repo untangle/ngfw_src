@@ -406,7 +406,6 @@ public abstract class NodeBase implements Node
         } finally {
             nodeManager.deregisterThreadContext();
         }
-        logger.info("started node");
     }
 
     private void stop(boolean syncState) throws Exception
