@@ -561,29 +561,17 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name : 'start',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'end',
-                    sortType : Ung.SortTypes.asTimestamp,
-                    convert : function(val) {
-                        var date = val;
-                        if (date == null) {
-                            date={time:0};
-                        }
-                        return date;
-                    }
-                }, {
-                    name : 'clientName'
-                }, {
-                    name : 'address',
-                    convert : function(val, rec) {
-                        return val == null ? "" : val + ":" + rec.port;
-                    }
+                    name : 'duration',
+                    mapping : 'seconds'
                 }, {
                     name : 'bytesTx',
+                    mapping : 'txBytes',
                     convert : function(val) {
                         return parseFloat(val) / 1024;
                     }
                 }, {
                     name : 'bytesRx',
+                    mapping : 'rxBytes',
                     convert : function(val) {
                         return parseFloat(val) / 1024;
                     }
@@ -597,27 +585,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         return i18n.timestampFormat(value);
                     }.createDelegate( this )
                 }, {
-                    header : this.i18n._("end time"),
+                    header : this.i18n._("duration (in seconds)"),
                     width : 130,
                     sortable : true,
-                    dataIndex : 'end',
-                    renderer : function(value) {
-                        if (( value == null ) || ( value.time == 0 )) {
-                            return this.i18n._( "active connection" );
-                        }
-                        return i18n.timestampFormat(value);
-                    }.createDelegate( this )
-                }, {
-                    id: 'client_name',
-                    header : this.i18n._("client name"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'clientName'
-                }, {
-                    header : this.i18n._("client address"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'address'
+                    dataIndex : 'duration'
                 }, {
                     header : this.i18n._("KB sent"),
                     width : 80,
@@ -634,9 +605,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     renderer : function( value ) {
                         return Math.round(( value + 0.0 ) * 10 ) / 10;
                     }.createDelegate( this )
-                }],
-                autoExpandColumn : 'client_name'
-
+                }]
             });
         },
         getDistributeColumn : function() {

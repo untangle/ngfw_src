@@ -13,18 +13,26 @@ import com.untangle.uvm.util.I18nUtil;
  * @author <a href="mailto:seb@untangle.com">Sebastien Delafond</a>
  * @version 1.0
  */
-public class UnblockEventAllFilter
+public class WebFilterUnblockedFilter
     implements SimpleEventFilter<UnblockEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All unblock events"));
+    private static final RepositoryDesc REPO_DESC
+        = new RepositoryDesc(I18nUtil.marktr("All unblock events (from reports tables)"));
 
-    private final String warmQuery;
+    private final String evtQuery;
 
-    UnblockEventAllFilter(WebFilterBase node)
+    private final String vendorName;
+    private final String capitalizedVendorName;
+
+    WebFilterUnblockedFilter(WebFilterBase node)
     {
-        warmQuery = "FROM UnblockEvent evt WHERE evt.vendorName = '"
-            + node.getVendor()
-            + "' AND evt.policy = :policy ORDER BY evt.timeStamp DESC";
+        this.vendorName = node.getVendor();
+        this.capitalizedVendorName = vendorName.substring(0, 1).toUpperCase() + 
+            vendorName.substring(1);
+
+        evtQuery = "FROM HttpLogEventFromReports evt " + 
+            "WHERE evt.wf" + capitalizedVendorName + "Category = 'unblocked' " + 
+            "AND evt.policyId = :policyId ";
     }
 
     // SimpleEventFilter methods ----------------------------------------------
@@ -36,7 +44,7 @@ public class UnblockEventAllFilter
 
     public String[] getQueries()
     {
-        return new String[] { warmQuery };
+        return new String[] { evtQuery };
     }
 
     public boolean accept(UnblockEvent e)

@@ -307,7 +307,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'action',
-                    mapping : 'blocked',
+                    mapping : 'ipsBlocked',
                     type : 'string',
                     convert : function(value) {
                         if (value) {
@@ -318,21 +318,18 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     }.createDelegate(this)
                 }, {
                     name : 'reason',
-                    mapping : 'ruleSid',
-                    type : 'string',
-                    convert : function(value, rec) {
-                           return "#" + rec.ruleSid + ": " + rec.message;
-                    }
+                    mapping : 'ipsName',
+                    type : 'string'
+                }, {
+                    name : 'description',
+                    mapping : 'ipsDescription',
+                    type : 'string'
                 }, {
                     name : 'client',
-                    mapping : 'pipelineEndpoints',
-                    sortType : Ung.SortTypes.asClient
+                    mapping : 'CClientaddr'
                 }, {
                     name : 'server',
-                    mapping : 'pipelineEndpoints',
-                    sortType : Ung.SortTypes.asServer
-                }, {
-                    name : 'message'
+                    mapping : 'CServerAddr'
                 }],
                 columns : [{
                     header : this.i18n._("timestamp"),
@@ -351,8 +348,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     header : this.i18n._("client"),
                     width : 165,
                     sortable : true,
-                    dataIndex : 'client',
-                    renderer : Ung.SortTypes.asClient
+                    dataIndex : 'client'
                 }, {
                     id: 'ruleSid',
                     header : this.i18n._('reason for action'),
@@ -360,11 +356,16 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     sortable : true,
                     dataIndex : 'reason'
                 }, {
+                    id: 'ruleDescription',
+                    header : this.i18n._('rule description'),
+                    width : 150,
+                    sortable : true,
+                    dataIndex : 'description'
+                }, {
                     header : this.i18n._("server"),
                     width : 165,
                     sortable : true,
-                    dataIndex : 'server',
-                    renderer : Ung.SortTypes.asServer
+                    dataIndex : 'server'
                 }],
                 autoExpandColumn: 'ruleSid'
                 

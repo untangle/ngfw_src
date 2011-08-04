@@ -57,16 +57,18 @@ class SimpleEventFilterAdaptor<E extends LogEvent>
         return simpleEventFilter.getRepositoryDesc();
     }
 
-    public boolean accept(E e)
-    {
-        return simpleEventFilter.accept(e);
-    }
+//     public boolean accept(E e)
+//     {
+//         return simpleEventFilter.accept(e);
+//     }
 
 
     public void doGetEvents(Session s, List<E> l, int limit, Map<String, Object> params)
     {
         for (String q : simpleEventFilter.getQueries()) {
+            logger.debug("Events required: query='" + q + "', params='" + params + "'");
             runQuery(q, s, l, limit, params);
+            logger.debug("... query returned: '" + l.size() + "'");
         }
     }
 

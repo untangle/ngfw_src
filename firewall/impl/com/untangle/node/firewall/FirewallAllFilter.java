@@ -24,10 +24,13 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class FirewallAllFilter implements SimpleEventFilter<FirewallEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Firewall Events"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Firewall Events (from reports tables)"));
 
     private static final String WARM_QUERY
-        = "FROM FirewallEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+        = "FROM SessionLogEventFromReports evt " +
+           "WHERE evt.policyId = :policyId " +
+           "AND firewallRuleIndex IS NOT NULL " +
+           "ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------
 
@@ -39,10 +42,5 @@ public class FirewallAllFilter implements SimpleEventFilter<FirewallEvent>
     public String[] getQueries()
     {
         return new String[] { WARM_QUERY };
-    }
-
-    public boolean accept(FirewallEvent e)
-    {
-        return true;
     }
 }

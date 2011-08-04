@@ -1,22 +1,4 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
-package com.untangle.node.spam;
+package com.untangle.node.virus;
 
 import java.util.Iterator;
 import java.util.List;
@@ -26,30 +8,35 @@ import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.MailLogEventFromReports;
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.util.I18nUtil;
 
-public class SpamAllFilter implements ListEventFilter<MailLogEventFromReports>
+/**
+ * Filter for HTTP virus events.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
+public class VirusSmtpInfectedFilter implements ListEventFilter<MailLogEventFromReports>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events (from reports tables)"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Mail Events (from reports tables)"));
 
     private final String vendor;
     private final String logQuery;
 
     // constructors -----------------------------------------------------------
 
-    public SpamAllFilter(String vendor)
+    VirusSmtpInfectedFilter(String vendor)
     {
-        if (vendor.equals("SpamAssassin")) //FIXME: more cases
-            this.vendor = "sa";
+        if (vendor.equals("Clam")) //FIXME: more cases
+            this.vendor = "Clam";
         else
             this.vendor = vendor;
-         
-        logQuery = "FROM MailLogEventFromReports AS evt" +
-            " WHERE evt.addrKind = 'T'" +
+
+        logQuery = "FROM MailLogEventFromReports evt" + 
+            " WHERE evt.virus" + this.vendor + "Clean IS FALSE" + 
             " AND evt.policyId = :policyId" + 
             " ORDER BY evt.timeStamp DESC";
     }

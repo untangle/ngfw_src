@@ -636,50 +636,17 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     name : 'timeStamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'action',
-                    mapping : 'blocked',
-                    type : 'string',
-                    convert :  function(value) {
-                        return value ? this.i18n._("block") : this.i18n._("pass");
-                    }.createDelegate(this)
-                }, {
                     name : 'client',
-                    mapping : 'pipelineEndpoints',
-                    sortType : Ung.SortTypes.asClient
+                    mapping : 'CClientAddr'
                 }, {
                     name : 'server',
-                    mapping : 'pipelineEndpoints',
-                    sortType : Ung.SortTypes.asServer
+                    mapping : 'CServerAddr'
                 }, {
                     name : 'request',
-                    mapping : 'location',
-                    type : 'string',
-                    convert : function(value, rec ) {
-                        return rec.location + " : " + rec.identification
+                    mapping : 'uri',
+                    type : 'string'
                     }
-                }, {
-                    name : 'reason',
-                    mapping : 'reason',
-                    type : 'string',
-                    convert : function(value, rec ) {
-                        var displayValue = value;
-                        switch (rec.type) {
-                            case 'Access' :
-                                displayValue = this.i18n._("in Subnet List");
-                                break;
-                            case 'ActiveX' :
-                                displayValue = this.i18n._("in ActiveX List");
-                                break;
-                            case 'Blacklist' :
-                                displayValue = this.i18n._("in URL List");
-                                break;
-                            case 'Cookie' :
-                                displayValue = this.i18n._("in Cookie List");
-                                break;
-                        }
-                        return displayValue;
-                    }.createDelegate(this)
-                }],
+                ],
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : 130,
@@ -689,16 +656,10 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("action"),
-                    width : 90,
-                    sortable : true,
-                    dataIndex : 'action'
-                }, {
                     header : this.i18n._("client"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'client',
-                    renderer : Ung.SortTypes.asClient
+                    dataIndex : 'client'
                 }, {
                     id: 'request',
                     header : this.i18n._("request"),
@@ -706,16 +667,10 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     sortable : true,
                     dataIndex : 'request'
                 }, {
-                    header : this.i18n._("reason for action"),
-                    width : 140,
-                    sortable : true,
-                    dataIndex : 'reason'
-                }, {
                     header : this.i18n._("server"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'server',
-                    renderer : Ung.SortTypes.asServer
+                    dataIndex : 'server'
                 }],
                 autoExpandColumn: 'request'
             });

@@ -624,64 +624,14 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name : 'timeStamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'displayAction',
-                    mapping : 'actionType',
-                    type : 'string',
-                    convert : function(value, rec ) {
-                        switch (rec.type) {
-                            case 'HTTP' :
-                            case 'FTP' :
-                                switch (value) {
-                                    case 0 : // PASSED
-                                        return this.i18n._("clean");
-                                    case 1 : // CLEANED
-                                        return this.i18n._("cleaned");
-                                    default :
-                                    case 2 : // BLOCKED
-                                        return this.i18n._("blocked");
-                                }
-                                break;
-                            case 'POP/IMAP' :
-                                switch (value) {
-                                    case 0 : // PASSED
-                                        return this.i18n._("pass message");
-                                    default :
-                                    case 1 : // CLEANED
-                                        return this.i18n._("remove infection");
-                                }
-                                break;
-                            case 'SMTP' :
-                                switch (value) {
-                                    case 0 : // PASSED
-                                        return this.i18n._("pass message");
-                                    case 1 : // CLEANED
-                                        return this.i18n._("remove infection");
-                                    default :
-                                    case 2 : // BLOCKED
-                                        return this.i18n._("block message");
-                                }
-                                break;
-                        }
-                        return "";
-                    }.createDelegate(this)
-                }, {
                     name : 'client',
-                    mapping : 'pipelineEndpoints',
-                    sortType : Ung.SortTypes.asClient
+                    mapping : 'CClientAddr'
                 }, {
                     name : 'server',
-                    mapping : 'pipelineEndpoints',
-                    sortType : Ung.SortTypes.asServer
-                }, {
-                    name : 'traffic',
-                    type : 'string'
+                    mapping : 'CServerAddr'
                 }, {
                     name : 'reason',
-                    mapping : 'infected',
-                    type : 'string',
-                    convert : function(value) {
-                        return value ? this.i18n._("virus found") : this.i18n._("no virus found");
-                    }.createDelegate(this)
+                    mapping : 'virusClamName' // FIXME: vendor name
                 }],
                 // the list of columns
                 columns : [{
@@ -693,22 +643,10 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("action"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'displayAction'
-                }, {
                     header : this.i18n._("client"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'client',
-                    renderer : Ung.SortTypes.asClient
-                }, {
-                    id: 'traffic',
-                    header : this.i18n._("traffic"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'traffic'
+                    dataIndex : 'client'
                 }, {
                     header : this.i18n._("reason for action"),
                     width : 140,
@@ -718,10 +656,8 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     header : this.i18n._("server"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'server',
-                    renderer : Ung.SortTypes.asServer
-                }],
-                autoExpandColumn: 'traffic'
+                    dataIndex : 'server'
+                }]
             });
         },
         // validation function

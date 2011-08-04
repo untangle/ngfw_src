@@ -1076,8 +1076,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 settingsCmp : this,
                 autoExpandColumn: "username",
                 fields : [{
-                    name : "id"
-                },{
                     name : "timeStamp",
                     sortType : Ung.SortTypes.asTimestamp
                 },{
@@ -1085,7 +1083,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 },{
                     name : "loginName"
                 },{
-                    name : "authenticationType"
+                    name : "authType"
                 },{
                     name : "event"
                 }],
@@ -1132,7 +1130,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     header : this.i18n._("Authentication"),
                     width : 165,
                     sortable : true,
-                    dataIndex : "authenticationType",
+                    dataIndex : "authType",
                     render : function( value ) {
                         switch ( value ) {
                         case "NONE":
@@ -1159,8 +1157,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 settingsCmp : this,
                 autoExpandColumn: "reason",
                 fields : [{
-                    name : "id"
-                },{
                     name : "timeStamp",
                     sortType : Ung.SortTypes.asTimestamp
                 },{

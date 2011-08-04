@@ -1,6 +1,3 @@
-# $HeadURL: svn://chef/work/src/buildtools/rake-util.rb $
-# Copyright (c) 2003-2009 Untangle, Inc.
-
 import gettext
 import logging
 import mx
@@ -127,7 +124,8 @@ CREATE TABLE reports.n_cpd_login_events (
     login_name text,
     event text,
     auth_type text,
-    client_addr inet)""",  'time_stamp', start_date, end_date)
+    client_addr inet,
+    event_id SERIAL)""",  'time_stamp', start_date, end_date)
 
         sd = DateFromMx(sql_helper.get_update_info('reports.n_cpd_login_events', start_date))
         ed = DateFromMx(end_date)
@@ -160,7 +158,8 @@ CREATE TABLE reports.n_cpd_block_events (
     client_address INET,
     client_port INT4,
     server_address INET,
-    server_port INT4)""",  'time_stamp', start_date, end_date)
+    server_port INT4,
+    event_id SERIAL)""",  'time_stamp', start_date, end_date)
 
         sd = DateFromMx(sql_helper.get_update_info('reports.n_cpd_block_events', start_date))
         ed = DateFromMx(end_date)

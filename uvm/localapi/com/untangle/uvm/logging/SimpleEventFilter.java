@@ -43,5 +43,4 @@ public interface SimpleEventFilter<E extends LogEvent>
 {
     RepositoryDesc getRepositoryDesc();
     String[] getQueries();
-    boolean accept(E e);
 }

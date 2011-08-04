@@ -48,5 +48,4 @@ public interface ListEventFilter<E extends LogEvent>
 {
     RepositoryDesc getRepositoryDesc();
     void doGetEvents(Session s, List<E> l, int limit, Map<String, Object> params);
-    boolean accept(E e);
 }

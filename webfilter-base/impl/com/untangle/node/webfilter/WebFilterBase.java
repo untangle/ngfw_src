@@ -87,15 +87,13 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
         SimpleEventFilter<WebFilterEvent> sef = new WebFilterBlockedFilter(this);
         eventLogger.addSimpleEventFilter(sef);
-        ListEventFilter<WebFilterEvent> lef = new WebFilterAllFilter(this);
-        eventLogger.addListEventFilter(lef);
-        sef = new WebFilterWhitelistFilter(this);
+        sef = new WebFilterAllFilter(this);
         eventLogger.addSimpleEventFilter(sef);
-        lef = new WebFilterPassedFilter(this);
-        eventLogger.addListEventFilter(lef);
+        sef = new WebFilterPassedFilter(this);
+        eventLogger.addSimpleEventFilter(sef);
 
         unblockEventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
-        UnblockEventAllFilter ueaf = new UnblockEventAllFilter(this);
+        WebFilterUnblockedFilter ueaf = new WebFilterUnblockedFilter(this);
         unblockEventLogger.addSimpleEventFilter(ueaf);
 
         MessageManager lmm = LocalUvmContextFactory.context().messageManager();

@@ -102,7 +102,9 @@ CREATE TABLE reports.n_mail_addrs (
     addr_kind char(1),
     msg_bytes bigint,
     msg_attachments integer,
-    hname text
+    hname text,
+    event_id text,
+    sender text
 )""",
                                             'time_stamp', start_date, end_date)
 
@@ -118,7 +120,7 @@ INSERT INTO reports.n_mail_addrs
        s_client_port, c_server_port, s_server_port, policy_id, policy_inbound,
        c2p_bytes, s2p_bytes, p2c_bytes, p2s_bytes, c2p_chunks, s2p_chunks,
        p2c_chunks, p2s_chunks, uid, msg_id, subject, server_type, addr_pos,
-       addr, addr_name, addr_kind, msg_bytes, msg_attachments, hname)
+       addr, addr_name, addr_kind, msg_bytes, msg_attachments, hname, event_id, sender)
     SELECT
         -- timestamp from request
         mi.time_stamp,
@@ -137,7 +139,9 @@ INSERT INTO reports.n_mail_addrs
         -- events.n_mail_message_stats
         mms.msg_bytes, mms.msg_attachments,
         -- from webpages
-        COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname
+        COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname,
+        md5(pe.session_id::text || mia.addr::text || mia.kind || mi.id::text),
+        ''
     FROM events.pl_endp pe
     JOIN events.pl_stats ps ON pe.event_id = ps.pl_endp_id
     JOIN events.n_mail_message_info mi ON mi.pl_endp_id = pe.event_id

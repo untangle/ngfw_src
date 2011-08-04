@@ -26,6 +26,7 @@ import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
@@ -172,30 +173,18 @@ public abstract class VirusNodeImpl extends AbstractNode
 
         String vendor = scanner.getVendorName();
 
-        SimpleEventFilter ef = new VirusAllFilter(vendor);
+        SimpleEventFilter ef = new VirusHttpInfectedFilter(vendor);
         eventLogger.addSimpleEventFilter(ef);
 
-        ef = new VirusInfectedFilter(vendor);
-        eventLogger.addSimpleEventFilter(ef);
-
-        ef = new VirusHttpFilter(vendor);
-        eventLogger.addSimpleEventFilter(ef);
-
-        ef = new VirusLogFilter(vendor);
-        eventLogger.addSimpleEventFilter(ef);
-
-        ef = new VirusMailFilter(vendor);
-        eventLogger.addSimpleEventFilter(ef);
-
-        ef = new VirusSmtpFilter(vendor);
-        eventLogger.addSimpleEventFilter(ef);
+        ListEventFilter lef = new VirusSmtpInfectedFilter(vendor);
+        eventLogger.addListEventFilter(lef);
 
         MessageManager lmm = LocalUvmContextFactory.context()
             .messageManager();
         Counters c = lmm.getCounters(getNodeId());
         scanBlinger = c.addActivity("scan",
                                     I18nUtil.marktr("Documents scanned"), null,
-                                    I18nUtil.marktr("SCAN"));
+                                    I18nUtil.marktr("SCAN !!!"));
         blockBlinger = c.addActivity("block",
                                      I18nUtil.marktr("Documents blocked"),
                                      null, I18nUtil.marktr("BLOCK"));

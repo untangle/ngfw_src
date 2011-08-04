@@ -17,6 +17,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
@@ -85,20 +86,18 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
 
         String vendor = scanner.getVendorName();
 
-        SimpleEventFilter ef = new SpamAllFilter(vendor);
-        eventLogger.addSimpleEventFilter(ef);
+        ListEventFilter lef = new SpamAllFilter(vendor);
+        eventLogger.addListEventFilter(lef);
 
-        ef = new SpamSpamFilter(vendor);
-        eventLogger.addSimpleEventFilter(ef);
+        lef = new SpamSpamFilter(vendor);
+        eventLogger.addListEventFilter(lef);
 
-        ef = new SpamSmtpFilter(vendor);
-        eventLogger.addSimpleEventFilter(ef);
-
-        ef = new SpamLogFilter(vendor);
-        eventLogger.addSimpleEventFilter(ef);
+        lef = new SpamLogFilter(vendor);
+        eventLogger.addListEventFilter(lef);
 
         // filters for RBL events
-        ef = new RBLAllFilter();
+        // FIXME: no equivalent info in reports tables
+        SimpleEventFilter ef = new RBLAllFilter();
         rblEventLogger.addSimpleEventFilter(ef);
 
         ef = new RBLSkippedFilter();

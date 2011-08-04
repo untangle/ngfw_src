@@ -24,10 +24,13 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class FirewallBlockedFilter implements SimpleEventFilter<FirewallEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Firewall Block Events"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Firewall Block Events (from reports tables)"));
 
     private static final String WARM_QUERY
-        = "FROM FirewallEvent evt WHERE evt.wasBlocked = true AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+        = "FROM SessionLogEventFromReports evt " +
+           "WHERE evt.policyId = :policyId " +
+           "AND firewallWasBlocked IS TRUE " +
+           "ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------
 
@@ -39,10 +42,5 @@ public class FirewallBlockedFilter implements SimpleEventFilter<FirewallEvent>
     public String[] getQueries()
     {
         return new String[] { WARM_QUERY };
-    }
-
-    public boolean accept(FirewallEvent e)
-    {
-        return e.getWasBlocked();
     }
 }

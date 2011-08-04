@@ -28,6 +28,7 @@ import org.hibernate.Session;
 
 import com.untangle.node.http.RequestLine;
 import com.untangle.uvm.logging.ListEventFilter;
+import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.util.I18nUtil;
 
@@ -37,24 +38,25 @@ import com.untangle.uvm.util.I18nUtil;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class WebFilterAllFilter implements ListEventFilter<WebFilterEvent>
+public class WebFilterAllFilter implements SimpleEventFilter<WebFilterEvent>
 {
-    private static final String RL_QUERY = "FROM RequestLine rl ORDER BY rl.httpRequestEvent.timeStamp DESC";
-
     private final String evtQuery;
 
     private static final RepositoryDesc REPO_DESC
-        = new RepositoryDesc(I18nUtil.marktr("All HTTP Traffic"));
+        = new RepositoryDesc(I18nUtil.marktr("All HTTP Traffic (from reports tables)"));
 
     private final String vendorName;
+    private final String capitalizedVendorName;
 
     public WebFilterAllFilter(WebFilterBase node)
     {
         this.vendorName = node.getVendor();
+        this.capitalizedVendorName = vendorName.substring(0, 1).toUpperCase() + 
+            vendorName.substring(1);
 
-        evtQuery = "FROM WebFilterEvent evt WHERE evt.vendorName = '"
-            + vendorName
-            + "' AND evt.requestLine = :requestLine";
+        evtQuery = "FROM HttpLogEventFromReports evt " + 
+            "WHERE evt.wf" + capitalizedVendorName + "Category IS NOT NULL " + 
+            "AND evt.policyId = :policyId ";
     }
 
     public RepositoryDesc getRepositoryDesc()
@@ -62,37 +64,8 @@ public class WebFilterAllFilter implements ListEventFilter<WebFilterEvent>
         return REPO_DESC;
     }
 
-    public boolean accept(WebFilterEvent e)
+    public String[] getQueries()
     {
-        return true;
-    }
-
-    @SuppressWarnings("unchecked") //Query
-    public void doGetEvents(Session s, List<WebFilterEvent> l, int limit, Map<String, Object> params)
-    {
-        Query q = s.createQuery(RL_QUERY);
-        for (String param : q.getNamedParameters()) {
-            Object o = params.get(param);
-            if (null != o) {
-                q.setParameter(param, o);
-            }
-        }
-
-        q.setMaxResults(limit);
-
-        int c = 0;
-        for (Iterator<RequestLine> i = q.iterate(); i.hasNext() && ++c < limit; ) {
-            RequestLine rl = i.next();
-            Query evtQ = s.createQuery(evtQuery);
-            evtQ.setEntity("requestLine", rl);
-            WebFilterEvent evt = (WebFilterEvent)evtQ.uniqueResult();
-            if (null == evt) {
-                evt = new WebFilterEvent(rl, null, null, null,
-                                         vendorName, true);
-            }
-            Hibernate.initialize(evt);
-            Hibernate.initialize(evt.getRequestLine());
-            l.add(evt);
-        }
+        return new String[] { evtQuery }; 
     }
 }

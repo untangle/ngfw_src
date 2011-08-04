@@ -11,19 +11,26 @@ import com.untangle.uvm.util.I18nUtil;
 public class WebFilterBlockedFilter
     implements SimpleEventFilter<WebFilterEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Blocked HTTP Traffic"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Blocked HTTP Traffic(from reports tables"));
 
-    private final String warmQuery;
+    private final String evtQuery;
+
+    private final String vendorName;
+    private final String capitalizedVendorName;
 
     WebFilterBlockedFilter(WebFilterBase node)
     {
-        warmQuery = "FROM WebFilterEvent evt WHERE evt.vendorName = '"
-            + node.getVendor()
-            + "' AND evt.action = 'B' AND evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+        this.vendorName = node.getVendor();
+        this.capitalizedVendorName = vendorName.substring(0, 1).toUpperCase() + 
+            vendorName.substring(1);
+
+        evtQuery = "FROM HttpLogEventFromReports evt " + 
+            "WHERE evt.wf" + capitalizedVendorName + "Category IS NOT NULL " + 
+            "AND evt.wf" + capitalizedVendorName + "Action = 'B' " + 
+            "AND evt.policyId = :policyId ";
     }
 
     // SimpleEventFilter methods ----------------------------------------------
-
     public RepositoryDesc getRepositoryDesc()
     {
         return REPO_DESC;
@@ -31,11 +38,6 @@ public class WebFilterBlockedFilter
 
     public String[] getQueries()
     {
-        return new String[] { warmQuery };
-    }
-
-    public boolean accept(WebFilterEvent e)
-    {
-        return e.isPersistent() && Action.BLOCK == e.getAction();
+        return new String[] { evtQuery };
     }
 }

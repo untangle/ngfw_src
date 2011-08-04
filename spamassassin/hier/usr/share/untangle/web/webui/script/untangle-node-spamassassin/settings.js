@@ -821,65 +821,51 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     name : 'timeStamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
+                    name : 'vendor',
+                    mapping : 'vendor'
+                }, {
                     name : 'displayAction',
-                    mapping : 'actionType',
+                    mapping : 'saAction', // FIXME: vendor name ?
                     type : 'string',
-                    convert : function(value, rec ) {
-                        switch (rec.type) {
-                          case 'POP/IMAP' :
-                            switch (value) {
-                              case 0 : // PASSED
+                    convert : function(value, rec ) { // FIXME: make that a switch
+                            if (value == 'P') { // PASSED
                                 return this.i18n._("pass message");
-                              case 1 : // MARKED
+                            } else if (value == 'M') { // MARKED
                                 return this.i18n._("mark message");
-                            default :
-                                return this.i18n._("unknown action");
-                            }
-                            break;
-                          case 'SMTP' :
-                            switch (value) {
-                              case 0 : // PASSED
-                                return this.i18n._("pass message");
-                              case 1 : // MARKED
-                                return this.i18n._("mark message");
-                              case 2 : // DROP
+                            } else if (value == 'B') { // DROP
                                 return this.i18n._("drop message");
-                              case 3 : // QUARANTINED
+                            } else if (value == 'Q') { // QUARANTINED
                                 return this.i18n._("quarantine message");
-                              case 4 : // SAFELISTED
+                            } else if (value == 'S') { // SAFELISTED
                                 return this.i18n._("safelist message");
-                              case 5 : // OVERSIZE
+                            } else if (value == 'Z') { // OVERSIZE
                                 return this.i18n._("pass oversize message");
-                            default:
+                            } else {
                                 return this.i18n._("unknown action");
                             }
-                            break;
-                        }
                         return "";
                     }.createDelegate(this)
                 }, {
                     name : 'client',
-                    mapping : 'clientAddr',
-                    convert : function(value, rec ) {
-                        return value === null ? "" : rec.clientAddr + ":" + rec.clientPort;
-                    }
+                    mapping : 'CClientAddr'
                 }, {
                     name : 'server',
-                    mapping : 'serverAddr',
-                    convert : function(value, rec ) {
-                        return value === null ? "" : rec.serverAddr + ":" + rec.serverPort;
-                    }
+                    mapping : 'SServerAddr'
                 }, {
                     name : 'subject',
                     type : 'string'
                 }, {
-                    name : 'receiver',
+                    name : 'addrName',
+                    type : 'string'
+                }, {
+                    name : 'addr',
                     type : 'string'
                 }, {
                     name : 'sender',
                     type : 'string'
                 }, {
-                    name : 'score'
+                    name : 'score',
+                    mapping : 'saScore'// FIXME : vendor name ?
                 }],
                 // the list of columns
                 columns : [{
@@ -909,7 +895,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     header : this.i18n._("receiver"),
                     width : 150,
                     sortable : true,
-                    dataIndex : 'receiver'
+                    dataIndex : 'addr'
                 }, {
                     header : this.i18n._("sender"),
                     width : 120,

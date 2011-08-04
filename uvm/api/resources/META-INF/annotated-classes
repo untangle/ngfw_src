@@ -10,6 +10,12 @@ com.untangle.uvm.addrbook.RepositorySettings
 com.untangle.uvm.message.ActiveStat
 com.untangle.uvm.logging.LoggingSettings
 com.untangle.uvm.logging.SystemStatEvent
+com.untangle.uvm.logging.SessionLogEventFromReports
+com.untangle.uvm.logging.HttpLogEventFromReports
+com.untangle.uvm.logging.MailLogEventFromReports
+com.untangle.uvm.logging.OpenvpnLogEventFromReports
+com.untangle.uvm.logging.CpdBlockEventsFromReports
+com.untangle.uvm.logging.CpdLoginEventsFromReports
 com.untangle.uvm.networking.AccessSettings
 com.untangle.uvm.networking.AddressSettings
 com.untangle.uvm.networking.MiscSettings

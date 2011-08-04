@@ -24,11 +24,13 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class IpsBlockedFilter implements SimpleEventFilter<IpsLogEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Blocked Events"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Blocked Events (from reports tables)"));
 
-    private static final String WARM_QUERY = "FROM IpsLogEvent evt "
-        + "WHERE evt.blocked = true AND evt.pipelineEndpoints.policy = :policy "
-        + "ORDER BY evt.timeStamp DESC";
+    private static final String WARM_QUERY
+        = "FROM SessionLogEventFromReports evt " +
+           "WHERE evt.policyId = :policyId " +
+           "AND ipsBlocked IS TRUE " +
+           "ORDER BY evt.timeStamp DESC";
 
     // constructors -----------------------------------------------------------
 
@@ -44,10 +46,5 @@ public class IpsBlockedFilter implements SimpleEventFilter<IpsLogEvent>
     public String[] getQueries()
     {
         return new String[] { WARM_QUERY };
-    }
-
-    public boolean accept(IpsLogEvent e)
-    {
-        return e.isBlocked();
     }
 }

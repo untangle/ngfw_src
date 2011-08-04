@@ -204,25 +204,24 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'action',
-                    mapping : 'blocked',
+                    mapping : 'pfBlocked',
                     convert : asAction,
                     type : 'string'
                 }, {
                     name : 'reason',
-                    mapping : 'blocked',
+                    mapping : 'pfBlocked',
                     convert : asReason,
                     type : 'string'
                 }, {
                     name : 'client',
-                    mapping : 'pipelineEndpoints',
-                    sortType : Ung.SortTypes.asClient
+                    mapping : 'CClientAddr'
                 }, {
                     name : 'server',
-                    mapping : 'pipelineEndpoints',
-                    sortType : Ung.SortTypes.asServer
+                    mapping : 'CServerAddr'
                 }, {
                     name : 'protocol',
-                    type : 'string'
+                    type : 'string',
+                    mapping : 'pfProtocol'
                 }],
                 columns : [{
                     header : this.i18n._("timestamp"),
@@ -241,10 +240,9 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     header : this.i18n._("client"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'client',
-                    renderer : Ung.SortTypes.asClient
+                    dataIndex : 'client'
                 }, {
-                    header : this.i18n._("request"),
+                    header : this.i18n._("protocol"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'protocol'
@@ -257,8 +255,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     header : this.i18n._("server"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'server',
-                    renderer : Ung.SortTypes.asServer
+                    dataIndex : 'server'
                 }]
             });
         },

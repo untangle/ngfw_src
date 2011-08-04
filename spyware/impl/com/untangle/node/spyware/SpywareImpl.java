@@ -1,6 +1,3 @@
-/*
- * $Id$
- */
 package com.untangle.node.spyware;
 
 import java.io.IOException;
@@ -109,10 +106,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
         statisticManager = new SpywareStatisticManager(nodeContext);
 
         SimpleEventFilter ef = new SpywareAllFilter();
-        eventLogger.addSimpleEventFilter(ef);
-        ef = new SpywareBlockedFilter();
-        eventLogger.addSimpleEventFilter(ef);
-        ef = new SpywareAccessFilter();
         eventLogger.addSimpleEventFilter(ef);
         ef = new SpywareBlacklistFilter();
         eventLogger.addSimpleEventFilter(ef);

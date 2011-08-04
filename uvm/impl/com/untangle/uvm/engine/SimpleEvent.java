@@ -21,6 +21,7 @@ package com.untangle.uvm.engine;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -104,7 +105,13 @@ class SimpleEvent<E extends LogEvent> implements EventRepository<E>
                         Map<String,Object> params;
                         if (null != tctx) {
                             Policy policy = tctx.getNodeId().getPolicy();
-                            params = Collections.singletonMap("policy", (Object)policy);
+                            if (policy != null) {
+                                params = new HashMap<String,Object>();
+                                params.put("policy", (Object)policy);
+                                params.put("policyId", (Object)policy.getId());
+                            } else {
+                                params = Collections.emptyMap();
+                            }
                         } else {
                             params = Collections.emptyMap();
                         }
@@ -122,12 +129,12 @@ class SimpleEvent<E extends LogEvent> implements EventRepository<E>
             }
 
             Collections.sort(list);
-            Long last = null;
+            String last = null;
             for (Iterator<E> i = list.iterator(); i.hasNext(); ) {
                 E e = i.next();
-                Long id = e.getId();
+                String id = e.getId();
                 if (null == id) {
-                    id = new Long(System.identityHashCode(e));
+                    id = Integer.toString(System.identityHashCode(e));
                 }
 
                 if (null == last ? last == id : last.equals(id)) {

@@ -24,11 +24,13 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class IpsLogFilter implements SimpleEventFilter<IpsLogEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events (from reports table)"));
 
-    private static final String WARM_QUERY = "FROM IpsLogEvent evt "
-        + "WHERE evt.pipelineEndpoints.policy = :policy "
-        + "ORDER BY evt.timeStamp DESC";
+    private static final String WARM_QUERY
+        = "FROM SessionLogEventFromReports evt " +
+           "WHERE evt.policyId = :policyId " +
+           "AND ipsName IS NOT NULL " +
+           "ORDER BY evt.timeStamp DESC";
 
     // constructors -----------------------------------------------------------
 

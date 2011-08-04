@@ -957,16 +957,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         },
         // Event Log
         buildEventLog : function() {
-            var asClient = function(value) {
-                return (value === null  || value.pipelineEndpoints === null) ? "" : value.pipelineEndpoints.CClientAddr + ":" + value.pipelineEndpoints.CClientPort;
-            };
-            var asServer = function(value) {
-                return (value === null  || value.pipelineEndpoints === null) ? "" : value.pipelineEndpoints.SServerAddr + ":" + value.pipelineEndpoints.SServerPort;
-            };
-            var asRequest = function(value) {
-                return (value === null  || value.url === null) ? "" : value.url;
-            };
-
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
                 fields : [{
@@ -974,51 +964,51 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'displayAction',
-                    mapping : 'actionType',
+                    mapping : 'wfUntangleAction', // FIXME: vendorName
                     type : 'string',
                     convert : function(value) {
                         switch (value) {
-                            case 0 : // PASSED
+                            case 'I' : // PASSED
                                 return this.i18n._("pass");
                             default :
-                            case 1 : // BLOCKED
                                 return this.i18n._("block");
                         }
                     }.createDelegate(this)
                 }, {
                     name : 'client',
-                    mapping : 'requestLine',
-                    sortType : asClient
+                    mapping : 'CClientAddr'
                 }, {
                     name : 'server',
-                    mapping : 'requestLine',
-                    sortType : asServer
+                    mapping : 'CServerAddr'
                 }, {
-                    name : 'request',
-                    mapping : 'requestLine',
-                    sortType : asRequest
+                    name : 'host',
+                    mapping : 'host'
+                }, {
+                    name : 'uri',
+                    mapping : 'uri'
                 }, {
                     name : 'reason',
+                    mapping : 'wfUntangleReason', // FIXME: vendorName
                     type : 'string',
                     convert : function(value) {
                         switch (value) {
-                            case 'BLOCK_CATEGORY' :
+                            case 'D' :
                                 return this.i18n._("in Categories Block list");
-                            case 'BLOCK_URL' :
+                            case 'U' :
                                 return this.i18n._("in URLs Block list");
-                            case 'BLOCK_EXTENSION' :
+                            case 'E' :
                                 return this.i18n._("in File Extensions Block list");
-                            case 'BLOCK_MIME' :
+                            case 'M' :
                                 return this.i18n._("in MIME Types Block list");
-                            case 'BLOCK_ALL' :
+                            case 'A' :
                                 return this.i18n._("blocking all traffic");
-                            case 'BLOCK_IP_HOST' :
+                            case 'H' :
                                 return this.i18n._("hostname is an IP address");
-                            case 'PASS_URL' :
+                            case 'I' :
                                 return this.i18n._("in URLs Pass list");
-                            case 'PASS_CLIENT' :
+                            case 'C' :
                                 return this.i18n._("in Clients Pass list");
-                            case 'PASS_BYPASS' :
+                            case 'B' :
                                 return this.i18n._("Client Bypass");
                             default :
                             case 'DEFAULT' :
@@ -1027,7 +1017,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     }.createDelegate(this)
 
                 }],
-                autoExpandColumn: 'request',
+                autoExpandColumn: 'host',
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : 120,
@@ -1045,15 +1035,19 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     header : this.i18n._("client"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'client',
-                    renderer : asClient
+                    dataIndex : 'client'
                 }, {
-                    id: 'request',
-                    header : this.i18n._("request"),
+                    id: 'host',
+                    header : this.i18n._("host"),
                     width : 200,
                     sortable : true,
-                    dataIndex : 'request',
-                    renderer : asRequest
+                    dataIndex : 'host'
+                }, {
+                    id: 'uri',
+                    header : this.i18n._("uri"),
+                    width : 200,
+                    sortable : true,
+                    dataIndex : 'uri'
                 }, {
                     header : this.i18n._("reason for action"),
                     width : 150,
@@ -1063,8 +1057,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     header : this.i18n._("server"),
                     width : 120,
                     sortable : true,
-                    dataIndex : 'server',
-                    renderer : asServer
+                    dataIndex : 'server'
                 }]
 
             });
@@ -1075,29 +1068,19 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         eventManagerFn : this.getRpcNode().getUnblockEventManager(),
         name : "Unblock Log",
         title : i18n._('Unblock Log'),
-                fields : [{
-                    name : 'timeStamp',
-            mapping : 'timeStamp',
-                    sortType : Ung.SortTypes.asTimestamp
-                },
-                {
-                    name : 'isPermanent',
-            mapping : 'isPermanent',
-                    type : 'string',
-                    convert : function(value) {
-                        return ( value ) ? this.i18n._("permanent") : this.i18n._("temporary");
-                    }.createDelegate(this)
-                }, {
-                    name : 'clientAddress',
-            mapping : 'clientAddress'
-                }, {
-                    name : 'uid',
-            mapping : 'uid'
-                },{
-                    name : 'request',
-            mapping : 'requestUri'
-        }],
-                autoExpandColumn: 'request',
+                fields : [{ name : 'timeStamp',
+                            mapping : 'timeStamp',
+                            sortType : Ung.SortTypes.asTimestamp
+                        }, { name : 'client',
+                             mapping : 'CClientAddr'
+                        }, { name : 'server',
+                             mapping : 'CServerAddr'
+                        }, { name : 'host',
+                             mapping : 'host'
+                        }, { name : 'uri',
+                             mapping : 'uri'
+                        }],
+                autoExpandColumn: 'host',
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : 120,
@@ -1107,26 +1090,24 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("permanent"),
-                    width : 100,
-                    sortable : true,
-                    dataIndex : 'isPermanent'
-                }, {
                     header : this.i18n._("client"),
                     width : 120,
-                    sortable : true,
-                    dataIndex : 'clientAddress'
+                    sortable : true
                 }, {
-                    header : this.i18n._("username"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'uid'
-                }, {
-                    id : "request",
-                    header : this.i18n._("request"),
+                    id : "host",
+                    header : this.i18n._("host"),
                     width : 200,
-                    sortable : true,
-                    dataIndex : 'request'
+                    sortable : true
+                }, {
+                    id : "uri",
+                    header : this.i18n._("uri"),
+                    width : 200,
+                    sortable : true
+                }, {
+                    id : "server",
+                    header : this.i18n._("server"),
+                    width : 200,
+                    sortable : true
                 }]
             });
         },

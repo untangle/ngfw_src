@@ -1,0 +1,277 @@
+package com.untangle.uvm.logging;
+
+import java.net.InetAddress;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
+
+import com.untangle.uvm.logging.PipelineEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
+import com.untangle.uvm.node.PipelineEndpoints;
+
+/**
+ * Log event from the denormalized reports.n_http_events table
+ *
+ * @author Sebastien Delafond
+ * @version 1.0
+ */
+@Entity
+    @org.hibernate.annotations.Entity(mutable=false)
+    @Table(name="n_http_events", schema="reports")
+    @SuppressWarnings("serial")
+    public class HttpLogEventFromReports extends LogEvent
+    {
+        private Integer sessionId;
+        private Integer clientIntf;
+        private Integer serverIntf;
+        private InetAddress cClientAddr;
+        private InetAddress sClientAddr;
+        private InetAddress cServerAddr;
+        private InetAddress sServerAddr;
+        private Integer cClientPort;
+        private Integer sClientPort;
+        private Integer cServerPort;
+        private Integer sServerPort;
+        private Long policyId;
+        private Boolean policyInbound;
+        private Long c2pBytes;
+        private Long s2pBytes;
+        private Long p2cBytes;
+        private Long p2sBytes;
+        private Long c2pChunks;
+        private Long s2pChunks;
+        private Long p2cChunks;
+        private Long p2sChunks;
+        private String uid;
+        private Long requestId;
+        private String method;
+        private String uri;
+        private String host;
+        private Integer c2sContentLength;
+        private Integer s2cContentLength;
+        private String s2cContentType;
+        private String hname;
+        private String wfEsoftAction;
+        private String wfEsoftReason;
+        private String wfEsoftCategory;
+        private Boolean virusClamClean;
+        private String virusClamName;
+        private Boolean swBlacklisted;
+        private String swCookieIdent;
+        private Boolean virusKasperskyClean;
+        private String virusKasperskyName;
+        private String wfUntangleAction;
+        private String wfUntangleReason;
+        private String wfUntangleCategory;
+        private String abAction;
+
+        // constructors -----------------------------------------------------------
+
+        protected HttpLogEventFromReports() { }
+
+        // accessors --------------------------------------------------------------
+        @Column(name="session_id")
+            public Integer getSessionId() { return sessionId; }
+        public void setSessionId(Integer sessionId) { this.sessionId = sessionId; }
+
+        @Column(name="client_intf")
+            public Integer getClientIntf() { return clientIntf; }
+        public void setClientIntf(Integer clientIntf) { this.clientIntf = clientIntf; }
+
+        @Column(name="server_intf")
+            public Integer getServerIntf() { return serverIntf; }
+        public void setServerIntf(Integer serverIntf) { this.serverIntf = serverIntf; }
+
+        @Column(name="c_client_addr")
+        @Type(type="com.untangle.uvm.type.InetAddressUserType")
+            public InetAddress getCClientAddr() { return cClientAddr; }
+        public void setCClientAddr(InetAddress cClientAddr) { this.cClientAddr = cClientAddr; }
+
+        @Column(name="s_client_addr")
+        @Type(type="com.untangle.uvm.type.InetAddressUserType")
+            public InetAddress getSClientAddr() { return sClientAddr; }
+        public void setSClientAddr(InetAddress sClientAddr) { this.sClientAddr = sClientAddr; }
+
+        @Column(name="c_server_addr")
+        @Type(type="com.untangle.uvm.type.InetAddressUserType")
+            public InetAddress getCServerAddr() { return cServerAddr; }
+        public void setCServerAddr(InetAddress cServerAddr) { this.cServerAddr = cServerAddr; }
+
+        @Column(name="s_server_addr")
+        @Type(type="com.untangle.uvm.type.InetAddressUserType")
+            public InetAddress getSServerAddr() { return sServerAddr; }
+        public void setSServerAddr(InetAddress sServerAddr) { this.sServerAddr = sServerAddr; }
+
+        @Column(name="c_client_port")
+            public Integer getCClientPort() { return cClientPort; }
+        public void setCClientPort(Integer cClientPort) { this.cClientPort = cClientPort; }
+
+        @Column(name="s_client_port")
+            public Integer getSClientPort() { return sClientPort; }
+        public void setSClientPort(Integer sClientPort) { this.sClientPort = sClientPort; }
+
+        @Column(name="c_server_port")
+            public Integer getCServerPort() { return cServerPort; }
+        public void setCServerPort(Integer cServerPort) { this.cServerPort = cServerPort; }
+
+        @Column(name="s_server_port")
+            public Integer getSServerPort() { return sServerPort; }
+        public void setSServerPort(Integer sServerPort) { this.sServerPort = sServerPort; }
+
+        @Column(name="policy_id")
+            public Long getPolicyId() { return policyId; }
+        public void setPolicyId(Long policyId) { this.policyId = policyId; }
+
+        @Column(name="policy_inbound")
+            public Boolean getPolicyInbound() { return policyInbound; }
+        public void setPolicyInbound(Boolean policyInbound) { this.policyInbound = policyInbound; }
+
+        @Column(name="c2p_bytes")
+            public Long getC2pBytes() { return c2pBytes; }
+        public void setC2pBytes(Long c2pBytes) { this.c2pBytes = c2pBytes; }
+
+        @Column(name="s2p_bytes")
+            public Long getS2pBytes() { return s2pBytes; }
+        public void setS2pBytes(Long s2pBytes) { this.s2pBytes = s2pBytes; }
+
+        @Column(name="p2c_bytes")
+            public Long getP2cBytes() { return p2cBytes; }
+        public void setP2cBytes(Long p2cBytes) { this.p2cBytes = p2cBytes; }
+
+        @Column(name="p2s_bytes")
+            public Long getP2sBytes() { return p2sBytes; }
+        public void setP2sBytes(Long p2sBytes) { this.p2sBytes = p2sBytes; }
+
+        @Column(name="c2p_chunks")
+            public Long getC2pChunks() { return c2pChunks; }
+        public void setC2pChunks(Long c2pChunks) { this.c2pChunks = c2pChunks; }
+
+        @Column(name="s2p_chunks")
+            public Long getS2pChunks() { return s2pChunks; }
+        public void setS2pChunks(Long s2pChunks) { this.s2pChunks = s2pChunks; }
+
+        @Column(name="p2c_chunks")
+            public Long getP2cChunks() { return p2cChunks; }
+        public void setP2cChunks(Long p2cChunks) { this.p2cChunks = p2cChunks; }
+
+        @Column(name="p2s_chunks")
+            public Long getP2sChunks() { return p2sChunks; }
+        public void setP2sChunks(Long p2sChunks) { this.p2sChunks = p2sChunks; }
+
+        @Column(name="uid")
+            public String getUid() { return uid; }
+        public void setUid(String uid) { this.uid = uid; }
+
+        @Column(name="request_id")
+            public Long getRequestId() { return requestId; }
+        public void setRequestId(Long requestId) { this.requestId = requestId; }
+
+        @Column(name="method")
+            public String getMethod() { return method; }
+        public void setMethod(String method) { this.method = method; }
+
+        @Column(name="uri")
+            public String getUri() { return uri; }
+        public void setUri(String uri) { this.uri = uri; }
+
+        @Column(name="host")
+            public String getHost() { return host; }
+        public void setHost(String host) { this.host = host; }
+
+        @Column(name="c2s_content_length")
+            public Integer getC2sContentLength() { return c2sContentLength; }
+        public void setC2sContentLength(Integer c2sContentLength) { this.c2sContentLength = c2sContentLength; }
+
+        @Column(name="s2c_content_length")
+            public Integer getS2cContentLength() { return s2cContentLength; }
+        public void setS2cContentLength(Integer s2cContentLength) { this.s2cContentLength = s2cContentLength; }
+
+        @Column(name="s2c_content_type")
+            public String getS2cContentType() { return s2cContentType; }
+        public void setS2cContentType(String s2cContentType) { this.s2cContentType = s2cContentType; }
+
+        @Column(name="hname")
+            public String getHname() { return hname; }
+        public void setHname(String hname) { this.hname = hname; }
+
+        @Column(name="wf_esoft_action")
+            public String getWfEsoftAction() { return wfEsoftAction; }
+        public void setWfEsoftAction(String wfEsoftAction) { this.wfEsoftAction = wfEsoftAction; }
+
+        @Column(name="wf_esoft_reason")
+            public String getWfEsoftReason() { return wfEsoftReason; }
+        public void setWfEsoftReason(String wfEsoftReason) { this.wfEsoftReason = wfEsoftReason; }
+
+        @Column(name="wf_esoft_category")
+            public String getWfEsoftCategory() { return wfEsoftCategory; }
+        public void setWfEsoftCategory(String wfEsoftCategory) { this.wfEsoftCategory = wfEsoftCategory; }
+
+        @Column(name="virus_clam_clean")
+            public Boolean getVirusClamClean() { return virusClamClean; }
+        public void setVirusClamClean(Boolean virusClamClean) { this.virusClamClean = virusClamClean; }
+
+        @Column(name="virus_clam_name")
+            public String getVirusClamName() { return virusClamName; }
+        public void setVirusClamName(String virusClamName) { this.virusClamName = virusClamName; }
+
+        @Column(name="sw_blacklisted")
+            public Boolean getSwBlacklisted() { return swBlacklisted; }
+        public void setSwBlacklisted(Boolean swBlacklisted) { this.swBlacklisted = swBlacklisted; }
+
+        @Column(name="sw_cookie_ident")
+            public String getSwCookieIdent() { return swCookieIdent; }
+        public void setSwCookieIdent(String swCookieIdent) { this.swCookieIdent = swCookieIdent; }
+
+        @Column(name="virus_kaspersky_clean")
+            public Boolean getVirusKasperskyClean() { return virusKasperskyClean; }
+        public void setVirusKasperskyClean(Boolean virusKasperskyClean) { this.virusKasperskyClean = virusKasperskyClean; }
+
+        @Column(name="virus_kaspersky_name")
+            public String getVirusKasperskyName() { return virusKasperskyName; }
+        public void setVirusKasperskyName(String virusKasperskyName) { this.virusKasperskyName = virusKasperskyName; }
+
+        @Column(name="wf_untangle_action")
+            public String getWfUntangleAction() { return wfUntangleAction; }
+        public void setWfUntangleAction(String wfUntangleAction) { this.wfUntangleAction = wfUntangleAction; }
+
+        @Column(name="wf_untangle_reason")
+            public String getWfUntangleReason() { return wfUntangleReason; }
+        public void setWfUntangleReason(String wfUntangleReason) { this.wfUntangleReason = wfUntangleReason; }
+
+        @Column(name="wf_untangle_category")
+            public String getWfUntangleCategory() { return wfUntangleCategory; }
+        public void setWfUntangleCategory(String wfUntangleCategory) { this.wfUntangleCategory = wfUntangleCategory; }
+
+        @Column(name="ab_action")
+            public String getAbAction() { return abAction; }
+        public void setAbAction(String abAction) { this.abAction = abAction; }
+
+        public void appendSyslog(SyslogBuilder sb) // FIXME: not called for now
+        {
+        }
+
+        @Transient
+        public String getSyslogId()
+        {
+            return ""; // FIMXE ?
+        }
+
+        @Transient
+        public SyslogPriority getSyslogPriority()
+        {
+            // FIXME
+            return SyslogPriority.INFORMATIONAL;
+        }
+
+    }

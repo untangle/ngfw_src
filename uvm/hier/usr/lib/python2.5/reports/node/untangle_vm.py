@@ -255,6 +255,7 @@ INSERT INTO reports.hnames (date, hname)
         sql_helper.create_partitioned_table("""\
 CREATE TABLE reports.sessions (
         pl_endp_id int8 NOT NULL,
+        event_id int8 NOT NULL,
         time_stamp timestamp NOT NULL,
         end_time timestamp NOT NULL,
         hname text,
@@ -280,7 +281,7 @@ CREATE TABLE reports.sessions (
 
         conn = sql_helper.get_connection()
         try:
-            sql_helper.run_sql("""\
+            sql_helper.run_sql("""
 CREATE TEMPORARY TABLE newsessions AS
     SELECT endp.event_id, endp.time_stamp, endp.policy_id, mam.name,
            endp.c_client_addr, endp.c_server_addr, endp.c_server_port,
@@ -292,12 +293,12 @@ CREATE TEMPORARY TABLE newsessions AS
     WHERE endp.time_stamp >= %s AND endp.time_stamp < %s
 """, (sd, ed), connection=conn, auto_commit=False)
 
-            sql_helper.run_sql("""\
+            sql_helper.run_sql("""
 INSERT INTO reports.sessions
-    (pl_endp_id, time_stamp, end_time, hname, uid, policy_id, c_client_addr,
+    (pl_endp_id, event_id, time_stamp, end_time, hname, uid, policy_id, c_client_addr,
      c_server_addr, c_server_port, c_client_port, client_intf, server_intf,
      c2p_bytes, p2c_bytes, s2p_bytes, p2s_bytes)
-    SELECT ses.event_id, ses.time_stamp, stats.time_stamp,
+    SELECT ses.event_id, ses.event_id, ses.time_stamp, stats.time_stamp,
          COALESCE(NULLIF(ses.name, ''), HOST(ses.c_client_addr)) AS hname,
          stats.uid, policy_id, c_client_addr, c_server_addr, c_server_port,
          c_client_port, client_intf, server_intf, stats.c2p_bytes,

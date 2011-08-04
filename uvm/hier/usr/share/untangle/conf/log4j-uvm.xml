@@ -151,6 +151,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.uvm.engine.SimpleEventFilterAdaptor">
+    <priority value="DEBUG"/>
+  </category>
+
   <category name="com.untangle.uvm.policy">
     <priority value="INFO"/>
   </category>

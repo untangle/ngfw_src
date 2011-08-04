@@ -24,10 +24,13 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class ProtoFilterBlockedFilter implements SimpleEventFilter<ProtoFilterLogEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Blocked Protocol Events"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Blocked Protocol Events (from reports tables)"));
 
     private static final String WARM_QUERY
-        = "FROM ProtoFilterLogEvent evt WHERE blocked = true AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+        = "FROM SessionLogEventFromReports evt " +
+           "WHERE evt.policyId = :policyId " +
+           "AND pfBlocked IS TRUE " +
+           "ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------
 
@@ -39,10 +42,5 @@ public class ProtoFilterBlockedFilter implements SimpleEventFilter<ProtoFilterLo
     public String[] getQueries()
     {
         return new String[] { WARM_QUERY };
-    }
-
-    public boolean accept(ProtoFilterLogEvent e)
-    {
-        return e.isBlocked();
     }
 }

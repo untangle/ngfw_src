@@ -60,7 +60,7 @@ public abstract class LogEvent implements Comparable<LogEvent>, Serializable
 {
     public static final int DEFAULT_STRING_SIZE = 255;
 
-    private Long id;
+    private String id;
     private Date timeStamp = new Date();
 
     // constructors -----------------------------------------------------------
@@ -72,12 +72,12 @@ public abstract class LogEvent implements Comparable<LogEvent>, Serializable
     @Id
     @Column(name="event_id")
     @GeneratedValue
-    public Long getId()
+    public String getId()
     {
         return id;
     }
 
-    protected void setId(Long id)
+    protected void setId(String id)
     {
         this.id = id;
     }
@@ -149,8 +149,8 @@ public abstract class LogEvent implements Comparable<LogEvent>, Serializable
             if (le.id == id) {
                 return 0;
             } else {
-                Long t = null == id ? 0L : id;
-                Long u = null == le.id ? 0L : le.id;
+                String t = null == id ? "0" : id;
+                String u = null == le.id ? "0" : le.id;
                 return t.compareTo(u);
             }
         } else {

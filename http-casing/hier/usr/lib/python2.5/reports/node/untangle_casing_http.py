@@ -70,7 +70,8 @@ CREATE TABLE reports.n_http_events (
     request_id bigint, method character(1), uri text,
     host text, c2s_content_length integer,
     s2c_content_length integer, s2c_content_type text,
-    hname text
+    hname text,
+    event_id bigint
 )""",
                                             'time_stamp', start_date, end_date)
 
@@ -86,7 +87,7 @@ INSERT INTO reports.n_http_events
        s_client_port, c_server_port, s_server_port, policy_id, policy_inbound,
        c2p_bytes, s2p_bytes, p2c_bytes, p2s_bytes, c2p_chunks, s2p_chunks,
        p2c_chunks, p2s_chunks, uid, request_id, method, uri, host,
-       c2s_content_length, s2c_content_length, s2c_content_type, hname)
+       c2s_content_length, s2c_content_length, s2c_content_type, hname, event_id)
     SELECT
         -- timestamp from request
         er.time_stamp,
@@ -105,7 +106,8 @@ INSERT INTO reports.n_http_events
         -- n_http_evt_resp
         resp.content_length, resp.content_type,
         -- from webpages
-        COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname
+        COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname,
+        pe.session_id
     FROM events.pl_endp pe
     JOIN events.pl_stats ps ON pe.event_id = ps.pl_endp_id
     JOIN events.n_http_req_line req ON pe.event_id = req.pl_endp_id

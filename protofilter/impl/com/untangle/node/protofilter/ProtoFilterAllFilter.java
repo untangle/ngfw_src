@@ -24,10 +24,13 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class ProtoFilterAllFilter implements SimpleEventFilter<ProtoFilterLogEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Protocol Events"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Protocol Events (from reports tables)"));
 
     private static final String WARM_QUERY
-        = "FROM ProtoFilterLogEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+        = "FROM SessionLogEventFromReports evt " +
+           "WHERE evt.policyId = :policyId " +
+           "AND pfProtocol IS NOT NULL " +
+           "ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------
 
@@ -39,10 +42,5 @@ public class ProtoFilterAllFilter implements SimpleEventFilter<ProtoFilterLogEve
     public String[] getQueries()
     {
         return new String[] { WARM_QUERY };
-    }
-
-    public boolean accept(ProtoFilterLogEvent e)
-    {
-        return true;
     }
 }

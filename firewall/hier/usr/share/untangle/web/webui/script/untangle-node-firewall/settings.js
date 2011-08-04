@@ -445,21 +445,21 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'action',
-                    mapping : 'wasBlocked',
+                    mapping : 'firewallWasBlocked',
                     type : 'string',
                     convert : function(value) {
                         return value ? this.i18n._("blocked") : this.i18n._("passed");
                     }.createDelegate(this)
                 }, {
-                    name : 'ruleIndex'
+                    name : 'firewallRulesIndex'
+                }, {
+                    name : 'firewallRuleDescription'
                 }, {
                     name : 'client',
-                    mapping : 'pipelineEndpoints',
-                    sortType : Ung.SortTypes.asClient
+                    mapping : 'CClientAddr'
                 }, {
                     name : 'server',
-                    mapping : 'pipelineEndpoints',
-                    sortType : Ung.SortTypes.asServer
+                    mapping : 'CCServerAddr'
                 }],
                 columns : [{
                     header : this.i18n._("timestamp"),
@@ -478,8 +478,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     header : this.i18n._("client"),
                     width : 165,
                     sortable : true,
-                    dataIndex : 'client',
-                    renderer : Ung.SortTypes.asClient
+                    dataIndex : 'client'
                 }, {
                     id: 'ruleIndex',
                     header : this.i18n._('reason for action'),
@@ -490,11 +489,16 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                            return String.format(this.i18n._("rule #{0}"), value);
                     }.createDelegate(this)
                 }, {
+                    id: 'ruleDescription',
+                    header : this.i18n._('rule description'),
+                    width : 150,
+                    sortable : true,
+                    dataIndex : 'firewallRuleDescription'
+                }, {
                     header : this.i18n._("server"),
                     width : 165,
                     sortable : true,
-                    dataIndex : 'server',
-                    renderer : Ung.SortTypes.asServer
+                    dataIndex : 'server'
                 }],
                 autoExpandColumn: 'ruleIndex'
 

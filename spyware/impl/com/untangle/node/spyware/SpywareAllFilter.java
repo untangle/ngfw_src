@@ -1,22 +1,18 @@
-/*
- * $Id$
- */
 package com.untangle.node.spyware;
 
+import com.untangle.uvm.logging.SessionLogEventFromReports;
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.util.I18nUtil;
 
-public class SpywareAllFilter implements SimpleEventFilter<SpywareEvent>
+public class SpywareAllFilter implements SimpleEventFilter<SessionLogEventFromReports>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events (from reports tables)"));
 
-    private static final String ACCESS_QUERY
-        = "FROM SpywareAccessEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
-    private static final String BLACKLIST_QUERY
-        = "FROM SpywareBlacklistEvent evt WHERE evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
-    private static final String COOKIE_QUERY
-        = "FROM SpywareCookieEvent evt WHERE evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+    private static final String logQuery = "FROM SessionLogEventFromReports evt " +
+        "WHERE evt.policyId = :policyId " +
+        "AND sw_access_ident != ''" +
+        "ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------
 
@@ -27,11 +23,6 @@ public class SpywareAllFilter implements SimpleEventFilter<SpywareEvent>
 
     public String[] getQueries()
     {
-        return new String[] { ACCESS_QUERY, BLACKLIST_QUERY, COOKIE_QUERY };
-    }
-
-    public boolean accept(SpywareEvent e)
-    {
-        return true;
+        return new String[] { logQuery };
     }
 }
