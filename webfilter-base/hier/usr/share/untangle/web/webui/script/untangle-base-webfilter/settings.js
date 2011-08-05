@@ -7,41 +7,17 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         gridEventLog : null,
         // called when the component is rendered
         initComponent : function() {
-            // keep initial base settings
-            this.genericRuleFields=[{
-                    name : 'id'
-                }, {
-                    name : 'name',
-                    type : 'string',
-                    convert : function(v) {
-                        return this.i18n._(v);
-                    }.createDelegate(this)
-                }, {
-                    name : 'string',
-                    type : 'string'
-                }, {
-                    name : 'description',
-                    type : 'string',
-                    convert : function(v) {
-                        return this.i18n._(v);
-                    }.createDelegate(this)
-                }, {
-                    name : 'category',
-                    type : 'string'
-                }, {
-                    name : 'enabled'
-                }, {
-                    name : 'blocked'
-                }, {
-                    name : 'flagged'
-                }];
-            this.initialSettings = Ung.Util.clone(this.getSettings());
+            this.genericRuleFields = Ung.Util.getGenericRuleFields(this);
             Ung.Util.generateListIds(this.getSettings().categories.list);
             Ung.Util.generateListIds(this.getSettings().blockedUrls.list);
             Ung.Util.generateListIds(this.getSettings().blockedExtensions.list);
             Ung.Util.generateListIds(this.getSettings().blockedMimeTypes.list);
             Ung.Util.generateListIds(this.getSettings().passedUrls.list);
             Ung.Util.generateListIds(this.getSettings().passedClients.list);
+
+            // keep initial base settings
+            this.initialSettings = Ung.Util.clone(this.getSettings());
+            
             this.buildBlockLists();
             this.buildPassLists();
             this.buildEventLog();
@@ -178,7 +154,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             applyAction : function(forceLoad){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 var saveList = {
-                                    javaClass : "java.util.ArrayList",
+                                    javaClass : "java.util.LinkedList",
                                     list : settingsCmp.gridCategories.getFullSaveList()
                                 };
                                 settingsCmp.getRpcNode().setCategories(function(result, exception) {
@@ -224,7 +200,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             applyAction : function(forceLoad){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 var saveList = {
-                                    javaClass : "java.util.ArrayList",
+                                    javaClass : "java.util.LinkedList",
                                     list : settingsCmp.gridBlockedUrls.getFullSaveList()
                                 };
                                 settingsCmp.alterUrls(saveList);
@@ -271,7 +247,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             applyAction : function(forceLoad){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 var saveList = {
-                                        javaClass : "java.util.ArrayList",
+                                        javaClass : "java.util.LinkedList",
                                         list : settingsCmp.gridBlockedExtensions.getFullSaveList()
                                     };
                                 settingsCmp.getRpcNode().setBlockedExtensions(function(result, exception) {
@@ -318,7 +294,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             applyAction : function(forceLoad){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 var saveList = {
-                                        javaClass : "java.util.ArrayList",
+                                        javaClass : "java.util.LinkedList",
                                         list : settingsCmp.gridBlockedMimeTypes.getFullSaveList()
                                     };
                                 settingsCmp.getRpcNode().setBlockedMimeTypes(function(result, exception) {
@@ -729,7 +705,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             applyAction : function(forceLoad){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 var saveList = {
-                                        javaClass : "java.util.ArrayList",
+                                        javaClass : "java.util.LinkedList",
                                         list : settingsCmp.gridPassedUrls.getFullSaveList()
                                     };
                                 settingsCmp.alterUrls(saveList);
@@ -795,7 +771,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 var saveList = {
-                                        javaClass : "java.util.ArrayList",
+                                        javaClass : "java.util.LinkedList",
                                         list : settingsCmp.gridPassedClients.getFullSaveList()
                                     };
                                 settingsCmp.getRpcNode().setPassedClients(function(result, exception) {
@@ -1164,7 +1140,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         try {
                             result = this.getValidator().validate({
                                 list : ipMaddrList,
-                                "javaClass" : "java.util.ArrayList"
+                                "javaClass" : "java.util.LinkedList"
                             });
                         } catch (e) {
                             Ung.Util.rpcExHandler(e);
