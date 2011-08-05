@@ -279,7 +279,8 @@ Ung.Util= {
         }
     },
     getScriptSrc: function(sScriptSrc){
-        return main.debugMode ? sScriptSrc : sScriptSrc.replace(/\.js$/, "-min.js");
+        //return main.debugMode ? sScriptSrc : sScriptSrc.replace(/\.js$/, "-min.js");
+        return sScriptSrc ;
     },
     // Load css file Dynamically
     loadCss: function(filename) {
