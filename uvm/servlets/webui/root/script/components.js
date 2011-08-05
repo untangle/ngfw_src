@@ -596,8 +596,36 @@ Ung.Util= {
             list[i]["id"]=i+1;
         }
     },
+    getGenericRuleFields: function(settingsCmp) {
+        return [{
+                name : 'id'
+            }, {
+                name : 'name',
+                type : 'string',
+                convert : function(v) {
+                    return settingsCmp.i18n._(v);
+                }.createDelegate(settingsCmp)
+            }, {
+                name : 'string',
+                type : 'string'
+            }, {
+                name : 'description',
+                type : 'string',
+                convert : function(v) {
+                    return settingsCmp.i18n._(v);
+                }.createDelegate(settingsCmp)
+            }, {
+                name : 'category',
+                type : 'string'
+            }, {
+                name : 'enabled'
+            }, {
+                name : 'blocked'
+            }, {
+                name : 'flagged'
+            }];
+    },
     maxRowCount : 2147483647
-    
 };
 
 Ung.Util.RetryHandler = {

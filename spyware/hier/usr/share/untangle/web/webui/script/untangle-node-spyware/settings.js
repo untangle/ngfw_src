@@ -3,15 +3,20 @@ if (!Ung.hasResource["Ung.Spyware"]) {
     Ung.NodeWin.registerClassName('untangle-node-spyware', "Ung.Spyware");
 
     Ung.Spyware = Ext.extend(Ung.NodeWin, {
-        gridActiveXList : null,
+        //gridActiveXList : null,
         gridCookiesList : null,
         gridSubnetList : null,
         panelBlockLists : null,
         gridPassList : null,
         gridEventLog : null,
         initComponent : function() {
-            // keep initial base settings
-            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
+            this.genericRuleFields = Ung.Util.getGenericRuleFields(this);
+            Ung.Util.generateListIds(this.getSettings().cookies.list);
+            Ung.Util.generateListIds(this.getSettings().subnets.list);
+            Ung.Util.generateListIds(this.getSettings().passedUrls.list);
+
+            // keep initial  settings
+            this.initialSettings = Ung.Util.clone(this.getSettings());
 
             this.buildBlockLists();
             this.buildPassList();
@@ -26,7 +31,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 name : 'Block Lists',
                 helpSource : 'block_lists',
                 winCookiesList : null,
-                winActiveXList : null,
+                //winActiveXList : null,
                 winSubnetList : null,
                 subCmps : [],
                 title : this.i18n._("Block Lists"),
@@ -48,11 +53,11 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         boxLabel : this.i18n._('Block Spyware & Ad URLs'),
                         hideLabel : true,
                         name : 'Block Spyware & Ad URLs',
-                        checked : this.getBaseSettings().urlBlacklistEnabled,
+                        checked : this.getSettings().scanUrls,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getBaseSettings().urlBlacklistEnabled = checked;
+                                    this.getSettings().scanUrls = checked;
                                 }.createDelegate(this)
                             }
                         }
@@ -63,19 +68,19 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         fieldLabel : this.i18n._('User Bypass'),
                         name : "User Bypass",
                         store : new Ext.data.SimpleStore({
-                            fields : ['userWhitelistValue', 'userWhitelistName'],
-                            data : [["NONE", this.i18n._("None")], ["USER_ONLY", this.i18n._("Temporary")],
-                                    ["USER_AND_GLOBAL", this.i18n._("Permanent and Global")]]
+                            fields : ['unblockModeValue', 'unblockModeName'],
+                            data : [["None", this.i18n._("None")], ["Host", this.i18n._("Host")],
+                                    ["Global", this.i18n._("Permanent and Global")]]
                         }),
-                        displayField : 'userWhitelistName',
-                        valueField : 'userWhitelistValue',
-                        value : this.getBaseSettings().userWhitelistMode,
+                        displayField : 'unblockModeName',
+                        valueField : 'unblockModeValue',
+                        value : this.getSettings().unblockMode,
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getBaseSettings().userWhitelistMode = newValue;
+                                    this.getSettings().unblockMode = newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -87,11 +92,11 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         boxLabel : this.i18n._('Block Tracking & Ad Cookies'),
                         hideLabel : true,
                         name : 'Block Tracking & Ad Cookies',
-                        checked : this.getBaseSettings().cookieBlockerEnabled,
+                        checked : this.getSettings().scanCookies,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getBaseSettings().cookieBlockerEnabled = checked;
+                                    this.getSettings().scanCookies = checked;
                                 }.createDelegate(this)
                             }
                         }
@@ -103,18 +108,18 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             this.panelBlockLists.onManageCookiesList();
                         }.createDelegate(this)
                     }]
-                }, {
+                }, /*{
                     title : this.i18n._('ActiveX'),
                     items : [{
                         xtype : 'checkbox',
                         boxLabel : this.i18n._('Block Malware ActiveX Installs'),
                         hideLabel : true,
                         name : 'Block Malware ActiveX Installs',
-                        checked : this.getBaseSettings().activeXEnabled,
+                        checked : this.getSettings().activeXEnabled,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getBaseSettings().activeXEnabled = checked;
+                                    this.getSettings().activeXEnabled = checked;
                                 }.createDelegate(this)
                             }
                         }
@@ -123,11 +128,11 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         boxLabel : this.i18n._('Block All ActiveX'),
                         hideLabel : true,
                         name : 'Block All ActiveX',
-                        checked : this.getBaseSettings().blockAllActiveX,
+                        checked : this.getSettings().blockAllActiveX,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getBaseSettings().blockAllActiveX = checked;
+                                    this.getSettings().blockAllActiveX = checked;
                                 }.createDelegate(this)
                             }
                         }
@@ -139,18 +144,18 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             this.panelBlockLists.onManageActiveXList();
                         }.createDelegate(this)
                     }]
-                }, {
+                },*/ {
                     title : this.i18n._('Traffic'),
                     items : [{
                         xtype : 'checkbox',
                         boxLabel : this.i18n._('Monitor Suspicious Traffic'),
                         hideLabel : true,
                         name : 'Monitor Suspicious Traffic',
-                        checked : this.getBaseSettings().spywareEnabled,
+                        checked : this.getSettings().scanSubnets,
                         listeners : {
                             "check" : {
                                 fn : function(elem, checked) {
-                                    this.getBaseSettings().spywareEnabled = checked;
+                                    this.getSettings().scanSubnets = checked;
                                 }.createDelegate(this)
                             }
                         }
@@ -165,7 +170,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }, {
                     cls: 'description',
                     html : this.i18n._("Spyware Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + ((this.getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getLastSignatureUpdate()) :
+                            + ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()) :
                             this.i18n._("Unknown"))
                 }],
 
@@ -186,7 +191,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                                     );
                                 }.createDelegate(settingsCmp)
                             }, {
-                                title : settingsCmp.node.md.displayName,
+                                title : settingsCmp.node.displayName,
                                 action : function() {
                                     this.panelBlockLists.winCookiesList.cancelAction();
                                 }.createDelegate(settingsCmp)
@@ -200,29 +205,28 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             }],
                             grid : settingsCmp.gridCookiesList,
                             applyAction : function(forceLoad){
-                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                            var saveList = settingsCmp.gridCookiesList.getSaveList();
-                                            settingsCmp.getRpcNode().updateCookieRules(function(result, exception) {
-                                                if(Ung.Util.handleException(exception)){
-                                                    Ext.MessageBox.hide();
-                                                    return;
-                                                }
-                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
-                                                    Ext.MessageBox.hide();                                                
-                                                    if(Ung.Util.handleException(exception2)){
-                                                        return;
-                                                    }
-                                                    this.gridCookiesList.setTotalRecords(result2.cookieRulesLength);
-                                                    if(forceLoad===true){                                                
-                                                        this.gridCookiesList.reloadGrid();
-                                                    }                                                    
-                                                }.createDelegate(this));
-                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                var saveList = {
+                                    javaClass : "java.util.LinkedList",
+                                    list : settingsCmp.gridCookiesList.getFullSaveList()
+                                };
+                                settingsCmp.alterUrls(saveList.list);
+                                settingsCmp.getRpcNode().setCookies(function(result, exception) {
+                                    if(Ung.Util.handleException(exception)) return;
+                                    this.getRpcNode().getCookies(function(result, exception) {
+                                        Ext.MessageBox.hide();
+                                        if(Ung.Util.handleException(exception)) return;
+                                        Ung.Util.generateListIds(result.list);
+                                        this.gridCookiesList.reloadGrid({data:result.list});
+                                        this.getSettings().cookies = result;
+                                    }.createDelegate(this));
+                                }.createDelegate(settingsCmp), saveList);
                             }    
                         });
                     }
                     this.winCookiesList.show();
                 },
+                /*
                 onManageActiveXList : function() {
                     if (!this.winActiveXList) {
                         var settingsCmp = Ext.getCmp(this.parentId);
@@ -240,7 +244,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                                     );
                                 }.createDelegate(settingsCmp)
                             }, {
-                                title : settingsCmp.node.md.displayName,
+                                title : settingsCmp.node.displayName,
                                 action : function() {
                                     this.panelBlockLists.winActiveXList.cancelAction();
                                 }.createDelegate(settingsCmp)
@@ -261,7 +265,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                                                     Ext.MessageBox.hide();
                                                     return;
                                                 }
-                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
+                                                this.getRpcNode().getSettings(function(result2,exception2){
                                                     Ext.MessageBox.hide();                                                
                                                     if(Ung.Util.handleException(exception2)){
                                                         return;
@@ -277,6 +281,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     }
                     this.winActiveXList.show();
                 },
+                */
                 onManageSubnetList : function() {
                     if (!this.winSubnetList) {
                         var settingsCmp = Ext.getCmp(this.parentId);
@@ -294,7 +299,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                                     );
                                 }.createDelegate(settingsCmp)
                             }, {
-                                title : settingsCmp.node.md.displayName,
+                                title : settingsCmp.node.displayName,
                                 action : function() {
                                     this.panelBlockLists.winSubnetList.cancelAction();
                                 }.createDelegate(settingsCmp)
@@ -308,24 +313,22 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             }],
                             grid : settingsCmp.gridSubnetList,
                             applyAction : function(forceLoad){
-                                            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                            var saveList = settingsCmp.gridSubnetList.getSaveList();
-                                            settingsCmp.getRpcNode().updateSubnetRules(function(result, exception) {
-                                                if(Ung.Util.handleException(exception)){
-                                                    Ext.MessageBox.hide();
-                                                    return;
-                                                }
-                                                this.getRpcNode().getBaseSettings(function(result2,exception2){
-                                                    Ext.MessageBox.hide();                                                
-                                                    if(Ung.Util.handleException(exception2)){
-                                                        return;
-                                                    }
-                                                    this.gridSubnetList.setTotalRecords(result2.subnetRulesLength);
-                                                    if(forceLoad===true){                                                
-                                                        this.gridSubnetList.reloadGrid();
-                                                    }                                                    
-                                                }.createDelegate(this));
-                                            }.createDelegate(settingsCmp), saveList[0],saveList[1],saveList[2]);
+                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                var saveList = {
+                                    javaClass : "java.util.LinkedList",
+                                    list : settingsCmp.gridSubnetList.getFullSaveList()
+                                };
+                                settingsCmp.alterUrls(saveList);
+                                settingsCmp.getRpcNode().setSubnets(function(result, exception) {
+                                    if(Ung.Util.handleException(exception)) return;
+                                    this.getRpcNode().getSubnets(function(result, exception) {
+                                        Ext.MessageBox.hide();
+                                        if(Ung.Util.handleException(exception)) return;
+                                        Ung.Util.generateListIds(result.list);
+                                        this.gridSubnetList.reloadGrid({data:result.list});
+                                        this.getSettings().subnets = result;
+                                    }.createDelegate(this));
+                                }.createDelegate(settingsCmp), saveList);
                             }
                         });
                     }
@@ -333,7 +336,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 },
 
                 beforeDestroy : function() {
-                    Ext.destroy(this.winCookiesList, this.winActiveXList, this.winSubnetList);
+                    Ext.destroy(this.winCookiesList, /*this.winActiveXList, */this.winSubnetList);
                     Ext.each(this.subCmps, Ext.destroy);
                     Ext.Panel.prototype.beforeDestroy.call(this);
                 }
@@ -342,35 +345,24 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         },
         // Cookies List
         buildCookiesList : function() {
-            var liveColumn = new Ext.grid.CheckColumn({
+            var enabledColumn = new Ext.grid.CheckColumn({
                 header : "<b>" + this.i18n._("block") + "</b>",
-                dataIndex : 'live',
+                dataIndex : 'enabled',
                 fixed : true
             });
 
             this.gridCookiesList = new Ung.EditorGrid({
                 name : 'Cookies List',
                 settingsCmp : this,
-                totalRecords : this.getBaseSettings().cookieRulesLength,
                 emptyRow : {
                     "string" : this.i18n._("[no identification]"),
-                    "live" : true,
+                    "enabled" : true,
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Cookies List"),
-                recordJavaClass : "com.untangle.uvm.node.StringRule",
-                proxyRpcFn : this.getRpcNode().getCookieRules,
-                fields : [{
-                    name : 'id'
-                }, {
-                    name : 'string',
-                    type : 'string'
-                }, {
-                    name : 'live'
-                }, {
-                    name : 'description',
-                    type : 'string'
-                }],
+                data: this.getSettings().cookies.list,
+                recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                fields : this.genericRuleFields,
                 columns : [{
                     id : 'string',
                     header : this.i18n._("identification"),
@@ -379,11 +371,11 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                }, liveColumn],
+                }, enabledColumn],
                 sortField : 'string',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'string',
-                plugins : [liveColumn],
+                plugins : [enabledColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
                     name : "Identification",
                     dataIndex : "string",
@@ -392,42 +384,32 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     width : 200
                 }), new Ext.form.Checkbox({
                     name : "Block",
-                    dataIndex : "live",
+                    dataIndex : "enabled",
                     fieldLabel : this.i18n._("Block")
                 })]
             });
         },
+/*        
         // ActiveX List
         buildActiveXList : function() {
-            var liveColumn = new Ext.grid.CheckColumn({
+            var enabledColumn = new Ext.grid.CheckColumn({
                 header : "<b>" + this.i18n._("block") + "</b>",
-                dataIndex : 'live',
+                dataIndex : 'enabled',
                 fixed : true
             });
 
             this.gridActiveXList = new Ung.EditorGrid({
                 name : 'ActiveX List',
                 settingsCmp : this,
-                totalRecords : this.getBaseSettings().activeXRulesLength,
                 emptyRow : {
                     "string" : this.i18n._("[no identification]"),
-                    "live" : true,
+                    "enabled" : true,
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("ActiveX List"),
-                recordJavaClass : "com.untangle.uvm.node.StringRule",
-                proxyRpcFn : this.getRpcNode().getActiveXRules,
-                fields : [{
-                    name : 'id'
-                }, {
-                    name : 'string',
-                    type : 'string'
-                }, {
-                    name : 'live'
-                }, {
-                    name : 'description',
-                    type : 'string'
-                }],
+                data: this.getSettings().cookies.list,
+                recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                fields : this.genericRuleFields,
                 columns : [{
                     id : 'string',
                     header : this.i18n._("identification"),
@@ -436,11 +418,11 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                }, liveColumn],
+                }, enabledColumn],
                 sortField : 'string',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'string',
-                plugins : [liveColumn],
+                plugins : [enabledColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
                     name : "Identification",
                     dataIndex : "string",
@@ -449,45 +431,33 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     width : 300
                 }), new Ext.form.Checkbox({
                     name : "Block",
-                    dataIndex : "live",
+                    dataIndex : "enabled",
                     fieldLabel : this.i18n._("Block")
                 })]
             });
         },
+*/        
         // Subnet List
         buildSubnetList : function() {
-            var logColumn = new Ext.grid.CheckColumn({
+            var flagColumn = new Ext.grid.CheckColumn({
                 header : "<b>" + this.i18n._("log") + "</b>",
-                dataIndex : 'log',
+                dataIndex : 'flagged',
                 fixed : true
             });
 
             this.gridSubnetList = new Ung.EditorGrid({
                 name : 'Subnet List',
                 settingsCmp : this,
-                totalRecords : this.getBaseSettings().subnetRulesLength,
                 emptyRow : {
-                    "ipMaddr" : "1.2.3.4/5",
+                    "string" : "1.2.3.4/5",
                     "name" : this.i18n._("[no name]"),
-                    "log" : true,
+                    "flagged" : true,
                     description : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Subnet List"),
-                recordJavaClass : "com.untangle.uvm.node.IPMaskedAddressRule",
-                proxyRpcFn : this.getRpcNode().getSubnetRules,
-                fields : [{
-                    name : 'id'
-                }, {
-                    name : 'name',
-                    type : 'string'
-                }, {
-                    name : 'ipMaddr'
-                }, {
-                    name : 'log'
-                }, {
-                    name : 'description',
-                    type : 'string'
-                }],
+                data: this.getSettings().subnets.list,
+                recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                fields : this.genericRuleFields,
                 columns : [{
                     id : 'name',
                     header : this.i18n._("name"),
@@ -497,18 +467,18 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         allowBlank : false
                     })
                 }, {
-                    id : 'ipMaddr',
+                    id : 'string',
                     header : this.i18n._("subnet"),
                     width : 200,
-                    dataIndex : 'ipMaddr',
+                    dataIndex : 'string',
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                }, logColumn],
+                }, flagColumn],
                 sortField : 'name',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'name',
-                plugins : [logColumn],
+                plugins : [flagColumn],
                 rowEditorInputLines : [new Ext.form.TextField({
                     name : "Name",
                     dataIndex : "name",
@@ -517,13 +487,13 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     width : 200
                 }), new Ext.form.TextField({
                     name : "Subnet",
-                    dataIndex : "ipMaddr",
+                    dataIndex : "string",
                     fieldLabel : this.i18n._("Subnet"),
                     allowBlank : false,
                     width : 200
                 }), new Ext.form.Checkbox({
                     name : "Log",
-                    dataIndex : "log",
+                    dataIndex : "flagged",
                     fieldLabel : this.i18n._("Log")
                 })]
             });
@@ -551,7 +521,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
 
             var passColumn = new Ext.grid.CheckColumn({
                 header : "<b>" + this.i18n._("pass") + "</b>",
-                dataIndex : 'live',
+                dataIndex : 'enabled',
                 width: 65,
                 fixed : true
             });
@@ -560,30 +530,15 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 name : 'Pass List',
                 helpSource : 'pass_list',
                 settingsCmp : this,
-                totalRecords : this.getBaseSettings().domainWhitelistLength,
                 emptyRow : {
                     "string" : "",
-                    "live" : true,
-                    "category" : this.i18n._("[no category]"),
+                    "enabled" : true,
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Pass List"),
-                proxyRpcFn : this.getRpcNode().getDomainWhitelist,
-                recordJavaClass : "com.untangle.uvm.node.StringRule",
-                fields : [{
-                    name : 'id'
-                }, {
-                    name : 'string',
-                    type : 'string'
-                }, {
-                    name : 'live'
-                }, {
-                    name : 'category',
-                    type : 'string'
-                }, {
-                    name : 'description',
-                    type : 'string'
-                }],
+                data: this.getSettings().passedUrls.list,
+                recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                fields : this.genericRuleFields,
                 columns : [{
                     id : 'string',
                     header : this.i18n._("site"),
@@ -617,7 +572,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     blankText : this.i18n._("Invalid \"URL\" specified")
                 }), new Ext.form.Checkbox({
                     name : "Pass",
-                    dataIndex : "live",
+                    dataIndex : "enabled",
                     fieldLabel : this.i18n._("Pass")
                 }), new Ext.form.TextArea({
                     name : "Description",
@@ -680,20 +635,20 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         validateClient : function() {
             // no need for validation here...just alter the URLs
             if (this.gridPassList) {
-                this.alterUrls(this.gridPassList.getSaveList());
+                var saveList = {
+                    javaClass : "java.util.LinkedList",
+                    list : this.gridPassList.getFullSaveList()
+                };
+                this.getSettings().passedUrls = saveList;
+                this.alterUrls(saveList.list);
             }
             return true;
         },
         // private method
         alterUrls : function(list) {
             if (list != null) {
-                // added
-                for (var i = 0; i < list[0].list.length; i++) {
-                    list[0].list[i]["string"] = this.alterUrl(list[0].list[i]["string"]);
-                }
-                // modified
-                for (var i = 0; i < list[2].list.length; i++) {
-                    list[2].list[i]["string"] = this.alterUrl(list[2].list[i]["string"]);
+                for (var i = 0; i < list.length; i++) {
+                    list[i]["string"] = this.alterUrl(list[i]["string"]);
                 }
             }
         },
@@ -718,11 +673,11 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 var ipMaddrList = [];
                 // added
                 for (var i = 0; i < subnetSaveList[0].list.length; i++) {
-                    ipMaddrList.push(subnetSaveList[0].list[i]["ipMaddr"]);
+                    ipMaddrList.push(subnetSaveList[0].list[i]["string"]);
                 }
                 // modified
                 for (var i = 0; i < subnetSaveList[2].list.length; i++) {
-                    ipMaddrList.push(subnetSaveList[2].list[i]["ipMaddr"]);
+                    ipMaddrList.push(subnetSaveList[2].list[i]["string"]);
                 }
                 if (ipMaddrList.length > 0) {
                     try {
@@ -730,7 +685,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         try {
                             result = this.getValidator().validate({
                                 list : ipMaddrList,
-                                "javaClass" : "java.util.ArrayList"
+                                "javaClass" : "java.util.LinkedList"
                             });
                         } catch (e) {
                             Ung.Util.rpcExHandler(e);
@@ -746,7 +701,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             }
 
                             this.panelBlockLists.onManageSubnetList();
-                            this.gridSubnetList.focusFirstChangedDataByFieldValue("ipMaddr", result.cause);
+                            this.gridSubnetList.focusFirstChangedDataByFieldValue("string", result.cause);
                             Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);
                             return false;
                         }
@@ -775,8 +730,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             // validate first
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.getRpcNode().updateAll(function(result, exception) {
-                    Ext.MessageBox.hide();
+                this.getRpcNode().setSettings(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     // exit settings screen
                     if(keepWindowOpen!== true){
@@ -784,25 +738,28 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         this.closeWindow();
                     }else{
                         //refresh the settings
-                        this.getRpcNode().getBaseSettings(function(result2,exception2){
-                            Ext.MessageBox.hide();                            
-                            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());                                      
-                            this.gridPassList.setTotalRecords(result2.domainWhitelistLength);
-                            this.gridPassList.reloadGrid();
-                        }.createDelegate(this));
-                        //this.gridEventLog.reloadGrid();                                     
+                        this.getSettings(true);
+                        Ung.Util.generateListIds(this.getSettings().cookies.list);
+                        Ung.Util.generateListIds(this.getSettings().subnets.list);
+                        Ung.Util.generateListIds(this.getSettings().passedUrls.list);
+
+                        // keep initial  settings
+                        this.initialSettings = Ung.Util.clone(this.getSettings());
+                        this.gridPassList.reloadGrid({data:this.getSettings().passedUrls.list});
+                        Ext.MessageBox.hide();
                     }
-                }.createDelegate(this), this.getBaseSettings(), this.gridActiveXList ? this.gridActiveXList.getSaveList() : null,
-                        this.gridCookiesList ? this.gridCookiesList.getSaveList() : null,
-                        this.gridSubnetList ? this.gridSubnetList.getSaveList() : null, this.gridPassList.getSaveList());
+                }.createDelegate(this), this.getSettings());
             }
         },
         isDirty : function() {
-            return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings)
-                || (this.gridActiveXList ? this.gridActiveXList.isDirty() : false)
+            return !Ung.Util.equals(this.getSettings(), this.initialSettings)
+//                || (this.gridActiveXList ? this.gridActiveXList.isDirty() : false)
+/*
                 || (this.gridCookiesList ? this.gridCookiesList.isDirty() : false)
                 || (this.gridSubnetList ? this.gridSubnetList.isDirty() : false)
+*/                
                 || this.gridPassList.isDirty();
+                
         }
     });
 }

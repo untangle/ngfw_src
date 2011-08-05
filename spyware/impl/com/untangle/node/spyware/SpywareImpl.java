@@ -134,6 +134,36 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
         this.reconfigure();
     }
+    
+    public List<GenericRule> getCookies()
+    {
+        return settings.getCookies();
+    }
+
+    public void setCookies( List<GenericRule> newCookies )
+    {
+        this.settings.setCookies(newCookies);
+    }
+    
+    public List<GenericRule> getSubnets()
+    {
+        return settings.getSubnets();
+    }
+
+    public void setSubnets( List<GenericRule> newSubnets )
+    {
+        this.settings.setSubnets(newSubnets);
+    }
+    
+    public List<GenericRule> getPassedUrls()
+    {
+        return settings.getPassedUrls();
+    }
+
+    public void setPassedUrls( List<GenericRule> newPassedUrls )
+    {
+        this.settings.setPassedUrls(newPassedUrls);
+    }
 
     public String getUnblockMode()
     {
