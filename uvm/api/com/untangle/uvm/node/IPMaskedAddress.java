@@ -203,6 +203,18 @@ public class IPMaskedAddress implements Serializable, Comparable<IPMaskedAddress
         return result;
     }
 
+    public boolean isValid()
+    {
+        try {
+            LinkedList<Boolean> test = this.bitString();
+        }
+        catch (Exception e) {
+            return false;
+        }
+
+        return true;
+    }
+    
     /**
      * <code>isIntersecting</code> returns true if the current IPMaskedAddress has at least one address
      * that is also present in the provided otherMaddr argument.

@@ -2,6 +2,7 @@ package com.untangle.node.spyware;
 
 import java.io.IOException;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -18,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 import org.apache.catalina.Valve;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -60,8 +62,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/spyware-convert-settings.py";
     private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/spyware-get-last-update";
 
-    private static final String COOKIE_LIST = "com/untangle/node/spyware/cookie.txt";
-    private static final String SUBNET_LIST = "com/untangle/node/spyware/subnet.txt";
+    private static final String COOKIE_LIST = "/usr/share/untangle-webfilter-init/spyware-cookie";
+    private static final String SUBNET_LIST = "/usr/share/untangle-webfilter-init/spyware-subnet";
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -262,6 +264,8 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     public void initializeSettings(SpywareSettings settings)
     {
+        logger.info("Initializing settings...");
+
         Set<String> cookieList = initList(COOKIE_LIST);
         List<GenericRule> cookieRules = new LinkedList<GenericRule>();
         for ( String cookie : cookieList) {
@@ -271,9 +275,15 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
         Set<String> subnetList = initList(SUBNET_LIST);
         List<GenericRule> subnetRules = new LinkedList<GenericRule>();
-        for ( String subnet : subnetList) {
-            subnetRules.add(new GenericRule(subnet, subnet, null, null, true));
+        for ( String line : subnetList) {
+            GenericRule rule = null;
+            rule = makeGenericSubnetRule(line);
+            if (rule == null)
+                logger.warn("Failed to parse rule (null): " + line);
+            else
+                subnetRules.add(rule);
         }
+        settings.setSubnets(subnetRules);
         
         return;
     }
@@ -518,7 +528,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         Set<String> s = new HashSet<String>();
 
         try {
-            InputStream is = getClass().getClassLoader().getResourceAsStream(file);
+            InputStream is = new FileInputStream(file);
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             for (String l = br.readLine(); null != l; l = br.readLine()) {
                 s.add(l);
@@ -629,12 +639,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
         return uri;
     }
     
-    // private methods --------------------------------------------------------
-
-    /**
-     * Set the current settings to new Settings
-     * And save the settings to disk
-     */
     private void _setSettings( SpywareSettings newSettings )
     {
         /**
@@ -654,4 +658,31 @@ public class SpywareImpl extends AbstractNode implements Spyware
         this.settings = newSettings;
         try {logger.info("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
     }
+
+    private GenericRule makeGenericSubnetRule(String line) 
+    {
+        StringTokenizer tok = new StringTokenizer(line, ",");
+
+        String addr = tok.nextToken();
+        String description = tok.nextToken();
+        String name = tok.hasMoreTokens() ? tok.nextToken() : "[no name]";
+
+        IPMaskedAddress maddr = new IPMaskedAddress(addr);
+
+        if (maddr == null) {
+            logger.warn("Invalid Masked Address: " + addr);
+            return null;
+        }
+        if (!maddr.isValid()) {
+            logger.warn("Invalid Masked Address: " + addr);
+            return null;
+        }
+        
+        GenericRule rule = new GenericRule(addr, addr, "[no category]", description, true);
+        rule.setFlagged(true);
+        rule.setBlocked(false);
+
+        return rule;
+    }
+
 }
