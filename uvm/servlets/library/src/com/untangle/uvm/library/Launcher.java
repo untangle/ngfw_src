@@ -64,6 +64,9 @@ public class Launcher extends HttpServlet
     private static final String PROPERTY_STORE_URL = "uvm.store.url";
     private static final String DEFAULT_STORE_URL = "https://store.untangle.com";
 
+    private static final String PROPERTY_WELCOME_URL = "uvm.welcome.url";
+    private static final String DEFAULT_WELCOME_URL = "https://store.untangle.com";
+    
     private static final String PROPERTY_LEGAL_URL = "uvm.legal.url";
     private static final String DEFAULT_LEGAL_URL = "http://www.untangle.com/legal";
     

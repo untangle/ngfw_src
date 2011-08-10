@@ -6,5 +6,11 @@
         "syslogName" : "Template_App",
         "type" : "NODE",
         "viewPosition" : 100,
+        "annotatedClasses" : {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                "com.untangle.node.template.TemplateSettings"
+            ]
+        }
 }
 

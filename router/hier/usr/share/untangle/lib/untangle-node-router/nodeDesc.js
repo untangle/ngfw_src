@@ -5,6 +5,15 @@
         "displayName" : "Router",
         "syslogName" : "Router",
         "type" : "SERVICE",
-        "viewPosition" : 1000
+        "viewPosition" : 1000,
+        "annotatedClasses" : {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                "com.untangle.node.router.DhcpAbsoluteEvent",
+                "com.untangle.node.router.DhcpAbsoluteLease",
+                "com.untangle.node.router.RouterStatisticEvent",
+                "com.untangle.node.router.DhcpLeaseEvent"
+            ]
+        }
 }
 

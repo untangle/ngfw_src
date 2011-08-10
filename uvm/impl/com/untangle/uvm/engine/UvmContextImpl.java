@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
+import java.util.List;
+import java.util.LinkedList;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +17,8 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.cfg.AnnotationConfiguration;
+
 import org.jabsorb.JSONSerializer;
 
 import com.untangle.uvm.CronJob;
@@ -69,17 +73,18 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private static final String CREATE_UID_SCRIPT;
     private static final String UID_FILE;
     private static final String WIZARD_COMPLETE_FLAG_FILE;
-    private static String uid;
 
-    /* true if running in a development environment */
-    private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel";
-    private static final String PROPERTY_IS_INSIDE_VM = "com.untangle.isInsideVM";
+    private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel"; /* devel Env */
+    private static final String PROPERTY_IS_INSIDE_VM = "com.untangle.isInsideVM"; /* vmWare */
 
     private static final String FACTORY_DEFAULT_FLAG = System.getProperty("uvm.conf.dir") + "/factory-defaults";
     
-    private final Object startupWaitLock = new Object();
+    private static final Object startupWaitLock = new Object();
+
     private final Logger logger = Logger.getLogger(UvmContextImpl.class);
 
+    private static String uid;
+    
     private UvmState state;
     private AdminManagerImpl adminManager;
     private ArgonManagerImpl argonManager;
@@ -112,11 +117,13 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     private volatile SessionFactory sessionFactory;
     private volatile TransactionRunner transactionRunner;
-
+    private volatile List<String> annotatedClasses = new LinkedList<String>();
+    
     // constructor ------------------------------------------------------------
 
     private UvmContextImpl()
     {
+        initializeUvmAnnotatedClasses();
         refreshSessionFactory();
 
         state = UvmState.LOADED;
@@ -540,6 +547,23 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.brandingManager.getCompanyName();
     }
 
+    public void addAnnotatedClass(String className)
+    {
+        if (className == null) {
+            logger.warn("Invalid argument: className is null");
+            return;
+        }
+
+        logger.info("Adding AnnotatedClass: " + className);
+        
+        for (String cname : this.annotatedClasses) {
+            if (className.equals(cname))
+                return; /* already in list */
+        }
+
+        this.annotatedClasses.add(className);
+    }
+    
     // UvmContextBase methods --------------------------------------------------
 
     @Override
@@ -789,7 +813,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     void refreshSessionFactory()
     {
         synchronized (this) {
-            sessionFactory = Util.makeSessionFactory(getClass().getClassLoader());
+            sessionFactory = this.makeSessionFactory(getClass().getClassLoader());
             transactionRunner = new TransactionRunner(sessionFactory);
         }
     }
@@ -909,6 +933,100 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
             f.delete();
         }
             
+    }
+
+    private SessionFactory makeSessionFactory(ClassLoader cl)
+    {
+        SessionFactory sessionFactory = null;
+
+        try {
+            AnnotationConfiguration cfg = buildAnnotationConfiguration(cl);
+
+            long t0 = System.currentTimeMillis();
+            sessionFactory = cfg.buildSessionFactory();
+            long t1 = System.currentTimeMillis();
+
+            logger.info("Built new SessionFactory in " + (t1 - t0) + " millis");
+        } catch (HibernateException exn) {
+            logger.warn("Failed to create SessionFactory", exn);
+        }
+
+        return sessionFactory;
+    }
+
+    @SuppressWarnings("unchecked")
+	private AnnotationConfiguration buildAnnotationConfiguration(ClassLoader cl)
+    {
+        AnnotationConfiguration cfg = new AnnotationConfiguration();
+        Thread thisThread = Thread.currentThread();
+        ClassLoader oldCl = thisThread.getContextClassLoader();
+
+        try {
+            thisThread.setContextClassLoader(cl);
+
+            for (String clz : this.annotatedClasses) {
+                Class c = cl.loadClass(clz);
+                cfg.addAnnotatedClass(c);
+            }
+        }
+        catch (java.lang.ClassNotFoundException exc) {
+            logger.warn("Annotated Class not found", exc);
+        }
+        finally {
+            thisThread.setContextClassLoader(oldCl);
+        }
+
+        return cfg;
+    }
+
+    private void initializeUvmAnnotatedClasses()
+    {
+        /* api */
+        this.addAnnotatedClass("com.untangle.uvm.LanguageSettings");
+        this.addAnnotatedClass("com.untangle.uvm.MailSettings");
+        this.addAnnotatedClass("com.untangle.uvm.Period");
+        this.addAnnotatedClass("com.untangle.uvm.SkinSettings");
+        this.addAnnotatedClass("com.untangle.uvm.AdminSettings");
+        this.addAnnotatedClass("com.untangle.uvm.User");
+        this.addAnnotatedClass("com.untangle.uvm.addrbook.AddressBookSettings");
+        this.addAnnotatedClass("com.untangle.uvm.addrbook.RadiusServerSettings");
+        this.addAnnotatedClass("com.untangle.uvm.addrbook.RepositorySettings");
+        this.addAnnotatedClass("com.untangle.uvm.message.ActiveStat");
+        this.addAnnotatedClass("com.untangle.uvm.logging.LoggingSettings");
+        this.addAnnotatedClass("com.untangle.uvm.logging.SystemStatEvent");
+        this.addAnnotatedClass("com.untangle.uvm.logging.SessionLogEventFromReports");
+        this.addAnnotatedClass("com.untangle.uvm.logging.HttpLogEventFromReports");
+        this.addAnnotatedClass("com.untangle.uvm.logging.MailLogEventFromReports");
+        this.addAnnotatedClass("com.untangle.uvm.logging.OpenvpnLogEventFromReports");
+        this.addAnnotatedClass("com.untangle.uvm.logging.CpdBlockEventsFromReports");
+        this.addAnnotatedClass("com.untangle.uvm.logging.CpdLoginEventsFromReports");
+        this.addAnnotatedClass("com.untangle.uvm.networking.AccessSettings");
+        this.addAnnotatedClass("com.untangle.uvm.networking.AddressSettings");
+        this.addAnnotatedClass("com.untangle.uvm.networking.MiscSettings");
+        this.addAnnotatedClass("com.untangle.uvm.node.IPMaskedAddressDirectory");
+        this.addAnnotatedClass("com.untangle.uvm.node.IPMaskedAddressRule");
+        this.addAnnotatedClass("com.untangle.uvm.node.MimeTypeRule");
+        this.addAnnotatedClass("com.untangle.uvm.node.NodePreferences");
+        this.addAnnotatedClass("com.untangle.uvm.node.PipelineEndpoints");
+        this.addAnnotatedClass("com.untangle.uvm.node.StringRule");
+        this.addAnnotatedClass("com.untangle.uvm.policy.Policy");
+        this.addAnnotatedClass("com.untangle.uvm.policy.UserPolicyRule");
+        this.addAnnotatedClass("com.untangle.uvm.policy.UserPolicyRuleSet");
+        this.addAnnotatedClass("com.untangle.uvm.security.NodeId");
+        this.addAnnotatedClass("com.untangle.uvm.snmp.SnmpSettings");
+        this.addAnnotatedClass("com.untangle.uvm.toolbox.UpgradeSettings");
+        /* localapi */
+        this.addAnnotatedClass("com.untangle.uvm.policy.UserPolicyRuleSet");
+        this.addAnnotatedClass("com.untangle.uvm.node.PipelineStats");
+        /* impl */
+        this.addAnnotatedClass("com.untangle.uvm.engine.StatSettings");
+        this.addAnnotatedClass("com.untangle.uvm.engine.LoginEvent");
+        this.addAnnotatedClass("com.untangle.uvm.engine.PackageState");
+        this.addAnnotatedClass("com.untangle.uvm.engine.NodeManagerState");
+        this.addAnnotatedClass("com.untangle.uvm.engine.NodePersistentState");
+        this.addAnnotatedClass("com.untangle.uvm.engine.NodeStateChange");
+        this.addAnnotatedClass("com.untangle.uvm.shield.ShieldRejectionEvent");
+        this.addAnnotatedClass("com.untangle.uvm.shield.ShieldStatisticEvent");
     }
     
     // static initializer -----------------------------------------------------

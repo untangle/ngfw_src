@@ -4,6 +4,12 @@
         "name" : "untangle-casing-ftp",
         "displayName" : "FTP Casing",
         "syslogName" : "FTP_Casing",
-        "type" : "CASING"
+        "type" : "CASING",
+        "annotatedClasses" : {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                "com.untangle.node.ftp.FtpSettings"
+            ]
+        }
 }
 

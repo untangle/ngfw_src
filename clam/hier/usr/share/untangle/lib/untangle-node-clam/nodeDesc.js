@@ -14,6 +14,21 @@
                 "untangle-casing-ftp",
                 "untangle-casing-mail"
             ]
+        },
+        "annotatedClasses" : {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                "com.untangle.node.virus.VirusConfig",
+                "com.untangle.node.virus.VirusIMAPConfig",
+                "com.untangle.node.virus.VirusMailEvent",
+                "com.untangle.node.virus.VirusPOPConfig",
+                "com.untangle.node.virus.VirusSMTPConfig",
+                "com.untangle.node.virus.VirusSettings",
+                "com.untangle.node.virus.VirusBaseSettings",
+                "com.untangle.node.virus.VirusHttpEvent",
+                "com.untangle.node.virus.VirusLogEvent",
+                "com.untangle.node.virus.VirusSmtpEvent"
+            ]
         }
 }
 

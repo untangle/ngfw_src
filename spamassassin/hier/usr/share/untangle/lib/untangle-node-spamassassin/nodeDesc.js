@@ -12,6 +12,20 @@
             "list": [
                 "untangle-casing-mail"
             ]
+        },
+        "annotatedClasses" : {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                "com.untangle.node.spam.SpamImapConfig",
+                "com.untangle.node.spam.SpamPopConfig",
+                "com.untangle.node.spam.SpamSmtpConfig",
+                "com.untangle.node.spam.SpamSettings",
+                "com.untangle.node.spam.SpamBaseSettings",
+                "com.untangle.node.spam.SpamRBL",
+                "com.untangle.node.spam.SpamLogEvent",
+                "com.untangle.node.spam.SpamSmtpEvent",
+                "com.untangle.node.spam.SpamSmtpRblEvent"
+            ]
         }
 }
 

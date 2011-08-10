@@ -11,6 +11,15 @@
             "list": [
                 "untangle-casing-http"
             ]
+        },
+        "annotatedClasses" : {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                "com.untangle.node.spyware.SpywareAccessEvent",
+                "com.untangle.node.spyware.SpywareStatisticEvent",
+                "com.untangle.node.spyware.SpywareBlacklistEvent",
+                "com.untangle.node.spyware.SpywareCookieEvent"
+            ]
         }
 }
 

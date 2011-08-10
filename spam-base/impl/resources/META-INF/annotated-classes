@@ -1,3 +1,0 @@
-com.untangle.node.spam.SpamLogEvent
-com.untangle.node.spam.SpamSmtpEvent
-com.untangle.node.spam.SpamSmtpRblEvent

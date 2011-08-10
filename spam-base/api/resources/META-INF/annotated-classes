@@ -1,6 +1,0 @@
-com.untangle.node.spam.SpamImapConfig
-com.untangle.node.spam.SpamPopConfig
-com.untangle.node.spam.SpamSmtpConfig
-com.untangle.node.spam.SpamSettings
-com.untangle.node.spam.SpamBaseSettings
-com.untangle.node.spam.SpamRBL

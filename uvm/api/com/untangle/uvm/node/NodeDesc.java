@@ -30,6 +30,7 @@ public class NodeDesc implements Serializable
 
     private List<String> parents = new LinkedList<String>();
     private List<String> uvmResources = new LinkedList<String>();
+    private List<String> annotatedClasses = new LinkedList<String>();
 
     private Integer viewPosition = null;
 
@@ -110,6 +111,21 @@ public class NodeDesc implements Serializable
         this.uvmResources = uvmResources;
     }
 
+    /**
+     * A list of uvm resources, resources to be loaded into the UVM Class Path.
+     *
+     * @return The list of UVM resources.
+     */
+    public List<String> getAnnotatedClasses()
+    {
+        return annotatedClasses;
+    }
+
+    public void setAnnotatedClasses(List<String> annotatedClasses)
+    {
+        this.annotatedClasses = annotatedClasses;
+    }
+    
     /**
      * Only a single instance may be initialized in the system.
      *

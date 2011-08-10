@@ -1,4 +1,6 @@
-/** $HeadURL: svn://chef/work/src/uvm/impl/com/untangle/uvm/engine/ToolboxManagerImpl.java $ */
+/**
+ * $Id: ToolboxManagerImpl.java,v 1.00 2011/08/02 15:01:17 dmorris Exp $
+ */
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
@@ -262,7 +264,7 @@ class ToolboxManagerImpl implements ToolboxManager
         }
     }
     
-    // all known mackages
+    // all known packages
     public PackageDesc[] available()
     {
         PackageDesc[] available = this.available;
@@ -336,7 +338,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
         PackageDesc req = packageDesc(name);
         if (null == req) {
-            logger.warn("No such mackage: " + name);
+            logger.warn("No such package: " + name);
         }
 
         /**
@@ -409,12 +411,12 @@ class ToolboxManagerImpl implements ToolboxManager
         logger.info("installAndInstantiate( " + name + ")");
         
         synchronized (installAndInstantiateLock) {
-            UvmContextImpl mctx = UvmContextImpl.getInstance();
-            NodeManager nm = mctx.nodeManager();
+            UvmContextImpl uvmContext = UvmContextImpl.getInstance();
+            NodeManager nm = uvmContext.nodeManager();
             List<String> subnodes = null;
 
             if (isInstalled(name)) {
-                logger.warn("mackage " + name + " already installed, ignoring");
+                logger.warn("package " + name + " already installed, ignoring");
                 //fix for bug #7675
                 //throw new PackageInstallException("package " + name + " already installed");
                 return;
@@ -456,7 +458,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 } 
             }
 
-            MessageManager mm = mctx.messageManager();
+            MessageManager mm = uvmContext.messageManager();
             PackageDesc packageDesc = packageDesc(name);
             Message m = new InstallAndInstantiateComplete(packageDesc);
             mm.submitMessage(m);
@@ -538,7 +540,7 @@ class ToolboxManagerImpl implements ToolboxManager
         PackageInstallRequest mir = new PackageInstallRequest(md,isInstalled(packageName));
         MessageManager mm = LocalUvmContextFactory.context().messageManager();
 
-        // Make sure there isn't an existing outstanding install request for this mackage.
+        // Make sure there isn't an existing outstanding install request for this package.
         for (Message msg : mm.getMessages()) {
             if (msg instanceof PackageInstallRequest) {
                 PackageInstallRequest existingMir = (PackageInstallRequest)msg;
@@ -564,7 +566,7 @@ class ToolboxManagerImpl implements ToolboxManager
         PackageUninstallRequest mir = new PackageUninstallRequest(md,isInstalled(packageName));
         MessageManager mm = LocalUvmContextFactory.context().messageManager();
 
-        // Make sure there isn't an existing outstanding uninstall request for this mackage.
+        // Make sure there isn't an existing outstanding uninstall request for this package.
         for (Message msg : mm.getMessages()) {
             if (msg instanceof PackageUninstallRequest) {
                 PackageUninstallRequest existingMir = (PackageUninstallRequest)msg;
@@ -579,27 +581,25 @@ class ToolboxManagerImpl implements ToolboxManager
         mm.submitMessage(mir);
     }
     
-    // registers a mackage and restarts all instances in previous state
+    // registers a package and restarts all instances in previous state
     public void register(String pkgName) throws PackageInstallException
     {
-        logger.debug("registering mackage: " + pkgName);
+        logger.debug("registering package: " + pkgName);
 
-        UvmContextImpl mctx = UvmContextImpl.getInstance();
-        if (mctx.refreshToolbox()) {
-            mctx.refreshSessionFactory();
-        }
+        UvmContextImpl uvmContext = UvmContextImpl.getInstance();
+        uvmContext.refreshToolbox();
 
         NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().nodeManager();
         nm.restart(pkgName);
         nm.startAutoStart(packageDesc(pkgName));
     }
 
-    // unregisters a mackage and unloads all instances
+    // unregisters a package and unloads all instances
     public void unregister(String pkgName)
     {
-        logger.debug("unregistering mackage: " + pkgName);
+        logger.debug("unregistering package: " + pkgName);
 
-        // stop mackage intances
+        // stop package intances
         NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().nodeManager();
         List<NodeId> tids = nm.nodeInstances(pkgName);
         logger.debug("unloading " + tids.size() + " nodes");
@@ -888,7 +888,7 @@ class ToolboxManagerImpl implements ToolboxManager
                     logger.info("Hiding package: " + name);
                 }
                 else {
-                    logger.debug("Added available mackage: " + name);
+                    logger.debug("Added available package: " + name);
                     pkgs.put(name, md);
                 }
 
@@ -999,7 +999,7 @@ class ToolboxManagerImpl implements ToolboxManager
                     throw new PackageException("ut-apt " + command + " exited with: " + e);
                 }
             } catch (IOException e) {
-                logger.info( "exception while in mackage: ", e);
+                logger.info( "exception while in package: ", e);
             }
         }
 
@@ -1030,12 +1030,12 @@ class ToolboxManagerImpl implements ToolboxManager
                 while (null != (line = br.readLine())) {
                     PackageDesc md = packageMap.get(line);
                     if (md == null) {
-                        logger.debug("Ignoring non-mackage: " + line);
+                        logger.debug("Ignoring non-package: " + line);
                         continue;
                     }
                     PackageDesc.Type mdType = md.getType();
                     if (mdType != PackageDesc.Type.NODE && mdType != PackageDesc.Type.SERVICE) {
-                        logger.debug("Ignoring non-node/service mackage: " + line);
+                        logger.debug("Ignoring non-node/service package: " + line);
                         continue;
                     }
                     l.add(line);

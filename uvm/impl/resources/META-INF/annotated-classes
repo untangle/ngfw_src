@@ -1,8 +1,0 @@
-com.untangle.uvm.engine.StatSettings
-com.untangle.uvm.engine.LoginEvent
-com.untangle.uvm.engine.PackageState
-com.untangle.uvm.engine.NodeManagerState
-com.untangle.uvm.engine.NodePersistentState
-com.untangle.uvm.engine.NodeStateChange
-com.untangle.uvm.shield.ShieldRejectionEvent
-com.untangle.uvm.shield.ShieldStatisticEvent
