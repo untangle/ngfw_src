@@ -109,6 +109,13 @@ public interface RemoteUvmContext
     RemoteAddressBook appAddressBook();
 
     /**
+     * The LocalDirectory for managing/authenticating users
+     *
+     * @return the local directory
+     */
+    LocalDirectory localDirectory();
+    
+    /**
      * The BrandingManager allows for customization of logo and
      * branding information.
      *

@@ -25,6 +25,7 @@ import com.untangle.uvm.CronJob;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalTomcatManager;
+import com.untangle.uvm.LocalDirectory;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.RemoteBrandingManager;
 import com.untangle.uvm.RemoteOemManager;
@@ -114,7 +115,8 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private OemManagerImpl oemManager;
     private SessionMonitorImpl sessionMonitor;
     private BackupManager backupManager;
-
+    private LocalDirectoryImpl localDirectory;
+    
     private volatile SessionFactory sessionFactory;
     private volatile TransactionRunner transactionRunner;
     private volatile List<String> annotatedClasses = new LinkedList<String>();
@@ -146,6 +148,11 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     public RemoteAddressBook appAddressBook()
     {
         return this.addressBookFactory.getAddressBook();
+    }
+
+    public LocalDirectory localDirectory()
+    {
+        return this.localDirectory;
     }
 
     public RemoteAddressBook appRemoteAddressBook()
@@ -634,7 +641,8 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
         //Start AddressBookImpl
         this.addressBookFactory = AddressBookFactory.makeInstance();
-
+        this.localDirectory = new LocalDirectoryImpl();
+        
         this.brandingManager = new BrandingManagerImpl();
 
         //Skins and Language managers

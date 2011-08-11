@@ -1,40 +1,9 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
+ * $Id$
  */
-
 package com.untangle.uvm.addrbook;
 
 import java.io.Serializable;
-
 
 /**
  * Lightweight class to encapsulate an entry (user)
@@ -42,48 +11,42 @@ import java.io.Serializable;
  *
  */
 @SuppressWarnings("serial")
-public final class UserEntry implements Serializable, Comparable<UserEntry> {
+public final class UserEntry implements Serializable, Comparable<UserEntry>
+{
 
     public static final String UNCHANGED_PASSWORD = "***UNCHANGED***";
 
-    private String m_firstName;
-    private String m_lastName;
-    private String m_uid;
+    private String firstName;
+    private String lastName;
+    private String uid;
     
-    private String m_primaryGroupID;
-    private String m_dn;
-    private String m_email;
-    private RepositoryType m_storedIn;
-    private String m_password;
-    private String m_comment;
+    private String primaryGroupID;
+    private String dn;
+    private String email;
+    private RepositoryType storedIn;
+    private String password;
+    private String comment;
 
-    public UserEntry() {
+    public UserEntry()
+    {
         this(null, null, null, null, null, null, RepositoryType.NONE);
     }
 
-    public UserEntry(String uid,
-                     String firstName,
-                     String lastName,
-                     String email) {
-
+    public UserEntry(String uid, String firstName, String lastName, String email)
+    {
         this(uid,firstName,lastName,email,null,null, RepositoryType.NONE);
     }
 
-    public UserEntry(String uid,
-                     String firstName,
-                     String lastName,
-                     String email,
-                     String primaryGroupID,
-                     String dn,
-                     RepositoryType storedIn) {
-
-        m_firstName = firstName;
-        m_lastName = lastName;
+    public UserEntry(String uid, String firstName, String lastName, String email,
+                     String primaryGroupID, String dn, RepositoryType storedIn)
+    {
+        this.firstName = firstName;
+        this.lastName = lastName;
         setUID(uid);
-        m_email = email;
-        m_storedIn = storedIn;
-        m_dn = dn;
-        m_primaryGroupID = primaryGroupID;
+        this.email = email;
+        this.storedIn = storedIn;
+        this.dn = dn;
+        this.primaryGroupID = primaryGroupID;
     }
 
     /**
@@ -92,16 +55,18 @@ public final class UserEntry implements Serializable, Comparable<UserEntry> {
      *
      * @return the unique id
      */
-    public String getUID() {
-        return m_uid;
+    public String getUID()
+    {
+        return this.uid;
     }
 
-    public void setUID(String uid) {
+    public void setUID(String uid)
+    {
         if ( uid == null ) {
             uid = "";
         }
         
-        m_uid = uid.toLowerCase();
+        this.uid = uid.toLowerCase();
     }
 
     /**
@@ -109,12 +74,14 @@ public final class UserEntry implements Serializable, Comparable<UserEntry> {
      *
      * @return the password
      */
-    public String getPassword() {
-        return m_password;
+    public String getPassword()
+    {
+        return this.password;
     }
 
-    public void setPassword(String password) {
-        m_password = password;
+    public void setPassword(String password)
+    {
+        this.password = password;
     }
 
     /**
@@ -122,15 +89,16 @@ public final class UserEntry implements Serializable, Comparable<UserEntry> {
      *
      * @return the comment
      */
-    public String getComment() {
-        if( m_comment != null )
-            return m_comment;
+    public String getComment()
+    {
+        if( this.comment != null )
+            return this.comment;
         else
             return "";
     }
 
     public void setComment(String comment) {
-        m_comment = comment;
+        this.comment = comment;
     }
 
     /**
@@ -139,12 +107,14 @@ public final class UserEntry implements Serializable, Comparable<UserEntry> {
      *
      * @return the first name.
      */
-    public String getFirstName() {
-        return m_firstName;
+    public String getFirstName()
+    {
+        return this.firstName;
     }
 
-    public void setFirstName(String name) {
-        m_firstName = name;
+    public void setFirstName(String name)
+    {
+        this.firstName = name;
     }
 
     /**
@@ -153,12 +123,14 @@ public final class UserEntry implements Serializable, Comparable<UserEntry> {
      *
      * @return the last name.
      */
-    public String getLastName() {
-        return m_lastName;
+    public String getLastName()
+    {
+        return this.lastName;
     }
 
-    public void setLastName(String name) {
-        m_lastName = name;
+    public void setLastName(String name)
+    {
+        this.lastName = name;
     }
 
     /**
@@ -167,12 +139,14 @@ public final class UserEntry implements Serializable, Comparable<UserEntry> {
      *
      * @return the address
      */
-    public String getEmail() {
-        return m_email;
+    public String getEmail()
+    {
+        return this.email;
     }
 
-    public void setEmail(String email) {
-        m_email = email;
+    public void setEmail(String email)
+    {
+        this.email = email;
     }
 
     /**
@@ -182,57 +156,65 @@ public final class UserEntry implements Serializable, Comparable<UserEntry> {
      *
      * @return the repository
      */
-    public RepositoryType getStoredIn() {
-        return m_storedIn;
+    public RepositoryType getStoredIn()
+    {
+        return this.storedIn;
     }
 
-    public void setStoredIn(RepositoryType type) {
-        m_storedIn = type;
+    public void setStoredIn(RepositoryType type)
+    {
+        this.storedIn = type;
     }
     
-    public String getPrimaryGroupID() {
-        return this.m_primaryGroupID;
+    public String getPrimaryGroupID()
+    {
+        return this.primaryGroupID;
     }
     
     public void setPrimaryGroupID( String newValue )
     {
-        this.m_primaryGroupID = newValue;
+        this.primaryGroupID = newValue;
     }
     
-    public String getDN() {
-        return this.m_dn;
+    public String getDN()
+    {
+        return this.dn;
     }
     
     public void setDN( String newValue )
     {
-        this.m_dn = newValue;
+        this.dn = newValue;
     }
 
     /**
      * Equality test based on uid (case sensitive - although I'm not sure
      * that is always true) and RepositoryType.
      */
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         UserEntry other = (UserEntry) obj;
-        return makeNotNull(other.getUID()).equals(makeNotNull(m_uid)) &&
-            makeNotNull(other.getStoredIn()).equals(makeNotNull(m_storedIn));
+        return makeNotNull(other.getUID()).equals(makeNotNull(this.uid)) &&
+            makeNotNull(other.getStoredIn()).equals(makeNotNull(this.storedIn));
     }
     
-    public int compareTo(UserEntry e) {
-        return m_uid.compareToIgnoreCase(e.getUID());
+    public int compareTo(UserEntry e)
+    {
+        return this.uid.compareToIgnoreCase(e.getUID());
     }
 
     /**
      * hashcode for use in hashing
      */
-    public int hashCode() {
-        return new String(makeNotNull(m_uid).toString() + makeNotNull(m_storedIn).toString()).hashCode();
+    public int hashCode()
+    {
+        return new String(makeNotNull(this.uid).toString() + makeNotNull(this.storedIn).toString()).hashCode();
     }
     
     /**
      * For debugging
      */
-    public String toString() {
+    public String toString()
+    {
         String newLine = System.getProperty("line.separator", "\n");
         StringBuilder ret = new StringBuilder();
 
@@ -245,7 +227,8 @@ public final class UserEntry implements Serializable, Comparable<UserEntry> {
         return ret.toString();
     }
 
-    private Object makeNotNull(Object obj) {
+    private Object makeNotNull(Object obj)
+    {
         return obj==null?"":obj;
     }
 

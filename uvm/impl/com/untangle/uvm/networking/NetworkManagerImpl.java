@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.uvm.networking;
 
 import static com.untangle.uvm.networking.ShellFlags.FILE_RULE_CFG;
@@ -842,7 +845,7 @@ public class NetworkManagerImpl implements NetworkManager
         try {
             settings = settingsManager.load(NetworkConfiguration.class, "/etc/untangle-net-alpaca/netConfig");
         } catch (SettingsManager.SettingsException e) {
-            logger.error("Unable to read license file: ", e );
+            logger.error("Unable to read netConfig file: ", e );
             return null;
         }
 
