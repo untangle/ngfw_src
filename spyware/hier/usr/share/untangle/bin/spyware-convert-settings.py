@@ -1,4 +1,9 @@
 #!/usr/bin/python
+
+#
+# This script can be removed in 10.x or after
+#
+
 import conversion.sql_helper as sql_helper
 import sys
 import os

@@ -14,15 +14,12 @@ class AddressBookFactory
 
     private final UtLogger logger = new UtLogger(getClass());
 
-    /** The stripped down default limited address book */
-    private final DefaultAddressBookImpl limited = new DefaultAddressBookImpl();
-
     /** The premium address book */
     private PremiumAddressBook premium = null;
 
     /** remote address book */
     //private RemoteAddressBook remote = new RemoteAddressBookAdaptor(limited);
-    private RemoteAddressBook remote = limited;
+    private RemoteAddressBook remote = null;
 
     private AddressBookFactory() { }
 
@@ -32,7 +29,7 @@ class AddressBookFactory
             refresh();
         }
         
-        return ( this.premium == null ) ? this.limited : this.premium;
+        return this.premium;
     }
 
     public RemoteAddressBook getRemoteAddressBook()
@@ -50,9 +47,9 @@ class AddressBookFactory
         }
 
         try {
-            Constructor<PremiumAddressBook> constructor = (Constructor<PremiumAddressBook>)Class.forName( PREMIUM_ADDRESSBOOK_IMPL ).getDeclaredConstructor(DefaultAddressBookImpl.class);
+            Constructor<PremiumAddressBook> constructor = (Constructor<PremiumAddressBook>)Class.forName( PREMIUM_ADDRESSBOOK_IMPL ).getDeclaredConstructor();
 
-            this.premium = constructor.newInstance( this.limited );
+            this.premium = constructor.newInstance();
             this.premium.init();
             //this.remote = new RemoteAddressBookAdaptor(this.premium);
             this.remote = this.premium;
@@ -60,7 +57,7 @@ class AddressBookFactory
             logger.info( "Could not load premium AddressBook: " + PREMIUM_ADDRESSBOOK_IMPL, e);
             this.premium = null;
             //this.remote = new RemoteAddressBookAdaptor(this.limited);
-            this.remote = this.limited;
+            this.remote = null;
         }
     }
 

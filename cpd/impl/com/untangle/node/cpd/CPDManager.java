@@ -49,7 +49,7 @@ public class CPDManager
     {
         this.cpd = cpd;
     }
-        
+       
     void setConfig(CPDSettings settings, boolean isEnabled ) throws JSONException, IOException
     {
         /* Convert the settings to JSON */
@@ -161,8 +161,8 @@ public class CPDManager
             
             case LOCAL_DIRECTORY:
                 try {
-                    isAuthenticated = LocalUvmContextFactory.context().appAddressBook().authenticate(u, password, Backend.LOCAL_DIRECTORY);
-                } catch (ServiceUnavailableException e) {
+                    isAuthenticated = LocalUvmContextFactory.context().localDirectory().authenticate(u, password);
+                } catch (Exception e) {
                     logger.warn( "Unable to authenticate users.", e );
                     isAuthenticated = false;
                 }

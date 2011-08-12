@@ -151,8 +151,7 @@ public final class LocalDirectoryUser implements Serializable, Comparable<LocalD
     }
     
     /**
-     * Equality test based on username (case sensitive - although I'm not sure
-     * that is always true) and RepositoryType.
+     * Equality test based on username (case insensitive)
      */
     public boolean equals(Object obj)
     {

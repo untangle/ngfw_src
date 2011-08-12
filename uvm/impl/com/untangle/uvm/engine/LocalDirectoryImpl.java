@@ -31,26 +31,24 @@ class LocalDirectoryImpl implements LocalDirectory
     
     public boolean authenticate(String uid, String pwd)
     {
-        
-        
+        /* FIXME */
         return false;
     }
 
-    public boolean addUser(LocalDirectoryUser newUser)
+    public LinkedList<LocalDirectoryUser> getUsers()
     {
-        for (LocalDirectoryUser user : this.currentList) {
-            if (user.equals(newUser)) {
-                logger.warn("Not adding: User already found: " + user);
-                return false;
-            }
-        }
+        if (this.currentList == null)
+            return new LinkedList<LocalDirectoryUser>();
 
-        this.currentList.add(newUser);
-        saveUsersList();
-
-        return true;
+        return this.currentList;
     }
 
+    public void setUsers(LinkedList<LocalDirectoryUser> users)
+    {
+        this.currentList = users;
+        saveUsersList();
+    }
+    
     private void saveUsersList()
     {
         SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();

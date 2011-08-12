@@ -20,7 +20,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
             Ung.LocalDirectory.superclass.initComponent.call(this);
         },
         buildLocalDirectory : function() {
-            var storeData=main.getAppAddressBook().getLocalUserEntries().list;
+            var storeData=main.getLocalDirectory().getUsers().list;
             for(var i=0; i<storeData.length; i++) {
                 storeData[i].password = "***UNCHANGED***";
             }
@@ -34,19 +34,19 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 height : 500,
                 paginated : false,
                 emptyRow : {
-                    "UID" : this.i18n._('[no ID/login]'),
+                    "username" : this.i18n._('[no ID/login]'),
                     "firstName" : this.i18n._('[no name]'),
                     "lastName" : this.i18n._('[no name]'),
                     "email" : this.i18n._('[no email]'),
                     "password" : "",
-                    "javaClass" : "com.untangle.uvm.addrbook.UserEntry"
+                    "javaClass" : "com.untangle.uvm.LocalDirectoryUser"
                 },
-                recordJavaClass : "com.untangle.uvm.addrbook.UserEntry",
+                recordJavaClass : "com.untangle.uvm.LocalDirectoryUser",
                 data : storeData,
                 dataRoot: null,
                 autoGenerateId: true,
                 fields : [{
-                    name : 'UID'
+                    name : 'username'
                 }, {
                     name : 'firstName'
                 }, {
@@ -56,15 +56,13 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 }, {
                     name : 'password'
                 }, {
-                    name : 'storedIn'
-                }, {
                     name : 'javaClass'
                 }],
                 columns : [{
-                    id : 'UID',
+                    id : 'username',
                     header : this.i18n._("user/login ID"),
                     width : 140,
-                    dataIndex : 'UID',
+                    dataIndex : 'username',
                     editor : new Ext.form.TextField({
                         allowBlank : false,
                         regex: /^[\w ]+$/,
@@ -108,12 +106,12 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                         return result;
                     }
                 }],
-                sortField : 'UID',
+                sortField : 'username',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'email',
                 rowEditorInputLines : [new Ext.form.TextField({
                     name : "User/Login ID",
-                    dataIndex: "UID",
+                    dataIndex: "username",
                     fieldLabel : this.i18n._("User/Login ID"),
                     allowBlank : false,
                     regex: /^[\w ]+$/,
@@ -144,131 +142,6 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 })]
             });
 
-            //var groupData=main.getAppAddressBook().getGroupEntries('LOCAL_DIRECTORY').list;
-
-
-            //this.gridGroups = new Ung.EditorGrid({
-                //name : 'Local Groups',
-                //helpSource : 'local_directory',
-                //title : this.i18n._('Local Groups'),
-                //settingsCmp : this,
-                //height : 500,
-                //paginated : false,
-                //emptyRow : {
-                    //"Name" : this.i18n._('[no name]'),
-                    //"firstName" : this.i18n._('[no name]'),
-                    //"lastName" : this.i18n._('[no name]'),
-                    //"email" : this.i18n._('[no email]'),
-                    //"password" : "",
-                    //"javaClass" : "com.untangle.uvm.addrbook.GroupEntry"
-                //},
-                //recordJavaClass : "com.untangle.uvm.addrbook.GroupEntry",
-                //data : groupData,
-                //dataRoot: null,
-                //autoGenerateId: true,
-                //fields : [{
-                //    name : 'CN'
-                //}//, {
-                //    name : 'firstName'
-                //}, {
-                //    name : 'lastName'
-                // }, {
-//                     name : 'email'
-//                 }, {
-//                     name : 'password'
-//                 }, {
-//                     name : 'storedIn'
-//                 }, {
-//                     name : 'javaClass'
-//                }
-                 //],
-                //columns : [{
-                    //id : 'CN',
-                    //header : this.i18n._("Name"),
-                    //width : 140,
-                    //dataIndex : 'CN',
-                    //editor : new Ext.form.TextField({
-                        //allowBlank : false,
-                        //regex: /^[\w ]+$/,
-                        //regexText: this.i18n._("The field name can have only alphanumeric characters.")
-                    //})
-                //}
-// , {
-//                     id : 'firstName',
-//                     header : this.i18n._("first name"),
-//                     width : 120,
-//                     dataIndex : 'firstName',
-//                     editor : new Ext.form.TextField({
-//                         allowBlank : false
-//                     })
-//                 }, {
-//                     id : 'lastName',
-//                     header : this.i18n._("last name"),
-//                     width : 120,
-//                     dataIndex : 'lastName',
-//                     editor : new Ext.form.TextField({
-//                     })
-//                 }, {
-//                     id : 'email',
-//                     header : this.i18n._("email address"),
-//                     width : 250,
-//                     dataIndex : 'email',
-//                     editor : new Ext.form.TextField({
-//                     })
-//                 }, {
-//                     id : 'password',
-//                     header : this.i18n._("password"),
-//                     width : 150,
-//                     dataIndex : 'password',
-//                     editor : new Ext.form.TextField({
-//                         inputType: 'password'
-//                     }),
-//                     renderer : function(value, metadata, record) {
-//                         var result = "";
-//                         for(var i=0; value != null && i<value.length; i++) {
-//                             result = result + "*";
-//                         }
-//                         return result;
-//                     }
-//                }
-//],
-                //sortField : 'CN',
-                //columnsDefaultSortable : true,
-                //autoExpandColumn : 'CN',
-                //rowEditorInputLines : [new Ext.form.TextField({
-                    //name : "Name",
-                    //dataIndex: "CN",
-                    //fieldLabel : this.i18n._("Name"),
-                    //allowBlank : false,
-                    //regex: /^[\w ]+$/,
-                    //regexText: this.i18n._("The field name can have only alphanumeric character."),
-                    //width : 100
-                //})
-// , new Ext.form.TextField({
-//                     name : "First Name",
-//                     dataIndex: "firstName",
-//                     fieldLabel : this.i18n._("First Name"),
-//                     allowBlank : false,
-//                     width : 100
-//                 }), new Ext.form.TextField({
-//                     name : "Last Name",
-//                     dataIndex: "lastName",
-//                     fieldLabel : this.i18n._("Last Name"),
-//                     width : 100
-//                 }), new Ext.form.TextField({
-//                     name : "Email Address",
-//                     dataIndex: "email",
-//                     fieldLabel : this.i18n._("Email Address"),
-//                     width : 250
-//                 }), new Ext.form.TextField({
-//                     inputType: 'password',
-//                     name : "Password",
-//                     dataIndex: "password",
-//                     fieldLabel : this.i18n._("Password"),
-//                     width : 150
-//                 })
-//]
-            //});
         },
         
         validateClient : function()
@@ -283,8 +156,8 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
             for(var i=0; i<listUsers.length;i++) {
                 // verify that the login name is not duplicated
                 for(var j=i+1; j<listUsers.length;j++) {
-                    if (listUsers[i].UID == listUsers[j].UID) {
-                        Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._('The login name "{0}" at row {1} has already been taken.'), listUsers[j].UID, j+1),
+                    if (listUsers[i].username == listUsers[j].username) {
+                        Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._('The login name "{0}" at row {1} has already been taken.'), listUsers[j].username, j+1),
                             function () {
                                 this.tabs.activate(this.gridUsers);
                             }.createDelegate(this) 
@@ -293,7 +166,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     }
                 }
                 // login name contains no forward slash character
-                if (listUsers[i].UID.indexOf("/") != -1) {
+                if (listUsers[i].username.indexOf("/") != -1) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._('The login name at row {0} must not contain forward slash character.'), i+1),
                         function () {
                             this.tabs.activate(this.gridUsers);
@@ -348,7 +221,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
         },
         reloadSettings : function()
         {
-            var storeData=main.getAppAddressBook().getLocalUserEntries().list;
+            var storeData=main.getLocalDirectory().getUsers().list;
             for(var i=0; i<storeData.length; i++) {
                 storeData[i].password = "***UNCHANGED***";
             }
@@ -389,10 +262,10 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 width : 200
             });
             //save local users            
-            main.getAppAddressBook().setLocalUserEntries(function(result, exception) {
+            main.getLocalDirectory().setUsers(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 callback();
-            }.createDelegate(this), this.gridUsers ? {javaClass:"java.util.ArrayList",list:this.gridUsers.getFullSaveList()} : null);
+            }.createDelegate(this), this.gridUsers ? {javaClass:"java.util.LinkedList",list:this.gridUsers.getFullSaveList()} : null);
         },
         
         isDirty : function()

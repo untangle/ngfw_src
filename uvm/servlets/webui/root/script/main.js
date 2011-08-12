@@ -620,6 +620,17 @@ Ung.Main=Ext.extend(Object, {
         return rpc.licenseManager;
     },
 
+    getLocalDirectory : function(forceReload) {
+        if (forceReload || rpc.localDirectory === undefined) {
+            try {
+                rpc.localDirectory = rpc.jsonrpc.RemoteUvmContext.localDirectory();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return rpc.localDirectory;
+    },
+
     getAppAddressBook : function(forceReload) {
         if (forceReload || rpc.appAddressBook === undefined) {
             try {

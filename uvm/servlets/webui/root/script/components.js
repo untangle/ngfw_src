@@ -4682,8 +4682,6 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                             if(rec.storedIn) {
                                 if(rec.storedIn=="MS_ACTIVE_DIRECTORY") {
                                     repository=i18n._("Active Directory");
-                                } else if(rec.storedIn=="LOCAL_DIRECTORY") {
-                                    repository=i18n._("Local");
                                 } else {
                                     repository=i18n._("UNKNOWN");
                                 }
@@ -4831,7 +4829,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 start : 0
             }
         });
-        this.populateSemaphore=3;
+        this.populateSemaphore=2;
         this.userEntries = [];
         if ( !this.singleSelectUser ) {
             this.userEntries.push({ firstName : "", lastName : null, UID: "[any]"});
@@ -4867,20 +4865,6 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
             }.createDelegate(this),"MS_ACTIVE_DIRECTORY");
         } else {
             this.populateSemaphore--;
-        }
-        
-        if (this.loadLocalDirectoryUsers) {
-            main.getAppAddressBook().getUserEntries(function(result, exception) {
-                if(Ung.Util.handleException(exception, function() {
-                    Ext.MessageBox.alert(i18n._("Warning"), i18n._("There was a problem refreshing Local Directory users.  Please check your Local Directory settings and try again."), function(){
-                        this.populateCallback();
-                    }.createDelegate(this));
-                }.createDelegate(this),"noAlert")) return;
-                this.userEntries=this.userEntries.concat(result.list);
-                this.populateCallback();
-            }.createDelegate(this),"LOCAL_DIRECTORY");
-        } else {
-            this.populateCallback();
         }
     },
     populateCallback : function () {
