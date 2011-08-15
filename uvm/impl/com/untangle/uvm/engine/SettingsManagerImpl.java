@@ -45,32 +45,21 @@ public class SettingsManagerImpl implements SettingsManager
      */
     public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd-HHmm");
 
+    /**
+     * This is the actual JSON serializer
+     */
     private JSONSerializer serializer = null;
 
+    /**
+     * This is the locks for the various files to guarantee synchronous file access
+     */
     private final Map<String, Object> pathLocks = new HashMap<String, Object>();
-
-    /**
-     * @param serializer
-     *            the serializer to set
-     */
-    protected void setSerializer(JSONSerializer serializer)
-    {
-        this.serializer = serializer;
-    }
-
-    /**
-     * @return the serializer
-     */
-    protected JSONSerializer getSerializer()
-    {
-        return serializer;
-    }
-
+    
+    
     /**
      * Documented in SettingsManager.java
      */
-    public <T> T load(Class<T> clz, String fileName)
-        throws SettingsException
+    public <T> T load(Class<T> clz, String fileName) throws SettingsException
     {
         if (!_checkLegalName(fileName)) {
             throw new IllegalArgumentException("Invalid file name: '" + fileName + "'");
@@ -82,8 +71,7 @@ public class SettingsManagerImpl implements SettingsManager
     /**
      * Documented in SettingsManager.java
      */
-    public <T> T loadUrl(Class<T> clz, String urlStr)
-        throws SettingsException
+    public <T> T loadUrl(Class<T> clz, String urlStr) throws SettingsException
     {
         InputStream is = null;
 
@@ -131,8 +119,7 @@ public class SettingsManagerImpl implements SettingsManager
     /**
      * Documented in SettingsManager.java
      */
-    public <T> T save(Class<T> clz, String fileName, T value)
-        throws SettingsException
+    public <T> T save(Class<T> clz, String fileName, T value) throws SettingsException
     {
         if (!_checkLegalName(fileName)) {
             throw new IllegalArgumentException("Invalid file name: '" + fileName + "'");
@@ -141,14 +128,29 @@ public class SettingsManagerImpl implements SettingsManager
         return _saveImpl(clz, fileName, value);
     }
 
+    /**
+     * @param serializer
+     *            the serializer to set
+     */
+    protected void setSerializer(JSONSerializer serializer)
+    {
+        this.serializer = serializer;
+    }
 
+    /**
+     * @return the serializer
+     */
+    protected JSONSerializer getSerializer()
+    {
+        return serializer;
+    }
+    
     /**
      * Implementation of the load
      * This appends ".js" to the filename, opens the file, and then calls loadInputStream
      */
     @SuppressWarnings("unchecked") //JSON
-    private <T> T _loadImpl(Class<T> clz, String fileName)
-        throws SettingsException
+    private <T> T _loadImpl(Class<T> clz, String fileName) throws SettingsException
     {
         File f = new File(fileName + ".js");
         if (!f.exists()) {
@@ -174,8 +176,7 @@ public class SettingsManagerImpl implements SettingsManager
      * 
      */
     @SuppressWarnings("unchecked") //JSON
-    private <T> T _loadInputStream(Class<T> clz, InputStream is)
-        throws SettingsException
+    private <T> T _loadInputStream(Class<T> clz, InputStream is) throws SettingsException
     {
         BufferedReader reader = null;
         try {
@@ -213,8 +214,7 @@ public class SettingsManagerImpl implements SettingsManager
      * Then formats that tmp file and copies it to another file
      * Then it repoints the symlink
      */
-    private <T> T _saveImpl(Class<T> clz, String fileName, T value)
-        throws SettingsException
+    private <T> T _saveImpl(Class<T> clz, String fileName, T value) throws SettingsException
     {
         File link = new File(fileName + ".js");
         String versionString = String.valueOf(DATE_FORMATTER.format(new Date()));
@@ -335,8 +335,7 @@ public class SettingsManagerImpl implements SettingsManager
         return lock;
     }
 
-    private boolean _checkLegalName(String name)
-        throws IllegalArgumentException
+    private boolean _checkLegalName(String name) throws IllegalArgumentException
     {
         if (!VALID_CHARACTERS.matcher(name.replace("/","")).matches()) {
             logger.error("Illegal name: " + name);

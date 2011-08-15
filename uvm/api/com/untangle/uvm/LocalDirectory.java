@@ -16,7 +16,7 @@ public interface LocalDirectory
      *
      * @returns true if valid uid/password, false otherwise
      */
-    public boolean authenticate(String uid, String pwd);
+    public boolean authenticate( String username, String password );
 
     /**
      * Return a list of users
@@ -27,9 +27,8 @@ public interface LocalDirectory
 
     /**
      * Save a new list of users
-     *
      */
-    public void setUsers(LinkedList<LocalDirectoryUser> users);
+    public void setUsers( LinkedList<LocalDirectoryUser> users );
     
 }
 
