@@ -41,6 +41,7 @@ Options:
   -m | --no-mail              skip mailing
   -a | --attach-csv           attach events as csv
   -t | --trial-report         only report on given trial
+  -f | --force                force regeneration of fact tables
   -e | --events-retention     number of days in events schema to keep
   -r | --report-length        number of days to report on
   -l | --locale               locale
