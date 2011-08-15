@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -17,34 +17,30 @@
  */
 package com.untangle.node.protofilter;
 
-import java.util.List;
-
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
+import java.util.LinkedList;
+import java.util.List;
 
 public interface ProtoFilter extends Node
 {
-    ProtoFilterBaseSettings getBaseSettings();
-    void setBaseSettings(ProtoFilterBaseSettings baseSettings);
+    ProtoFilterSettings getNodeSettings();
+    void setNodeSettings(ProtoFilterSettings settings);
 
-    List<ProtoFilterPattern> getPatterns(int start, int limit, String... sortColumns);
-    void updatePatterns(List<ProtoFilterPattern> added, List<Long> deleted, List<ProtoFilterPattern> modified);
+    LinkedList<ProtoFilterPattern> getPatterns();
+    void setPatterns(LinkedList<ProtoFilterPattern> patterns);
     
-    /**
-     * Update all settings once
-     */
-    @SuppressWarnings("unchecked")
-	void updateAll(List[] patternsChanges);
-    
+    int getPatternsTotal();
+    int getPatternsLogged();
+    int getPatternsBlocked();
+
     /**
      * Reconfigure node. This method should be called after some settings are updated
      * in order to reconfigure the node accordingly.
      *
      * @throws Exception if an exception occurs when reconfiguring.
      */
-	void reconfigure() throws Exception;
+    void reconfigure() throws Exception;
 
-    
     EventManager<ProtoFilterLogEvent> getEventManager();
-    
 }

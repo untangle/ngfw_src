@@ -11,10 +11,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
-import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
@@ -31,7 +28,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
-
+import com.untangle.uvm.SettingsManager;
 
 public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 {
@@ -45,10 +42,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     private final Logger logger = Logger.getLogger(ProtoFilterImpl.class);
 
     private ProtoFilterSettings cachedSettings = null;
-
-    private final PartialListUtil listUtil = new PartialListUtil();
-    private final ProtoFilterPatternHandler patternHandler = new ProtoFilterPatternHandler();
-
+    
     private final BlingBlinger scanBlinger;
     private final BlingBlinger detectBlinger;
     private final BlingBlinger blockBlinger;
@@ -74,88 +68,73 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
     // ProtoFilter methods ----------------------------------------------------
 
-    public ProtoFilterSettings getProtoFilterSettings()
+    public ProtoFilterSettings getNodeSettings()
     {
         if( this.cachedSettings == null )
             logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
         return this.cachedSettings;
     }
 
-    public void setProtoFilterSettings(final ProtoFilterSettings settings)
+    public void setNodeSettings(final ProtoFilterSettings settings)
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                	ProtoFilterImpl.this.cachedSettings = (ProtoFilterSettings)s.merge(settings);
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
+        this.cachedSettings = settings;
+        
+        SettingsManager setman = LocalUvmContextFactory.context().settingsManager();
 
         try {
+            setman.save( ProtoFilterSettings.class, System.getProperty("uvm.settings.dir") + "/untangle-node-protofilter/settings_" + getNodeId(), cachedSettings);
             reconfigure();
         }
+
         catch (Exception exn) {
             logger.error("Could not save ProtoFilter settings", exn);
         }
     }
-    
-    public ProtoFilterBaseSettings getBaseSettings() {
-        return cachedSettings.getBaseSettings();
+
+    public int getPatternsTotal()
+    {
+        return(cachedSettings.getPatterns().size());
     }
 
-    public void setBaseSettings(final ProtoFilterBaseSettings baseSettings)
+    public int getPatternsLogged()
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>() {
-                public boolean doWork(Session s) {
-                    cachedSettings.setBaseSettings(baseSettings);
-                    s.merge(cachedSettings);
-                    return true;
-                }
-                
-                public Object getResult() {
-				return null;
-                }
-            };
-        getNodeContext().runTransaction(tw);
+        HashSet<ProtoFilterPattern> set = cachedSettings.getPatterns();
+        Iterator it = set.iterator();
+        int count = 0;
+        
+        while (it.hasNext()) {
+            ProtoFilterPattern item = (ProtoFilterPattern)it.next();
+            if (item.getLog()) count++;
+        }
+        
+        return(count);
     }
-    
+
+    public int getPatternsBlocked()
+    {
+        HashSet<ProtoFilterPattern> set = cachedSettings.getPatterns();
+        Iterator it = set.iterator();
+        int count = 0;
+        
+        while (it.hasNext()) {
+            ProtoFilterPattern item = (ProtoFilterPattern)it.next();
+            if (item.isBlocked()) count++;
+        }
+        
+        return(count);
+    }
+
     @SuppressWarnings("unchecked") //getItems
-    public List<ProtoFilterPattern> getPatterns(final int start, final int limit, final String... sortColumns)
+    public LinkedList<ProtoFilterPattern> getPatterns()
     {
-        return listUtil.getItems( "select hbs.patterns from ProtoFilterSettings hbs where hbs.nodeId = :nodeId ",
-                                  getNodeContext(), getNodeId(), start, limit, sortColumns );
-    }
-    
-    public void updatePatterns(List<ProtoFilterPattern> added, List<Long> deleted, List<ProtoFilterPattern> modified)
-    {
-        
-        updatePatterns(getProtoFilterSettings().getPatterns(), added, deleted,
-                       modified);
+        return(new LinkedList(cachedSettings.getPatterns()));
     }
 
-	/*
-	 * For this node, updateAll means update only the patterns and then reconfigure the node
-	 * @see com.untangle.node.protofilter.ProtoFilter#updateAll(java.util.List[])
-	 */
-    @SuppressWarnings("unchecked")
-	public void updateAll(List[] patternsChanges)
+    public void setPatterns(LinkedList<ProtoFilterPattern> patterns)
     {
-    	if (patternsChanges != null && patternsChanges.length >= 3) {
-            updatePatterns(patternsChanges[0], patternsChanges[1], patternsChanges[2]);
-    	}
-        
-        try {
-            reconfigure();
-        }
-        catch (Exception exn) {
-            logger.error("Could not update ProtoFilter changes", exn);
-        }
+        cachedSettings.setPatterns(new HashSet<ProtoFilterPattern>(patterns));
     }
-    
+
     public EventManager<ProtoFilterLogEvent> getEventManager()
     {
         return eventLogger;
@@ -177,47 +156,42 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     @Override
     public void initializeSettings()
     {
-        ProtoFilterSettings settings = new ProtoFilterSettings(this.getNodeId());
+        ProtoFilterSettings settings = new ProtoFilterSettings();
         logger.info("INIT: Importing patterns...");
         TreeMap<Integer,ProtoFilterPattern> factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
         // Turn on the Instant Messenger ones so it does something by default:
-        Set<ProtoFilterPattern> pats = new HashSet<ProtoFilterPattern>(factoryPatterns.values());
+        HashSet<ProtoFilterPattern> pats = new HashSet<ProtoFilterPattern>(factoryPatterns.values());
         for (ProtoFilterPattern pfp : pats) {
             if (pfp.getCategory().equalsIgnoreCase("Instant Messenger"))
                 pfp.setLog(true);
         }
-        settings.setPatterns(pats);
-        setProtoFilterSettings(settings);
+        settings.setPatterns(new HashSet<ProtoFilterPattern>(pats));
+        setNodeSettings(settings);
     }
 
     protected void postInit(String[] args)
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery("from ProtoFilterSettings hbs where hbs.nodeId = :nodeId");
-                    q.setParameter("nodeId", getNodeId());
-                    ProtoFilterImpl.this.cachedSettings = (ProtoFilterSettings)q.uniqueResult();
-
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
-
         updateToCurrent();
     }
 
-    protected void preStart() throws Exception
+    protected void preStart()
     {
-        reconfigure();
+        SettingsManager setman = LocalUvmContextFactory.context().settingsManager();
+        
+        try {
+            cachedSettings =  setman.load( ProtoFilterSettings.class, System.getProperty("uvm.settings.dir") + "/untangle-node-protofilter/settings_" + getNodeId());
+            if (cachedSettings == null) initializeSettings();
+            reconfigure();
+        }
+
+        catch (Exception exn) {
+            logger.error("Could not read node settings", exn);
+        }
     }
 
     public void reconfigure() throws Exception
     {
-        Set<ProtoFilterPattern> enabledPatternsSet = new HashSet<ProtoFilterPattern>();
+        HashSet<ProtoFilterPattern> enabledPatternsSet = new HashSet<ProtoFilterPattern>();
 
         logger.info("Reconfigure()");
 
@@ -225,7 +199,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
             throw new Exception("Failed to get ProtoFilter settings: " + cachedSettings);
         }
 
-        Set<ProtoFilterPattern> curPatterns = cachedSettings.getPatterns();
+        HashSet<ProtoFilterPattern> curPatterns = cachedSettings.getPatterns();
         if (curPatterns == null)
             logger.error("NULL pattern list. Continuing anyway...");
         else {
@@ -245,8 +219,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         handler.stripZeros(cachedSettings.isStripZeros());
     }
 
-
-    private   void updateToCurrent()
+    private void updateToCurrent()
     {
         if (cachedSettings == null) {
             logger.error("NULL ProtoFilter Settings");
@@ -255,7 +228,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
         boolean    madeChange = false;
         TreeMap<Integer,ProtoFilterPattern> factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
-        Set<ProtoFilterPattern> curPatterns = cachedSettings.getPatterns(); /* Current list of Patterns */
+        HashSet<ProtoFilterPattern> curPatterns = cachedSettings.getPatterns(); /* Current list of Patterns */
 
         /*
          * Look for updates
@@ -359,8 +332,8 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
         if (madeChange) {
             logger.info("UPDATE: Saving new patterns list, size " + curPatterns.size());
-            cachedSettings.setPatterns(curPatterns);
-            setProtoFilterSettings(cachedSettings);
+            cachedSettings.setPatterns(new HashSet<ProtoFilterPattern>(curPatterns));
+            setNodeSettings(cachedSettings);
         }
 
         logger.info("UPDATE: Complete");
@@ -369,37 +342,6 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     void log(ProtoFilterLogEvent se)
     {
         eventLogger.log(se);
-    }
-
-    private void updatePatterns(final Set<ProtoFilterPattern> patterns, final List<ProtoFilterPattern> added, final List<Long> deleted, final List<ProtoFilterPattern> modified)
-    {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    listUtil.updateCachedItems( patterns, patternHandler, added, deleted, modified );
-
-                    cachedSettings = (ProtoFilterSettings)s.merge(cachedSettings);
-
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
-    }
-    
-    private static class ProtoFilterPatternHandler implements PartialListUtil.Handler<ProtoFilterPattern>
-    {
-        public Long getId( ProtoFilterPattern rule )
-        {
-            return rule.getId();
-        }
-
-        public void update( ProtoFilterPattern current, ProtoFilterPattern newRule )
-        {
-            current.updateRule( newRule );
-        }
     }
 
     void incrementScanCount()

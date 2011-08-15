@@ -3,12 +3,15 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
     Ung.NodeWin.registerClassName('untangle-node-protofilter', 'Ung.Protofilter');
 
     Ung.Protofilter = Ext.extend(Ung.NodeWin, {
+		filterData: null,
         panelStatus: null,
         gridProtocolList : null,
         gridEventLog : null,
+		nodeData : null,
         initComponent : function() {
-            this.buildStatus();
-            this.buildProtocolList();
+			this.filterData = this.getRpcNode().getPatterns();
+			this.buildStatus();
+			this.buildProtocolList();
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelStatus, this.gridProtocolList, this.gridEventLog]);
@@ -45,15 +48,15 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     items: [{
                         fieldLabel : this.i18n._('Total Signatures Available'),
                         name: 'Total Signatures Available',
-                        value: this.getBaseSettings().patternsLength
+                        value: this.getRpcNode().getPatternsTotal()
                     }, {
                         fieldLabel : this.i18n._('Total Signatures Logging'),
                         name: 'Total Signatures Logging',
-                        value: this.getBaseSettings().patternsLoggedLength
+                        value: this.getRpcNode().getPatternsLogged()
                     }, {
                         fieldLabel : this.i18n._('Total Signatures Blocking'),
                         name: 'Total Signatures Blocking',
-                        value: this.getBaseSettings().patternsBlockedLength
+                        value: this.getRpcNode().getPatternsBlocked()
                     }]
                 }, {
                     title : this.i18n._('Note'),
@@ -81,9 +84,11 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 settingsCmp : this,
                 name : 'Signatures',
                 helpSource : 'protocol_list',
+				paginated : false,
+				autoGenerateId: true,
                 // the total records is set from the base settings
                 // patternsLength field
-                totalRecords : this.getBaseSettings().patternsLength,
+				data : this.filterData.list,
                 emptyRow : {
                     "protocol" : this.i18n._("[no protocol]"),
                     "category" : this.i18n._("[no category]"),
@@ -98,7 +103,6 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 recordJavaClass : "com.untangle.node.protofilter.ProtoFilterPattern",
                 // this is the function used by Ung.RpcProxy to retrive data
                 // from the server
-                proxyRpcFn : this.getRpcNode().getPatterns,
                 // the list of fields
                 fields : [{
                     name : 'id'
@@ -196,7 +200,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
             var asReason = function(value) {
                 return value ? this.i18n._("blocked in block list") : this.i18n._("not blocked in block list");
             }.createDelegate(this);
-            
+
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
                 fields : [{
@@ -262,33 +266,33 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
         isDirty : function() {
             return this.gridProtocolList.isDirty();
         },
-        //apply function 
+        //apply function
         applyAction : function(){
             this.saveAction(true);
-        },        
+        },
         // save function
-        saveAction : function(keepWindowOpen) {
+        saveAction : function(keepWindowOpen)
+		{
+			if (this.isDirty() === false)
+            {
+				if (!keepWindowOpen) { this.closeWindow(); }
+				return;
+			}
+
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-            this.getRpcNode().updateAll(function(result, exception) {
-                Ext.MessageBox.hide();
-                if(Ung.Util.handleException(exception)) return;
-                // exit settings screen
-                if(!keepWindowOpen){
-                    Ext.MessageBox.hide();                    
-                    this.closeWindow();
-                }else{
-                //refresh the settings
-                        Ext.MessageBox.hide();
-                        //refresh the settings
-                        this.getRpcNode().getBaseSettings(function(result2,exception2){
-                            Ext.MessageBox.hide();                            
-                            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());                                      
-                            this.gridProtocolList.setTotalRecords(result2.patternsLength);
-                            this.gridProtocolList.reloadGrid();
-                        }.createDelegate(this));                        
-                        //this.gridEventLog.reloadGrid();                            
-                }
-            }.createDelegate(this), this.gridProtocolList.getSaveList());
+			this.filterData = this.gridProtocolList.getFullSaveList();
+
+            this.getRpcNode().setPatterns(function(result, exception)
+            {
+				Ext.MessageBox.hide();
+					if (!keepWindowOpen)
+					{
+					this.closeWindow();
+					return;
+					}
+				this.gridProtocolList.reloadGrid({ data: this.filterData.list } );
+            }.createDelegate(this), this.filterData);
         }
     });
 }
+
