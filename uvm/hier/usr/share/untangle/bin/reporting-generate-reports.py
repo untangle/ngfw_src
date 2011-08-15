@@ -1,22 +1,3 @@
-#!/usr/bin/python
-# $HeadURL: svn://chef/work/src/buildtools/rake-util.rb $
-# Copyright (c) 2003-2009 Untangle, Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, version 2,
-# as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful, but
-# AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
-# NONINFRINGEMENT.  See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
-#
-# Aaron Read <amread@untangle.com>
-
 import getopt
 import logging
 import mx
@@ -52,13 +33,14 @@ Options:
 # main
 
 try:
-     opts, args = getopt.getopt(sys.argv[1:], "hncgpmiave:r:d:l:t:s:",
+     opts, args = getopt.getopt(sys.argv[1:], "hncgpmiavef:r:d:l:t:s:",
                                 ['help', 'no-migration', 'no-cleanup',
                                  'no-data-gen', 'no-mail', 'incremental',
                                  'no-plot-gen', 'verbose', 'attach-csv',
                                  'events-retention', 'report-length',
                                  'date=', 'locale=', 'simulate='
-                                 'trial-report'])
+                                 'force',
+                                 'trial-report='])
 
 except getopt.GetoptError, err:
      print str(err)
@@ -87,7 +69,7 @@ attach_csv = False
 attachment_size_limit = 10
 events_retention = 3
 end_date = mx.DateTime.today()
-end_date_forced = False
+force_regeneration = False
 locale = None
 db_retention = None
 file_retention = None
@@ -110,6 +92,8 @@ for opt in opts:
           no_mail = True
      elif k == '-i' or k == '--incremental':
           incremental = True
+     elif k == '-f' or k == '--force':
+          force_regeneration = True
      elif k == '-a' or k == '--attach-csv':
           attach_csv = True
      elif k == '-t' or k == '--trial-report':
@@ -357,6 +341,8 @@ if trial_report:
 
 if not no_migration:
      init_date = end_date - mx.DateTime.DateTimeDelta(max(report_lengths))
+     if force_regeneration:
+          sql_helper.clear_partitioned_tables(init_date, end_date)
      reports.engine.setup(init_date, end_date)
      reports.engine.process_fact_tables(init_date, end_date)
      reports.engine.post_facttable_setup(init_date, end_date)
