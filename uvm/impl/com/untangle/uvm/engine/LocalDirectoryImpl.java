@@ -149,7 +149,8 @@ class LocalDirectoryImpl implements LocalDirectory
             }
 
             // Call the save function to calculate the hashes
-            this.setUsers(users);
+            if (users != null)
+                this.setUsers(users);
         }
 
         // Still no settings, just initialize new ones
