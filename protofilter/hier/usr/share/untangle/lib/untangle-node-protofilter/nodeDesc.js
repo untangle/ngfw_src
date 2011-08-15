@@ -11,7 +11,6 @@
             "list": [
                 "com.untangle.node.protofilter.ProtoFilterPattern",
                 "com.untangle.node.protofilter.ProtoFilterLogEvent",
-                "com.untangle.node.protofilter.ProtoFilterBaseSettings",
                 "com.untangle.node.protofilter.ProtoFilterSettings"
             ]
         }
