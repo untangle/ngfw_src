@@ -51,13 +51,13 @@ Options:
 # main
 
 try:
-     opts, args = getopt.getopt(sys.argv[1:], "hncgpmave:r:d:l:t:s:",
+     opts, args = getopt.getopt(sys.argv[1:], "hncgpmavef:r:d:l:t:s:",
                                 ['help', 'no-migration', 'no-cleanup',
                                  'no-data-gen', 'no-mail', 'no-plot-gen',
                                  'verbose', 'attach-csv', 'events-retention',
                                  'report-length', 'date=', 'locale=',
-                                 'simulate='
-                                 'trial-report'])
+                                 'simulate=', 'force',
+                                 'trial-report='])
 
 except getopt.GetoptError, err:
      print str(err)
@@ -85,7 +85,7 @@ attach_csv = False
 attachment_size_limit = 10
 events_retention = 3
 end_date = mx.DateTime.today()
-end_date_forced = False
+force_regeneration = False
 locale = None
 db_retention = None
 file_retention = None
@@ -106,6 +106,8 @@ for opt in opts:
           no_plot_gen = True
      elif k == '-m' or k == '--no-mail':
           no_mail = True
+     elif k == '-f' or k == '--force':
+          force_regeneration = True
      elif k == '-a' or k == '--attach-csv':
           attach_csv = True
      elif k == '-t' or k == '--trial-report':
@@ -119,7 +121,6 @@ for opt in opts:
      elif k == '-v' or k == '--verbose':
           setConsoleLogLevel(logging.DEBUG)
      elif k == '-d' or k == '--date':
-          end_date_forced = True
           end_date = mx.DateTime.DateFrom(v)
      elif k == '-s' or k == '--simulate':
           simulate = v
@@ -354,7 +355,7 @@ if trial_report:
 
 if not no_migration:
      init_date = end_date - mx.DateTime.DateTimeDelta(max(report_lengths))
-     if end_date_forced:
+     if force_regeneration:
           sql_helper.clear_partitioned_tables(init_date, end_date)
      reports.engine.setup(init_date, end_date)
      reports.engine.process_fact_tables(init_date, end_date)
