@@ -1,8 +1,7 @@
 #!/usr/bin/python
+import conversion.sql_helper as sql_helper
 import sys
 import os
-sys.path.insert(0,"/work")
-import sql_helper
 
 global nodeName
 
