@@ -7,6 +7,7 @@
 import sys
 import os
 import re
+import base64
 
 def get_settings(debug=False):
     str = "{\n"
@@ -60,8 +61,8 @@ def get_settings(debug=False):
         if line.startswith("userPassword:: "):
             splits = line.split(" ")
             if len(splits) > 1:
-                currentUser['passwordSshaHash'] = splits[1]
-                if debug: print 'passwordSshaHash: "%s"' % currentUser['passwordSshaHash']
+                currentUser['password'] = base64.b64decode(splits[1])
+                if debug: print 'password: "%s"' % currentUser['password']
 
         if line.startswith("mail: "):
             splits = line.split(" ")

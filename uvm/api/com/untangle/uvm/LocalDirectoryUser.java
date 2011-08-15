@@ -23,7 +23,9 @@ public final class LocalDirectoryUser implements Serializable, Comparable<LocalD
     
     private String email;
     private String password;
-    private String passwordHash;
+    private String passwordShaHash;
+    private String passwordMd5Hash;
+    private String passwordBase64Hash;
 
     public LocalDirectoryUser()
     {
@@ -64,20 +66,50 @@ public final class LocalDirectoryUser implements Serializable, Comparable<LocalD
     }
 
     /**
-     * Get the passwordHash to used in account creation
+     * Get the passwordShaHash to used in account creation
      *
-     * @return the passwordHash
+     * @return the passwordShaHash
      */
-    public String getPasswordHash()
+    public String getPasswordShaHash()
     {
-        return this.passwordHash;
+        return this.passwordShaHash;
     }
 
-    public void setPasswordHash(String passwordHash)
+    public void setPasswordShaHash(String passwordShaHash)
     {
-        this.passwordHash = makeNotNull(passwordHash);
+        this.passwordShaHash = makeNotNull(passwordShaHash);
     }
 
+    /**
+     * Get the passwordMd5Hash to used in account creation
+     *
+     * @return the passwordMd5Hash
+     */
+    public String getPasswordMd5Hash()
+    {
+        return this.passwordMd5Hash;
+    }
+
+    public void setPasswordMd5Hash(String passwordMd5Hash)
+    {
+        this.passwordMd5Hash = makeNotNull(passwordMd5Hash);
+    }
+
+    /**
+     * Get the passwordBase64Hash to used in account creation
+     *
+     * @return the passwordBase64Hash
+     */
+    public String getPasswordBase64Hash()
+    {
+        return this.passwordBase64Hash;
+    }
+
+    public void setPasswordBase64Hash(String passwordBase64Hash)
+    {
+        this.passwordBase64Hash = makeNotNull(passwordBase64Hash);
+    }
+    
     /**
      * Get the password (in the clear)
      * Note: This is often blanked out before saving the user,
@@ -92,7 +124,6 @@ public final class LocalDirectoryUser implements Serializable, Comparable<LocalD
 
     public void setPassword(String password)
     {
-        this.passwordHash = password; /* FIXME hash */
         this.password = password;
     }
     
