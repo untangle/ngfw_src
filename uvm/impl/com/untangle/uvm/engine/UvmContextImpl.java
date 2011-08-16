@@ -34,7 +34,6 @@ import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.SessionMonitor;
-import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
 import com.untangle.uvm.license.LicenseManagerFactory;
@@ -102,7 +101,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private NodeManagerImpl nodeManager;
     private CronManager cronManager;
     private AppServerManagerImpl appServerManager;
-    private AddressBookFactory addressBookFactory;
     private BrandingManagerImpl brandingManager;
     private SkinManagerImpl skinManager;
     private MessageManagerImpl messageManager;
@@ -145,19 +143,9 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     // singletons -------------------------------------------------------------
 
-    public RemoteAddressBook appAddressBook()
-    {
-        return this.addressBookFactory.getAddressBook();
-    }
-
     public LocalDirectory localDirectory()
     {
         return this.localDirectory;
-    }
-
-    public RemoteAddressBook appRemoteAddressBook()
-    {
-        return this.addressBookFactory.getRemoteAddressBook();
     }
 
     public RemoteBrandingManager brandingManager()
@@ -639,8 +627,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
         this.pipelineFoundry = PipelineFoundryImpl.foundry();
 
-        //Start AddressBookImpl
-        this.addressBookFactory = AddressBookFactory.makeInstance();
         this.localDirectory = new LocalDirectoryImpl();
         
         this.brandingManager = new BrandingManagerImpl();
@@ -732,9 +718,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
             logger.warn("could not destroy NodeManager", exn);
         }
         nodeManager = null;
-
-        // XXX destroy needed
-        addressBookFactory = null;
 
         // XXX destroy methods for:
         // - pipelineFoundry
@@ -830,7 +813,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     {
         synchronized (this) {
             this.policyManagerFactory.refresh();
-            this.addressBookFactory.refresh();
         }
     }
     
@@ -996,9 +978,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         this.addAnnotatedClass("com.untangle.uvm.SkinSettings");
         this.addAnnotatedClass("com.untangle.uvm.AdminSettings");
         this.addAnnotatedClass("com.untangle.uvm.User");
-        this.addAnnotatedClass("com.untangle.uvm.addrbook.AddressBookSettings");
-        this.addAnnotatedClass("com.untangle.uvm.addrbook.RadiusServerSettings");
-        this.addAnnotatedClass("com.untangle.uvm.addrbook.RepositorySettings");
         this.addAnnotatedClass("com.untangle.uvm.message.ActiveStat");
         this.addAnnotatedClass("com.untangle.uvm.logging.LoggingSettings");
         this.addAnnotatedClass("com.untangle.uvm.logging.SystemStatEvent");

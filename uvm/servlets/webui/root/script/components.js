@@ -4644,13 +4644,13 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         type : "string",
                         sortType : Ung.SortTypes.asLastName,
                         convert : function( val,rec) {
-                            if ( rec.javaClass == "com.untangle.uvm.addrbook.GroupEntry" ) {
+                            if ( rec.javaClass == "com.untangle.node.adconnector.GroupEntry" ) {
                                 /* This is filth, it is designed so
                                 the groups sort after the special
                                 matchers (like [all]), but before all
                                 of the users. */
                                 return "___";
-                            } else if ( rec.javaClass == "com.untangle.uvm.addrbook.UserEntry" ) {
+                            } else if ( rec.javaClass == "com.untangle.node.adconnector.UserEntry" ) {
                                 return "_" + rec.lastName;
                             }
 
@@ -4686,9 +4686,9 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                                     repository=i18n._("UNKNOWN");
                                 }
 
-                                if ( rec.javaClass == "com.untangle.uvm.addrbook.UserEntry" ) {
+                                if ( rec.javaClass == "com.untangle.node.adconnector.UserEntry" ) {
                                     repository = repository + i18n._( " User" );
-                                } else if ( rec.javaClass == "com.untangle.uvm.addrbook.GroupEntry" ) {
+                                } else if ( rec.javaClass == "com.untangle.node.adconnector.GroupEntry" ) {
                                     repository = repository + i18n._( " Group" );
                                     name = rec.CN;
                                 }
@@ -4703,12 +4703,12 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         name : "displayName",
                         mapping : "javaClass",
                         convert : function(val, rec) {
-                            if ( rec.javaClass == "com.untangle.uvm.addrbook.UserEntry" ) {
+                            if ( rec.javaClass == "com.untangle.node.adconnector.UserEntry" ) {
                                 var displayName = ( rec.firstName == null )  ? "" : rec.firstName;
                                 displayName = displayName + " " + 
                                     (( rec.lastName == null )  ? "" : rec.lastName);
                                 return displayName;
-                            } else if ( rec.javaClass == "com.untangle.uvm.addrbook.GroupEntry" ) {
+                            } else if ( rec.javaClass == "com.untangle.node.adconnector.GroupEntry" ) {
                                 return rec.CN;
                             } else {
                                 return "";
@@ -4839,7 +4839,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
 
         var loadActiveDirectory = this.loadActiveDirectoryUsers && main.isNodeRunning("untangle-node-adconnector");
         if (loadActiveDirectory){
-            main.getAppAddressBook().getUserEntries(function(result, exception) {
+            main.getActiveDirectory().getUserEntries(function(result, exception) {
                 if(Ung.Util.handleException(exception, function() {
                     Ext.MessageBox.alert(i18n._("Warning"), i18n._("There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again."), function(){
                         this.populateCallback();
@@ -4853,7 +4853,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         }
 
         if (loadActiveDirectory && !this.singleSelectUser){
-            main.getAppAddressBook().getGroupEntries(function(result, exception) {
+            main.getActiveDirectory().getGroupEntries(function(result, exception) {
                 if( Ung.Util.handleException(exception, function() {
                     Ext.MessageBox.alert(i18n._("Warning"), i18n._("There was a problem refreshing Active Directory groups.  Please check your Active Directory settings and then try again."), function(){
                         this.populateCallback();
@@ -4944,7 +4944,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 
                 for( i=0;i<selRecs.length;i++) {
                     record = selRecs[i];
-                    if ( record.get("javaClass") == "com.untangle.uvm.addrbook.GroupEntry" ) {
+                    if ( record.get("javaClass") == "com.untangle.node.adconnector.GroupEntry" ) {
                         value =  "group::" + record.get("SAMAccountName");
                     } else {
                         value = record.get("UID");

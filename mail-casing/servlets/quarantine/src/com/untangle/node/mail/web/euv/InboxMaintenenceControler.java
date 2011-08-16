@@ -26,8 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.addrbook.RemoteAddressBook;
-import com.untangle.uvm.addrbook.UserEntry;
 import com.untangle.node.mail.papi.quarantine.BadTokenException;
 import com.untangle.node.mail.papi.quarantine.InboxIndex;
 import com.untangle.node.mail.papi.quarantine.InboxRecordComparator;

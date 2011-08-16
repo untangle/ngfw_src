@@ -37,7 +37,6 @@ import java.io.File;
 
 import java.io.IOException;
 
-import com.untangle.uvm.addrbook.RemoteAddressBook;
 import com.untangle.uvm.RemoteUvmContext;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.RemoteLoggingManager;
@@ -108,13 +107,6 @@ public interface LocalUvmContext extends RemoteUvmContext
      * @return the singleton
      */
     LocalAppServerManager localAppServerManager();
-
-    /**
-     * Get the AddressBook singleton for this instance
-     *
-     * @return the singleton
-     */
-    RemoteAddressBook appAddressBook();
 
     /**
      * The BrandingManager manages customization of logo and

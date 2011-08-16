@@ -261,12 +261,10 @@ CREATE TABLE settings.u_ab_repository_settings (
     port int4,
     PRIMARY KEY (settings_id));
 
-
--- com.untangle.uvm.addrbook.AddressBookSettings
+-- com.untangle.node.adconnector.ADConnectorSettings
 CREATE TABLE settings.u_ab_settings (
     settings_id int8 NOT NULL,
     ad_repo_settings int8 NOT NULL,
-    ab_configuration char(1) NOT NULL,
     radius_server_settings INT8 NOT NULL,
     PRIMARY KEY (settings_id));
 

@@ -4,8 +4,8 @@ package com.untangle.uvm.node;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
-
 import com.untangle.uvm.RemoteUvmContextFactory;
+import com.untangle.uvm.node.DirectoryConnector;
 
 public class UserMatcher
 {
@@ -77,7 +77,10 @@ public class UserMatcher
             return false;
             
         case GROUP:
-            boolean isMemberOf = RemoteUvmContextFactory.context().appAddressBook().isMemberOf(user,this.groupName);
+            DirectoryConnector adconnector = (DirectoryConnector)RemoteUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+            boolean isMemberOf = false;
+            if (adconnector != null)
+                isMemberOf = adconnector.isMemberOf( user, this.groupName );
             return isMemberOf;
             
         case AUTHENTICATED:

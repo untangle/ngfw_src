@@ -631,15 +631,30 @@ Ung.Main=Ext.extend(Object, {
         return rpc.localDirectory;
     },
 
-    getAppAddressBook : function(forceReload) {
-        if (forceReload || rpc.appAddressBook === undefined) {
+    getActiveDirectory : function(forceReload) {
+        if (forceReload || rpc.activeDirectory === undefined) {
             try {
-                rpc.appAddressBook = rpc.jsonrpc.RemoteUvmContext.appAddressBook();
+                var node = main.getNode('untangle-node-adconnector');
+                if (node)
+                    rpc.activeDirectory = node.getActiveDirectory();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return rpc.appAddressBook;
+        return rpc.activeDirectory;
+    },
+
+    getRADIUSDirectory : function(forceReload) {
+        if (forceReload || rpc.radiusDirectory === undefined) {
+            try {
+                var node = main.getNode('untangle-node-adconnector');
+                if (node)
+                    rpc.radiusDirectory = node.getRADIUSDirectory();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return rpc.radiusDirectory;
     },
 
     getMailSender : function(forceReload) {

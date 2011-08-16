@@ -8,8 +8,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.naming.ServiceUnavailableException;
-
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,13 +16,12 @@ import org.json.JSONObject;
 import com.untangle.node.cpd.CPD.BlingerType;
 import com.untangle.node.cpd.CPDSettings.AuthenticationType;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.addrbook.RemoteAddressBook.Backend;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.JsonClient.ConnectionException;
-import com.untangle.uvm.node.LocalADConnector;
+import com.untangle.uvm.node.DirectoryConnector;
 
 public class CPDManager
 {
@@ -152,8 +149,10 @@ public class CPDManager
             
             case ACTIVE_DIRECTORY:
                 try {
-                    isAuthenticated = LocalUvmContextFactory.context().appAddressBook().authenticate(u, password, Backend.ACTIVE_DIRECTORY);
-                } catch (ServiceUnavailableException e) {
+                    DirectoryConnector adconnector = (DirectoryConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+                    if (adconnector != null)
+                        isAuthenticated = adconnector.adAuthenticate( u, password );
+                } catch (Exception e) {
                     logger.warn( "Unable to authenticate users.", e );
                     isAuthenticated = false;
                 }
@@ -161,7 +160,7 @@ public class CPDManager
             
             case LOCAL_DIRECTORY:
                 try {
-                    isAuthenticated = LocalUvmContextFactory.context().localDirectory().authenticate(u, password);
+                    isAuthenticated = LocalUvmContextFactory.context().localDirectory().authenticate( u, password );
                 } catch (Exception e) {
                     logger.warn( "Unable to authenticate users.", e );
                     isAuthenticated = false;
@@ -170,8 +169,11 @@ public class CPDManager
             
             case RADIUS:
                 try {
-                    isAuthenticated = LocalUvmContextFactory.context().appAddressBook().authenticate(u, password, Backend.RADIUS);
-                } catch (ServiceUnavailableException e) {
+                    DirectoryConnector adconnector = (DirectoryConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+                    if (adconnector != null)
+                        isAuthenticated = adconnector.radiusAuthenticate( u, password );
+                }
+                catch (Exception e) {
                     logger.warn( "Unable to authenticate users.", e );
                     isAuthenticated = false;
                 }
@@ -198,7 +200,7 @@ public class CPDManager
         
         /* Expire the cache on the phonebook */
         /* This will force adconnector to relookup the address and log any associated events */
-        LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        DirectoryConnector adconnector = (DirectoryConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) {
             adconnector.getIpUsernameMap().expireUser( address );
         }
@@ -240,7 +242,7 @@ public class CPDManager
         
         /* Expire the cache on the phonebook */
         /* This will force adconnector to relookup the address and log any associated events */
-        LocalADConnector adconnector = (LocalADConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        DirectoryConnector adconnector = (DirectoryConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) {
             adconnector.getIpUsernameMap().expireUser( address );
         }
