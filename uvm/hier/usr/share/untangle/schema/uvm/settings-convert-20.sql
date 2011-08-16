@@ -16,7 +16,7 @@
 
 ALTER SCHEMA events OWNER TO postgres;
 
--- com.untangle.uvm.RadiusServerSettings -- 7.2
+-- com.untangle.uvm.RadiusSettings -- 7.2
 CREATE TABLE settings.u_radius_server_settings (
     enabled           BOOL NOT NULL,
     settings_id       INT8 NOT NULL,

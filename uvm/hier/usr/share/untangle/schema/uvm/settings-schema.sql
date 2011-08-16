@@ -250,9 +250,10 @@ CREATE TABLE settings.u_snmp_settings (
     PRIMARY KEY (snmp_settings_id));
 
 
--- com.untangle.uvm.addrbook.RepositorySettings
+-- com.untangle.uvm.addrbook.ActiveDirectorySettings
 CREATE TABLE settings.u_ab_repository_settings (
     settings_id int8 NOT NULL,
+    enabled     BOOL NOT NULL,
     superuser text,
     superuser_pass text,
     domain text,
@@ -261,7 +262,7 @@ CREATE TABLE settings.u_ab_repository_settings (
     port int4,
     PRIMARY KEY (settings_id));
 
--- com.untangle.node.adconnector.ADConnectorSettings
+-- com.untangle.node.adconnector.DirectoryConnectorSettings
 CREATE TABLE settings.u_ab_settings (
     settings_id int8 NOT NULL,
     ad_repo_settings int8 NOT NULL,
@@ -316,7 +317,7 @@ CREATE TABLE settings.u_active_stat (
     interval             text NOT NULL,
     PRIMARY KEY (id));
 
--- com.untangle.uvm.RadiusServerSettings -- 7.2
+-- com.untangle.uvm.RadiusSettings -- 7.2
 CREATE TABLE settings.u_radius_server_settings (
     enabled           BOOL NOT NULL,
     settings_id       INT8 NOT NULL,

@@ -17,7 +17,7 @@
 --
 
 -- Added for AddressBook
--- com.untangle.mvvm.addrbook.RepositorySettings
+-- com.untangle.mvvm.addrbook.ActiveDirectorySettings
 CREATE TABLE settings.ab_repository_settings (
     settings_id int8 NOT NULL,
     superuser_dn text,

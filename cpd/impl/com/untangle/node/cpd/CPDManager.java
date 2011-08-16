@@ -151,7 +151,7 @@ public class CPDManager
                 try {
                     DirectoryConnector adconnector = (DirectoryConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
                     if (adconnector != null)
-                        isAuthenticated = adconnector.adAuthenticate( u, password );
+                        isAuthenticated = adconnector.activeDirectoryAuthenticate( u, password );
                 } catch (Exception e) {
                     logger.warn( "Unable to authenticate users.", e );
                     isAuthenticated = false;

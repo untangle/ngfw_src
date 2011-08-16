@@ -26,7 +26,7 @@ CREATE TABLE settings.mackage_state (
 
 ------ Added for Portal
 
--- com.untangle.mvvm.addrbook.RepositorySettings
+-- com.untangle.mvvm.addrbook.ActiveDirectorySettings
 DROP TABLE settings.ab_repository_settings;
 CREATE TABLE settings.ab_repository_settings (
     settings_id int8 NOT NULL,
