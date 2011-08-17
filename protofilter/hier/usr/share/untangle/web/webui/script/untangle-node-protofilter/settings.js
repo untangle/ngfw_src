@@ -3,15 +3,15 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
     Ung.NodeWin.registerClassName('untangle-node-protofilter', 'Ung.Protofilter');
 
     Ung.Protofilter = Ext.extend(Ung.NodeWin, {
-		nodeData: null,
+        nodeData: null,
         panelStatus: null,
         gridProtocolList : null,
         gridEventLog : null,
-		nodeData : null,
+        nodeData : null,
         initComponent : function() {
-			this.nodeData = this.getRpcNode().getNodeSettings();
-			this.buildStatus();
-			this.buildProtocolList();
+            this.nodeData = this.getRpcNode().getNodeSettings();
+            this.buildStatus();
+            this.buildProtocolList();
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelStatus, this.gridProtocolList, this.gridEventLog]);
@@ -84,11 +84,11 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 settingsCmp : this,
                 name : 'Signatures',
                 helpSource : 'protocol_list',
-				paginated : false,
-				autoGenerateId: true,
+                paginated : false,
+                autoGenerateId: true,
                 // the total records is set from the base settings
                 // patternsLength field
-				data : this.nodeData.patterns.list,
+                data : this.nodeData.patterns.list,
                 emptyRow : {
                     "protocol" : this.i18n._("[no protocol]"),
                     "category" : this.i18n._("[no category]"),
@@ -106,20 +106,20 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 // the list of fields
                 fields : [{
                     name : 'id',
-					type : 'int'
+                    type : 'int'
                 },{
-					name : 'alert',
-					type : 'boolean'
-				},{
-					name : 'metavizeId',
-					type : 'int'
-				},{
-					name : 'quality',
-					type : 'string'
-				},{
-					name : 'readOnly',
-					type : 'boolean'
-				},
+                    name : 'alert',
+                    type : 'boolean'
+                },{
+                    name : 'metavizeId',
+                    type : 'int'
+                },{
+                    name : 'quality',
+                    type : 'string'
+                },{
+                    name : 'readOnly',
+                    type : 'boolean'
+                },
                 // this field is internationalized so a converter was
                 // added
                 {
@@ -130,16 +130,16 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     type : 'string'
                 }, {
                     name : 'log',
-					type : 'boolean'
+                    type : 'boolean'
                 }, {
                     name : 'blocked',
-					type : 'boolean'
+                    type : 'boolean'
                 }, {
                     name : 'description',
                     type : 'string'
                 }, {
                     name : 'definition',
-					type : 'string'
+                    type : 'string'
                 }],
                 // the list of columns for the column model
                 columns : [{
@@ -288,25 +288,25 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
         },
         // save function
         saveAction : function(keepWindowOpen)
-		{
-			if (this.isDirty() === false)
+        {
+            if (this.isDirty() === false)
             {
-				if (!keepWindowOpen) { this.closeWindow(); }
-				return;
-			}
+                if (!keepWindowOpen) { this.closeWindow(); }
+                return;
+            }
 
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-			this.nodeData.patterns.list = this.gridProtocolList.getFullSaveList();
+            this.nodeData.patterns.list = this.gridProtocolList.getFullSaveList();
 
             this.getRpcNode().setNodeSettings(function(result, exception)
             {
-				Ext.MessageBox.hide();
-					if (!keepWindowOpen)
-					{
-					this.closeWindow();
-					return;
-					}
-				this.gridProtocolList.reloadGrid({ data: this.nodeData.patterns.list } );
+                Ext.MessageBox.hide();
+                    if (!keepWindowOpen)
+                    {
+                    this.closeWindow();
+                    return;
+                    }
+                this.gridProtocolList.reloadGrid({ data: this.nodeData.patterns.list } );
             }.createDelegate(this), this.nodeData);
         }
     });
