@@ -159,7 +159,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         return nodeInstances(name,policy,true);
     }
 
-    public List<NodeId> nodeInstances(String name, Policy policy,boolean parents)
+    public List<NodeId> nodeInstances(String name, Policy policy, boolean parents)
     {
         List<NodeId> l = new ArrayList<NodeId>(nodeIds.size());
 
@@ -284,16 +284,6 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             logger.info("initializing node desc for: " + nodeName);
             nodeDesc = initNodeDesc(packageDesc, resUrls, nodeId);
 
-            if (nodeDesc != null) {
-                List<String> annotatedClasses = nodeDesc.getAnnotatedClasses();
-                if (annotatedClasses != null) {
-                    for (String clz : annotatedClasses) {
-                        UvmContextImpl.getInstance().addAnnotatedClass(clz);
-                    }
-                }
-                UvmContextImpl.getInstance().refreshSessionFactory();
-            }
-            
             if (!live) {
                 throw new DeployException("NodeManager is shut down");
             }
@@ -306,6 +296,16 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
                 if (null == tc.node()) {
                     nodeIds.remove(nodeId);
                 }
+            }
+
+            if (nodeDesc != null) {
+                List<String> annotatedClasses = nodeDesc.getAnnotatedClasses();
+                if (annotatedClasses != null) {
+                    for (String clz : annotatedClasses) {
+                        UvmContextImpl.getInstance().addAnnotatedClass(clz);
+                    }
+                }
+                UvmContextImpl.getInstance().refreshSessionFactory();
             }
         }
 
