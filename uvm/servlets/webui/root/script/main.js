@@ -842,7 +842,7 @@ Ung.Main=Ext.extend(Object, {
             for (var i = 0; i < main.nodes.length; i++) {
                 var nodeCmp = Ung.Node.getCmp(main.nodes[i].nodeId);
                 if (nodeCmp && nodeCmp.license) {
-                    nodeCmp.updateLicense(rpc.rackView.licenses.map[nodeCmp.name]);
+                    nodeCmp.updateLicense(rpc.rackView.licenseMap.map[nodeCmp.name]);
                 }
             }
         }.createDelegate(this);

@@ -38,7 +38,7 @@ CREATE TABLE settings.ab_repository_settings (
     port int4,
     PRIMARY KEY (settings_id));
 
--- com.untangle.mvvm.addrbook.AddressBookSettings
+-- com.untangle.mvvm.addrbook.DirectoryConnectorSettings
 DROP TABLE settings.ab_settings;
 CREATE TABLE settings.ab_settings (
     settings_id int8 NOT NULL,

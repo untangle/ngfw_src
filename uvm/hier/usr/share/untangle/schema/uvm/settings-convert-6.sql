@@ -16,7 +16,7 @@
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 --
 
--- Added for AddressBook
+-- Added for DirectoryConnector
 -- com.untangle.mvvm.addrbook.ActiveDirectorySettings
 CREATE TABLE settings.ab_repository_settings (
     settings_id int8 NOT NULL,
@@ -28,8 +28,8 @@ CREATE TABLE settings.ab_repository_settings (
     PRIMARY KEY (settings_id));
 
 
--- Added for AddressBook
--- com.untangle.mvvm.addrbook.AddressBookSettings
+-- Added for DirectoryConnector
+-- com.untangle.mvvm.addrbook.DirectoryConnectorSettings
 
 CREATE TABLE settings.ab_settings (
     settings_id int8 NOT NULL,
