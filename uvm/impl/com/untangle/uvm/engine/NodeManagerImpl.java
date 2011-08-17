@@ -163,7 +163,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
     {
         List<NodeId> l = new ArrayList<NodeId>(nodeIds.size());
 
-        for (NodeId nodeId : getNodesForPolicy(policy,parents)) {
+        for (NodeId nodeId : getNodesForPolicy(policy, parents)) {
             NodeContext tc = nodeIds.get(nodeId);
             if (null != tc) {
                 String n = tc.getNodeDesc().getName();
@@ -288,16 +288,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
                 throw new DeployException("NodeManager is shut down");
             }
 
-            tc = new NodeContextImpl((URLClassLoader)getClass().getClassLoader(), nodeDesc, packageDesc.getName(), true);
-            nodeIds.put(nodeId, tc);
-            try {
-                tc.init(args);
-            } finally {
-                if (null == tc.node()) {
-                    nodeIds.remove(nodeId);
-                }
-            }
-
+            /* load annotated classes */
             if (nodeDesc != null) {
                 List<String> annotatedClasses = nodeDesc.getAnnotatedClasses();
                 if (annotatedClasses != null) {
@@ -306,6 +297,16 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
                     }
                 }
                 UvmContextImpl.getInstance().refreshSessionFactory();
+            }
+
+            tc = new NodeContextImpl((URLClassLoader)getClass().getClassLoader(), nodeDesc, packageDesc.getName(), true);
+            nodeIds.put(nodeId, tc);
+            try {
+                tc.init(args);
+            } finally {
+                if (null == tc.node()) {
+                    nodeIds.remove(nodeId);
+                }
             }
         }
 
