@@ -107,7 +107,7 @@ class BuildEnv
     @home = home
 
     ## Prefix is the value used in substitutions
-    @prefix = $DevelBuild ? File.expand_path("#{home}/dist") : '';
+    @prefix = $DevelBuild ? File.expand_path("#{home}/dist").sub('hades','work') : '';
 
     ## Flag indicating whether or not this is a development or
     ## package/production build.
