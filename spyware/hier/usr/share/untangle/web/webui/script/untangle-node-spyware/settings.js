@@ -50,9 +50,9 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     labelWidth: 150,
                     items : [{
                         xtype : 'checkbox',
-                        boxLabel : this.i18n._('Block Spyware & Ad URLs'),
+                        boxLabel : this.i18n._('Block Malware URLs (Community List)'),
                         hideLabel : true,
-                        name : 'Block Spyware & Ad URLs',
+                        name : 'Block Malware URLs (Community List)',
                         checked : this.getSettings().scanUrls,
                         listeners : {
                             "check" : {
@@ -61,7 +61,20 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                                 }.createDelegate(this)
                             }
                         }
-                    }, {
+                    },  {
+                        xtype : 'checkbox',
+                        boxLabel : this.i18n._('Block Malware URLs (Google List)'),
+                        hideLabel : true,
+                        name : 'Block Malware URLs (Google List)',
+                        checked : this.getSettings().scanGoogleSafeBrowsing,
+                        listeners : {
+                            "check" : {
+                                fn : function(elem, checked) {
+                                    this.getSettings().scanGoogleSafeBrowsing = checked;
+                                }.createDelegate(this)
+                            }
+                        }
+                    },  {
                         xtype : 'combo',
                         editable : false,
                         mode : 'local',
