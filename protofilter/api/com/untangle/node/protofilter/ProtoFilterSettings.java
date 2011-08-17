@@ -18,8 +18,7 @@
 
 package com.untangle.node.protofilter;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
 
 /**
  * Settings for the ProtoFilter node.
@@ -31,17 +30,23 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class ProtoFilterSettings implements java.io.Serializable
 {
+    private int version = 1;
     private int byteLimit  = 2048;
     private int chunkLimit = 10;
     private String unknownString = "[unknown]";
     private boolean stripZeros = true;
-    private HashSet<ProtoFilterPattern> patterns = null;
+    private LinkedList<ProtoFilterPattern> patterns = null;
 
     public ProtoFilterSettings()
     {
-        this.patterns = new HashSet<ProtoFilterPattern>();
     }
 
+    public int getVersion()
+    { return this.version; }
+
+    public void setVersion(int i)
+    { this.version = i; }
+    
     public int getByteLimit()
     { return this.byteLimit; }
 
@@ -66,9 +71,9 @@ public class ProtoFilterSettings implements java.io.Serializable
     public void setStripZeros(boolean b)
     { this.stripZeros = b; }
 
-    public HashSet<ProtoFilterPattern> getPatterns()
+    public LinkedList<ProtoFilterPattern> getPatterns()
     { return patterns; }
 
-    public void setPatterns(HashSet<ProtoFilterPattern> s)
+    public void setPatterns(LinkedList<ProtoFilterPattern> s)
     { this.patterns = s; }
 }

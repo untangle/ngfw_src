@@ -3,13 +3,13 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
     Ung.NodeWin.registerClassName('untangle-node-protofilter', 'Ung.Protofilter');
 
     Ung.Protofilter = Ext.extend(Ung.NodeWin, {
-		filterData: null,
+		nodeData: null,
         panelStatus: null,
         gridProtocolList : null,
         gridEventLog : null,
 		nodeData : null,
         initComponent : function() {
-			this.filterData = this.getRpcNode().getPatterns();
+			this.nodeData = this.getRpcNode().getNodeSettings();
 			this.buildStatus();
 			this.buildProtocolList();
             this.buildEventLog();
@@ -88,7 +88,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
 				autoGenerateId: true,
                 // the total records is set from the base settings
                 // patternsLength field
-				data : this.filterData.list,
+				data : this.nodeData.patterns.list,
                 emptyRow : {
                     "protocol" : this.i18n._("[no protocol]"),
                     "category" : this.i18n._("[no category]"),
@@ -105,8 +105,21 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 // from the server
                 // the list of fields
                 fields : [{
-                    name : 'id'
-                },
+                    name : 'id',
+					type : 'int'
+                },{
+					name : 'alert',
+					type : 'boolean'
+				},{
+					name : 'metavizeId',
+					type : 'int'
+				},{
+					name : 'quality',
+					type : 'string'
+				},{
+					name : 'readOnly',
+					type : 'boolean'
+				},
                 // this field is internationalized so a converter was
                 // added
                 {
@@ -116,14 +129,17 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     name : 'category',
                     type : 'string'
                 }, {
-                    name : 'log'
+                    name : 'log',
+					type : 'boolean'
                 }, {
-                    name : 'blocked'
+                    name : 'blocked',
+					type : 'boolean'
                 }, {
                     name : 'description',
                     type : 'string'
                 }, {
-                    name : 'definition'
+                    name : 'definition',
+					type : 'string'
                 }],
                 // the list of columns for the column model
                 columns : [{
@@ -280,9 +296,9 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
 			}
 
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-			this.filterData = this.gridProtocolList.getFullSaveList();
+			this.nodeData.patterns.list = this.gridProtocolList.getFullSaveList();
 
-            this.getRpcNode().setPatterns(function(result, exception)
+            this.getRpcNode().setNodeSettings(function(result, exception)
             {
 				Ext.MessageBox.hide();
 					if (!keepWindowOpen)
@@ -290,8 +306,8 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
 					this.closeWindow();
 					return;
 					}
-				this.gridProtocolList.reloadGrid({ data: this.filterData.list } );
-            }.createDelegate(this), this.filterData);
+				this.gridProtocolList.reloadGrid({ data: this.nodeData.patterns.list } );
+            }.createDelegate(this), this.nodeData);
         }
     });
 }

@@ -27,9 +27,6 @@ public interface ProtoFilter extends Node
     ProtoFilterSettings getNodeSettings();
     void setNodeSettings(ProtoFilterSettings settings);
 
-    LinkedList<ProtoFilterPattern> getPatterns();
-    void setPatterns(LinkedList<ProtoFilterPattern> patterns);
-    
     int getPatternsTotal();
     int getPatternsLogged();
     int getPatternsBlocked();
