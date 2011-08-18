@@ -237,7 +237,7 @@ Ung.Main=Ext.extend(Object, {
         // initialize viewport object
         var contentRightArr=[
             '<div id="content-right">',
-                '<div id="racks" style="display:none;">',
+                '<div id="racks" style="">',
                     '<div id="rack-list"><div id="rack-select-container"></div><div id="parent-rack-container"></div>',
                     '</div>',
                     '<div id="rack-nodes">',
@@ -351,23 +351,6 @@ Ung.Main=Ext.extend(Object, {
         });
 
         Ext.getCmp("west").fireEvent("resize");
-        buttonCmp=new Ext.Button({
-            name: 'What Apps should I use?',
-            id: 'help_empty_rack',
-            renderTo: 'content-right',
-            iconCls: 'icon-help',
-            text: i18n._('What Apps should I use?'),
-            show : function() {
-                Ext.Button.prototype.show.call(this);
-                this.getEl().alignTo("content-right","c-c");
-            },
-            handler: function() {
-                main.warnOnUpgrades(function() {
-                     main.openStore("wizard",i18n._('What Apps should I use?'));
-                }.createDelegate(this));
-            }.createDelegate(this)
-        });
-        buttonCmp.hide();
         buttonCmp=new Ext.Button({
             id: "my_account_button",
             name: "My Account",
@@ -706,7 +689,7 @@ Ung.Main=Ext.extend(Object, {
     
     // load policies list
     loadPolicies: function() {
-        Ext.MessageBox.wait(i18n._("Loading Rack..."), i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Loading Apps..."), i18n._("Please wait"));
         rpc.policyManager.getPolicies( function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.policies=result;
@@ -1118,30 +1101,22 @@ Ung.Main=Ext.extend(Object, {
     },
     // Show - hide Services header in the rack
     updateSeparator: function() {
-        if(this.nodes.length==0) {
-            document.getElementById("racks").style.display="none";
-            this.showInitialScreen();
-            //Ext.getCmp("help_empty_rack").show();
-        } else {
-            Ext.getCmp("help_empty_rack").hide();
-            document.getElementById("racks").style.display="";
-            var hasUtil=false;
-            var hasService=false;
-            for(var i=0;i<this.nodes.length;i++) {
-                if(this.nodes[i].type != "NODE") {
-                   hasService=true;
-                   if(this.nodes[i].type != "SERVICE") {
-                     hasUtil=true;
-                   }
+        var hasUtil=false;
+        var hasService=false;
+        for(var i=0;i<this.nodes.length;i++) {
+            if(this.nodes[i].type != "NODE") {
+                hasService=true;
+                if(this.nodes[i].type != "SERVICE") {
+                    hasUtil=true;
                 }
             }
-            document.getElementById("nodes-separator-text").innerHTML=(hasService && hasUtil)?i18n._("Services & Utilities"):hasService?i18n._("Services"):"";
-            document.getElementById("nodes-separator").style.display= hasService?"":"none";
-            if(hasService) {
-                document.getElementById("racks").style.backgroundPosition="0px 100px";
-            } else {
-                document.getElementById("racks").style.backgroundPosition="0px 50px";
-            }
+        }
+        document.getElementById("nodes-separator-text").innerHTML=(hasService && hasUtil)?i18n._("Services & Utilities"):hasService?i18n._("Services"):"";
+        document.getElementById("nodes-separator").style.display= hasService?"":"none";
+        if(hasService) {
+            document.getElementById("racks").style.backgroundPosition="0px 100px";
+        } else {
+            document.getElementById("racks").style.backgroundPosition="0px 50px";
         }
     },
     // build policies select box
