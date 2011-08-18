@@ -174,7 +174,7 @@ Ung.SetupWizard.Welcome = Ext.extend(Object, {
         var panel = new Ext.FormPanel({
             items : [{
                 xtype : 'label',
-                html : '<h2 class="wizard-title">' + String.format(i18n._( "Thanks for choosing {0}" ),oemName) + '</h2>'
+                html : '<h2 class="wizard-title">' + String.format(i18n._( "Thanks for choosing {0}!" ),oemName) + '</h2>'
             },{
                 xtype : 'label',
                 cls : 'noborder',

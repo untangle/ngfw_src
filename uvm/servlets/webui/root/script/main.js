@@ -1296,6 +1296,12 @@ Ung.Main=Ext.extend(Object, {
      showUpgradeScreen : function(){
         this.openStore('upgrade',i18n._("Welcome"));
      },
+    /**
+     *  Displays the setup wizard
+     **/         
+    showSetupWizardScreen : function(){
+        this.openWindow( "", "setupwizard", i18n._("Setup Wizard"), "/setup/");
+    },     
               
     /**
      *  Hides the welcome screen

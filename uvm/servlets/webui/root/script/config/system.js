@@ -198,10 +198,9 @@ if (!Ung.hasResource["Ung.System"]) {
                         xtype : "checkbox",
                         name : "Send data about your server for support purposes",
                         boxLabel : String.format(this.i18n
-                                ._("{0}Send{1} data about your server for support purposes. This will send status updates and an email if any unexpected problems occur, but will not allow support secure access to your server. No personal information about the network will be transmitted."),
+                                ._("{0}Send{1} data about your server. This will send status updates and alerts if any unexpected problems occur, but will not allow support access to your server."),
                                 "<b>", "</b>"),
                         hideLabel : true,
-                        height: 100,
                         checked : this.getMiscSettings().isExceptionReportingEnabled,
                         listeners : {
                             "check" : {
@@ -269,6 +268,31 @@ if (!Ung.hasResource["Ung.System"]) {
                                             Ext.MessageBox.wait(String.format(this.i18n._("The {0} Server is shutting down."),this.companyName), i18n._("Please wait"));
                                         }
                                     }.createDelegate(this));
+                                }
+                             }.createDelegate(this));
+                        }.createDelegate(this)
+                    }]
+                },{
+                    xtype : "fieldset",
+                    autoHeight : true,
+                    title : this.i18n._("Setup Wizard"),
+                    buttonAlign: "left",
+                    items : [{
+                        border: false,
+                        cls: "description",
+                        html: this.i18n._("Clicking this button will launch the Setup Wizard.")
+                    }],
+                    buttons: [{
+                        xtype : "button",
+                        text : this.i18n._("Setup Wizard"),
+                        name : "Setup Wizard",
+                        iconCls : "reboot-icon",
+                        handler : function() {
+                            Ext.MessageBox.confirm(this.i18n._("Setup Wizard Warning"),
+                                String.format(this.i18n._("You are about to re-run the Setup Wizard.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), this.companyName, "<b>", "</b>" ), 
+                                function(btn) {
+                                if (btn == "yes") {
+                                    main.showSetupWizardScreen();
                                 }
                              }.createDelegate(this));
                         }.createDelegate(this)
