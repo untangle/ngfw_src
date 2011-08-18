@@ -768,6 +768,9 @@ Ung.Main=Ext.extend(Object, {
                 rpc.rackView.runStates.map[nodeDesc.nodeId.id]);
             this.nodes.push(node);
         }
+        if (this.nodes.length == 0) {
+            this.showInitialScreen();
+        }
         this.updateSeparator();
         for(var i=0;i<this.nodes.length;i++) {
             var node=this.nodes[i];
@@ -1241,9 +1244,9 @@ Ung.Main=Ext.extend(Object, {
             centerSize = Ext.getCmp('center').getSize(),
             centerPosition = Ext.getCmp('center').getPosition();
         ifr.initialConfig.sizeToRack = false;
-        ifr.setSize({width:centerSize.width*0.75,height:centerSize.height*0.75});        
-        position[0] = centerPosition[0]+Math.round(centerSize.width/8);
-        position[1] = centerPosition[1]+Math.round(centerSize.height/8);
+        ifr.setSize({width:centerSize.width*0.90,height:centerSize.height*0.90});        
+        position[0] = centerPosition[0]+Math.round(centerSize.width/20);
+        position[1] = centerPosition[1]+Math.round(centerSize.height/20);
         ifr.setPosition(position[0],position[1]);
         Ext.MessageBox.hide();
         Ext.getCmp('center').setSize({width:centerSize.width , height: centerSize.height});                  
