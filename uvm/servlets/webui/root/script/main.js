@@ -1276,25 +1276,25 @@ Ung.Main=Ext.extend(Object, {
      *  Displays the run setup first screen
      **/         
     showRunSetupScreen : function(){
-        this.openWindow( "", "runsetup", i18n._("Congratulations"), "/webui/runsetup.jsp");
+        this.openWindow( "", "runsetup", i18n._("Welcome"), "/webui/runsetup.jsp");
     },     
     /**
      *  Displays the offline welcome screen
      **/             
     showFailureScreen : function (){
-        this.openStore("offline",i18n._("Congratulations"));
+        this.openStore("offline",i18n._("Welcome"));
     },
     /**
      *  Displays the online welcome screen
      **/         
     showWelcomeScreen : function (){
-        this.openStore("online-welcome",i18n._("Congratulations"));            
+        this.openStore("online-welcome",i18n._("Welcome"));            
     },
     /**
      * Display the upgrade screen
      */
      showUpgradeScreen : function(){
-        this.openStore('upgrade',i18n._("Congratulations"));
+        this.openStore('upgrade',i18n._("Welcome"));
      },
               
     /**
