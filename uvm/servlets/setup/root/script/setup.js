@@ -61,14 +61,15 @@ Ung.SetupWizard.EmailTester = Ext.extend( Object, {
         }
 
         this.emailTestMessage =
-            i18n._( "Enter an email address which you would like to send a test message to, and then press \"Proceed\".  You should receive an email shortly after running the test.  If not, your email settings may not be correct." );
+            i18n._( "Enter an email address to send a test email and then press ") + "<i>" + i18n._("Send Test Email") + "</i>." + "<br/>" +
+            i18n._( "The specified email address should receive an email within a few minutes. If not, the current email configuration may not be correct." );
 
         this.emailAddress = config.emailAddress;
     },
 
     testMessageHandler : function( result, exception )
     {
-        var message = i18n._( 'Test email sent.  Check your mailbox for successful delivery.' );
+        var message = i18n._( 'Test email sent. ') + i18n._('Check ') + this.emailAddress + i18n._(' mailbox for successful delivery.' );
         if ( exception ) {
             message  = exception.message;
             if (message == null || message == "Unknown") {
@@ -79,7 +80,7 @@ Ung.SetupWizard.EmailTester = Ext.extend( Object, {
         }
 
         if ( result != true ) {
-            message = i18n._( 'Warning!  Test failed.  Check your settings.' );
+            message = i18n._( 'Warning!  Test failed.  Check the settings.' );
         }
 
         this.showTester( { progressText : message } );
@@ -105,7 +106,7 @@ Ung.SetupWizard.EmailTester = Ext.extend( Object, {
             title : i18n._('Email Test'),
             buttons : {
                 cancel : i18n._('Close'),
-                ok : i18n._('Proceed')
+                ok : i18n._('Send Test Email')
             },
             width : 450,
             msg : this.emailTestMessage,
@@ -173,11 +174,11 @@ Ung.SetupWizard.Welcome = Ext.extend(Object, {
         var panel = new Ext.FormPanel({
             items : [{
                 xtype : 'label',
-                html : '<h2 class="wizard-title">' + String.format(i18n._( "Thanks for using {0}" ),oemName) + '</h2>'
+                html : '<h2 class="wizard-title">' + String.format(i18n._( "Thanks for choosing {0}" ),oemName) + '</h2>'
             },{
                 xtype : 'label',
                 cls : 'noborder',
-                html : String.format(i18n._( 'This wizard will guide you through the initial setup and configuration of your {0} Server '),oemName) +
+                html : String.format(i18n._( 'This wizard will guide you through the initial setup and configuration of the {0} Server.'),oemName) +
                     '<br/><br/>'+
                     String.format(i18n._('Click {0}Next{1} to get started.'),'<b>','</b>')
             }]
@@ -201,7 +202,7 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
             },
             items : [{
                 xtype : 'label',
-                html : '<h2 class="wizard-title">'+i18n._( "Configure your Server" )+'</h2>'
+                html : '<h2 class="wizard-title">'+i18n._( "Configure the Server" )+'</h2>'
             },{
                 defaultType : 'textfield',
                 defaults : {
@@ -210,7 +211,7 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
                 },
                 items : [{
                     xtype : 'label',
-                    html : i18n._( '<b>Choose a password for the admin account</b>' ),
+                    html : i18n._( '<b>Choose a password for the admin account.</b>' ),
                     border : false
                 },{
                     inputType : 'text',
@@ -239,7 +240,7 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
             },{
                 items : [{
                     xtype : 'label',
-                    html : i18n._( '<b>Select a timezone</b>' ),
+                    html : i18n._( '<b>Select a timezone.</b>' ),
                     border : false
                 },{
                     xtype : 'combo',
@@ -260,7 +261,7 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
 
         this.card = {
             title : i18n._( "Settings" ),
-            //cardTitle : i18n._( "Configure your Server" ),
+            //cardTitle : i18n._( "Configure the Server" ),
             panel : this.panel,
             onNext : this.saveSettings.createDelegate( this ),
             onValidate : this.validateSettings.createDelegate(this)
@@ -418,8 +419,23 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
 
         
         var panelTitle = i18n._('Identify Network Cards');
-        var panelText = i18n._( "<b>Important:</b> This step identifies your external, internal, and other network cards. Plug an active cable into each network card one at a time and hit refresh to determine which network card is which. <b>Drag and drop</b> the interfaces to remap them at this time." );
+        var panelText = "<font color=\"red\"><b>" + i18n._( "Important:") + "</b></font>";
+        panelText += i18n._( " This step identifies the external, internal, and other network cards. ");
+        panelText += "<br/>";
+        panelText += "<br/>";
 
+        panelText += "<b>" + i18n._("Step 1: ") + "</b>";
+        panelText += i18n._( "Plug an active cable into one network card and hit <i>Refresh</i> to determine which network card it is.");
+        panelText += "<br/>";
+        
+        panelText += "<b>" + i18n._("Step 2: ") + "</b>";
+        panelText += "<b>" + i18n._( "Drag and drop") + "</b>" + i18n._(" the network card to map it to the desired interface.");
+        panelText += "<br/>";
+
+        panelText += "<b>" + i18n._("Step 3: ") + "</b>";
+        panelText += i18n._( "Repeat Step 1 and 2 for each network card and click <i>Next</i>.");
+        panelText += "<br/>";
+        
         var panel = new Ext.Panel({
             defaults : { cls : 'noborder' },
             items : [{
@@ -661,7 +677,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                 autoHeight : true,
                 items : [{
                     name : "ip",
-                    fieldLabel : i18n._( "IP" )
+                    fieldLabel : i18n._( "IP Address" )
                 },{
                     name : "netmask",
                     fieldLabel : i18n._( "Netmask" )
@@ -710,7 +726,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                 autoHeight : true,
                 items : [{
                     name : "ip",
-                    fieldLabel : i18n._( "IP" ),
+                    fieldLabel : i18n._( "IP Address" ),
                     allowBlank : false
                 },{
                     name : "netmask",
@@ -733,7 +749,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                     allowBlank : false
                 },{
                     name : "dns2",
-                    fieldLabel : i18n._( "Secondary DNS(optional)" ),
+                    fieldLabel : i18n._( "Secondary DNS (optional)"),
                     allowBlank : true
                 },{
                     xtype : 'button',
@@ -782,7 +798,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                     fieldClass : '',
                     labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px'
                 },{
-                    fieldLabel : i18n._( "IP" ),
+                    fieldLabel : i18n._( "IP Address" ),
                     labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
                     name : "ip",
                     fieldClass : 'noborder'
@@ -836,7 +852,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             }
         });
 
-        var configureText = i18n._("Configure your Internet Connection");
+        var configureText = i18n._("Configure the Internet Connection");
         
         var configure = new Ext.FormPanel({
             cls : "untangle-form-panel",
@@ -1152,25 +1168,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
             },
             items : [{
                 xtype : 'label',
-                html : '<h2 class="wizard-title">'+i18n._( "Configure your Internal Network Interface" )+'</h2>'
-            },{
-                cls : 'noborder wizard-internal-network',
-                items : [{
-                    xtype : 'radio',
-                    name : 'bridgeOrRouter',
-                    inputValue : 'bridge',
-                    boxLabel : i18n._('Transparent Bridge'),
-                    ctCls : 'large-option',
-                    hideLabel : 'true',
-                    checked : true
-                },{
-                    xtype : 'label',
-                    html : "<div class='wizard-network-image-description'>" + i18n._('This is recommended if the external port is plugged into a firewall/router. This bridges Internal and External and disables DHCP.') + "</div>"
-                },{
-                    xtype : 'label',
-                    cls : 'wizard-network-image',
-                    html : '<img src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/bridge.png"/>'
-                }]
+                html : '<h2 class="wizard-title">'+i18n._( "Configure the Internal Network Interface" )+'</h2>'
             },{
                 cls : 'noborder  wizard-internal-network',
                 items : [{
@@ -1189,7 +1187,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                     }
                 },{
                     xtype : 'label',
-                    html : "<div class='wizard-network-image-description'>" + i18n._('This is recommended if the external port is plugged into your internet  connection. This enables NAT on the Internal Interface and DHCP.') + "</div>"
+                    html : "<div class='wizard-network-image-description'>" + i18n._('This is recommended if the external port is plugged into the internet connection. This enables NAT on the Internal Interface and DHCP.') + "</div>"
                 },{
                     name : 'network',
                     xtype : 'textfield',
@@ -1229,6 +1227,24 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
                     cls : 'wizard-network-image',
                     html : '<img src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/router.png"/>'
                 }]
+            }, {
+                cls : 'noborder wizard-internal-network',
+                items : [{
+                    xtype : 'radio',
+                    name : 'bridgeOrRouter',
+                    inputValue : 'bridge',
+                    boxLabel : i18n._('Transparent Bridge'),
+                    ctCls : 'large-option',
+                    hideLabel : 'true',
+                    checked : true
+                },{
+                    xtype : 'label',
+                    html : "<div class='wizard-network-image-description'>" + i18n._('This is recommended if the external port is plugged into a firewall/router. This bridges Internal and External and disables DHCP.') + "</div>"
+                },{
+                    xtype : 'label',
+                    cls : 'wizard-network-image',
+                    html : '<img src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/bridge.png"/>'
+                }]
             }]
         });
 
@@ -1257,8 +1273,8 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
             var intfs = netConf.interfaceList.list;
             for ( var c = 0 ;  c < intfs.length ; c++ ) {
                 if (intfs[c].name == "Internal" && intfs[c].configType == "static" ) {
-                    this.panel.find( "name", "bridgeOrRouter" )[0].setValue(false);
-                    this.panel.find( "name", "bridgeOrRouter" )[1].setValue(true);
+                    this.panel.find( "name", "bridgeOrRouter" )[0].setValue(true);
+                    this.panel.find( "name", "bridgeOrRouter" )[1].setValue(false);
                 }
             }
         }
@@ -1347,7 +1363,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
 Ung.SetupWizard.Email = Ext.extend( Object, {
     constructor : function( config )
     {
-        this.isAdvanced = false;
+        this.showEmailConfig = false;
 
         this.panel = new Ext.FormPanel({
             defaultType : 'textfield',
@@ -1357,26 +1373,29 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
             },
             items : [{
                 xtype : 'label',
-                html : '<h2 class="wizard-title">'+i18n._( "Email Configuration" )+'</h2>'
+                itemCls : 'small-top-margin',
+                html : '<h2 class="wizard-title">'+i18n._( "Email Configuration" )+ " <i>" + i18n._('(Optional)') + "</i>" + '</h2>'
             },{
                 xtype : 'label',
-                html : String.format(i18n._('The {0} Server sends email for Quarantine Digests, Reports, etc.'),oemName)
+                html : String.format(i18n._("The {0} Server needs a valid email configuration to send email for Quarantine Digests, Reports, etc."), oemName) + "<br/>" + "<br/>"
             },{
                 xtype : 'label',
-                cls : 'optional-email-tester noborder',
-                html : i18n._('This test is optional')
+                html : "<b>" + i18n._("Step 1: ") + "</b>" + i18n._("Click") + " <i>" + i18n._("Verify Email Configuration") + "</i> " + i18n._("to test the current email configuration.") + "<br/>"
             },{
                 xtype : 'button',
-                text : i18n._( 'Send Test Email' ),
+                text : i18n._( 'Verify Email Configuration' ),
                 handler : this.emailTest.createDelegate( this ),
                 iconCls : ' email-tester',
                 cls : 'spacing-margin-1 email-tester'
             },{
+                xtype : 'label',
+                html : "<br/>" + "<b>" + i18n._("Step 2: ") + "</b>" + i18n._("If the verification succeeds click") + " <i>" + i18n._("Next") + " </i>" + i18n._(",otherwise setup email configuration and repeat Step 1. ") + "<br/>"
+            },{
                 name:'advanced',
                 xtype:'fieldset',
-                title:i18n._("Advanced Email Configuration"),
+                title:i18n._("Email Configuration"),
                 collapsible : true,
-                collapsed : !this.isAdvanced,
+                collapsed : !this.showEmailConfig,
                 autoHeight : true,
                 listeners : {
                     beforecollapse : this.onBeforeCollapse.createDelegate( this ),
@@ -1555,7 +1574,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
     validateEmailConfiguration : function()
     {
         var rv = true;
-        if(this.isAdvanced){//advanced email config checked
+        if(this.showEmailConfig){//advanced email config checked
             if(!_validate(this.panel.find('name','from-address')[0].items.items)) {
                 rv = !rv;
             }
@@ -1603,19 +1622,19 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
 
     onBeforeCollapse : function( panel, animate )
     {
-        this.isAdvanced = false;
+        this.showEmailConfig = false;
               return true;
     },
 
     onBeforeExpand : function( panel, animate )
     {
-        this.isAdvanced = true;
+        this.showEmailConfig = true;
                return true;
     },
 
     saveSettings : function( handler )
     {
-        Ext.MessageBox.wait( i18n._( "Saving Email Settings" ), i18n._( "Please wait" ));
+        Ext.MessageBox.wait( i18n._( "Saving Email Configuration..." ), i18n._( "Please wait" ));
 
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
     },
@@ -1632,7 +1651,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
         settings.authPass = "";
         settings.reportEmail = "";
         
-        if ( this.isAdvanced ) {
+        if ( this.showEmailConfig ) {
             settings.fromAddress = this.panel.find( "name", "from-address-textfield" )[0].getValue();
 
             if ( this.panel.find( "name", "smtp-send-directly" )[0].getGroupValue() == "smtp-server" ) {
@@ -1669,10 +1688,10 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
         var panel = new Ext.FormPanel({
             items : [{
                 xtype : 'label',
-                html : '<h2 class="wizard-title">'+i18n._( "Congrats!" )+'</h2>'
+                html : '<h2 class="wizard-title">'+i18n._( "Congratulations!" )+'</h2>'
              },{
                  xtype : 'label',
-                 html : String.format(i18n._( '<b>Your {0} Server is now configured.</b><br/><br/>You are now ready to login and download some applications.' ),oemName),
+                 html : String.format(i18n._( '<b>The {0} Server is now configured.</b><br/><br/>You are now ready to login and download applications.' ),oemName),
                  cls : 'noborder'
              }]
         });
@@ -1687,7 +1706,7 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
 
     openUserInterface : function( handler )
     {
-        Ext.MessageBox.wait( i18n._( "Completing Setup Wizard..." ), i18n._( "Please wait" ));
+        Ext.MessageBox.wait( i18n._( "Loading User Interface..." ), i18n._( "Please wait" ));
 
         //now that we are done, create the UID
         rpc.jsonrpc.RemoteUvmContext.createUID();
