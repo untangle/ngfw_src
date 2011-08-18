@@ -35,7 +35,7 @@
             top.window.resizeTo(screen.availWidth,screen.availHeight);
         } else {
             top.window.outerHeight = top.screen.availHeight-30;
-            top.window.outerWidth = top.screen.availWidth-30;
+            top.window.outerWidth = top.screen.availWidth;
         }
     }
      </script>
