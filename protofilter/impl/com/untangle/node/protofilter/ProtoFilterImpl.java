@@ -173,23 +173,19 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         
         logger.info("Loading settings from " + settingsFile);
         
-        try
-        {
+        try {
             readSettings =  setman.load( ProtoFilterSettings.class, settingsBase);
         }
 
-        catch (Exception exn)
-        {
+        catch (Exception exn) {
             logger.error("Could not read node settings", exn);
         }
 
         // if no settings found try getting them from the database
-        if (readSettings == null)
-        {
+        if (readSettings == null) {
             logger.warn("No json settings found... attempting to import from database");
             
-            try
-            {
+            try {
                 SimpleExec.SimpleExecResult result = null;
                 
                 result = SimpleExec.exec(SETTINGS_CONVERSION_SCRIPT, new String[] { nodeID.toString(), settingsFile } , null, null, true, true, 1000*60, logger, true);
@@ -197,18 +193,15 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
                 logger.info("EXEC stderr: " + new String(result.stdErr));
             }
 
-            catch (Exception exn)
-            {
+            catch (Exception exn) {
                 logger.error("Conversion script failed", exn);
             }
 
-            try
-            {
+            try {
                 readSettings =  setman.load( ProtoFilterSettings.class, settingsBase);
             }
 
-            catch (Exception exn)
-            {
+            catch (Exception exn) {
                 logger.error("Could not read node settings", exn);
             }
             
@@ -217,25 +210,20 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
         try
         {
-            if (readSettings == null)
-            {
+            if (readSettings == null) {
                 logger.warn("No database or json settings found... initializing with defaults");
                 initializeSettings();
             }
             
-            else
-            {
+            else {
                 nodeSettings = readSettings;
                 reconfigure();
             }
         }
         
-        catch (Exception exn)
-        {
+        catch (Exception exn) {
             logger.error("Could not apply node settings", exn);
         }
-        
-        updateToCurrent();
     }
 
     public void reconfigure() throws Exception
@@ -266,126 +254,6 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         handler.byteLimit(nodeSettings.getByteLimit());
         handler.chunkLimit(nodeSettings.getChunkLimit());
         handler.stripZeros(nodeSettings.isStripZeros());
-    }
-
-    private void updateToCurrent()
-    {
-        if (nodeSettings == null) {
-            logger.error("NULL ProtoFilter Settings");
-            return;
-        }
-
-        boolean    madeChange = false;
-        TreeMap<Integer,ProtoFilterPattern> factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
-        LinkedList<ProtoFilterPattern> curPatterns = nodeSettings.getPatterns(); /* Current list of Patterns */
-
-        /*
-         * Look for updates
-         */
-        for (Iterator<ProtoFilterPattern> i = curPatterns.iterator() ; i.hasNext() ; ) {
-            ProtoFilterPattern curPat = i.next();
-            int mvid = curPat.getMetavizeId();
-            ProtoFilterPattern newPat = factoryPatterns.get(mvid);
-
-            // logger.info("INFO: Found existing pattern " + mvid + " Pattern (" + curPat.getProtocol() + ")");
-            if (mvid == ProtoFilterPattern.NEEDS_CONVERSION_METAVIZE_ID) {
-                // Special one-time handling for conversion from 3.1.3 to 3.2
-                // Find it by name
-                madeChange = true;
-                String curName = curPat.getProtocol();
-                boolean found = false;
-                for (Iterator<ProtoFilterPattern> j = factoryPatterns.values().iterator() ; j.hasNext() ; ) {
-                    newPat = j.next();
-                    if (newPat.getProtocol().equals(curName)) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (found) {
-                    logger.info("CONVERT: Updating MVID for Pattern (" + curName + ")");
-                    mvid = newPat.getMetavizeId();
-                    curPat.setMetavizeId(mvid);
-                } else {
-                    // A name mismatch, a user pattern, or the pattern has been deleted.
-                    newPat = null;
-                }
-                // In either case, fall through to below
-            }
-            if (newPat != null) {
-                /*
-                 * Pattern is present in current config
-                 * Update it if needed
-                 */
-                if (!newPat.getProtocol().equals(curPat.getProtocol())) {
-                    logger.info("UPDATE: Updating Protocol for Pattern (" + mvid + ")");
-                    madeChange = true;
-                    curPat.setProtocol(newPat.getProtocol());
-                }
-                if (!newPat.getCategory().equals(curPat.getCategory())) {
-                    logger.info("UPDATE: Updating Category for Pattern (" + mvid + ")");
-                    madeChange = true;
-                    curPat.setCategory(newPat.getCategory());
-                }
-                if (!newPat.getDescription().equals(curPat.getDescription())) {
-                    logger.info("UPDATE: Updating Description for Pattern (" + mvid + ")");
-                    madeChange = true;
-                    curPat.setDescription(newPat.getDescription());
-                }
-                if (!newPat.getDefinition().equals(curPat.getDefinition())) {
-                    logger.info("UPDATE: Updating Definition  for Pattern (" + mvid + ")");
-                    madeChange = true;
-                    curPat.setDefinition(newPat.getDefinition());
-                }
-                if (!newPat.getQuality().equals(curPat.getQuality())) {
-                    logger.info("UPDATE: Updating Quality  for Pattern (" + mvid + ")");
-                    madeChange = true;
-                    curPat.setQuality(newPat.getQuality());
-                }
-
-                // Remove it, its been accounted for
-                factoryPatterns.remove(mvid);
-            } else if (mvid != ProtoFilterPattern.USER_CREATED_METAVIZE_ID) {
-                // MV Pattern has been deleted.
-                i.remove();
-                madeChange = true;
-                logger.info("UPDATE: Removing old Pattern " + mvid + " (" + curPat.getProtocol() + ")");
-            }
-        }
-
-        /*
-         * At this point, curPatterns is correct except for the newly added factory patterns.
-         * Go ahead and add them now.  To put them in the right place, we do a linear
-         * insertion, which isn't bad since the list is never very long.
-         */
-        if (factoryPatterns.size() > 0) {
-            madeChange = true;
-            LinkedList<ProtoFilterPattern> allPatterns = new LinkedList<ProtoFilterPattern>(curPatterns);
-            for (Iterator<ProtoFilterPattern> i = factoryPatterns.values().iterator() ; i.hasNext() ; ) {
-                ProtoFilterPattern factoryPat = i.next();
-                logger.info("UPDATE: Adding New Pattern (" + factoryPat.getProtocol() + ")");
-                boolean added = false;
-                int index = 0;
-                for (Iterator<ProtoFilterPattern> j = allPatterns.iterator() ; j.hasNext() ; index++) {
-                    ProtoFilterPattern curPat = j.next();
-                    if (factoryPat.getMetavizeId() < curPat.getMetavizeId()) {
-                        allPatterns.add(index, factoryPat);
-                        added = true;
-                        break;
-                    }
-                }
-                if (!added)
-                    allPatterns.add(factoryPat);
-            }
-            curPatterns = new LinkedList<ProtoFilterPattern>(allPatterns);
-        }
-
-        if (madeChange) {
-            logger.info("UPDATE: Saving new patterns list, size " + curPatterns.size());
-            nodeSettings.setPatterns(new LinkedList<ProtoFilterPattern>(curPatterns));
-            setNodeSettings(nodeSettings);
-        }
-
-        logger.info("UPDATE: Complete");
     }
 
     void log(ProtoFilterLogEvent se)
