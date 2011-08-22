@@ -108,7 +108,7 @@ Ung.SetupWizard.EmailTester = Ext.extend( Object, {
                 cancel : i18n._('Close'),
                 ok : i18n._('Send Test Email')
             },
-            width : 450,
+            width : 500,
             msg : this.emailTestMessage,
             modal : true,
             prompt : true,
