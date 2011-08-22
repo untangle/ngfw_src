@@ -433,7 +433,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         panelText += "<br/>";
 
         panelText += "<b>" + i18n._("Step 3: ") + "</b>";
-        panelText += i18n._( "Repeat Step 1 and 2 for each network card and click <i>Next</i>.");
+        panelText += i18n._( "Repeat steps 1 and 2 for each network card and then click <i>Next</i>.");
         panelText += "<br/>";
         
         var panel = new Ext.Panel({
@@ -1377,7 +1377,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                 html : '<h2 class="wizard-title">'+i18n._( "Email Configuration" )+ " <i>" + i18n._('(Optional)') + "</i>" + '</h2>'
             },{
                 xtype : 'label',
-                html : String.format(i18n._("The {0} Server needs a valid email configuration to send email for Quarantine Digests, Reports, etc."), oemName) + "<br/>" + "<br/>"
+                html : String.format(i18n._("The {0} Server needs a valid email configuration to send email."), oemName) + "<br/>" + "<br/>"
             },{
                 xtype : 'label',
                 html : "<b>" + i18n._("Step 1: ") + "</b>" + i18n._("Click") + " <i>" + i18n._("Verify Email Configuration") + "</i> " + i18n._("to test the current email configuration.") + "<br/>"
@@ -1389,7 +1389,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                 cls : 'spacing-margin-1 email-tester'
             },{
                 xtype : 'label',
-                html : "<br/>" + "<b>" + i18n._("Step 2: ") + "</b>" + i18n._("If the verification succeeds click") + " <i>" + i18n._("Next") + " </i>" + i18n._(",otherwise setup email configuration and repeat Step 1. ") + "<br/>"
+                html : "<br/>" + "<b>" + i18n._("Step 2: ") + "</b>" + i18n._("If the verification succeeds click") + " <i>" + i18n._("Next") + " </i>" + i18n._(", otherwise configure and repeat step 1. ") + "<br/>"
             },{
                 name:'advanced',
                 xtype:'fieldset',
