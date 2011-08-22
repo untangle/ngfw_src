@@ -52,7 +52,7 @@ class AptLogTail implements Runnable
 
     AptLogTail(long key, PackageDesc requestingPackage)
     {
-        logger.info("AptLogTail(" + key + ")" + " new AptLogTail key: " + key);
+        logger.debug("AptLogTail(" + key + ")" + " new AptLogTail key: " + key);
 
         this.key = key;
         this.requestingPackage = requestingPackage;
@@ -73,7 +73,7 @@ class AptLogTail implements Runnable
             throw new RuntimeException("should never happen");
         }
 
-        logger.info("AptLogTail(" + key + ")" + " constructed");
+        logger.debug("AptLogTail(" + key + ")" + " constructed");
     }
 
     // package protected methods ----------------------------------------------
@@ -91,9 +91,9 @@ class AptLogTail implements Runnable
             Thread.sleep(2000);
         } catch (InterruptedException e) {}
         
-        logger.info("AptLogTail(" + key + ")" + " tailing apt log");
+        logger.debug("AptLogTail(" + key + ")" + " tailing apt log");
         doIt();
-        logger.info("AptLogTail(" + key + ")" + " tailing apt log - done");
+        logger.debug("AptLogTail(" + key + ")" + " tailing apt log - done");
 
         try {
             raf.close();
