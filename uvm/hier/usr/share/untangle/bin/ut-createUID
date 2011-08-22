@@ -32,7 +32,6 @@ SOURCES_LIST=/etc/apt/sources.list.d/untangle.list
 touch $SOURCES_LIST
 perl -i -pe 's/.*untangle\.com.*//' $SOURCES_LIST
 echo -e $DEFAULT_UNTANGLE_SOURCE | sed "s/$UID_TEMPLATE/$MYUID/" >> $SOURCES_LIST
-nohup apt-get update >& /dev/null &
 echo "`date` $NAME: Created  sources list..."
 
 exit 0

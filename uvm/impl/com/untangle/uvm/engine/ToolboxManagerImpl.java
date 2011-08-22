@@ -735,7 +735,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
     // package list functions -------------------------------------------------
 
-    private void update(long millis) throws PackageException
+    private synchronized void update(long millis) throws PackageException
     {
         FutureTask<Object> f = new FutureTask<Object>(new Callable<Object>()
             {
