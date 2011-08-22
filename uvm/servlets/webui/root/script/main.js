@@ -1238,16 +1238,20 @@ Ung.Main=Ext.extend(Object, {
      *  cleanup and ensure the window opened is on the right size
      */         
     postInitialScreen :function (){
-        var ifr = main.getIframeWin(),
-            position = [],
-            size = main.viewport.getSize(),
-            centerSize = Ext.getCmp('center').getSize(),
-            centerPosition = Ext.getCmp('center').getPosition();
+        var ifr = main.getIframeWin();
+        var position = [];
+        var size = main.viewport.getSize();
+        var centerSize = Ext.getCmp('center').getSize();
+        var centerPosition = Ext.getCmp('center').getPosition();
+
         ifr.initialConfig.sizeToRack = false;
         ifr.setSize({width:centerSize.width*0.90,height:centerSize.height*0.90});        
+
         position[0] = centerPosition[0]+Math.round(centerSize.width/20);
         position[1] = centerPosition[1]+Math.round(centerSize.height/20);
+
         ifr.setPosition(position[0],position[1]);
+
         Ext.MessageBox.hide();
         Ext.getCmp('center').setSize({width:centerSize.width , height: centerSize.height});                  
     }, 

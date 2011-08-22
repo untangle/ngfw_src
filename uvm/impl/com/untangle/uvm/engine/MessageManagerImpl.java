@@ -1,21 +1,6 @@
 /*
- * $HeadURL: svn://chef/branch/prod/web-ui/work/src/uvm/impl/com/untangle/uvm/engine/UvmContextImpl.java $
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id: MessageManagerImpl.java,v 1.00 2011/08/22 13:52:25 dmorris Exp $
  */
-
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
@@ -287,6 +272,8 @@ class MessageManagerImpl implements MessageManager
 
         List<Integer> removals = new ArrayList<Integer>(messages.keySet().size());
 
+        logger.info("Submit Message: " + m.getMessageType() + " : " + m );
+        
         synchronized (messages) {
             for (Integer k : messages.keySet()) {
                 Long d = lastMessageAccess.get(k);
@@ -403,7 +390,7 @@ class MessageManagerImpl implements MessageManager
                 public boolean doWork(Session s)
                 {
                     Query q = s.createQuery
-                        ("from NodeId t where t.id = 0");
+                    ("from NodeId t where t.id = 0");
                     NodeId t = (NodeId)q.uniqueResult();
                     if (null == t) {
                         t = new NodeId(0L);
@@ -433,9 +420,9 @@ class MessageManagerImpl implements MessageManager
 
     private class SystemStatCollector implements Runnable
     {
-	private int LOG_DELAY = 60; // in seconds
-	private long ONE_BILLION = 1000000000l;
-	private long timeStamp = 0;
+        private int LOG_DELAY = 60; // in seconds
+        private long ONE_BILLION = 1000000000l;
+        private long timeStamp = 0;
 
         private long user0 = 0;
         private long nice0 = 0;
@@ -460,26 +447,26 @@ class MessageManagerImpl implements MessageManager
                 logger.warn("could not get memory information", exn);
             }
 
-	    long time = System.nanoTime();
-	    if ((time - timeStamp)/ONE_BILLION >= LOG_DELAY) {
-		SystemStatEvent sse = new SystemStatEvent();
-		// FIXME: wrap the following in public method in SystemStatEvent
-		sse.setMemFree(Long.parseLong(m.get("MemFree").toString()));
-		sse.setMemCache(Long.parseLong(m.get("Cached").toString()));
-		sse.setMemCache(Long.parseLong(m.get("Buffers").toString()));
-		sse.setLoad1(Float.parseFloat(m.get("oneMinuteLoadAvg").toString()));
-		sse.setLoad5(Float.parseFloat(m.get("fiveMinuteLoadAvg").toString()));
-		sse.setLoad15(Float.parseFloat(m.get("fifteenMinuteLoadAvg").toString()));
-		sse.setCpuUser(Float.parseFloat(m.get("userCpuUtilization").toString()));
-		sse.setCpuSystem(Float.parseFloat(m.get("systemCpuUtilization").toString()));
-		sse.setDiskTotal(Long.parseLong(m.get("totalDiskSpace").toString()));
-		sse.setDiskFree(Long.parseLong(m.get("freeDiskSpace").toString()));
+            long time = System.nanoTime();
+            if ((time - timeStamp)/ONE_BILLION >= LOG_DELAY) {
+                SystemStatEvent sse = new SystemStatEvent();
+                // FIXME: wrap the following in public method in SystemStatEvent
+                sse.setMemFree(Long.parseLong(m.get("MemFree").toString()));
+                sse.setMemCache(Long.parseLong(m.get("Cached").toString()));
+                sse.setMemCache(Long.parseLong(m.get("Buffers").toString()));
+                sse.setLoad1(Float.parseFloat(m.get("oneMinuteLoadAvg").toString()));
+                sse.setLoad5(Float.parseFloat(m.get("fiveMinuteLoadAvg").toString()));
+                sse.setLoad15(Float.parseFloat(m.get("fifteenMinuteLoadAvg").toString()));
+                sse.setCpuUser(Float.parseFloat(m.get("userCpuUtilization").toString()));
+                sse.setCpuSystem(Float.parseFloat(m.get("systemCpuUtilization").toString()));
+                sse.setDiskTotal(Long.parseLong(m.get("totalDiskSpace").toString()));
+                sse.setDiskFree(Long.parseLong(m.get("freeDiskSpace").toString()));
                 sse.setSwapFree(Long.parseLong(m.get("SwapFree").toString()));
                 sse.setSwapTotal(Long.parseLong(m.get("SwapTotal").toString()));
-		logger.debug("Logging SystemStatEvent");
-		eventLogger.log(sse);
-		timeStamp = time;
-	    }
+                logger.debug("Logging SystemStatEvent");
+                eventLogger.log(sse);
+                timeStamp = time;
+            }
 
             systemStats = Collections.unmodifiableMap(m);
         }
@@ -500,13 +487,13 @@ class MessageManagerImpl implements MessageManager
             if (null != i) {
                 memFree += i;
             }
-	    //            m.remove("Cached");
+            //            m.remove("Cached");
 
             i = (Long)m.get("Buffers");
             if (null != i) {
                 memFree += i;
             }
-	    //            m.remove("Buffers");
+            //            m.remove("Buffers");
 
             m.put("MemFree", memFree);
         }

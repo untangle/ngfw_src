@@ -1063,9 +1063,9 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         if(!this.progressBar.hidden) {
             return;
         }
-        main.warnOnUpgrades(function() {
-            main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName),action);
-        }.createDelegate(this));
+            main.warnOnUpgrades(function() {
+                main.openStoreToLibItem(this.libItem.name,String.format(i18n._("More Info - {0}"),this.item.displayName),action);
+            }.createDelegate(this));
     },
     // install node / uninstall App
     installNodeFn : function(e) {
@@ -1737,13 +1737,16 @@ Ung.MessageManager = {
                                     main.IEWin=null;
                                 }
 
-                                main.warnOnUpgrades(function() {
-                                    rpc.toolboxManager.installAndInstantiate(function(result, exception) {
-                                        if (exception)
-                                            Ung.AppItem.updateState(appItemDisplayName, null);
-                                        if(Ung.Util.handleException(exception)) return;
-                                    }.createDelegate(this),msg.packageDesc.name, policy);
-                                }.createDelegate(this));
+                                //already checked for upgrades
+                                //main.warnOnUpgrades(function() {
+
+                                rpc.toolboxManager.installAndInstantiate(function(result, exception) {
+                                    if (exception)
+                                        Ung.AppItem.updateState(appItemDisplayName, null);
+                                    if(Ung.Util.handleException(exception)) return;
+                                }.createDelegate(this),msg.packageDesc.name, policy);
+
+                                //}.createDelegate(this));
                             }
                         } else if (msg.javaClass.indexOf("PackageUninstallRequest") >= 0) {
                             if(!msg.installed) {

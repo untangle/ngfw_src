@@ -1,21 +1,6 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id$
  */
-
 package com.untangle.uvm.engine;
 
 import java.io.File;
@@ -39,9 +24,6 @@ import com.untangle.uvm.toolbox.PackageDesc;
 
 /**
  * Tails apt output to produce progress messages for the Swing GUI.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 class AptLogTail implements Runnable
 {
@@ -54,9 +36,9 @@ class AptLogTail implements Runnable
     private final Logger logger = Logger.getLogger(getClass());
 
     static {
-        FETCH_PATTERN = Pattern.compile("'(http://.*)' (.*\\.deb) ([0-9]+) (MD5Sum:|SHA1:|SHA256:)?([0-9a-z]+)");
-        //6850K .......... .......... .......... .......... .......... 96% 46.6K 6s
-        DOWNLOAD_PATTERN = Pattern.compile("( *[0-9]+)K[ .]+([0-9]+)% *([0-9]+\\.[0-9]+)K.*");
+        FETCH_PATTERN = Pattern.compile(".*'(http://.*)' (.*\\.deb) ([0-9]+) (MD5Sum:|SHA1:|SHA256:)?([0-9a-z]+)");
+        //6850K .......... .......... .......... .......... .......... 96 46.6K 6s
+        DOWNLOAD_PATTERN = Pattern.compile(".* ([0-9]+)K[ .]+([0-9]+) *([0-9]+\\.*[0-9]+)K.*");
     }
 
     private final long key;
@@ -64,14 +46,13 @@ class AptLogTail implements Runnable
 
     private final RandomAccessFile raf;
 
-    private StringBuilder builder = new StringBuilder(80);
     private long lastActivity = -1;
 
     // constructor ------------------------------------------------------------
 
     AptLogTail(long key, PackageDesc requestingPackage)
     {
-        logger.debug("new AptLogTail: " + key);
+        logger.info("AptLogTail(" + key + ")" + " new AptLogTail key: " + key);
 
         this.key = key;
         this.requestingPackage = requestingPackage;
@@ -92,7 +73,7 @@ class AptLogTail implements Runnable
             throw new RuntimeException("should never happen");
         }
 
-        logger.debug("AptLogTail constructed");
+        logger.info("AptLogTail(" + key + ")" + " constructed");
     }
 
     // package protected methods ----------------------------------------------
@@ -110,8 +91,9 @@ class AptLogTail implements Runnable
             Thread.sleep(2000);
         } catch (InterruptedException e) {}
         
-        logger.debug("tailing apt log");
+        logger.info("AptLogTail(" + key + ")" + " tailing apt log");
         doIt();
+        logger.info("AptLogTail(" + key + ")" + " tailing apt log - done");
 
         try {
             raf.close();
@@ -125,8 +107,8 @@ class AptLogTail implements Runnable
         MessageManager mm = LocalUvmContextFactory.context().messageManager();
         
         // find `start key'
-        logger.debug("finding start key: \"start " + key + "\"");
-        for (String line = readLine(); !line.equals("start " + key); line = readLine());
+        logger.debug("AptLogTail(" + key + ")" + " finding start key: \"start " + key + "\"");
+        for (String line = readLine(); !line.contains("start " + key); line = readLine());
 
         // 'uri' package size hash
         List<PackageInfo> downloadQueue = new LinkedList<PackageInfo>();
@@ -136,8 +118,8 @@ class AptLogTail implements Runnable
             String line = readLine();
 
             Matcher m = FETCH_PATTERN.matcher(line);
-            if (line.equals("END PACKAGE LIST")) {
-                logger.debug("found: END PACKAGE LIST");
+            if (line.contains("END PACKAGE LIST")) {
+                logger.debug("AptLogTail(" + key + ")" + " found: END PACKAGE LIST");
                 break;
             } else if (m.matches()) {
                 String url = m.group(1);
@@ -146,11 +128,11 @@ class AptLogTail implements Runnable
                 String hash = m.group(5);
 
                 PackageInfo pi = new PackageInfo(url, file, size, hash);
-                logger.debug("adding package: " + pi);
+                logger.debug("AptLogTail(" + key + ")" + " adding package: " + pi);
                 downloadQueue.add(pi);
                 totalSize += size;
             } else {
-                logger.debug("does not match FETCH_PATTERN: " + line);
+                logger.debug("AptLogTail(" + key + ")" + " does not match FETCH_PATTERN: " + line);
             }
         }
 
@@ -159,20 +141,20 @@ class AptLogTail implements Runnable
             return;
         }
 
-        logger.debug("Sending DownloadSummary(downloadQueue.size()=" + downloadQueue.size() + ", totalSize=" + totalSize + ")");
+        logger.debug("AptLogTail(" + key + ")" + " Sending DownloadSummary(downloadQueue.size()=" + downloadQueue.size() + ", totalSize=" + totalSize + ")");
         mm.submitMessage(new DownloadSummary(downloadQueue.size(), totalSize, requestingPackage));
 
         for (PackageInfo pi : downloadQueue) {
-            logger.debug("downloading: " + pi);
+            logger.debug("AptLogTail(" + key + ")" + " downloading: " + pi);
             while (true) {
                 String line = readLine();
                 Matcher m = DOWNLOAD_PATTERN.matcher(line);
                 if (line.startsWith("DOWNLOAD SUCCEEDED: ")) {
-                    logger.debug("Sending DownloadComplete");
+                    logger.debug("AptLogTail(" + key + ")" + " Sending DownloadComplete");
                     mm.submitMessage(new DownloadComplete(true, requestingPackage));
                     break;
                 } else if (line.startsWith("DOWNLOAD FAILED: " )) {
-                    logger.debug("Sending DownloadComplete (failed)");
+                    logger.debug("AptLogTail(" + key + ")" + " Sending DownloadComplete (failed)");
                     mm.submitMessage(new DownloadComplete(false, requestingPackage));
                     break;
                 } else if (m.matches()) {
@@ -182,8 +164,7 @@ class AptLogTail implements Runnable
                     // enqueue event
                     DownloadProgress dpe;
                     if (null == requestingPackage) {
-                        dpe = new DownloadProgress
-                            (pi.file, bytesDownloaded, pi.size, speed, null);
+                        dpe = new DownloadProgress(pi.file, bytesDownloaded, pi.size, speed, null);
                     } else {
                         pi.bytesDownloaded = bytesDownloaded;
 
@@ -195,30 +176,29 @@ class AptLogTail implements Runnable
                         dpe = new DownloadProgress(pi.file, soFar, totalSize, speed, requestingPackage);
                     }
 
-                    logger.debug("Sending DownloadProgress:" + dpe);
+                    logger.debug("AptLogTail(" + key + ")" + " Sending DownloadProgress:" + dpe);
                     mm.submitMessage(dpe);
                 } else {
-                    logger.debug("ignoring line: " + line.substring(0,(line.length()<10 ? line.length() : 9)) + "...");
+                    logger.debug("AptLogTail(" + key + ")" + " ignoring line: " + line.substring(0,(line.length()<10 ? line.length() : 9)) + "...");
                 }
             }
         }
 
-        logger.debug("Sending InstallComplete");
+        logger.debug("AptLogTail(" + key + ")" + " Sending InstallComplete");
         mm.submitMessage(new InstallComplete(true, requestingPackage));
     }
 
     private String readLine()
     {
-        MessageManager mm = LocalUvmContextFactory.context().messageManager();
-
         try {
             while (true) {
                 long t = System.currentTimeMillis();
                 if (0 > lastActivity) {
                     lastActivity = t;
                 }
-                int c = raf.read();
-                if (0 > c) {
+                String line = raf.readLine();
+
+                if (line == null) {
                     try {
                         if (TIMEOUT < t - lastActivity) {
                             // just end the thread adding TimeoutEvent
@@ -228,17 +208,25 @@ class AptLogTail implements Runnable
                             Thread.sleep(100);
                         }
                     } catch (InterruptedException exn) { }
-                } else if ('\n' == c) {
-                    lastActivity = t;
-                    String s = builder.toString().trim();
-                    builder.delete(0, builder.length());
-                    return s;
                 } else {
                     lastActivity = t;
-                    builder.append((char)c);
-                }
+
+                    /**
+                     * rsyslog inserts the date at the beginning followed by ": "
+                     * find that and cut out the date
+                     */
+                    int index = line.indexOf(": ");
+                    if (index > 0) 
+                        return line.substring(index+1);
+                    else
+                        return line;
+                } 
             }
         } catch (IOException exn) {
+            logger.warn("could not read apt.log", exn);
+            throw new RuntimeException("could not read apt-log", exn);
+        } catch (Exception exn) {
+            logger.warn("could not read apt.log", exn);
             throw new RuntimeException("could not read apt-log", exn);
         }
     }
