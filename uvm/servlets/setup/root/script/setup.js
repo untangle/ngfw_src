@@ -1413,7 +1413,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                     items : [{
                         name : 'from-address-label',
                         xtype : 'label',
-                        html : String.format(i18n._( "<b>Please choose a <i>From Address</i> for emails originating from the {0} Server</b>"),oemName)
+                        html : String.format(i18n._( "<b>Choose a <i>From Address</i> for emails sent from the {0} Server.</b>"),oemName)
                     },{
                         xtype : 'textfield',
                         name : 'from-address-textfield',
