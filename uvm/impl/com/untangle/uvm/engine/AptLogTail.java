@@ -19,7 +19,7 @@ import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.toolbox.DownloadComplete;
 import com.untangle.uvm.toolbox.DownloadProgress;
 import com.untangle.uvm.toolbox.DownloadSummary;
-import com.untangle.uvm.toolbox.InstallComplete;
+import com.untangle.uvm.toolbox.DownloadAllComplete;
 import com.untangle.uvm.toolbox.PackageDesc;
 
 /**
@@ -184,8 +184,8 @@ class AptLogTail implements Runnable
             }
         }
 
-        logger.debug("AptLogTail(" + key + ")" + " Sending InstallComplete");
-        mm.submitMessage(new InstallComplete(true, requestingPackage));
+        logger.debug("AptLogTail(" + key + ")" + " Sending DownloadAllComplete");
+        mm.submitMessage(new DownloadAllComplete(true, requestingPackage));
     }
 
     private String readLine()

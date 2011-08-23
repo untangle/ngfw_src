@@ -1798,7 +1798,7 @@ Ung.MessageManager = {
                                         Ext.MessageBox.alert(i18n._("Warning"), Sting.format(i18n._("Error downloading package {0}: {1}"),appItemDisplayName,msg.errorMessage));
                                         Ung.AppItem.updateState(appItemDisplayName);
                                     }
-                                } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
+                                } else if(msg.javaClass.indexOf("DownloadAllComplete") != -1) {
                                     if(msg.success) {
                                         this.installInProgress++;
                                        Ung.AppItem.updateState(appItemDisplayName, "installing");
@@ -1827,7 +1827,7 @@ Ung.MessageManager = {
                                         startUpgradeMode="stop";
                                         Ext.MessageBox.alert(i18n._("Warning"), i18n._("Error downloading packages. Install Aborted."));
                                     }
-                                } else if(msg.javaClass.indexOf("InstallComplete") != -1) {
+                                } else if(msg.javaClass.indexOf("DownloadAllComplete") != -1) {
                                     lastUpgradeDownloadProgressMsg="stop";
                                     startUpgradeMode="stop";
                                     this.stop();

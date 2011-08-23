@@ -42,13 +42,13 @@ import com.untangle.uvm.message.Message;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class InstallComplete extends Message
+public class DownloadAllComplete extends Message
 {
 
     private final boolean success;
     private final PackageDesc requestingPackage;
 
-    public InstallComplete(boolean success, PackageDesc requestingPackage)
+    public DownloadAllComplete(boolean success, PackageDesc requestingPackage)
     {
         this.success = success;
         this.requestingPackage = requestingPackage;
