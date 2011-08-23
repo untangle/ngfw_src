@@ -149,11 +149,11 @@ class AptLogTail implements Runnable
             while (true) {
                 String line = readLine();
                 Matcher m = DOWNLOAD_PATTERN.matcher(line);
-                if (line.startsWith("DOWNLOAD SUCCEEDED: ")) {
+                if (line.contains("DOWNLOAD SUCCEEDED: ")) {
                     logger.debug("AptLogTail(" + key + ")" + " Sending DownloadComplete");
                     mm.submitMessage(new DownloadComplete(true, requestingPackage));
                     break;
-                } else if (line.startsWith("DOWNLOAD FAILED: " )) {
+                } else if (line.contains("DOWNLOAD FAILED: " )) {
                     logger.debug("AptLogTail(" + key + ")" + " Sending DownloadComplete (failed)");
                     mm.submitMessage(new DownloadComplete(false, requestingPackage));
                     break;
