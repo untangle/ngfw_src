@@ -1,15 +1,7 @@
 /*
- * Copyright (c) 2003-2007 Untangle, Inc.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information of
- * Untangle, Inc. ("Confidential Information"). You shall
- * not disclose such Confidential Information.
- *
- * $Id: License.java 27705 2010-10-15 01:44:20Z dmorris $
+ * $Id: LicenseRevocation.java,v 1.00 2011/08/24 11:06:23 dmorris Exp $
  */
-
-package com.untangle.uvm.license;
+package com.untangle.node.license;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -19,7 +11,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class LicenseRevocation implements Serializable
 {
-    private final Logger logger = Logger.getLogger(License.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     /** Identifier for the product this license revocation is for */
     private String name;

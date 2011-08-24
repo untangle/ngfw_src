@@ -1,21 +1,15 @@
 /*
- * Copyright (c) 2003-2007 Untangle, Inc.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information of
- * Untangle, Inc. ("Confidential Information"). You shall
- * not disclose such Confidential Information.
- *
  * $Id$
  */
-
-package com.untangle.uvm.license;
+package com.untangle.node.license;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
+
+import com.untangle.uvm.node.License;
 
 @SuppressWarnings("serial")
 public class LicenseSettings implements java.io.Serializable
@@ -33,7 +27,6 @@ public class LicenseSettings implements java.io.Serializable
     {
         this.licenses = licenses;
     }
-
 
     public Integer getSettingsVersion()
     {

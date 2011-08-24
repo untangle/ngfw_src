@@ -1,14 +1,7 @@
 /*
- * Copyright (c) 2003-2007 Untangle, Inc.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information of
- * Untangle, Inc. ("Confidential Information"). You shall
- * not disclose such Confidential Information.
- *
  * $Id$
  */
-package com.untangle.uvm.license;
+package com.untangle.node.license;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -29,13 +22,18 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.util.Pulse;
+import com.untangle.uvm.node.License;
+import com.untangle.uvm.node.LicenseManager;
 
-public class LicenseManagerImpl implements LicenseManager
+public class LicenseManagerImpl extends AbstractNode implements LicenseManager
 {
     private static final String LICENSE_URL_PROPERTY = "uvm.license.url";
     private static final String DEFAULT_LICENSE_URL = "https://license.untangle.com/license.php";
@@ -46,8 +44,9 @@ public class LicenseManagerImpl implements LicenseManager
     /* update every 12 hours, leaves an hour window */
     private static final long TIMER_DELAY = 1000 * 60 * 60 * 12;
 
-    /* has to be declared after all static declarations */
-    private static final LicenseManagerImpl INSTANCE;
+    private final Logger logger = Logger.getLogger(getClass());
+
+    private final PipeSpec[] pipeSpecs = new PipeSpec[0];
 
     /**
      * Map from the product name to the latest valid license available for this product
@@ -79,9 +78,7 @@ public class LicenseManagerImpl implements LicenseManager
      */
     private Pulse pulse = null;
 
-    private final Logger logger = Logger.getLogger(getClass());
-
-    private LicenseManagerImpl()
+    public LicenseManagerImpl()
     {
         this.pulse = new Pulse("uvm-license", true, task);
         this.pulse.start(TIMER_DELAY);
@@ -94,6 +91,32 @@ public class LicenseManagerImpl implements LicenseManager
         }
     }
 
+    @Override
+    protected void preStop() throws Exception
+    {
+        super.preStop();
+        logger.debug("preStop()");
+    }
+
+    @Override
+    protected void postStart() throws Exception
+    {
+        logger.debug("postStart()");
+
+        /* Reload the licenses */
+        try {
+            LocalUvmContextFactory.context().licenseManager().reloadLicenses();
+        } catch ( Exception ex ) {
+            logger.warn( "Unable to reload the licenses." );
+        }
+    }
+
+    @Override
+    protected PipeSpec[] getPipeSpecs()
+    {
+        return pipeSpecs;
+    }
+    
     /**
      * Reload all of the licenses from the file system.
      */
@@ -166,15 +189,6 @@ public class LicenseManagerImpl implements LicenseManager
         return this.settings.getLicenses().size() > 0;
     }
 
-    /**
-     * Used by the LicenseManagerFactory to fetch the instance
-     */
-    public static LicenseManager getInstance()
-    {
-        return INSTANCE;
-    }
-
-    
     /**
      * Initialize the settings
      * (By default there are no liceneses)
@@ -615,7 +629,16 @@ public class LicenseManagerImpl implements LicenseManager
         }
     }
     
-    static {
-        INSTANCE = new LicenseManagerImpl();
+
+
+    public Object getSettings()
+    {
+        /* These are controlled using the methods in the uvm class */
+        return null;
+    }
+
+    public void setSettings(Object settings)
+    {
+        /* These are controlled using the methods in the uvm class */
     }
 }
