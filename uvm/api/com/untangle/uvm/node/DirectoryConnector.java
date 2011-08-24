@@ -3,6 +3,8 @@
  */
 package com.untangle.uvm.node;
 
+import java.util.List;
+
 import com.untangle.uvm.user.IpUsernameMap;
 
 /**
@@ -22,6 +24,11 @@ public interface DirectoryConnector
      */
     public boolean isMemberOf( String username, String group );
 
+    /**
+     * Retrieve a list of groups this user belongs to (Currently only applies to Active Directory)
+     */
+    public List<String> memberOf(String user);
+    
     /**
      * Authenticate a user against Active Directory
      */
