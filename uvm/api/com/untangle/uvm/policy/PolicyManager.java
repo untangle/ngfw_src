@@ -117,8 +117,4 @@ public interface PolicyManager
 
     Policy getParent(Policy p);
 
-    /** Gets the validator for IP and ports. used to validate UserPolicyRules
-     * @return Validator
-     */
-    Validator getValidator();
 }

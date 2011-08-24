@@ -278,5 +278,4 @@ public interface LocalUvmContext extends RemoteUvmContext
      */
     SettingsManager settingsManager();
 
-    void refreshPolicyManager();
 }

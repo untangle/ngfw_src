@@ -49,7 +49,6 @@ import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.PolicyManager;
-import com.untangle.uvm.policy.PolicyManagerFactory;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.UploadManager;
@@ -92,7 +91,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private RemoteLoggingManagerImpl loggingManager;
     private SyslogManagerImpl syslogManager;
     private EventLogger<LogEvent> eventLogger;
-    private PolicyManagerFactory policyManagerFactory;
+    private DefaultPolicyManager defaultPolicyManager;
     private MailSenderImpl mailSender;
     private NetworkManagerImpl networkManager;
     private RemoteReportingManagerImpl reportingManager;
@@ -201,7 +200,12 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     public PolicyManager policyManager()
     {
-        return this.policyManagerFactory.policyManager();
+        PolicyManager pm = (PolicyManager)this.nodeManager().node("untangle-node-policy");
+
+        if (pm == null)
+            return this.defaultPolicyManager;
+        else
+            return pm;
     }
 
     public MailSenderImpl mailSender()
@@ -625,8 +629,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
         this.mailSender = MailSenderImpl.mailSender();
 
-        // Fire up the policy manager.
-        this.policyManagerFactory = PolicyManagerFactory.makeInstance();
+        this.defaultPolicyManager = new DefaultPolicyManager();
 
         this.toolboxManager = ToolboxManagerImpl.toolboxManager();
         this.toolboxManager.start();
@@ -815,13 +818,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         }
     }
 
-    public void refreshPolicyManager()
-    {
-        synchronized (this) {
-            this.policyManagerFactory.refresh();
-        }
-    }
-    
     public LocalTomcatManager tomcatManager()
     {
         return tomcatManager;
