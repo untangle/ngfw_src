@@ -654,7 +654,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
     constructor : function( config )
     {
         this.configTypes = [];
-        this.configTypes.push( [ "dhcp", i18n._( "Dynamic (DHCP)" ) ] );
+        this.configTypes.push( [ "dynamic", i18n._( "Dynamic (DHCP)" ) ] );
         this.configTypes.push( [ "static", i18n._( "Static" ) ] );
         this.configTypes.push( [ "pppoe", i18n._( "PPPoE" ) ] );
 
