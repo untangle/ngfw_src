@@ -24,7 +24,7 @@ elif [ $MEM -gt 2900000 ] ; then
 elif [ $MEM -gt 1900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=720m
-        MAX_VIRTUAL_SIZE=1500m
+        MAX_VIRTUAL_SIZE=2500m
     else
         MAX_HEAP_SIZE=720m
         MAX_VIRTUAL_SIZE=1500m
@@ -34,7 +34,7 @@ elif [ $MEM -gt 1900000 ] ; then
 elif [ $MEM -gt 900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=360m
-        MAX_VIRTUAL_SIZE=1000m
+        MAX_VIRTUAL_SIZE=1500m
     else
         MAX_HEAP_SIZE=360m
         MAX_VIRTUAL_SIZE=1000m
@@ -44,7 +44,7 @@ elif [ $MEM -gt 900000 ] ; then
 else
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=260m
-        MAX_VIRTUAL_SIZE=1000m
+        MAX_VIRTUAL_SIZE=1500m
     else
         MAX_HEAP_SIZE=220m
         MAX_VIRTUAL_SIZE=1000m
