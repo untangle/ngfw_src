@@ -144,7 +144,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         }
                     ]
                 }),
-                recordJavaClass : "com.untangle.uvm.license.License",
+                recordJavaClass : "com.untangle.uvm.node.License",
                 proxyRpcFn : main.getLicenseManager().getLicenses,
                 plugins : [],
                 fields : [{

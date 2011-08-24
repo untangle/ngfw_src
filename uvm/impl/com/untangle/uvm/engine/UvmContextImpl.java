@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/*
+ * $Id$
+ */
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
@@ -36,8 +38,7 @@ import com.untangle.uvm.UvmState;
 import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
-import com.untangle.uvm.license.LicenseManagerFactory;
-import com.untangle.uvm.license.LicenseManager;
+import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.LogEvent;
@@ -105,7 +106,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private SkinManagerImpl skinManager;
     private MessageManagerImpl messageManager;
     private LanguageManagerImpl languageManager;
-    private LicenseManagerFactory licenseManagerFactory;
+    private DefaultLicenseManagerImpl defaultLicenseManager;
     private TomcatManagerImpl tomcatManager;
     private HeapMonitor heapMonitor;
     private UploadManagerImpl uploadManager;
@@ -236,7 +237,12 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     public LicenseManager licenseManager()
     {
-        return this.licenseManagerFactory.getLicenseManager();
+        LicenseManager lm = (LicenseManager)this.nodeManager().node("untangle-node-license");
+
+        if (lm == null)
+            return this.defaultLicenseManager;
+        else
+            return lm;
     }
 
     public PipelineFoundryImpl pipelineFoundry()
@@ -615,7 +621,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         // initialize the network Manager
         this.networkManager = NetworkManagerImpl.getInstance();
 
-        this.licenseManagerFactory = LicenseManagerFactory.makeInstance();
+        this.defaultLicenseManager = new DefaultLicenseManagerImpl();
 
         this.mailSender = MailSenderImpl.mailSender();
 

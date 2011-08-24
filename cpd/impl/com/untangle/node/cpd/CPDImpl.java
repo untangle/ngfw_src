@@ -27,7 +27,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.RemoteBrandingManager;
-import com.untangle.uvm.license.License;
+import com.untangle.uvm.node.License;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;

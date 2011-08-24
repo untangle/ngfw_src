@@ -12,13 +12,13 @@ import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.SkinManager;
 import com.untangle.uvm.RemoteOemManager;
 import com.untangle.uvm.SessionMonitor;
-import com.untangle.uvm.license.LicenseManager;
+import com.untangle.uvm.AdminManager;
+import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.logging.RemoteLoggingManager;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.reports.RemoteReportingManager;
-import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
 
 /**

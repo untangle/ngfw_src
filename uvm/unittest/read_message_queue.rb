@@ -11,7 +11,7 @@ class MessageFormatter
     self.send( method_name, message )      
   end
 
-  def format_com_untangle_uvm_license_LicenseUpdateMessage( message )
+  def format_com.untangle.uvm.node.LicenseUpdateMessage( message )
     message["mackageMap"]["map"].map do |mackage_name, license_status|
       "\t mackage : #{mackage_name}, '#{license_status["type"]}', #{license_status["timeRemaining"]}"
     end.join( "\n" )

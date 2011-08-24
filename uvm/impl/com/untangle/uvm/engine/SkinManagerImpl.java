@@ -44,7 +44,7 @@ import com.untangle.uvm.SkinManager;
 import com.untangle.uvm.SkinInfo;
 import com.untangle.uvm.SkinSettings;
 import com.untangle.uvm.UvmException;
-import com.untangle.uvm.license.License;
+import com.untangle.uvm.node.License;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.TransactionWork;

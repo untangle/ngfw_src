@@ -34,8 +34,8 @@ import org.hibernate.Session;
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.Period;
-import com.untangle.uvm.license.License;
-import com.untangle.uvm.license.LicenseManager;
+import com.untangle.uvm.node.License;
+import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.Message;
@@ -735,7 +735,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
     // package list functions -------------------------------------------------
 
-    private synchronized void update(long millis) throws PackageException
+    private void update(long millis) throws PackageException
     {
         FutureTask<Object> f = new FutureTask<Object>(new Callable<Object>()
             {
@@ -767,6 +767,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 }
             } catch (TimeoutException exn) {
                 f.cancel(true);
+                logger.warn("ut-apt timeout: ", exn);
                 throw new PackageException("ut-apt timed out");
             }
         } while (tryAgain);
@@ -974,7 +975,7 @@ class ToolboxManagerImpl implements ToolboxManager
         String cmdStr = System.getProperty("uvm.bin.dir") + "/ut-apt " + (0 > key ? "" : "-k " + key + " ") + command;
 
         synchronized(this) {
-            logger.debug("running: " + cmdStr);
+            logger.debug("Running apt: " + cmdStr);
             try {
                 Process proc = LocalUvmContextFactory.context().exec(cmdStr);
                 InputStream is = proc.getInputStream();

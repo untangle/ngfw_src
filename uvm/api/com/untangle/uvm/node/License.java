@@ -1,15 +1,7 @@
 /*
- * Copyright (c) 2003-2007 Untangle, Inc.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information of
- * Untangle, Inc. ("Confidential Information"). You shall
- * not disclose such Confidential Information.
- *
- * $Id: License.java 27705 2010-10-15 01:44:20Z dmorris $
+ * $Id: License.java,v 1.00 2011/08/24 10:48:12 dmorris Exp $
  */
-
-package com.untangle.uvm.license;
+package com.untangle.uvm.node;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -28,19 +20,19 @@ public class License implements Serializable
      * Various Names
      */
     public static final String ADCONNECTOR = "untangle-node-adconnector";
-    public static final String POLICY = "untangle-node-policy";
-    public static final String KAV = "untangle-node-kav";
-    public static final String COMMTOUCHAV = "untangle-node-commtouchav";
-    public static final String SITEFILTER = "untangle-node-sitefilter";
-    public static final String BRANDING = "untangle-node-branding";
-    public static final String COMMTOUCH = "untangle-node-commtouch";
-    public static final String SPLITD = "untangle-node-splitd";
-    public static final String FAILD = "untangle-node-faild";
     public static final String BANDWIDTH = "untangle-node-bandwidth";
     public static final String BOXBACKUP = "untangle-node-boxbackup";
-    public static final String WEBCACHE = "untangle-node-webcache";
-    public static final String IPSEC = "untangle-node-ipsec";
+    public static final String BRANDING = "untangle-node-branding";
+    public static final String COMMTOUCH = "untangle-node-commtouch";
+    public static final String COMMTOUCHAV = "untangle-node-commtouchav";
     public static final String DATAVAULT = "untangle-node-datavault";
+    public static final String FAILD = "untangle-node-faild";
+    public static final String IPSEC = "untangle-node-ipsec";
+    public static final String KAV = "untangle-node-kav";
+    public static final String POLICY = "untangle-node-policy";
+    public static final String SITEFILTER = "untangle-node-sitefilter";
+    public static final String SPLITD = "untangle-node-splitd";
+    public static final String WEBCACHE = "untangle-node-webcache";
     
     /** Identifier for the product this license is for */
     private String name;

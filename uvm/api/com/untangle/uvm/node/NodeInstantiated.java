@@ -33,7 +33,7 @@
 
 package com.untangle.uvm.node;
 
-import com.untangle.uvm.license.License;
+import com.untangle.uvm.node.License;
 import com.untangle.uvm.message.Message;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.policy.Policy;
