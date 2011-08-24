@@ -666,20 +666,13 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                             Ext.getCmp("gridRules_rowEditor_user").setValue(record.data.user);
                             Ext.getCmp("gridRules_rowEditor_start_time").setValue(record.data.startTimeString);
                             Ext.getCmp("gridRules_rowEditor_end_time").setValue(record.data.endTimeString);
-                            Ext.getCmp("gridRules_rowEditor_sunday").setValue(record.data.dayOfWeek == "any"
-                                    || record.data.dayOfWeek.indexOf("Sunday") >= 0);
-                            Ext.getCmp("gridRules_rowEditor_monday").setValue(record.data.dayOfWeek == "any"
-                                    || record.data.dayOfWeek.indexOf("Monday") >= 0);
-                            Ext.getCmp("gridRules_rowEditor_tuesday").setValue(record.data.dayOfWeek == "any"
-                                    || record.data.dayOfWeek.indexOf("Tuesday") >= 0);
-                            Ext.getCmp("gridRules_rowEditor_wednesday").setValue(record.data.dayOfWeek == "any"
-                                    || record.data.dayOfWeek.indexOf("Wednesday") >= 0);
-                            Ext.getCmp("gridRules_rowEditor_thursday").setValue(record.data.dayOfWeek == "any"
-                                    || record.data.dayOfWeek.indexOf("Thursday") >= 0);
-                            Ext.getCmp("gridRules_rowEditor_friday").setValue(record.data.dayOfWeek == "any"
-                                    || record.data.dayOfWeek.indexOf("Friday") >= 0);
-                            Ext.getCmp("gridRules_rowEditor_saturday").setValue(record.data.dayOfWeek == "any"
-                                    || record.data.dayOfWeek.indexOf("Saturday") >= 0);
+                            Ext.getCmp("gridRules_rowEditor_sunday").setValue(record.data.dayOfWeek == "any" || record.data.dayOfWeek.indexOf("sunday") >= 0);
+                            Ext.getCmp("gridRules_rowEditor_monday").setValue(record.data.dayOfWeek == "any" || record.data.dayOfWeek.indexOf("monday") >= 0);
+                            Ext.getCmp("gridRules_rowEditor_tuesday").setValue(record.data.dayOfWeek == "any" || record.data.dayOfWeek.indexOf("tuesday") >= 0);
+                            Ext.getCmp("gridRules_rowEditor_wednesday").setValue(record.data.dayOfWeek == "any" || record.data.dayOfWeek.indexOf("wednesday") >= 0);
+                            Ext.getCmp("gridRules_rowEditor_thursday").setValue(record.data.dayOfWeek == "any" || record.data.dayOfWeek.indexOf("thursday") >= 0);
+                            Ext.getCmp("gridRules_rowEditor_friday").setValue(record.data.dayOfWeek == "any" || record.data.dayOfWeek.indexOf("friday") >= 0);
+                            Ext.getCmp("gridRules_rowEditor_saturday").setValue(record.data.dayOfWeek == "any" || record.data.dayOfWeek.indexOf("saturday") >= 0);
                             Ext.getCmp("gridRules_rowEditor_rack").setValue(record.data.policyName);
                             Ext.getCmp("gridRules_rowEditor_description").setValue(record.data.description);
                             Ext.getCmp("gridRules_rowEditor_live").setValue(record.data.live);
