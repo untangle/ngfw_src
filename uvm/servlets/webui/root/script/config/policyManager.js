@@ -86,17 +86,6 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             }
             return this.rpc.policyConfiguration;
         },
-        getPolicyManagerValidator : function(forceReload) {
-            if (forceReload || this.rpc.policyManagerValidator === undefined) {
-                try {
-                    this.rpc.policyManagerValidator = rpc.policyManager.getValidator();
-                } catch (e) {
-                    Ung.Util.rpcExHandler(e);
-                }
-
-            }
-            return this.rpc.policyManagerValidator;
-        },
         getPolicyManagerLicense : function(forceReload) {
             if (forceReload || this.rpc.policyManagerLicense === undefined) {
                 try {
@@ -1117,42 +1106,6 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             }
             if (serverPortList.length > 0) {
                 validateData.map["SERVER_PORT"] = {"javaClass" : "java.util.ArrayList", list : serverPortList};
-            }
-            if (Ung.Util.hasData(validateData.map)) {
-                try {
-                    try {
-                        var result = this.getPolicyManagerValidator().validate(validateData);
-                    } catch (e) {
-                        Ung.Util.rpcExHandler(e);
-                    }
-                    
-                    if (!result.valid) {
-                        var errorMsg = "";
-                        switch (result.errorCode) {
-                            case 'INVALID_CLIENT_ADDR' :
-                                errorMsg = this.i18n._("Invalid address specified for Client Address") + ": " + result.cause;
-                            break;
-                            case 'INVALID_SERVER_ADDR' :
-                                errorMsg = this.i18n._("Invalid address specified for Server Address") + ": " + result.cause;
-                            break;
-                            case 'INVALID_SERVER_PORT' :
-                                errorMsg = this.i18n._("Invalid port specified for Server Port") + ": " + result.cause;
-                            break;
-                            default :
-                                errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
-                        }
-                        Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);
-                        return false;
-                    }
-                } catch (e) {
-                    var message = e.message;
-                    if (message == null || message == "Unknown") {
-                        message = i18n._("Please Try Again");
-                    }
-                    
-                    Ext.MessageBox.alert(i18n._("Failed"), message);
-                    return false;
-                }
             }
             return true;
         },
