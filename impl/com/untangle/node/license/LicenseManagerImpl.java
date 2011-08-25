@@ -300,11 +300,12 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
         LinkedList<License> licenses;
 
         int numDevices = _getEstimatedNumDevices();
-            
+        String uvmVersion = LocalUvmContextFactory.context().version();
+        
         logger.info("REFRESH: Downloading new Licenses...");
         
         try {
-            String urlStr = _getLicenseUrl() + "?" + "action=getLicenses" + "&" + "uid=" + LocalUvmContextFactory.context().getServerUID() + "&" + "numDevices=" + numDevices;
+            String urlStr = _getLicenseUrl() + "?" + "action=getLicenses" + "&" + "uid=" + LocalUvmContextFactory.context().getServerUID() + "&" + "numDevices=" + numDevices + "&" + "version=" + uvmVersion;
             logger.info("Downloading: \"" + urlStr + "\"");
 
             Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
