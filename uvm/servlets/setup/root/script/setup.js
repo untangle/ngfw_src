@@ -1397,6 +1397,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                 collapsible : true,
                 collapsed : !this.showEmailConfig,
                 autoHeight : true,
+                style : 'margin-top:8px;',
                 listeners : {
                     beforecollapse : this.onBeforeCollapse.createDelegate( this ),
                     beforeexpand : this.onBeforeExpand.createDelegate( this )
