@@ -138,15 +138,15 @@ Ext.apply( Ext.form.VTypes, {
 
     emailAddressMatchCheck : function( val, field )
     {
-    var email_original = Ext.getCmp(field.compareEmailField);
-    return val == email_original.getValue();
+        var email_original = Ext.getCmp(field.compareEmailField);
+        return val == email_original.getValue();
     },
 
     emailAddressMatchCheckText : 'Email addresses do not match',
 
     passwordConfirmCheck : function(val,field){
-    var pass_original = Ext.getCmp(field.comparePasswordField);
-    return val == pass_original.getValue();
+            var pass_original = Ext.getCmp(field.comparePasswordField);
+        return val == pass_original.getValue();
     },
 
     passwordConfirmCheckText : 'Passwords do not match',
@@ -301,7 +301,7 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
         if( exception ) {
             Ext.MessageBox.alert(i18n._( "Unable to save the admin password" ), exception.message );
             return;
-        }
+            }
 
         var timezone = this.panel.find( "name", "timezone" )[0].getValue();
 
@@ -498,7 +498,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         var row = this.interfaceStore.getById(rows[0].id);
         var status = row.get( "status" );
 
-        var c = 0;
+            var c = 0;
         var rowData = [];
         var index = -1;
 
@@ -631,7 +631,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         if ( interfaceList.length < 2) {
             Ext.MessageBox.alert( i18n._( "Missing interfaces" ), i18n._ ( "Untangle requires two or more network cards. Please reinstall with at least two network cards." ), "" );
             return;
-        }
+            }
         
         var statusHash = {};
         /* XXX This status array is brittle and should be refactored. XXXX */
@@ -703,7 +703,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                     handler : this.testConnectivity.createDelegate( this ),
                     disabled : false
                 }]
-             }]}));
+            }]}));
 
 
         this.cards.push( this.staticPanel = new Ext.FormPanel({
@@ -774,13 +774,10 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                 html : String.format( i18n._( 'Using PPPoE on {0} is <b>NOT</b> recommended.' ), oemName) + "<br/>" +
                     i18n._("It is recommended to use the ISP-supplied modem in bridge mode to handle PPPoE.") + "<br/>" +
                     "&nbsp;<br/>"
-                }, {
+            }, {
                 xtype : 'fieldset',
                 title : i18n._( "PPPoE Settings" ),
                 defaultType : 'textfield',
-                defaults : {
-                    readOnly : true
-                },
                 autoHeight : true,
                 items : [{
                     fieldLabel : i18n._( "Username" ),
@@ -797,7 +794,16 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                     readOnly : false,
                     fieldClass : '',
                     labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px'
-                },{
+                }]
+            }, {
+                xtype : 'fieldset',
+                title : i18n._( "PPPoE Status" ),
+                defaultType : 'textfield',
+                defaults : {
+                    readOnly : true
+                },
+                autoHeight : true,
+                items : [{
                     fieldLabel : i18n._( "IP Address" ),
                     labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
                     name : "ip",
@@ -849,7 +855,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             defaults : {
                 autoHeight : true,
                 border : false
-            }
+                }
         });
 
         var configureText = i18n._("Configure the Internet Connection");
@@ -872,7 +878,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                 mode : 'local',
                 listeners : {
                     "select" : {
-                         fn : this.onSelectConfig.createDelegate( this )
+                        fn : this.onSelectConfig.createDelegate( this )
                     }
                 },
                 width : 115,
@@ -1118,7 +1124,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             }
 
             this.updateValue( this.card.panel.find("name", "configType")[0], wanConfig.configType);
-        
+            
             for ( c = 0; c < this.cards.length ; c++ ) {
                 var card = this.cards[c];
                 if (wanConfig.primaryAddress != null) {
@@ -1621,13 +1627,13 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
     onBeforeCollapse : function( panel, animate )
     {
         this.showEmailConfig = false;
-              return true;
+        return true;
     },
 
     onBeforeExpand : function( panel, animate )
     {
         this.showEmailConfig = true;
-               return true;
+        return true;
     },
 
     saveSettings : function( handler )
@@ -1638,34 +1644,34 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
     },
 
     afterReauthenticate : function( handler )
-    {
-        var settings = Ung.SetupWizard.CurrentValues.mailSettings;
+        {
+            var settings = Ung.SetupWizard.CurrentValues.mailSettings;
 
-        settings.fromAddress = oemName.toLowerCase() + "@" + "example.com";
-        settings.useMxRecords = true;
-        settings.smtpHost = "";
-        settings.smtpPort = 25;
-        settings.authUser = "";
-        settings.authPass = "";
-        settings.reportEmail = "";
-        
-        if ( this.showEmailConfig ) {
-            settings.fromAddress = this.panel.find( "name", "from-address-textfield" )[0].getValue();
+            settings.fromAddress = oemName.toLowerCase() + "@" + "example.com";
+            settings.useMxRecords = true;
+            settings.smtpHost = "";
+            settings.smtpPort = 25;
+            settings.authUser = "";
+            settings.authPass = "";
+            settings.reportEmail = "";
+            
+            if ( this.showEmailConfig ) {
+                settings.fromAddress = this.panel.find( "name", "from-address-textfield" )[0].getValue();
 
-            if ( this.panel.find( "name", "smtp-send-directly" )[0].getGroupValue() == "smtp-server" ) {
-                settings.useMxRecords = false;
-                settings.smtpHost = this.panel.find( "name", "smtp-server-addr" )[0].getValue();
-                settings.smtpPort = this.panel.find( "name", "smtp-server-port" )[0].getValue();
+                if ( this.panel.find( "name", "smtp-send-directly" )[0].getGroupValue() == "smtp-server" ) {
+                    settings.useMxRecords = false;
+                    settings.smtpHost = this.panel.find( "name", "smtp-server-addr" )[0].getValue();
+                    settings.smtpPort = this.panel.find( "name", "smtp-server-port" )[0].getValue();
 
-                if ( this.panel.find( "name", "smtp-server-requires-auth" )[0].getValue()) {
-                    settings.authUser = this.panel.find( "name", "smtp-server-username" )[0].getValue();
-                    settings.authPass = this.panel.find( "name", "smtp-server-password" )[0].getValue();
+                    if ( this.panel.find( "name", "smtp-server-requires-auth" )[0].getValue()) {
+                        settings.authUser = this.panel.find( "name", "smtp-server-username" )[0].getValue();
+                        settings.authPass = this.panel.find( "name", "smtp-server-password" )[0].getValue();
+                    }
                 }
             }
-        }
 
-        rpc.mailSender.setMailSettings(this.complete.createDelegate( this, [ handler ], true ), settings );
-    },
+            rpc.mailSender.setMailSettings(this.complete.createDelegate( this, [ handler ], true ), settings );
+        },
 
     complete : function( result, exception, foo, handler )
     {
@@ -1687,11 +1693,11 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
             items : [{
                 xtype : 'label',
                 html : '<h2 class="wizard-title">'+i18n._( "Congratulations!" )+'</h2>'
-             },{
-                 xtype : 'label',
-                 html : String.format(i18n._( '<b>The {0} Server is now configured.</b><br/><br/>You are now ready to login and download applications.' ),oemName),
-                 cls : 'noborder'
-             }]
+            },{
+                xtype : 'label',
+                html : String.format(i18n._( '<b>The {0} Server is now configured.</b><br/><br/>You are now ready to login and download applications.' ),oemName),
+                cls : 'noborder'
+            }]
         });
 
         this.card = {
@@ -1759,7 +1765,7 @@ Ung.Setup = {
         var settings = new Ung.SetupWizard.Settings();
         var interfaces = new Ung.SetupWizard.Interfaces();
         var internet = new Ung.SetupWizard.Internet();
-        var email = new Ung.SetupWizard.Email();
+            var email = new Ung.SetupWizard.Email();
         var complete = new Ung.SetupWizard.Complete();
 
         var cards = [];
@@ -1787,10 +1793,10 @@ Ung.Setup = {
         this.wizard.render();
         Ext.QuickTips.init();
 
-        if ( true ) {
+        if ( false ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = function() {
-                this.wizard.goToPage( 5 );
+                this.wizard.goToPage( 3 );
             }.createDelegate( this );
             var ss = new Ung.SetupWizard.SettingsSaver( null, debugHandler );
 
