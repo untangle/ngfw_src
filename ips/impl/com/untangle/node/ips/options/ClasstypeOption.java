@@ -45,7 +45,7 @@ class ClasstypeOption extends IpsOption
             // Allow null for testing.
             rc = engine.getClassification(params);
         if (rc == null) {
-            logger.warn("Unable to find rule classification: " + params);
+            logger.info("Unable to find rule classification: " + params);
             // use default classification text for signature
         } else {
             signature.setClassification(rc.getDescription());
