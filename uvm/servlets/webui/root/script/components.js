@@ -2019,9 +2019,9 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
         // disk tooltip
         var diskArr=[
             '<div class="title">'+i18n._("Total Disk Space:")+'</div>',
-            '<div class="values"><span name="total_disk_space"></span> GBs</div>',
+            '<div class="values"><span name="total_disk_space"></span> GB</div>',
             '<div class="title">'+i18n._("Free Disk Space:")+'</div>',
-            '<div class="values"><span name="free_disk_space"></span> GBs</div>',
+            '<div class="values"><span name="free_disk_space"></span> GB</div>',
             '<div class="title">'+i18n._("Data read:")+'</div>',
             '<div class="values"><span name="disk_reads"></span> MB, <span name="disk_reads_per_second"></span> b/sec</div>',
             '<div class="title">'+i18n._("Data write:")+'</div>',
@@ -2051,8 +2051,8 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
         this.getEl().child("div[class=rx-value]").dom.innerHTML=rxSpeed+"KB/s";
         var memoryFree=Ung.Util.bytesToMBs(stats.map.MemFree);
         var memoryUsed=Ung.Util.bytesToMBs(stats.map.MemTotal-stats.map.MemFree);
-        this.getEl().child("div[class=free-value]").dom.innerHTML=memoryFree+" MBs";
-        this.getEl().child("div[class=used-value]").dom.innerHTML=memoryUsed+" MBs";
+        this.getEl().child("div[class=free-value]").dom.innerHTML=memoryFree+" MB";
+        this.getEl().child("div[class=used-value]").dom.innerHTML=memoryUsed+" MB";
         var diskPercent=Math.round((1-stats.map.freeDiskSpace/stats.map.totalDiskSpace)*20 )*5;
         this.getEl().child("div[name=disk_value]").dom.className="disk"+diskPercent;
         if(this.networkToolTip.rendered) {
