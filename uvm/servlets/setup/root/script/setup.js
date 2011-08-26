@@ -69,7 +69,7 @@ Ung.SetupWizard.EmailTester = Ext.extend( Object, {
 
     testMessageHandler : function( result, exception )
     {
-        var message = i18n._( 'Test email sent. ') + i18n._('Check ') + this.emailAddress + i18n._(' mailbox for successful delivery.' );
+        var message = i18n._( 'Email sent. ') + i18n._('Check ') + this.emailAddress + i18n._(' mailbox for successful delivery.' );
         if ( exception ) {
             message  = exception.message;
             if (message == null || message == "Unknown") {
@@ -108,12 +108,12 @@ Ung.SetupWizard.EmailTester = Ext.extend( Object, {
                 cancel : i18n._('Close'),
                 ok : i18n._('Send Test Email')
             },
-            width : 500,
+            width : 600,
             msg : this.emailTestMessage,
             modal : true,
             prompt : true,
-            progress : true,
-                progressText : config.progressText,
+            progress : (config.progressText != null),
+            progressText : config.progressText,
             value : this.emailAddress,
             fn : this.buttonHandler.createDelegate( this )
         });
@@ -1787,7 +1787,7 @@ Ung.Setup = {
         this.wizard.render();
         Ext.QuickTips.init();
 
-        if ( false ) {
+        if ( true ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = function() {
                 this.wizard.goToPage( 5 );
