@@ -1,21 +1,6 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id$
  */
-
 package com.untangle.node.firewall;
 
 import java.net.InetAddress;
@@ -41,13 +26,9 @@ class EventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(EventHandler.class);
 
-    private List<FirewallMatcher> firewallRuleList = new LinkedList<FirewallMatcher>();
+    private List<FirewallRule> firewallRuleList = new LinkedList<FirewallRule>();
 
-    private boolean isQuickExit = true;
-    private boolean rejectSilently = true;
-
-    /* True to accept by default, false to block by default */
-    private boolean isDefaultAccept = true;
+    private boolean blockSilently = true;
 
     /* Firewall Node */
     private final FirewallImpl node;
@@ -71,33 +52,41 @@ class EventHandler extends AbstractEventHandler
 
     private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol)
     {
-        boolean reject    = !isDefaultAccept; /* By default, do whatever the first rule is */
+        boolean block = false;
         boolean log = false;
-        FirewallRule rule = null;
+        FirewallRule matchedRule = null;
         int ruleIndex     = 0;
 
         /**
          * Find the matching rule compute block/log verdicts
          */
-        FirewallMatcher matcher = findMatchingRule(protocol, request);
-        if (matcher != null) {
-            rule      = matcher.rule();
-            ruleIndex = matcher.ruleIndex();
-            if (rule != null) {
-                reject = matcher.isTrafficBlocker();
-                log = rule.getLog();
+        for (FirewallRule rule : firewallRuleList) {
+            ruleIndex++;
+            if (rule.isMatch(request.protocol(),
+                             request.clientIntf(), request.serverIntf(),
+                             request.clientAddr(),request.serverAddr(),
+                             request.clientPort(), request.serverPort(),
+                             (String)request.globalAttachment(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME))) {
+                matchedRule = rule;
+                break;
             }
+        }
+        
+        if (matchedRule != null) {
+            block = matchedRule.getBlock();
+            log = matchedRule.getLog();
+            ruleIndex = matchedRule.getId();
         }
 
         /**
          * Take the appropriate actions
          */
-        if (reject) {
+        if (block) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Rejecting session: " + request);
+                logger.debug("Blocking session: " + request);
             }
 
-            if (rejectSilently) {
+            if (blockSilently) {
                 /* use finalization only if logging */
                 request.rejectSilently(log);
             } else {
@@ -112,12 +101,10 @@ class EventHandler extends AbstractEventHandler
             node.incrementBlockCount(); 
 
             /* We just blocked, so we have to log too, regardless of what the rule actually says */
-            FirewallEvent fwe = new FirewallEvent(request.pipelineEndpoints(), reject, ruleIndex);
-            if (rule != null)
-                fwe.setRuleId(rule.getId());
+            FirewallEvent fwe = new FirewallEvent(request.pipelineEndpoints(), block, ruleIndex);
             request.attach(fwe);
             node.incrementLogCount(); 
-        } else { /* not rejected */
+        } else { /* not blocked */
             if (logger.isDebugEnabled()) {
                 logger.debug("Releasing session: " + request);
             }
@@ -130,17 +117,15 @@ class EventHandler extends AbstractEventHandler
 
             /* If necessary log the event */
             if (log) {
-                FirewallEvent fwe = new FirewallEvent(request.pipelineEndpoints(), 
-                                                      reject, 
-                                                      ruleIndex);
-                fwe.setRuleId(rule.getId());
+                FirewallEvent fwe = new FirewallEvent(request.pipelineEndpoints(), block, ruleIndex);
+                fwe.setRuleId(ruleIndex);
                 request.attach(fwe);
                 node.incrementLogCount();
             }
         }
 
         /* Track the statistics */
-        node.statisticManager.incrRequest(protocol, request, reject, rule == null);
+        node.statisticManager.incrRequest(protocol, request, block, (matchedRule == null));
     }
 
     @Override
@@ -165,56 +150,7 @@ class EventHandler extends AbstractEventHandler
 
     public void configure(FirewallSettings settings)
     {
-        this.isQuickExit = settings.getBaseSettings().isQuickExit();
-        this.rejectSilently = settings.getBaseSettings().isRejectSilently();
-        this.isDefaultAccept = settings.getBaseSettings().isDefaultAccept();
-
-        /* Create a new list in tmp to avoid sessions that are
-         * iterating the current list */
-        List <FirewallMatcher> firewallRuleList = new LinkedList<FirewallMatcher>();
-
-        List<FirewallRule> list = settings.getFirewallRuleList();
-
-        if (list == null) {
-            logger.error("Settings contain null firewall list");
-        } else {
-            int index = 1;
-
-            /* Update all of the rules */
-            for (Iterator<FirewallRule> iter = list.iterator() ; iter.hasNext() ; index++) {
-                FirewallRule rule = iter.next();
-                /* Don't insert inactive rules */
-                if (!rule.isLive()) continue;
-                firewallRuleList.add(new FirewallMatcher(rule, index));
-            }
-        }
-
-        this.firewallRuleList = firewallRuleList;
+        this.firewallRuleList = settings.getRules();
     }
-
-    protected FirewallMatcher findMatchingRule( Protocol protocol,
-                                                int clientIntf, InetAddress clientAddr, int clientPort,
-                                                int serverIntf, InetAddress serverAddr, int serverPort)
-    {
-        for (FirewallMatcher matcher : firewallRuleList) {
-
-            if (matcher.isMatch(protocol,
-                                clientIntf, serverIntf,
-                                clientAddr, serverAddr,
-                                clientPort, serverPort)) {
-                return matcher;
-            }
-        }
-
-        return null;
-    }
-    
-    protected FirewallMatcher findMatchingRule( Protocol protocol, IPNewSessionRequest request )
-    {
-        return findMatchingRule( protocol,
-                                 request.clientIntf(), request.clientAddr(), request.clientPort(),
-                                 request.serverIntf(), request.getNatToHost(), request.getNatToPort());
-    }
-    
 
 }

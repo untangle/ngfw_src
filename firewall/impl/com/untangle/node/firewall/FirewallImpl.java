@@ -12,6 +12,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.localapi.SessionMatcher;
 import com.untangle.uvm.localapi.SessionMatcherFactory;
 import com.untangle.uvm.logging.EventLogger;
@@ -36,9 +37,12 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.Protocol;
+import com.untangle.node.util.SimpleExec;
 
 public class FirewallImpl extends AbstractNode implements Firewall
 {
+    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/firewall-convert-settings.py";
+
     private final EventHandler handler;
     private final SoloPipeSpec pipeSpec;
     private final SoloPipeSpec[] pipeSpecs;
@@ -62,19 +66,31 @@ public class FirewallImpl extends AbstractNode implements Firewall
             {
                 if (handler == null)
                     return false;
-                
-                FirewallMatcher matcher = handler.findMatchingRule(Protocol.getInstance(client.protocol()),
-                                                                   client.clientIntf(), client.clientAddr(), client.clientPort(),
-                                                                   server.serverIntf(), client.serverAddr(), client.serverPort());
 
-                if (matcher == null)
+                FirewallRule matchedRule = null;
+                
+                /**
+                 * Find the matching rule compute block/log verdicts
+                 */
+                for (FirewallRule rule : settings.getRules()) {
+                    if (rule.isMatch(client.protocol(),
+                                     client.clientIntf(), server.serverIntf(),
+                                     client.clientAddr(),  client.serverAddr(),
+                                     client.clientPort(), client.serverPort(),
+                                     null)) {
+                        matchedRule = rule;
+                        break;
+                    }
+                }
+        
+                if (matchedRule == null)
                     return false;
 
                 logger.info("Firewall Save Setting Matcher: " +
                             client.clientAddr() + ":" + client.clientPort() + " -> " +
-                            server.serverAddr() + ":" + server.serverPort() + " :: block:" + matcher.isTrafficBlocker());
+                            server.serverAddr() + ":" + server.serverPort() + " :: block:" + matchedRule.getBlock());
                 
-                return matcher.isTrafficBlocker();
+                return matchedRule.getBlock();
             }
         };
     
@@ -102,109 +118,55 @@ public class FirewallImpl extends AbstractNode implements Firewall
         lmm.setActiveMetricsIfNotSet(getNodeId(), passBlinger, loggedBlinger, blockBlinger);
     }
 
-    // Firewall methods --------------------------------------------------------
-
     public EventManager<FirewallEvent> getEventManager()
     {
         return eventLogger;
     }
 
-    public FirewallBaseSettings getBaseSettings()
+    public FirewallSettings getSettings()
     {
-        return settings.getBaseSettings();
+        return settings;
     }
 
-    public void setBaseSettings(final FirewallBaseSettings baseSettings)
+    public void setSettings(final FirewallSettings settings)
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>() {
-            public boolean doWork(Session s) {
-                settings.setBaseSettings(baseSettings);
-                settings = (FirewallSettings)s.merge(settings);
-                return true;
-            }
+        this.settings = settings;
 
-            public Object getResult() {
-                return null;
-            }
-        };
-        getNodeContext().runTransaction(tw);
-
-        /* check for any sessions that should be killed according to new rules */
-        this.killMatchingSessions(FIREWALL_SESSION_MATCHER);
-    }
-
-    public List<FirewallRule> getFirewallRuleList()
-    {
-        return settings.getFirewallRuleList();
-    }
-
-    public void setFirewallRuleList(final List<FirewallRule> rules)
-    {
-        for (FirewallRule fwr : rules) {
-            fwr.setId(null);
-        }
-
-        TransactionWork<Object> tw = new TransactionWork<Object>() {
-            public boolean doWork(Session s) {
-                settings.setFirewallRuleList(rules);
-                settings = (FirewallSettings)s.merge(settings);
-                return true;
-            }
-
-            public Object getResult() {
-                return null;
-            }
-        };
-        getNodeContext().runTransaction(tw);
+        /* XXX FIXME */
+        /* XXX FIXME */
+        /* XXX FIXME */
+        /* save to settings file */
 
         /* check for any sessions that should be killed according to new rules */
         this.killMatchingSessions(FIREWALL_SESSION_MATCHER);
     }
     
-    public void updateAll(final FirewallBaseSettings baseSettings, final List<FirewallRule> rules)
-    {
-        for (FirewallRule fwr : rules) {
-            fwr.setId(null);
-        }
-
-        TransactionWork<Object> tw = new TransactionWork<Object>() {
-            public boolean doWork(Session s) {
-                settings.setBaseSettings(baseSettings);
-                settings.setFirewallRuleList(rules);
-                settings = (FirewallSettings)s.merge(settings);
-                return true;
-            }
-
-            public Object getResult() {
-                return null;
-            }
-        };
-        getNodeContext().runTransaction(tw);
-        handler.configure(settings);
-
-        /* check for any sessions that should be killed according to new rules */
-        this.killMatchingSessions(FIREWALL_SESSION_MATCHER);
-    }
-
-    public Validator getValidator()
-    {
-        return new FirewallValidator();
-    }
-
-    // AbstractNode methods ----------------------------------------------------
-
     public void initializeSettings()
     {
         logger.info("Initializing Settings...");
 
         FirewallSettings settings = getDefaultSettings();
 
-        setFirewallSettings(settings);
+        _setSettings(settings);
 
         statisticManager.stop();
     }
 
-    // protected methods -------------------------------------------------------
+
+    public void incrementBlockCount() 
+    {
+        blockBlinger.increment();
+    }
+
+    public void incrementPassCount() 
+    {
+        passBlinger.increment();
+    }
+
+    public void incrementLogCount() 
+    {
+        loggedBlinger.increment();
+    }
 
     @Override
     protected PipeSpec[] getPipeSpecs()
@@ -239,22 +201,59 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
     protected void postInit(String[] args)
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery("from FirewallSettings hbs where hbs.nodeId = :nodeId");
-                    q.setParameter("nodeId", getNodeId());
-                    FirewallImpl.this.settings = (FirewallSettings)q.uniqueResult();
+        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeId().getId().toString();
+        FirewallSettings readSettings = null;
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-firewall/" + "settings_" + nodeID;
 
-                    updateToCurrent(FirewallImpl.this.settings);
+        try {
+            readSettings = settingsManager.load( FirewallSettings.class, settingsFileName );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:",e);
+        }
+        
+        /**
+         * If there are no settings, run the conversion script to see if there are any in the database
+         * Then check again for the file
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Running conversion script to check DB");
+            try {
+                SimpleExec.SimpleExecResult result = null;
+                logger.warn("Running: " + SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + settingsFileName + ".js");
+                result = SimpleExec.exec( SETTINGS_CONVERSION_SCRIPT, new String[] { nodeID.toString() , settingsFileName + ".js"}, null, null, true, true, 1000*60, logger, true);
+            } catch ( Exception e ) {
+                logger.warn( "Conversion script failed.", e );
+            } 
 
-                    return true;
+            try {
+                readSettings = settingsManager.load( FirewallSettings.class, settingsFileName );
+                if (readSettings != null) {
+                    logger.warn("Found settings imported from database");
                 }
+            } catch (SettingsManager.SettingsException e) {
+                logger.warn("Failed to load settings:",e);
+            }
+        }
 
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
+        /**
+         * If there are still no settings, just initialize
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Initializing new settings.");
+
+            this.initializeSettings();
+        }
+        else {
+            logger.info("Loading Settings...");
+
+            // UPDATE settings if necessary
+            
+            this.settings = readSettings;
+            logger.info("Settings: " + this.settings.toJSONString());
+        }
+
+        this.reconfigure();
     }
 
     // package protected methods -----------------------------------------------
@@ -266,77 +265,47 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
     FirewallSettings getDefaultSettings()
     {
-        logger.info("Loading the default settings");
-        FirewallSettings settings = new FirewallSettings(this.getNodeId());
+        logger.info("Creating the default settings...");
 
-        try {
-            /* A few sample settings */
-            settings.getBaseSettings().setQuickExit(true);
-            settings.getBaseSettings().setRejectSilently(true);
-            settings.getBaseSettings().setDefaultAccept(true);
+        /* A few sample settings */
+        List<FirewallRule> ruleList = new LinkedList<FirewallRule>();
+        LinkedList<FirewallRuleMatcher> matcherList = null;
+            
+        /* example rule 1 */
+        FirewallRuleMatcher portMatch1 = new FirewallRuleMatcher(FirewallRuleMatcher.MatcherType.SRC_PORT, "21");
+        matcherList = new LinkedList<FirewallRuleMatcher>();
+        matcherList.add(portMatch1);
+        ruleList.add(new FirewallRule(false, matcherList, true, true, "Block and log all traffic destined to port 21 (FTP)"));
+                             
+        /* example rule 2 */
+        FirewallRuleMatcher addrMatch2 = new FirewallRuleMatcher(FirewallRuleMatcher.MatcherType.SRC_ADDR, "1.2.3.4/255.255.255.0");
+        matcherList = new LinkedList<FirewallRuleMatcher>();
+        matcherList.add(addrMatch2);
+        ruleList.add(new FirewallRule(false, matcherList, true, true, "Block all TCP traffic from 1.2.3.0 netmask 255.255.255.0"));
 
-            List<FirewallRule> firewallList = new LinkedList<FirewallRule>();
+        /* example rule 3 */
+        FirewallRuleMatcher addrMatch3 = new FirewallRuleMatcher(FirewallRuleMatcher.MatcherType.DST_ADDR, "1.2.3.4/255.255.255.0");
+        FirewallRuleMatcher portMatch3 = new FirewallRuleMatcher(FirewallRuleMatcher.MatcherType.DST_PORT, "1000-5000");
+        matcherList = new LinkedList<FirewallRuleMatcher>();
+        matcherList.add(addrMatch3);
+        matcherList.add(portMatch3);
+        ruleList.add(new FirewallRule(false, matcherList, true, true, "Accept and log all traffic to the range 1.2.3.1 - 1.2.3.10 to ports 1000-5000"));
 
-            IntfMatcher any = IntfMatcher.getAnyMatcher();
-
-            FirewallRule tmp = new FirewallRule(false,
-                                                ProtocolMatcher.getTCPAndUDPMatcher(),
-                                                any, any,
-                                                IPMatcher.getAnyMatcher(),
-                                                IPMatcher.getAnyMatcher(),
-                                                PortMatcher.getAnyMatcher(),
-                                                new PortMatcher("21"),
-                                                true);
-            tmp.setLog(true);
-            tmp.setDescription("Block and log all traffic destined to port 21 (FTP)");
-            firewallList.add(tmp);
-
-            /* Block all traffic TCP traffic from the network 1.2.3.4/255.255.255.0 */
-            tmp = new FirewallRule(false, ProtocolMatcher.getTCPMatcher(),
-                                   any, any,
-                                   new IPMatcher("1.2.3.0/255.255.255.0"),
-                                   IPMatcher.getAnyMatcher(),
-                                   PortMatcher.getAnyMatcher(),
-                                   PortMatcher.getAnyMatcher(),
-                                   true);
-            tmp.setDescription("Block all TCP traffic from 1.2.3.0 netmask 255.255.255.0");
-            firewallList.add(tmp);
-
-            tmp = new FirewallRule(false, ProtocolMatcher.getTCPAndUDPMatcher(),
-                                   any, any,
-                                   IPMatcher.getAnyMatcher(),
-                                   new IPMatcher("1.2.3.1 - 1.2.3.10"),
-                                   new PortMatcher("1000-5000"),
-                                   PortMatcher.getAnyMatcher(),
-                                   false);
-            tmp.setLog(true);
-            tmp.setDescription("Accept and log all traffic to the range 1.2.3.1 - 1.2.3.10 from ports 1000-5000");
-            firewallList.add(tmp);
-
-            for (Iterator<FirewallRule> iter = firewallList.iterator() ; iter.hasNext() ;) {
-                iter.next().setCategory("[Sample]");
-            }
-
-            settings.setFirewallRuleList(firewallList);
-
-        } catch (Exception e) {
-            logger.error("This should never happen", e);
-        }
-
+        FirewallSettings settings = new FirewallSettings(ruleList);
         return settings;
     }
 
     // private methods ---------------------------------------------------------
 
-    private void reconfigure() throws Exception
+    private void reconfigure() 
     {
         logger.info("Reconfigure()");
 
         if (settings == null) {
-            throw new Exception("Failed to get Firewall settings: " + settings);
+            logger.warn("Invalid settings: null");
+        } else {
+            handler.configure(settings);
         }
-
-        handler.configure(settings);
     }
 
     private void updateToCurrent(FirewallSettings settings)
@@ -349,41 +318,23 @@ public class FirewallImpl extends AbstractNode implements Firewall
         logger.info("Update Settings Complete");
     }
 
-    private void setFirewallSettings(final FirewallSettings settings)
+    private void _setSettings( FirewallSettings newSettings )
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    FirewallImpl.this.settings = (FirewallSettings)s.merge(settings);
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-
-        getNodeContext().runTransaction(tw);
-        
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeId().getId().toString();
         try {
-            reconfigure();
-        } catch (Exception exn) {
-            logger.error("Could not save Firewall settings", exn);
+            settingsManager.save(FirewallSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-firewall/" + "settings_"  + nodeID, newSettings);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
         }
-    }
 
-    public void incrementBlockCount() 
-    {
-	blockBlinger.increment();
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.info("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
     }
-
-    public void incrementPassCount() 
-    {
-	passBlinger.increment();
-    }
-
-    public void incrementLogCount() 
-    {
-	loggedBlinger.increment();
-    }
-
 }

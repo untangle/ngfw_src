@@ -8,49 +8,11 @@ if (!Ung.hasResource["Ung.Firewall"]) {
         gridEventLog : null,
         initComponent : function() {
             Ung.Util.clearInterfaceStore();
-            // keep initial base settings
-            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
             // builds the tabs
             this.buildRules();
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelRules, this.gridEventLog]);
-/*
-            this.bbar=['-',{
-                name : "Remove",
-                id : this.getId() + "_removeBtn",
-                iconCls : 'node-remove-icon',
-                text : i18n._('Remove'),
-                handler : function() {
-                    this.removeAction();
-                }.createDelegate(this)
-            },'-',{
-                name : 'Help',
-                id : this.getId() + "_helpBtn",
-                iconCls : 'icon-help',
-                text : i18n._('Help'),
-                handler : function() {
-                    this.helpAction();
-                }.createDelegate(this)
-            },'->',{
-                name : "Cancel",
-                id : this.getId() + "_cancelBtn",
-                iconCls : 'cancel-icon',
-                text : i18n._('Cancel'),
-                handler : function() {
-                    this.cancelAction();
-                }.createDelegate(this)
-            },'-',this.saveButton = new Ext.Toolbar.Button({
-                name : "Save",
-                disabled : true,
-                id : this.getId() + "_saveBtn",
-                iconCls : 'save-icon',
-                text : i18n._('Save'),
-                handler : function() {
-                    this.saveAction.defer(1, this);
-                }.createDelegate(this)
-            })];
-*/
             Ung.Firewall.superclass.initComponent.call(this);
         },
         // Rules Panel
@@ -131,7 +93,6 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         name : 'Rules',
                         settingsCmp : this,
                         height : 500,
-                        totalRecords : this.getBaseSettings().firewallRulesLength,
                         paginated : false,
                         hasReorder : true,
                         emptyRow : {
@@ -398,39 +359,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                                 })
                             ]
                         })]
-                    }),{
-                        xtype : 'fieldset',
-                        autoHeight : true,
-                        cls:'firewall-top-margin-1',
-                        title : this.i18n._('Default Action'),
-                        items : [{
-                            xtype : 'radio',
-                            boxLabel : this.i18n._('Block'),
-                            hideLabel : true,
-                            name : 'isDefaultAccept',
-                            checked : !this.getBaseSettings().defaultAccept,
-                            listeners : {
-                                "check" : {
-                                    fn : function(elem, checked) {
-                                        this.getBaseSettings().defaultAccept = !checked;
-                                    }.createDelegate(this)
-                                }
-                            }
-                        },{
-                            xtype : 'radio',
-                            boxLabel : this.i18n._('Pass'),
-                            hideLabel : true,
-                            name : 'isDefaultAccept',
-                            checked : this.getBaseSettings().defaultAccept,
-                            listeners : {
-                                "check" : {
-                                    fn : function(elem, checked) {
-                                        this.getBaseSettings().defaultAccept = checked;
-                                    }.createDelegate(this)
-                                }
-                            }
-                        }]
-                    }
+                    })
                 ]
             });
         },
@@ -597,7 +526,6 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         //refresh the settings
                         this.getRpcNode().getBaseSettings(function(result2,exception2){
                             Ext.MessageBox.hide();                            
-                            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
                             this.gridRules.setTotalRecords(result2.firewallRulesLength);
                             this.gridRules.reloadGrid();
                             this.initialRules =this.gridRules.getFullSaveList();                                 
@@ -608,8 +536,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
             }
         },
         isDirty : function() {
-            return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings)
-               || this.gridRules.isDirty();//!Ung.Util.equals(this.gridRules.getFullSaveList(), this.initialRules
+            return this.gridRules.isDirty();
         }
     });
 }

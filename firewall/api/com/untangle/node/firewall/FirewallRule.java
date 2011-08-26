@@ -1,260 +1,174 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id$
  */
-
 package com.untangle.node.firewall;
 
+import java.util.List;
+import java.io.Serializable;
+import java.net.InetAddress;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import org.json.JSONObject;
+import org.json.JSONString;
+import org.apache.log4j.Logger;
 
-import org.hibernate.annotations.Type;
-
-import com.untangle.uvm.node.Rule;
-import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.IntfMatcher;
-import com.untangle.uvm.node.IPMatcher;
-import com.untangle.uvm.node.PortMatcher;
-import com.untangle.uvm.node.ProtocolMatcher;
+import com.untangle.uvm.vnet.Session;
+import com.untangle.uvm.vnet.IPSession;
 
 /**
- * Rule for matching based on IP addresses and subnets.
+ * This in the implementation of a Firewall Rule
  *
- * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
- * @version 1.0
+ * A rule is basically a collection of FirewallRuleMatchers (matchers)
+ * and what to do if the matchers match (block, log, etc)
  */
-@Entity
-@Table(name="n_firewall_rule", schema="settings")
 @SuppressWarnings("serial")
-public class FirewallRule extends Rule
+public class FirewallRule implements JSONString, Serializable
 {
+    private final Logger logger = Logger.getLogger(getClass());
+
+    private List<FirewallRuleMatcher> matchers;
+
+    private int id;
+    private boolean live;
+    private boolean log;
+    private boolean block;
+    private String description;
     
-    private static final String ACTION_BLOCK     = "Block";
-    private static final String ACTION_PASS      = "Pass";
+    public FirewallRule()
+    {
+    }
 
-    private static final String[] ACTION_ENUMERATION = { ACTION_BLOCK, ACTION_PASS };
-
-    private boolean isTrafficBlocker;
-
-
-    /* True if this matches source interface */
-    private IntfMatcher srcIntf = IntfMatcher.getAnyMatcher();
-
-    /* True if this matches the destination interface */
-    private IntfMatcher dstIntf = IntfMatcher.getAnyMatcher();
-
-    private ProtocolMatcher protocol;
-
-    private IPMatcher   srcAddress;
-    private IPMatcher   dstAddress;
-
-    private PortMatcher srcPort;
-    private PortMatcher dstPort;
+    public FirewallRule(boolean live, List<FirewallRuleMatcher> matchers, boolean log, boolean block, String description)
+    {
+        this.setMatchers(matchers);
+        this.setLive(live);
+        this.setLog(log);
+        this.setBlock(block);
+        this.setDescription(description);
+    }
     
-    // constructors -----------------------------------------------------------
-
-    public FirewallRule() { }
-
-    public FirewallRule(boolean isLive, ProtocolMatcher protocol,
-                        IntfMatcher clientIface, IntfMatcher serverIface,
-                        IPMatcher srcAddress, IPMatcher dstAddress,
-                        PortMatcher srcPort, PortMatcher dstPort,
-                        boolean isTrafficBlocker)
+    public List<FirewallRuleMatcher> getMatchers()
     {
-        /* Attributes of the firewall */
-        this.isTrafficBlocker = isTrafficBlocker;
-
-        this.srcIntf = srcIntf;
-        this.dstIntf = dstIntf;
-
-        setLive( isLive );
-        this.protocol   = protocol;
-        this.srcAddress = srcAddress;
-        this.dstAddress = dstAddress;
-        this.srcPort    = srcPort;
-        this.dstPort    = dstPort;
+        return this.matchers;
     }
 
-
-    // accessors --------------------------------------------------------------
-
-    /**
-     * Does this rule block traffic or let it pass.
-     *
-     * @return if this rule blocks traffic.
-     */
-    @Column(name="is_traffic_blocker", nullable=false)
-    public boolean isTrafficBlocker()
+    public void setMatchers( List<FirewallRuleMatcher> matchers )
     {
-        return isTrafficBlocker;
+        this.matchers = matchers;
     }
 
-    public void setTrafficBlocker( boolean isTrafficBlocker )
+    public int getId()
     {
-        this.isTrafficBlocker = isTrafficBlocker;
+        return this.id;
     }
 
-    @Transient
-    public  String getAction()
+    public void setId(int id)
     {
-        return ( isTrafficBlocker ) ? ACTION_BLOCK : ACTION_PASS;
+        this.id = id;
+    }
+    
+    public boolean getLive()
+    {
+        return live;
     }
 
-    public  void setAction( String action ) throws ParseException
+    public void setLive( boolean live )
     {
-        if ( action.equalsIgnoreCase( ACTION_BLOCK )) {
-            isTrafficBlocker = true;
-        } else if ( action.equalsIgnoreCase( ACTION_PASS )) {
-            isTrafficBlocker = false;
-        } else {
-            throw new ParseException( "Invalid action: " + action );
+        this.live = live;
+    }
+
+    public boolean getBlock()
+    {
+        return block;
+    }
+
+    public void setBlock( boolean live )
+    {
+        this.block = block;
+    }
+
+    public boolean getLog()
+    {
+        return log;
+    }
+
+    public void setLog( boolean live )
+    {
+        this.log = log;
+    }
+    
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public void setDescription( String description )
+    {
+        this.description = description;
+    }
+    
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
+    }
+    
+    public boolean isMatch( IPSession sess )
+    {
+        if (!getLive())
+            return false;
+
+        /**
+         * If no matchers return true
+         */
+        if (this.matchers == null) {
+            logger.warn("Null matchers - assuming true");
+            return true;
         }
+
+        /**
+         * IF any matcher doesn't match - return false
+         */
+        for ( FirewallRuleMatcher matcher : matchers ) {
+            if (!matcher.matches(sess))
+                return false;
+        }
+
+        /**
+         * Otherwise all match - so the rule matches
+         */
+        return true;
     }
 
-    @Transient
-    public static String[] getActionEnumeration()
+    public boolean isMatch( short protocol,
+                            int srcIntf, int dstIntf,
+                            InetAddress srcAddress, InetAddress dstAddress,
+                            int srcPort, int dstPort,
+                            String username)
     {
-        return ACTION_ENUMERATION;
-    }
+        if (!getLive())
+            return false;
 
-    public static String getActionDefault()
-    {
-        return ACTION_ENUMERATION[0];
-    }
+        /**
+         * If no matchers return true
+         */
+        if (this.matchers == null) {
+            logger.warn("Null matchers - assuming true");
+            return true;
+        }
 
-    /**
-     * source IntfMatcher
-     *
-     * @return the source IP matcher.
-     */
-    @Column(name="src_intf_matcher")
-    @Type(type="com.untangle.uvm.type.IntfMatcherUserType")
-    public IntfMatcher getSrcIntf()
-    {
-        return srcIntf;
-    }
+        /**
+         * IF any matcher doesn't match - return false
+         */
+        for ( FirewallRuleMatcher matcher : matchers ) {
+            if (!matcher.matches(protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort, username))
+                return false;
+        }
 
-    public void setSrcIntf( IntfMatcher srcIntf )
-    {
-        this.srcIntf = srcIntf;
+        /**
+         * Otherwise all match - so the rule matches
+         */
+        return true;
     }
-
-    /**
-     * destination IntfMatcher
-     *
-     * @return the destination IP matcher.
-     */
-    @Column(name="dst_intf_matcher")
-    @Type(type="com.untangle.uvm.type.IntfMatcherUserType")
-    public IntfMatcher getDstIntf()
-    {
-        return dstIntf;
-    }
-
-    public void setDstIntf( IntfMatcher dstIntf )
-    {
-        this.dstIntf = dstIntf;
-    }
-
-    /**
-     * Protocol matcher
-     *
-     * @return the protocol matcher.
-     */
-    @Column(name="protocol_matcher")
-    @Type(type="com.untangle.uvm.type.ProtocolMatcherUserType")
-    public ProtocolMatcher getProtocol()
-    {
-        return protocol;
-    }
-
-    public void setProtocol( ProtocolMatcher protocol )
-    {
-        this.protocol = protocol;
-    }
-
-    /**
-     * source IPMatcher
-     *
-     * @return the source IP matcher.
-     */
-    @Column(name="src_ip_matcher")
-    @Type(type="com.untangle.uvm.type.IPMatcherUserType")
-    public IPMatcher getSrcAddress()
-    {
-        return srcAddress;
-    }
-
-    public void setSrcAddress( IPMatcher srcAddress )
-    {
-        this.srcAddress = srcAddress;
-    }
-
-    /**
-     * destination IPMatcher
-     *
-     * @return the destination IP matcher.
-     */
-    @Column(name="dst_ip_matcher")
-    @Type(type="com.untangle.uvm.type.IPMatcherUserType")
-    public IPMatcher getDstAddress()
-    {
-        return dstAddress;
-    }
-
-    public void setDstAddress( IPMatcher dstAddress )
-    {
-        this.dstAddress = dstAddress;
-    }
-
-    /**
-     * source PortMatcher
-     *
-     * @return the source IP matcher.
-     */
-    @Column(name="src_port_matcher")
-    @Type(type="com.untangle.uvm.type.PortMatcherUserType")
-    public PortMatcher getSrcPort()
-    {
-        return srcPort;
-    }
-
-    public void setSrcPort( PortMatcher srcPort )
-    {
-        this.srcPort = srcPort;
-    }
-
-    /**
-     * destination PortMatcher
-     *
-     * @return the destination IP matcher.
-     */
-    @Column(name="dst_port_matcher")
-    @Type(type="com.untangle.uvm.type.PortMatcherUserType")
-    public PortMatcher getDstPort()
-    {
-        return dstPort;
-    }
-
-    public void setDstPort( PortMatcher dstPort )
-    {
-        this.dstPort = dstPort;
-    }
+    
 }
+
