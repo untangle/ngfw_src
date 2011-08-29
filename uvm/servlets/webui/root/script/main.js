@@ -893,6 +893,7 @@ Ung.Main=Ext.extend(Object, {
     },
     openInRightFrame : function(title, url) {
         var iframeWin=main.getIframeWin();
+        iframeWin.setSizeToRack();
         iframeWin.show();
         if (typeof title == 'string') {
             iframeWin.setTitle(title);

@@ -2753,9 +2753,10 @@ Ung.Window = Ext.extend(Ext.Window, {
     setSizeToRack: function () {
         var objSize = main.viewport.getSize();
         var viewportWidth=objSize.width;
-        objSize.width = Math.min(viewportWidth,Math.max(1024,viewportWidth - main.contentLeftWidth));
+        //objSize.width = Math.min(viewportWidth,Math.max(1024,viewportWidth - main.contentLeftWidth));
+        //objSize.width = Math.min(viewportWidth,Math.max(1024,viewportWidth - main.contentLeftWidth));
+        objSize.width = viewportWidth - main.contentLeftWidth;
         this.setPosition(viewportWidth-objSize.width, 0);
-        objSize.width = Math.min(viewportWidth,Math.max(1024,viewportWidth - main.contentLeftWidth));
         this.setSize(objSize);
     },
 
