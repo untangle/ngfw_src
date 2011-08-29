@@ -29,6 +29,11 @@ public class InterfaceConfiguration implements java.io.Serializable, JSONString
     /* This is the configuration type of this interface */
     private String configType = null;
 
+    /* This is the mac address for this NIC/interfaces */
+    private String macAddress = null;
+    /* This is the vendor for this NIC */
+    private String vendor = null;
+    
     /**
      * common configuration
      */
@@ -331,6 +336,26 @@ public class InterfaceConfiguration implements java.io.Serializable, JSONString
         this.currentMedia = currentMedia;
     }
 
+    public String getMacAddress()
+    {
+        return this.macAddress;
+    }
+
+    public void setMacAddress(String macAddress)
+    {
+        this.macAddress = macAddress;
+    }
+
+    public String getVendor()
+    {
+        return this.vendor;
+    }
+
+    public void setVendor(String vendor)
+    {
+        this.vendor = vendor;
+    }
+    
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);

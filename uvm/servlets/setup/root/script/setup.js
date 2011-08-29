@@ -402,16 +402,20 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                     var divClass = "draggable-disabled-interface";
                     var status = i18n._( "unknown" );
 
+                    if (value[3] == "Unknown") {
+                        value[3] = i18n._("Unknown Vendor");
+                    }
+                    
                     if ( value[1] == "connected" ) {
-                        status = i18n._( "connected" );
+                        status = i18n._( "connected " ) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + " [" + value[0] + " / " + value[2] + " / " + value[3] + "]";
                         divClass = "draggable-enabled-interface";
                     }
                     if ( value[1] == "disconnected" ) {
-                        status = i18n._( "disconnected" );
+                        status = i18n._( "disconnected" ) + "&nbsp;&nbsp;" + " [" + value[0] + " / " + value[2] + " / " + value[3] + "]";
                         divClass = "draggable-disabled-interface";
                     }
                     
-                    return "<div class='" + divClass + "'>" + value[0] + " : " + status + "</div>";
+                    return "<div class='" + divClass + "'>" + status + "</div>";
                 },
                 width : 400
             }])
@@ -551,7 +555,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
 
         for ( c = 0 ; c < cleanArray.length ; c++ ) {
             i = cleanArray[c];
-            interfaceList.push( [ i.name, [ i.systemName, i.connectionState, i.currentMedia ]] );
+            interfaceList.push( [ i.name, [ i.systemName, i.connectionState, i.macAddress, i.vendor ]] );
         }
 
         return interfaceList;
@@ -1793,10 +1797,10 @@ Ung.Setup = {
         this.wizard.render();
         Ext.QuickTips.init();
 
-        if ( false ) {
+        if ( true ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = function() {
-                this.wizard.goToPage( 3 );
+                this.wizard.goToPage( 2 );
             }.createDelegate( this );
             var ss = new Ung.SetupWizard.SettingsSaver( null, debugHandler );
 
