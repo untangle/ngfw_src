@@ -553,15 +553,12 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
          * to just have two few fields */
         interfaceList = [];
 
-        if (i.vendor == null) {
-            i.vendor = "Unknown";
-        }
-        if (i.macAddress == null) {
-            i.macAddress = "";
-        }
-        
         for ( c = 0 ; c < cleanArray.length ; c++ ) {
             i = cleanArray[c];
+            if (i.vendor == null) 
+                i.vendor = "Unknown";
+            if (i.macAddress == null) 
+                i.macAddress = "";
             interfaceList.push( [ i.name, [ i.systemName, i.connectionState, i.macAddress, i.vendor ]] );
         }
 
