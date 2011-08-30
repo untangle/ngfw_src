@@ -138,7 +138,7 @@ public abstract class DecisionEngine
         // If a client is on the pass list is is passed regardless of any other settings
         String description = checkClientPassList(clientIp);
         if (null != description) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Action.PASS, Reason.PASS_CLIENT,description, node.getVendor());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_CLIENT, description, node.getVendor());
             logger.info(hbe);
             return null;
         }
@@ -147,7 +147,7 @@ public abstract class DecisionEngine
         // If a site/URL is on the pass list is is passed regardless of any other settings
         description = checkSitePassList(host,uri);
         if (null != description) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Action.PASS, Reason.PASS_URL, description, node.getVendor());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_URL, description, node.getVendor());
             logger.debug("LOG: in pass list: " + requestLine.getRequestLine());
             node.log(hbe, host, port, event);
             return null;
@@ -156,7 +156,7 @@ public abstract class DecisionEngine
         // check unblocks
         // if a site/URL is unblocked already for this specific IP it is passed regardless of any other settings
         if (checkUnblockedSites(host, uri, clientIp)) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Action.PASS, Reason.PASS_UNBLOCK, "bypass", node.getVendor());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, "bypass", node.getVendor());
             logger.debug("LOG: in unblock list: " + requestLine.getRequestLine());
             node.log(hbe, host, port, event);
             return null;
@@ -165,7 +165,7 @@ public abstract class DecisionEngine
         // if this is HTTP traffic and the request is IP-based and block IP-based browsing is enabled, block this traffic
         if (80 == port && node.getSettings().getBlockAllIpHosts()) {
             if (null == host || IP_PATTERN.matcher(host).matches()) {
-                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Action.BLOCK, Reason.BLOCK_IP_HOST, host, node.getVendor());
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_IP_HOST, host, node.getVendor());
                 logger.debug("LOG: block all IPs: " + requestLine.getRequestLine());
                 node.log(hbe, host, port, event);
 
@@ -193,7 +193,7 @@ public abstract class DecisionEngine
                 if (logger.isDebugEnabled()) {
                     logger.debug("blocking extension " + exn);
                 }
-                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Action.BLOCK,Reason.BLOCK_EXTENSION, exn, node.getVendor());
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_EXTENSION, exn, node.getVendor());
                 logger.debug("LOG: in extensions list: " + requestLine.getRequestLine());
                 node.log(hbe, host, port, event);
 
@@ -207,21 +207,13 @@ public abstract class DecisionEngine
             }
         }
 
-        // Check categories
+        // Check Categories
         String nonce = checkCategory(sess, clientIp, host, port, requestLine, event, username);
         if (nonce != null) {
             return nonce;
         }
-        
-        /* XXX */
-        // need to log all categories visits
-        // need to log flagged categories
-        // need to log flagged sites
-        /* XXX */
 
-        WebFilterEvent hbe = new WebFilterEvent( requestLine.getRequestLine(), null, null, null, node.getVendor(), true );
-        node.log( hbe, host, port, event );
-
+        // Nothing matched, just return null and allow the visit
         return null;
     }
 
@@ -258,9 +250,7 @@ public abstract class DecisionEngine
         for (GenericRule rule : node.getSettings().getBlockedMimeTypes()) {
             MimeType mt = new MimeType(rule.getString());
             if (rule.getEnabled() && mt.matches(contentType)) {
-                WebFilterEvent hbe = new WebFilterEvent
-                    (requestLine.getRequestLine(), Action.BLOCK,
-                     Reason.BLOCK_MIME, contentType, node.getVendor());
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_MIME, contentType, node.getVendor());
                 logger.debug("LOG: in mimetype list: " + requestLine.getRequestLine());
                 node.log(hbe);
 
@@ -429,12 +419,11 @@ public abstract class DecisionEngine
             return null;
         
         if (rule.getBlocked()) {
-            Action a = Action.BLOCK;
-            Reason reason = Reason.BLOCK_URL;
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), a, reason, rule.getDescription(), node.getVendor());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE,  Boolean.TRUE, Reason.BLOCK_URL, rule.getDescription(), node.getVendor());
             node.log(hbe, host, port, event);
         } else if (rule.getFlagged()) {
-            /* FIXME log an event XXX bug #8876 */
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.TRUE, Reason.PASS_URL, rule.getDescription(), node.getVendor());
+            node.log(hbe, host, port, event);
         } 
 
         return null;
@@ -486,8 +475,9 @@ public abstract class DecisionEngine
                 isBlocked = true;
                 blockedName = catSettings.getName();
             }
-            if ( catSettings.getFlagged() ) 
+            if ( catSettings.getFlagged() ) {
                 isFlagged = true;
+            }
         }
         
         if (bestCategory != null && sess != null) {
@@ -503,17 +493,21 @@ public abstract class DecisionEngine
             sess.globalAttach(node.getVendor()+"-category-blocked",isBlocked);
         }
         
+        /**
+         * Always log an event if the site was blocked
+         * Always log an event if the site was flagged
+         * Always log an event if the site had some valid categorization
+         */
         if (isBlocked) {
-            Action a = Action.BLOCK;
-            Reason reason = Reason.BLOCK_CATEGORY;
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), a, reason, blockedName, node.getVendor());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), isBlocked, isFlagged, Reason.BLOCK_CATEGORY, blockedName, node.getVendor());
             node.log(hbe, host, port, event);
 
             WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri, bestCategory.getDescription(), clientIp, node.getNodeTitle(), username);
             return node.generateNonce(bd);
-        } else if (isFlagged) {
-            /* FIXME log an event XXX bug #8876 */
-        }
+        } else if (isFlagged || (bestCategory != null)) {
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), isBlocked, isFlagged, Reason.PASS_URL, bestCategory.getName(), node.getVendor());
+            node.log(hbe, host, port, event);
+        } 
 
         return null;
     }

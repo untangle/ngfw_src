@@ -730,10 +730,10 @@ CREATE TABLE n_virus_evt_smtp (
 ALTER TABLE events.n_virus_evt_smtp OWNER TO postgres;
 
 --
--- Name: n_webfilter_evt_blk; Type: TABLE; Schema: events; Owner: postgres; Tablespace:
+-- Name: n_webfilter_evt; Type: TABLE; Schema: events; Owner: postgres; Tablespace:
 --
 
-CREATE TABLE n_webfilter_evt_blk (
+CREATE TABLE n_webfilter_evt (
     event_id bigint NOT NULL,
     request_id bigint,
     action character(1),
@@ -744,7 +744,7 @@ CREATE TABLE n_webfilter_evt_blk (
 );
 
 
-ALTER TABLE events.n_webfilter_evt_blk OWNER TO postgres;
+ALTER TABLE events.n_webfilter_evt OWNER TO postgres;
 
 --
 -- Name: pl_endp; Type: TABLE; Schema: events; Owner: postgres; Tablespace:
@@ -1195,10 +1195,10 @@ COPY n_virus_evt_smtp (event_id, msg_id, clean, virus_name, virus_cleaned, actio
 
 
 --
--- Data for Name: n_webfilter_evt_blk; Type: TABLE DATA; Schema: events; Owner: postgres
+-- Data for Name: n_webfilter_evt; Type: TABLE DATA; Schema: events; Owner: postgres
 --
 
-COPY n_webfilter_evt_blk (event_id, request_id, action, reason, category, vendor_name, time_stamp) FROM stdin;
+COPY n_webfilter_evt (event_id, request_id, action, reason, category, vendor_name, time_stamp) FROM stdin;
 \.
 
 
@@ -1666,11 +1666,11 @@ ALTER TABLE ONLY n_virus_evt_smtp
 
 
 --
--- Name: n_webfilter_evt_blk_pkey; Type: CONSTRAINT; Schema: events; Owner: postgres; Tablespace:
+-- Name: n_webfilter_evt_pkey; Type: CONSTRAINT; Schema: events; Owner: postgres; Tablespace:
 --
 
-ALTER TABLE ONLY n_webfilter_evt_blk
-    ADD CONSTRAINT n_webfilter_evt_blk_pkey PRIMARY KEY (event_id);
+ALTER TABLE ONLY n_webfilter_evt
+    ADD CONSTRAINT n_webfilter_evt_pkey PRIMARY KEY (event_id);
 
 
 --
@@ -2015,10 +2015,10 @@ CREATE INDEX n_virus_evt_ts_idx ON n_virus_evt USING btree (time_stamp);
 
 
 --
--- Name: n_webfilter_evt_blk_ts_idx; Type: INDEX; Schema: events; Owner: postgres; Tablespace:
+-- Name: n_webfilter_evt_ts_idx; Type: INDEX; Schema: events; Owner: postgres; Tablespace:
 --
 
-CREATE INDEX n_webfilter_evt_blk_ts_idx ON n_webfilter_evt_blk USING btree (time_stamp);
+CREATE INDEX n_webfilter_evt_ts_idx ON n_webfilter_evt USING btree (time_stamp);
 
 
 --

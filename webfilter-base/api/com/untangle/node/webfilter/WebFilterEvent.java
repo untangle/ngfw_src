@@ -27,67 +27,29 @@ import com.untangle.uvm.logging.SyslogPriority;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-@Table(name="n_webfilter_evt_blk", schema="events")
+@Table(name="n_webfilter_evt", schema="events")
 @SuppressWarnings("serial")
 public class WebFilterEvent extends LogEvent
 {
-    // action types
-    private static final int PASSED = 0;
-    private static final int BLOCKED = 1;
-
     private RequestLine requestLine;
-    private Action action;
-    private Reason reason;
-    private String category;
-    private String vendorName;
-
-    // non-persistent fields -----------------------------------------------
-
-    private boolean nonEvent = false;
-
-    // constructors --------------------------------------------------------
+    private Boolean blocked;
+    private Boolean flagged;
+    private Reason  reason;
+    private String  category;
+    private String  vendorName;
 
     public WebFilterEvent() { }
 
-    public WebFilterEvent(RequestLine requestLine, Action action,
-                          Reason reason, String category,
-                          String vendorName, boolean nonEvent)
+    public WebFilterEvent(RequestLine requestLine, Boolean blocked, Boolean flagged, Reason reason,
+                          String category, String vendorName)
     {
         this.requestLine = requestLine;
-        this.action = action;
-        this.reason = reason;
-        this.category = category;
-
-        this.vendorName = vendorName;
-
-        this.nonEvent = nonEvent;
-
-        if (nonEvent && null != requestLine
-            && null != requestLine.getHttpRequestEvent()) {
-            setTimeStamp(requestLine.getHttpRequestEvent().getTimeStamp());
-        }
-    }
-
-    public WebFilterEvent(RequestLine requestLine, Action action,
-                          Reason reason, String category,
-                          String vendorName)
-    {
-        this.requestLine = requestLine;
-        this.action = action;
+        this.blocked = blocked;
+        this.flagged = flagged;
         this.reason = reason;
         this.category = category;
         this.vendorName = vendorName;
     }
-
-    // public methods ------------------------------------------------------
-
-    @Transient
-    public boolean isNonEvent()
-    {
-        return nonEvent;
-    }
-
-    // accessors -----------------------------------------------------------
 
     /**
      * Request line for this HTTP response pair.
@@ -107,19 +69,29 @@ public class WebFilterEvent extends LogEvent
     }
 
     /**
-     * The action taken.
-     *
-     * @return the action.
+     * True if this event was blocked
      */
-    @Type(type="com.untangle.node.webfilter.ActionUserType")
-    public Action getAction()
+    public Boolean getBlocked()
     {
-        return action;
+        return blocked;
     }
 
-    public void setAction(Action action)
+    public void setBlocked(Boolean blocked)
     {
-        this.action = action;
+        this.blocked = blocked;
+    }
+
+    /**
+     * True if this event flagged as a violation
+     */
+    public Boolean getFlagged()
+    {
+        return flagged;
+    }
+
+    public void setFlagged(Boolean flagged)
+    {
+        this.flagged = flagged;
     }
 
     /**
@@ -167,25 +139,13 @@ public class WebFilterEvent extends LogEvent
         this.vendorName = vendorName;
     }
 
-    // WebFilterEvent methods ----------------------------------------------
-
-    @Transient
-    public int getActionType()
-    {
-        if (null == action ||
-            Action.PASS_KEY == action.getKey()) {
-            return PASSED;
-        } else {
-            return BLOCKED;
-        }
-    }
 
     // LogEvent methods ----------------------------------------------------
 
     @Transient
     public boolean isPersistent()
     {
-        return !nonEvent;
+        return true;
     }
 
     // Syslog methods ------------------------------------------------------
@@ -196,7 +156,8 @@ public class WebFilterEvent extends LogEvent
 
         sb.startSection("info");
         sb.addField("url", requestLine.getUrl().toString());
-        sb.addField("action", null == action ? "none" : action.getName());
+        sb.addField("blocked", blocked);
+        sb.addField("flagged", flagged);
         sb.addField("reason", null == reason ? "none" : reason.toString());
         sb.addField("category", null == category ? "none" : category);
     }
@@ -210,16 +171,7 @@ public class WebFilterEvent extends LogEvent
     @Transient
     public SyslogPriority getSyslogPriority()
     {
-        switch(getActionType())
-            {
-            case PASSED:
-                // statistics or normal operation
-                return SyslogPriority.INFORMATIONAL;
-
-            default:
-            case BLOCKED:
-                return SyslogPriority.WARNING; // traffic altered
-            }
+        return SyslogPriority.WARNING; 
     }
 
     // Object methods ------------------------------------------------------

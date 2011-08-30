@@ -118,7 +118,7 @@ class WebFilterBaseNode(Node):
 
     def events_cleanup(self, cutoff):
         sql_helper.run_sql("""\
-DELETE FROM events.n_webfilter_evt_blk WHERE time_stamp < %s""", (cutoff,))
+DELETE FROM events.n_webfilter_evt WHERE time_stamp < %s""", (cutoff,))
 
     def reports_cleanup(self, cutoff):
         pass
@@ -152,11 +152,11 @@ UPDATE reports.n_http_events
 SET wf_%s_action = action,
   wf_%s_reason = reason,
   wf_%s_category = category
-FROM events.n_webfilter_evt_blk
+FROM events.n_webfilter_evt
 WHERE reports.n_http_events.time_stamp >= %%s
   AND reports.n_http_events.time_stamp < %%s
-  AND events.n_webfilter_evt_blk.vendor_name = %%s
-  AND reports.n_http_events.request_id = events.n_webfilter_evt_blk.request_id"""
+  AND events.n_webfilter_evt.vendor_name = %%s
+  AND reports.n_http_events.request_id = events.n_webfilter_evt.request_id"""
                                % (3 * (self.__vendor_name,)),
                                (sd, ed, self.__vendor_name), connection=conn,
                                auto_commit=False)

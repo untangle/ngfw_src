@@ -67,44 +67,11 @@ public class WebFilterPassedFilter implements SimpleEventFilter<WebFilterEvent>
 
     public boolean accept(WebFilterEvent e)
     {
-        return null == e.getAction() || Action.PASS == e.getAction();
+        return !e.getBlocked();
     }
 
     public String[] getQueries()
     {
         return new String[] { evtQuery }; 
     }
-
-//    @SuppressWarnings("unchecked") //Query
-//    public void doGetEvents(Session s, List<WebFilterEvent> l, int limit, Map<String, Object> params)
-//         Query q = s.createQuery(RL_QUERY);
-//         for (String param : q.getNamedParameters()) {
-//             Object o = params.get(param);
-//             if (null != o) {
-//                 q.setParameter(param, o);
-//             }
-//         }
-
-//         q.setMaxResults(limit);
-
-//         int c = 0;
-//         for (Iterator<RequestLine> i = q.iterate(); i.hasNext() && c < limit; ) {
-//             RequestLine rl = i.next();
-//             Query evtQ = s.createQuery(evtQuery);
-//             evtQ.setEntity("requestLine", rl);
-//             WebFilterEvent evt = (WebFilterEvent)evtQ.uniqueResult();
-//             if (null == evt) {
-//                 evt = new WebFilterEvent(rl, null, null, null,
-//                                          vendorName, true);
-//                 Hibernate.initialize(rl);
-//                 l.add(evt);
-//                 c++;
-//             } else if (Action.PASS == evt.getAction()) {
-//                 Hibernate.initialize(evt);
-//                 Hibernate.initialize(evt.getRequestLine());
-//                 l.add(evt);
-//                 c++;
-//             }
-//         }
-//     }
 }
