@@ -297,17 +297,14 @@ if len(sys.argv) > 3:
     filename = sys.argv[3]
 
 try:
-    dir = "/usr/share/untangle/settings/untangle-node-webfilter/"
-    if not os.path.exists(dir):
-        os.makedirs(dir)
-    dir = "/usr/share/untangle/settings/untangle-node-sitefilter/"
-    if not os.path.exists(dir):
-        os.makedirs(dir)
-
     settings_str = get_settings(tid, debug=True)
     print settings_str
     if filename == None:
         filename = "/usr/share/untangle/settings/untangle-node-webfilter/settings_%s.js" % tid
+    dir = os.path.dirname(filename)
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+
     file = open(filename, 'w')
     file.write(settings_str)
     file.close()

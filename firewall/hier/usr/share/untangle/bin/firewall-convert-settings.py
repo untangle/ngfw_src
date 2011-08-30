@@ -132,14 +132,14 @@ if len(sys.argv) > 2:
     filename = sys.argv[2]
 
 try:
-    dir = "/usr/share/untangle/settings/untangle-node-firewall/"
-    if not os.path.exists(dir):
-        os.makedirs(dir)
-
     settings_str = get_settings(tid, debug=True)
     print settings_str
     if filename == None:
         filename = "/usr/share/untangle/settings/untangle-node-firewall/settings_%s.js" % tid
+    dir = os.path.dirname(filename)
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+
     file = open(filename, 'w')
     file.write(settings_str)
     file.close()
