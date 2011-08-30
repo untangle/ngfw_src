@@ -12,7 +12,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
             this.buildRules();
             this.buildEventLog();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelRules, this.gridEventLog]);
+            this.buildTabPanel([this.panelRules, /*this.gridEventLog*/]);
             Ung.Firewall.superclass.initComponent.call(this);
         },
         // Rules Panel
@@ -113,7 +113,8 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         },
                         title : this.i18n._("Rules"),
                         recordJavaClass : "com.untangle.node.firewall.FirewallRule",
-                        proxyRpcFn : this.getRpcNode().getFirewallRuleList,
+                        data:this.getSettings().rules.list,
+                        //proxyRpcFn : this.getRpcNode().getFirewallRuleList,
                         fields : [{
                             name : 'id'
                         }, {
@@ -513,26 +514,27 @@ if (!Ung.hasResource["Ung.Firewall"]) {
         saveAction : function(keepWindowOpen) {
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.getRpcNode().updateAll(function(result, exception) {
+                if(this.gridRules) {
+                    this.getSettings().rules.list = this.gridRules.getFullSaveList();
+                }
+                this.getRpcNode().setSettings(function(result, exception) {
                     Ext.MessageBox.hide();
                     if(Ung.Util.handleException(exception)) return;
                     // exit settings screen
-                    if(!keepWindowOpen){
+                    if(!keepWindowOpen) {
                         Ext.MessageBox.hide();                    
                         this.closeWindow();
-                    }else{
+                    } else {
                         //refresh the settings
                         Ext.MessageBox.hide();
                         //refresh the settings
-                        this.getRpcNode().getBaseSettings(function(result2,exception2){
-                            Ext.MessageBox.hide();                            
-                            this.gridRules.setTotalRecords(result2.firewallRulesLength);
-                            this.gridRules.reloadGrid();
-                            this.initialRules =this.gridRules.getFullSaveList();                                 
-                        }.createDelegate(this));                        
-                        //this.gridEventLog.reloadGrid();                            
+                        this.getRpcNode().getSettings(function(result,exception){
+                            Ext.MessageBox.hide();
+                            Ung.Util.generateListIds(result.list);
+                            this.gridRules.reloadGrid({data:result.list});
+                        }.createDelegate(this));                       
                     }
-                }.createDelegate(this), this.getBaseSettings(), this.gridRules ? {javaClass:"java.util.ArrayList",list:this.gridRules.getFullSaveList()} : null);
+                }.createDelegate(this), this.getSettings());
             }
         },
         isDirty : function() {
