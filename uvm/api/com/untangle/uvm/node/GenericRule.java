@@ -9,14 +9,14 @@ import com.untangle.uvm.node.GenericRule;
 @SuppressWarnings("serial")
 public class GenericRule implements Serializable
 {
-    Integer id = new Integer(0);
-    String name = ""; 
-    String string = "";
-    String description = ""; 
-    String category = ""; 
-    Boolean enabled = true;
-    Boolean blocked = false;
-    Boolean flagged = false;
+    Integer id = null;
+    String name = null; 
+    String string = null;
+    String description = null; 
+    String category = null; 
+    Boolean enabled = null;
+    Boolean blocked = null;
+    Boolean flagged = null;
 
     public GenericRule() {}
 
@@ -37,6 +37,12 @@ public class GenericRule implements Serializable
         this.enabled = Boolean.valueOf(enabled);
     }
 
+    public GenericRule(String string, boolean enabled)
+    {
+        this.string = string;
+        this.enabled = Boolean.valueOf(enabled);
+    }
+    
     public Integer getId()
     {
         return this.id;
