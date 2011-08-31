@@ -116,7 +116,7 @@
     <priority value="ALL"/>
     <appender-ref ref="REPORTER"/>
   </category>
-  <category name="com.untangle.uvm.engine.RemoteReportingManagerImpl" additivity="false">
+  <category name="com.untangle.uvm.engine.ReportingManagerImpl" additivity="false">
     <priority value="ALL"/>
     <appender-ref ref="REPORTER"/>
   </category>

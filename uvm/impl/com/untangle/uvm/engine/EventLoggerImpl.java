@@ -168,6 +168,6 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
     // static initialization --------------------------------------------------
 
     static {
-        LOGGING_DISABLED = RemoteLoggingManagerImpl.isLoggingDisabled();
+        LOGGING_DISABLED = LoggingManagerImpl.isLoggingDisabled();
     }
 }

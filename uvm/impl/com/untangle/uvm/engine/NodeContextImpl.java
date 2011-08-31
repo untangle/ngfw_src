@@ -72,7 +72,7 @@ class NodeContextImpl implements NodeContext
         nodeManager = mctx.nodeManager();
         toolboxManager = mctx.toolboxManager();
 
-        RemoteLoggingManagerImpl lm = mctx.loggingManager();
+        LoggingManagerImpl lm = mctx.loggingManager();
         if (null != tDesc.getNodeBase()) {
             lm.initSchema(tDesc.getNodeBase());
         }

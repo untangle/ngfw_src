@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.RemoteBrandingManager;
+import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 
@@ -88,19 +88,19 @@ public class BlockPageServlet extends HttpServlet
         }
         
         /* Retrieve the page title (in the window bar) of the page */
-        public String getPageTitle( RemoteBrandingManager bm, Map<String,String> i18n_map )
+        public String getPageTitle( BrandingManager bm, Map<String,String> i18n_map )
         {
             return I18nUtil.tr("{0} | {1} Warning", 
                                new Object[]{bm.getCompanyName(), this.blockDetails.getVendor()}, i18n_map);
         }
         
         /* Retrieve the title (top of the pae) of the page */
-        public String getTitle( RemoteBrandingManager bm, Map<String,String> i18n_map )
+        public String getTitle( BrandingManager bm, Map<String,String> i18n_map )
         {
             return this.nodeTitle;
         }
         
-        public String getFooter( RemoteBrandingManager bm, Map<String,String> i18n_map )
+        public String getFooter( BrandingManager bm, Map<String,String> i18n_map )
         {
             return I18nUtil.tr("{0} Virus Blocker", bm.getCompanyName(), i18n_map);
         }
@@ -117,7 +117,7 @@ public class BlockPageServlet extends HttpServlet
         }
         
         /* Retrieve the description of why this page was blocked. */
-        public String getDescription( RemoteBrandingManager bm, Map<String,String> i18n_map )
+        public String getDescription( BrandingManager bm, Map<String,String> i18n_map )
         {
             return I18nUtil.tr("{0}This file was blocked{1} because it contained a virus.",
                     new Object[]{ "<b>","</b>" }, i18n_map);

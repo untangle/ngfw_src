@@ -4,21 +4,21 @@ package com.untangle.uvm;
 import java.io.IOException;
 
 import com.untangle.uvm.MailSender;
-import com.untangle.uvm.RemoteAppServerManager;
-import com.untangle.uvm.RemoteBrandingManager;
-import com.untangle.uvm.RemoteConnectivityTester;
+import com.untangle.uvm.AppServerManager;
+import com.untangle.uvm.BrandingManager;
+import com.untangle.uvm.ConnectivityTester;
 import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.SkinManager;
-import com.untangle.uvm.RemoteOemManager;
+import com.untangle.uvm.OemManager;
 import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.node.LicenseManager;
-import com.untangle.uvm.logging.RemoteLoggingManager;
+import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.PolicyManager;
-import com.untangle.uvm.reports.RemoteReportingManager;
+import com.untangle.uvm.reports.ReportingManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
 
 /**
@@ -45,11 +45,11 @@ public interface RemoteUvmContext
     NodeManager nodeManager();
 
     /**
-     * Get the <code>RemoteLoggingManager</code> singleton.
+     * Get the <code>LoggingManager</code> singleton.
      *
-     * @return the RemoteLoggingManager.
+     * @return the LoggingManager.
      */
-    RemoteLoggingManager loggingManager();
+    LoggingManager loggingManager();
 
     /**
      * Get the <code>PolicyManager</code> singleton.
@@ -59,9 +59,9 @@ public interface RemoteUvmContext
     PolicyManager policyManager();
 
     /**
-     * Get the <code>RemoteAdminManager</code> singleton.
+     * Get the <code>AdminManager</code> singleton.
      *
-     * @return the RemoteAdminManager.
+     * @return the AdminManager.
      */
     AdminManager adminManager();
 
@@ -73,18 +73,18 @@ public interface RemoteUvmContext
     NetworkManager networkManager();
 
     /**
-     * Get the <code>RemoteReportingManager</code> singleton.
+     * Get the <code>ReportingManager</code> singleton.
      *
-     * @return the RemoteReportingManager.
+     * @return the ReportingManager.
      */
-    RemoteReportingManager reportingManager();
+    ReportingManager reportingManager();
 
     /**
-     * Get the <code>RemoteConnectivityTester</code> singleton.
+     * Get the <code>ConnectivityTester</code> singleton.
      *
-     * @return the RemoteConnectivityTester
+     * @return the ConnectivityTester
      */
-    RemoteConnectivityTester getRemoteConnectivityTester();
+    ConnectivityTester getConnectivityTester();
 
     /**
      * get the <code>MailSender</code> - Used for sending mail
@@ -98,7 +98,7 @@ public interface RemoteUvmContext
      *
      * @return the singleton
      */
-    RemoteAppServerManager appServerManager();
+    AppServerManager appServerManager();
 
     /**
      * The LocalDirectory for managing/authenticating users
@@ -113,7 +113,7 @@ public interface RemoteUvmContext
      *
      * @return the BrandingManager.
      */
-    RemoteBrandingManager brandingManager();
+    BrandingManager brandingManager();
 
     /**
      * Get the <code>SkinManager</code> singleton.
@@ -139,7 +139,7 @@ public interface RemoteUvmContext
     /**
      * The license manager.
      *
-     * @return the RemoteLicenseManager
+     * @return the LicenseManager
      */
     LicenseManager licenseManager();
 
@@ -152,11 +152,11 @@ public interface RemoteUvmContext
     SessionMonitor sessionMonitor();
 
     /**
-     * Get the <code>RemoteOemManager</code> singleton.
+     * Get the <code>OemManager</code> singleton.
      *
-     * @return the RemoteOemManager.
+     * @return the OemManager.
      */
-    RemoteOemManager oemManager();
+    OemManager oemManager();
 
     /**
      * Shut down the untangle-vm

@@ -39,14 +39,14 @@ import java.io.IOException;
 
 import com.untangle.uvm.RemoteUvmContext;
 import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.RemoteLoggingManager;
+import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.policy.PolicyManager;
-import com.untangle.uvm.reports.RemoteReportingManager;
+import com.untangle.uvm.reports.ReportingManager;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.servlet.UploadManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
@@ -78,11 +78,11 @@ public interface LocalUvmContext extends RemoteUvmContext
     ToolboxManager toolboxManager();
 
     /**
-     * Get the <code>RemoteLoggingManager</code> singleton.
+     * Get the <code>LoggingManager</code> singleton.
      *
-     * @return a <code>RemoteLoggingManager</code> value
+     * @return a <code>LoggingManager</code> value
      */
-    RemoteLoggingManager loggingManager();
+    LoggingManager loggingManager();
 
     SyslogManager syslogManager();
 
@@ -95,9 +95,9 @@ public interface LocalUvmContext extends RemoteUvmContext
 
     ArgonManager argonManager();
 
-    RemoteReportingManager reportingManager();
+    ReportingManager reportingManager();
 
-    RemoteConnectivityTester getRemoteConnectivityTester();
+    ConnectivityTester getConnectivityTester();
 
     MailSender mailSender();
 
@@ -112,16 +112,16 @@ public interface LocalUvmContext extends RemoteUvmContext
      * The BrandingManager manages customization of logo and
      * branding information.
      *
-     * @return the RemoteBrandingManager.
+     * @return the BrandingManager.
      */
-    RemoteBrandingManager brandingManager();
+    BrandingManager brandingManager();
 
     /**
      * The OemManager manages OEM parameteres such as CompanyName
      *
-     * @return the RemoteOemManager
+     * @return the OemManager
      */
-    RemoteOemManager oemManager();
+    OemManager oemManager();
     
     /**
      * Get the <code>SkinManager</code> singleton.

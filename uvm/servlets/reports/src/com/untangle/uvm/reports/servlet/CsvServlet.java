@@ -43,7 +43,7 @@ import com.untangle.uvm.engine.DataSourceFactory;
 import com.untangle.uvm.reports.ApplicationData;
 import com.untangle.uvm.reports.ColumnDesc;
 import com.untangle.uvm.reports.DetailSection;
-import com.untangle.uvm.reports.RemoteReportingManager;
+import com.untangle.uvm.reports.ReportingManager;
 import com.untangle.uvm.reports.Section;
 import org.apache.log4j.Logger;
 
@@ -81,7 +81,7 @@ public class CsvServlet extends HttpServlet
         }
 
         RemoteUvmContext uvm = RemoteUvmContextFactory.context();
-        RemoteReportingManager rm = uvm.reportingManager();
+        ReportingManager rm = uvm.reportingManager();
 
         BufferedWriter bw = null;
         try {

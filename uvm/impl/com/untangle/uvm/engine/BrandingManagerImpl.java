@@ -18,12 +18,12 @@
 
 package com.untangle.uvm.engine;
 
-import com.untangle.uvm.RemoteBrandingManager;
+import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.vnet.AbstractNode;
 
-class BrandingManagerImpl implements RemoteBrandingManager
+class BrandingManagerImpl implements BrandingManager
 {
     private DefaultBrandingManager defaultBranding;
 
@@ -103,9 +103,9 @@ class BrandingManagerImpl implements RemoteBrandingManager
 		return this.getBrandingManager().getContactHtml();
     }
     
-    private RemoteBrandingManager getBrandingManager()
+    private BrandingManager getBrandingManager()
     {
-        RemoteBrandingManager bnode = (RemoteBrandingManager)LocalUvmContextFactory.context().nodeManager().node("untangle-node-branding");
+        BrandingManager bnode = (BrandingManager)LocalUvmContextFactory.context().nodeManager().node("untangle-node-branding");
         if (bnode != null && (((AbstractNode)bnode).getRunState() == NodeState.RUNNING)) {
             return bnode;
         }
@@ -114,7 +114,7 @@ class BrandingManagerImpl implements RemoteBrandingManager
     }
     
     @SuppressWarnings("unused")
-    private class DefaultBrandingManager implements RemoteBrandingManager
+    private class DefaultBrandingManager implements BrandingManager
     {
 		public boolean isDefaultLogo() {return true;}
         public String getContactHtml() {return this.getContactName();}

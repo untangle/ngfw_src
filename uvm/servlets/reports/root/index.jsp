@@ -8,7 +8,7 @@ Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-li
 String company = uvm.brandingManager().getCompanyName();
 String companyUrl = uvm.brandingManager().getCompanyUrl();
 
-RemoteReportingManager reportingManager = uvm.reportingManager();
+ReportingManager reportingManager = uvm.reportingManager();
 
 String buildStamp = getServletContext().getInitParameter("buildStamp");
 

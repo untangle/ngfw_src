@@ -61,7 +61,7 @@ import com.untangle.uvm.reports.DetailSection;
 import com.untangle.uvm.reports.Email;
 import com.untangle.uvm.reports.Highlight;
 import com.untangle.uvm.reports.Host;
-import com.untangle.uvm.reports.RemoteReportingManager;
+import com.untangle.uvm.reports.ReportingManager;
 import com.untangle.uvm.reports.ReportXmlHandler;
 import com.untangle.uvm.reports.Section;
 import com.untangle.uvm.reports.SummarySection;
@@ -70,7 +70,7 @@ import com.untangle.uvm.reports.User;
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.toolbox.PackageDesc;
 
-class RemoteReportingManagerImpl implements RemoteReportingManager
+class ReportingManagerImpl implements ReportingManager
 {
     private static final String UVM_REPORTS_DATA
         = System.getProperty("uvm.web.dir") + "/reports/data";
@@ -80,14 +80,14 @@ class RemoteReportingManagerImpl implements RemoteReportingManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static RemoteReportingManagerImpl REPORTING_MANAGER
-        = new RemoteReportingManagerImpl();
+    private static ReportingManagerImpl REPORTING_MANAGER
+        = new ReportingManagerImpl();
 
-    private RemoteReportingManagerImpl()
+    private ReportingManagerImpl()
     {
     }
 
-    static RemoteReportingManagerImpl reportingManager()
+    static ReportingManagerImpl reportingManager()
     {
         return REPORTING_MANAGER;
     }

@@ -65,7 +65,7 @@ class LogWorker implements Runnable
         RUNTIME_SYNC_TIME = i < 0 ? 0 : i;
     }
 
-    private final RemoteLoggingManagerImpl loggingManager;
+    private final LoggingManagerImpl loggingManager;
 
     /**
      * The queue of events waiting to be written to the database
@@ -89,7 +89,7 @@ class LogWorker implements Runnable
 
     // constructors -------------------------------------------------------
 
-    LogWorker(RemoteLoggingManagerImpl loggingManager)
+    LogWorker(LoggingManagerImpl loggingManager)
     {
         this.loggingManager = loggingManager;
         this.lastLoadGet = 0;
@@ -274,7 +274,7 @@ class LogWorker implements Runnable
 
     void start()
     {
-        if (!RemoteLoggingManagerImpl.isLoggingDisabled()) {
+        if (!LoggingManagerImpl.isLoggingDisabled()) {
             LocalUvmContextFactory.context().newThread(this).start();
         }
     }

@@ -26,13 +26,13 @@ import java.net.UnknownHostException;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.RemoteConnectivityTester;
+import com.untangle.uvm.ConnectivityTester;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.ConnectionStatus;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.node.script.ScriptRunner;
 
-class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
+class ConnectivityTesterImpl implements ConnectivityTester
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -60,7 +60,7 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
     /* Give the bridge 30 seconds to come alive */
     private static final int BRIDGE_WAIT_TIMEOUT = 30000;
 
-    private static RemoteConnectivityTesterImpl INSTANCE = new RemoteConnectivityTesterImpl();
+    private static ConnectivityTesterImpl INSTANCE = new ConnectivityTesterImpl();
 
     /* Address of updates */
     private InetAddress address;
@@ -179,7 +179,7 @@ class RemoteConnectivityTesterImpl implements RemoteConnectivityTester
         return tcpTest.isWorking;
     }
 
-    static RemoteConnectivityTesterImpl getInstance()
+    static ConnectivityTesterImpl getInstance()
     {
         return INSTANCE;
     }

@@ -29,7 +29,7 @@ import org.hibernate.Session;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.LoggingSettings;
-import com.untangle.uvm.logging.RemoteLoggingManager;
+import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.util.TransactionWork;
 
@@ -39,7 +39,7 @@ import com.untangle.uvm.util.TransactionWork;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class RemoteLoggingManagerImpl implements RemoteLoggingManager
+class LoggingManagerImpl implements LoggingManager
 {
     private static final boolean LOGGING_DISABLED = Boolean.parseBoolean(System.getProperty("uvm.logging.disabled"));
 
@@ -53,7 +53,7 @@ class RemoteLoggingManagerImpl implements RemoteLoggingManager
 
     private volatile boolean conversionComplete = true;
 
-    RemoteLoggingManagerImpl(UvmRepositorySelector repositorySelector)
+    LoggingManagerImpl(UvmRepositorySelector repositorySelector)
     {
         this.repositorySelector = repositorySelector;
 

@@ -34,7 +34,7 @@ import com.untangle.uvm.RemoteUvmContext;
 import com.untangle.uvm.reports.ApplicationData;
 import com.untangle.uvm.reports.DateItem;
 import com.untangle.uvm.reports.Highlight;
-import com.untangle.uvm.reports.RemoteReportingManager;
+import com.untangle.uvm.reports.ReportingManager;
 import com.untangle.uvm.reports.TableOfContents;
 import org.apache.commons.fileupload.FileItem;
 
@@ -44,7 +44,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     private final RemoteUvmContext context;
 
     private final SkinManager skinManager = new SkinManagerImpl();
-    private final RemoteReportingManager reportingManager = new RemoteReportingManagerImpl();
+    private final ReportingManager reportingManager = new ReportingManagerImpl();
     private final LanguageManager languageManager = new LanguageManagerImpl();
 
 
@@ -53,7 +53,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         this.context = context;
     }
 
-    public RemoteReportingManager reportingManager()
+    public ReportingManager reportingManager()
     {
         return this.reportingManager;
     }
@@ -167,7 +167,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
         }
     }
 
-    private class RemoteReportingManagerImpl implements RemoteReportingManager
+    private class ReportingManagerImpl implements ReportingManager
     {
         public List<DateItem> getDates()
         {

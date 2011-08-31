@@ -68,7 +68,7 @@ class SimpleEvent<E extends LogEvent> implements EventRepository<E>
 
     public List<E> getEvents()
     {
-        RemoteLoggingManagerImpl lm = UvmContextImpl.getInstance().loggingManager();
+        LoggingManagerImpl lm = UvmContextImpl.getInstance().loggingManager();
 
         doGetEvents();
 

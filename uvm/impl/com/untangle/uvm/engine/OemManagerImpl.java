@@ -12,12 +12,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
-import com.untangle.uvm.RemoteOemManager;
+import com.untangle.uvm.OemManager;
 
 /**
  * OemManagerImpl opens up the OEM properties file and overwrites any current properties with the OEM settings
  */
-class OemManagerImpl implements RemoteOemManager
+class OemManagerImpl implements OemManager
 {
     private static final String OEM_PROPERTIES_FILE = "/etc/untangle/oem/oem.properties";
 

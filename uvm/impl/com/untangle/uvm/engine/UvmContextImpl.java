@@ -29,9 +29,9 @@ import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalTomcatManager;
 import com.untangle.uvm.LocalDirectory;
 import com.untangle.uvm.Period;
-import com.untangle.uvm.RemoteBrandingManager;
-import com.untangle.uvm.RemoteOemManager;
-import com.untangle.uvm.RemoteAppServerManager;
+import com.untangle.uvm.BrandingManager;
+import com.untangle.uvm.OemManager;
+import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
@@ -88,14 +88,14 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private UvmState state;
     private AdminManagerImpl adminManager;
     private ArgonManagerImpl argonManager;
-    private RemoteLoggingManagerImpl loggingManager;
+    private LoggingManagerImpl loggingManager;
     private SyslogManagerImpl syslogManager;
     private EventLogger<LogEvent> eventLogger;
     private DefaultPolicyManager defaultPolicyManager;
     private MailSenderImpl mailSender;
     private NetworkManagerImpl networkManager;
-    private RemoteReportingManagerImpl reportingManager;
-    private RemoteConnectivityTesterImpl connectivityTester;
+    private ReportingManagerImpl reportingManager;
+    private ConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
     private ToolboxManagerImpl toolboxManager;
     private NodeManagerImpl nodeManager;
@@ -148,7 +148,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.localDirectory;
     }
 
-    public RemoteBrandingManager brandingManager()
+    public BrandingManager brandingManager()
     {
         return this.brandingManager;
     }
@@ -173,7 +173,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.appServerManager;
     }
 
-    public RemoteAppServerManager appServerManager()
+    public AppServerManager appServerManager()
     {
         return this.appServerManager;
     }
@@ -188,7 +188,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.nodeManager;
     }
 
-    public RemoteLoggingManagerImpl loggingManager()
+    public LoggingManagerImpl loggingManager()
     {
         return this.loggingManager;
     }
@@ -224,12 +224,12 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.networkManager;
     }
 
-    public RemoteReportingManagerImpl reportingManager()
+    public ReportingManagerImpl reportingManager()
     {
         return this.reportingManager;
     }
 
-    public RemoteConnectivityTesterImpl getRemoteConnectivityTester()
+    public ConnectivityTesterImpl getConnectivityTester()
     {
         return this.connectivityTester;
     }
@@ -607,7 +607,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
             fatalError("Can not connect to database. Is postgres running?", null);
         }
 
-        this.loggingManager = new RemoteLoggingManagerImpl(repositorySelector);
+        this.loggingManager = new LoggingManagerImpl(repositorySelector);
         loggingManager.initSchema("uvm");
         loggingManager.start();
 
@@ -651,10 +651,10 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         this.messageManager = new MessageManagerImpl();
 
         // Retrieve the reporting configuration manager
-        this.reportingManager = RemoteReportingManagerImpl.reportingManager();
+        this.reportingManager = ReportingManagerImpl.reportingManager();
 
         // Retrieve the connectivity tester
-        this.connectivityTester = RemoteConnectivityTesterImpl.getInstance();
+        this.connectivityTester = ConnectivityTesterImpl.getInstance();
 
         // Retrieve the argon manager
         this.argonManager = ArgonManagerImpl.getInstance();
@@ -761,7 +761,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
             if (loggingManager != null)
                 loggingManager.stop();
         } catch (Exception exn) {
-            logger.error("could not stop RemoteLoggingManager", exn);
+            logger.error("could not stop LoggingManager", exn);
         }
 
         try {
@@ -790,7 +790,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     // package protected methods ----------------------------------------------
 
-    RemoteAppServerManager remoteAppServerManager()
+    AppServerManager remoteAppServerManager()
     {
         return appServerManager;
     }
@@ -859,7 +859,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     }
 
     @Override
-    public RemoteOemManager oemManager()
+    public OemManager oemManager()
     {
         return this.oemManager;
     }

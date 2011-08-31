@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.untangle.node.http.BlockPageUtil;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.RemoteBrandingManager;
+import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.security.NodeId;
@@ -85,18 +85,18 @@ public class BlockPageServlet extends HttpServlet
         }
         
         /* Retrieve the page title (in the window bar) of the page */
-        public String getPageTitle( RemoteBrandingManager bm, Map<String,String> i18n_map )
+        public String getPageTitle( BrandingManager bm, Map<String,String> i18n_map )
         {
             return I18nUtil.tr( "{0} | Spyware Blocker Warning", bm.getCompanyName(), i18n_map);
         }
         
         /* Retrieve the title (top of the pae) of the page */
-        public String getTitle( RemoteBrandingManager bm, Map<String,String> i18n_map )
+        public String getTitle( BrandingManager bm, Map<String,String> i18n_map )
         {
             return "Spyware Blocker";
         }
         
-        public String getFooter( RemoteBrandingManager bm, Map<String,String> i18n_map )
+        public String getFooter( BrandingManager bm, Map<String,String> i18n_map )
         {
             return I18nUtil.tr( "{0} Spyware Blocker", bm.getCompanyName(), i18n_map);
         }
@@ -113,7 +113,7 @@ public class BlockPageServlet extends HttpServlet
         }
         
         /* Retrieve the description of why this page was blocked. */
-        public String getDescription( RemoteBrandingManager bm, Map<String,String> i18n_map )
+        public String getDescription( BrandingManager bm, Map<String,String> i18n_map )
         {
             return I18nUtil.tr( "{0}This web page was blocked{1} because it may be designed to steal personal information.", new Object[]{ "<b>","</b>" },
                     i18n_map );

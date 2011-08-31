@@ -347,7 +347,7 @@ Ung.SetupWizard.SettingsSaver = Ext.extend( Object, {
             rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
             rpc.adminManager = rpc.jsonrpc.RemoteUvmContext.adminManager();
             rpc.networkManager = rpc.jsonrpc.RemoteUvmContext.networkManager();
-            rpc.connectivityTester = rpc.jsonrpc.RemoteUvmContext.getRemoteConnectivityTester();
+            rpc.connectivityTester = rpc.jsonrpc.RemoteUvmContext.getConnectivityTester();
             rpc.toolboxManager = rpc.jsonrpc.RemoteUvmContext.toolboxManager();
             rpc.mailSender = rpc.jsonrpc.RemoteUvmContext.mailSender();
 
@@ -1852,7 +1852,7 @@ Ung.SetupWizard.ReauthenticateHandler = {
             rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
             rpc.adminManager = rpc.jsonrpc.RemoteUvmContext.adminManager();
             rpc.networkManager = rpc.jsonrpc.RemoteUvmContext.networkManager();
-            rpc.connectivityTester = rpc.jsonrpc.RemoteUvmContext.getRemoteConnectivityTester();
+            rpc.connectivityTester = rpc.jsonrpc.RemoteUvmContext.getConnectivityTester();
             rpc.toolboxManager = rpc.jsonrpc.RemoteUvmContext.toolboxManager();
             rpc.mailSender = rpc.jsonrpc.RemoteUvmContext.mailSender();
             handler();

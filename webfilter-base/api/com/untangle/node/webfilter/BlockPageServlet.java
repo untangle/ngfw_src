@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.node.http.BlockPageUtil;
-import com.untangle.uvm.RemoteBrandingManager;
+import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.NodeManager;
@@ -84,18 +84,18 @@ public class BlockPageServlet extends HttpServlet
         }
 
         /* Retrieve the page title (in the window bar) of the page */
-        public String getPageTitle( RemoteBrandingManager bm, Map<String,String> i18n_map )
+        public String getPageTitle( BrandingManager bm, Map<String,String> i18n_map )
         {
             return I18nUtil.tr("{0} | {1} Warning", new String[] { bm.getCompanyName(), this.blockDetails.getNodeTitle() }, i18n_map);
         }
 
         /* Retrieve the title (top of the pae) of the page */
-        public String getTitle( RemoteBrandingManager bm, Map<String,String> i18n_map )
+        public String getTitle( BrandingManager bm, Map<String,String> i18n_map )
         {
             return this.blockDetails.getNodeTitle();
         }
 
-        public String getFooter( RemoteBrandingManager bm, Map<String,String> i18n_map )
+        public String getFooter( BrandingManager bm, Map<String,String> i18n_map )
         {
             return bm.getCompanyName() + " " + this.blockDetails.getNodeTitle();
         }
@@ -112,7 +112,7 @@ public class BlockPageServlet extends HttpServlet
         }
 
         /* Retrieve the description of why this page was blocked. */
-        public String getDescription( RemoteBrandingManager bm, Map<String,String> i18n_map )
+        public String getDescription( BrandingManager bm, Map<String,String> i18n_map )
         {
             return I18nUtil.tr("{0}This web page was blocked{1} because it is considered inappropriate.", new Object[]{ "<b>","</b>" }, i18n_map );
         }
