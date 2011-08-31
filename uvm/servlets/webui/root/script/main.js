@@ -719,6 +719,7 @@ Ung.Main=Ext.extend(Object, {
         node.image='image?name='+node.name;
         node.blingers=statDesc;
         node.runState=runState;
+        node.viewPosition=nodeDesc.viewPosition;
         return node;
     },
     buildApps: function () {

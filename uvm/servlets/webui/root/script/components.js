@@ -1182,7 +1182,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         if(this.fadeIn) {
             this.getEl().scrollIntoView(Ext.getCmp("center").body);
             this.getEl().syncFx();
-            this.getEl().fadeIn({duration: 3});
+            this.getEl().fadeIn({duration: 6});
             this.getEl().frame(null, 1, { duration: 1 });
         }
         var nodeButtons=[{
@@ -1623,7 +1623,7 @@ Ung.NodePreview = Ext.extend(Ext.Component, {
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
         this.getEl().scrollIntoView(Ext.getCmp("center").body);
-        this.getEl().fadeIn({ endOpacity: 0.58, duration: 12});
+        this.getEl().fadeIn({ endOpacity: 0.58, duration: 20});
     }
 });
 Ung.NodePreview.template = new Ext.Template('<div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>');
