@@ -413,11 +413,11 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                     }
                     
                     if ( value[1] == "connected" ) {
-                        status = i18n._( "connected" ) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + " [" + value[0] + " / " + value[2] + " / " + value[3] + "]";
+                        status = i18n._( "connected" ) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + " [" + value[0] + " | " + value[2] + " | " + value[3] + "]";
                         divClass = "draggable-enabled-interface";
                     }
                     if ( value[1] == "disconnected" ) {
-                        status = i18n._( "disconnected" ) + "&nbsp;&nbsp;" + " [" + value[0] + " / " + value[2] + " / " + value[3] + "]";
+                        status = i18n._( "disconnected" ) + "&nbsp;&nbsp;" + " [" + value[0] + " | " + value[2] + " | " + value[3] + "]";
                         divClass = "draggable-disabled-interface";
                     }
                     
