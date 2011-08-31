@@ -6,7 +6,7 @@
         "displayName" : "Web Filter Lite",
         "syslogName" : "Web_Filter_Lite",
         "type" : "NODE",
-        "viewPosition" : 30,
+        "viewPosition" : 20,
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [

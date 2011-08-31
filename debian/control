@@ -159,7 +159,7 @@ Architecture: all
 Depends: untangle-vm, untangle-shield, dash
 XB-Display-Name: Attack Blocker
 XB-Untangle-Pkg-Type: service
-XB-View-Position: 1020
+XB-View-Position: 1110
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAJmklEQVRYhcWZWYwb
  dx3HPzOeGdtjj9f3epO92yRtjkZNQzehQlQoIkoQKlXzVCG1AgmekPoEqAJa8VAE
  T7xVFHiohBAPlVBVUYiIqlKpSUPTpE02x26O9XqT7K53be+uz/FcPHg9a6+97gYh
@@ -220,7 +220,7 @@ Package: untangle-node-spyware
 Architecture: all
 Depends: untangle-vm, untangle-casing-http, untangle-google-safebrowsing
 XB-Display-Name: Spyware Blocker
-XB-View-Position: 20
+XB-View-Position: 70
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMgAAABl0RVh0
  U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAjsSURBVHjaxFlrTFXZFV5XQMEHTx0G0Qgj
@@ -271,7 +271,7 @@ Package: untangle-node-webfilter
 Architecture: all
 Depends: untangle-vm, untangle-casing-http, untangle-base-webfilter, untangle-webfilter-init
 XB-Display-Name: Web Filter Lite
-XB-View-Position: 30
+XB-View-Position: 20
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA
  IGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAzKSURBVHjarJl/cBXX
@@ -340,7 +340,7 @@ Package: untangle-node-clam
 Architecture: all
 Depends: untangle-vm, untangle-base-virus, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-mail
 XB-Display-Name: Virus Blocker Lite
-XB-View-Position: 70
+XB-View-Position: 60
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz
  AAALEgAACxIB0t1+/AAAABZ0RVh0Q3JlYXRpb24gVGltZQAwOC8zMS8xMbwytWUAAAAYdEVYdFNv
@@ -404,7 +404,7 @@ Package: untangle-node-protofilter
 Architecture: all
 Depends: untangle-vm
 XB-Display-Name: Protocol Control
-XB-View-Position: 80
+XB-View-Position: 100
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAA+BSURBVHjalFkJlFTlmb3vvdp7
@@ -489,7 +489,7 @@ Package: untangle-node-router
 Architecture: all
 Depends: untangle-vm, dnsmasq, untangle-casing-ftp
 XB-Display-Name: Router
-XB-View-Position: 1000
+XB-View-Position: 2000
 XB-Invisible: true
 XB-Untangle-Pkg-Type: service
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
@@ -548,7 +548,7 @@ Package: untangle-node-firewall
 Architecture: all
 Depends: untangle-vm
 XB-Display-Name: Firewall
-XB-View-Position: 90
+XB-View-Position: 110
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAANjr9RwUqgAAACBjSFJNAABtmAAAc44AAPJxAACDbAAAg7sAANTIAAAx7AAA
@@ -599,7 +599,7 @@ Package: untangle-node-spamassassin
 Architecture: all
 Depends: untangle-vm, untangle-base-spam, untangle-casing-mail
 XB-Display-Name: Spam Blocker
-XB-View-Position: 15
+XB-View-Position: 80
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz
  AAALEgAACxIB0t1+/AAAABh0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzT7MfTgAAABZ0RVh0
@@ -684,7 +684,7 @@ Package: untangle-node-phish
 Architecture: all
 Depends: untangle-vm, untangle-base-spam, untangle-clamav-config, untangle-casing-mail, untangle-casing-http, untangle-google-safebrowsing
 XB-Display-Name: Phish Blocker
-XB-View-Position: 17
+XB-View-Position: 90
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAA
@@ -777,7 +777,7 @@ Package: untangle-node-openvpn
 Architecture: all
 Depends: untangle-vm, untangle-nsis-addons, openssl, openvpn
 XB-Display-Name: OpenVPN
-XB-View-Position: 1019
+XB-View-Position: 1080
 XB-Untangle-Pkg-Type: service
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAA
@@ -845,7 +845,7 @@ Package: untangle-node-ips
 Architecture: all
 Depends: untangle-vm, untangle-casing-http, untangle-snort-rules
 XB-Display-Name: Intrusion Prevention
-XB-View-Position: 75
+XB-View-Position: 120
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAA
@@ -915,7 +915,7 @@ Package: untangle-node-reporting
 Architecture: all
 Depends: untangle-vm
 XB-Display-Name: Reports
-XB-View-Position: 1022
+XB-View-Position: 1010
 XB-Untangle-Pkg-Type: service
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAgkSURBVHjazFlJb5vHGX5mvo2k
@@ -965,7 +965,7 @@ Package: untangle-node-adblocker
 Architecture: all
 Depends: untangle-vm, untangle-casing-http
 XB-Display-Name: Ad Blocker
-XB-View-Position: 120
+XB-View-Position: 130
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAACXBIWXMAAAsTAAALEwEAmpwYAAAK
  T2lDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAHjanVNnVFPpFj333vRCS4iAlEtvUhUIIFJCi4AU
@@ -1056,7 +1056,7 @@ Package: untangle-node-cpd
 Architecture: all
 Depends: untangle-vm, untangle-cpd, php5-pgsql, php5-curl
 XB-Display-Name: Captive Portal
-XB-View-Position: 34
+XB-View-Position: 1060
 XB-Untangle-Pkg-Type: service
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAMAAADyHTlpAAAAGXRFWHRTb2Z0d2Fy
  ZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAwBQTFRFb4o2ztOop6qV7PTDmKOSbnJy

@@ -5,7 +5,7 @@
         "displayName" : "Firewall",
         "syslogName" : "Firewall",
         "type" : "NODE",
-        "viewPosition" : 90,
+        "viewPosition" : 110,
         "singleInstance" : "true",
         "annotatedClasses" : {
             "javaClass": "java.util.LinkedList",

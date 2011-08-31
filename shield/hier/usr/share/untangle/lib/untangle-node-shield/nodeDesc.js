@@ -5,7 +5,7 @@
         "displayName" : "Attack Blocker",
         "syslogName" : "Attack_Blocker",
         "type" : "SERVICE",
-        "viewPosition" : 1020,
+        "viewPosition" : 1110,
         "annotatedClasses" : {
             "javaClass": "java.util.LinkedList",
             "list": [

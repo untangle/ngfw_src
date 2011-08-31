@@ -5,7 +5,7 @@
         "displayName" : "OpenVPN",
         "syslogName" : "OpenVPN",
         "type" : "SERVICE",
-        "viewPosition" : 1019,
+        "viewPosition" : 1080,
         "autoStart" : "false",
         "singleInstance" : "true",
         "annotatedClasses" : {

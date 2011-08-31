@@ -5,7 +5,7 @@
         "displayName" : "Intrusion Prevention",
         "syslogName" : "Intrusion_Prevention",
         "type" : "NODE",
-        "viewPosition" : 75,
+        "viewPosition" : 120,
         "autoStart" : "false",
         "parents" : {
             "javaClass": "java.util.LinkedList",

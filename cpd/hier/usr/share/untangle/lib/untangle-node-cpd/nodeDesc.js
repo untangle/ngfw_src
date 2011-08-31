@@ -5,7 +5,7 @@
         "displayName" : "Captive Portal",
         "syslogName" : "Captive_Portal",
         "type" : "SERVICE",
-        "viewPosition" : 90,
+        "viewPosition" : 1060,
         "singleInstance" : true,
         "autoStart" : false,
         "annotatedClasses" : {

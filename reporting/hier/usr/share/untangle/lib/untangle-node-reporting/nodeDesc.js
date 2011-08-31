@@ -5,7 +5,7 @@
         "displayName" : "Reports",
         "syslogName" : "Reports",
         "type" : "SERVICE",
-        "viewPosition" : 1022,
+        "viewPosition" : 1010,
         "annotatedClasses" : {
             "javaClass": "java.util.LinkedList",
             "list": [

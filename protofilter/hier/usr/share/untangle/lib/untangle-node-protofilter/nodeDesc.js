@@ -5,7 +5,7 @@
         "displayName" : "Protocol Control",
         "syslogName" : "Protocol_Control",
         "type" : "NODE",
-        "viewPosition" : 80,
+        "viewPosition" : 100,
         "annotatedClasses" : {
             "javaClass": "java.util.LinkedList",
             "list": [
