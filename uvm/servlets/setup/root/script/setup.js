@@ -380,7 +380,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             ddGroup : 'interfaceDND',
             ddText : '',
             height : 300,
-            width : 505,
+            width : 555,
             tbar : [ refreshButton ],
             viewConfig : {
                 forceFit : true
@@ -417,7 +417,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                     
                     return "<div class='" + divClass + "'>" + status + "</div>";
                 },
-                width : 400
+                width : 460
             }])
         });
 
