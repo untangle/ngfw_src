@@ -90,6 +90,9 @@ Ung.SetupWizard.EmailTester = Ext.extend( Object, {
     {
         this.emailAddress = emailAddress;
 
+        if (this.emailAddress == '') {
+            this.showTester( { progressText : i18n._( 'You must enter a valid email address.' ) } );
+        }
         if ( button == 'ok' ) {
             this.showTester( { progressText : i18n._( 'Sending...' ) } );
             rpc.adminManager.sendTestMessage( this.testMessageHandler.createDelegate( this ), this.emailAddress );
@@ -115,6 +118,7 @@ Ung.SetupWizard.EmailTester = Ext.extend( Object, {
             progress : (config.progressText != null),
             progressText : config.progressText,
             value : this.emailAddress,
+            multiline: 20,
             fn : this.buttonHandler.createDelegate( this )
         });
     }
