@@ -92,10 +92,10 @@ INSERT INTO reports.n_http_events
         -- timestamp from request
         er.time_stamp,
         -- pipeline endpoints
-        pe.session_id, pe.client_intf, pe.server_intf,
-        pe.c_client_addr, pe.s_client_addr, pe.c_server_addr, pe.s_server_addr,
-        pe.c_client_port, pe.s_client_port, pe.c_server_port, pe.s_server_port,
-        pe.policy_id, pe.policy_inbound,
+        ps.session_id, ps.client_intf, ps.server_intf,
+        ps.c_client_addr, ps.s_client_addr, ps.c_server_addr, ps.s_server_addr,
+        ps.c_client_port, ps.s_client_port, ps.c_server_port, ps.s_server_port,
+        ps.policy_id, ps.policy_inbound,
         -- pipeline stats
         ps.c2p_bytes, ps.s2p_bytes, ps.p2c_bytes, ps.p2s_bytes, ps.c2p_chunks,
         ps.s2p_chunks, ps.p2c_chunks, ps.p2s_chunks, ps.uid,
@@ -107,15 +107,14 @@ INSERT INTO reports.n_http_events
         resp.content_length, resp.content_type,
         -- from webpages
         COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname,
-        pe.session_id
-    FROM events.pl_endp pe
-    JOIN events.pl_stats ps ON pe.event_id = ps.pl_endp_id
-    JOIN events.n_http_req_line req ON pe.event_id = req.pl_endp_id
+        ps.session_id
+    FROM events.pl_stats ps
+    JOIN events.n_http_req_line req ON ps.event_id = req.pl_endp_id
     JOIN events.n_http_evt_req er ON er.request_id = req.request_id
     LEFT OUTER JOIN events.n_http_evt_resp resp on req.request_id = resp.request_id
     LEFT OUTER JOIN reports.merged_address_map mam
-        ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time
-    WHERE pe.time_stamp >= %s AND pe.time_stamp < %s""",
+        ON ps.c_client_addr = mam.addr AND ps.time_stamp >= mam.start_time AND ps.time_stamp < mam.end_time
+    WHERE ps.time_stamp >= %s AND ps.time_stamp < %s""",
                                (sd, ed), connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('reports.n_http_events', ed,

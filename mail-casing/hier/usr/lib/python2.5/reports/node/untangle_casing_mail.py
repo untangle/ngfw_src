@@ -125,10 +125,10 @@ INSERT INTO reports.n_mail_addrs
         -- timestamp from request
         mi.time_stamp,
         -- pipeline endpoints
-        pe.session_id, pe.client_intf, pe.server_intf,
-        pe.c_client_addr, pe.s_client_addr, pe.c_server_addr, pe.s_server_addr,
-        pe.c_client_port, pe.s_client_port, pe.c_server_port, pe.s_server_port,
-        pe.policy_id, pe.policy_inbound,
+        ps.session_id, ps.client_intf, ps.server_intf,
+        ps.c_client_addr, ps.s_client_addr, ps.c_server_addr, ps.s_server_addr,
+        ps.c_client_port, ps.s_client_port, ps.c_server_port, ps.s_server_port,
+        ps.policy_id, ps.policy_inbound,
         -- pipeline stats
         ps.c2p_bytes, ps.s2p_bytes, ps.p2c_bytes, ps.p2s_bytes, ps.c2p_chunks,
         ps.s2p_chunks, ps.p2c_chunks, ps.p2s_chunks, ps.uid,
@@ -140,17 +140,16 @@ INSERT INTO reports.n_mail_addrs
         mms.msg_bytes, mms.msg_attachments,
         -- from webpages
         COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname,
-        md5(pe.session_id::text || mia.addr::text || mia.kind || mi.id::text),
+        md5(ps.session_id::text || mia.addr::text || mia.kind || mi.id::text),
         ''
-    FROM events.pl_endp pe
-    JOIN events.pl_stats ps ON pe.event_id = ps.pl_endp_id
-    JOIN events.n_mail_message_info mi ON mi.pl_endp_id = pe.event_id
+    FROM events.pl_stats ps
+    JOIN events.n_mail_message_info mi ON mi.pl_endp_id = ps.event_id
     JOIN events.n_mail_message_info_addr mia ON mia.msg_id = mi.id
     LEFT OUTER JOIN events.n_mail_message_stats mms ON mms.msg_id = mi.id
     LEFT OUTER JOIN reports.merged_address_map mam
-        ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time
-           AND pe.time_stamp < mam.end_time
-    WHERE pe.time_stamp >= %s AND pe.time_stamp < %s
+        ON ps.c_client_addr = mam.addr AND ps.time_stamp >= mam.start_time
+           AND ps.time_stamp < mam.end_time
+    WHERE ps.time_stamp >= %s AND ps.time_stamp < %s
     AND mi.time_stamp >= %s and mi.time_stamp < %s
 --    AND mia.time_stamp >= %s and mia.time_stamp < %s
 --    AND mms.time_stamp >= %s and mms.time_stamp < %s""",
@@ -239,10 +238,10 @@ INSERT INTO reports.n_mail_msgs
         -- timestamp from request
         mi.time_stamp,
         -- pipeline endpoints
-        pe.session_id, pe.client_intf, pe.server_intf,
-        pe.c_client_addr, pe.s_client_addr, pe.c_server_addr, pe.s_server_addr,
-        pe.c_client_port, pe.s_client_port, pe.c_server_port, pe.s_server_port,
-        pe.policy_id, pe.policy_inbound,
+        ps.session_id, ps.client_intf, ps.server_intf,
+        ps.c_client_addr, ps.s_client_addr, ps.c_server_addr, ps.s_server_addr,
+        ps.c_client_port, ps.s_client_port, ps.c_server_port, ps.s_server_port,
+        ps.policy_id, ps.policy_inbound,
         -- pipeline stats
         ps.c2p_bytes, ps.s2p_bytes, ps.p2c_bytes, ps.p2s_bytes, ps.c2p_chunks,
         ps.s2p_chunks, ps.p2c_chunks, ps.p2s_chunks, ps.uid,
@@ -252,13 +251,12 @@ INSERT INTO reports.n_mail_msgs
         mms.msg_bytes, mms.msg_attachments,
         -- from webpages
         COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname
-    FROM events.pl_endp pe
-    JOIN events.pl_stats ps ON pe.event_id = ps.pl_endp_id
-    JOIN events.n_mail_message_info mi ON mi.pl_endp_id = pe.event_id
+    FROM events.pl_stats ps
+    JOIN events.n_mail_message_info mi ON mi.pl_endp_id = ps.event_id
     LEFT OUTER JOIN events.n_mail_message_stats mms ON mms.msg_id = mi.id
     LEFT OUTER JOIN reports.merged_address_map mam
-        ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time
-    WHERE pe.time_stamp >= %s AND pe.time_stamp < %s
+        ON ps.c_client_addr = mam.addr AND ps.time_stamp >= mam.start_time AND ps.time_stamp < mam.end_time
+    WHERE ps.time_stamp >= %s AND ps.time_stamp < %s
     AND mi.time_stamp >= %s and mi.time_stamp < %s
 --    AND mms.time_stamp >= %s and mms.time_stamp < %s""",
                                (sd, ed, sd, ed, sd, ed), connection=conn, auto_commit=False)

@@ -276,21 +276,22 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports.sessions', 'server_intf', 'int2')
 
         sd = TimestampFromMx(sql_helper.get_update_info('reports.sessions',
-                                                   start_date))
+                                                        start_date))
         ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""
 CREATE TEMPORARY TABLE newsessions AS
-    SELECT endp.event_id, endp.time_stamp, endp.policy_id, mam.name,
-           endp.c_client_addr, endp.c_server_addr, endp.c_server_port,
-           endp.c_client_port, endp.client_intf, endp.server_intf
-    FROM events.pl_endp endp
+    SELECT stats.pl_endp_id, stats.time_stamp, stats.policy_id, uid, mam.name,
+           stats.c_client_addr, stats.c_server_addr, stats.c_server_port,
+           stats.c_client_port, stats.client_intf, stats.server_intf,
+           stats.c2p_bytes, stats.p2c_bytes, stats.s2p_bytes, stats.p2s_bytes
+    FROM events.pl_stats stats
     LEFT OUTER JOIN reports.merged_address_map mam
-      ON (endp.c_client_addr = mam.addr AND endp.time_stamp >= mam.start_time
-         AND endp.time_stamp < mam.end_time)
-    WHERE endp.time_stamp >= %s AND endp.time_stamp < %s
+      ON (stats.c_client_addr = mam.addr AND stats.time_stamp >= mam.start_time
+         AND stats.time_stamp < mam.end_time)
+    WHERE stats.time_stamp >= %s AND stats.time_stamp < %s
 """, (sd, ed), connection=conn, auto_commit=False)
 
             sql_helper.run_sql("""
@@ -298,13 +299,12 @@ INSERT INTO reports.sessions
     (pl_endp_id, event_id, time_stamp, end_time, hname, uid, policy_id, c_client_addr,
      c_server_addr, c_server_port, c_client_port, client_intf, server_intf,
      c2p_bytes, p2c_bytes, s2p_bytes, p2s_bytes)
-    SELECT ses.event_id, ses.event_id, ses.time_stamp, stats.time_stamp,
+    SELECT ses.pl_endp_id, ses.pl_endp_id, ses.time_stamp, ses.time_stamp,
          COALESCE(NULLIF(ses.name, ''), HOST(ses.c_client_addr)) AS hname,
-         stats.uid, policy_id, c_client_addr, c_server_addr, c_server_port,
-         c_client_port, client_intf, server_intf, stats.c2p_bytes,
-         stats.p2c_bytes, stats.s2p_bytes, stats.p2s_bytes
-    FROM newsessions ses
-    JOIN events.pl_stats stats ON (ses.event_id = stats.pl_endp_id)""",
+         ses.uid, policy_id, c_client_addr, c_server_addr, c_server_port,
+         c_client_port, client_intf, server_intf, ses.c2p_bytes,
+         ses.p2c_bytes, ses.s2p_bytes, ses.p2s_bytes
+    FROM newsessions ses""",
                                connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('reports.sessions', ed,
