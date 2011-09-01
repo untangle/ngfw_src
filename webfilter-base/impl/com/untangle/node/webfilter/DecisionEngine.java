@@ -524,7 +524,7 @@ public abstract class DecisionEngine
         logger.debug("findMatchRule: rules = '" + rules +"', value = '" + value + "' (normalized from '" + oldVal + ";");
 
         for (GenericRule rule : rules) {
-            if (!rule.getEnabled()) continue;
+            if (rule.getEnabled() == null || !rule.getEnabled()) continue;
             
             String re = rule.getString();
             // remove potential '\*\.?' at the beginning
