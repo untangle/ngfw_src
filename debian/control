@@ -684,7 +684,7 @@ Package: untangle-node-phish
 Architecture: all
 Depends: untangle-vm, untangle-base-spam, untangle-clamav-config, untangle-casing-mail, untangle-casing-http, untangle-google-safebrowsing
 XB-Display-Name: Phish Blocker
-XB-View-Position: 90
+XB-View-Position: 70
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAA

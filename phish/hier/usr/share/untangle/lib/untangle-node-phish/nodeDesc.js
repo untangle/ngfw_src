@@ -6,7 +6,7 @@
         "displayName" : "Phish Blocker",
         "syslogName" : "Phish_Blocker",
         "type" : "NODE",
-        "viewPosition" : 90,
+        "viewPosition" : 70,
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [
