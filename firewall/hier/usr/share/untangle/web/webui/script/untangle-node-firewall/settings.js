@@ -2,17 +2,240 @@ if (!Ung.hasResource["Ung.Firewall"]) {
     Ung.hasResource["Ung.Firewall"] = true;
     Ung.NodeWin.registerClassName('untangle-node-firewall', 'Ung.Firewall');
 
+    Ung.FirewallUtil={
+            getMatchers : function (settingsCmp) {
+                return [
+                    {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text"},
+                    {name:"DST_ADDR",displayName: settingsCmp.i18n._("Destination Address"), type: "text"},
+                    {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"port"},
+                    {name:"DST_PORT",displayName: settingsCmp.i18n._("Destination Port"), type: "text",vtype:"port"},
+                    {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: [["External","External"],["any","any"]] },
+                    {name:"DST_INTF",displayName: settingsCmp.i18n._("Destination Interface"), type: "checkgroup", values: [["External","External"],["any","any"]] },
+                    {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["TCP,UDP","TCP,UDP"],["any","any"]]},
+                    {name:"DIRECTORY_CONNECTOR_USERNAME",displayName: settingsCmp.i18n._("Directory Connector: Username"), type: "text"},
+                    {name:"DIRECTORY_CONNECTOR_GROUP",displayName: settingsCmp.i18n._("Directory Connector: User in Group"), type: "text"}
+                ];
+            }
+        };
+    // FirewallRuleBuilder
+    Ung.FirewallRuleBuilder = Ext.extend(Ext.grid.EditorGridPanel, {
+        settingsCmp: null,
+        enableHdMenu : false,
+        enableColumnMove: false,
+        
+        clicksToEdit:1,
+
+        initComponent: function() {
+            Ext.applyIf(this,{
+                height:220,
+                width:600,
+                anchor:"98%"
+            });
+            this.xtype="firewallrulebuilder";
+            this.selModel= new Ext.grid.RowSelectionModel();
+            this.tbar = [{
+                iconCls : 'icon-add-row',
+                text : this.settingsCmp.i18n._("Add"),
+                handler : this.addHandler,
+                scope : this
+            }];
+
+            this.store = new Ext.data.SimpleStore({
+                fields: [
+                    {name: 'name'},
+                    {name: 'value'}
+                ]
+            });
+            
+            this.recordDefaults={name:this.rules[0].name, value:""};
+            var deleteColumn = new Ext.grid.DeleteColumn({});
+            this.autoExpandColumn = 'displayName',
+            this.plugins=[deleteColumn];
+            this.columns=[{
+                align: "center", 
+                header: "",
+                width:45,
+                fixed: true,
+                dataIndex: null,
+                renderer: function(value, metadata, record) {
+                    return this.settingsCmp.i18n._("and");
+                }.createDelegate(this)
+            },{
+                header : this.settingsCmp.i18n._("Type"),
+                width: 300,
+                fixed: true,
+                dataIndex : "name",
+                renderer: function(value, metadata, record, rowIndex, colIndex, store) {
+                    var out=[];
+                    out.push('<select class="rule_builder_type" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowType(\''+record.id+'\',this)">');
+                    for (var i = 0; i < this.rules.length; i++) {
+                        var seleStr=(this.rules[i].name == value)?"selected":"";
+                        out.push('<option value="' + this.rules[i].name + '" ' + seleStr + '>' + this.rules[i].displayName + '</option>');
+                    }
+                    out.push("</select>");
+                    return out.join("");
+                }.createDelegate(this)
+            },{
+                id:'displayName',
+                header : this.settingsCmp.i18n._("Value"),
+                width: 315,
+                fixed: true,
+                dataIndex : "value",
+                renderer: function(value, metadata, record, rowIndex, colIndex, store) {
+                    var name=record.get("name");
+                    value=record.data.value;
+                    var rule=null;
+                    for (var i = 0; i < this.rules.length; i++) {
+                        if (this.rules[i].name == name) {
+                            rule=this.rules[i];
+                            break;
+                        }
+                    }
+                    var res="";
+                    if ( rule == null ) {
+                        return "";
+                    }
+                    switch(rule.type) {
+                      case "text":
+                        res='<input type="text" size="20" class="x-form-text x-form-field rule_builder_value" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.id+'\',this)" value="'+value+'"/>';
+                        break;
+                      case "boolean":
+                        res="<div>&nbsp;</div>";
+                        break;
+                      case "checkgroup":
+                        var values_arr=(value!=null && value.length>0)?value.split(","):[];
+                        var out=[];
+                        for(var count=0; count<rule.values.length; count++) {
+                            var rule_value=rule.values[count][0];
+                            var rule_label=rule.values[count][1];
+                            var checked_str="";
+                            for(var j=0;j<values_arr.length; j++) {
+                                if(values_arr[j]==rule_value) {
+                                    checked_str="checked";
+                                    break;
+                                }
+                            }
+                            out.push('<div class="checkbox" style="width:100px; float: left; padding:3px 0;">');
+                            out.push('<input id="'+rule_value+'[]" class="rule_builder_checkbox" '+checked_str+' onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.id+'\',this)" style="display:inline; float:left;margin:0;" name="'+rule_label+'" value="'+rule_value+'" type="checkbox">');
+                            out.push('<label for="'+rule_value+'[]" style="display:inline;float:left;margin:0 0 0 0.6em;padding:0;text-align:left;width:50%;">'+rule_label+'</label>');
+                            out.push('</div>');
+                        }
+                        res=out.join("");
+                        break;
+                        
+                    }
+                    return res;
+
+                }.createDelegate(this)
+            },deleteColumn];
+            Ung.FirewallRuleBuilder.superclass.initComponent.apply( this, arguments );
+        },
+        changeRowType: function(recordId,selObj) {
+            var record=this.store.getById(recordId);
+            var newName=selObj.options[selObj.selectedIndex].value;
+            var rule=null;
+            for (var i = 0; i < this.rules.length; i++) {
+                if (this.rules[i].name == newName) {
+                    rule=this.rules[i];
+                    break;
+                }
+            }
+            var newValue="";
+            if(rule.type=="boolean") {
+                newValue="true";
+            }
+            record.data.value=newValue;
+            record.set("name",newName);
+            this.fireEvent("afteredit");
+        },
+        changeRowValue: function(recordId,valObj) {
+            var record=this.store.getById(recordId);
+            switch(valObj.type) {
+              case "checkbox":
+                var record_value=record.get("value");
+                var values_arr=(record_value!=null && record_value.length>0)?record_value.split(","):[];
+                if(valObj.checked) {
+                    values_arr.push(valObj.value);
+                } else {
+                    for(var i=0;i<values_arr.length;i++) {
+                        if(values_arr[i]==valObj.value) {
+                            values_arr.splice(i,1);
+                            break;
+                        }
+                    }
+                }
+                record.data.value=values_arr.join(",");
+                break;
+              case "text":
+                var new_value=valObj.value;
+                if(new_value!=null) {
+                    new_value.replace("::","");
+                    new_value.replace("&&","");
+                }
+                record.data.value=new_value;
+                break;
+            }
+            this.fireEvent("afteredit");
+        },
+        addHandler: function() {
+            var record=new Ext.data.Record(Ext.decode(Ext.encode(this.recordDefaults)));
+            this.getStore().insert(0, [record]);
+            this.fireEvent("afteredit");
+        },
+        deleteHandler: function (record) {
+            this.store.remove(record);
+            this.fireEvent("afteredit");
+        },
+        setValue: function(value) {
+            var entries=[];
+            if (value != null && value.list != null) {
+                for(var i=0; i<value.list.length; i++) {
+                    entries.push([value.list[i].matcherType,value.list[i].value]);
+                }
+            }
+            this.store.loadData(entries);
+        },
+        getValue: function() {
+            var list=[];
+            var records=this.store.getRange();
+            for(var i=0; i<records.length;i++) {
+                list.push({
+                    javaClass: "com.untangle.node.firewall.FirewallRuleMatcher",
+                    matcherType: records[i].get("name"),
+                    value: records[i].get("value")});
+            }
+            return {
+                javaClass: "java.util.LinkedList", 
+                list: list,
+                //must override toString in order for all objects not to appear the same
+                toString: function() {
+                    return Ext.encode(this);
+                }
+            };
+        },
+        getName: function() {
+            return "firewallrulebuilder";
+        },
+        isValid: function() {
+            //TODO: implement is valid
+            return true;
+        }
+    });
+    Ext.reg('firewallrulebuilder', Ung.FirewallRuleBuilder);
+    
     Ung.Firewall = Ext.extend(Ung.NodeWin, {
         panelRules: null,
         gridRules : null,
         gridEventLog : null,
         initComponent : function() {
-            Ung.Util.clearInterfaceStore();
+            //Ung.Util.clearInterfaceStore();
+            Ung.Util.generateListIds(this.getSettings().rules.list);
+            
             // builds the tabs
             this.buildRules();
             this.buildEventLog();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelRules, /*this.gridEventLog*/]);
+            this.buildTabPanel([this.panelRules, this.gridEventLog]);
             Ung.Firewall.superclass.initComponent.call(this);
         },
         // Rules Panel
@@ -23,8 +246,6 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 dataIndex : 'live',
                 fixed : true
             });
-
-            var actionData = [["Pass", this.i18n._('Pass')],["Block", this.i18n._('Block')]];
 
             this.panelRules = new Ext.Panel({
                 name : 'panelRules',
@@ -40,48 +261,6 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     autoScroll: true
                 },
                 autoScroll : true,
-                listeners: {
-                    'activate': {
-                        fn : function (){
-                            (new Ext.ToolTip({
-                            html : 'Examples:<br/>80<br/>80,443,8080<br/>80-90',
-                                    target :Ext.getCmp('srcPort').container.id,
-                                    autoWidth : true,
-                                    autoHeight : true,
-                                    showDelay : 200,
-                                    dismissDelay : 0,
-                                    hideDelay : 0
-                                }));
-                            (new Ext.ToolTip({
-                            html : 'Examples:<br/>80<br/>80,443,8080<br/>80-90',
-                                    target :Ext.getCmp('dstPort').container.id,
-                                    autoWidth : true,
-                                    autoHeight : true,
-                                    showDelay : 200,
-                                    dismissDelay : 0,
-                                    hideDelay : 0
-                                }));
-                            (new Ext.ToolTip({
-                            html : 'Examples:<br/>1.2.3.4<br/>1.2.3.4,1.2.3.5<br/>1.2.3.4-1.2.3.100<br/>1.2.3.0/24',
-                                    target :Ext.getCmp('srcAddress').container.id,
-                                    autoWidth : true,
-                                    autoHeight : true,
-                                    showDelay : 200,
-                                    dismissDelay : 0,
-                                    hideDelay : 0
-                                }));
-                            (new Ext.ToolTip({
-                            html : 'Examples:<br/>1.2.3.4<br/>1.2.3.4,1.2.3.5<br/>1.2.3.4-1.2.3.100<br/>1.2.3.0/24',
-                                    target :Ext.getCmp('dstAddress').container.id,
-                                    autoWidth : true,
-                                    autoHeight : true,
-                                    showDelay : 200,
-                                    dismissDelay : 0,
-                                    hideDelay : 0
-                                }));
-                        }
-                    }
-                },
                 border : false,
                 cls: 'ung-panel',
                 items : [{
@@ -89,7 +268,8 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     cls: 'description',
                     bodyStyle : 'padding:5px 5px 5px; 5px;',
                     html : String.format(this.i18n._(" <b>Firewall</b> is a simple application designed to block and log network traffic based on a set of rules. To learn more click on the <b>Help</b> button below.<br/> Routing and Port Forwarding functionality can be found elsewhere in Config->Networking."),main.getBrandingManager().getCompanyName())
-                        },this.gridRules= new Ung.EditorGrid({
+                },
+                this.gridRules= new Ung.EditorGrid({
                         name : 'Rules',
                         settingsCmp : this,
                         height : 500,
@@ -97,51 +277,25 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         hasReorder : true,
                         emptyRow : {
                             "live" : true,
-                            "action" : 'Block',
+                            "block" : true,
                             "log" : false,
-                            "protocol" : "TCP & UDP",
-                            "srcIntf" : "any",
-                            "dstIntf" : "any",
-                            "srcAddress" : "any",
-                            "dstAddress" : "1.2.3.4",
-                            "srcPort" : "any",
-                            "dstPort" : "80",
-                            "name" : this.i18n._("[no name]"),
-                            "category" : this.i18n._("[no category]"),
                             "description" : this.i18n._("[no description]"),
                             "javaClass" : "com.untangle.node.firewall.FirewallRule"
                         },
                         title : this.i18n._("Rules"),
                         recordJavaClass : "com.untangle.node.firewall.FirewallRule",
                         data:this.getSettings().rules.list,
-                        //proxyRpcFn : this.getRpcNode().getFirewallRuleList,
                         fields : [{
                             name : 'id'
                         }, {
                             name : 'live'
                         }, {
-                            name : 'action'
+                            name : 'block'
                         }, {
                             name : 'log'
                         }, {
-                            name : 'protocol'
-                        }, {
-                            name : 'srcIntf'
-                        }, {
-                            name : 'dstIntf'
-                        }, {
-                            name : 'srcAddress'
-                        }, {
-                            name : 'dstAddress'
-                        }, {
-                            name : 'srcPort'
-                        }, {
-                            name : 'dstPort'
-                        }, {
-                            name : 'name'
-                        }, {
-                            name : 'category'
-                        }, {
+                            name : 'matchers'
+                        },{
                             name : 'description'
                         }, {
                             name : 'javaClass'
@@ -156,122 +310,78 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         autoExpandColumn : 'description',
                         plugins : [liveColumn],
 
-                        // load first page initialy
-                        initialLoad : function() {
-                            this.setTotalRecords(this.totalRecords);
-                            this.loadPage(0,
-                                function() {
-                                    this.settingsCmp.initialRules = Ung.Util.clone(this.getFullSaveList());
-                                    //this.settingsCmp.saveButton.enable();
-                                }.createDelegate(this));
-                        },
-
                         initComponent : function() {
                             this.rowEditor = new Ung.RowEditorWindow({
                                 grid : this,
-                                sizeToGrid : true,
-                                inputLines : this.customInputLines,
-                                rowEditorLabelWidth:120,
+                                sizeToComponent : this.settingsCmp,
+                                inputLines : this.rowEditorInputLines,
+                                rowEditorLabelWidth : 100,
                                 populate : function(record, addMode) {
-                                    this.addMode=addMode;
-                                    this.record = record;
-                                    this.initialRecordData = Ext.encode(record.data);
-                                    for (var i = 0; i < this.inputLines.length; i++) {
-                                        var inputLine = this.inputLines[i];
-                                        if (inputLine instanceof Ext.form.Field) {
-                                            this.populateField(inputLine, record);
-                                        } else if (inputLine instanceof Ext.Panel) {
-                                            for (var j = 0; j < inputLine.items.length; j++) {
-                                                var field = inputLine.items.get(j);
-                                                if ( field instanceof Ext.form.Field) {
-                                                    this.populateField(field, record);
-                                                }
-                                            }
-                                        }
-                                    }
+                                    return this.populateTree(record, addMode);
                                 },
-                                populateField : function(field, record) {
-                                    if(field.dataIndex!=null) {
-                                        field.suspendEvents();
-                                        field.setValue(record.get(field.dataIndex));
-                                        field.resumeEvents();
-                                    }
-                                },
-                                isFormValid : function() {
-                                    for (var i = 0; i < this.inputLines.length; i++) {
-                                        var inputLine = this.inputLines[i];
-                                        if (inputLine instanceof Ext.form.Field && !inputLine.isValid()) {
-                                            return false;
-                                        } else if (inputLine instanceof Ext.Panel) {
-                                            for (var j = 0; j < inputLine.items.length; j++) {
-                                                var field = inputLine.items.get(j);
-                                                if (field instanceof Ext.form.Field && !field.isValid()) {
-                                                    return false;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    return true;
-                                },
+                                // updateAction is called to update the record after the edit
                                 updateAction : function() {
-                                    if (this.isFormValid()) {
-                                        if (this.record !== null) {
-                                            for (var i = 0; i < this.inputLines.length; i++) {
-                                                var inputLine = this.inputLines[i];
-                                                if (inputLine instanceof Ext.form.Field) {
-                                                    this.record.set(inputLine.dataIndex, inputLine.getValue());
-                                                } else if (inputLine instanceof Ext.Panel) {
-                                                    for (var j = 0; j < inputLine.items.length; j++) {
-                                                        var field = inputLine.items.get(j);
-                                                        if (field instanceof Ext.form.Field) {
-                                                            this.record.set(field.dataIndex, field.getValue());
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                            if (this.addMode) {
-                                                this.grid.getStore().insert(0, [this.record]);
-                                                this.grid.startEditing(0,0);
-                                                this.grid.stopEditing();
-                                                this.grid.updateChangedData(this.record, "added");
-                                            }
-                                        }
-                                        this.hide();
-                                    } else {
-                                        Ext.MessageBox.alert(i18n._('Warning'), i18n._("The form is not valid!"));
-                                    }
+                                    return this.updateActionTree();
                                 },
                                 isDirty : function() {
                                     if (this.record !== null) {
                                         if (this.inputLines) {
                                             for (var i = 0; i < this.inputLines.length; i++) {
                                                 var inputLine = this.inputLines[i];
-                                                if(inputLine instanceof Ext.form.Field) {
+                                                if(inputLine.dataIndex!=null) {
                                                     if (this.record.get(inputLine.dataIndex) != inputLine.getValue()) {
                                                         return true;
                                                     }
-                                                } else if (inputLine instanceof Ext.Panel) {
-                                                    for (var j = 0; j < inputLine.items.length; j++) {
-                                                        var field = inputLine.items.get(j);
-                                                        if (field instanceof Ext.form.Field) {
-                                                            if (this.record.get(field.dataIndex) != field.getValue()) {
-                                                                return true;
-                                                            }
-                                                        }
+                                                }
+                                                /* for fieldsets */
+                                                if(inputLine.items !=null && inputLine.items.dataIndex != null) {
+                                                    if (this.record.get(inputLine.items.dataIndex) != inputLine.items.getValue()) {
+                                                        return true;
                                                     }
                                                 }
                                             }
                                         }
                                     }
                                     return false;
+                                },
+                                isFormValid : function() {
+                                    for (var i = 0; i < this.inputLines.length; i++) {
+                                        var item = null;
+                                        if ( this.inputLines.get != null ) {
+                                            item = this.inputLines.get(i);
+                                        } else {
+                                            item = this.inputLines[i];
+                                        }
+                                        if ( item == null ) {
+                                            continue;
+                                        }
+
+                                        if ( item.isValid != null) {
+                                            if(!item.isValid()) {
+                                                return false;
+                                            }
+                                        } else if(item.items !=null && item.items.getCount()>0) {
+                                            /* for fieldsets */
+                                            for (var j = 0; j < item.items.getCount(); j++) {
+                                                var subitem=item.items.get(j);
+                                                if ( subitem == null ) {
+                                                    continue;
+                                                }
+
+                                                if ( subitem.isValid != null && !subitem.isValid()) {
+                                                    return false;
+                                                }
+                                            }                                    
+                                        }
+                                        
+                                    }
+                                    return true;
                                 }
                             });
-
                             Ung.EditorGrid.prototype.initComponent.call(this);
                         },
 
-                        customInputLines : [new Ext.form.Checkbox({
+                        rowEditorInputLines : [new Ext.form.Checkbox({
                             name : "Enable Rule",
                             dataIndex: "live",
                             fieldLabel : this.i18n._("Enable Rule"),
@@ -283,23 +393,11 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             fieldLabel : this.i18n._("Description"),
                             itemCls:'firewall-spacing-1',
                             width : 400
-                        }), new Ext.form.ComboBox({
-                            name : "Action",
-                            dataIndex: "action",
-                            fieldLabel : this.i18n._("Action"),
-                            store : new Ext.data.SimpleStore({
-                                fields : ['key', 'name'],
-                                data : actionData
-                            }),
-                            displayField : 'name',
-                            valueField : 'key',
-                            forceSelection : true,
-                            typeAhead : true,
-                            mode : 'local',
-                            triggerAction : 'all',
-                            listClass : 'x-combo-list-small',
+                        }), new Ext.form.Checkbox({
+                            name : "Block",
+                            dataIndex: "block",
                             itemCls:'firewall-spacing-1',
-                            selectOnFocus : true
+                            fieldLabel : this.i18n._("Block")
                         }), new Ext.form.Checkbox({
                             name : "Log",
                             dataIndex: "log",
@@ -310,55 +408,14 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             title : this.i18n._("Rule") ,
                             cls:'firewall-spacing-2',
                             autoHeight : true,
-                            items:[
-                                new Ung.Util.ProtocolCombo({
-                                    name : "Traffic Type",
-                                    dataIndex: "protocol",
-                                    itemCls:'firewall-spacing-3',
-                                    fieldLabel : this.i18n._("Traffic Type"),
-                                    width : 100
-                                }), new Ung.Util.InterfaceCombo({
-                                    name : "Source Interface",
-                                    dataIndex: "srcIntf",
-                                    fieldLabel : this.i18n._("Source Interface"),
-                                    width : 150
-                                }), new Ung.Util.InterfaceCombo({
-                                    name : "Destination Interface",
-                                    dataIndex: "dstIntf",
-                                    itemCls:'firewall-spacing-3',
-                                    fieldLabel : this.i18n._("Destination Interface"),
-                                    width : 150
-                                }), new Ext.form.TextField({
-                                    name : "Source Address",
-                                    id : "srcAddress",
-                                    dataIndex: "srcAddress",
-                                    fieldLabel : this.i18n._("Source Address"),
-                                    allowBlank : false,
-                                    width : 150
-                                }), new Ext.form.TextField({
-                                    name : "Destination Address",
-                                    id : "dstAddress",
-                                    dataIndex: "dstAddress",
-                                    itemCls:'firewall-spacing-3',
-                                    fieldLabel : this.i18n._("Destination Address"),
-                                    allowBlank : false,
-                                    width : 150
-                                }), new Ext.form.TextField({
-                                    name : "Source Port",
-                    id : "srcPort",
-                                    dataIndex: "srcPort",
-                                    fieldLabel : this.i18n._("Source Port"),
-                                    width : 150,
-                                    allowBlank : false
-                                }), new Ext.form.TextField({
-                                    name : "Destination Port",
-                    id : "dstPort",
-                                    dataIndex: "dstPort",
-                                    fieldLabel : this.i18n._("Destination Port"),
-                                    allowBlank : false,
-                                    width : 150
-                                })
-                            ]
+                            items:[{
+                                xtype:"firewallrulebuilder",
+                                settingsCmp: this,
+                                anchor:"98%",
+                                width: 900,
+                                dataIndex: "matchers",
+                                rules : Ung.FirewallUtil.getMatchers(this)
+                            }]
                         })]
                     })
                 ]
@@ -434,108 +491,35 @@ if (!Ung.hasResource["Ung.Firewall"]) {
 
             });
         },
-        validateServer : function() {
-            // ipMaddr list must be validated server side
-            var passedAddresses = this.gridRules ? this.gridRules.getFullSaveList() : null;
-            if (passedAddresses != null) {
-                var srcAddrList = [];
-                var dstAddrList = [];
-                var srcPortList = [];
-                var dstPortList = [];
-                for (var i = 0; i < passedAddresses.length; i++) {
-                    srcAddrList.push(passedAddresses[i]["srcAddress"]);
-                    dstAddrList.push(passedAddresses[i]["dstAddress"]);
-                    srcPortList.push(passedAddresses[i]["srcPort"]);
-                    dstPortList.push(passedAddresses[i]["dstPort"]);
-                }
-                var validateData = {
-                    map : {},
-                    javaClass : "java.util.HashMap"
-                };
-                if (srcAddrList.length > 0) {
-                    validateData.map["SRC_ADDR"] = {"javaClass" : "java.util.ArrayList", list : srcAddrList};
-                }
-                if (dstAddrList.length > 0) {
-                    validateData.map["DST_ADDR"] = {"javaClass" : "java.util.ArrayList", list : dstAddrList};
-                }
-                if (srcPortList.length > 0) {
-                    validateData.map["SRC_PORT"] = {"javaClass" : "java.util.ArrayList", list : srcPortList};
-                }
-                if (dstPortList.length > 0) {
-                    validateData.map["DST_PORT"] = {"javaClass" : "java.util.ArrayList", list : dstPortList};
-                }
-                if (Ung.Util.hasData(validateData.map)) {
-                    try {
-                        var result=null;
-                        try {
-                            result = this.getValidator().validate(validateData);
-                        } catch (e) {
-                            Ung.Util.rpcExHandler(e);
-                        }
-                        if (!result.valid) {
-                            var errorMsg = "";
-                            switch (result.errorCode) {
-                                case 'INVALID_SRC_ADDR' :
-                                    errorMsg = this.i18n._("Invalid address specified for Source Address") + ": " + result.cause;
-                                break;
-                                case 'INVALID_DST_ADDR' :
-                                    errorMsg = this.i18n._("Invalid address specified for Destination Address") + ": " + result.cause;
-                                break;
-                                case 'INVALID_SRC_PORT' :
-                                    errorMsg = this.i18n._("Invalid port specified for Source Port") + ": " + result.cause;
-                                break;
-                                case 'INVALID_DST_PORT' :
-                                    errorMsg = this.i18n._("Invalid port specified for Destination Port") + ": " + result.cause;
-                                break;
-                                default :
-                                    errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
-                            }
-                            Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);
-                            return false;
-                        }
-                    } catch (e) {
-                        var message = exception.message;
-                        if (message == null || message == "Unknown") {
-                            message = i18n._("Please Try Again");
-                        }
-                        
-                        Ext.MessageBox.alert(i18n._("Failed"), message);
-                        return false;
-                    }
-                }
-            }
-            return true;
-        },
+
         //apply function 
         applyAction : function(){
             this.saveAction(true);
         },         
         // save function
         saveAction : function(keepWindowOpen) {
-            if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                if(this.gridRules) {
-                    this.getSettings().rules.list = this.gridRules.getFullSaveList();
-                }
-                this.getRpcNode().setSettings(function(result, exception) {
-                    Ext.MessageBox.hide();
-                    if(Ung.Util.handleException(exception)) return;
-                    // exit settings screen
-                    if(!keepWindowOpen) {
-                        Ext.MessageBox.hide();                    
-                        this.closeWindow();
-                    } else {
-                        //refresh the settings
-                        Ext.MessageBox.hide();
-                        //refresh the settings
-                        this.getRpcNode().getSettings(function(result,exception){
-                            Ext.MessageBox.hide();
-                            Ung.Util.generateListIds(result.list);
-                            this.gridRules.reloadGrid({data:result.list});
-                        }.createDelegate(this));                       
-                    }
-                }.createDelegate(this), this.getSettings());
+            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+            if(this.gridRules) {
+                this.getSettings().rules.list = this.gridRules.getFullSaveList();
             }
+            this.getRpcNode().setSettings(function(result, exception) {
+                Ext.MessageBox.hide();
+                if(Ung.Util.handleException(exception)) return;
+                // exit settings screen
+                if(!keepWindowOpen) {
+                    Ext.MessageBox.hide();                    
+                    this.closeWindow();
+                } else {
+                    //refresh the settings
+                    Ext.MessageBox.hide();
+                    //refresh the settings
+                    this.getRpcNode().getSettings(function(result,exception){
+                        Ext.MessageBox.hide();
+                        Ung.Util.generateListIds(result.list);
+                        this.gridRules.reloadGrid({data:result.list});
+                    }.createDelegate(this));                       
+                }
+            }.createDelegate(this), this.getSettings());
         },
         isDirty : function() {
             return this.gridRules.isDirty();
