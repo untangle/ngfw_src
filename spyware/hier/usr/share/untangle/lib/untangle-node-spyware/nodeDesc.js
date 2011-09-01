@@ -5,7 +5,7 @@
         "displayName" : "Spyware Blocker",
         "syslogName" : "Spyware_Blocker",
         "type" : "NODE",
-        "viewPosition" : 70,
+        "viewPosition" : 50,
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [

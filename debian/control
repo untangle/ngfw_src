@@ -220,7 +220,7 @@ Package: untangle-node-spyware
 Architecture: all
 Depends: untangle-vm, untangle-casing-http, untangle-google-safebrowsing
 XB-Display-Name: Spyware Blocker
-XB-View-Position: 70
+XB-View-Position: 50
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMgAAABl0RVh0
  U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAjsSURBVHjaxFlrTFXZFV5XQMEHTx0G0Qgj
@@ -340,7 +340,7 @@ Package: untangle-node-clam
 Architecture: all
 Depends: untangle-vm, untangle-base-virus, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-mail
 XB-Display-Name: Virus Blocker Lite
-XB-View-Position: 60
+XB-View-Position: 40
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz
  AAALEgAACxIB0t1+/AAAABZ0RVh0Q3JlYXRpb24gVGltZQAwOC8zMS8xMbwytWUAAAAYdEVYdFNv
@@ -599,7 +599,7 @@ Package: untangle-node-spamassassin
 Architecture: all
 Depends: untangle-vm, untangle-base-spam, untangle-casing-mail
 XB-Display-Name: Spam Blocker
-XB-View-Position: 80
+XB-View-Position: 60
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz
  AAALEgAACxIB0t1+/AAAABh0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzT7MfTgAAABZ0RVh0

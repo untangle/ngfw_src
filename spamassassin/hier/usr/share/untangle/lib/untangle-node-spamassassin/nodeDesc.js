@@ -6,7 +6,7 @@
         "displayName" : "Spam Blocker",
         "syslogName" : "Spam_Blocker",
         "type" : "NODE",
-        "viewPosition" : 80,
+        "viewPosition" : 60,
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [

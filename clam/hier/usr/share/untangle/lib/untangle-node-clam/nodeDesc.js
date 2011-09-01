@@ -6,7 +6,7 @@
         "displayName" : "Virus Blocker Lite",
         "syslogName" : "Virus_Blocker_Lite",
         "type" : "NODE",
-        "viewPosition" : 60,
+        "viewPosition" : 40,
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [
