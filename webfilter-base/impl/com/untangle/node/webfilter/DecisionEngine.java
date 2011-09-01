@@ -505,7 +505,8 @@ public abstract class DecisionEngine
             WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri, bestCategory.getDescription(), clientIp, node.getNodeTitle(), username);
             return node.generateNonce(bd);
         } else if (isFlagged || (bestCategory != null)) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), isBlocked, isFlagged, Reason.PASS_URL, bestCategory.getName(), node.getVendor());
+            //no "reason" for this event
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), isBlocked, isFlagged, null, bestCategory.getName(), node.getVendor());
             node.log(hbe, host, port, event);
         } 
 
