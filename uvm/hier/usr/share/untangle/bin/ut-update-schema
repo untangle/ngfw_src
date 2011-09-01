@@ -8,6 +8,10 @@ require 'socket'
 
 PORT = 2345
 
+# FIXME
+$stdout.reopen("/var/log/uvm/schema-out.log", "a")
+$stderr.reopen("/var/log/uvm/schema-err.log", "a")
+
 class SqlHelper
   def SqlHelper.log_sql_error(msg, e)
     Syslog.warn <<MSG
@@ -305,6 +309,7 @@ loop {
   end
 
   str = client.gets
+  Syslog.info "*** Received '#{str}'"
   next if str.nil? or str.empty?
   str.chop!
   array = str.split(/\s+/)
@@ -345,7 +350,7 @@ loop {
     elsif latest_version.nil?
       Syslog.info 'No schema for this component.'
     elsif inst_version > latest_version
-      Syslog.error 'Installed version greater than latest version'
+      Syslog.err('Installed version greater than latest version')
     elsif inst_version < latest_version
       Syslog.info "Converting schema from #{inst_version} to #{latest_version}"
       (inst_version + 1).upto(latest_version) do |n|

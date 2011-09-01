@@ -54,7 +54,6 @@ public class Main
     private Main()
     {
         schemaUtil.initSchema("settings", "uvm");
-        schemaUtil.initSchema("events", "uvm");
         LogManager.setRepositorySelector(UvmRepositorySelector.selector(),
                                          new Object());
     }
