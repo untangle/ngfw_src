@@ -1,6 +1,6 @@
 echo "Warning: this file needs to be *sourced*"
 
-DIR=$(dirname "$0")
+DIR=$(pwd)
 
 DEFAULT_RUP=${DIR}/../../hades/src
 [ ! -d "$DEFAULT_RUP" ] && DEFAULT_RUP=${DIR}/../hades/src
