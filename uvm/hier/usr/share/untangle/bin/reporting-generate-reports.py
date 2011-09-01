@@ -1,3 +1,5 @@
+#! /usr/bin/env python 
+
 import getopt
 import logging
 import mx
