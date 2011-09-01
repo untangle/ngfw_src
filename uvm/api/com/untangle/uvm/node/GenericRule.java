@@ -20,6 +20,17 @@ public class GenericRule implements Serializable
 
     public GenericRule() {}
 
+    public GenericRule(String string, String name, String category, String description, boolean enabled, boolean blocked, boolean flagged)
+    {
+        this.string = string;
+        this.name = name;
+        this.category = category;
+        this.description = description;
+        this.enabled = Boolean.valueOf(enabled);
+        this.blocked = Boolean.valueOf(blocked);
+        this.flagged = Boolean.valueOf(flagged);
+    }
+
     public GenericRule(String string, String name, String category, String description, boolean enabled)
     {
         this.string = string;

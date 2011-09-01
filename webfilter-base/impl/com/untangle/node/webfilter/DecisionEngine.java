@@ -471,11 +471,11 @@ public abstract class DecisionEngine
                 bestCategory = catSettings;
                 logger.info("checkCategory: " + host + uri + " bestCategory: " + bestCategory.getName());
             }
-            if ( catSettings.getBlocked() ) {
+            if ( catSettings.getBlocked() != null && catSettings.getBlocked()) {
                 isBlocked = true;
                 blockedName = catSettings.getName();
             }
-            if ( catSettings.getFlagged() ) {
+            if ( catSettings.getFlagged() != null && catSettings.getFlagged()) {
                 isFlagged = true;
             }
         }
