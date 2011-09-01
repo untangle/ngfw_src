@@ -524,7 +524,12 @@ public abstract class DecisionEngine
         logger.debug("findMatchRule: rules = '" + rules +"', value = '" + value + "' (normalized from '" + oldVal + ";");
 
         for (GenericRule rule : rules) {
-            if (rule.getEnabled() == null || !rule.getEnabled()) continue;
+            if (rule.getEnabled() == null) {
+                logger.warn("Skipping rule with NULL enabled attribute");
+                continue;
+            } else if (!rule.getEnabled()) {
+                continue;
+            }
             
             String re = rule.getString();
             // remove potential '\*\.?' at the beginning
