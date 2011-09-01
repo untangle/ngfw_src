@@ -506,7 +506,7 @@ public abstract class DecisionEngine
             return node.generateNonce(bd);
         } else if (isFlagged || (bestCategory != null)) {
             //no "reason" for this event
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), isBlocked, isFlagged, null, bestCategory.getName(), node.getVendor());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), isBlocked, isFlagged, Reason.DEFAULT, bestCategory.getName(), node.getVendor());
             node.log(hbe, host, port, event);
         } 
 
