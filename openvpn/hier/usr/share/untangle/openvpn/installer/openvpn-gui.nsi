@@ -8,19 +8,20 @@
 ; ****************************************************************************
 
 ; OpenVPN install script for Windows, using NSIS
+RequestExecutionLevel admin
 
 !include "MUI.nsh"
 !include "setpath.nsi"
 !include "GetWindowsVersion.nsi"
 
 !define HOME "openvpn"
-!define MV_FILES "@UVM_CONF@/openvpn"
+!define MV_FILES "/usr/share/untangle/conf/openvpn"
 !define MV_PACKAGE_DIR "${MV_FILES}/client-packages"
 !define MV_PKI_DIR "${MV_FILES}/pki"
 !define BIN "${HOME}\bin"
 
 !define PRODUCT_NAME "OpenVPN"
-!define OPENVPN_VERSION "2.1.3"
+!define OPENVPN_VERSION "2.2.1"
 !define GUI_VERSION "1.0.3"
 !define VERSION "${OPENVPN_VERSION}-gui-${GUI_VERSION}"
 
@@ -69,7 +70,7 @@
 
   OutFile "${MV_PACKAGE_DIR}/setup-${COMMON_NAME}.exe"
 
-  SetCompressor bzip2
+  SetCompressor lzma
 
   ShowInstDetails show
   ShowUninstDetails show
@@ -125,8 +126,6 @@
   LangString DESC_SecOpenSSLDLLs ${LANG_ENGLISH} "Install OpenSSL DLLs locally (may be omitted if DLLs are already installed globally)."
 
   LangString DESC_SecTAP ${LANG_ENGLISH} "Install/Upgrade the TAP-Win32/Win64 virtual device driver.  Will not interfere with CIPE."
-
-  LangString DESC_SecTAPHidden ${LANG_ENGLISH} "Install the TAP device as hidden. The TAP device will not be visible under Network Connections."
 
   LangString DESC_SecService ${LANG_ENGLISH} "Install the OpenVPN service wrapper (openvpnserv.exe)"
 
@@ -281,9 +280,6 @@ SectionEnd
 Section "AutoStart OpenVPN GUI" SecGUIAuto
 SectionEnd
 
-Section "Hide the TAP-Win32/Win64 Virtual Ethernet Adapter" SecTAPHidden
-SectionEnd
-
 Section "OpenVPN Service" SecService
 
   SetOverwrite on
@@ -316,7 +312,10 @@ Section "OpenSSL DLLs" SecOpenSSLDLLs
   SetOutPath "$INSTDIR\bin"
   File "${BIN}\libeay32.dll"
   File "${BIN}\libssl32.dll"
+  File "${BIN}\ssleay32.dll"
   File "${BIN}\libpkcs11-helper-1.dll"
+  File "${BIN}\lzo2.dll"
+  File "${BIN}\msvcr90.dll"
 
 SectionEnd
 
@@ -362,13 +361,7 @@ SetOutPath "$INSTDIR\bin"
 File "${BIN}\ti3790\32\tapinstall.exe"
 SetOutPath "$INSTDIR\driver"
 File "${HOME}\tap-win32\i386\${TAPDRV}"
-File "${HOME}\tap-win32\i386\${TAPDRVCAT}"
-SectionGetFlags ${SecTAPHidden} $R0
-IntOp $R0 $R0 & ${SF_SELECTED}
-IntCmp $R0 ${SF_SELECTED} "" nohiddentap32 nohiddentap32
-File "${HOME}\tap-win32-hiddentap\i386\OemWin2k.inf"
-goto end
-nohiddentap32:
+File /nonfatal "${HOME}\tap-win32\i386\${TAPDRVCAT}"
 File "${HOME}\tap-win32\i386\OemWin2k.inf"
 goto end
 
@@ -377,15 +370,9 @@ DetailPrint "We are running on a 64-bit system."
 SetOutPath "$INSTDIR\bin"
 File "${BIN}\ti3790\64\tapinstall.exe"
 SetOutPath "$INSTDIR\driver"
-File "${HOME}\tap-win64\i386\${TAPDRV}"
-File "${HOME}\tap-win64\i386\${TAPDRVCAT}"
-SectionGetFlags ${SecTAPHidden} $R0
-IntOp $R0 $R0 & ${SF_SELECTED}
-IntCmp $R0 ${SF_SELECTED} "" nohiddentap64 nohiddentap64
-File "${HOME}\tap-win64-hiddentap\i386\OemWin2k.inf"
-goto end
-nohiddentap64:
-File "${HOME}\tap-win64\i386\OemWin2k.inf"
+File "${HOME}\tap-win64\amd64\${TAPDRV}"
+File /nonfatal "${HOME}\tap-win64\amd64\${TAPDRVCAT}"
+File "${HOME}\tap-win64\amd64\OemWin2k.inf"
 goto end
 
 end:
@@ -404,6 +391,7 @@ Section "Add OpenVPN to PATH" SecAddPath
 SectionEnd
 
 Section "Add Shortcuts to Start Menu" SecAddShortcuts
+  SetShellVarContext all
 
   SetOverwrite on
   CreateDirectory "$SMPROGRAMS\OpenVPN"
@@ -696,11 +684,6 @@ Function .onSelChange
   SectionGetFlags ${SecTAP} $0
   IntOp $0 $0 & ${SF_SELECTED}
   IntCmp $0 ${SF_SELECTED} "" notap notap
-
-  ;TAP was selected so set TAPHidden to Not-ReadOnly.
-  SectionGetFlags ${SecTAPHidden} $0
-  IntOp $0 $0 & ${SF_NOT_RO}
-  SectionSetFlags ${SecTAPHidden} $0
   goto end
 
   notap:
@@ -753,6 +736,8 @@ FunctionEnd
 
 Section "Uninstall"
 
+SetShellVarContext all
+
   DetailPrint "Service REMOVE"
   nsExec::ExecToLog '"$INSTDIR\bin\openvpnserv.exe" -remove'
   Pop $R0 # return value/error/timeout
@@ -774,7 +759,10 @@ Section "Uninstall"
   Delete "$INSTDIR\bin\openvpn-gui.exe"
   Delete "$INSTDIR\bin\libeay32.dll"
   Delete "$INSTDIR\bin\libssl32.dll"
+  Delete "$INSTDIR\bin\ssleay32.dll"
   Delete "$INSTDIR\bin\libpkcs11-helper-1.dll"
+  Delete "$INSTDIR\bin\lzo2.dll"
+  Delete "$INSTDIR\bin\msvcr90.dll"
   Delete "$INSTDIR\bin\tapinstall.exe"
   Delete "$INSTDIR\bin\addtap.bat"
   Delete "$INSTDIR\bin\deltapall.bat"

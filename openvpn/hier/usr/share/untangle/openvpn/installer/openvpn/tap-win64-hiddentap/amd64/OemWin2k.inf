@@ -67,9 +67,9 @@
 ;                      Manufacturer + Product Section (Done)
 ;----------------------------------------------------------------
 [Manufacturer]
-   %Provider% = tap0901
+   %Provider% = tap0901, NTamd64
 
-[tap0901]
+[tap0901.NTamd64]
    %DeviceDescription% = tap0901.ndi, tap0901
 
 ;---------------------------------------------------------------
@@ -89,7 +89,7 @@
    CopyFiles       = tap0901.driver, tap0901.files
    AddReg          = tap0901.reg
    AddReg          = tap0901.params.reg
-   Characteristics = 0x81
+   Characteristics = 0x89
 
 [tap0901.ndi.Services]
    AddService = tap0901,        2, tap0901.service
