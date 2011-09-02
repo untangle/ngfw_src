@@ -48,6 +48,8 @@ public interface WebFilter extends Node
 
     String getUnblockMode();
 
+    String getVendor();
+
     EventManager<WebFilterEvent> getEventManager();
 
     EventManager<UnblockEvent> getUnblockEventManager();
