@@ -1872,6 +1872,15 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     );
                     return false;
                 }
+                if (syslogHostCmp.getValue() == 'localhost' || syslogHostCmp.getValue() == '127.0.0.1') {
+                    Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("The \"Host\" needs to be remote."),
+                        function () {
+                            this.tabs.activate(this.panelMonitoring);
+                            syslogHostCmp.focus(true);
+                        }.createDelegate(this)
+                    );
+                    return false;
+                }
                 var syslogPortCmp = Ext.getCmp('administration_syslog_port');
                 if (!syslogPortCmp.isValid()) {
                     Ext.MessageBox.alert(this.i18n._('Warning'), String.format(this.i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
