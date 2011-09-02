@@ -337,56 +337,40 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'displayAction',
-                    mapping : 'actionType',
+                    mapping : 'phishAction',
                     type : 'string',
-                    convert : function(value, rec ) {
-                        switch (rec.type) {
-                            case 'POP/IMAP' :
-                                switch (value) {
-                                    case 0 : // PASSED
-                                        return this.i18n._("pass message");
-                                    default :
-                                    case 1 : // MARKED
-                                        return this.i18n._("mark message");
-                                }
-                                break;
-                            case 'SMTP' :
-                                switch (value) {
-                                    default :
-                                    case 0 : // PASSED
-                                        return this.i18n._("pass message");
-                                    case 1 : // MARKED
-                                        return this.i18n._("mark message");
-                                    case 2 : // BLOCKED
-                                        return this.i18n._("drop message");
-                                    case 3 : // QUARANTINED
-                                        return this.i18n._("quarantine message");
-                                    case 4 : // SAFELISTED
-                                        return this.i18n._("safelist message");
-                                    case 5 : // OVERSIZE
-                                        return this.i18n._("oversize message");
-                                }
-                                break;
-                        }
+                    convert : function(value, rec ) { // FIXME: make that a switch
+                            if (value == 'P') { // PASSED
+                                return this.i18n._("pass message");
+                            } else if (value == 'M') { // MARKED
+                                return this.i18n._("mark message");
+                            } else if (value == 'B') { // DROP
+                                return this.i18n._("drop message");
+                            } else if (value == 'Q') { // QUARANTINED
+                                return this.i18n._("quarantine message");
+                            } else if (value == 'S') { // SAFELISTED
+                                return this.i18n._("safelist message");
+                            } else if (value == 'Z') { // OVERSIZE
+                                return this.i18n._("pass oversize message");
+                            } else {
+                                return this.i18n._("unknown action");
+                            }
                         return "";
                     }.createDelegate(this)
                 }, {
                     name : 'client',
-                    mapping : 'clientAddr',
-                    convert : function(value, rec ) {
-                        return value === null ? "" : rec.clientAddr + ":" + rec.clientPort;
-                    }
+                    mapping : 'CClientAddr'
                 }, {
                     name : 'server',
-                    mapping : 'serverAddr',
-                    convert : function(value, rec ) {
-                        return value === null ? "" : rec.serverAddr + ":" + rec.serverPort;
-                    }
+                    mapping : 'SServerAddr'
                 }, {
                     name : 'subject',
                     type : 'string'
                 }, {
-                    name : 'receiver',
+                    name : 'addrName',
+                    type : 'string'
+                }, {
+                    name : 'addr',
                     type : 'string'
                 }, {
                     name : 'sender',
@@ -420,7 +404,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     header : this.i18n._("receiver"),
                     width : 90,
                     sortable : true,
-                    dataIndex : 'receiver'
+                    dataIndex : 'addr'
                 }, {
                     header : this.i18n._("sender"),
                     width : 90,

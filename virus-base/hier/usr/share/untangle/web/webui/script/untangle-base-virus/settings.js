@@ -631,7 +631,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     mapping : 'CServerAddr'
                 }, {
                     name : 'reason',
-                    mapping : 'virusClamName' // FIXME: vendor name
+                    mapping : 'virus' + main.capitalize(this.getRpcNode().getVendor()) + 'Name'
                 }],
                 // the list of columns
                 columns : [{

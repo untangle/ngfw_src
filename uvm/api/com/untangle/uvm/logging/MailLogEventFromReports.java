@@ -74,6 +74,8 @@ import com.untangle.uvm.node.PipelineEndpoints;
         private String saAction;
         private Boolean virusKasperskyClean;
         private String virusKasperskyName;
+        private Boolean virusCommtouchClean;
+        private String virusCommtouchName;
         private Float phishScore;
         private Boolean phishIsSpam;
         private String phishAction;
@@ -244,6 +246,14 @@ import com.untangle.uvm.node.PipelineEndpoints;
         @Column(name="virus_kaspersky_name")
             public String getVirusKasperskyName() { return virusKasperskyName; }
         public void setVirusKasperskyName(String virusKasperskyName) { this.virusKasperskyName = virusKasperskyName; }
+
+        @Column(name="virus_commtouch_clean")
+            public Boolean getVirusCommtouchClean() { return virusCommtouchClean; }
+        public void setVirusCommtouchClean(Boolean virusCommtouchClean) { this.virusCommtouchClean = virusCommtouchClean; }
+
+        @Column(name="virus_commtouch_name")
+            public String getVirusCommtouchName() { return virusCommtouchName; }
+        public void setVirusCommtouchName(String virusCommtouchName) { this.virusCommtouchName = virusCommtouchName; }
 
         @Column(name="phish_score")
             public Float getPhishScore() { return phishScore; }

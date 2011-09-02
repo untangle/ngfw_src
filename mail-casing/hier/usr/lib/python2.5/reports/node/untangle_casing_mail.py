@@ -143,7 +143,7 @@ INSERT INTO reports.n_mail_addrs
         md5(ps.session_id::text || mia.addr::text || mia.kind || mi.id::text),
         ''
     FROM events.pl_stats ps
-    JOIN events.n_mail_message_info mi ON mi.pl_endp_id = ps.event_id
+    JOIN events.n_mail_message_info mi ON mi.pl_endp_id = ps.pl_endp_id
     JOIN events.n_mail_message_info_addr mia ON mia.msg_id = mi.id
     LEFT OUTER JOIN events.n_mail_message_stats mms ON mms.msg_id = mi.id
     LEFT OUTER JOIN reports.merged_address_map mam
@@ -252,7 +252,7 @@ INSERT INTO reports.n_mail_msgs
         -- from webpages
         COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname
     FROM events.pl_stats ps
-    JOIN events.n_mail_message_info mi ON mi.pl_endp_id = ps.event_id
+    JOIN events.n_mail_message_info mi ON mi.pl_endp_id = ps.pl_endp_id
     LEFT OUTER JOIN events.n_mail_message_stats mms ON mms.msg_id = mi.id
     LEFT OUTER JOIN reports.merged_address_map mam
         ON ps.c_client_addr = mam.addr AND ps.time_stamp >= mam.start_time AND ps.time_stamp < mam.end_time

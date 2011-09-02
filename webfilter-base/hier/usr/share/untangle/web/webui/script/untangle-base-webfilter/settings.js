@@ -952,12 +952,16 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'blocked',
-                    mapping : 'wfUntangleBlocked', // FIXME: vendorName
+                    mapping : 'wf' + main.capitalize(this.getRpcNode().getVendor()) + 'Blocked',
                     type : 'boolean'
                 }, {
                     name : 'flagged',
-                    mapping : 'wfUntangleFlagged', // FIXME: vendorName
+                    mapping : 'wf' + main.capitalize(this.getRpcNode().getVendor()) + 'Flagged',
                     type : 'boolean'
+                }, {
+                    name : 'category',
+                    mapping : 'wf' + main.capitalize(this.getRpcNode().getVendor()) + 'Category',
+                    type : 'string'
                 }, {
                     name : 'client',
                     mapping : 'CClientAddr'
@@ -972,7 +976,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     mapping : 'uri'
                 }, {
                     name : 'reason',
-                    mapping : 'wfUntangleReason', // FIXME: vendorName
+                    mapping : 'wf' + main.capitalize(this.getRpcNode().getVendor()) + 'Reason',
                     type : 'string',
                     convert : function(value) {
                         switch (value) {
@@ -1040,6 +1044,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     width : 150,
                     sortable : true,
                     dataIndex : 'reason'
+                }, {
+                    header : this.i18n._("category"),
+                    width : 150,
+                    sortable : true,
+                    dataIndex : 'category'
                 }, {
                     header : this.i18n._("server"),
                     width : 120,

@@ -28,6 +28,10 @@ Ung.Main=Ext.extend(Object, {
     firstTimeRun: null,
     companyName: document.title,
     hostName: null,
+    capitalize : function(foo) {
+            return foo.replace(/\w+/g, function(a){
+                    return a.charAt(0).toUpperCase() + a.substr(1).toLowerCase();
+                }); },
     // init function
     constructor: function(config) {
         Ext.apply(this, config);
