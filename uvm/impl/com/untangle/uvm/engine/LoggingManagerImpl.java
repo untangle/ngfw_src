@@ -157,7 +157,6 @@ class LoggingManagerImpl implements LoggingManager
                     synchronized (initQueue) {
                         for (Iterator<String> i = initQueue.iterator(); i.hasNext(); ) {
                             String n = i.next();
-                            logger.error("====== About to run initSchema for events," + n);
                             i.remove();
                             mctx.schemaUtil().initSchema("events", n);
                         }
