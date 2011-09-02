@@ -951,17 +951,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name : 'timeStamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'displayAction',
-                    mapping : 'wfUntangleAction', // FIXME: vendorName
-                    type : 'string',
-                    convert : function(value) {
-                        switch (value) {
-                            case 'I' : // PASSED
-                                return this.i18n._("pass");
-                            default :
-                                return this.i18n._("block");
-                        }
-                    }.createDelegate(this)
+                    name : 'blocked',
+                    mapping : 'wfUntangleBlocked', // FIXME: vendorName
+                    type : 'boolean'
+                }, {
+                    name : 'flagged',
+                    mapping : 'wfUntangleFlagged', // FIXME: vendorName
+                    type : 'boolean'
                 }, {
                     name : 'client',
                     mapping : 'CClientAddr'
@@ -1015,10 +1011,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("action"),
+                    header : this.i18n._("flagged"),
                     width : 100,
-                    sortable : true,
-                    dataIndex : 'displayAction'
+                    dataIndex : 'flagged'
+                }, {
+                    header : this.i18n._("blocked"),
+                    width : 100,
+                    dataIndex : 'blocked'
                 }, {
                     header : this.i18n._("client"),
                     width : 120,

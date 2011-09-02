@@ -62,18 +62,20 @@ import com.untangle.uvm.node.PipelineEndpoints;
         private Integer s2cContentLength;
         private String s2cContentType;
         private String hname;
-        private String wfEsoftAction;
         private String wfEsoftReason;
         private String wfEsoftCategory;
+        private Boolean wfEsoftBlocked;
+        private Boolean wfEsoftFlagged;
         private Boolean virusClamClean;
         private String virusClamName;
         private Boolean swBlacklisted;
         private String swCookieIdent;
         private Boolean virusKasperskyClean;
         private String virusKasperskyName;
-        private String wfUntangleAction;
         private String wfUntangleReason;
         private String wfUntangleCategory;
+        private Boolean wfUntangleBlocked;
+        private Boolean wfUntangleFlagged;
         private String abAction;
 
         // constructors -----------------------------------------------------------
@@ -205,10 +207,6 @@ import com.untangle.uvm.node.PipelineEndpoints;
             public String getHname() { return hname; }
         public void setHname(String hname) { this.hname = hname; }
 
-        @Column(name="wf_esoft_action")
-            public String getWfEsoftAction() { return wfEsoftAction; }
-        public void setWfEsoftAction(String wfEsoftAction) { this.wfEsoftAction = wfEsoftAction; }
-
         @Column(name="wf_esoft_reason")
             public String getWfEsoftReason() { return wfEsoftReason; }
         public void setWfEsoftReason(String wfEsoftReason) { this.wfEsoftReason = wfEsoftReason; }
@@ -216,6 +214,14 @@ import com.untangle.uvm.node.PipelineEndpoints;
         @Column(name="wf_esoft_category")
             public String getWfEsoftCategory() { return wfEsoftCategory; }
         public void setWfEsoftCategory(String wfEsoftCategory) { this.wfEsoftCategory = wfEsoftCategory; }
+
+        @Column(name="wf_esoft_blocked")
+            public Boolean getWfEsoftBlocked() { return wfEsoftBlocked; }
+        public void setWfEsoftBlocked(Boolean wfEsoftBlocked) { this.wfEsoftBlocked = wfEsoftBlocked; }
+
+        @Column(name="wf_esoft_flagged")
+            public Boolean getWfEsoftFlagged() { return wfEsoftFlagged; }
+        public void setWfEsoftFlagged(Boolean wfEsoftFlagged) { this.wfEsoftFlagged = wfEsoftFlagged; }
 
         @Column(name="virus_clam_clean")
             public Boolean getVirusClamClean() { return virusClamClean; }
@@ -241,10 +247,6 @@ import com.untangle.uvm.node.PipelineEndpoints;
             public String getVirusKasperskyName() { return virusKasperskyName; }
         public void setVirusKasperskyName(String virusKasperskyName) { this.virusKasperskyName = virusKasperskyName; }
 
-        @Column(name="wf_untangle_action")
-            public String getWfUntangleAction() { return wfUntangleAction; }
-        public void setWfUntangleAction(String wfUntangleAction) { this.wfUntangleAction = wfUntangleAction; }
-
         @Column(name="wf_untangle_reason")
             public String getWfUntangleReason() { return wfUntangleReason; }
         public void setWfUntangleReason(String wfUntangleReason) { this.wfUntangleReason = wfUntangleReason; }
@@ -252,6 +254,14 @@ import com.untangle.uvm.node.PipelineEndpoints;
         @Column(name="wf_untangle_category")
             public String getWfUntangleCategory() { return wfUntangleCategory; }
         public void setWfUntangleCategory(String wfUntangleCategory) { this.wfUntangleCategory = wfUntangleCategory; }
+
+        @Column(name="wf_untangle_blocked")
+            public Boolean getWfUntangleBlocked() { return wfUntangleBlocked; }
+        public void setWfUntangleBlocked(Boolean wfUntangleBlocked) { this.wfUntangleBlocked = wfUntangleBlocked; }
+
+        @Column(name="wf_untangle_flagged")
+            public Boolean getWfUntangleFlagged() { return wfUntangleFlagged; }
+        public void setWfUntangleFlagged(Boolean wfUntangleFlagged) { this.wfUntangleFlagged = wfUntangleFlagged; }
 
         @Column(name="ab_action")
             public String getAbAction() { return abAction; }

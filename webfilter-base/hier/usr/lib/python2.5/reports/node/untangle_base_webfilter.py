@@ -1,19 +1,3 @@
-# $HeadURL: svn://chef/work/src/buildtools/rake-util.rb $
-# Copyright (c) 2003-2009 Untangle, Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, version 2,
-# as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful, but
-# AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
-# NONINFRINGEMENT.  See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
-#
 # Aaron Read <amread@untangle.com>
 # Sebastien Delafond <seb@untangle.com>
 
@@ -71,13 +55,15 @@ class WebFilterBaseNode(Node):
 
         ft.measures.append(Column('wf_%s_blocks' % self.__vendor_name,
                                   'integer',
-                                  "count(CASE WHEN wf_%s_action = 'B' THEN 1 ELSE null END)"
+                                  "count(CASE WHEN wf_%s_blocked THEN 1 ELSE null END)"
+                                  % self.__vendor_name))
+
+        ft.measures.append(Column('wf_%s_violations' % self.__vendor_name,
+                                  'integer',
+                                  "count(CASE WHEN wf_%s_flagged THEN 1 ELSE null END)"
                                   % self.__vendor_name))
 
         ft.dimensions.append(Column('wf_%s_category' % self.__vendor_name,
-                                    'text'))
-
-        ft.dimensions.append(Column('wf_%s_action' % self.__vendor_name,
                                     'text'))
 
         ft.dimensions.append(Column('wf_%s_reason' % self.__vendor_name,
@@ -104,7 +90,7 @@ class WebFilterBaseNode(Node):
                             TopTenWebPolicyViolatorsByHits(self.__vendor_name),
                             TopTenWebPolicyViolatorsADByHits(self.__vendor_name),
                             TopTenPolicyViolations(self.__vendor_name),
-                            TopTenBlockerPolicyViolations(self.__vendor_name)])
+                            TopTenBlockedPolicyViolations(self.__vendor_name)])
         sections.append(s)
 
         sections.append(WebFilterDetail(self.__vendor_name))
@@ -127,7 +113,7 @@ DELETE FROM events.n_webfilter_evt WHERE time_stamp < %s""", (cutoff,))
     def __update_n_http_events(self, start_date, end_date):
         try:
             sql_helper.run_sql("""\
-ALTER TABLE reports.n_http_events ADD COLUMN wf_%s_action character(1)"""
+ALTER TABLE reports.n_http_events DROP COLUMN wf_%s_action"""
                                % self.__vendor_name)
         except: pass
         try:
@@ -140,6 +126,16 @@ ALTER TABLE reports.n_http_events ADD COLUMN wf_%s_reason character(1)"""
 ALTER TABLE reports.n_http_events ADD COLUMN wf_%s_category text"""
                                % self.__vendor_name)
         except: pass
+        try:
+            sql_helper.run_sql("""\
+ALTER TABLE reports.n_http_events ADD COLUMN wf_%s_blocked boolean"""
+                               % self.__vendor_name)
+        except: pass
+        try:
+            sql_helper.run_sql("""\
+ALTER TABLE reports.n_http_events ADD COLUMN wf_%s_flagged boolean"""
+                               % self.__vendor_name)
+        except: pass
 
         sd = TimestampFromMx(sql_helper.get_update_info('n_http_events[%s]'
                                                         % self.name, start_date))
@@ -149,15 +145,16 @@ ALTER TABLE reports.n_http_events ADD COLUMN wf_%s_category text"""
         try:
             sql_helper.run_sql("""\
 UPDATE reports.n_http_events
-SET wf_%s_action = action,
-  wf_%s_reason = reason,
-  wf_%s_category = category
+SET wf_%s_blocked = blocked,
+    wf_%s_flagged = flagged,
+    wf_%s_reason = reason,
+    wf_%s_category = category
 FROM events.n_webfilter_evt
 WHERE reports.n_http_events.time_stamp >= %%s
   AND reports.n_http_events.time_stamp < %%s
   AND events.n_webfilter_evt.vendor_name = %%s
   AND reports.n_http_events.request_id = events.n_webfilter_evt.request_id"""
-                               % (3 * (self.__vendor_name,)),
+                               % (4 * (self.__vendor_name,)),
                                (sd, ed, self.__vendor_name), connection=conn,
                                auto_commit=False)
 
@@ -190,11 +187,11 @@ class WebHighlight(Highlight):
 
         query = """\
 SELECT COALESCE(sum(hits), 0)::int AS hits,
-       COALESCE(sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END), 0)::int AS violations,
+       COALESCE(sum(wf_%s_violations), 0)::int AS violations,
        COALESCE(sum(wf_%s_blocks), 0)::int AS blocks
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-""" % (self.__vendor_name, self.__vendor_name, self.__vendor_name)
+""" % (self.__vendor_name, self.__vendor_name)
 
         if host:
             query = query + " AND hname = %s"
@@ -241,7 +238,7 @@ class DailyWebUsage(Graph):
         try:
             sums = ["COALESCE(SUM(hits), 0)::float",
                     "COALESCE(SUM(wf_%s_blocks), 0)::float" % (self.__vendor_name,),
-                    "COALESCE(SUM(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END), 0)::float" % (self.__vendor_name, self.__vendor_name)]
+                    "COALESCE(SUM(wf_%s_violations), 0)::float" % (self.__vendor_name,)]
 
             extra_where = []
             if host:
@@ -337,11 +334,10 @@ class TotalWebUsage(Graph):
 
         query = """\
 SELECT COALESCE(sum(hits)::int, 0),
-       COALESCE(sum(CASE WHEN NULLIF(wf_%s_category,'') IS NULL OR wf_%s_reason = 'I' THEN 0 ELSE hits END), 0)::int AS violations,
-       COALESCE(sum(wf_%s_blocks)::int, 0)
+       COALESCE(sum(wf_%s_violations), 0)::int AS violations,
+       COALESCE(sum(wf_%s_blocks), 0)::int AS blocks
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s""" % (self.__vendor_name,
-                                                   self.__vendor_name,
                                                    self.__vendor_name)
         if host:
             query = query + " AND hname = %s"
@@ -407,16 +403,15 @@ class TopTenWebPolicyViolationsByHits(Graph):
 SELECT wf_%s_category, count(*)::int AS blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-AND NOT wf_%s_category IS NULL
-AND NOT wf_%s_reason = 'I'
-""" % (3 * (self.__vendor_name,))
+AND wf_%s_violations > 0
+""" % (2 * (self.__vendor_name,))
         if host:
             query = query + " AND hname = %s"
         elif user:
             query = query + " AND uid = %s"
         query += """
 GROUP BY wf_%s_category ORDER BY blocks_sum DESC
-""" % self.__vendor_name
+""" % (self.__vendor_name,)
 
         conn = sql_helper.get_connection()
         try:
@@ -471,9 +466,8 @@ class TopTenWebBlockedPolicyViolationsByHits(Graph):
 SELECT wf_%s_category, sum(wf_%s_blocks)::int AS blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-AND wf_%s_category != ''
-AND wf_%s_action = 'B'
-AND wf_%s_blocks > 0""" % (5 * (self.__vendor_name,))
+AND wf_%s_blocks > 0
+""" % (3 * (self.__vendor_name,))
         if host:
             query = query + " AND hname = %s"
         elif user:
@@ -675,7 +669,7 @@ class TopTenWebPolicyViolatorsByHits(Graph):
 SELECT hname, COALESCE(sum(wf_%s_blocks), 0)::int as blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-AND wf_%s_action = 'B'
+AND wf_%s_blocks > 0
 GROUP BY hname
 ORDER BY blocks_sum DESC""" % ((self.__vendor_name,)*2)
 
@@ -725,12 +719,10 @@ class TopTenWebPolicyViolatorsADByHits(Graph):
 SELECT uid, sum(wf_%s_blocks)::int as blocks_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-AND wf_%s_action = 'B'
-AND wf_%s_category != ''
 AND wf_%s_blocks > 0
 AND uid != ''
 GROUP BY uid ORDER BY blocks_sum DESC""" \
-            % (4 * (self.__vendor_name,))
+            % (2 * (self.__vendor_name,))
 
         conn = sql_helper.get_connection()
         try:
@@ -939,8 +931,8 @@ class TopTenPolicyViolations(Graph):
 SELECT host, sum(hits)::int as hits_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-AND NOT wf_%s_category IS NULL
-AND NOT wf_%s_reason = 'I'""" % (self.__vendor_name, self.__vendor_name)
+AND wf_%s_violations > 0
+""" % (self.__vendor_name,)
         if host:
             query += " AND hname = %s"
         elif user:
@@ -980,7 +972,7 @@ AND NOT wf_%s_reason = 'I'""" % (self.__vendor_name, self.__vendor_name)
 
         return (lks, plot, 10)
 
-class TopTenBlockerPolicyViolations(Graph):
+class TopTenBlockedPolicyViolations(Graph):
     def __init__(self, vendor_name):
         Graph.__init__(self, 'top-blocked-violations',
                        _('Top Blocked Violations'))
@@ -1000,10 +992,8 @@ class TopTenBlockerPolicyViolations(Graph):
 SELECT host, COALESCE(sum(hits), 0)::int as hits_sum
 FROM reports.n_http_totals
 WHERE trunc_time >= %%s AND trunc_time < %%s
-AND NOT wf_%s_category IS NULL
-AND wf_%s_action = 'B'
-AND wf_%s_blocks > 0""" % (self.__vendor_name, self.__vendor_name,
-                           self.__vendor_name)
+AND wf_%s_blocks > 0
+""" % (self.__vendor_name,)
         if host:
             query += " AND hname = %s"
         elif user:
@@ -1063,7 +1053,8 @@ class WebFilterDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('wf_%s_category' % self.__vendor_name, _('Category')),
-               ColumnDesc('case', _('Blocked')),
+               ColumnDesc('flagged', _('Flagged')),
+               ColumnDesc('blocked', _('Blocked')),
                ColumnDesc('url', _('Url'), 'URL'),
                ColumnDesc('s_server_addr', _('Server Ip')),
                ColumnDesc('c_client_addr', _('Client Ip'))]
@@ -1076,14 +1067,14 @@ class WebFilterDetail(DetailSection):
 
         sql = """\
 SELECT time_stamp, hname, uid, wf_%s_category,
-       CASE wf_%s_action WHEN 'B' THEN 'True' ELSE 'False' END,
+       wf_%s_flagged, wf_%s_blocked,
        CASE s_server_port WHEN 443 THEN 'https://' ELSE 'http://' END || host || uri,
        host(s_server_addr), c_client_addr::text
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s
 AND NOT wf_%s_action IS NULL
 AND NOT wf_%s_reason = 'I'
-""" % (self.__vendor_name, self.__vendor_name,
+""" % (self.__vendor_name, self.__vendor_name, self.__vendor_name,
        DateFromMx(start_date), DateFromMx(end_date),
        self.__vendor_name, self.__vendor_name)
 
@@ -1166,7 +1157,8 @@ class WebFilterDetailAll(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('wf_%s_category' % self.__vendor_name, _('Category')),
-               ColumnDesc('case', _('Blocked')),
+               ColumnDesc('flagged', _('Flagged')),
+               ColumnDesc('blocked', _('Blocked')),
                ColumnDesc('url', _('Url'), 'URL'),
                ColumnDesc('s_server_addr', _('Server Ip')),
                ColumnDesc('c_client_addr', _('Client Ip'))]
@@ -1179,11 +1171,12 @@ class WebFilterDetailAll(DetailSection):
 
         sql = """\
 SELECT time_stamp, hname, uid, wf_%s_category,
-       CASE wf_%s_action WHEN 'B' THEN 'True' ELSE 'False' END,
+       wf_%s_flagged, wf_%s_blocked,
        CASE s_server_port WHEN 443 THEN 'https://' ELSE 'http://' END || host || uri,
        host(s_server_addr), c_client_addr::text
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s""" % (self.__vendor_name,
+                                                 self.__vendor_name,
                                                  self.__vendor_name,
                                                  DateFromMx(start_date),
                                                  DateFromMx(end_date))
@@ -1315,7 +1308,7 @@ class ViolationsByCategory(Graph):
 SELECT wf_%s_category, count(*) as blocks_sum
 FROM reports.n_http_events
 WHERE time_stamp >= %%s AND time_stamp < %%s
-AND wf_%s_action IS NOT NULL """ % (2 * (self.__vendor_name,))
+AND wf_%s_flagged """ % (2 * (self.__vendor_name,))
         if host:
             query += " AND hname = %s"
         elif user:

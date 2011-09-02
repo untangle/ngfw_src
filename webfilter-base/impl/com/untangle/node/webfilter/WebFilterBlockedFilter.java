@@ -25,8 +25,7 @@ public class WebFilterBlockedFilter
             vendorName.substring(1);
 
         evtQuery = "FROM HttpLogEventFromReports evt " + 
-            "WHERE evt.wf" + capitalizedVendorName + "Category IS NOT NULL " + 
-            "AND evt.wf" + capitalizedVendorName + "Action = 'B' " + 
+            "WHERE evt.wf" + capitalizedVendorName + "Blocked IS TRUE " + 
             "AND evt.policyId = :policyId ";
     }
 

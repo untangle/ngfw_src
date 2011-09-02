@@ -36,7 +36,7 @@ Options:
 # main
 
 try:
-     opts, args = getopt.getopt(sys.argv[1:], "hncgpmiavef:r:d:l:t:s:",
+     opts, args = getopt.getopt(sys.argv[1:], "hncgpmiavefr:d:l:t:s:",
                                 ['help', 'no-migration', 'no-cleanup',
                                  'no-data-gen', 'no-mail', 'incremental',
                                  'no-plot-gen', 'verbose', 'attach-csv',

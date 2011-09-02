@@ -109,7 +109,7 @@ INSERT INTO reports.n_http_events
         COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname,
         ps.session_id
     FROM events.pl_stats ps
-    JOIN events.n_http_req_line req ON ps.event_id = req.pl_endp_id
+    JOIN events.n_http_req_line req ON ps.pl_endp_id = req.pl_endp_id
     JOIN events.n_http_evt_req er ON er.request_id = req.request_id
     LEFT OUTER JOIN events.n_http_evt_resp resp on req.request_id = resp.request_id
     LEFT OUTER JOIN reports.merged_address_map mam

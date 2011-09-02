@@ -1,21 +1,3 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
 package com.untangle.node.webfilter;
 
 import java.io.Serializable;
@@ -23,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+
+import org.apache.log4j.Logger;
 
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
@@ -36,6 +20,8 @@ import org.hibernate.usertype.UserType;
  */
 public class ReasonUserType implements UserType
 {
+    private final Logger logger = Logger.getLogger(getClass());
+
     private static final int[] SQL_TYPES = { Types.CHAR };
 
     public int[] sqlTypes() { return SQL_TYPES; }
@@ -64,7 +50,8 @@ public class ReasonUserType implements UserType
         } else {
             Reason r = (Reason)v;
             if (Reason.DEFAULT == r) {
-                throw new IllegalStateException("i told you");
+                logger.error("Default reason: " + r);
+                //throw new IllegalStateException("i told you");
             }
             ps.setString(i, Character.toString(r.getKey()));
         }
