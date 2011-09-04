@@ -156,7 +156,8 @@ class LocalDirectoryImpl implements LocalDirectory
         // Still no settings, just initialize new ones
         if (users == null) {
             logger.warn("No settings found - Initializing new settings.");
-            users = new LinkedList<LocalDirectoryUser>();
+            this.currentList = new LinkedList<LocalDirectoryUser>();
+            this.saveUsersList();
         }
 
         this.currentList = users;

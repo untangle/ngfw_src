@@ -298,10 +298,13 @@ public class SettingsManagerImpl implements SettingsManager
                  *  fileWriter = null;
                  */
             } catch (IOException e) {
+                logger.warn("Failed to save settings: ", e);
                 throw new SettingsException("Unable to load the file: '" + fileName + "'", e);
             } catch (MarshallException e) {
+                logger.warn("Failed to save settings: ", e);
                 throw new SettingsException("Unable to marshal json string:", e);
             } catch (InterruptedException e) {
+                logger.warn("Failed to save settings: ", e);
                 throw new SettingsException("Unable to create symbolic link:", e);
             } finally {
                 try {
