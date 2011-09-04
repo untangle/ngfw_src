@@ -241,9 +241,9 @@ if (!Ung.hasResource["Ung.Firewall"]) {
         // Rules Panel
         buildRules : function() {
             // enable is a check column
-            var liveColumn = new Ext.grid.CheckColumn({
+            var enabledColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("Enable"),
-                dataIndex : 'live',
+                dataIndex : 'enabled',
                 fixed : true
             });
 
@@ -276,7 +276,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         paginated : false,
                         hasReorder : true,
                         emptyRow : {
-                            "live" : true,
+                            "enabled" : true,
                             "block" : true,
                             "log" : false,
                             "description" : this.i18n._("[no description]"),
@@ -288,7 +288,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         fields : [{
                             name : 'id'
                         }, {
-                            name : 'live'
+                            name : 'enabled'
                         }, {
                             name : 'block'
                         }, {
@@ -300,7 +300,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         }, {
                             name : 'javaClass'
                         }],
-                        columns : [liveColumn, {
+                        columns : [enabledColumn, {
                             id : 'description',
                             header : this.i18n._("Description"),
                             width : 200,
@@ -308,7 +308,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         }],
                         columnsDefaultSortable : false,
                         autoExpandColumn : 'description',
-                        plugins : [liveColumn],
+                        plugins : [enabledColumn],
 
                         initComponent : function() {
                             this.rowEditor = new Ung.RowEditorWindow({
@@ -383,7 +383,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
 
                         rowEditorInputLines : [new Ext.form.Checkbox({
                             name : "Enable Rule",
-                            dataIndex: "live",
+                            dataIndex: "enabled",
                             fieldLabel : this.i18n._("Enable Rule"),
                             itemCls:'firewall-spacing-1'
                         }),

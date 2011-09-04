@@ -272,10 +272,10 @@ public class FirewallImpl extends AbstractNode implements Firewall
         LinkedList<FirewallRuleMatcher> matcherList = null;
             
         /* example rule 1 */
-        FirewallRuleMatcher portMatch1 = new FirewallRuleMatcher(FirewallRuleMatcher.MatcherType.SRC_PORT, "21");
+        FirewallRuleMatcher portMatch1 = new FirewallRuleMatcher(FirewallRuleMatcher.MatcherType.DST_PORT, "21");
         matcherList = new LinkedList<FirewallRuleMatcher>();
         matcherList.add(portMatch1);
-        ruleList.add(new FirewallRule(false, matcherList, true, true, "Block and log all traffic destined to port 21 (FTP)"));
+        ruleList.add(new FirewallRule(false, matcherList, true, true, "Block and log all traffic destined to port 21"));
                              
         /* example rule 2 */
         FirewallRuleMatcher addrMatch2 = new FirewallRuleMatcher(FirewallRuleMatcher.MatcherType.SRC_ADDR, "1.2.3.4/255.255.255.0");
@@ -292,6 +292,9 @@ public class FirewallImpl extends AbstractNode implements Firewall
         ruleList.add(new FirewallRule(false, matcherList, true, true, "Accept and log all traffic to the range 1.2.3.1 - 1.2.3.10 to ports 1000-5000"));
 
         FirewallSettings settings = new FirewallSettings(ruleList);
+        settings.setVersion(1);
+        logger.info("New Settings: " + settings.toJSONString());
+        
         return settings;
     }
 

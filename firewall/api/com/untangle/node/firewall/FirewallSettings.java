@@ -14,11 +14,11 @@ import org.json.JSONString;
  * Settings for the Firewall node.
  */
 @SuppressWarnings("serial")
-public class FirewallSettings implements Serializable
+public class FirewallSettings implements Serializable, JSONString
 {
     private List<FirewallRule> rules = null;
 
-    private int version = 1;
+    private Integer version = Integer.valueOf(1);
     
     public FirewallSettings()
     {
@@ -40,12 +40,12 @@ public class FirewallSettings implements Serializable
         this.rules = rules;
     }
 
-    public int getVersion()
+    public Integer getVersion()
     {
         return this.version;
     }
 
-    public void setVersion(int version)
+    public void setVersion(Integer version)
     {
         this.version = version;
     }

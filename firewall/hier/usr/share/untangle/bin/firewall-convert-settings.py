@@ -13,7 +13,7 @@ def build_rule(id, live, description, block, log, protocol_matcher, src_addr_mat
     str += '\t\t\t{\n'
     str += '\t\t\t"javaClass": "com.untangle.node.firewall.FirewallRule",\n'
     str += '\t\t\t"id": "%s",\n' % id
-    str += '\t\t\t"live": "%s",\n' % live
+    str += '\t\t\t"enabled": "%s",\n' % live
     str += '\t\t\t"description": "%s",\n' % description
     str += '\t\t\t"block": "%s",\n' % block
     str += '\t\t\t"log": "%s",\n' % log

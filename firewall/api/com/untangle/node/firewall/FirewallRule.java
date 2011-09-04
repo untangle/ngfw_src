@@ -27,22 +27,22 @@ public class FirewallRule implements JSONString, Serializable
 
     private List<FirewallRuleMatcher> matchers;
 
-    private int id;
-    private boolean live;
-    private boolean log;
-    private boolean block;
+    private Integer id;
+    private Boolean enabled;
+    private Boolean log;
+    private Boolean block;
     private String description;
     
     public FirewallRule()
     {
     }
 
-    public FirewallRule(boolean live, List<FirewallRuleMatcher> matchers, boolean log, boolean block, String description)
+    public FirewallRule(boolean enabled, List<FirewallRuleMatcher> matchers, boolean log, boolean block, String description)
     {
         this.setMatchers(matchers);
-        this.setLive(live);
-        this.setLog(log);
-        this.setBlock(block);
+        this.setEnabled(Boolean.valueOf(enabled));
+        this.setLog(Boolean.valueOf(log));
+        this.setBlock(Boolean.valueOf(block));
         this.setDescription(description);
     }
     
@@ -56,42 +56,42 @@ public class FirewallRule implements JSONString, Serializable
         this.matchers = matchers;
     }
 
-    public int getId()
+    public Integer getId()
     {
         return this.id;
     }
 
-    public void setId(int id)
+    public void setId(Integer id)
     {
         this.id = id;
     }
     
-    public boolean getLive()
+    public Boolean getEnabled()
     {
-        return live;
+        return enabled;
     }
 
-    public void setLive( boolean live )
+    public void setEnabled( Boolean enabled )
     {
-        this.live = live;
+        this.enabled = enabled;
     }
 
-    public boolean getBlock()
+    public Boolean getBlock()
     {
         return block;
     }
 
-    public void setBlock( boolean live )
+    public void setBlock( Boolean block )
     {
         this.block = block;
     }
 
-    public boolean getLog()
+    public Boolean getLog()
     {
         return log;
     }
 
-    public void setLog( boolean live )
+    public void setLog( Boolean log )
     {
         this.log = log;
     }
@@ -114,7 +114,7 @@ public class FirewallRule implements JSONString, Serializable
     
     public boolean isMatch( IPSession sess )
     {
-        if (!getLive())
+        if (!getEnabled())
             return false;
 
         /**
@@ -145,7 +145,7 @@ public class FirewallRule implements JSONString, Serializable
                             int srcPort, int dstPort,
                             String username)
     {
-        if (!getLive())
+        if (!getEnabled())
             return false;
 
         /**
