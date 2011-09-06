@@ -1015,8 +1015,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         this.addAnnotatedClass("com.untangle.uvm.engine.NodeManagerState");
         this.addAnnotatedClass("com.untangle.uvm.engine.NodePersistentState");
         this.addAnnotatedClass("com.untangle.uvm.engine.NodeStateChange");
-        this.addAnnotatedClass("com.untangle.uvm.shield.ShieldRejectionEvent");
-        this.addAnnotatedClass("com.untangle.uvm.shield.ShieldStatisticEvent");
     }
     
     // static initializer -----------------------------------------------------

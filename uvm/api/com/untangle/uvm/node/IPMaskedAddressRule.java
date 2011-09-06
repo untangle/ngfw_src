@@ -37,12 +37,12 @@ public class IPMaskedAddressRule extends Rule
      * @return the IPMaskedAddress.
      */
     @Type(type="com.untangle.uvm.type.IPMaskedAddressUserType")
-    public IPMaskedAddress getIpMaddr()
+    public IPMaskedAddress getIpMaskedAddress()
     {
         return ipMaddr;
     }
 
-    public void setIpMaddr(IPMaskedAddress ipMaddr)
+    public void setIpMaskedAddress(IPMaskedAddress ipMaddr)
     {
         this.ipMaddr = ipMaddr;
     }

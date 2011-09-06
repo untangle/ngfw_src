@@ -1,23 +1,14 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id$
  */
 package com.untangle.node.shield;
 
 import java.util.Date;
+
+import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
@@ -27,21 +18,16 @@ import com.untangle.uvm.shield.ShieldStatisticEvent;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.Worker;
 import com.untangle.uvm.util.WorkerRunner;
-import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-class ShieldManager
+public class ShieldManager
 {
     private static final int SLEEP_DELAY_MS = 5000;
     /* Currently set to 20 minutes */
     private static final int STATISTIC_DELAY_MS = 1200000;
 
-    private static final String START_SCRIPT = System.getProperty( "uvm.home" ) + "/shield/start";
-    private static final String STOP_SCRIPT = System.getProperty( "uvm.home" ) + "/shield/stop";
-    private static final String SHIELD_URL =
-        System.getProperty( "uvm.shield.url", "http://localhost:3001" );
+    private static final String START_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/shield-start";
+    private static final String STOP_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/shield-stop";
+    private static final String SHIELD_URL = "http://localhost:3001";
 
     private static final String FUNCTION_BLESS_USERS = "bless_users";
     private static final String FUNCTION_GET_LOGS = "get_logs";
@@ -84,15 +70,15 @@ class ShieldManager
 
         JSONArray users = new JSONArray();
 
-        for ( ShieldNodeRule rule : settings.getShieldNodeRules()) {
-            if ( !rule.isLive()) continue;
+        for ( ShieldRule rule : settings.getRules()) {
+            if ( !rule.getEnabled()) continue;
 
             JSONObject rule_json = new JSONObject();
-            String temp = rule.getAddressString();
+            String temp = rule.getIpMaskedAddress().getAddr();
             if ( temp.length() == 0 ) continue;
 
             rule_json.put( "ip", temp );
-            temp = rule.getNetmaskString();
+            temp = rule.getIpMaskedAddress().getMask();
             if ( temp.length() == 0 ) temp = "255.255.255.255";
             rule_json.put( "netmask", temp );
             rule_json.put( "divider", rule.getDivider());

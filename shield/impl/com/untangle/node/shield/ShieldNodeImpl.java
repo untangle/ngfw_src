@@ -12,7 +12,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.node.util.PartialListUtil;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
+import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
@@ -23,9 +27,7 @@ import com.untangle.uvm.shield.ShieldStatisticEvent;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
+import com.untangle.node.util.SimpleExec;
 
 public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
 
@@ -35,6 +37,8 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
         + " FROM n_shield_rejection_evt "
         + " ORDER BY time_stamp DESC LIMIT ?";
 
+    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/shield-convert-settings.py";
+    
     private static final int CREATE_DATE_IDX =  1;
     private static final int CLIENT_ADDR_IDX =  2;
     private static final int CLIENT_INTF_IDX =  3;
@@ -49,8 +53,6 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
 
     private ShieldSettings settings;
 
-    private final PartialListUtil listUtil = new PartialListUtil();
-
     private final ShieldManager shieldManager;
 
     public ShieldNodeImpl()
@@ -63,35 +65,18 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
         this.shieldManager = new ShieldManager( sse, sre );
     }
 
-    public void setShieldSettings(final ShieldSettings settings)
+    public void setSettings(final ShieldSettings settings)
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    ShieldNodeImpl.this.settings = (ShieldSettings)s.merge(settings);
-                    return true;
-                }
+        this._setSettings(settings);
 
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
-
-        if ( getRunState() == NodeState.RUNNING ) {
-            try {
-                this.shieldManager.start();
-                this.shieldManager.blessUsers( this.settings );
-            } catch ( Exception e ) {
-                logger.error( "Error setting shield node rules", e );
-            }
-        }
+        this.reconfigure();
     }
 
-    public ShieldSettings getShieldSettings()
+    public ShieldSettings getSettings()
     {
-        validateSettings();
         if( settings == null )
             logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
+
         return settings;
     }
 
@@ -103,27 +88,68 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
 
     public void initializeSettings()
     {
-        ShieldSettings settings = new ShieldSettings(this.getNodeId());
+        ShieldSettings settings = new ShieldSettings();
         logger.info("Initializing Settings...");
-        setShieldSettings( settings);
+        setSettings( settings);
     }
 
     protected void postInit(String[] args)
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery
-                        ("from ShieldSettings ts where ts.nodeId = :nodeId");
-                    q.setParameter("nodeId", getNodeId());
-                    ShieldNodeImpl.this.settings = (ShieldSettings)q.uniqueResult();
-                    return true;
-                }
+        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeId().getId().toString();
+        ShieldSettings readSettings = null;
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-shield/" + "settings_" + nodeID;
 
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
+        try {
+            readSettings = settingsManager.load( ShieldSettings.class, settingsFileName );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:",e);
+        }
+        
+        /**
+         * If there are no settings, run the conversion script to see if there are any in the database
+         * Then check again for the file
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Running conversion script to check DB");
+            try {
+                SimpleExec.SimpleExecResult result = null;
+                logger.warn("Running: " + SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + settingsFileName + ".js");
+                result = SimpleExec.exec( SETTINGS_CONVERSION_SCRIPT, new String[] { nodeID.toString() , settingsFileName + ".js"}, null, null, true, true, 1000*60, logger, true);
+            } catch ( Exception e ) {
+                logger.warn( "Conversion script failed.", e );
+            } 
+
+            try {
+                readSettings = settingsManager.load( ShieldSettings.class, settingsFileName );
+                if (readSettings != null) {
+                    logger.warn("Found settings imported from database");
+                }
+                this._setSettings(readSettings);
+
+            } catch (SettingsManager.SettingsException e) {
+                logger.warn("Failed to load settings:",e);
+            }
+        }
+
+        /**
+         * If there are still no settings, just initialize
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Initializing new settings.");
+
+            ShieldSettings settings = new ShieldSettings();
+
+            this.initializeSettings();
+        }
+        else {
+            logger.info("Loading Settings...");
+
+            this.settings = readSettings;
+            logger.info("Settings: " + this.settings.toJSONString());
+        }
+
+        this.reconfigure();
     }
 
     public List<ShieldRejectionLogEntry> getLogs( final int limit )
@@ -166,12 +192,10 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
 
     protected void preStart()
     {
-        validateSettings();
     }
 
     protected void postStart() 
     {
-        validateSettings();
         try {
             this.shieldManager.start();
             this.shieldManager.blessUsers( this.settings );
@@ -189,61 +213,33 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
         }
     }
 
-    /* This just checks if the settings are null, tries to load them from the database
-     * if they are still null it will then initialize a new set of settings */
-    private void validateSettings()
+    private void _setSettings( ShieldSettings newSettings )
     {
-        if (this.settings == null) {
-            String args[] = { "" };
-            postInit( args );
-            /* If the settings are still null, initialize them */
-            if ( this.settings == null ) initializeSettings();
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeId().getId().toString();
+        try {
+            settingsManager.save(ShieldSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-shield/" + "settings_"  + nodeID, newSettings);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
         }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.info("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+        this.reconfigure();
     }
-
-    public ShieldBaseSettings getBaseSettings() {
-        return settings.getBaseSettings();
-    }
-
-    public void setBaseSettings(final ShieldBaseSettings baseSettings) {
-        TransactionWork<Object> tw = new TransactionWork<Object>() {
-            public boolean doWork(Session s) {
-                settings.setBaseSettings(baseSettings);
-                s.merge(settings);
-                return true;
-            }
-
-            public Object getResult() {
-                return null;
-            }
-        };
-        getNodeContext().runTransaction(tw);
-    }
-
-    @SuppressWarnings("unchecked") //getItems
-    public List<ShieldNodeRule> getShieldNodeRules(int start, int limit,
-            String... sortColumns) {
-        return listUtil.getItems(
-                "select ts.shieldNodeRules from ShieldSettings ts where ts.nodeId = :nodeId ",
-                getNodeContext(), getNodeId(), start, limit, sortColumns);
-    }
-
-    public void updateShieldNodeRules(List<ShieldNodeRule> added,
-            List<Long> deleted, List<ShieldNodeRule> modified) {
-
-        updateRules(getShieldSettings().getShieldNodeRules(), added, deleted,
-                modified);
-    }
-
-    /*
-     * For this node, updateAll means update only the rules
-     * @see com.untangle.node.shield.ShieldNode#updateAll(java.util.List[])
-     */
-    @SuppressWarnings("unchecked")
-	public void updateAll(List[] shieldNodeRulesChanges) 
+    
+    private void reconfigure()
     {
-        if (shieldNodeRulesChanges != null && shieldNodeRulesChanges.length >= 3) {
-            updateShieldNodeRules(shieldNodeRulesChanges[0], shieldNodeRulesChanges[1], shieldNodeRulesChanges[2]);
+        if (settings == null) {
+            logger.warn("NULL Settings");
+            return;
         }
 
         if ( getRunState() == NodeState.RUNNING ) {
@@ -255,25 +251,4 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
             }
         }
     }
-
-    private void updateRules(final Set<ShieldNodeRule> rules,
-            final List<ShieldNodeRule> added, final List<Long> deleted,
-            final List<ShieldNodeRule> modified) {
-
-        TransactionWork<Object> tw = new TransactionWork<Object>() {
-            public boolean doWork(Session s) {
-                listUtil.updateCachedItems( rules, added, deleted, modified );
-
-                settings = (ShieldSettings)s.merge(settings);
-
-                return true;
-            }
-
-            public Object getResult() {
-                return null;
-            }
-        };
-        getNodeContext().runTransaction(tw);
-    }
-
 }

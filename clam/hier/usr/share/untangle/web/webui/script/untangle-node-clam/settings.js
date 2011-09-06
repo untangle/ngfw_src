@@ -7,4 +7,4 @@ Ung.NodeWin.dependency["untangle-node-clam"] = {
             Ung.Clam = Ext.extend(Ung.Virus, {});
         }
     }
-}
+};
