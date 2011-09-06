@@ -33,24 +33,15 @@
 
 package com.untangle.node.spam;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.Type;
-
 /**
  * Spam control: Definition of spam control settings (either direction)
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-@Entity
-@Table(name="n_spam_smtp_config", schema="settings")
 @SuppressWarnings("serial")
 public class SpamSmtpConfig extends SpamProtoConfig
 {
-
     public static final int DEFAULT_SUPER_STRENGTH = 200;
     public static final boolean DEFAULT_TARPIT = false;
     public static final int DEFAULT_TARPIT_TIMEOUT = 15;
@@ -110,7 +101,6 @@ public class SpamSmtpConfig extends SpamProtoConfig
      * for a notification message.
      */
 
-    @Column(name="block_superspam", nullable=false)
     public boolean getBlockSuperSpam()
     {
         return blockSuperSpam;
@@ -121,7 +111,6 @@ public class SpamSmtpConfig extends SpamProtoConfig
         this.blockSuperSpam = blockSuperSpam;
     }
 
-    @Column(name="superspam_strength", nullable=false)
     public int getSuperSpamStrength()
     {
         return superSpamStrength;
@@ -132,7 +121,6 @@ public class SpamSmtpConfig extends SpamProtoConfig
         this.superSpamStrength = superSpamStrength;
     }
 
-    @Column(name="fail_closed", nullable=false)
     public boolean getFailClosed()
     {
         return failClosed;
@@ -149,8 +137,6 @@ public class SpamSmtpConfig extends SpamProtoConfig
      *
      * @return the action to take if a message is judged to be spam.
      */
-    @Column(name="msg_action", nullable=false)
-    @Type(type="com.untangle.node.spam.SmtpSpamMessageActionUserType")
     public SmtpSpamMessageAction getMsgAction()
     {
         return msgAction;
@@ -167,7 +153,6 @@ public class SpamSmtpConfig extends SpamProtoConfig
      *
      * @return whether or not to reject a spammer
      */
-    @Column(name="tarpit", nullable=false)
     public boolean getTarpit()
     {
         return tarpit;
@@ -184,7 +169,6 @@ public class SpamSmtpConfig extends SpamProtoConfig
      *
      * @return timeout in seconds for tarpit lookups
      */
-    @Column(name="tarpit_timeout",nullable=false)
     public int getTarpitTimeout()
     {
         return tarpit_timeout;
@@ -202,7 +186,6 @@ public class SpamSmtpConfig extends SpamProtoConfig
      *
      * @return timeout in seconds for tarpit lookups
      */
-    @Column(name="limit_scans", nullable=false)
     public int getScanLimit()
     {
         return limit_scans;
@@ -219,7 +202,6 @@ public class SpamSmtpConfig extends SpamProtoConfig
      *
      * @return timeout in seconds for tarpit lookups
      */
-    @Column(name="limit_load", nullable=false)
     public float getLoadLimit()
     {
         return limit_load;
@@ -236,7 +218,6 @@ public class SpamSmtpConfig extends SpamProtoConfig
      *
      * @return boolean value
      */
-    @Column(name="scan_wan_mail", nullable=false)
     public boolean getScanWanMail()
     {
         return scan_wan_mail;
@@ -246,5 +227,4 @@ public class SpamSmtpConfig extends SpamProtoConfig
     {
         this.scan_wan_mail = scan_wan_mail;
     }
-    
 }

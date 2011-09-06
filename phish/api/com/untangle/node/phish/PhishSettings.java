@@ -19,11 +19,6 @@
 package com.untangle.node.phish;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
-
 import com.untangle.uvm.security.NodeId;
 import com.untangle.node.spam.SpamSettings;
 
@@ -33,9 +28,6 @@ import com.untangle.node.spam.SpamSettings;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-@Entity
-@PrimaryKeyJoinColumn(name="spam_settings_id")
-@Table(name="n_phish_settings", schema="settings")
 @SuppressWarnings("serial")
 public class PhishSettings extends SpamSettings implements Serializable
 {
@@ -54,7 +46,6 @@ public class PhishSettings extends SpamSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    @Column(name="enable_google_sb")
     public boolean getEnableGooglePhishList()
     {
         return enableGooglePhishList;

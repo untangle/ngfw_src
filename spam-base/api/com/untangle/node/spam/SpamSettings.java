@@ -37,23 +37,6 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
-
 import com.untangle.uvm.security.NodeId;
 
 /**
@@ -62,13 +45,9 @@ import com.untangle.uvm.security.NodeId;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-@Entity
-@Table(name="n_spam_settings", schema="settings")
-@Inheritance(strategy=InheritanceType.JOINED)
 @SuppressWarnings("serial")
 public class SpamSettings implements Serializable
 {
-
     private Long id;
     private NodeId tid;
 
@@ -87,16 +66,11 @@ public class SpamSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    @SuppressWarnings("unused")
-	@Id
-    @Column(name="settings_id")
-    @GeneratedValue
     private Long getId()
     {
         return id;
     }
 
-    @SuppressWarnings("unused")
 	private void setId(Long id)
     {
         this.id = id;
@@ -107,8 +81,6 @@ public class SpamSettings implements Serializable
      *
      * @return tid for these settings
      */
-    @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="tid", nullable=false)
     public NodeId getNodeId()
     {
         return tid;
@@ -119,7 +91,6 @@ public class SpamSettings implements Serializable
         this.tid = tid;
     }
 
-    @Embedded
     public SpamBaseSettings getBaseSettings()
     {
         if (null != baseSettings) {
@@ -139,13 +110,6 @@ public class SpamSettings implements Serializable
      *
      * @return Spam RBL list.
      */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({org.hibernate.annotations.CascadeType.ALL,
-                  org.hibernate.annotations.CascadeType.DELETE_ORPHAN})
-    @JoinTable(name="n_spam_rbl_list",
-               joinColumns=@JoinColumn(name="settings_id"),
-               inverseJoinColumns=@JoinColumn(name="rule_id"))
-    @IndexColumn(name="position")
     public List<SpamRBL> getSpamRBLList()
     {
         if (spamRBLList != null) spamRBLList.removeAll(java.util.Collections.singleton(null));

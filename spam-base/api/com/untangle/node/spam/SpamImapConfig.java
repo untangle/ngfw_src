@@ -33,12 +33,6 @@
 
 package com.untangle.node.spam;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.Type;
-
 /**
  * Spam control: Definition of spam control settings (either
  * direction)
@@ -46,8 +40,6 @@ import org.hibernate.annotations.Type;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-@Entity
-@Table(name="n_spam_imap_config", schema="settings")
 @SuppressWarnings("serial")
 public class SpamImapConfig extends SpamProtoConfig
 {
@@ -94,8 +86,6 @@ public class SpamImapConfig extends SpamProtoConfig
      *
      * @return the action to take if a message is judged to be spam.
      */
-    @Column(name="msg_action", nullable=false)
-    @Type(type="com.untangle.node.spam.SpamMessageActionUserType")
     public SpamMessageAction getMsgAction()
     {
         return msgAction;
@@ -105,5 +95,4 @@ public class SpamImapConfig extends SpamProtoConfig
     {
         this.msgAction = msgAction;
     }
-
 }

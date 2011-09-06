@@ -8,8 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.PartialListUtil;
@@ -232,22 +230,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     {
         // set lists if not already set
         initSpamRBLList(newSpamSettings);
-
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    s.merge(newSpamSettings);
-                    SpamNodeImpl.this.spamSettings = newSpamSettings;
-
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
-
-        return;
+        SpamNodeImpl.this.spamSettings = newSpamSettings;
     }
 
     public void enableSmtpSpamHeaders(boolean enableHeaders)
@@ -306,72 +289,31 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
 
     public void setBaseSettings(final SpamBaseSettings baseSettings)
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>() {
-                public boolean doWork(Session s) {
-                    spamSettings.setBaseSettings(baseSettings);
-                    s.merge(spamSettings);
-                    return true;
-                }
-
-                public Object getResult() {
-                    return null;
-                }
-            };
-        getNodeContext().runTransaction(tw);
+        spamSettings.setBaseSettings(baseSettings);
     }
 
     @SuppressWarnings("unchecked") //getItems
     public List<SpamRBL> getSpamRBLList( int start, int limit, String ... sortColumns )
     {
-        String query = "select s.spamRBLList from SpamSettings s where s.nodeId = :nodeId ";
-        return listUtil.getItems( query, getNodeContext(), getNodeId(), start, limit, sortColumns );
+        return spamSettings.getSpamRBLList();
     }
 
     public void updateSpamRBLList( final List<SpamRBL> added, final List<Long> deleted,
                                    final List<SpamRBL> modified )
     {
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-            {
-                public boolean doWork(Session s)
-                {
-                    List<SpamRBL> rblList = getSpamSettings().getSpamRBLList();
-                    listUtil.updateCachedItems( rblList, spamRblHandler, added, deleted, modified);
-                    spamSettings = (SpamSettings)s.merge(spamSettings);
-
-                    return true;
-                }
-
-                public Void getResult() { return null; }
-            };
-
-        getNodeContext().runTransaction( tw );
-
     }
 
     @SuppressWarnings("unchecked")
 	public void updateAll( final SpamBaseSettings baseSettings, final List[] rblRules )
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>() {
-                public boolean doWork(Session s) {
-                    if (baseSettings != null) {
-                        spamSettings.setBaseSettings(baseSettings);
-                    }
-                    if (rblRules != null && rblRules.length >= 3) {
-                        List<SpamRBL> rblList = new LinkedList<SpamRBL>( getSpamSettings().getSpamRBLList());
-                        listUtil.updateCachedItems( rblList, spamRblHandler, rblRules );
-                        // spamSettings.setSpamRBLList( rblList );
-                    }
-
-                    spamSettings = (SpamSettings)s.merge(spamSettings);
-
-                    return true;
-                }
-
-                public Object getResult() {
-                    return null;
-                }
-            };
-        getNodeContext().runTransaction(tw);
+        if (baseSettings != null) {
+            spamSettings.setBaseSettings(baseSettings);
+        }
+        
+        if (rblRules != null && rblRules.length >= 3) {
+            List<SpamRBL> rblList = new LinkedList<SpamRBL>( getSpamSettings().getSpamRBLList());
+            // spamSettings.setSpamRBLList( rblList );
+        }
     }
 
     public void initializeSettings()
@@ -409,32 +351,9 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     @Override
     protected void preInit(String args[])
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = getSettingsQuery(s);
-                    q.setParameter("nodeId", getNodeId());
-                    spamSettings = (SpamSettings)q.uniqueResult();
-
-                    // set lists if not already set
-                    initSpamRBLList(spamSettings);
-
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
-
-        return;
-    }
-
-    protected Query getSettingsQuery(Session s)
-    {
-        Query q = s.createQuery("from SpamSettings ss where ss.nodeId = :nodeId");
-        q.setParameter("nodeId", getNodeId());
-        return q;
+        spamSettings = new SpamSettings(getNodeId());
+        initializeSettings();
+        initSpamRBLList(spamSettings);
     }
 
     public SpamScanner getScanner()
@@ -477,5 +396,4 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
         setSpamSettings((SpamSettings)settings);
         return;
     }
-
 }

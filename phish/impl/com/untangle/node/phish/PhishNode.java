@@ -16,8 +16,6 @@ import java.io.InputStreamReader;
 import java.util.zip.GZIPInputStream;
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -42,9 +40,13 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.SettingsManager;
+import com.untangle.node.util.SimpleExec;
 
 public class PhishNode extends SpamNodeImpl implements Phish
 {
+    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/phish-convert-settings.py";
+    
     private final Logger logger = Logger.getLogger(getClass());
 
     /**
@@ -98,6 +100,85 @@ public class PhishNode extends SpamNodeImpl implements Phish
         phishHttpEventLogger.addListEventFilter(lef);
     }
 
+    // private methods --------------------------------------------------------
+
+    private void readNodeSettings()
+    {
+        SettingsManager setman = LocalUvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeId().getId().toString();
+        String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-phish/settings_" + nodeID;
+        String settingsFile = settingsBase + ".js";
+        PhishSettings readSettings = null;
+        
+        logger.info("Loading settings from " + settingsFile);
+        
+        try {
+            readSettings =  setman.load( PhishSettings.class, settingsBase);
+        }
+
+        catch (Exception exn) {
+            logger.error("Could not read node settings", exn);
+        }
+
+        // if no settings found try getting them from the database
+        if (readSettings == null) {
+            logger.warn("No json settings found... attempting to import from database");
+            
+            try {
+                SimpleExec.SimpleExecResult result = null;
+                
+                result = SimpleExec.exec(SETTINGS_CONVERSION_SCRIPT, new String[] { nodeID.toString(), settingsFile } , null, null, true, true, 1000*60, logger, true);
+                logger.info("EXEC stdout: " + new String(result.stdOut));
+                logger.info("EXEC stderr: " + new String(result.stdErr));
+            }
+
+            catch (Exception exn) {
+                logger.error("Conversion script failed", exn);
+            }
+
+            try {
+                readSettings = setman.load( PhishSettings.class, settingsBase);
+            }
+
+            catch (Exception exn) {
+                logger.error("Could not read node settings", exn);
+            }
+            
+            if (readSettings != null) logger.warn("Database settings successfully imported");
+        }
+
+        try
+        {
+            if (readSettings == null) {
+                logger.warn("No database or json settings found... initializing with defaults");
+                initializeSettings();
+            }
+            
+            else {
+                setSpamSettings(readSettings);
+            }
+        }
+        
+        catch (Exception exn) {
+            logger.error("Could not apply node settings", exn);
+        }
+    }
+
+    private void writeNodeSettings(PhishSettings argSettings)
+    {
+        SettingsManager setman = LocalUvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeId().getId().toString();
+        String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-phish/settings_" + nodeID;
+
+        try {
+            setman.save( PhishSettings.class, settingsBase, argSettings);
+        }
+
+        catch (Exception exn) {
+            logger.error("Could not save PhishNode settings", exn);
+        }
+    }
+    
     // public methods ---------------------------------------------------------
 
     public EventManager<PhishHttpEvent> getPhishHttpEventManager()
@@ -107,24 +188,30 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
     public void setPhishSettings(PhishSettings spamSettings)
     {
+        logger.info("setPhishSettings()");
         setSpamSettings(spamSettings);
+        writeNodeSettings(spamSettings);
     }
 
     public PhishSettings getPhishSettings()
     {
+        logger.info("getPhishSettings()");
         return (PhishSettings)getSpamSettings();
     }
 
     public void setPhishBaseSettings(PhishBaseSettings phishBaseSettings)
     {
+        logger.info("setPhishBaseSettings()");
         PhishSettings phishSettings = getPhishSettings();
         phishBaseSettings.copy(phishSettings.getBaseSettings());
         phishSettings.setEnableGooglePhishList(phishBaseSettings.getEnableGooglePhishList());
         setSpamSettings(phishSettings);
+        writeNodeSettings(phishSettings);
     }
 
     public PhishBaseSettings getPhishBaseSettings(boolean updateInfo)
     {
+        logger.info("getPhishBaseSettings()");
         PhishBaseSettings phishBaseSettings = new PhishBaseSettings();
         PhishSettings phishSettings = getPhishSettings();
         SpamBaseSettings spamBaseSettings = getBaseSettings(updateInfo);
@@ -173,7 +260,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
     public void initializeSettings()
     {
-        logger.debug("Initializing Settings");
+        logger.info("Initializing Settings");
 
         PhishSettings tmpSpamSettings = new PhishSettings(getNodeId());
         tmpSpamSettings.setEnableGooglePhishList(true);
@@ -181,6 +268,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
         tmpSpamSettings.getBaseSettings().getSmtpConfig().setBlockSuperSpam(false);
 
         setSpamSettings(tmpSpamSettings);
+        initSpamRBLList(tmpSpamSettings);
     }
 
     // protected methods ------------------------------------------------------
@@ -192,27 +280,29 @@ public class PhishNode extends SpamNodeImpl implements Phish
     }
 
     @Override
+    protected void preInit(String args[])
+    {
+        // nothing happens here we just want to prevent the base member
+        // function from being called since it does a bunch of settings
+        // init that we don't want after moving to the new settings model.
+    }
+
+    @Override
     protected void postInit(String args[])
     {
         deployWebAppIfRequired(logger);
 
+        readNodeSettings();
         SpamSettings ps = getSpamSettings();
         ps.getBaseSettings().getSmtpConfig().setBlockSuperSpam(false);
         setSpamSettings(ps);
+        initSpamRBLList(ps);
     }
 
     @Override
     protected void postDestroy()
     {
         unDeployWebAppIfRequired(logger);
-    }
-
-    @Override
-    protected Query getSettingsQuery(Session s)
-    {
-        Query q = s.createQuery("from PhishSettings ss where ss.nodeId = :nodeId");
-        q.setParameter("nodeId", getNodeId());
-        return q;
     }
 
     @Override

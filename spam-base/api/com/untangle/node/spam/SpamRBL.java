@@ -35,24 +35,15 @@ package com.untangle.node.spam;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 /**
  * spam RBL
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-@Entity
-@Table(name="n_spam_rbl", schema="settings")
 @SuppressWarnings("serial")
 public class SpamRBL implements Serializable
 {
-
     // a spam RBL list with a single NO_RBL hostname will deactivate RBL and
     // prevent the list from re-initializing with default hostnames
     // or
@@ -81,14 +72,10 @@ public class SpamRBL implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    @Id
-    @Column(name="id")
-    @GeneratedValue
     public Long getId() {
         return id;
     }
 
-    @SuppressWarnings("unused")
 	private void setId(Long id) {
         this.id = id;
     }
@@ -98,7 +85,6 @@ public class SpamRBL implements Serializable
      *
      * @return hostname of spam RBL
      */
-    @Column(nullable=false)
     public String getHostname() {
         return hostname;
     }
@@ -113,7 +99,6 @@ public class SpamRBL implements Serializable
      *
      * @return description of hostname
      */
-    @Column(nullable=true)
     public String getDescription() {
         return description;
     }
@@ -128,7 +113,6 @@ public class SpamRBL implements Serializable
      *
      * @return active spam RBL flag
      */
-    @Column(nullable=false)
     public boolean getActive() {
         return active;
     }
