@@ -74,5 +74,7 @@ public interface VirusNode extends Node
      */
     void reconfigure();
 
+    String getVendor();
+    
     EventManager<VirusEvent> getEventManager();
 }

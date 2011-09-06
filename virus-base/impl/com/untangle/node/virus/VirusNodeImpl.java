@@ -391,7 +391,10 @@ public abstract class VirusNodeImpl extends AbstractNode
         pipeSpecs[POP].setSubscriptions(subscriptions);
     }
 
-
+    public String getVendor()
+    {
+        return scanner.getVendorName();
+    }
 
     // AbstractNode methods ----------------------------------------------
 
