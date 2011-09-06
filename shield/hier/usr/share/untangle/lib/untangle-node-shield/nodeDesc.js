@@ -9,8 +9,8 @@
         "annotatedClasses" : {
             "javaClass": "java.util.LinkedList",
             "list": [
-                "com.untangle.uvm.shield.ShieldRejectionEvent",
-                "com.untangle.uvm.shield.ShieldStatisticEvent"
+                "com.untangle.node.shield.ShieldRejectionEvent",
+                "com.untangle.node.shield.ShieldStatisticEvent"
             ]
         }
 }

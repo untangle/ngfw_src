@@ -22,8 +22,6 @@ import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.shield.ShieldRejectionEvent;
-import com.untangle.uvm.shield.ShieldStatisticEvent;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;

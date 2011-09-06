@@ -13,8 +13,6 @@ import org.json.JSONObject;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.node.script.ScriptRunner;
-import com.untangle.uvm.shield.ShieldRejectionEvent;
-import com.untangle.uvm.shield.ShieldStatisticEvent;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.Worker;
 import com.untangle.uvm.util.WorkerRunner;
