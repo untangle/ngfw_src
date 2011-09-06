@@ -19,7 +19,6 @@
 package com.untangle.node.phish;
 
 import java.io.Serializable;
-import com.untangle.uvm.security.NodeId;
 import com.untangle.node.spam.SpamSettings;
 
 /**
@@ -37,11 +36,9 @@ public class PhishSettings extends SpamSettings implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    public PhishSettings() {}
-
-    public PhishSettings(NodeId tid)
+    public PhishSettings()
     {
-        super(tid);
+        super();
     }
 
     // accessors --------------------------------------------------------------

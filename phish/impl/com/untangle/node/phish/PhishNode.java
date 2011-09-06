@@ -262,7 +262,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
     {
         logger.info("Initializing Settings");
 
-        PhishSettings tmpSpamSettings = new PhishSettings(getNodeId());
+        PhishSettings tmpSpamSettings = new PhishSettings();
         tmpSpamSettings.setEnableGooglePhishList(true);
         configureSpamSettings(tmpSpamSettings);
         tmpSpamSettings.getBaseSettings().getSmtpConfig().setBlockSuperSpam(false);

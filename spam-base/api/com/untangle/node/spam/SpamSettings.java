@@ -37,8 +37,6 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.security.NodeId;
-
 /**
  * Settings for the SpamNode.
  *
@@ -49,18 +47,14 @@ import com.untangle.uvm.security.NodeId;
 public class SpamSettings implements Serializable
 {
     private Long id;
-    private NodeId tid;
 
     SpamBaseSettings baseSettings = new SpamBaseSettings();
     private List<SpamRBL> spamRBLList; // spam only
 
     // constructors -----------------------------------------------------------
 
-    public SpamSettings() {}
-
-    public SpamSettings(NodeId tid)
+    public SpamSettings()
     {
-        this.tid = tid;
         spamRBLList = new LinkedList<SpamRBL>();
     }
 
@@ -74,21 +68,6 @@ public class SpamSettings implements Serializable
 	private void setId(Long id)
     {
         this.id = id;
-    }
-
-    /**
-     * Node id for these settings.
-     *
-     * @return tid for these settings
-     */
-    public NodeId getNodeId()
-    {
-        return tid;
-    }
-
-    public void setNodeId(NodeId tid)
-    {
-        this.tid = tid;
     }
 
     public SpamBaseSettings getBaseSettings()

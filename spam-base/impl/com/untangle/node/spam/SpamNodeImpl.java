@@ -320,7 +320,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     {
         logger.debug("Initializing Settings");
 
-        SpamSettings tmpSpamSettings = new SpamSettings(getNodeId());
+        SpamSettings tmpSpamSettings = new SpamSettings();
         configureSpamSettings(tmpSpamSettings);
         setSpamSettings(tmpSpamSettings);
     }
@@ -351,7 +351,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     @Override
     protected void preInit(String args[])
     {
-        spamSettings = new SpamSettings(getNodeId());
+        spamSettings = new SpamSettings();
         initializeSettings();
         initSpamRBLList(spamSettings);
     }
