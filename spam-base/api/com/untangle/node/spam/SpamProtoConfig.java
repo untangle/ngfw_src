@@ -35,18 +35,7 @@ package com.untangle.node.spam;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
-
-/**
- * Hibernate mappings for this class are in the UVM resource
- * directory.
- */
 @SuppressWarnings("serial")
-@MappedSuperclass
 public abstract class SpamProtoConfig implements Serializable
 {
     public static final int DEFAULT_MESSAGE_SIZE_LIMIT = 1 << 18;
@@ -80,9 +69,6 @@ public abstract class SpamProtoConfig implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    @Id
-    @Column(name="config_id")
-    @GeneratedValue
     public Long getId()
     {
         return id;
@@ -98,7 +84,6 @@ public abstract class SpamProtoConfig implements Serializable
      * Get the name of the header (e.g. "X-SPAM") used to indicate the
      * SPAM/HAM value of this email
      */
-    @Transient
     public String getHeaderName() {
         return headerName;
     }
@@ -107,14 +92,12 @@ public abstract class SpamProtoConfig implements Serializable
         this.headerName = headerName;
     }
 
-
     /**
      * scan: a boolean specifying whether or not to scan a message for
      * spam (defaults to true)
      *
      * @return whether or not to scan message for spam
      */
-    @Column(nullable=false)
     public boolean getScan()
     {
         return bScan;
@@ -133,7 +116,6 @@ public abstract class SpamProtoConfig implements Serializable
      *
      * @return an <code>int</code> giving the spam strength * 10
      */
-    @Column(nullable=false)
     public int getStrength()
     {
         return strength;
@@ -144,7 +126,6 @@ public abstract class SpamProtoConfig implements Serializable
         this.strength = strength;
     }
 
-    @Column(name="add_spam_headers", nullable=false)
     public boolean getAddSpamHeaders()
     {
         return addSpamHeaders;
@@ -163,7 +144,6 @@ public abstract class SpamProtoConfig implements Serializable
      * @return an <code>int</code> giving the spam message size limit
      * (cutoff) in bytes.
      */
-    @Column(name="msg_size_limit", nullable=false)
     public int getMsgSizeLimit()
     {
         return msgSizeLimit;

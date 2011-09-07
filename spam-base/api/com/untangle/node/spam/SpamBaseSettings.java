@@ -16,17 +16,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/*
+ * Since the jabsorb serializer doesn't seem to pay attention to the transient
+ * keyword, I have prefixed all of the getXxx and setXxx functions that deal
+ * with transient objects with T_ which prevents them from being included
+ * in the JSON stream.
+ */
+
 package com.untangle.node.spam;
 
 import java.io.Serializable;
 import java.util.Date;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
 
 /**
  * Base Settings for the Spam node.
@@ -34,7 +34,6 @@ import javax.persistence.Transient;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-@Embeddable
 @SuppressWarnings("serial")
 public class SpamBaseSettings implements Serializable
 {
@@ -42,24 +41,22 @@ public class SpamBaseSettings implements Serializable
     private SpamPopConfig popConfig;
     private SpamImapConfig imapConfig;
 
-    private int rblListLength;
+    transient private int rblListLength;
 
     /* This is the date when the system last got updates */
-    private Date lastUpdate;
+    transient private Date lastUpdate;
 
     /* This is the date when the system last checked for updates */
-    private Date lastUpdateCheck;
+    transient private Date lastUpdateCheck;
     
     /* This is the version string for the signatures, it may or may not include a date */
-    private String signatureVersion;
+    transient private String signatureVersion;
     
     /**
      * SMTP settings.
      *
      * @return SMTP settings.
      */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="smtp_config", nullable=false)
     public SpamSmtpConfig getSmtpConfig()
     {
         return smtpConfig;
@@ -75,8 +72,6 @@ public class SpamBaseSettings implements Serializable
      *
      * @return POP settings.
      */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="pop_config", nullable=false)
     public SpamPopConfig getPopConfig()
     {
         return popConfig;
@@ -92,8 +87,6 @@ public class SpamBaseSettings implements Serializable
      *
      * @return IMAP settings.
      */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="imap_config", nullable=false)
     public SpamImapConfig getImapConfig()
     {
         return imapConfig;
@@ -104,47 +97,42 @@ public class SpamBaseSettings implements Serializable
         this.imapConfig = imapConfig;
     }
 
-    @Transient
-    public int getSpamRBLListLength()
+    public int T_getSpamRBLListLength()
     {
         return this.rblListLength;
     }
 
-    public void setSpamRBLListLength(int newValue)
+    public void T_setSpamRBLListLength(int newValue)
     {
         this.rblListLength = newValue;
     }
 
-
-    @Transient
-    public Date getLastUpdate()
+    public Date T_getLastUpdate()
     {
         return this.lastUpdate;
     }
 
-    public void setLastUpdate(Date newValue)
+    public void T_setLastUpdate(Date newValue)
     {
         this.lastUpdate = newValue;
     }
 
-    @Transient
-    public Date getLastUpdateCheck()
+    public Date T_getLastUpdateCheck()
     {
         return this.lastUpdateCheck;
     }
 
-    public void setLastUpdateCheck(Date newValue)
+    public void T_setLastUpdateCheck(Date newValue)
     {
         this.lastUpdateCheck = newValue;
     }
 
-    @Transient
-    public String getSignatureVersion()
+    public String T_getSignatureVersion()
     {
         return this.signatureVersion;
     }
 
-    public void setSignatureVersion(String newValue)
+    public void T_setSignatureVersion(String newValue)
     {
         this.signatureVersion = newValue;
     }
@@ -154,8 +142,8 @@ public class SpamBaseSettings implements Serializable
 		baseSettings.setSmtpConfig(this.smtpConfig);
 		baseSettings.setPopConfig(this.popConfig);
 		baseSettings.setImapConfig(this.imapConfig);
-		baseSettings.setSpamRBLListLength(this.rblListLength);
-		baseSettings.setLastUpdate(this.lastUpdate);
-		baseSettings.setSignatureVersion(this.signatureVersion);
+		baseSettings.T_setSpamRBLListLength(this.rblListLength);
+		baseSettings.T_setLastUpdate(this.lastUpdate);
+		baseSettings.T_setSignatureVersion(this.signatureVersion);
     }    
 }

@@ -235,7 +235,6 @@ def get_settings(tid, debug=False):
 
     str += '\t"baseSettings":\n\t{\n'
     str += '\t\t"javaClass": "com.untangle.node.spam.SpamBaseSettings",\n'
-    str += '\t\t"signatureVersion": "",\n'
 
     str += '\t\t"smtpConfig": %s\n' % get_smtp_config(smtp_config, debug=debug)
     str += '\t\t"imapConfig": %s\n' % get_imap_config(imap_config, debug=debug)

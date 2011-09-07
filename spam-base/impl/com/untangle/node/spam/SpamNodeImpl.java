@@ -279,9 +279,9 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
             if (signatureVersion != null) this.signatureVersion = signatureVersion;
         }
 
-        baseSettings.setLastUpdate(this.lastSignatureUpdate);
-        baseSettings.setLastUpdateCheck(this.lastSignatureUpdateCheck);
-        baseSettings.setSignatureVersion(this.signatureVersion);
+        baseSettings.T_setLastUpdate(this.lastSignatureUpdate);
+        baseSettings.T_setLastUpdateCheck(this.lastSignatureUpdateCheck);
+        baseSettings.T_setSignatureVersion(this.signatureVersion);
 
         /* XXXX Have to figure out how to calculate the version string. */
         return baseSettings;

@@ -73,7 +73,7 @@ public class SpamSettings implements Serializable
     public SpamBaseSettings getBaseSettings()
     {
         if (null != baseSettings) {
-            baseSettings.setSpamRBLListLength(null == spamRBLList ? 0 : spamRBLList.size());
+            baseSettings.T_setSpamRBLListLength(null == spamRBLList ? 0 : spamRBLList.size());
         }
 
         return baseSettings;

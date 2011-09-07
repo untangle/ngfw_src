@@ -216,8 +216,8 @@ public class PhishNode extends SpamNodeImpl implements Phish
         PhishSettings phishSettings = getPhishSettings();
         SpamBaseSettings spamBaseSettings = getBaseSettings(updateInfo);
         phishSettings.getBaseSettings().copy(phishBaseSettings);
-        phishBaseSettings.setLastUpdate(spamBaseSettings.getLastUpdate());
-        phishBaseSettings.setSignatureVersion(spamBaseSettings.getSignatureVersion());
+        phishBaseSettings.T_setLastUpdate(spamBaseSettings.T_getLastUpdate());
+        phishBaseSettings.T_setSignatureVersion(spamBaseSettings.T_getSignatureVersion());
         phishBaseSettings.setEnableGooglePhishList(phishSettings.getEnableGooglePhishList());
         return phishBaseSettings;
     }
