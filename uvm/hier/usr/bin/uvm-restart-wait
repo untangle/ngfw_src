@@ -24,19 +24,20 @@ while true; do
     elif ps -C apt-get,aptitude,synaptic >/dev/null 2>&1; then
         sleep 1
     else
-        # The upgrade is complete - stop showing the upgrade screen (regardless of mode)
-        /usr/share/untangle/bin/ut-show-upgrade-splash stop
-
         # restart will have been scheduled by the time apt-get is gone
         if is_rebooting; then
+            /usr/share/untangle/bin/ut-show-upgrade-splash stop
             exit
         elif [ "xreboot" =  "x$mode" ]; then
+            /usr/share/untangle/bin/ut-show-upgrade-splash stop
             rm $pidfile
             reboot
             exit
         else
             rm $pidfile
             /etc/init.d/untangle-vm start
+            # stop showing splash screen after uvm is booted
+            /usr/share/untangle/bin/ut-show-upgrade-splash stop
             exit
         fi
     fi
