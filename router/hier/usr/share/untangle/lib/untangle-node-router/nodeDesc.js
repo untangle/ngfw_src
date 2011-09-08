@@ -14,6 +14,12 @@
                 "com.untangle.node.router.RouterStatisticEvent",
                 "com.untangle.node.router.DhcpLeaseEvent"
             ]
+        },
+        "parents" : {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                "untangle-casing-ftp"
+            ]
         }
 }
 
