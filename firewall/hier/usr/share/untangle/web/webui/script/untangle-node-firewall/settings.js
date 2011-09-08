@@ -5,15 +5,15 @@ if (!Ung.hasResource["Ung.Firewall"]) {
     Ung.FirewallUtil={
             getMatchers : function (settingsCmp) {
                 return [
-                    {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text"},
-                    {name:"DST_ADDR",displayName: settingsCmp.i18n._("Destination Address"), type: "text"},
-                    {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"port"},
-                    {name:"DST_PORT",displayName: settingsCmp.i18n._("Destination Port"), type: "text",vtype:"port"},
-                    {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: [["External","External"],["any","any"]] },
-                    {name:"DST_INTF",displayName: settingsCmp.i18n._("Destination Interface"), type: "checkgroup", values: [["External","External"],["any","any"]] },
-                    {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["TCP,UDP","TCP,UDP"],["any","any"]]},
-                    {name:"DIRECTORY_CONNECTOR_USERNAME",displayName: settingsCmp.i18n._("Directory Connector: Username"), type: "text"},
-                    {name:"DIRECTORY_CONNECTOR_GROUP",displayName: settingsCmp.i18n._("Directory Connector: User in Group"), type: "text"}
+                    {name:"DST_ADDR",displayName: settingsCmp.i18n._("Destination Address"), type: "text", visible: true},
+                    {name:"DST_PORT",displayName: settingsCmp.i18n._("Destination Port"), type: "text",vtype:"port", visible: true},
+                    {name:"DST_INTF",displayName: settingsCmp.i18n._("Destination Interface"), type: "checkgroup", values: [["External","External"],["any","any"]], visible: true},
+                    {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text", visible: true},
+                    {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"port", visible: false},
+                    {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: [["External","External"],["any","any"]], visible: true},
+                    {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["TCP,UDP","TCP,UDP"],["any","any"]], visible: true},
+                    {name:"DIRECTORY_CONNECTOR_USERNAME",displayName: settingsCmp.i18n._("Directory Connector: Username"), type: "text", visible: true},
+                    {name:"DIRECTORY_CONNECTOR_GROUP",displayName: settingsCmp.i18n._("Directory Connector: User in Group"), type: "text", visible: true}
                 ];
             }
         };
@@ -69,7 +69,12 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     var out=[];
                     out.push('<select class="rule_builder_type" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowType(\''+record.id+'\',this)">');
                     for (var i = 0; i < this.rules.length; i++) {
-                        var seleStr=(this.rules[i].name == value)?"selected":"";
+                        var selected = this.rules[i].name == value;
+                        var seleStr=(selected)?"selected":"";
+                        // if this select is invisible and not already selected (dont show it)
+                        // if it is selected and invisible, show it (we dont have a choice)
+                        if (!this.rules[i].visible && !selected)
+                            continue;
                         out.push('<option value="' + this.rules[i].name + '" ' + seleStr + '>' + this.rules[i].displayName + '</option>');
                     }
                     out.push("</select>");
@@ -276,7 +281,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         paginated : false,
                         hasReorder : true,
                         emptyRow : {
-                            "id" : 0,
+                            "id" : "0",
                             "enabled" : true,
                             "block" : true,
                             "log" : false,
