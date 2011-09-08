@@ -1397,7 +1397,8 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                 html : '<h2 class="wizard-title">'+i18n._( "Email Configuration" )+ " <i>" + i18n._('(Optional)') + "</i>" + '</h2>'
             },{
                 xtype : 'label',
-                html : String.format(i18n._("The {0} Server needs a valid email configuration to send email."), oemName) + "<br/>" + "<br/>"
+                html : String.format(i18n._("The {0} Server needs a valid email configuration to send email."), oemName) + "<br/>" +
+                    i18n._("This is used for sending emails such as Report Summaries, Quarantine Digests, etc.")  + "<br/>" + "<br/>"
             },{
                 xtype : 'label',
                 html : "<b>" + i18n._("Step 1: ") + "</b>" + i18n._("Click") + " <i>" + i18n._("Verify Email Configuration") + "</i> " + i18n._("to test the current email configuration.") + "<br/>"
@@ -1426,7 +1427,8 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                     name : 'from-address',
                     xtype : "fieldset",
                     autoHeight:true,
-
+                    style : "padding-bottom: 1px;",
+                    border: false,
                     defaults : {
                         validationEvent : 'blur',
                         msgTarget : 'side'
@@ -1448,6 +1450,8 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                     name : 'smtp-server-config',
                     xtype : "fieldset",
                     defaultType : 'textfield',
+                    style : "padding-top: 1px;",
+                    border: false,
                     autoHeight:true,
                     defaults : {
                         msgTarget : 'side',
@@ -1810,7 +1814,7 @@ Ung.Setup = {
         if ( false ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = function() {
-                this.wizard.goToPage( 2 );
+                this.wizard.goToPage( 5 );
             }.createDelegate( this );
             var ss = new Ung.SetupWizard.SettingsSaver( null, debugHandler );
 
