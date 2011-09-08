@@ -306,6 +306,7 @@ Ung.Util= {
                 window.eval(req.responseText);
         } catch (e) {
             error=e;
+            alert(error);
         }
         if(handler) {
             handler.call(this);
