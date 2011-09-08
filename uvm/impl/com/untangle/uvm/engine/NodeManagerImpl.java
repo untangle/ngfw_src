@@ -569,7 +569,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
             if (0 == l.size()) {
                 try {
-                    logger.info("instantiating new: " + md.getName());
+                    logger.info("Auto-starting new node: " + md.getName());
                     t = instantiate(md.getName()).getNodeId();
                 } catch (DeployException exn) {
                     logger.warn("could not deploy: " + md.getName(), exn);
