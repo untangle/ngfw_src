@@ -1964,10 +1964,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             '<div class="values"><span name="num_cpus"></span>, <span name="cpu_model"></span>, <span name="cpu_speed"></span></div>',
             '<div class="title">'+i18n._("Load average (1 min , 5 min , 15 min):")+'</div>',
             '<div class="values"><span name="load_average_1_min"></span>, <span name="load_average_5_min"></span>, <span name="load_average_15_min"></span></div>',
-            '<div class="title">'+i18n._("CPU Utilization by User:")+'</div>',
-            '<div class="values"><span name="cpu_utilization_user"></span>  %</div>',
-            '<div class="title">'+i18n._("CPU Utilization by System:")+'</div>',
-            '<div class="values"><span name="cpu_utilization_system"></span> %</div>',
+
             '<div class="title">'+i18n._("Tasks (Processes)")+'</div>',
             '<div class="values"><span name="tasks"></span>'+'</div>',
             '<div class="title">'+i18n._("Uptime:")+'</div>',
@@ -2037,9 +2034,22 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
 
     },
     update : function(stats) {
-        this.getEl().child("div[class=sessions]").dom.innerHTML=stats.map.uvmSessions;
-        //this.getEl().child("div[class=cpu]").dom.innerHTML=Math.round((stats.map.userCpuUtilization+stats.map.systemCpuUtilization)*100.0/stats.map.numCpus)+"%";
+        var sessionsText = '<font color="#55BA47">' + stats.map.uvmSessions + "</font>";
+        if (stats.map.uvmSessions > 2000)
+            sessionsText = '<font color="orange">' + stats.map.uvmSessions + "</font>";
+        if (stats.map.uvmSessions > 6000)
+            sessionsText = '<font color="red">' + stats.map.uvmSessions + "</font>";
+        this.getEl().child("div[class=sessions]").dom.innerHTML=sessionsText;
+        
         this.getEl().child("div[class=cpu]").dom.innerHTML=stats.map.oneMinuteLoadAvg;
+        var oneMinuteLoadAvg = stats.map.oneMinuteLoadAvg;
+        var loadText = '<font color="#55BA47">' + i18n._('low') + '</font>';
+        if (oneMinuteLoadAvg > 3.5)
+            loadText = '<font color="orange">' + i18n._('medium') + '</font>';
+        if (oneMinuteLoadAvg > 7.0)
+            loadText = '<font color="red">' + i18n._('high') + '</font>';
+        this.getEl().child("div[class=cpu]").dom.innerHTML=loadText;
+            
         var txSpeed=Math.round(stats.map.txBps/10)/100;
         var rxSpeed=Math.round(stats.map.rxBps/10)/100;
         this.getEl().child("div[class=tx-value]").dom.innerHTML=txSpeed+"KB/s";
@@ -2054,11 +2064,6 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             var toolTipEl=this.networkToolTip.getEl();
             toolTipEl.child("span[name=tx_speed]").dom.innerHTML=txSpeed;
             toolTipEl.child("span[name=rx_speed]").dom.innerHTML=rxSpeed;
-            /*
-             * toolTipEl.child("span[name=data_received]").dom.innerHTML="TODO";
-             * toolTipEl.child("span[name=data_sent]").dom.innerHTML="TODO";
-             * toolTipEl.child("span[name=total_throughput]").dom.innerHTML="TODO";
-             */
         }
         if(this.sessionsToolTip.rendered) {
             var toolTipEl=this.sessionsToolTip.getEl();
@@ -2082,9 +2087,6 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
 
             toolTipEl.child("span[name=uptime]").dom.innerHTML=(uptimeDays>0?(uptimeDays+" "+(uptimeDays==1?i18n._("Day"):i18n._("Days"))+", "):"") + ((uptimeDays>0 || uptimeHours>0)?(uptimeHours+" "+(uptimeHours==1?i18n._("Hour"):i18n._("Hours"))+", "):"") + uptimeMinutes+" "+(uptimeMinutes==1?i18n._("Minute"):i18n._("Minutes"));
             toolTipEl.child("span[name=tasks]").dom.innerHTML=stats.map.numProcs;
-            // toolTipEl.child("span[name=threads]").dom.innerHTML="TODO";
-            toolTipEl.child("span[name=cpu_utilization_user]").dom.innerHTML=Math.round(stats.map.userCpuUtilization*100.0/stats.map.numCpus);
-            toolTipEl.child("span[name=cpu_utilization_system]").dom.innerHTML=Math.round(stats.map.systemCpuUtilization*100.0/stats.map.numCpus);
             toolTipEl.child("span[name=load_average_1_min]").dom.innerHTML=stats.map.oneMinuteLoadAvg;
             toolTipEl.child("span[name=load_average_5_min]").dom.innerHTML=stats.map.fiveMinuteLoadAvg;
             toolTipEl.child("span[name=load_average_15_min]").dom.innerHTML=stats.map.fifteenMinuteLoadAvg;
