@@ -276,6 +276,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         paginated : false,
                         hasReorder : true,
                         emptyRow : {
+                            "id" : 0,
                             "enabled" : true,
                             "block" : true,
                             "log" : false,
@@ -300,7 +301,12 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         }, {
                             name : 'javaClass'
                         }],
-                        columns : [enabledColumn, {
+                        columns : [{
+                            id : 'id',
+                            header : this.i18n._("Rule ID"),
+                            width : 50,
+                            dataIndex : 'id'
+                        }, enabledColumn, {
                             id : 'description',
                             header : this.i18n._("Description"),
                             width : 200,
