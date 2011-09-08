@@ -489,6 +489,7 @@ Package: untangle-node-router
 Architecture: all
 Depends: untangle-vm, dnsmasq, untangle-casing-ftp
 XB-Display-Name: Router
+XB-Auto-Start: true
 XB-View-Position: 2000
 XB-Invisible: true
 XB-Untangle-Pkg-Type: service
