@@ -92,12 +92,23 @@ class OpenVpn(Node):
         sql_helper.create_partitioned_table("""\
 CREATE TABLE reports.n_openvpn_stats (
     time_stamp timestamp without time zone,
+    start_time timestamp without time zone,
+    end_time timestamp without time zone,
     rx_bytes bigint,
     tx_bytes bigint,
     seconds double precision,
     event_id serial
 )""",
                                             'time_stamp', start_date, end_date)
+
+        try:
+            sql_helper.run_sql("""
+ALTER TABLE reports.n_openvpn_stats ADD COLUMN start_time timestamp without time zone""")
+        except: pass
+        try:
+            sql_helper.run_sql("""
+ALTER TABLE reports.n_openvpn_stats ADD COLUMN end_time timestamp without time zone""")
+        except: pass
 
         sd = TimestampFromMx(sql_helper.get_update_info('reports.n_openvpn_stats',
                                                    start_date))
@@ -107,11 +118,11 @@ CREATE TABLE reports.n_openvpn_stats (
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.n_openvpn_stats
-      (time_stamp, rx_bytes, tx_bytes, seconds, event_id)
-    SELECT time_stamp, rx_bytes, tx_bytes,
+      (time_stamp, start_time, end_time, rx_bytes, tx_bytes, seconds, event_id)
+    SELECT time_stamp, start_time, end_time, rx_bytes, tx_bytes,
            extract('epoch' from (end_time - start_time)) AS seconds,
            event_id
-    FROM events.n_openvpn_statistic_evt evt
+    FROM events.n_openvpn_connect_evt evt
     WHERE evt.time_stamp >= %s AND evt.time_stamp < %s""",
                                (sd, ed), connection=conn, auto_commit=False)
 

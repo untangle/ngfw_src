@@ -34,7 +34,9 @@ import com.untangle.uvm.node.PipelineEndpoints;
     {
         private Long rxBytes;
         private Long txBytes;
-        private Long seconds;
+        private Float seconds;
+        private Date endTime;
+        private Date startTime;
 
         @Column(name="rx_bytes")
             public Long getRxBytes() { return rxBytes; }
@@ -45,8 +47,18 @@ import com.untangle.uvm.node.PipelineEndpoints;
         public void setTxBytes(Long txBytes) { this.txBytes = txBytes; }
 
         @Column(name="seconds")
-            public Long getSeconds() { return seconds; }
-        public void setSeconds(Long seconds) { this.seconds = seconds; }
+            public Float getSeconds() { return seconds; }
+        public void setSeconds(Float seconds) { this.seconds = seconds; }
+
+        @Temporal(TemporalType.TIMESTAMP)
+        @Column(name="end_time")
+        public Date getEndTime() { return endTime; }
+        public void setEndTime(Date endTime) { this.endTime = endTime; }
+
+        @Temporal(TemporalType.TIMESTAMP)
+        @Column(name="start_time")
+        public Date getStartTime() { return startTime; }
+        public void setStartTime(Date startTime) { this.startTime = startTime; }
 
         public void appendSyslog(SyslogBuilder sb) // FIXME: not called for now
         {

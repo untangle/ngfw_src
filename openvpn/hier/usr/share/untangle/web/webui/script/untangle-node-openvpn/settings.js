@@ -559,8 +559,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 settingsCmp : this,
                 fields : [{
                     name : 'start',
+                    mapping : 'startTime',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
+                    name : 'end',
+                    mapping : 'endTime',
+                    sortType : Ung.SortTypes.asTimestamp
+                },{
                     name : 'duration',
                     mapping : 'seconds'
                 }, {
@@ -581,6 +586,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width : 130,
                     sortable : true,
                     dataIndex : 'start',
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
+                    }.createDelegate( this )
+                }, {
+                    header : this.i18n._("end time"),
+                    width : 130,
+                    sortable : true,
+                    dataIndex : 'end',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }.createDelegate( this )
