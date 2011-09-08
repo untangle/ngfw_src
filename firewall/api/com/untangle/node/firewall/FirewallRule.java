@@ -148,6 +148,8 @@ public class FirewallRule implements JSONString, Serializable
         if (!getEnabled())
             return false;
 
+        //logger.debug("Checking rule " + getId() + " against [" + protocol + " " + srcAddress + ":" + srcPort + " -> " + dstAddress + ":" + dstPort + " (" + username + ")]");
+            
         /**
          * If no matchers return true
          */

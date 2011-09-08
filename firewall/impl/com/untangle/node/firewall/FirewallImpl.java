@@ -130,15 +130,12 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
     public void setSettings(final FirewallSettings settings)
     {
-        this.settings = settings;
-
-        /* XXX FIXME */
-        /* XXX FIXME */
-        /* XXX FIXME */
-        /* save to settings file */
+        this._setSettings(settings);
 
         /* check for any sessions that should be killed according to new rules */
         this.killMatchingSessions(FIREWALL_SESSION_MATCHER);
+
+        this.reconfigure();
     }
     
     public void initializeSettings()
@@ -147,7 +144,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
         FirewallSettings settings = getDefaultSettings();
 
-        _setSettings(settings);
+        this.setSettings(settings);
 
         statisticManager.stop();
     }
@@ -323,6 +320,14 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
     private void _setSettings( FirewallSettings newSettings )
     {
+        /**
+         * set the new ID of each rule
+         */
+        int idx = 0;
+        for (FirewallRule rule : newSettings.getRules()) {
+            rule.setId(++idx);
+        }
+        
         /**
          * Save the settings
          */

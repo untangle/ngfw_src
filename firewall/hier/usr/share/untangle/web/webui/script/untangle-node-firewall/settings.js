@@ -281,10 +281,10 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         paginated : false,
                         hasReorder : true,
                         emptyRow : {
-                            "id" : "0",
+                            "id" : 0,
                             "enabled" : true,
-                            "block" : true,
-                            "log" : false,
+                            "block" : false,
+                            "log" : true,
                             "description" : this.i18n._("[no description]"),
                             "javaClass" : "com.untangle.node.firewall.FirewallRule"
                         },
@@ -308,7 +308,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         }],
                         columns : [{
                             id : 'id',
-                            header : this.i18n._("Rule ID"),
+                            header : this.i18n._("Rule Id"),
                             width : 50,
                             dataIndex : 'id'
                         }, enabledColumn, {
@@ -434,8 +434,8 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             dataIndex: "log",
                             itemCls:'firewall-spacing-1',
                             fieldLabel : this.i18n._("Log")
-                        })]
-                    })
+                        })
+]                    })
                 ]
             });
         },

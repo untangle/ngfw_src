@@ -75,7 +75,6 @@ class EventHandler extends AbstractEventHandler
         if (matchedRule != null) {
             block = matchedRule.getBlock();
             log = matchedRule.getLog();
-            ruleIndex = matchedRule.getId();
         }
 
         /**
