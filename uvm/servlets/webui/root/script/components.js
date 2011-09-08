@@ -1990,18 +1990,18 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
         var memoryArr=[
 
             '<div class="title">'+i18n._("Total Memory:")+'</div>',
-            '<div class="values"><span name="memory_total"></span> MBs</div>',
+            '<div class="values"><span name="memory_total"></span> MB</div>',
             '<div class="title">'+i18n._("Memory Used:")+'</div>',
-            '<div class="values"><span name="memory_used"></span> MBs, <span name="memory_used_percent"></span> %</div>',
+            '<div class="values"><span name="memory_used"></span> MB, <span name="memory_used_percent"></span> %</div>',
             '<div class="title">'+i18n._("Memory Free:")+'</div>',
-            '<div class="values"><span name="memory_free"></span> MBs, <span name="memory_free_percent"></span> %</div>',
+            '<div class="values"><span name="memory_free"></span> MB, <span name="memory_free_percent"></span> %</div>',
             '<div class="title">'+i18n._("Memory Pages:")+'</div>',
-            '<div class="values"><span name="memory_pages_active"></span> MBs '+i18n._("active")+'</div>',
-            '<div class="values"><span name="memory_pages_inactive"></span> MBs '+i18n._("inactive")+'</div>',
+            '<div class="values"><span name="memory_pages_active"></span> MB '+i18n._("active")+'</div>',
+            '<div class="values"><span name="memory_pages_inactive"></span> MB '+i18n._("inactive")+'</div>',
             '<div class="title">'+i18n._("VM Statistics:")+'</div>',
             '<div class="values"><span name="vm_pageins"></span> '+i18n._("pageins")+', <span name="vm_pageouts"></span> '+i18n._("pageouts")+'</div>',
             '<div class="title">'+i18n._("Swap Files:")+'</div>',
-            '<div class="values"><span name="swap_total"></span> MBs '+i18n._("total swap space")+' (<span name="swap_used"></span> MBs '+i18n._("used")+')</div>'
+            '<div class="values"><span name="swap_total"></span> MB '+i18n._("total swap space")+' (<span name="swap_used"></span> MB '+i18n._("used")+')</div>'
         ];
         this.memoryToolTip= new Ext.ToolTip({
             target: this.getEl().child("div[class=memory]"),
