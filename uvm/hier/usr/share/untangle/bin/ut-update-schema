@@ -310,8 +310,17 @@ loop {
 
   str = client.gets
   Syslog.info "*** Received '#{str}'"
-  next if str.nil? or str.empty?
-  str.chop!
+  if str.nil? then
+    Syslog.err("*** Empty request, aborting")
+    next
+  else
+    str.chop!
+    if str.empty? then
+      Syslog.err("*** Empty request, aborting")
+      next
+    end
+  end
+
   array = str.split(/\s+/)
   if array.length == 1 then
     if array[0].downcase == 'quit' then
