@@ -404,7 +404,27 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             fieldLabel : this.i18n._("Description"),
                             itemCls:'firewall-spacing-1',
                             width : 400
-                        }), new Ext.form.Checkbox({
+                        }),
+                        new Ext.form.FieldSet({
+                            title : this.i18n._("Rule") ,
+                            cls:'firewall-spacing-2',
+                            autoHeight : true,
+                            title: "If all of the following conditions are met:",
+                            items:[{
+                                xtype:"firewallrulebuilder",
+                                settingsCmp: this,
+                                anchor:"98%",
+                                width: 900,
+                                dataIndex: "matchers",
+                                rules : Ung.FirewallUtil.getMatchers(this)
+                            }]
+                        }), {
+                            xtype : 'fieldset',
+                            autoHeight: true,
+                            cls:'description',
+                            title : i18n._('Perform the following action(s):'),
+                            border: false
+                        }, new Ext.form.Checkbox({
                             name : "Block",
                             dataIndex: "block",
                             itemCls:'firewall-spacing-1',
@@ -414,19 +434,6 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             dataIndex: "log",
                             itemCls:'firewall-spacing-1',
                             fieldLabel : this.i18n._("Log")
-                        }),
-                        new Ext.form.FieldSet({
-                            title : this.i18n._("Rule") ,
-                            cls:'firewall-spacing-2',
-                            autoHeight : true,
-                            items:[{
-                                xtype:"firewallrulebuilder",
-                                settingsCmp: this,
-                                anchor:"98%",
-                                width: 900,
-                                dataIndex: "matchers",
-                                rules : Ung.FirewallUtil.getMatchers(this)
-                            }]
                         })]
                     })
                 ]
