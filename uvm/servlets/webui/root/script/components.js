@@ -1995,11 +1995,6 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             '<div class="values"><span name="memory_used"></span> MB, <span name="memory_used_percent"></span> %</div>',
             '<div class="title">'+i18n._("Memory Free:")+'</div>',
             '<div class="values"><span name="memory_free"></span> MB, <span name="memory_free_percent"></span> %</div>',
-            '<div class="title">'+i18n._("Memory Pages:")+'</div>',
-            '<div class="values"><span name="memory_pages_active"></span> MB '+i18n._("active")+'</div>',
-            '<div class="values"><span name="memory_pages_inactive"></span> MB '+i18n._("inactive")+'</div>',
-            '<div class="title">'+i18n._("VM Statistics:")+'</div>',
-            '<div class="values"><span name="vm_pageins"></span> '+i18n._("pageins")+', <span name="vm_pageouts"></span> '+i18n._("pageouts")+'</div>',
             '<div class="title">'+i18n._("Swap Files:")+'</div>',
             '<div class="values"><span name="swap_total"></span> MB '+i18n._("total swap space")+' (<span name="swap_used"></span> MB '+i18n._("used")+')</div>'
         ];
@@ -2101,11 +2096,7 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
             toolTipEl.child("span[name=memory_total]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.MemTotal);
             toolTipEl.child("span[name=memory_used_percent]").dom.innerHTML=Math.round((stats.map.MemTotal-stats.map.MemFree)/stats.map.MemTotal*100);
             toolTipEl.child("span[name=memory_free_percent]").dom.innerHTML=Math.round(stats.map.MemFree/stats.map.MemTotal*100);
-            toolTipEl.child("span[name=memory_pages_active]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.Active);
-            toolTipEl.child("span[name=memory_pages_inactive]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.Inactive);
 
-            toolTipEl.child("span[name=vm_pageins]").dom.innerHTML=stats.map.pgpgin;
-            toolTipEl.child("span[name=vm_pageouts]").dom.innerHTML=stats.map.pgpgout;
             toolTipEl.child("span[name=swap_total]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.SwapTotal);
             toolTipEl.child("span[name=swap_used]").dom.innerHTML=Ung.Util.bytesToMBs(stats.map.SwapTotal-stats.map.SwapFree);
         }

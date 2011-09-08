@@ -48,8 +48,6 @@ public class NetworkManagerImpl implements NetworkManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    static final String NAT_NODE_NAME = "untangle-node-router";
-
     static final String UVM_BASE = System.getProperty( "uvm.home" );
     static final String UVM_CONF = System.getProperty( "uvm.conf.dir" );
 
