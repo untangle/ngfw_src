@@ -312,12 +312,12 @@ loop {
   Syslog.info "*** Received '#{str}'"
   if str.nil? then
     Syslog.err("*** Empty request, aborting")
-    next
+    exit 1
   else
     str.chop!
     if str.empty? then
       Syslog.err("*** Empty request, aborting")
-      next
+      exit 2
     end
   end
 
