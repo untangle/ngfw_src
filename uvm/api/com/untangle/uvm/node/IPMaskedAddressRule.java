@@ -5,6 +5,8 @@ package com.untangle.uvm.node;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Column;
+
 import org.hibernate.annotations.Type;
 
 /**
@@ -36,6 +38,7 @@ public class IPMaskedAddressRule extends Rule
      *
      * @return the IPMaskedAddress.
      */
+    @Column(name="ipmaddr")
     @Type(type="com.untangle.uvm.type.IPMaskedAddressUserType")
     public IPMaskedAddress getIpMaskedAddress()
     {
