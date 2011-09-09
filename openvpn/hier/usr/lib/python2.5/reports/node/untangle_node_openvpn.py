@@ -117,7 +117,7 @@ INSERT INTO reports.n_openvpn_stats
            extract('epoch' from (end_time - start_time)) AS seconds,
            event_id
     FROM events.n_openvpn_connect_evt evt
-    WHERE evt.time_stamp >= %s AND evt.time_stamp < %s""",
+    WHERE evt.end_time >= %s AND evt.end_time < %s""",
                                (sd, ed), connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('reports.n_openvpn_stats', ed,
