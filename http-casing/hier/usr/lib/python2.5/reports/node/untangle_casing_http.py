@@ -71,7 +71,6 @@ CREATE TABLE reports.n_http_events (
     host text, c2s_content_length integer,
     s2c_content_length integer, s2c_content_type text,
     hname text,
-    event_id bigint,
     wf_esoft_reason character,
     wf_esoft_category text,
     virus_clam_clean boolean,
@@ -91,7 +90,7 @@ CREATE TABLE reports.n_http_events (
     virus_commtouch_clean boolean,
     virus_commtouch_name text)""", 'time_stamp', start_date, end_date)
 
-        sql_helper.add_column('reports.n_http_events', 'event_id', 'bigint')
+        sql_helper.add_column('reports.n_http_events', 'event_id', 'text')
         sql_helper.add_column('reports.n_http_events', 'ab_action', 'character(1)')
         sql_helper.add_column('reports.n_http_events', 'sw_cookie_ident', 'text')
         sql_helper.add_column('reports.n_http_events', 'sw_blacklisted', 'boolean')

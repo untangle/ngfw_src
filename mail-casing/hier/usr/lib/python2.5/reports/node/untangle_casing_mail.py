@@ -119,6 +119,7 @@ CREATE TABLE reports.n_mail_addrs (
     virus_commtouch_clean boolean,
     virus_commtouch_name text)""", 'time_stamp', start_date, end_date)
 
+        sql_helper.add_column('n_mail_addrs', 'event_id', 'text')
         sql_helper.add_column('n_mail_addrs', 'virus_clam_clean', 'boolean')
         sql_helper.add_column('n_mail_addrs', 'virus_clam_name', 'text')
         sql_helper.add_column('n_mail_addrs', 'sa_score', 'real')

@@ -127,6 +127,8 @@ CREATE TABLE reports.n_cpd_login_events (
     client_addr inet,
     event_id SERIAL)""",  'time_stamp', start_date, end_date)
 
+        sql_helper.add_column('reports.n_cpd_login_events', 'event_id', 'serial')
+
         sd = DateFromMx(sql_helper.get_update_info('reports.n_cpd_login_events', start_date))
         ed = DateFromMx(end_date)
 
@@ -160,6 +162,8 @@ CREATE TABLE reports.n_cpd_block_events (
     server_address INET,
     server_port INT4,
     event_id SERIAL)""",  'time_stamp', start_date, end_date)
+
+        sql_helper.add_column('reports.n_cpd_block_events', 'event_id', 'serial')
 
         sd = DateFromMx(sql_helper.get_update_info('reports.n_cpd_block_events', start_date))
         ed = DateFromMx(end_date)

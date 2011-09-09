@@ -98,17 +98,11 @@ CREATE TABLE reports.n_openvpn_stats (
     tx_bytes bigint,
     seconds double precision,
     event_id serial
-)""",
-                                            'time_stamp', start_date, end_date)
+)""", 'time_stamp', start_date, end_date)
 
-        try:
-            sql_helper.run_sql("""
-ALTER TABLE reports.n_openvpn_stats ADD COLUMN start_time timestamp without time zone""")
-        except: pass
-        try:
-            sql_helper.run_sql("""
-ALTER TABLE reports.n_openvpn_stats ADD COLUMN end_time timestamp without time zone""")
-        except: pass
+        sql_helper.add_column('reports.n_openvpn_stats', 'event_id', 'serial')
+        sql_helper.add_column('reports.n_openvpn_stats', 'start_time', 'timestamp without time zone')
+        sql_helper.add_column('reports.n_openvpn_stats', 'end_time', 'timestamp without time zone')
 
         sd = TimestampFromMx(sql_helper.get_update_info('reports.n_openvpn_stats',
                                                    start_date))
