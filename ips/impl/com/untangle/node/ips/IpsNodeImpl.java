@@ -3,6 +3,7 @@
  */
 package com.untangle.node.ips;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -142,12 +143,18 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
     @SuppressWarnings("unchecked") //getItems
     public List<IpsRule> getRules(final int start, final int limit, final String... sortColumns)
     {
-        List<IpsRule> rules = listUtil.getItems("select s.rules from IpsSettings s where s.nodeId = :nodeId ",
+        List<IpsRule> rules = listUtil.getItems("select s.rules from IpsSettings s where s.nodeId = :tid ",
                                  getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
-        for(IpsRule rule : rules) {
-            engine.addRule(rule);
+        if (rules == null) {
+            logger.warn("No rules found in database");
+            rules = new LinkedList<IpsRule>();
+        } else {
+            for(IpsRule rule : rules) {
+                engine.addRule(rule);
+            }
         }
+        
         return rules;
     }
 
