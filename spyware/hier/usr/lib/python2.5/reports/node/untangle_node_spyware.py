@@ -115,11 +115,6 @@ DELETE FROM events.n_spyware_evt_cookie
 
     @print_timing
     def __update_access(self, start_date, end_date):
-        try:
-            sql_helper.run_sql("""
-ALTER TABLE reports.sessions ADD COLUMN sw_access_ident text""")
-        except: pass
-
         sd = TimestampFromMx(sql_helper.get_update_info('sessions[spyware-access]',
                                                         start_date))
         ed = TimestampFromMx(mx.DateTime.now())
@@ -150,11 +145,6 @@ WHERE reports.sessions.time_stamp >= %s
 
     @print_timing
     def __update_blacklist(self, start_date, end_date):
-        try:
-            sql_helper.run_sql("""\
-ALTER TABLE reports.n_http_events ADD COLUMN sw_blacklisted boolean""")
-        except: pass
-
         sd = TimestampFromMx(sql_helper.get_update_info('n_http_events[spyware-blacklist]',
                                                    start_date))
         ed = TimestampFromMx(mx.DateTime.now())
@@ -184,11 +174,6 @@ WHERE reports.n_http_events.time_stamp >= %s
 
     @print_timing
     def __update_cookie(self, start_date, end_date):
-        try:
-            sql_helper.run_sql("""\
-ALTER TABLE reports.n_http_events ADD COLUMN sw_cookie_ident text""")
-        except: pass
-
         sd = TimestampFromMx(sql_helper.get_update_info('n_http_events[spyware-cookie]',
                                                    start_date))
         ed = TimestampFromMx(mx.DateTime.now())

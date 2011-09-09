@@ -154,6 +154,9 @@ def run_sql(sql, args=None, connection=None,
 def add_column(tablename, column, type):
     sql = "ALTER TABLE %s ADD COLUMN %s %s" % (tablename, column, type)
     run_sql(sql)
+def drop_column(tablename, column):
+    sql = "ALTER TABLE %s DROP COLUMN %s" % (tablename, column)
+    run_sql(sql)
 
 def drop_partitioned_table(tablename, cutoff_date):
     for t, date in find_partitioned_tables(tablename):

@@ -99,19 +99,6 @@ DELETE FROM events.n_firewall_statistic_evt WHERE time_stamp < %s""", (cutoff,))
 
     @sql_helper.print_timing
     def __update_sessions(self, start_date, end_date):
-        try:
-            sql_helper.run_sql("""
-ALTER TABLE reports.sessions ADD COLUMN firewall_was_blocked boolean""")
-        except: pass
-        try:
-            sql_helper.run_sql("""
-ALTER TABLE reports.sessions ADD COLUMN firewall_rule_index integer""")
-        except: pass
-        try:
-            sql_helper.run_sql("""
-ALTER TABLE reports.sessions ADD COLUMN firewall_rule_description text""")
-        except: pass
-
         sd = TimestampFromMx(sql_helper.get_update_info('sessions[firewall]',
                                                    start_date))
         ed = TimestampFromMx(mx.DateTime.now())

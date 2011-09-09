@@ -105,18 +105,6 @@ DELETE FROM events.n_ips_statistic_evt
 
     @print_timing
     def __update_sessions(self, start_date, end_date):
-        try:
-            sql_helper.run_sql("""\
-ALTER TABLE reports.sessions ADD COLUMN ips_blocked boolean""")
-        except: pass
-
-        try:
-            sql_helper.run_sql("""\
-ALTER TABLE reports.sessions ADD COLUMN ips_name text""")
-            sql_helper.run_sql("""\
-ALTER TABLE reports.sessions ADD COLUMN ips_description text""")
-        except: pass
-
         sd = TimestampFromMx(sql_helper.get_update_info('sessions[ips]',
                                                    start_date))
         ed = TimestampFromMx(mx.DateTime.now())

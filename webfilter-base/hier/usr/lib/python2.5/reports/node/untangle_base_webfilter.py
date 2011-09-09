@@ -111,32 +111,6 @@ DELETE FROM events.n_webfilter_evt WHERE time_stamp < %s""", (cutoff,))
 
     @print_timing
     def __update_n_http_events(self, start_date, end_date):
-        try:
-            sql_helper.run_sql("""\
-ALTER TABLE reports.n_http_events DROP COLUMN wf_%s_action"""
-                               % self.__vendor_name)
-        except: pass
-        try:
-            sql_helper.run_sql("""\
-ALTER TABLE reports.n_http_events ADD COLUMN wf_%s_reason character(1)"""
-                               % self.__vendor_name)
-        except: pass
-        try:
-            sql_helper.run_sql("""\
-ALTER TABLE reports.n_http_events ADD COLUMN wf_%s_category text"""
-                               % self.__vendor_name)
-        except: pass
-        try:
-            sql_helper.run_sql("""\
-ALTER TABLE reports.n_http_events ADD COLUMN wf_%s_blocked boolean"""
-                               % self.__vendor_name)
-        except: pass
-        try:
-            sql_helper.run_sql("""\
-ALTER TABLE reports.n_http_events ADD COLUMN wf_%s_flagged boolean"""
-                               % self.__vendor_name)
-        except: pass
-
         sd = TimestampFromMx(sql_helper.get_update_info('n_http_events[%s]'
                                                         % self.name, start_date))
         ed = TimestampFromMx(mx.DateTime.now())

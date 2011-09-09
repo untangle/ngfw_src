@@ -274,6 +274,19 @@ CREATE TABLE reports.sessions (
 
         sql_helper.add_column('reports.sessions', 'policy_id', 'bigint')
         sql_helper.add_column('reports.sessions', 'server_intf', 'int2')
+        sql_helper.add_column('reports.sessions', 'bandwidth_priority', 'bigint')
+        sql_helper.add_column('reports.sessions', 'bandwidth_priority', 'bigint')
+        sql_helper.add_column('reports.sessions', 'bandwidth_priority', 'bigint')
+        sql_helper.add_column('reports.sessions', 'bandwidth_priority', 'bigint')
+        sql_helper.add_column('reports.sessions', 'firewall_was_blocked', 'boolean')
+        sql_helper.add_column('reports.sessions', 'firewall_rule_index', 'integer')
+        sql_helper.add_column('reports.sessions', 'firewall_rule_description', 'text')
+        sql_helper.add_column('reports.sessions', 'pf_protocol', 'text')
+        sql_helper.add_column('reports.sessions', 'pf_blocked', 'boolean')
+        sql_helper.add_column('reports.sessions', 'ips_blocked', 'boolean')
+        sql_helper.add_column('reports.sessions', 'ips_name', 'text')
+        sql_helper.add_column('reports.sessions', 'ips_description', 'text')
+        sql_helper.add_column('reports.sessions', 'sw_access_ident', 'text')
 
         sd = TimestampFromMx(sql_helper.get_update_info('reports.sessions',
                                                         start_date))

@@ -71,9 +71,42 @@ CREATE TABLE reports.n_http_events (
     host text, c2s_content_length integer,
     s2c_content_length integer, s2c_content_type text,
     hname text,
-    event_id bigint
-)""",
-                                            'time_stamp', start_date, end_date)
+    event_id bigint,
+    wf_esoft_reason character,
+    wf_esoft_category text,
+    virus_clam_clean boolean,
+    virus_clam_name text,
+    sw_blacklisted boolean,
+    sw_cookie_ident text,
+    virus_kaspersky_clean boolean,
+    virus_kaspersky_name text,
+    wf_untangle_reason character,
+    wf_untangle_category text,
+    event_id text,
+    ab_action character,
+    wf_untangle_blocked boolean,
+    wf_untangle_flagged boolean,
+    wf_esoft_blocked boolean,
+    wf_esoft_flagged boolean,
+    virus_commtouch_clean boolean,
+    virus_commtouch_name text)""", 'time_stamp', start_date, end_date)
+
+        sql_helper.add_column('reports.n_http_events', 'event_id', 'bigint')
+        sql_helper.add_column('reports.n_http_events', 'ab_action', 'character(1)')
+        sql_helper.add_column('reports.n_http_events', 'sw_cookie_ident', 'text')
+        sql_helper.add_column('reports.n_http_events', 'sw_blacklisted', 'boolean')
+        sql_helper.add_column('reports.n_http_events', 'start_time', 'timestamp')
+
+        for vendor in ("untangle", "esoft"):
+            sql_helper.drop_column('reports.n_http_events', 'wf_%s_action' % vendor)
+            sql_helper.add_column('reports.n_http_events', 'wf_%s_reason' % vendor, 'character(1)')
+            sql_helper.add_column('reports.n_http_events', 'wf_%s_category' % vendor, 'text')
+            sql_helper.add_column('reports.n_http_events', 'wf_%s_blocked' % vendor, 'boolean')
+            sql_helper.add_column('reports.n_http_events', 'wf_%s_flagged' % vendor, 'boolean')
+
+        for vendor in ("clam", "kaspersky", "commtouch"):
+            sql_helper.add_column('reports.n_http_events', 'virus_%s_clean' % vendor, 'boolean')
+            sql_helper.add_column('reports.n_http_events', 'virus_%s_name' % vendor, 'text')
 
         sd = TimestampFromMx(sql_helper.get_update_info('reports.n_http_events', start_date))
         ed = TimestampFromMx(mx.DateTime.now())

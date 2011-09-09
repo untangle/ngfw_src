@@ -104,9 +104,34 @@ CREATE TABLE reports.n_mail_addrs (
     msg_attachments integer,
     hname text,
     event_id text,
-    sender text
-)""",
-                                            'time_stamp', start_date, end_date)
+    sender text,
+    virus_clam_clean boolean,
+    virus_clam_name text,
+    sa_score real,
+    sa_is_spam boolean,
+    sa_action character,
+    virus_kaspersky_clean boolean,
+    virus_kaspersky_name text,
+    phish_score real,
+    phish_is_spam boolean,
+    phish_action character,
+    vendor text,
+    virus_commtouch_clean boolean,
+    virus_commtouch_name text)""", 'time_stamp', start_date, end_date)
+
+        sql_helper.add_column('n_mail_addrs', 'virus_clam_clean', 'boolean')
+        sql_helper.add_column('n_mail_addrs', 'virus_clam_name', 'text')
+        sql_helper.add_column('n_mail_addrs', 'sa_score', 'real')
+        sql_helper.add_column('n_mail_addrs', 'sa_is_spam', 'boolean')
+        sql_helper.add_column('n_mail_addrs', 'sa_action', 'character')
+        sql_helper.add_column('n_mail_addrs', 'virus_kaspersky_clean', 'boolean')
+        sql_helper.add_column('n_mail_addrs', 'virus_kaspersky_name', 'text')
+        sql_helper.add_column('n_mail_addrs', 'phish_score', 'real')
+        sql_helper.add_column('n_mail_addrs', 'phish_is_spam', 'boolean')
+        sql_helper.add_column('n_mail_addrs', 'phish_action', 'character')
+        sql_helper.add_column('n_mail_addrs', 'vendor', 'text')
+        sql_helper.add_column('n_mail_addrs', 'virus_commtouch_clean', 'boolean')
+        sql_helper.add_column('n_mail_addrs', 'virus_commtouch_name', 'text')
 
         sd = TimestampFromMx(sql_helper.get_update_info('reports.n_mail_addrs', start_date))
         ed = TimestampFromMx(mx.DateTime.now())

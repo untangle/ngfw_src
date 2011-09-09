@@ -136,21 +136,6 @@ DELETE FROM events.n_spam_smtp_rbl_evt WHERE time_stamp < %s""", (cutoff,))
     @print_timing
     def __update_n_mail_events(self, src_table, target_table, protocol,
                                start_date, end_date):
-        try:
-            sql_helper.run_sql("ALTER TABLE %s ADD COLUMN %s_score real" \
-                                   % (target_table, self.__short_name))
-        except: pass
-
-        try:
-            sql_helper.run_sql("ALTER TABLE %s ADD COLUMN %s_is_spam boolean" \
-                                   % (target_table, self.__short_name))
-        except: pass
-
-        try:
-            sql_helper.run_sql("ALTER TABLE %s ADD COLUMN %s_action char(1)" \
-                                   % (target_table, self.__short_name))
-        except: pass
-
         sd = TimestampFromMx(sql_helper.get_update_info('%s[%s.%s]' % (target_table,
                                                                        self.name,
                                                                        protocol),

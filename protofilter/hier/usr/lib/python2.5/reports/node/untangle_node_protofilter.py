@@ -99,16 +99,6 @@ DELETE FROM events.n_protofilter_evt WHERE time_stamp < %s""", (cutoff,))
 
     @print_timing
     def __update_sessions(self, start_date, end_date):
-        try:
-            sql_helper.run_sql("""
-ALTER TABLE reports.sessions ADD COLUMN pf_protocol text""")
-        except: pass
-
-        try:
-            sql_helper.run_sql("""\
-ALTER TABLE reports.sessions ADD COLUMN pf_blocked boolean""")
-        except: pass
-
         sd = TimestampFromMx(sql_helper.get_update_info('sessions[protofilter]',
                                                    start_date))
         ed = TimestampFromMx(mx.DateTime.now())

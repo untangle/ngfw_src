@@ -152,17 +152,6 @@ DELETE FROM events.n_virus_evt WHERE time_stamp < %s""", (cutoff,))
 
     @sql_helper.print_timing
     def __update_n_http_events(self, start_date, end_date):
-        try:
-            sql_helper.run_sql("""\
-ALTER TABLE reports.n_http_events ADD COLUMN virus_%s_clean boolean""" \
-                                   % self.__vendor_name)
-        except: pass
-        try:
-            sql_helper.run_sql("""\
-ALTER TABLE reports.n_http_events ADD COLUMN virus_%s_name text""" \
-                                   % self.__vendor_name)
-        except: pass
-
         sd = TimestampFromMx(sql_helper.get_update_info('n_http_events[%s]' % self.name, start_date))
         ed = TimestampFromMx(mx.DateTime.now())
 
@@ -187,15 +176,6 @@ WHERE reports.n_http_events.time_stamp >= %s
 
     @sql_helper.print_timing
     def __update_n_mail_table(self, tablename, start_date, end_date):
-        try:
-            sql_helper.run_sql("""\
-ALTER TABLE reports.%s ADD COLUMN virus_%s_clean boolean""" % (tablename, self.__vendor_name))
-        except: pass
-        try:
-            sql_helper.run_sql("""\
-ALTER TABLE reports.%s ADD COLUMN virus_%s_name text""" % (tablename, self.__vendor_name))
-        except: pass
-
         update_name = 'report.%s-mail[%s]' % (tablename, self.name)
         sd = TimestampFromMx(sql_helper.get_update_info(update_name, start_date))
         ed = TimestampFromMx(mx.DateTime.now())
