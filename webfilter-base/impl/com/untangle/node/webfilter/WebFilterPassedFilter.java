@@ -56,7 +56,7 @@ public class WebFilterPassedFilter implements SimpleEventFilter<WebFilterEvent>
 
         evtQuery = "FROM HttpLogEventFromReports evt " + 
             "WHERE evt.wf" + capitalizedVendorName + "Category IS NOT NULL " + 
-            "AND evt.wf" + capitalizedVendorName + "Action = 'I' " + 
+            "AND evt.wf" + capitalizedVendorName + "Reason = 'I' " + 
             "AND evt.policyId = :policyId ";
     }
 
