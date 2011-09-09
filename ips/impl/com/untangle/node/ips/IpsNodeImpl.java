@@ -166,7 +166,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
     @SuppressWarnings("unchecked") //getItems
     public List<IpsVariable> getVariables(final int start, final int limit, final String... sortColumns)
     {
-        return listUtil.getItems("select s.variables from IpsSettings s where s.nodeId = :nodeId ",
+        return listUtil.getItems("select s.variables from IpsSettings s where s.nodeId = :tid ",
                                  getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
     }
@@ -179,7 +179,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
     @SuppressWarnings("unchecked") //getItems
     public List<IpsVariable> getImmutableVariables(final int start, final int limit, final String... sortColumns)
     {
-        return listUtil.getItems("select s.immutableVariables from IpsSettings s where s.nodeId = :nodeId ",
+        return listUtil.getItems("select s.immutableVariables from IpsSettings s where s.nodeId = :tid ",
                                  getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
     }
@@ -327,7 +327,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
             {
                 public boolean doWork(Session s)
                 {
-                    Query q = s.createQuery("from IpsSettings ips where ips.nodeId = :nodeId");
+                    Query q = s.createQuery("from IpsSettings ips where ips.nodeId = :tid");
                     q.setParameter("nodeId", getNodeId());
                     IpsNodeImpl.this.settings = (IpsSettings)q.uniqueResult();
                     return true;
