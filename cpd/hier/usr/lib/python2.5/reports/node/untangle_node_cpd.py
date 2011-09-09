@@ -7,6 +7,7 @@ import reports.sql_helper as sql_helper
 
 from psycopg2.extensions import DateFromMx
 from psycopg2.extensions import QuotedString
+from psycopg2.extensions import TimestampFromMx
 from reports import Chart
 from reports import ColumnDesc
 from reports import DATE_FORMATTER
@@ -129,8 +130,8 @@ CREATE TABLE reports.n_cpd_login_events (
 
         sql_helper.add_column('reports.n_cpd_login_events', 'event_id', 'serial')
 
-        sd = DateFromMx(sql_helper.get_update_info('reports.n_cpd_login_events', start_date))
-        ed = DateFromMx(end_date)
+        sd = TimestampFromMx(sql_helper.get_update_info('reports.n_cpd_login_events', start_date))
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:
@@ -165,8 +166,8 @@ CREATE TABLE reports.n_cpd_block_events (
 
         sql_helper.add_column('reports.n_cpd_block_events', 'event_id', 'serial')
 
-        sd = DateFromMx(sql_helper.get_update_info('reports.n_cpd_block_events', start_date))
-        ed = DateFromMx(end_date)
+        sd = TimestampFromMx(sql_helper.get_update_info('reports.n_cpd_block_events', start_date))
+        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:
