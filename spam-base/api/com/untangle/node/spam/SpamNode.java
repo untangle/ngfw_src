@@ -33,6 +33,7 @@
 
 package com.untangle.node.spam;
 
+import java.util.Date;
 import java.util.List;
 
 import com.untangle.uvm.logging.EventManager;
@@ -50,4 +51,16 @@ public interface SpamNode extends Node
 
     EventManager<SpamEvent> getEventManager();
     EventManager<SpamSmtpRblEvent> getRBLEventManager();
+
+    public int getSpamRBLListLength();
+    public void setSpamRBLListLength(int newValue);
+    
+    public Date getLastUpdate();
+    public void setLastUpdate(Date newValue);
+    
+    public Date getLastUpdateCheck();
+    public void setLastUpdateCheck(Date newValue);
+    
+    public String getSignatureVersion();
+    public void setSignatureVersion(String newValue);
 }

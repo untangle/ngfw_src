@@ -186,17 +186,17 @@ public class PhishNode extends SpamNodeImpl implements Phish
         return phishHttpEventLogger;
     }
 
+    public PhishSettings getPhishSettings()
+    {
+        logger.info("getPhishSettings()");
+        return (PhishSettings)getSpamSettings();
+    }
+
     public void setPhishSettings(PhishSettings spamSettings)
     {
         logger.info("setPhishSettings()");
         setSpamSettings(spamSettings);
         writeNodeSettings(spamSettings);
-    }
-
-    public PhishSettings getPhishSettings()
-    {
-        logger.info("getPhishSettings()");
-        return (PhishSettings)getSpamSettings();
     }
 
     public PhishBlockDetails getBlockDetails(String nonce)
