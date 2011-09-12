@@ -1,7 +1,7 @@
 {
         "javaClass": "com.untangle.uvm.node.NodeDesc",
         "className" : "com.untangle.node.phish.PhishNode",
-        "baseNode" : "untangle-base-spam",
+        "nodeBase" : "untangle-base-spam",
         "name" : "untangle-node-phish",
         "displayName" : "Phish Blocker",
         "syslogName" : "Phish_Blocker",
