@@ -56,7 +56,7 @@ class RBLEventHandler extends AbstractEventHandler
     {
         TCPNewSessionRequest tsr = event.sessionRequest();
         SpamSettings spamSettings = m_spamImpl.getSpamSettings();
-        SpamSmtpConfig spamConfig = spamSettings.getBaseSettings().getSmtpConfig();
+        SpamSmtpConfig spamConfig = spamSettings.getSmtpConfig();
 
         boolean releaseSession = true;
 

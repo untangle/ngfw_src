@@ -48,8 +48,10 @@ public class SpamSettings implements Serializable
 {
     private Long id;
 
-    SpamBaseSettings baseSettings = new SpamBaseSettings();
-    private List<SpamRBL> spamRBLList; // spam only
+    private List<SpamRBL> spamRBLList;
+    private SpamSmtpConfig smtpConfig;
+    private SpamPopConfig popConfig;
+    private SpamImapConfig imapConfig;
 
     // constructors -----------------------------------------------------------
 
@@ -70,28 +72,8 @@ public class SpamSettings implements Serializable
         this.id = id;
     }
 
-    public SpamBaseSettings getBaseSettings()
-    {
-        if (null != baseSettings) {
-            baseSettings.T_setSpamRBLListLength(null == spamRBLList ? 0 : spamRBLList.size());
-        }
-
-        return baseSettings;
-    }
-
-    public void setBaseSettings(SpamBaseSettings baseSettings)
-    {
-        this.baseSettings = baseSettings;
-    }
-
-    /**
-     * Spam RBL list.
-     *
-     * @return Spam RBL list.
-     */
     public List<SpamRBL> getSpamRBLList()
     {
-        if (spamRBLList != null) spamRBLList.removeAll(java.util.Collections.singleton(null));
         return spamRBLList;
     }
 
@@ -99,4 +81,42 @@ public class SpamSettings implements Serializable
     {
         this.spamRBLList = spamRBLList;
     }
+
+    public SpamSmtpConfig getSmtpConfig()
+    {
+        return smtpConfig;
+    }
+
+    public void setSmtpConfig(SpamSmtpConfig smtpConfig)
+    {
+        this.smtpConfig = smtpConfig;
+    }
+
+    public SpamPopConfig getPopConfig()
+    {
+        return popConfig;
+    }
+
+    public void setPopConfig(SpamPopConfig popConfig)
+    {
+        this.popConfig = popConfig;
+    }
+
+    public SpamImapConfig getImapConfig()
+    {
+        return imapConfig;
+    }
+
+    public void setImapConfig(SpamImapConfig imapConfig)
+    {
+        this.imapConfig = imapConfig;
+    }
+
+    public void copy(SpamSettings argSettings)
+    {
+        argSettings.setSpamRBLList(this.spamRBLList);
+        argSettings.setSmtpConfig(this.smtpConfig);
+        argSettings.setPopConfig(this.popConfig);
+        argSettings.setImapConfig(this.imapConfig);
+    }    
 }

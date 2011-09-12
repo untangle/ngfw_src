@@ -78,7 +78,7 @@ public class SpamPopHandler extends PopStateMachine
 
         MailNodeSettings zMTSettings = zMExport.getExportSettings();
 
-        zConfig = node.getSpamSettings().getBaseSettings().getPopConfig();
+        zConfig = node.getSpamSettings().getPopConfig();
         lTimeout = zMTSettings.getPopTimeout();
         bScan = zConfig.getScan();
         zMsgAction = zConfig.getMsgAction();

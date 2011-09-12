@@ -49,7 +49,7 @@ public class PhishSmtpFactory implements TokenHandlerFactory
 
     public TokenHandler tokenHandler(TCPSession session)
     {
-        SpamSmtpConfig spamConfig = m_phishImpl.getSpamSettings().getBaseSettings().getSmtpConfig();
+        SpamSmtpConfig spamConfig = m_phishImpl.getSpamSettings().getSmtpConfig();
 
         if(!spamConfig.getScan()) {
             m_logger.debug("Scanning disabled.  Return passthrough token handler");
@@ -70,7 +70,7 @@ public class PhishSmtpFactory implements TokenHandlerFactory
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)
     {
-        SpamSmtpConfig spamConfig = m_phishImpl.getSpamSettings().getBaseSettings().getSmtpConfig();
+        SpamSmtpConfig spamConfig = m_phishImpl.getSpamSettings().getSmtpConfig();
 
         // Note that we may *****NOT***** release the session here.
         // This is because the mail casings currently assume that

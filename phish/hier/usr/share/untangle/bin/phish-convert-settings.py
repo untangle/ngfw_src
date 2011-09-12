@@ -57,24 +57,23 @@ def get_smtp_config(sid, debug=False):
     scan_wan_mail =  n_spam_smtp_config[0][12]
 
     str = '\n'
-    str += '\t\t{\n'
-    str += '\t\t\t"javaClass": "com.untangle.node.spam.SpamSmtpConfig",\n'
-    str += '\t\t\t"addSpamHeaders": %s,\n' % add_spam_headers
-    str += '\t\t\t"blockSuperSpam": %s,\n' % block_superspam
-    str += '\t\t\t"failClosed": %s,\n' % fail_closed
-    str += '\t\t\t"headerName": "X-Spam-Flag",\n'
-    str += '\t\t\t"loadLimit": %s,\n' % limit_load
-    str += '\t\t\t"msgAction": "%s",\n' % action_string(msg_action)
-    str += '\t\t\t"msgSizeLimit": %s,\n' % msg_size_limit
-    str += '\t\t\t"scan": %s,\n' % scan
-    str += '\t\t\t"scanLimit": %s,\n' % limit_scans
-    str += '\t\t\t"scanWanMail": %s,\n' % scan_wan_mail
-    str += '\t\t\t"strengh": %s,\n' % strength
-    str += '\t\t\t"superSpamStrength": %s,\n' % superspam_strength
-    str += '\t\t\t"tarpit": %s,\n' % tarpit
-    str += '\t\t\t"tarpitTimeout": %s,\n' % tarpit_timeout
-
-    str += '\t\t},\n'
+    str += '\t{\n'
+    str += '\t\t"javaClass": "com.untangle.node.spam.SpamSmtpConfig",\n'
+    str += '\t\t"addSpamHeaders": %s,\n' % add_spam_headers
+    str += '\t\t"blockSuperSpam": %s,\n' % block_superspam
+    str += '\t\t"failClosed": %s,\n' % fail_closed
+    str += '\t\t"headerName": "X-Spam-Flag",\n'
+    str += '\t\t"loadLimit": %s,\n' % limit_load
+    str += '\t\t"msgAction": "%s",\n' % action_string(msg_action)
+    str += '\t\t"msgSizeLimit": %s,\n' % msg_size_limit
+    str += '\t\t"scan": %s,\n' % scan
+    str += '\t\t"scanLimit": %s,\n' % limit_scans
+    str += '\t\t"scanWanMail": %s,\n' % scan_wan_mail
+    str += '\t\t"strengh": %s,\n' % strength
+    str += '\t\t"superSpamStrength": %s,\n' % superspam_strength
+    str += '\t\t"tarpit": %s,\n' % tarpit
+    str += '\t\t"tarpitTimeout": %s,\n' % tarpit_timeout
+    str += '\t},\n'
 
     return str
 
@@ -99,16 +98,15 @@ def get_imap_config(sid, debug=False):
     msg_action =  n_spam_imap_config[0][4]
 
     str = '\n'
-    str += '\t\t{\n'
-    str += '\t\t\t"javaClass": "com.untangle.node.spam.SpamImapConfig",\n'
-    str += '\t\t\t"addSpamHeaders": %s,\n' % add_spam_headers
-    str += '\t\t\t"headerName": "X-Spam-Flag",\n'
-    str += '\t\t\t"msgAction": "%s",\n' % action_string(msg_action)
-    str += '\t\t\t"msgSizeLimit": %s,\n' % msg_size_limit
-    str += '\t\t\t"scan": %s,\n' % scan
-    str += '\t\t\t"strengh": %s,\n' % strength
-
-    str += '\t\t},\n'
+    str += '\t{\n'
+    str += '\t\t"javaClass": "com.untangle.node.spam.SpamImapConfig",\n'
+    str += '\t\t"addSpamHeaders": %s,\n' % add_spam_headers
+    str += '\t\t"headerName": "X-Spam-Flag",\n'
+    str += '\t\t"msgAction": "%s",\n' % action_string(msg_action)
+    str += '\t\t"msgSizeLimit": %s,\n' % msg_size_limit
+    str += '\t\t"scan": %s,\n' % scan
+    str += '\t\t"strengh": %s,\n' % strength
+    str += '\t},\n'
 
     return str
 
@@ -133,16 +131,15 @@ def get_pop_config(sid, debug=False):
     msg_action =  n_spam_pop_config[0][4]
 
     str = '\n'
-    str += '\t\t{\n'
-    str += '\t\t\t"javaClass": "com.untangle.node.spam.SpamPopConfig",\n'
-    str += '\t\t\t"addSpamHeaders": %s,\n' % add_spam_headers
-    str += '\t\t\t"headerName": "X-Spam-Flag",\n'
-    str += '\t\t\t"msgAction": "%s",\n' % action_string(msg_action)
-    str += '\t\t\t"msgSizeLimit": %s,\n' % msg_size_limit
-    str += '\t\t\t"scan": %s,\n' % scan
-    str += '\t\t\t"strengh": %s,\n' % strength
-
-    str += '\t\t},\n'
+    str += '\t{\n'
+    str += '\t\t"javaClass": "com.untangle.node.spam.SpamPopConfig",\n'
+    str += '\t\t"addSpamHeaders": %s,\n' % add_spam_headers
+    str += '\t\t"headerName": "X-Spam-Flag",\n'
+    str += '\t\t"msgAction": "%s",\n' % action_string(msg_action)
+    str += '\t\t"msgSizeLimit": %s,\n' % msg_size_limit
+    str += '\t\t"scan": %s,\n' % scan
+    str += '\t\t"strengh": %s,\n' % strength
+    str += '\t},\n'
 
     return str
 
@@ -232,15 +229,9 @@ def get_settings(tid, debug=False):
     str += '\t"javaClass": "com.untangle.node.phish.PhishSettings",\n'
     str += '\t"enableGooglePhishList": %s,\n' % enable_google_sb
     str += '\t"version": 1,\n'
-
-    str += '\t"baseSettings":\n\t{\n'
-    str += '\t\t"javaClass": "com.untangle.node.spam.SpamBaseSettings",\n'
-
-    str += '\t\t"smtpConfig": %s\n' % get_smtp_config(smtp_config, debug=debug)
-    str += '\t\t"imapConfig": %s\n' % get_imap_config(imap_config, debug=debug)
-    str += '\t\t"popConfig": %s\n' % get_pop_config(pop_config, debug=debug)
-    str += '\t},\n'
-
+    str += '\t"smtpConfig": %s\n' % get_smtp_config(smtp_config, debug=debug)
+    str += '\t"imapConfig": %s\n' % get_imap_config(imap_config, debug=debug)
+    str += '\t"popConfig": %s\n' % get_pop_config(pop_config, debug=debug)
     str += '\t"spamRBLList": %s\n' % get_rbl_list(rule_id, debug=debug)
     str += '}\n'
 

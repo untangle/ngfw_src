@@ -40,21 +40,13 @@ import com.untangle.uvm.node.Node;
 
 public interface SpamNode extends Node
 {
-    SpamBaseSettings getBaseSettings();
-    SpamBaseSettings getBaseSettings(boolean updateScannerInfo);
-    void setBaseSettings(SpamBaseSettings baseSettings);
-
     void enableSmtpSpamHeaders(boolean enableHeaders);
     void enablePopSpamHeaders(boolean enableHeaders);
     void enableImapSpamHeaders(boolean enableHeaders);
 
     void enableSmtpFailClosed(boolean failClosed);
 
-    List<SpamRBL> getSpamRBLList( int start, int limit, String ... sortColumns );
-    void updateSpamRBLList( List<SpamRBL> added, List<Long> deleted, List<SpamRBL> modified );
-
-    @SuppressWarnings("unchecked")
-	void updateAll( SpamBaseSettings baseSettings, List[] rblRules );
+    void updateScannerInfo();
 
     EventManager<SpamEvent> getEventManager();
     EventManager<SpamSmtpRblEvent> getRBLEventManager();

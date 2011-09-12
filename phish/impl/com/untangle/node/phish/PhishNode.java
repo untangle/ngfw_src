@@ -21,7 +21,6 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 
-import com.untangle.node.spam.SpamBaseSettings;
 import com.untangle.node.spam.SpamNodeImpl;
 import com.untangle.node.spam.SpamSettings;
 import com.untangle.node.token.Token;
@@ -152,6 +151,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
             if (readSettings == null) {
                 logger.warn("No database or json settings found... initializing with defaults");
                 initializeSettings();
+                writeNodeSettings(getPhishSettings());
             }
             
             else {
@@ -199,29 +199,6 @@ public class PhishNode extends SpamNodeImpl implements Phish
         return (PhishSettings)getSpamSettings();
     }
 
-    public void setPhishBaseSettings(PhishBaseSettings phishBaseSettings)
-    {
-        logger.info("setPhishBaseSettings()");
-        PhishSettings phishSettings = getPhishSettings();
-        phishBaseSettings.copy(phishSettings.getBaseSettings());
-        phishSettings.setEnableGooglePhishList(phishBaseSettings.getEnableGooglePhishList());
-        setSpamSettings(phishSettings);
-        writeNodeSettings(phishSettings);
-    }
-
-    public PhishBaseSettings getPhishBaseSettings(boolean updateInfo)
-    {
-        logger.info("getPhishBaseSettings()");
-        PhishBaseSettings phishBaseSettings = new PhishBaseSettings();
-        PhishSettings phishSettings = getPhishSettings();
-        SpamBaseSettings spamBaseSettings = getBaseSettings(updateInfo);
-        phishSettings.getBaseSettings().copy(phishBaseSettings);
-        phishBaseSettings.T_setLastUpdate(spamBaseSettings.T_getLastUpdate());
-        phishBaseSettings.T_setSignatureVersion(spamBaseSettings.T_getSignatureVersion());
-        phishBaseSettings.setEnableGooglePhishList(phishSettings.getEnableGooglePhishList());
-        return phishBaseSettings;
-    }
-
     public PhishBlockDetails getBlockDetails(String nonce)
     {
         return replacementGenerator.getNonceData(nonce);
@@ -265,7 +242,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
         PhishSettings tmpSpamSettings = new PhishSettings();
         tmpSpamSettings.setEnableGooglePhishList(true);
         configureSpamSettings(tmpSpamSettings);
-        tmpSpamSettings.getBaseSettings().getSmtpConfig().setBlockSuperSpam(false);
+        tmpSpamSettings.getSmtpConfig().setBlockSuperSpam(false);
 
         setSpamSettings(tmpSpamSettings);
         initSpamRBLList(tmpSpamSettings);
@@ -294,7 +271,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
         readNodeSettings();
         SpamSettings ps = getSpamSettings();
-        ps.getBaseSettings().getSmtpConfig().setBlockSuperSpam(false);
+        ps.getSmtpConfig().setBlockSuperSpam(false);
         setSpamSettings(ps);
         initSpamRBLList(ps);
     }

@@ -63,11 +63,11 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     private final BlingBlinger blockBlinger;
     private final BlingBlinger markBlinger;
     private final BlingBlinger quarantineBlinger;
-
-    /* Cached in the node in case the base settings lose the values during a save. */
-    private Date lastSignatureUpdate = new Date();
-    private Date lastSignatureUpdateCheck = new Date();
-    private String signatureVersion = "";
+    
+    private String signatureVersion;
+    private Date lastUpdate = new Date();
+    private Date lastUpdateCheck = new Date();
+    private int rblListLength;
 
     // constructors -----------------------------------------------------------
 
@@ -187,34 +187,31 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     }
 
     protected void configureSpamSettings(SpamSettings tmpSpamSettings) {
-        tmpSpamSettings.getBaseSettings().
-            setSmtpConfig(new SpamSmtpConfig(true,
-                                             SmtpSpamMessageAction.QUARANTINE,
-                                             SpamProtoConfig.DEFAULT_STRENGTH,
-                                             SpamProtoConfig.DEFAULT_ADD_SPAM_HEADERS,
-                                             SpamSmtpConfig.DEFAULT_BLOCK_SUPER_SPAM,
-                                             SpamSmtpConfig.DEFAULT_SUPER_STRENGTH,
-                                             SpamSmtpConfig.DEFAULT_FAIL_CLOSED,
-                                             SpamProtoConfig.DEFAULT_HEADER_NAME,
-                                             SpamSmtpConfig.DEFAULT_TARPIT,
-                                             SpamSmtpConfig.DEFAULT_TARPIT_TIMEOUT,
-                                             SpamSmtpConfig.DEFAULT_LIMIT_LOAD,
-                                             SpamSmtpConfig.DEFAULT_LIMIT_SCANS,
-                                             SpamSmtpConfig.DEFAULT_SCAN_WAN_MAIL ));
+        tmpSpamSettings.setSmtpConfig(new SpamSmtpConfig(true,
+                SmtpSpamMessageAction.QUARANTINE,
+                SpamProtoConfig.DEFAULT_STRENGTH,
+                SpamProtoConfig.DEFAULT_ADD_SPAM_HEADERS,
+                SpamSmtpConfig.DEFAULT_BLOCK_SUPER_SPAM,
+                SpamSmtpConfig.DEFAULT_SUPER_STRENGTH,
+                SpamSmtpConfig.DEFAULT_FAIL_CLOSED,
+                SpamProtoConfig.DEFAULT_HEADER_NAME,
+                SpamSmtpConfig.DEFAULT_TARPIT,
+                SpamSmtpConfig.DEFAULT_TARPIT_TIMEOUT,
+                SpamSmtpConfig.DEFAULT_LIMIT_LOAD,
+                SpamSmtpConfig.DEFAULT_LIMIT_SCANS,
+                SpamSmtpConfig.DEFAULT_SCAN_WAN_MAIL ));
 
-        tmpSpamSettings.getBaseSettings().
-            setPopConfig(new SpamPopConfig(true,
-                                           SpamMessageAction.MARK,
-                                           SpamProtoConfig.DEFAULT_STRENGTH,
-                                           SpamProtoConfig.DEFAULT_ADD_SPAM_HEADERS,
-                                           SpamProtoConfig.DEFAULT_HEADER_NAME ));
+        tmpSpamSettings.setPopConfig(new SpamPopConfig(true,
+                SpamMessageAction.MARK,
+                SpamProtoConfig.DEFAULT_STRENGTH,
+                SpamProtoConfig.DEFAULT_ADD_SPAM_HEADERS,
+                SpamProtoConfig.DEFAULT_HEADER_NAME ));
 
-        tmpSpamSettings.getBaseSettings().
-            setImapConfig(new SpamImapConfig(true,
-                                             SpamMessageAction.MARK,
-                                             SpamProtoConfig.DEFAULT_STRENGTH,
-                                             SpamProtoConfig.DEFAULT_ADD_SPAM_HEADERS,
-                                             SpamProtoConfig.DEFAULT_HEADER_NAME ));
+        tmpSpamSettings.setImapConfig(new SpamImapConfig(true,
+                SpamMessageAction.MARK,
+                SpamProtoConfig.DEFAULT_STRENGTH,
+                SpamProtoConfig.DEFAULT_ADD_SPAM_HEADERS,
+                SpamProtoConfig.DEFAULT_HEADER_NAME ));
     }
 
     public SpamSettings getSpamSettings()
@@ -235,85 +232,42 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
 
     public void enableSmtpSpamHeaders(boolean enableHeaders)
     {
-        SpamBaseSettings sbs = getBaseSettings(false);
-        sbs.getSmtpConfig().setAddSpamHeaders(enableHeaders);
-        setBaseSettings(sbs);
+        SpamSettings ss = getSpamSettings();
+        ss.getSmtpConfig().setAddSpamHeaders(enableHeaders);
+        setSpamSettings(ss);
     }
 
     public void enablePopSpamHeaders(boolean enableHeaders)
     {
-        SpamBaseSettings sbs = getBaseSettings(false);
-        sbs.getPopConfig().setAddSpamHeaders(enableHeaders);
-        setBaseSettings(sbs);
+        SpamSettings ss = getSpamSettings();
+        ss.getPopConfig().setAddSpamHeaders(enableHeaders);
+        setSpamSettings(ss);
     }
 
     public void enableImapSpamHeaders(boolean enableHeaders)
     {
-        SpamBaseSettings sbs = getBaseSettings(false);
-        sbs.getImapConfig().setAddSpamHeaders(enableHeaders);
-        setBaseSettings(sbs);
+        SpamSettings ss = getSpamSettings();
+        ss.getImapConfig().setAddSpamHeaders(enableHeaders);
+        setSpamSettings(ss);
     }
 
     public void enableSmtpFailClosed(boolean failClosed)
     {
-        SpamBaseSettings sbs = getBaseSettings(false);
-        sbs.getSmtpConfig().setFailClosed(failClosed);
-        setBaseSettings(sbs);
+        SpamSettings ss = getSpamSettings();
+        ss.getSmtpConfig().setFailClosed(failClosed);
+        setSpamSettings(ss);
     }
 
-    public SpamBaseSettings getBaseSettings()
+    public void updateScannerInfo()
     {
-        return getBaseSettings(false);
-    }
-
-    public SpamBaseSettings getBaseSettings(boolean updateScannerInfo)
-    {
-        SpamBaseSettings baseSettings = spamSettings.getBaseSettings();
-
-        if (updateScannerInfo) {
-            Date lastSignatureUpdate = scanner.getLastSignatureUpdate();
-            if (lastSignatureUpdate != null) this.lastSignatureUpdate = lastSignatureUpdate;
-            Date lastSignatureUpdateCheck = scanner.getLastSignatureUpdateCheck();
-            if (lastSignatureUpdateCheck != null) this.lastSignatureUpdateCheck = lastSignatureUpdateCheck;
-            String signatureVersion = scanner.getSignatureVersion();
-            if (signatureVersion != null) this.signatureVersion = signatureVersion;
-        }
-
-        baseSettings.T_setLastUpdate(this.lastSignatureUpdate);
-        baseSettings.T_setLastUpdateCheck(this.lastSignatureUpdateCheck);
-        baseSettings.T_setSignatureVersion(this.signatureVersion);
-
-        /* XXXX Have to figure out how to calculate the version string. */
-        return baseSettings;
-    }
-
-    public void setBaseSettings(final SpamBaseSettings baseSettings)
-    {
-        spamSettings.setBaseSettings(baseSettings);
-    }
-
-    @SuppressWarnings("unchecked") //getItems
-    public List<SpamRBL> getSpamRBLList( int start, int limit, String ... sortColumns )
-    {
-        return spamSettings.getSpamRBLList();
-    }
-
-    public void updateSpamRBLList( final List<SpamRBL> added, final List<Long> deleted,
-                                   final List<SpamRBL> modified )
-    {
-    }
-
-    @SuppressWarnings("unchecked")
-	public void updateAll( final SpamBaseSettings baseSettings, final List[] rblRules )
-    {
-        if (baseSettings != null) {
-            spamSettings.setBaseSettings(baseSettings);
-        }
+        Date lastSignatureUpdate = scanner.getLastSignatureUpdate();
+        if (lastSignatureUpdate != null) lastUpdate = lastSignatureUpdate;
         
-        if (rblRules != null && rblRules.length >= 3) {
-            List<SpamRBL> rblList = new LinkedList<SpamRBL>( getSpamSettings().getSpamRBLList());
-            // spamSettings.setSpamRBLList( rblList );
-        }
+        Date lastSignatureUpdateCheck = scanner.getLastSignatureUpdateCheck();
+        if (lastSignatureUpdateCheck != null) this.lastUpdateCheck = lastSignatureUpdateCheck;
+        
+        String signatureVersion = scanner.getSignatureVersion();
+        if (signatureVersion != null) this.signatureVersion = signatureVersion;
     }
 
     public void initializeSettings()
@@ -386,14 +340,43 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
 
     // XXX soon to be deprecated ----------------------------------------------
 
-    public Object getSettings()
+    public int getSpamRBLListLength()
     {
-        return getSpamSettings();
+        return rblListLength;
     }
 
-    public void setSettings(Object settings)
+    public void setSpamRBLListLength(int newValue)
     {
-        setSpamSettings((SpamSettings)settings);
-        return;
+        rblListLength = newValue;
+    }
+
+    public Date getLastUpdate()
+    {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(Date newValue)
+    {
+        lastUpdate = newValue;
+    }
+
+    public Date getLastUpdateCheck()
+    {
+        return lastUpdateCheck;
+    }
+
+    public void setLastUpdateCheck(Date newValue)
+    {
+        lastUpdateCheck = newValue;
+    }
+
+    public String getSignatureVersion()
+    {
+        return signatureVersion;
+    }
+
+    public void setSignatureVersion(String newValue)
+    {
+        signatureVersion = newValue;
     }
 }
