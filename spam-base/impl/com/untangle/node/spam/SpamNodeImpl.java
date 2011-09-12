@@ -305,7 +305,6 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     @Override
     protected void preInit(String args[])
     {
-        spamSettings = new SpamSettings();
         initializeSettings();
         initSpamRBLList(spamSettings);
     }

@@ -41,6 +41,9 @@ import com.untangle.uvm.node.Node;
 
 public interface SpamNode extends Node
 {
+    public SpamSettings getSpamSettings();
+    public void setSpamSettings(final SpamSettings newSpamSettings);
+
     void enableSmtpSpamHeaders(boolean enableHeaders);
     void enablePopSpamHeaders(boolean enableHeaders);
     void enableImapSpamHeaders(boolean enableHeaders);

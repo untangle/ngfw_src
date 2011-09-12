@@ -259,21 +259,17 @@ public class PhishNode extends SpamNodeImpl implements Phish
     @Override
     protected void preInit(String args[])
     {
-        // nothing happens here we just want to prevent the base member
-        // function from being called since it does a bunch of settings
-        // init that we don't want after moving to the new settings model.
+        readNodeSettings();
+        SpamSettings ps = getSpamSettings();
+        ps.getSmtpConfig().setBlockSuperSpam(false);
+        setSpamSettings(ps);
+        initSpamRBLList(ps);
     }
 
     @Override
     protected void postInit(String args[])
     {
         deployWebAppIfRequired(logger);
-
-        readNodeSettings();
-        SpamSettings ps = getSpamSettings();
-        ps.getSmtpConfig().setBlockSuperSpam(false);
-        setSpamSettings(ps);
-        initSpamRBLList(ps);
     }
 
     @Override
