@@ -25,6 +25,7 @@ public class License implements Serializable
     public static final String BRANDING = "untangle-node-branding";
     public static final String COMMTOUCH = "untangle-node-commtouch";
     public static final String COMMTOUCHAV = "untangle-node-commtouchav";
+    public static final String COMMTOUCHAS = "untangle-node-commtouchas";
     public static final String DATAVAULT = "untangle-node-datavault";
     public static final String FAILD = "untangle-node-faild";
     public static final String IPSEC = "untangle-node-ipsec";

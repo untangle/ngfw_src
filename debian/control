@@ -599,8 +599,8 @@ Description: Firewall
 Package: untangle-node-spamassassin
 Architecture: all
 Depends: untangle-vm, untangle-base-spam, untangle-casing-mail
-XB-Display-Name: Spam Blocker
-XB-View-Position: 60
+XB-Display-Name: Spam Blocker Lite
+XB-View-Position: 61
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz
  AAALEgAACxIB0t1+/AAAABh0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzT7MfTgAAABZ0RVh0
