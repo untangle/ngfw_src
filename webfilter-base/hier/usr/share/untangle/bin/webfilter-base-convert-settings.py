@@ -140,7 +140,7 @@ def get_category_settings(tid, settings_id, debug=False):
                 string = "uncategorized"
         if (nodeName == "sitefilter"):
             if string == "Uncategorized":
-                string = "0"
+                continue; # no longer have an uncat setting for sitefilter (it has misc instead)
 
         if not first:
             str += ',\n'

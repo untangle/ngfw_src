@@ -662,7 +662,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
      * Set the current settings to new Settings
      * And save the settings to disk
      */
-    private void _setSettings( WebFilterSettings newSettings )
+    protected void _setSettings( WebFilterSettings newSettings )
     {
         /**
          * Save the settings

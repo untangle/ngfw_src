@@ -348,6 +348,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 data: this.getSettings().categories.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
+                paginated : false,
                 columns : [{
                     id : 'name',
                     header : this.i18n._("category"),
@@ -362,7 +363,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         allowBlank : false
                     })
                 }],
-                sortField : 'description',
+                sortField : 'name',
                 columnsDefaultSortable : true,
                 autoExpandColumn : 'description',
                 plugins : [blockColumn, flagColumn],
