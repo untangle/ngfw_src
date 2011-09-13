@@ -598,7 +598,7 @@ Description: Firewall
 
 Package: untangle-node-spamassassin
 Architecture: all
-Depends: untangle-vm, untangle-base-spam, untangle-casing-mail
+Depends: untangle-vm, untangle-base-spam, untangle-casing-mail, untangle-spamassassin-update
 XB-Display-Name: Spam Blocker Lite
 XB-View-Position: 61
 XB-Untangle-Pkg-Type: node
@@ -1155,7 +1155,7 @@ Description: Virus Blocker Base
 
 Package: untangle-base-spam
 Architecture: all
-Depends: untangle-vm, untangle-spamassassin-update, untangle-casing-mail
+Depends: untangle-vm, untangle-casing-mail
 XB-Display-Name: Spam Blocker Base
 XB-Untangle-Pkg-Type: base
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
