@@ -16,6 +16,8 @@ APACHE_UPGRADE_CONFIG_FILE="/etc/apache2/conf.d/${BASENAME}"
 CONSOLIDATED_UPGRADE_LOG="/var/www/${BASENAME}.log"
 UPGRADE_LOGS=$(ls @PREFIX@/var/log/uvm/{wrapper,uvm,console,apt}.log)
 
+# The PID file stores the pid of the tail process dumping to the log
+# It is also the indicator the untangle-vm checks to see if the upgrade screen is being displayed
 PIDFILE=/var/run/${BASENAME}.pid
 
 # during the preinst of the 1st untangle-vm package containing the

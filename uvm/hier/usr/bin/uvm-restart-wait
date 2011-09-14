@@ -26,18 +26,14 @@ while true; do
     else
         # restart will have been scheduled by the time apt-get is gone
         if is_rebooting; then
-            /usr/share/untangle/bin/ut-show-upgrade-splash stop
             exit
         elif [ "xreboot" =  "x$mode" ]; then
-            /usr/share/untangle/bin/ut-show-upgrade-splash stop
             rm $pidfile
             reboot
             exit
         else
             rm $pidfile
             /etc/init.d/untangle-vm start
-            # stop showing splash screen after uvm is booted
-            /usr/share/untangle/bin/ut-show-upgrade-splash stop
             exit
         fi
     fi

@@ -69,6 +69,8 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     private static final String REBOOT_SCRIPT = "/sbin/reboot";
     private static final String SHUTDOWN_SCRIPT = "/sbin/shutdown";
+    private static final String UPGRADE_PID_FILE = "/var/run/uvm-upgrade.pid";
+    private static final String UPGRADE_SPLASH_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-show-upgrade-splash";;
 
     private static final String CREATE_UID_SCRIPT;
     private static final String UID_FILE;
@@ -675,6 +677,8 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
         if (isFactoryDefaults())
             initializeWizard();
+
+        hideUpgradeSplash();
         
         state = UvmState.INITIALIZED;
     }
@@ -1015,6 +1019,33 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         this.addAnnotatedClass("com.untangle.uvm.engine.NodeManagerState");
         this.addAnnotatedClass("com.untangle.uvm.engine.NodePersistentState");
         this.addAnnotatedClass("com.untangle.uvm.engine.NodeStateChange");
+    }
+    
+    /**
+     * This changes apache to show the regular screen again if it is currently showing the
+     * upgrade log (which is displayed during upgrades)
+     */
+    private void hideUpgradeSplash()
+    {
+        File upgradePid = new File(UPGRADE_PID_FILE);
+        /* If the upgrade is in progress */
+        if (upgradePid.exists()) {
+            logger.info("Upgrade complete. Removing upgrade splash screen...");
+
+            try {
+                Process p = exec(new String[] { UPGRADE_SPLASH_SCRIPT , "stop" });
+                for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
+                int exitValue = p.waitFor();
+                if (0 != exitValue) {
+                    logger.warn("Upgrade complete. Removing upgrade splash screen... failed");
+                } else {
+                    logger.info("Upgrade complete. Removing upgrade splash screen... done");
+                }
+            }
+            catch (Exception e) {
+                logger.warn("Upgrade complete. Removing upgrade splash screen... failed", e);
+            }
+        }
     }
     
     // static initializer -----------------------------------------------------
