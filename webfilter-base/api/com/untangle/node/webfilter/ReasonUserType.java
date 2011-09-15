@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.node.webfilter;
 
 import java.io.Serializable;
@@ -14,9 +17,6 @@ import org.hibernate.usertype.UserType;
 /**
  * Hibernate <code>UserType</code> for persisting <code>Reason</code>
  * objects.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class ReasonUserType implements UserType
 {
@@ -49,10 +49,6 @@ public class ReasonUserType implements UserType
             ps.setString(i, "0");
         } else {
             Reason r = (Reason)v;
-            if (Reason.DEFAULT == r) {
-                logger.error("Default reason: " + r);
-                //throw new IllegalStateException("i told you");
-            }
             ps.setString(i, Character.toString(r.getKey()));
         }
     }

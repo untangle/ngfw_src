@@ -47,46 +47,37 @@ public class WebFilterImpl extends WebFilterBase
     {
         LinkedList<GenericRule> categories = new LinkedList<GenericRule>();
 
-        GenericRule porn = new GenericRule("porn", "Pornography", null, "Pornography", true);
-        porn.setBlocked(true);
-        porn.setFlagged(true);
-        categories.add(porn);
-        
-        GenericRule proxy = new GenericRule("proxy", "Proxy Sites", null, "Proxy Sites", true);
-        porn.setBlocked(true);
-        porn.setFlagged(true);
-        categories.add(proxy);
 
         GenericRule rule;
-        rule = new GenericRule("aggression", "Hate and Aggression", null, "Hate and Aggression", true, false, false);
+        rule = new GenericRule("aggression", "Hate and Aggression", null, "Hate and Aggression sites ", true, false, false);
         categories.add(rule);
-        rule = new GenericRule("dating", "Dating", null, "Dating", true, false, false);
+        rule = new GenericRule("dating", "Dating", null, "Dating sites", true, false, false);
         categories.add(rule);
-        rule = new GenericRule("drugs", "Illegal Drugs", null, "Illegal Drugs", true, false, false);
+        rule = new GenericRule("drugs", "Illegal Drugs", null, "Illegal Drugs sites", true, false, false);
         categories.add(rule);
-        rule = new GenericRule("ecommerce", "Shopping", null, "Shopping", true, false, false);
+        rule = new GenericRule("ecommerce", "Shopping", null, "Shopping and eCommerce sites", true, false, false);
         categories.add(rule);
-        rule = new GenericRule("gambling", "Gambling", null, "Gambling", true, false, false);
+        rule = new GenericRule("gambling", "Gambling", null, "Gambling sites", true, false, false);
         categories.add(rule);
-        rule = new GenericRule("hacking", "Hacking", null, "Hacking", true, false, false);
+        rule = new GenericRule("hacking", "Hacking", null, "Hacking sites", true, false, false);
         categories.add(rule);
-        rule = new GenericRule("jobsearch", "Job Search", null, "Job Search", true, false, false);
+        rule = new GenericRule("jobsearch", "Job Search", null, "Job Search sites", true, false, false);
         categories.add(rule);
-        rule = new GenericRule("mail", "Web Mail", null, "Web Mail", true, false, false);
+        rule = new GenericRule("mail", "Web Mail", null, "Web Mail sites", true, false, false);
         categories.add(rule);
-        rule = new GenericRule("porn", "Pornography", null, "Pornography", true, true, true);
+        rule = new GenericRule("porn", "Pornography", null, "Pornography sites", true, true, true);
         categories.add(rule);
-        rule = new GenericRule("proxy", "Proxy Sites", null, "Proxy Sites", true, true, true);
+        rule = new GenericRule("proxy", "Proxy Sites", null, "Proxy/Anonymizer sites", true, true, true);
         categories.add(rule);
-        rule = new GenericRule("socialnetworking", "Social Networking", null, "Social Networking", true, false, false);
+        rule = new GenericRule("socialnetworking", "Social Networking", null, "Social Networking sites", true, false, false);
         categories.add(rule);
-        rule = new GenericRule("sports", "Sports", null, "Sports", true, false, false);
+        rule = new GenericRule("sports", "Sports", null, "Sports sites", true, false, false);
         categories.add(rule);
-        rule = new GenericRule("vacation", "Vacation", null, "Vacation", true, false, false);
+        rule = new GenericRule("vacation", "Vacation", null, "Vacation sites", true, false, false);
         categories.add(rule);
-        rule = new GenericRule("violence", "Violence", null, "Violence", true, false, false);
+        rule = new GenericRule("violence", "Violence", null, "Violence sites", true, false, false);
         categories.add(rule);
-        rule = new GenericRule("uncategorized", "Uncategorized", null, "Uncategorized", true, false, false);
+        rule = new GenericRule("uncategorized", "Uncategorized", null, "Uncategorized sites", true, false, false);
         categories.add(rule);
 
         settings.setCategories(categories);
