@@ -176,7 +176,7 @@ WHERE reports.n_http_events.time_stamp >= %s
 
     @sql_helper.print_timing
     def __update_n_mail_table(self, tablename, start_date, end_date):
-        update_name = 'report.%s-mail[%s]' % (tablename, self.name)
+        update_name = 'reports.%s-mail[%s]' % (tablename, self.name)
         sd = TimestampFromMx(sql_helper.get_update_info(update_name, start_date))
         ed = TimestampFromMx(mx.DateTime.now())
 
@@ -205,7 +205,7 @@ WHERE reports.%s.time_stamp >= %%s
             raise e
 
         try:
-            update_name = 'report.%s-smtp[%s]' % (tablename, self.name)
+            update_name = 'reports.%s-smtp[%s]' % (tablename, self.name)
             sd = TimestampFromMx(sql_helper.get_update_info(update_name, start_date))
 
             sql_helper.run_sql("""\

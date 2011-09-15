@@ -239,13 +239,40 @@ SELECT last_update FROM reports.table_updates WHERE tablename = %s
 
 def set_update_info(tablename, last_update, connection=None,
                     auto_commit=True):
+    # FIXME: last_update is now ignored and re-calculated from the
+    # info in the corresponding table; change all the calls to this
+    # function at some point
     if not connection:
         connection = get_connection()
     
-    logger.debug("Setting update_info for %s to %s" % (tablename, last_update))
     try:
         curs = connection.cursor()
 
+        origin_tablename = re.sub(r'(\-[a-z]+|reports\.|\[.+\])', '', tablename)
+
+        last_update_origin = last_update
+        try:
+            curs.execute("SELECT max(time_stamp) FROM reports.%s" % (origin_tablename,))
+        except psycopg2.ProgrammingError, e:
+            connection.rollback()
+            if str(e).find('column "time_stamp" does not exist') > 0:
+                try:
+                    curs = connection.cursor()
+                    curs.execute("SELECT max(trunc_time) FROM reports.%s" % (origin_tablename,))
+                except:
+                    connection.rollback()
+
+        last_update = curs.fetchone()
+        if not last_update or not last_update[0]:
+            last_update = last_update_origin
+        else:
+            last_update = last_update[0]
+            
+        logger.debug("About to set last_update to %s (instead of %s) for %s" % (last_update,
+                                                                                last_update_origin,
+                                                                                tablename))
+
+        curs = connection.cursor()
         curs.execute("""\
 SELECT count(*) FROM reports.table_updates WHERE tablename = %s
 """, (tablename,))
