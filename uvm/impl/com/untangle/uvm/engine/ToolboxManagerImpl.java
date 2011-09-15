@@ -162,8 +162,17 @@ class ToolboxManagerImpl implements ToolboxManager
             if (type == PackageDesc.Type.LIB_ITEM) {
                 displayNames.add(dn);
                 libitems.put(dn, md);
-                if (md.getHide().contains("true")) {
-                    hiddenApps.add(dn);
+                String hiddenConditions = md.getHide();
+                if (hiddenConditions != null) {
+                    if ( hiddenConditions.contains("true") ) {
+                        hiddenApps.add(dn);
+                    } else {
+                        for ( String str : hiddenConditions.split(",") ) {
+                            if (isInstalled(str)) {
+                                hiddenApps.add(dn);
+                            }
+                        }
+                    }
                 }
             } else if (type == PackageDesc.Type.TRIAL) {
                 // Workaround for Trial display names. better solution
@@ -283,8 +292,10 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public boolean isInstalled(String name)
     {
+        String pkgName = name.trim();
+        
         for (PackageDesc md : this.installed) {
-            if (md.getName().equals(name)) {
+            if (md.getName().equals(pkgName)) {
                 return true;
             }
         }
