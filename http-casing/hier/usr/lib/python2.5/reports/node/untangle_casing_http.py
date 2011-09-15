@@ -81,7 +81,7 @@ CREATE TABLE reports.n_http_events (
     virus_kaspersky_name text,
     wf_untangle_reason character,
     wf_untangle_category text,
-    event_id text,
+    event_id serial,
     ab_action character,
     wf_untangle_blocked boolean,
     wf_untangle_flagged boolean,
@@ -90,7 +90,7 @@ CREATE TABLE reports.n_http_events (
     virus_commtouch_clean boolean,
     virus_commtouch_name text)""", 'time_stamp', start_date, end_date)
 
-        sql_helper.add_column('reports.n_http_events', 'event_id', 'text')
+        sql_helper.add_column('reports.n_http_events', 'event_id', 'serial')
         sql_helper.add_column('reports.n_http_events', 'ab_action', 'character(1)')
         sql_helper.add_column('reports.n_http_events', 'sw_cookie_ident', 'text')
         sql_helper.add_column('reports.n_http_events', 'sw_blacklisted', 'boolean')
@@ -119,7 +119,7 @@ INSERT INTO reports.n_http_events
        s_client_port, c_server_port, s_server_port, policy_id, policy_inbound,
        c2p_bytes, s2p_bytes, p2c_bytes, p2s_bytes, c2p_chunks, s2p_chunks,
        p2c_chunks, p2s_chunks, uid, request_id, method, uri, host,
-       c2s_content_length, s2c_content_length, s2c_content_type, hname, event_id)
+       c2s_content_length, s2c_content_length, s2c_content_type, hname)
     SELECT
         -- timestamp from request
         er.time_stamp,
@@ -138,8 +138,7 @@ INSERT INTO reports.n_http_events
         -- n_http_evt_resp
         resp.content_length, resp.content_type,
         -- from webpages
-        COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname,
-        ps.session_id
+        COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname
     FROM events.pl_stats ps
     JOIN events.n_http_req_line req ON ps.pl_endp_id = req.pl_endp_id
     JOIN events.n_http_evt_req er ON er.request_id = req.request_id

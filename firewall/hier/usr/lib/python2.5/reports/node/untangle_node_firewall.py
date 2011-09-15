@@ -108,14 +108,12 @@ DELETE FROM events.n_firewall_statistic_evt WHERE time_stamp < %s""", (cutoff,))
             sql_helper.run_sql("""\
 UPDATE reports.sessions
 SET firewall_was_blocked = was_blocked,
-    firewall_rule_index = rule_index,
-    firewall_rule_description = description
-FROM events.n_firewall_evt, settings.n_firewall_rule
+    firewall_rule_index = rule_index
+FROM events.n_firewall_evt
 WHERE reports.sessions.time_stamp >= %s
 AND reports.sessions.time_stamp < %s
-AND n_firewall_evt.rule_id = n_firewall_rule.rule_id
 AND reports.sessions.pl_endp_id = events.n_firewall_evt.pl_endp_id""",
-                               (sd, ed), connection=conn, auto_commit=False)
+                               (sd, ed), connection=conn, auto_commit=False, debug=True)
 
             sql_helper.set_update_info('sessions[firewall]', ed,
                                        connection=conn, auto_commit=False)

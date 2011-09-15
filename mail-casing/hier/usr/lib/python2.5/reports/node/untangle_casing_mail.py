@@ -103,7 +103,7 @@ CREATE TABLE reports.n_mail_addrs (
     msg_bytes bigint,
     msg_attachments integer,
     hname text,
-    event_id text,
+    event_id serial,
     sender text,
     virus_clam_clean boolean,
     virus_clam_name text,
@@ -119,7 +119,7 @@ CREATE TABLE reports.n_mail_addrs (
     virus_commtouch_clean boolean,
     virus_commtouch_name text)""", 'time_stamp', start_date, end_date)
 
-        sql_helper.add_column('reports.n_mail_addrs', 'event_id', 'text')
+        sql_helper.add_column('reports.n_mail_addrs', 'event_id', 'serial')
         sql_helper.add_column('reports.n_mail_addrs', 'virus_clam_clean', 'boolean')
         sql_helper.add_column('reports.n_mail_addrs', 'virus_clam_name', 'text')
         sql_helper.add_column('reports.n_mail_addrs', 'sa_score', 'real')
@@ -146,7 +146,7 @@ INSERT INTO reports.n_mail_addrs
        s_client_port, c_server_port, s_server_port, policy_id, policy_inbound,
        c2p_bytes, s2p_bytes, p2c_bytes, p2s_bytes, c2p_chunks, s2p_chunks,
        p2c_chunks, p2s_chunks, uid, msg_id, subject, server_type, addr_pos,
-       addr, addr_name, addr_kind, msg_bytes, msg_attachments, hname, event_id, sender)
+       addr, addr_name, addr_kind, msg_bytes, msg_attachments, hname, sender)
     SELECT
         -- timestamp from request
         mi.time_stamp,
@@ -166,7 +166,6 @@ INSERT INTO reports.n_mail_addrs
         mms.msg_bytes, mms.msg_attachments,
         -- from webpages
         COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname,
-        md5(ps.session_id::text || mia.addr::text || mia.kind || mi.id::text),
         ''
     FROM events.pl_stats ps
     JOIN events.n_mail_message_info mi ON mi.pl_endp_id = ps.pl_endp_id
@@ -243,9 +242,37 @@ CREATE TABLE reports.n_mail_msgs (
     server_type char(1),
     msg_bytes bigint,
     msg_attachments integer,
-    hname text
-)""",
-                                            'time_stamp', start_date, end_date)
+    hname text,
+    event_id serial,
+    sender text,
+    virus_clam_clean boolean,
+    virus_clam_name text,
+    sa_score real,
+    sa_is_spam boolean,
+    sa_action character,
+    virus_kaspersky_clean boolean,
+    virus_kaspersky_name text,
+    phish_score real,
+    phish_is_spam boolean,
+    phish_action character,
+    vendor text,
+    virus_commtouch_clean boolean,
+    virus_commtouch_name text)""", 'time_stamp', start_date, end_date)
+
+        sql_helper.add_column('reports.n_mail_msgs', 'event_id', 'serial')
+        sql_helper.add_column('reports.n_mail_msgs', 'virus_clam_clean', 'boolean')
+        sql_helper.add_column('reports.n_mail_msgs', 'virus_clam_name', 'text')
+        sql_helper.add_column('reports.n_mail_msgs', 'sa_score', 'real')
+        sql_helper.add_column('reports.n_mail_msgs', 'sa_is_spam', 'boolean')
+        sql_helper.add_column('reports.n_mail_msgs', 'sa_action', 'character')
+        sql_helper.add_column('reports.n_mail_msgs', 'virus_kaspersky_clean', 'boolean')
+        sql_helper.add_column('reports.n_mail_msgs', 'virus_kaspersky_name', 'text')
+        sql_helper.add_column('reports.n_mail_msgs', 'phish_score', 'real')
+        sql_helper.add_column('reports.n_mail_msgs', 'phish_is_spam', 'boolean')
+        sql_helper.add_column('reports.n_mail_msgs', 'phish_action', 'character')
+        sql_helper.add_column('reports.n_mail_msgs', 'vendor', 'text')
+        sql_helper.add_column('reports.n_mail_msgs', 'virus_commtouch_clean', 'boolean')
+        sql_helper.add_column('reports.n_mail_msgs', 'virus_commtouch_name', 'text')
 
         sd = TimestampFromMx(sql_helper.get_update_info('reports.n_mail_msgs', start_date))
         ed = TimestampFromMx(mx.DateTime.now())
