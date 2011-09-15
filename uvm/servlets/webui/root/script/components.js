@@ -1084,7 +1084,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 });
 Ung.AppItem.template = new Ext.Template('<div class="icon">{imageHtml}</div>', '<div class="text">{text}</div>',
         '<div id="button-buy_{id}"></div>', '<div id="action_{id}" class="action"></div>', '<div class="state-pos" id="state_{id}"></div>');
-Ung.AppItem.buttonTemplate = new Ext.Template('<table cellspacing="0" cellpadding="0" border="0" style="width: 100%; height:100%"><tbody><tr><td class="app-item-left">&nbsp;</td><td class="app-item-center">{content}</td><td class="app-item-right">&nbsp;</td></tr></tbody></table>');
+Ung.AppItem.buttonTemplate = new Ext.Template('<table cellspacing="0" cellpadding="0" border="0" style="width: 100%; height:100%"><tbody><tr><td class="app-item-left"></td><td class="app-item-center">{content}</td><td class="app-item-right">&nbsp;</td></tr></tbody></table>');
 // update state for the app with a displayName
 Ung.AppItem.updateState = function(displayName, state, options) {
     var app = Ung.AppItem.getApp(displayName);
