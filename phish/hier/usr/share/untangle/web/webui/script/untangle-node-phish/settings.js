@@ -32,10 +32,10 @@ if (!Ung.hasResource["Ung.Phish"]) {
             // build tabs
             this.buildEmail();
             this.buildWeb();
-            this.buildWebEventLog();
             this.buildEmailEventLog();
+            this.buildWebEventLog();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.emailPanel, this.webPanel, this.gridWebEventLog, this.gridEmailEventLog]);
+            this.buildTabPanel([this.emailPanel, this.webPanel, this.gridEmailEventLog, this.gridWebEventLog]);
             Ung.Phish.superclass.initComponent.call(this);
         },
         lookup : function(needle, haystack1, haystack2) {
