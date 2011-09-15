@@ -11,7 +11,7 @@ public class SpywareAllFilter implements SimpleEventFilter<SessionLogEventFromRe
 
     private static final String logQuery = "FROM SessionLogEventFromReports evt " +
         "WHERE evt.policyId = :policyId " +
-        "AND sw_access_ident != ''" +
+        "AND swAccessIdent != '' " +
         "ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------

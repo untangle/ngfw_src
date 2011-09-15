@@ -10,7 +10,7 @@ public class SpywareCookieFilter implements SimpleEventFilter<HttpLogEventFromRe
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Cookie Events (from reports tables)"));
 
     private static final String logQuery = "FROM HttpLogEventFromReports evt" + 
-            " WHERE evt.swCookieIdent != ''" + 
+            " WHERE evt.swCookieIdent IS NOT NULL" + 
             " AND evt.policyId = :policyId" + 
             " ORDER BY evt.timeStamp DESC";
 

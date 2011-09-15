@@ -609,12 +609,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }, {
                     name : 'server',
                     mapping : 'CServerAddr'
-                }, {
-                    name : 'request',
-                    mapping : 'uri',
-                    type : 'string'
-                    }
-                ],
+                }],
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : 130,
@@ -629,18 +624,11 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     sortable : true,
                     dataIndex : 'client'
                 }, {
-                    id: 'request',
-                    header : this.i18n._("request"),
-                    width : 200,
-                    sortable : true,
-                    dataIndex : 'request'
-                }, {
                     header : this.i18n._("server"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'server'
-                }],
-                autoExpandColumn: 'request'
+                }]
             });
         },
 
