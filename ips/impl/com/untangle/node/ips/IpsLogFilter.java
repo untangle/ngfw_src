@@ -24,7 +24,7 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class IpsLogFilter implements SimpleEventFilter<IpsLogEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events (from reports table)"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events"));
 
     private static final String WARM_QUERY
         = "FROM SessionLogEventFromReports evt " +

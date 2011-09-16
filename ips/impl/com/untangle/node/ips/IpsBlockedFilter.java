@@ -24,7 +24,7 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class IpsBlockedFilter implements SimpleEventFilter<IpsLogEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Blocked Events (from reports tables)"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Blocked Events"));
 
     private static final String WARM_QUERY
         = "FROM SessionLogEventFromReports evt " +

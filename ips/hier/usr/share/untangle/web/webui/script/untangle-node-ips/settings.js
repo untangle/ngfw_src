@@ -306,16 +306,8 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     name : 'timeStamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'action',
+                    name : 'blocked',
                     mapping : 'ipsBlocked',
-                    type : 'string',
-                    convert : function(value) {
-                        if (value) {
-                            return this.i18n._("block");
-                        } else {
-                            return this.i18n._("pass");
-                        }
-                    }.createDelegate(this)
                 }, {
                     name : 'reason',
                     mapping : 'ipsName',
@@ -326,10 +318,15 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     type : 'string'
                 }, {
                     name : 'client',
-                    mapping : 'CClientaddr'
+                    mapping : 'CClientAddr'
                 }, {
                     name : 'server',
                     mapping : 'CServerAddr'
+                }, {
+                    name : 'server',
+                    mapping : 'CServerAddr'
+                }, {
+                    name : 'uid'
                 }],
                 columns : [{
                     header : this.i18n._("timestamp"),
@@ -340,21 +337,20 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("action"),
-                    width : 100,
-                    sortable : true,
-                    dataIndex : 'action'
-                }, {
                     header : this.i18n._("client"),
                     width : 165,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
-                    id: 'ruleSid',
-                    header : this.i18n._('reason for action'),
-                    width : 150,
+                    header : this.i18n._("username"),
+                    width : 165,
                     sortable : true,
-                    dataIndex : 'reason'
+                    dataIndex : 'uid'
+                }, {
+                    header : this.i18n._("blocked"),
+                    width : 100,
+                    sortable : true,
+                    dataIndex : 'blocked'
                 }, {
                     id: 'ruleDescription',
                     header : this.i18n._('rule description'),
@@ -366,9 +362,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     width : 165,
                     sortable : true,
                     dataIndex : 'server'
-                }],
-                autoExpandColumn: 'ruleSid'
-                
+                }]
             });
         },
         //apply function 
