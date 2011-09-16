@@ -449,20 +449,18 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     name : 'timeStamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'action',
-                    mapping : 'firewallWasBlocked',
-                    type : 'string',
-                    convert : function(value) {
-                        return value ? this.i18n._("blocked") : this.i18n._("passed");
-                    }.createDelegate(this)
+                    name : 'blocked',
+                    mapping : 'firewallWasBlocked'
                 }, {
                     name : 'firewallRuleIndex'
+                }, {
+                    name : 'uid'
                 }, {
                     name : 'client',
                     mapping : 'CClientAddr'
                 }, {
                     name : 'server',
-                    mapping : 'CCServerAddr'
+                    mapping : 'CServerAddr'
                 }],
                 columns : [{
                     header : this.i18n._("timestamp"),
@@ -473,24 +471,26 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("action"),
-                    width : 100,
-                    sortable : true,
-                    dataIndex : 'action'
-                }, {
                     header : this.i18n._("client"),
                     width : 165,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
+                    header : this.i18n._("username"),
+                    width : 165,
+                    sortable : true,
+                    dataIndex : 'uid'
+                }, {
+                    header : this.i18n._("blocked"),
+                    width : 100,
+                    sortable : true,
+                    dataIndex : 'blocked'
+                }, {
                     id: 'ruleIndex',
-                    header : this.i18n._('reason for action'),
+                    header : this.i18n._('rule'),
                     width : 150,
                     sortable : true,
-                    dataIndex : 'ruleIndex',
-                    renderer : function(value, metadata, record) {
-                           return String.format(this.i18n._("rule #{0}"), value);
-                    }.createDelegate(this)
+                    dataIndex : 'firewallRuleIndex'
                 }, {
                     header : this.i18n._("server"),
                     width : 165,

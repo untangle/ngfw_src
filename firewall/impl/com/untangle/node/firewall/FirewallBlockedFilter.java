@@ -24,7 +24,7 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class FirewallBlockedFilter implements SimpleEventFilter<FirewallEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Firewall Block Events (from reports tables)"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Blocked Events"));
 
     private static final String WARM_QUERY
         = "FROM SessionLogEventFromReports evt " +
