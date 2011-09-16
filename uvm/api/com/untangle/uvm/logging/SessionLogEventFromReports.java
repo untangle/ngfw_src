@@ -35,7 +35,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
         private Long plEndpId;
         private Date endTime;
         private String hname;
-        private Long uid;
+        private String uid;
         private Long policyId;
         private InetAddress cClientAddr;
         private InetAddress cServerAddr;
@@ -65,7 +65,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
         // accessors --------------------------------------------------------------
         @Column(name="pl_endp_id")
         public Long getPlEndpId() { return plEndpId; }
-        public void setPlEndpId(Long id) { this.plEndpId = id; }
+        public void setPlEndpId(Long plEndpId) { this.plEndpId = plEndpId; }
 
         @Temporal(TemporalType.TIMESTAMP)
         @Column(name="end_time")
@@ -77,8 +77,8 @@ import com.untangle.uvm.node.PipelineEndpoints;
         public void setHname(String hname) { this.hname = hname; }
 
         @Column(name="uid")
-        public Long getUid() { return uid; }
-        public void setUid(Long uid) { this.uid = uid; }
+        public String getUid() { return uid; }
+        public void setUid(String uid) { this.uid = uid; }
 
         @Column(name="policy_id")
         public Long getPolicyId() { return policyId; }
@@ -168,29 +168,29 @@ import com.untangle.uvm.node.PipelineEndpoints;
 
         public void appendSyslog(SyslogBuilder sb) // FIXME: not called for now
         {
-            sb.startSection("endpoints");
-            sb.addField("create-date", getTimeStamp());
+//             sb.startSection("endpoints");
+//             sb.addField("create-date", getTimeStamp());
 
-            Long policyId = getPolicyId();
-            sb.addField("policy", ((policyId == null) ? "<none>" : policyId.toString()));
+//             Long policyId = getPolicyId();
+//             sb.addField("policy", ((policyId == null) ? "<none>" : policyId.toString()));
 
-            sb.addField("client-iface", getClientIntf());
-            sb.addField("client-addr", getCClientAddr());
-            sb.addField("client-port", getCClientPort());
-            sb.addField("server-addr", getCServerAddr());
-            sb.addField("server-port", getCServerPort());
+//             sb.addField("client-iface", getClientIntf());
+//             sb.addField("client-addr", getCClientAddr());
+//             sb.addField("client-port", getCClientPort());
+//             sb.addField("server-addr", getCServerAddr());
+//             sb.addField("server-port", getCServerPort());
 
-            sb.startSection("info");
-            sb.addField("pf-protocol", getPfProtocol());
-            sb.addField("pf-blocked", getPfBlocked());
+//             sb.startSection("info");
+//             sb.addField("pf-protocol", getPfProtocol());
+//             sb.addField("pf-blocked", getPfBlocked());
 
-            sb.addField("ips-name", getIpsName());
-            sb.addField("ips-blocked", getIpsBlocked());
+//             sb.addField("ips-name", getIpsName());
+//             sb.addField("ips-blocked", getIpsBlocked());
 
-            sb.addField("fw-description", getFirewallRuleDescription());
-            sb.addField("fw-blocked", getFirewallWasBlocked());
+//             sb.addField("fw-description", getFirewallRuleDescription());
+//             sb.addField("fw-blocked", getFirewallWasBlocked());
 
-            sb.addField("sw-access", getSwAccessIdent());
+//             sb.addField("sw-access", getSwAccessIdent());
         }
 
         @Transient
@@ -202,15 +202,15 @@ import com.untangle.uvm.node.PipelineEndpoints;
         @Transient
         public SyslogPriority getSyslogPriority()
         {
-            // WARNING = traffic altered
-            // INFORMATIONAL = statistics or normal operation
-            if (getPfBlocked() || 
-                getIpsBlocked() ||
-                getFirewallWasBlocked() ||
-                (getSwAccessIdent() != null && getSwAccessIdent() != ""))
-                return SyslogPriority.WARNING;
-            else
-                return SyslogPriority.INFORMATIONAL;
+//             // WARNING = traffic altered
+//             // INFORMATIONAL = statistics or normal operation
+//             if (getPfBlocked() || 
+//                 getIpsBlocked() ||
+//                 getFirewallWasBlocked() ||
+//                 (getSwAccessIdent() != null && getSwAccessIdent() != ""))
+//                 return SyslogPriority.WARNING;
+//             else
+            return SyslogPriority.INFORMATIONAL;
         }
 
 

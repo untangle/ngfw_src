@@ -456,9 +456,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         return value ? this.i18n._("blocked") : this.i18n._("passed");
                     }.createDelegate(this)
                 }, {
-                    name : 'firewallRulesIndex'
-                }, {
-                    name : 'firewallRuleDescription'
+                    name : 'firewallRuleIndex'
                 }, {
                     name : 'client',
                     mapping : 'CClientAddr'
@@ -493,12 +491,6 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     renderer : function(value, metadata, record) {
                            return String.format(this.i18n._("rule #{0}"), value);
                     }.createDelegate(this)
-                }, {
-                    id: 'ruleDescription',
-                    header : this.i18n._('rule description'),
-                    width : 150,
-                    sortable : true,
-                    dataIndex : 'firewallRuleDescription'
                 }, {
                     header : this.i18n._("server"),
                     width : 165,
