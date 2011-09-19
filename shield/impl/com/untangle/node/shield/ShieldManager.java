@@ -152,7 +152,7 @@ public class ShieldManager
                             last_js = iteration.getStart();
                         }
                     } catch ( JSONException e ) {
-                        logger.info( "Unable to parse iteration: " + e.getMessage());
+                        logger.info( "Unable to parse iteration: " + e.getMessage() + " js: " + iteration_js.toString());
                     }
                 }
 
