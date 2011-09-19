@@ -2850,13 +2850,21 @@ Ung.SettingsWin = Ext.extend(Ung.Window, {
     applyAction : function() {
         if (this.validate()) {
         Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-            this.getRpcNode().setBaseSettings(function(result, exception) {
-                if (typeof this.getBaseSettings == 'function') {
+            // If it uses the old getBaseSettings/setBaseSettings
+            if (typeof this.getRpcNode().setBaseSettings == 'function') {
+                this.getRpcNode().setBaseSettings(function(result, exception) {
                     this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());            
-                }
-                Ext.MessageBox.hide();
-                if(Ung.Util.handleException(exception)) return;
-            }.createDelegate(this), this.getBaseSettings());
+                    Ext.MessageBox.hide();
+                    if(Ung.Util.handleException(exception)) return;
+                }.createDelegate(this), this.getBaseSettings());
+            // If it uses the old getSettings/setSettings
+            } else {
+                this.getRpcNode().setSettings(function(result, exception) {
+                    this.initialSettings = Ung.Util.clone(this.getSettings());            
+                    Ext.MessageBox.hide();
+                    if(Ung.Util.handleException(exception)) return;
+                }.createDelegate(this), this.getSettings());
+            }
         }
     },    
     // validation functions
@@ -2955,7 +2963,9 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
     getBaseSettings : function(forceReload) {
         if (forceReload || this.rpc.baseSettings === undefined) {
             try {
-                this.rpc.baseSettings = this.getRpcNode().getBaseSettings();
+                if (typeof this.getRpcNode().getBaseSettings == 'function') {
+                    this.rpc.baseSettings = this.getRpcNode().getBaseSettings();
+                }
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }

@@ -108,8 +108,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         name : "user_bypass",
                         store : new Ext.data.SimpleStore({
                             fields : ['unblockModeValue', 'unblockModeName'],
-                            data : [["NONE", this.i18n._("None")], ["USER_ONLY", this.i18n._("Temporary")],
-                                    ["USER_AND_GLOBAL", this.i18n._("Permanent and Global")]]
+                            data : [["None", this.i18n._("None")],
+                                    ["Host", this.i18n._("Temporary")],
+                                    ["Global", this.i18n._("Permanent and Global")]]
                         }),
                         displayField : "unblockModeName",
                         valueField : "unblockModeValue",

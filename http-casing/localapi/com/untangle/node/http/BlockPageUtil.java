@@ -70,8 +70,12 @@ public class BlockPageUtil
 
         request.setAttribute( "contact", I18nUtil.tr("If you have any questions, Please contact {0}.", contactHtml, i18n_map));
 
-        String mode = params.getUnblockMode();
-        if (( BlockPageParameters.UNBLOCK_MODE_NONE != mode ) && ( null != bd ) && ( null != bd.getWhitelistHost())) {
+        
+        String mode = (params.getUnblockMode() == null ? "" : params.getUnblockMode()).trim().toLowerCase();
+        logger.warn("Current Unblock mode: " + mode);
+        logger.warn("Test against    mode: " + BlockPageParameters.UNBLOCK_MODE_NONE);
+
+        if ((!BlockPageParameters.UNBLOCK_MODE_NONE.equals(mode)) && ( null != bd ) && ( null != bd.getWhitelistHost())) {
             request.setAttribute( "showUnblockNow", true );
             if (BlockPageParameters.UNBLOCK_MODE_GLOBAL == mode) {
                 request.setAttribute( "showUnblockGlobal", true );
@@ -110,9 +114,9 @@ public class BlockPageUtil
 
         public BlockDetails getBlockDetails();
 
-        public static final String UNBLOCK_MODE_NONE   = "None";
-        public static final String UNBLOCK_MODE_HOST   = "Host";
-        public static final String UNBLOCK_MODE_GLOBAL = "Global";
+        public static final String UNBLOCK_MODE_NONE   = "none";
+        public static final String UNBLOCK_MODE_HOST   = "host";
+        public static final String UNBLOCK_MODE_GLOBAL = "global";
         public String getUnblockMode();
     }
 
