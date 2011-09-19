@@ -109,9 +109,6 @@ public abstract class DecisionEngine
             logger.error("Could not parse URI '" + uri + "'", e);
         }
 
-        String path = uri.getPath();
-        path = null == path ? "" : uri.getPath().toLowerCase();
-
         String host = uri.getHost();
         if (null == host) {
             host = header.getValue("host");
@@ -187,24 +184,10 @@ public abstract class DecisionEngine
         
         // Check Extensions
         // If this extension is blocked, block the request
-        for ( GenericRule rule : node.getSettings().getBlockedExtensions()) {
-            String exn = "."+rule.getString().toLowerCase();
-            if (rule.getEnabled() && path.endsWith(exn)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("blocking extension " + exn);
-                }
-                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_EXTENSION, exn, node.getVendor());
-                logger.debug("LOG: in extensions list: " + requestLine.getRequestLine());
-                node.log(hbe, host, port, event);
-
-                Map<String,String> i18nMap = LocalUvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
-
-                WebFilterBlockDetails bd = new WebFilterBlockDetails (node.getSettings(), host, uri.toString(),
-                                                                      I18nUtil.tr("extension ({0})", exn, i18nMap), clientIp,
-                                                                      node.getNodeTitle(),
-                                                                      (String) sess.globalAttachment(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME));
-                return node.generateNonce(bd);
-            }
+        GenericRule extRule = checkExtensionList(host, uri.toString(), port, requestLine, event);
+        if (extRule != null) {
+            WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), extRule.getDescription(), clientIp, node.getNodeTitle(), username);
+            return node.generateNonce(bd);
         }
 
         // Check Categories
@@ -249,13 +232,19 @@ public abstract class DecisionEngine
         // check mime-type list
         for (GenericRule rule : node.getSettings().getBlockedMimeTypes()) {
             MimeType mt = new MimeType(rule.getString());
-            if (rule.getEnabled() && mt.matches(contentType)) {
-                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_MIME, contentType, node.getVendor());
-                logger.debug("LOG: in mimetype list: " + requestLine.getRequestLine());
-                node.log(hbe);
+            if ((rule.getBlocked() || rule.getFlagged()) && mt.matches(contentType)) {
 
-                Map<String,String> i18nMap = LocalUvmContextFactory.context().
-                    languageManager().getTranslations("untangle-node-webfilter");
+                if (rule.getBlocked()) {
+                    WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_MIME, contentType, node.getVendor());
+                    logger.debug("LOG: in mimetype list: " + requestLine.getRequestLine());
+                    node.log(hbe);
+                } else if (rule.getFlagged()) {
+                    WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.TRUE, Reason.BLOCK_MIME, contentType, node.getVendor());
+                    logger.debug("LOG: in mimetype list: " + requestLine.getRequestLine());
+                    node.log(hbe);
+                }
+
+                Map<String,String> i18nMap = LocalUvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
 
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(),
                                                                      I18nUtil.tr("Mime-Type ({0})", contentType, i18nMap),
@@ -343,7 +332,7 @@ public abstract class DecisionEngine
      * @param uri URI of the URL
      * @return description of the rule that passlist rule, null if DNE
      */
-    private String     checkSitePassList( String host, URI uri )
+    private String      checkSitePassList( String host, URI uri )
     {
         String dom;
         for ( dom = host ; null != dom ; dom = nextHost(dom) ) {
@@ -365,7 +354,7 @@ public abstract class DecisionEngine
      * @param clientIp IP of the host
      * @return description of the rule that passlist rule, null if DNE
      */
-    private String     checkClientPassList( InetAddress clientIp )
+    private String      checkClientPassList( InetAddress clientIp )
     {
         for (GenericRule rule : node.getSettings().getPassedClients()) {
             IPMaskedAddress addr = new IPMaskedAddress(rule.getString());
@@ -386,7 +375,7 @@ public abstract class DecisionEngine
      * @param clientIp IP of the host
      * @return true if the site has been explicitly unblocks for that user, false otherwise
      */
-    private boolean    checkUnblockedSites( String host, URI uri, InetAddress clientIp )
+    private boolean     checkUnblockedSites( String host, URI uri, InetAddress clientIp )
     {
         String dom;
         for ( dom = host ; null != dom ; dom = nextHost(dom) ) {
@@ -421,18 +410,48 @@ public abstract class DecisionEngine
         if (rule.getBlocked()) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE,  Boolean.TRUE, Reason.BLOCK_URL, rule.getDescription(), node.getVendor());
             node.log(hbe, host, port, event);
+            return rule;
         } else if (rule.getFlagged()) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.TRUE, Reason.PASS_URL, rule.getDescription(), node.getVendor());
             node.log(hbe, host, port, event);
+            return null;
         } 
 
         return null;
     }
 
     /**
+     * Checks the given URL against the file extension rules
+     */
+    private GenericRule checkExtensionList( String host, String uri, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event )
+    {
+        for ( GenericRule rule : node.getSettings().getBlockedExtensions()) {
+            String exn = "." + rule.getString().toLowerCase();
+            
+            if ((rule.getBlocked() || rule.getFlagged()) && uri.endsWith(exn)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("blocking/flagging extension " + exn);
+                }
+
+                if (rule.getBlocked()) {
+                    WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE,  Boolean.TRUE, Reason.BLOCK_EXTENSION, rule.getDescription(), node.getVendor());
+                    node.log(hbe, host, port, event);
+                    return rule;
+                } else if (rule.getFlagged()) {
+                    WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.TRUE, Reason.BLOCK_EXTENSION, rule.getDescription(), node.getVendor());
+                    node.log(hbe, host, port, event);
+                    return null;
+                } 
+            }
+        }
+
+        return null;
+    }
+    
+    /**
      * Check the given URL against the categories (and their settings)
      */
-    private String     checkCategory( TCPSession sess, InetAddress clientIp, String host, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event, String username )
+    private String      checkCategory( TCPSession sess, InetAddress clientIp, String host, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event, String username )
     {
         URI reqUri = requestLine.getRequestUri();
 
@@ -446,7 +465,7 @@ public abstract class DecisionEngine
 
         uri = uri.replaceAll("/+", "/");
 
-        logger.info("checkCategory: " + host + uri);
+        logger.debug("checkCategory: " + host + uri);
 
         List<String> categories = categorizeSite(host, port, uri);
 
@@ -469,7 +488,7 @@ public abstract class DecisionEngine
 
             if ( bestCategory ==  null ) {
                 bestCategory = catSettings;
-                logger.info("checkCategory: " + host + uri + " bestCategory: " + bestCategory.getName());
+                logger.debug("checkCategory: " + host + uri + " bestCategory: " + bestCategory.getName());
             }
             if ( catSettings.getBlocked() != null && catSettings.getBlocked()) {
                 isBlocked = true;
@@ -526,12 +545,8 @@ public abstract class DecisionEngine
         logger.debug("findMatchRule: rules = '" + rules +"', value = '" + value + "' (normalized from '" + oldVal + ";");
 
         for (GenericRule rule : rules) {
-            if (rule.getEnabled() == null) {
-                logger.warn("Skipping rule with NULL enabled attribute");
+            if (rule.getEnabled() != null && !rule.getEnabled()) 
                 continue;
-            } else if (!rule.getEnabled()) {
-                continue;
-            }
             
             String re = rule.getString();
             // remove potential '\*\.?' at the beginning
@@ -568,7 +583,7 @@ public abstract class DecisionEngine
      * @param host host of the URL
      * @return the normalized string for that hostname, or null if param is null
      */
-    private String     normalizeHostname( String oldhost )
+    private String      normalizeHostname( String oldhost )
     {
         if (null == oldhost)
             return null;
@@ -594,7 +609,7 @@ public abstract class DecisionEngine
      * @param host a <code>String</code> value
      * @return a <code>String</code> value
      */
-    private String     nextHost( String host )
+    private String      nextHost( String host )
     {
         int i = host.indexOf('.');
         if (-1 == i) {
@@ -613,7 +628,7 @@ public abstract class DecisionEngine
      * normalizes a domain name
      * removes extra "http://" or "www." or "." at the beginning
      */
-    private String     normalizeDomain( String dom )
+    private String      normalizeDomain( String dom )
     {
         String url = dom.toLowerCase();
         String uri = url.startsWith("http://") ? url.substring("http://".length()) : url;
@@ -632,7 +647,7 @@ public abstract class DecisionEngine
     /**
      * Checks whether a given domain has been unblocked for the given address
      */
-    private boolean    isDomainUnblocked( String domain, InetAddress clientAddr )
+    private boolean     isDomainUnblocked( String domain, InetAddress clientAddr )
     {
         if (null == domain) {
             return false;

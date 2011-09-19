@@ -518,12 +518,14 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     "string" : this.i18n._("[no extension]"),
                     "blocked" : true,
                     "flagged" : true,
+                    "category" : this.i18n._("[no category]"),
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("File Types"),
                 data : this.getSettings().blockedExtensions.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
+                //paginated: false,
                 columns : [{
                     id : 'string',
                     header : this.i18n._("file type"),
@@ -533,6 +535,14 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         allowBlank : false
                     })
                 }, blockColumn, flagColumn, {
+                    id : 'category',
+                    header : this.i18n._("category"),
+                    width : 200,
+                    dataIndex : 'category',
+                    editor : new Ext.form.TextField({
+                        allowBlank : false
+                    })
+                }, {
                     id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
@@ -550,7 +560,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex : "string",
                     fieldLabel : this.i18n._("File Type"),
                     allowBlank : false,
-                    width : 200
+                    width : 100
                 }), new Ext.form.Checkbox({
                     name : "Block",
                     dataIndex : "blocked",
@@ -560,6 +570,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex : "flagged",
                     fieldLabel : this.i18n._("Flag"),
                     tooltip : this.i18n._("Flag as Violation")
+                }), new Ext.form.TextArea({
+                    name : "Category",
+                    dataIndex : "category",
+                    fieldLabel : this.i18n._("Category"),
+                    width : 100
                 }), new Ext.form.TextArea({
                     name : "Description",
                     dataIndex : "description",
@@ -590,11 +605,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     "string" : this.i18n._("[no mime type]"),
                     "blocked" : true,
                     "flagged" : true,
+                    "category" : this.i18n._("[no category]"),
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("MIME Types"),
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
+                //paginated: false,
                 data : this.getSettings().blockedMimeTypes.list,
                 columns : [{
                     id : 'string',
@@ -605,6 +622,14 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         allowBlank : false
                     })
                 }, blockColumn, flagColumn, {
+                    id : 'category',
+                    header : this.i18n._("category"),
+                    width : 100,
+                    dataIndex : 'category',
+                    editor : new Ext.form.TextField({
+                        allowBlank : false
+                    })
+                }, {
                     id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
@@ -632,6 +657,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex : "flagged",
                     fieldLabel : this.i18n._("Flag"),
                     tooltip : this.i18n._("Flag as Violation")
+                }), new Ext.form.TextArea({
+                    name : "Category",
+                    dataIndex : "category",
+                    fieldLabel : this.i18n._("Category"),
+                    width : 100
                 }), new Ext.form.TextArea({
                     name : "Description",
                     dataIndex : "description",
@@ -839,6 +869,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 data: this.getSettings().passedUrls.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
+                paginated: false,
                 columns : [{
                     id : 'string',
                     header : this.i18n._("site"),
@@ -904,6 +935,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 data: this.getSettings().passedClients.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
+                paginated: false,
                 columns : [{
                     id : 'string',
                     header : this.i18n._("IP address/range"),
@@ -1003,6 +1035,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             case 'DEFAULT' :
                                 return this.i18n._("no rule applied");
                         }
+                        return null;
                     }.createDelegate(this)
 
                 }],

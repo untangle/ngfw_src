@@ -10,18 +10,24 @@ public class GenericRule extends BaseRule implements java.io.Serializable
 
     public GenericRule() {}
 
-    public GenericRule(String string, String name, String category, String description, boolean enabled, boolean blocked, boolean flagged)
+    public GenericRule(String string, String name, String category, String description, Boolean enabled, Boolean blocked, Boolean flagged)
     {
         super(name, category, description, enabled, blocked, flagged);
         this.string = string;
     }
 
-    public GenericRule(String string, String name, String category, String description, boolean enabled)
+    public GenericRule(String string, String name, String category, String description, Boolean enabled)
     {
         super(name, category, description, enabled);
         this.string = string;
     }
 
+    public GenericRule(String string, String name, String category, String description)
+    {
+        super(name, category, description);
+        this.string = string;
+    }
+    
     public GenericRule(String string, boolean enabled)
     {
         super(enabled);

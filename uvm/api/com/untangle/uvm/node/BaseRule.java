@@ -16,27 +16,34 @@ public class BaseRule implements java.io.Serializable
 
     public BaseRule() {}
 
-    public BaseRule(String name, String category, String description, boolean enabled, boolean blocked, boolean flagged)
+    public BaseRule(String name, String category, String description, Boolean enabled, Boolean blocked, Boolean flagged)
     {
         this.name = name;
         this.category = category;
         this.description = description;
-        this.enabled = Boolean.valueOf(enabled);
-        this.blocked = Boolean.valueOf(blocked);
-        this.flagged = Boolean.valueOf(flagged);
+        this.enabled = enabled;
+        this.blocked = blocked;
+        this.flagged = flagged;
     }
 
-    public BaseRule(String name, String category, String description, boolean enabled)
+    public BaseRule(String name, String category, String description, Boolean enabled)
     {
         this.name = name;
         this.category = category;
         this.description = description;
-        this.enabled = Boolean.valueOf(enabled);
+        this.enabled = enabled;
     }
 
-    public BaseRule(boolean enabled)
+    public BaseRule(String name, String category, String description)
     {
-        this.enabled = Boolean.valueOf(enabled);
+        this.name = name;
+        this.category = category;
+        this.description = description;
+    }
+    
+    public BaseRule(Boolean enabled)
+    {
+        this.enabled = enabled;
     }
     
     public Integer getId()

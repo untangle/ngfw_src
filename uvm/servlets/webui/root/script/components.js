@@ -2851,7 +2851,9 @@ Ung.SettingsWin = Ext.extend(Ung.Window, {
         if (this.validate()) {
         Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
             this.getRpcNode().setBaseSettings(function(result, exception) {
-                this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());            
+                if (typeof this.getBaseSettings == 'function') {
+                    this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());            
+                }
                 Ext.MessageBox.hide();
                 if(Ung.Util.handleException(exception)) return;
             }.createDelegate(this), this.getBaseSettings());
