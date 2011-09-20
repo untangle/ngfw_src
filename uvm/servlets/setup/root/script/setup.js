@@ -1713,7 +1713,7 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
                 html : '<h2 class="wizard-title">'+i18n._( "Congratulations!" )+'</h2>'
             },{
                 xtype : 'label',
-                html : String.format(i18n._( '<b>The {0} Server is now configured.</b><br/><br/>You are now ready to login and download applications.' ),oemName),
+                html : String.format(i18n._( '<b>The {0} Server is now configured.</b><br/><br/>You are now ready to download and configure applications.' ),oemName),
                 cls : 'noborder'
             }]
         });
