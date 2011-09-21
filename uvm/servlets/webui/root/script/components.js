@@ -2421,6 +2421,8 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     settingsCmp : null,
     // if the event log has more than one repositories that can be selected
     hasRepositories : true,
+    // refresh on render
+    refreshOnRender : true,
     // Event manager rpc function to call
     // default is getEventManager() from settingsCmp
     eventManagerFn : null,
@@ -2638,6 +2640,10 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                     boxRepositoryDescEventLog.innerHTML = out.join("");
                 }
             }.createDelegate(this));
+        }
+        if (this.refreshOnRender) {
+            Ext.MessageBox.wait(i18n._("Refreshing..."), i18n._("Please wait"));
+            this.refreshList();
         }
     },
     // get selected repository
