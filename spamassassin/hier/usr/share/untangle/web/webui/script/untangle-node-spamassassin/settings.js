@@ -843,7 +843,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             } else if (value == 'Q') { // QUARANTINED
                                 return this.i18n._("quarantine message");
                             } else if (value == 'S') { // SAFELISTED
-                                return this.i18n._("safelist message");
+                                return this.i18n._("pass safelist message");
                             } else if (value == 'Z') { // OVERSIZE
                                 return this.i18n._("pass oversize message");
                             } else if (value == 'O') { // OUTBOUND
