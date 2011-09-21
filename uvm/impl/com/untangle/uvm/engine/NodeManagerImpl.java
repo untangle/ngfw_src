@@ -291,12 +291,14 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             /* load annotated classes */
             if (nodeDesc != null) {
                 List<String> annotatedClasses = nodeDesc.getAnnotatedClasses();
+                boolean classAdded = false;
                 if (annotatedClasses != null) {
                     for (String clz : annotatedClasses) {
-                        UvmContextImpl.getInstance().addAnnotatedClass(clz);
+                        classAdded |= UvmContextImpl.getInstance().addAnnotatedClass(clz);
                     }
                 }
-                UvmContextImpl.getInstance().refreshSessionFactory();
+                if (classAdded)
+                    UvmContextImpl.getInstance().refreshSessionFactory();
             }
 
             tc = new NodeContextImpl((URLClassLoader)getClass().getClassLoader(), nodeDesc, packageDesc.getName(), true);

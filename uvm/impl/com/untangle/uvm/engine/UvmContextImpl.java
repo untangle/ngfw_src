@@ -554,21 +554,21 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return this.brandingManager.getCompanyName();
     }
 
-    public void addAnnotatedClass(String className)
+    public boolean addAnnotatedClass(String className)
     {
         if (className == null) {
             logger.warn("Invalid argument: className is null");
-            return;
+            return false;
+        }
+
+        for (String cname : this.annotatedClasses) {
+            if (className.equals(cname))
+                return false; /* already in list */
         }
 
         logger.info("Adding AnnotatedClass: " + className);
-        
-        for (String cname : this.annotatedClasses) {
-            if (className.equals(cname))
-                return; /* already in list */
-        }
-
         this.annotatedClasses.add(className);
+        return true;
     }
     
     // UvmContextBase methods --------------------------------------------------
