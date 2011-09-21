@@ -978,9 +978,8 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                     completeSize:0,
                     completePackages:0
                 };
-                var progressString = String.format(i18n._("{0} Packages"), this.download.summary.count);
                 this.progressBar.reset();
-                this.progressBar.updateProgress(0, progressString);
+                this.progressBar.updateProgress(0, String.format(i18n._("{0} Packages"), this.download.summary.count));
                 break;
             case "download_complete" :
                 if(this.download!=null && this.download.summary!=null) {
@@ -1003,9 +1002,23 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                     this.progressBar.updateProgress(progressIndex, progressString);
                 }
                 break;
-            case "installing" :
+            case "apt_progress" :
                 this.displayButtonsOrProgress(false);
-                this.progressBar.waitDefault(i18n._("Installing..."));
+                if(this.download!=null && this.download.summary!=null) {
+                    var action = "";
+                    if (options.action.indexOf("unpack") != -1) {
+                        action = i18n._("Unpacking");
+                    } 
+                    var currentPercentComplete = parseFloat(options.count) / parseFloat(options.totalCount != 0 ? options.totalCount : 1);
+                    var progressIndex = parseFloat(0.9 * currentPercentComplete);
+                    var progressString = action + " " + String.format("{0}/{1}", options.count, options.totalCount);
+                    this.progressBar.reset();
+                    this.progressBar.updateProgress(progressIndex, progressString);
+                }
+                break;
+            case "loadapps" :
+                this.displayButtonsOrProgress(false);
+                this.progressBar.waitDefault(i18n._("Loading Apps..."));
                 break;
             case "activate_timeout" :
                 this.displayButtonsOrProgress(false);
@@ -1784,7 +1797,7 @@ Ung.MessageManager = {
                         } else if(msg.javaClass.indexOf("LicenseUpdateMessage") != -1) {
                             main.loadLicenses();
                         } else {
-                            if(msg.upgrade==false) {
+                            if( msg.upgrade==false || msg.upgrade === undefined ) {
                                 var appItemDisplayName=msg.requestingPackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingPackage.fullVersion):msg.requestingPackage.displayName;
                                 if(msg.javaClass.indexOf("DownloadSummary") != -1) {
                                     Ung.AppItem.updateState(appItemDisplayName, "download_summary", msg);
@@ -1799,11 +1812,17 @@ Ung.MessageManager = {
                                     }
                                 } else if(msg.javaClass.indexOf("DownloadAllComplete") != -1) {
                                     if(msg.success) {
-                                        this.installInProgress++;
-                                       Ung.AppItem.updateState(appItemDisplayName, "installing");
+                                       Ung.AppItem.updateState(appItemDisplayName, "loadapps");
                                     } else {
                                         Ext.MessageBox.alert(i18n._("Warning"), Sting.format(i18n._("Error installing package {0}: Aborted."),appItemDisplayName));
                                         Ung.AppItem.updateState(appItemDisplayName);
+                                    }
+                                } else if(msg.javaClass.indexOf("AptMessage") != -1) {
+                                    if(msg.action.indexOf("alldone") != -1) {
+                                        this.installInProgress++;
+                                        Ung.AppItem.updateState(appItemDisplayName, "loadapps");
+                                    } else {
+                                        Ung.AppItem.updateState(appItemDisplayName, "apt_progress", msg);
                                     }
                                 } 
                             } else if(msg.upgrade==true) {

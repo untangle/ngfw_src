@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.message.MessageManager;
+import com.untangle.uvm.message.AptMessage;
 import com.untangle.uvm.toolbox.DownloadComplete;
 import com.untangle.uvm.toolbox.DownloadProgress;
 import com.untangle.uvm.toolbox.DownloadSummary;
@@ -32,6 +33,10 @@ class AptLogTail implements Runnable
 
     private static final Pattern FETCH_PATTERN;
     private static final Pattern DOWNLOAD_PATTERN;
+    private static final Pattern APT_INSTALL_PATTERN;
+    private static final Pattern DPKG_UNPACK_PATTERN;
+    private static final Pattern DPKG_INSTALL_PATTERN;
+    private static final Pattern DONE_PATTERN;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -39,6 +44,10 @@ class AptLogTail implements Runnable
         FETCH_PATTERN = Pattern.compile(".*'(http://.*)' (.*\\.deb) ([0-9]+) (MD5Sum:|SHA1:|SHA256:)?([0-9a-z]+)");
         //6850K .......... .......... .......... .......... .......... 96 46.6K 6s
         DOWNLOAD_PATTERN = Pattern.compile(".* ([0-9]+)K[ .]+([0-9]+) *([0-9]+\\.*[0-9]+)K.*");
+        APT_INSTALL_PATTERN = Pattern.compile(".*\\s([0-9]+) newly installed,.*");
+        DPKG_UNPACK_PATTERN = Pattern.compile(".*Unpacking (\\S+) .*");
+        DPKG_INSTALL_PATTERN = Pattern.compile(".*Setting up (\\S+) .*");
+        DONE_PATTERN = Pattern.compile(".*done [0-9]+.*");
     }
 
     private final long key;
@@ -92,7 +101,7 @@ class AptLogTail implements Runnable
         } catch (InterruptedException e) {}
         
         logger.debug("AptLogTail(" + key + ")" + " tailing apt log");
-        doIt();
+        processLog();
         logger.debug("AptLogTail(" + key + ")" + " tailing apt log - done");
 
         try {
@@ -102,8 +111,9 @@ class AptLogTail implements Runnable
         }
     }
 
-    public void doIt()
+    public void processLog()
     {
+        int c=0;
         MessageManager mm = LocalUvmContextFactory.context().messageManager();
         
         // find `start key'
@@ -117,15 +127,15 @@ class AptLogTail implements Runnable
         while (true) {
             String line = readLine();
 
-            Matcher m = FETCH_PATTERN.matcher(line);
+            Matcher match = FETCH_PATTERN.matcher(line);
             if (line.contains("END PACKAGE LIST")) {
                 logger.debug("AptLogTail(" + key + ")" + " found: END PACKAGE LIST");
                 break;
-            } else if (m.matches()) {
-                String url = m.group(1);
-                String file = m.group(2);
-                int size = new Integer(m.group(3));
-                String hash = m.group(5);
+            } else if (match.matches()) {
+                String url = match.group(1);
+                String file = match.group(2);
+                int size = new Integer(match.group(3));
+                String hash = match.group(5);
 
                 PackageInfo pi = new PackageInfo(url, file, size, hash);
                 logger.debug("AptLogTail(" + key + ")" + " adding package: " + pi);
@@ -148,7 +158,7 @@ class AptLogTail implements Runnable
             logger.debug("AptLogTail(" + key + ")" + " downloading: " + pi);
             while (true) {
                 String line = readLine();
-                Matcher m = DOWNLOAD_PATTERN.matcher(line);
+                Matcher match = DOWNLOAD_PATTERN.matcher(line);
                 if (line.contains("DOWNLOAD SUCCEEDED: ")) {
                     logger.debug("AptLogTail(" + key + ")" + " Sending DownloadComplete");
                     mm.submitMessage(new DownloadComplete(true, requestingPackage));
@@ -157,9 +167,9 @@ class AptLogTail implements Runnable
                     logger.debug("AptLogTail(" + key + ")" + " Sending DownloadComplete (failed)");
                     mm.submitMessage(new DownloadComplete(false, requestingPackage));
                     break;
-                } else if (m.matches()) {
-                    int bytesDownloaded = Integer.parseInt(m.group(1)) * 1000;
-                    String speed = m.group(3);
+                } else if (match.matches()) {
+                    int bytesDownloaded = Integer.parseInt(match.group(1)) * 1000;
+                    String speed = match.group(3);
 
                     // enqueue event
                     DownloadProgress dpe;
@@ -186,6 +196,46 @@ class AptLogTail implements Runnable
 
         logger.debug("AptLogTail(" + key + ")" + " Sending DownloadAllComplete");
         mm.submitMessage(new DownloadAllComplete(true, requestingPackage));
+
+        /**
+         * Wait for installing packages line
+         */
+        int packageCount = 0;
+        while (true) {
+            String line = readLine();
+            logger.warn("Waiting for \"" + APT_INSTALL_PATTERN + "\" + \"" + line + "\"");
+            Matcher match = APT_INSTALL_PATTERN.matcher(line);
+            if (match.matches()) {
+                packageCount = Integer.parseInt(match.group(1));
+                logger.warn("TOTAL PKG COUNT: " + packageCount);
+                break;
+            }
+        }
+
+        /**
+         * Unpack and install phase
+         */
+        while (true) {
+            logger.warn("Apt readline: ");
+            String line = readLine();
+            logger.warn("Apt readline: got \"" + line + "\"");
+            Matcher unpackMatch = DPKG_UNPACK_PATTERN.matcher(line);
+            Matcher installMatch = DPKG_INSTALL_PATTERN.matcher(line);
+            if (unpackMatch.matches()) {
+                String packageName = unpackMatch.group(1);
+                mm.submitMessage(new AptMessage("unpack", requestingPackage, c, packageCount*2));
+                c++;
+            } else if (installMatch.matches()) {
+                String packageName = installMatch.group(1);
+                mm.submitMessage(new AptMessage("unpack", requestingPackage, c, packageCount*2));
+                c++;
+            } else if (DONE_PATTERN.matcher(line).matches()) {
+                logger.warn("APT DONE matched");
+                break; //its done
+            }
+        }
+
+        mm.submitMessage(new AptMessage("alldone", requestingPackage, 0, 0));
     }
 
     private String readLine()

@@ -272,7 +272,7 @@ class MessageManagerImpl implements MessageManager
 
         List<Integer> removals = new ArrayList<Integer>(messages.keySet().size());
 
-        logger.info("Submit Message: " + m.getMessageType() + " : " + m );
+        logger.info("Submit Message: " + m.getMessageType() + " : " + m.toJSONString() );
         
         synchronized (messages) {
             for (Integer k : messages.keySet()) {

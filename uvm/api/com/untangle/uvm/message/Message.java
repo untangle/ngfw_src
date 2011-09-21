@@ -6,6 +6,9 @@ package com.untangle.uvm.message;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.json.JSONObject;
+import org.json.JSONString;
+
 /**
  * Marker class for messages.
  *
@@ -14,7 +17,7 @@ import java.util.Date;
  * @see MessageQueue
  */
 @SuppressWarnings("serial")
-public class Message implements Serializable
+public class Message implements Serializable, JSONString
 {
     private final Date time = new Date();
 
@@ -28,5 +31,11 @@ public class Message implements Serializable
 	public final Date getTime()
     {
         return time;
+    }
+
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
     }
 }
