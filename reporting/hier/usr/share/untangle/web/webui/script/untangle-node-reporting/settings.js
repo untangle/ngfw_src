@@ -84,7 +84,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                         this.cancelAction();
                                     }.createDelegate(this)
                                 }, {
-                                    title: this.node.md.displayName,
+                                    title: this.node.nodeContext.nodeDesc.displayName,
                                     action: function() {
                                         main.iframeWin.closeActionFn();
                                     }.createDelegate(this)
