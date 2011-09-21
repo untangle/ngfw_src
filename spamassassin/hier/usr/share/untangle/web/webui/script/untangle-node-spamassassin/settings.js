@@ -846,6 +846,8 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 return this.i18n._("safelist message");
                             } else if (value == 'Z') { // OVERSIZE
                                 return this.i18n._("pass oversize message");
+                            } else if (value == 'O') { // OUTBOUND
+                                return this.i18n._("pass outbound message");
                             } else {
                                 return this.i18n._("unknown action");
                             }

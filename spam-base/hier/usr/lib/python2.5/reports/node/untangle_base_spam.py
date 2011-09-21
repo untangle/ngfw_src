@@ -578,6 +578,7 @@ SELECT m1.time_stamp, m1.hname, m1.%s_score, m2.addr, m1.subject, host(m1.s_serv
                       WHEN 'Q' THEN '%s'
                       WHEN 'S' THEN '%s'
                       WHEN 'Z' THEN '%s'
+                      WHEN 'O' THEN '%s'
                       END,
        m1.addr
 FROM reports.n_mail_addrs AS m1, reports.n_mail_addrs AS m2
@@ -639,6 +640,7 @@ SELECT m1.time_stamp, m1.hname, m1.%s_score, m2.addr, m1.subject, host(m1.s_serv
                       WHEN 'Q' THEN '%s'
                       WHEN 'S' THEN '%s'
                       WHEN 'Z' THEN '%s'
+                      WHEN 'O' THEN '%s'
                       END,
        m1.addr
 FROM reports.n_mail_addrs AS m1, reports.n_mail_addrs AS m2
