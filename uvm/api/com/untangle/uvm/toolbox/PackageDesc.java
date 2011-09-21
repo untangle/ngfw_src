@@ -143,11 +143,7 @@ public class PackageDesc implements Serializable
         this.installedVersion = installedVersion;
 
         // hide 
-        v = m.get("untangle-hide");
-        String hideOn = m.get("untangle-hide-on"); // obsolete old name - this is for backwards compat
-        // any non-null value means true
-        // we must do this because old packages used varying values like "iso" and "u4w"
-        this.hide = (v == null && hideOn == null ? "" : "true");
+        this.hide = m.get("untangle-hide");
     }
 
     public String getName()
