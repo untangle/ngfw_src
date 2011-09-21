@@ -152,7 +152,13 @@ public class ShieldManager
                             last_js = iteration.getStart();
                         }
                     } catch ( JSONException e ) {
-                        logger.info( "Unable to parse iteration: " + e.getMessage() + " js: " + iteration_js.toString());
+                        // this happens often with the last event missing the end_time as it hasn't completed yet
+                        // just ignore bad these
+                        if (e.getMessage().contains("end_time")) {
+                            logger.debug( "Unable to parse iteration: " + e.getMessage() + " js: " + iteration_js.toString());
+                        } else {
+                            logger.warn( "Unable to parse iteration: " + e.getMessage() + " js: " + iteration_js.toString());
+                        }
                     }
                 }
 

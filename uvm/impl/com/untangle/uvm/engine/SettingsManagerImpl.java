@@ -1,4 +1,6 @@
-/* $Id$ */
+/**
+ * $Id$
+ */
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
@@ -54,8 +56,7 @@ public class SettingsManagerImpl implements SettingsManager
      * This is the locks for the various files to guarantee synchronous file access
      */
     private final Map<String, Object> pathLocks = new HashMap<String, Object>();
-    
-    
+     
     /**
      * Documented in SettingsManager.java
      */
