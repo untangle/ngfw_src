@@ -1040,10 +1040,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     }.createDelegate(this)
 
                 }],
-                autoExpandColumn: 'host',
+                autoExpandColumn: 'uri',
                 columns : [{
                     header : this.i18n._("timestamp"),
-                    width : 120,
+                    width : 130,
                     sortable : true,
                     dataIndex : 'timeStamp',
                     renderer : function(value) {
@@ -1051,27 +1051,27 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     }
                 }, {
                     header : this.i18n._("flagged"),
-                    width : 100,
+                    width : 60,
                     dataIndex : 'flagged'
                 }, {
                     header : this.i18n._("blocked"),
-                    width : 100,
+                    width : 60,
                     dataIndex : 'blocked'
                 }, {
                     header : this.i18n._("client"),
-                    width : 120,
+                    width : 100,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
                     id: 'host',
                     header : this.i18n._("host"),
-                    width : 200,
+                    width : 120,
                     sortable : true,
                     dataIndex : 'host'
                 }, {
                     id: 'uri',
                     header : this.i18n._("uri"),
-                    width : 200,
+                    width : 300,
                     sortable : true,
                     dataIndex : 'uri'
                 }, {
@@ -1081,7 +1081,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex : 'reason'
                 }, {
                     header : this.i18n._("category"),
-                    width : 150,
+                    width : 120,
                     sortable : true,
                     dataIndex : 'category'
                 }, {
