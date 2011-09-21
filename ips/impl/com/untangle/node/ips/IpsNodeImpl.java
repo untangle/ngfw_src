@@ -327,7 +327,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
             {
                 public boolean doWork(Session s)
                 {
-                    Query q = s.createQuery("from IpsSettings ips where ips.nodeId = :tid");
+                    Query q = s.createQuery("from IpsSettings ips where ips.nodeId = :nodeId");
                     q.setParameter("nodeId", getNodeId());
                     IpsNodeImpl.this.settings = (IpsSettings)q.uniqueResult();
                     return true;
