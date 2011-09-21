@@ -375,7 +375,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
         return result;
     }
-    
+
     /**
      * Get a map of nodes that are enabled for a policy, this takes into account
      * parent / child relationships
@@ -433,6 +433,10 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         this.clearEnabledNodes();
     }
 
+    public boolean isInstantiated(String nodeName)
+    {
+        return (this.node(nodeName) != null);
+    }
 
     // Manager lifetime -------------------------------------------------------
 
@@ -813,8 +817,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
     @SuppressWarnings("unchecked") //Query
     private List<NodePersistentState> getUnloaded()
     {
-        final List<NodePersistentState> unloaded
-            = new LinkedList<NodePersistentState>();
+        final List<NodePersistentState> unloaded = new LinkedList<NodePersistentState>();
 
         TransactionWork<Void> tw = new TransactionWork<Void>()
             {
@@ -1004,7 +1007,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         return l;
     }
     
-    /*
+    /**
      * Used to empty the cache of the enabled nodes.  This cache is used to build
      * the pipeline, so it must be updated whenever the node state changes.
      */

@@ -1,11 +1,8 @@
 Ext.namespace('Ung');
 Ext.namespace('Ung.form');
-// The location of the blank pixel image
-Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
-// the main internationalization object
-var i18n=new Ung.I18N({"map":null});
-// the main json rpc object
-var rpc=null;
+Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif'; // The location of the blank pixel image
+var i18n=new Ung.I18N({"map":null}); // the main internationalization object
+var rpc=null; // the main json rpc object
 
 Ext.override(Ext.Button, {
     listeners : {
@@ -20,6 +17,7 @@ Ext.override(Ext.Button, {
         }
     }
 });
+
 Ext.override(Ext.form.Field, { 
     afterRender : Ext.form.Field.prototype.afterRender.createSequence(function(){
         Ext.QuickTips.init();    
@@ -46,6 +44,7 @@ Ext.override(Ext.form.Field, {
         }
     })
 });
+
 Ext.override(Ext.Panel, {
     listeners : {
         "render" : {
@@ -59,6 +58,7 @@ Ext.override(Ext.Panel, {
         }
     }
 });
+
 Ext.override(Ext.Toolbar,{
     nextBlock : function(){
         var td = document.createElement("td");
@@ -76,6 +76,7 @@ Ext.override(Ext.Toolbar,{
         }
     }).createSequence(Ext.Toolbar.prototype.insertButton)
 });
+
 Ext.override(Ext.PagingToolbar, {
     listeners : {
         "render" : {
@@ -89,6 +90,7 @@ Ext.override(Ext.PagingToolbar, {
         }
     }
 });
+
 Ext.override(Ext.TabPanel, {
     addNamesToPanels: function () {
         if (this.items) {
@@ -113,7 +115,6 @@ Ext.override( Ext.form.Field, {
         /* show entire container and children (including label if applicable) */
         this.getEl().up('.x-form-item').setDisplayed( true );
     },
-    
     hideContainer : function()
     {
         this.disable();
@@ -152,7 +153,6 @@ Ext.override( Ext.form.TextField, {
     }
 });
 
-
 Ung.form.TimeField = Ext.extend(Ext.form.TimeField, {
     /* Default the format to 24 hour */
     format : "H:i",
@@ -170,6 +170,7 @@ Ung.form.TimeField = Ext.extend(Ext.form.TimeField, {
         }
     }
 });
+
 Ext.ComponentMgr.registerType('utimefield', Ung.form.TimeField);
 
 Ung.Util= {
@@ -709,7 +710,6 @@ Ung.Util.RetryHandler = {
     }
 };
 
-
 Ung.Util.InterfaceCombo=Ext.extend(Ext.form.ComboBox, {
     initComponent : function() {
         if (( this.width == null ) && ( this.listWidth == null )) {
@@ -795,7 +795,6 @@ Ung.SortTypes = {
     }
 };
 
-
 // resources map
 Ung.hasResource = {};
 
@@ -833,7 +832,6 @@ Ung.ConfigItem = Ext.extend(Ext.Component, {
 });
 Ung.ConfigItem.template = new Ext.Template(
     '<div class="icon"><div name="iconCls" class="{iconCls}"></div></div>', '<div class="text text-center">{text}</div>');
-
 
 Ung.AppItem = Ext.extend(Ext.Component, {
     libItem: null,
@@ -2441,19 +2439,19 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     initComponent : function() {
         this.rpc = {};
 
-        if (this.title == null) {
+        if ( this.title == null ) {
             this.title = i18n._('Event Log');
         }
         if ( this.hasAutoRefresh == null ) {
             this.hasAutoRefresh = true;
         }
-        if (this.autoExpandColumn == null) {
+        if ( this.autoExpandColumn == null ) {
             this.autoExpandColumn = "timestamp";
         }
-        if (this.name == null) {
+        if ( this.name == null ) {
             this.name = "Event Log";
         }
-        if (this.eventManagerFn == null && this.hasRepositories == true) {
+        if ( this.eventManagerFn == null && this.hasRepositories == true ) {
             this.eventManagerFn = this.settingsCmp.getEventManager();
         }
         this.rpc.repository = {};
@@ -2492,8 +2490,13 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             tooltip : i18n._('Refresh'),
             iconCls : 'icon-refresh',
             handler : function() {
-                Ext.MessageBox.wait(i18n._("Refreshing..."), i18n._("Please wait"));
-                this.refreshList();
+                if (!rpc.nodeManager.isInstantiated("untangle-node-reporting")) {
+        	        Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install the Reports application."));
+                }
+                else {
+                    Ext.MessageBox.wait(i18n._("Refreshing..."), i18n._("Please wait"));
+                    this.refreshList();
+                }
             }.createDelegate(this)
         }, {
             xtype : 'tbbutton',
