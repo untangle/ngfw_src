@@ -121,11 +121,11 @@ def run_sql(sql, args=None, connection=None,
         curs = connection.cursor()
         if args:
             if debug:
-                logger.debug("Executing: %s" % re.sub(r'\#012\s*', ' ', curs.mogrify(sql, args)))
+                logger.debug("Executing: %s" % re.sub(r'\n', ' ', curs.mogrify(sql, args)))
             curs.execute(sql, args)
         else:
             if debug:
-                logger.debug("Executing: %s" % (sql,))
+                logger.debug("Executing: %s" % re.sub(r'\n', ' ', sql))
             curs.execute(sql)
 
         if auto_commit:
@@ -244,7 +244,12 @@ def set_update_info(tablename, last_update, connection=None,
     # new signature at some point
     if not connection:
         connection = get_connection()
-    
+    else:
+        try:
+            connection.commit()
+        except:
+            pass
+
     try:
         curs = connection.cursor()
 
