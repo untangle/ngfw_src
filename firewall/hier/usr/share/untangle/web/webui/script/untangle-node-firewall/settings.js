@@ -525,8 +525,8 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     //refresh the settings
                     this.getRpcNode().getSettings(function(result,exception){
                         Ext.MessageBox.hide();
-                        Ung.Util.generateListIds(result.list);
-                        this.gridRules.reloadGrid({data:result.list});
+                        Ung.Util.generateListIds(result.rules.list);
+                        this.gridRules.reloadGrid({data:result.rules.list});
                     }.createDelegate(this));                       
                 }
             }.createDelegate(this), this.getSettings());
