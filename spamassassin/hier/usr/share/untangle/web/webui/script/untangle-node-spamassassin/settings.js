@@ -806,14 +806,11 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     title : this.i18n._('Note'),
                     autoHeight : true,
                     cls: 'description',
-                    html : this.i18n._('Spam Blocker last checked for updates') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
+                    html : this.i18n._('Spam Blocker Lite last checked for updates') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
                         + (this.lastCheck != null ? i18n.timestampFormat(this.lastCheck) : i18n._("unknown"))
                         + '<br\>'
-                        + this.i18n._('Spam Blocker was last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
+                        + this.i18n._('Spam Blocker Lite was last updated') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
                         + (this.lastUpdate != null ? i18n.timestampFormat(this.lastUpdate) : i18n._("unknown"))
-                    //+ '<br\>'
-                    //+ this.i18n._('Current Version:') + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                    //+ (this.signatureVersion != null ? this.signatureVersion : i18n._("unknown"))
                 }]
             });
         },
