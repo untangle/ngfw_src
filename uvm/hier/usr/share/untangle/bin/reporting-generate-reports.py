@@ -25,7 +25,6 @@ Options:
   -i | --incremental          only update fact tables, do not generate reports themselves
   -a | --attach-csv           attach events as csv
   -t | --trial-report         only report on given trial
-  -f | --force                force regeneration of fact tables
   -e | --events-retention     number of days in events schema to keep
   -r | --report-length        number of days to report on
   -l | --locale               locale
@@ -36,13 +35,12 @@ Options:
 # main
 
 try:
-     opts, args = getopt.getopt(sys.argv[1:], "hncgpmiavefr:d:l:t:s:",
+     opts, args = getopt.getopt(sys.argv[1:], "hncgpmiaver:d:l:t:s:",
                                 ['help', 'no-migration', 'no-cleanup',
                                  'no-data-gen', 'no-mail', 'incremental',
                                  'no-plot-gen', 'verbose', 'attach-csv',
                                  'events-retention', 'report-length',
                                  'date=', 'locale=', 'simulate='
-                                 'force',
                                  'trial-report='])
 
 except getopt.GetoptError, err:
@@ -72,7 +70,6 @@ attach_csv = False
 attachment_size_limit = 10
 events_retention = 3
 end_date = mx.DateTime.today()
-force_regeneration = False
 locale = None
 db_retention = None
 file_retention = None
@@ -95,8 +92,6 @@ for opt in opts:
           no_mail = True
      elif k == '-i' or k == '--incremental':
           incremental = True
-     elif k == '-f' or k == '--force':
-          force_regeneration = True
      elif k == '-a' or k == '--attach-csv':
           attach_csv = True
      elif k == '-t' or k == '--trial-report':
@@ -344,8 +339,6 @@ if trial_report:
 
 if not no_migration:
      init_date = end_date - mx.DateTime.DateTimeDelta(max(report_lengths))
-     if force_regeneration:
-          sql_helper.clear_partitioned_tables(init_date, end_date)
      reports.engine.setup(init_date, end_date)
      reports.engine.process_fact_tables(init_date, end_date)
      reports.engine.post_facttable_setup(init_date, end_date)
