@@ -161,6 +161,7 @@ class FactTable:
         try:
             sql_helper.run_sql(self.__insert_stmt(), (sd, ed), connection=conn,
                                auto_commit=False)
+            conn.commit()
             sql_helper.set_update_info(self.__name, ed, connection=conn,
                                        auto_commit=False)
             conn.commit()

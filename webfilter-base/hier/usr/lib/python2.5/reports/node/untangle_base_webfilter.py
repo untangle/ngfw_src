@@ -1027,8 +1027,8 @@ class WebFilterDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('wf_%s_category' % self.__vendor_name, _('Category')),
-               ColumnDesc('flagged', _('Flagged')),
-               ColumnDesc('blocked', _('Blocked')),
+               ColumnDesc('wf_%s_flagged' % self.__vendor_name, _('Flagged')),
+               ColumnDesc('wf_%s_blocked' % self.__vendor_name, _('Blocked')),
                ColumnDesc('url', _('Url'), 'URL'),
                ColumnDesc('s_server_addr', _('Server Ip')),
                ColumnDesc('c_client_addr', _('Client Ip'))]
@@ -1046,8 +1046,7 @@ SELECT time_stamp, hname, uid, wf_%s_category,
        host(s_server_addr), c_client_addr::text
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s
-AND NOT wf_%s_action IS NULL
-AND NOT wf_%s_reason = 'I'
+AND wf_%s_flagged OR wf_%s_blocked
 """ % (self.__vendor_name, self.__vendor_name, self.__vendor_name,
        DateFromMx(start_date), DateFromMx(end_date),
        self.__vendor_name, self.__vendor_name)
@@ -1131,8 +1130,8 @@ class WebFilterDetailAll(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv += [ColumnDesc('wf_%s_category' % self.__vendor_name, _('Category')),
-               ColumnDesc('flagged', _('Flagged')),
-               ColumnDesc('blocked', _('Blocked')),
+               ColumnDesc('wf_%s_flagged' % self.__vendor_name, _('Flagged')),
+               ColumnDesc('wf_%s_blocked' % self.__vendor_name, _('Blocked')),
                ColumnDesc('url', _('Url'), 'URL'),
                ColumnDesc('s_server_addr', _('Server Ip')),
                ColumnDesc('c_client_addr', _('Client Ip'))]

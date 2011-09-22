@@ -241,7 +241,7 @@ def set_update_info(tablename, last_update, connection=None,
                     auto_commit=True):
     # FIXME: last_update is now ignored and re-calculated from the
     # info in the corresponding table; change all the calls to this
-    # function at some point
+    # new signature at some point
     if not connection:
         connection = get_connection()
     
