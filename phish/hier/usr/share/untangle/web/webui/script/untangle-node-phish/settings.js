@@ -335,15 +335,15 @@ if (!Ung.hasResource["Ung.Phish"]) {
             this.gridEmailEventLog = new Ung.GridEventLog({
                 name : 'Email Event Log',
                 helpSource : 'email_event_log',
-                settingsCmp : this,
-                title : this.i18n._("Email Event Log"),
-                // the list of fields
                 fields : [{
                     name : 'timeStamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
+                    name : 'vendor',
+                    mapping : 'vendor'
+                }, {
                     name : 'displayAction',
-                    mapping : 'phishAction',
+                    mapping : 'saAction', // FIXME: vendor name ?
                     type : 'string',
                     convert : function(value, rec ) { // FIXME: make that a switch
                             if (value == 'P') { // PASSED
@@ -355,9 +355,11 @@ if (!Ung.hasResource["Ung.Phish"]) {
                             } else if (value == 'Q') { // QUARANTINED
                                 return this.i18n._("quarantine message");
                             } else if (value == 'S') { // SAFELISTED
-                                return this.i18n._("safelist message");
+                                return this.i18n._("pass safelist message");
                             } else if (value == 'Z') { // OVERSIZE
                                 return this.i18n._("pass oversize message");
+                            } else if (value == 'O') { // OUTBOUND
+                                return this.i18n._("pass outbound message");
                             } else {
                                 return this.i18n._("unknown action");
                             }
@@ -381,6 +383,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 }, {
                     name : 'sender',
                     type : 'string'
+                }, {
+                    name : 'score',
+                    mapping : 'saScore'// FIXME : vendor name ?
                 }],
                 // the list of columns
                 columns : [{
@@ -392,30 +397,35 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
+                    header : this.i18n._("receiver"),
+                    width : 150,
+                    sortable : true,
+                    dataIndex : 'addr'
+                }, {
+                    header : this.i18n._("sender"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'sender'
+                }, {
+                    header : this.i18n._("subject"),
+                    width : 150,
+                    sortable : true,
+                    dataIndex : 'subject'
+                }, {
                     header : this.i18n._("action"),
-                    width : 90,
+                    width : 125,
                     sortable : true,
                     dataIndex : 'displayAction'
+                }, {
+                    header : this.i18n._("spam score"),
+                    width : 70,
+                    sortable : true,
+                    dataIndex : 'score'
                 }, {
                     header : this.i18n._("client"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'client'
-                }, {
-                    header : this.i18n._("subject"),
-                    width : 90,
-                    sortable : true,
-                    dataIndex : 'subject'
-                }, {
-                    header : this.i18n._("receiver"),
-                    width : 90,
-                    sortable : true,
-                    dataIndex : 'addr'
-                }, {
-                    header : this.i18n._("sender"),
-                    width : 90,
-                    sortable : true,
-                    dataIndex : 'sender'
                 }, {
                     header : this.i18n._("server"),
                     width : 120,

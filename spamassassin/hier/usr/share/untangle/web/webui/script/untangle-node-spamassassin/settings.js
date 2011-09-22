@@ -885,21 +885,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("action"),
-                    width : 125,
-                    sortable : true,
-                    dataIndex : 'displayAction'
-                }, {
-                    header : this.i18n._("client"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'client'
-                }, {
-                    header : this.i18n._("subject"),
-                    width : 150,
-                    sortable : true,
-                    dataIndex : 'subject'
-                }, {
                     header : this.i18n._("receiver"),
                     width : 150,
                     sortable : true,
@@ -910,10 +895,25 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     sortable : true,
                     dataIndex : 'sender'
                 }, {
+                    header : this.i18n._("subject"),
+                    width : 150,
+                    sortable : true,
+                    dataIndex : 'subject'
+                }, {
+                    header : this.i18n._("action"),
+                    width : 125,
+                    sortable : true,
+                    dataIndex : 'displayAction'
+                }, {
                     header : this.i18n._("spam score"),
                     width : 70,
                     sortable : true,
                     dataIndex : 'score'
+                }, {
+                    header : this.i18n._("client"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'client'
                 }, {
                     header : this.i18n._("server"),
                     width : 120,

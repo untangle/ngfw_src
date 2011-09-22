@@ -34,7 +34,7 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class SpamAllFilter implements ListEventFilter<MailLogEventFromReports>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events (from reports tables)"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events"));
 
     private final String vendor;
     private final String logQuery;

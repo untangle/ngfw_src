@@ -34,7 +34,7 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class SpamSpamFilter implements ListEventFilter<MailLogEventFromReports>
 {
-    private static final RepositoryDesc SPAM_REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Spam Events (from reports tables)"));
+    private static final RepositoryDesc SPAM_REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Spam Events"));
     // XXX Hack - specify clamphish label here
     private static final RepositoryDesc CLAM_REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Identity Theft Events (from reports tables)"));
 
