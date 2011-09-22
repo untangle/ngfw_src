@@ -214,7 +214,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
                 SpamProtoConfig.DEFAULT_HEADER_NAME ));
     }
 
-    public SpamSettings getSpamSettings()
+    public SpamSettings getSettings()
     {
         if( this.spamSettings == null ) {
             logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
@@ -223,7 +223,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
         return this.spamSettings;
     }
 
-    public void setSpamSettings(final SpamSettings newSpamSettings)
+    public void setSettings(final SpamSettings newSpamSettings)
     {
         // set lists if not already set
         initSpamRBLList(newSpamSettings);
@@ -232,30 +232,30 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
 
     public void enableSmtpSpamHeaders(boolean enableHeaders)
     {
-        SpamSettings ss = getSpamSettings();
+        SpamSettings ss = getSettings();
         ss.getSmtpConfig().setAddSpamHeaders(enableHeaders);
-        setSpamSettings(ss);
+        setSettings(ss);
     }
 
     public void enablePopSpamHeaders(boolean enableHeaders)
     {
-        SpamSettings ss = getSpamSettings();
+        SpamSettings ss = getSettings();
         ss.getPopConfig().setAddSpamHeaders(enableHeaders);
-        setSpamSettings(ss);
+        setSettings(ss);
     }
 
     public void enableImapSpamHeaders(boolean enableHeaders)
     {
-        SpamSettings ss = getSpamSettings();
+        SpamSettings ss = getSettings();
         ss.getImapConfig().setAddSpamHeaders(enableHeaders);
-        setSpamSettings(ss);
+        setSettings(ss);
     }
 
     public void enableSmtpFailClosed(boolean failClosed)
     {
-        SpamSettings ss = getSpamSettings();
+        SpamSettings ss = getSettings();
         ss.getSmtpConfig().setFailClosed(failClosed);
-        setSpamSettings(ss);
+        setSettings(ss);
     }
 
     public void updateScannerInfo()
@@ -276,7 +276,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
 
         SpamSettings tmpSpamSettings = new SpamSettings();
         configureSpamSettings(tmpSpamSettings);
-        setSpamSettings(tmpSpamSettings);
+        setSettings(tmpSpamSettings);
     }
 
     // convenience method for GUI

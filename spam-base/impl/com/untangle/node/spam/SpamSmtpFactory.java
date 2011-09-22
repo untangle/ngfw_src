@@ -49,7 +49,7 @@ public class SpamSmtpFactory implements TokenHandlerFactory
     }
 
     public TokenHandler tokenHandler(TCPSession session) {
-        SpamSettings spamSettings = m_spamImpl.getSpamSettings();
+        SpamSettings spamSettings = m_spamImpl.getSettings();
         SpamSmtpConfig spamConfig = spamSettings.getSmtpConfig();
 
         if(!spamConfig.getScan()) {
@@ -68,7 +68,7 @@ public class SpamSmtpFactory implements TokenHandlerFactory
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)
     {
-        SpamSettings spamSettings = m_spamImpl.getSpamSettings();
+        SpamSettings spamSettings = m_spamImpl.getSettings();
         SpamSmtpConfig spamConfig = spamSettings.getSmtpConfig();
 
         // Note that we may *****NOT***** release the session here.  This is because

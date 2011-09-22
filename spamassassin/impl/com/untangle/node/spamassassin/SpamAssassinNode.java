@@ -85,13 +85,13 @@ public class SpamAssassinNode extends SpamNodeImpl
             if (readSettings == null) {
                 logger.warn("No database or json settings found... initializing with defaults");
                 initializeSettings();
-                SpamSettings ps = getSpamSettings();
+                SpamSettings ps = getSettings();
                 initSpamRBLList(ps);
-                writeNodeSettings(getSpamSettings());
+                writeNodeSettings(getSettings());
             }
             
             else {
-                setSpamSettings(readSettings);
+                setSettings(readSettings);
                 initSpamRBLList(readSettings);
             }
         }
@@ -117,9 +117,9 @@ public class SpamAssassinNode extends SpamNodeImpl
     }
 
     @Override
-    public void setSpamSettings(SpamSettings spamSettings)
+    public void setSettings(SpamSettings spamSettings)
     {
-        super.setSpamSettings(spamSettings);
+        super.setSettings(spamSettings);
         writeNodeSettings(spamSettings);
     }
     
@@ -127,7 +127,7 @@ public class SpamAssassinNode extends SpamNodeImpl
     protected void preInit(String args[])
     {
         readNodeSettings();
-        SpamSettings ps = getSpamSettings();
+        SpamSettings ps = getSettings();
         initSpamRBLList(ps);
     }
 }

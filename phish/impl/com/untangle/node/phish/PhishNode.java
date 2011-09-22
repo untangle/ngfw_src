@@ -155,7 +155,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
             }
             
             else {
-                setSpamSettings(readSettings);
+                setSettings(readSettings);
             }
         }
         
@@ -189,13 +189,13 @@ public class PhishNode extends SpamNodeImpl implements Phish
     public PhishSettings getPhishSettings()
     {
         logger.info("getPhishSettings()");
-        return (PhishSettings)getSpamSettings();
+        return (PhishSettings)getSettings();
     }
 
     public void setPhishSettings(PhishSettings spamSettings)
     {
         logger.info("setPhishSettings()");
-        setSpamSettings(spamSettings);
+        setSettings(spamSettings);
         writeNodeSettings(spamSettings);
     }
 
@@ -244,7 +244,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
         configureSpamSettings(tmpSpamSettings);
         tmpSpamSettings.getSmtpConfig().setBlockSuperSpam(false);
 
-        setSpamSettings(tmpSpamSettings);
+        setSettings(tmpSpamSettings);
         initSpamRBLList(tmpSpamSettings);
     }
 
@@ -260,9 +260,9 @@ public class PhishNode extends SpamNodeImpl implements Phish
     protected void preInit(String args[])
     {
         readNodeSettings();
-        SpamSettings ps = getSpamSettings();
+        SpamSettings ps = getSettings();
         ps.getSmtpConfig().setBlockSuperSpam(false);
-        setSpamSettings(ps);
+        setSettings(ps);
         initSpamRBLList(ps);
     }
 

@@ -16,7 +16,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         getNodeSettings : function(forceReload) {
             if (forceReload || this.rpc.nodeSettings === undefined) {
                 try {
-                    this.rpc.nodeSettings = this.getRpcNode().getSpamSettings();
+                    this.rpc.nodeSettings = this.getRpcNode().getSettings();
                     this.lastUpdate = this.getRpcNode().getLastUpdate();
                     this.lastCheck = this.getRpcNode().getLastUpdateCheck();
                     this.signatureVer = this.getRpcNode().getSignatureVersion();
@@ -994,7 +994,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         saveAction : function() {
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.getRpcNode().setSpamSettings(function(result, exception) {
+                this.getRpcNode().setSettings(function(result, exception) {
                     Ext.MessageBox.hide();
                     if(Ung.Util.handleException(exception)) return;
                     // exit settings screen
