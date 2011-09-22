@@ -2618,7 +2618,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                 this.autorefreshList.defer(5000,this);
                 var reports = rpc.nodeManager.node("untangle-node-reporting");
                 if (reports !== null)
-                    reports.flushEvents();
+                    reports.flushEvents(); // TESTING XXX
             } else {
                 this.stopAutoRefresh(true);
             }
