@@ -45,9 +45,9 @@ class AptLogTail implements Runnable
         //6850K .......... .......... .......... .......... .......... 96 46.6K 6s
         DOWNLOAD_PATTERN = Pattern.compile(".* ([0-9]+)K[ .]+([0-9]+) *([0-9]+\\.*[0-9]+)K.*");
         APT_INSTALL_PATTERN = Pattern.compile(".*\\s([0-9]+) newly installed,.*");
-        DPKG_UNPACK_PATTERN = Pattern.compile(".*Unpacking (\\S+) .*");
-        DPKG_INSTALL_PATTERN = Pattern.compile(".*Setting up (\\S+) .*");
-        DONE_PATTERN = Pattern.compile(".*done [0-9]+.*");
+        DPKG_UNPACK_PATTERN = Pattern.compile("\\s+Unpacking\\s*(\\S+) .*");
+        DPKG_INSTALL_PATTERN = Pattern.compile("\\s+Setting up\\s*(\\S+) .*");
+        DONE_PATTERN = Pattern.compile("\\s+done [0-9]+.*");
     }
 
     private final long key;
@@ -203,11 +203,10 @@ class AptLogTail implements Runnable
         int packageCount = 0;
         while (true) {
             String line = readLine();
-            logger.warn("Waiting for \"" + APT_INSTALL_PATTERN + "\" + \"" + line + "\"");
+            logger.debug("Waiting for \"" + APT_INSTALL_PATTERN + "\" + \"" + line + "\"");
             Matcher match = APT_INSTALL_PATTERN.matcher(line);
             if (match.matches()) {
                 packageCount = Integer.parseInt(match.group(1));
-                logger.warn("TOTAL PKG COUNT: " + packageCount);
                 break;
             }
         }
@@ -216,9 +215,9 @@ class AptLogTail implements Runnable
          * Unpack and install phase
          */
         while (true) {
-            logger.warn("Apt readline: ");
+            logger.debug("Apt readline... ");
             String line = readLine();
-            logger.warn("Apt readline: got \"" + line + "\"");
+            logger.debug("Apt readline...  got \"" + line + "\"");
             Matcher unpackMatch = DPKG_UNPACK_PATTERN.matcher(line);
             Matcher installMatch = DPKG_INSTALL_PATTERN.matcher(line);
             if (unpackMatch.matches()) {
@@ -230,7 +229,7 @@ class AptLogTail implements Runnable
                 mm.submitMessage(new AptMessage("unpack", requestingPackage, c, packageCount*2));
                 c++;
             } else if (DONE_PATTERN.matcher(line).matches()) {
-                logger.warn("APT DONE matched");
+                logger.debug("APT DONE matched");
                 break; //its done
             }
         }

@@ -903,7 +903,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             id : 'progressBar_' + this.getId(),
             renderTo : "state_" + this.getId(),
             height : 17,
-            width : 120,
+            width : 140,
             waitDefault : function(updateText) {
                 this.reset();
                 this.wait({
@@ -968,6 +968,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             case "download" :
                 this.displayButtonsOrProgress(false);
                 this.progressBar.reset();
+                Ung.MessageManager.setFrequency(Ung.MessageManager.highFrequency);
                 this.progressBar.updateProgress(0, i18n._("Downloading..."));
                 this.progressBar.waitDefault(i18n._("Downloading..."));
                 break;
@@ -984,8 +985,8 @@ Ung.AppItem = Ext.extend(Ext.Component, {
             case "download_complete" :
                 if(this.download!=null && this.download.summary!=null) {
                     this.download.completePackages++;
-                    var currentPercentComplete = parseFloat(this.download.completeSize) / parseFloat(this.download.summary.size > 0 ? this.download.summary.size : 1);
-                    var progressIndex = parseFloat(0.9 * currentPercentComplete);
+                    var currentPercentComplete = parseFloat(this.download.completePackages) / parseFloat(this.download.summary.size > 0 ? this.download.summary.size : 1);
+                    var progressIndex = parseFloat(0.99 * currentPercentComplete);
                     var progressString = String.format(i18n._("Pkg {0}/{1} done"), this.download.completePackages, this.download.summary.count);
                     this.progressBar.reset();
                     this.progressBar.updateProgress(progressIndex, progressString);
@@ -996,8 +997,8 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 if(this.download!=null && this.download.summary!=null) {
                     this.download.completeSize=options.bytesDownloaded;
                     var currentPercentComplete = parseFloat(options.bytesDownloaded) / parseFloat(options.size != 0 ? options.size : 1);
-                    var progressIndex = parseFloat(0.9 * currentPercentComplete);
-                    var progressString = String.format(i18n._("Pkg {0}/{1} @ {2} kB/s"), this.download.completePackages, this.download.summary.count, options.speed);
+                    var progressIndex = parseFloat(0.99 * currentPercentComplete);
+                    var progressString = String.format(i18n._("Pkg {0}/{1} @ {2} KB/s"), this.download.completePackages, this.download.summary.count, options.speed);
                     this.progressBar.reset();
                     this.progressBar.updateProgress(progressIndex, progressString);
                 }
@@ -1010,8 +1011,9 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                         action = i18n._("Unpacking");
                     } 
                     var currentPercentComplete = parseFloat(options.count) / parseFloat(options.totalCount != 0 ? options.totalCount : 1);
-                    var progressIndex = parseFloat(0.9 * currentPercentComplete);
-                    var progressString = action + " " + String.format("{0}/{1}", options.count, options.totalCount);
+                    var progressIndex = parseFloat(0.99 * currentPercentComplete);
+                    //var progressString = action + " " + String.format("{0}/{1}", options.count, options.totalCount);
+                    var progressString = action + " " + String.format("{0}%", Math.round(progressIndex*100)) + "&nbsp;";
                     this.progressBar.reset();
                     this.progressBar.updateProgress(progressIndex, progressString);
                 }
@@ -1643,12 +1645,12 @@ Ung.NodePreview.template = new Ext.Template('<div class="node-image"><img src="{
 // Message Manager object
 Ung.MessageManager = {
     // update interval in millisecond
-    updateTime : 5000,
+    normalFrequency : 5000,
+    highFrequency : 1000,
     started : false,
     intervalId : null,
     cycleCompleted : true,
     upgradeMode: false,
-    upgradeUpdateTime:1000,
     installInProgress:0,
     upgradeSummary: null,
     upgradesComplete: 0,
@@ -1662,15 +1664,21 @@ Ung.MessageManager = {
         if(now) {
             Ung.MessageManager.run();
         }
-        this.intervalId = window.setInterval("Ung.MessageManager.run()", this.updateTime);
+        this.setFrequency(this.normalFrequency);
         this.started = true;
     },
     startUpgradeMode: function() {
         this.stop();
         this.upgradeMode=true;
-        this.intervalId = window.setInterval("Ung.MessageManager.run()", this.upgradeUpdateTime);
+        this.setFrequency(this.highFrequency);
         this.started = true;
-
+    },
+    setFrequency: function(timeMs) {
+        this.currentFrequency = timeMs;
+        if (this.intervalId !== null) {
+            window.clearInterval(this.intervalId);
+        }
+        this.intervalId = window.setInterval("Ung.MessageManager.run()", timeMs);
     },
     stop : function() {
         if (this.intervalId !== null) {
@@ -1793,6 +1801,7 @@ Ung.MessageManager = {
                             refreshApps=true;
                             this.installInProgress--;
                             var appItemDisplayName=msg.requestingPackage.type=="TRIAL"?main.findLibItemDisplayName(msg.requestingPackage.fullVersion):msg.requestingPackage.displayName;
+                            Ung.MessageManager.setFrequency(Ung.MessageManager.normalFrequency);
                             Ung.AppItem.updateState(appItemDisplayName, null);
                         } else if(msg.javaClass.indexOf("LicenseUpdateMessage") != -1) {
                             main.loadLicenses();
@@ -2199,7 +2208,7 @@ Ung.ActivityBlinger = Ext.extend(Ext.Component, {
 });
 Ung.ActivityBlinger.template = new Ext.Template('<div class="blinger-name">{blingerName}</div>',
         '<div class="activity-blinger-box" id="blingerBox_{id}"></div>');
-Ung.ActivityBlinger.decayFactor = Math.pow(0.94, Ung.MessageManager.updateTime / 1000);
+Ung.ActivityBlinger.decayFactor = Math.pow(0.94, Ung.MessageManager.normalFrequency / 1000);
 Ung.ActivityBlinger.decayValue = function(newValue, lastValue, decay) {
     if (lastValue !== null && newValue != lastValue) {
         decay = 98;
