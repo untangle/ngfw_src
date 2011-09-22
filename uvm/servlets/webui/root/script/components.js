@@ -2542,7 +2542,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             text : '<div style="width:30px;"></div>'
         }, this.pagingToolbar, {
             xtype : 'tbtext',
-            text : '<i><font color="red">WARNING:</font></i> Event logs are delayed by 2 minutes.'
+            text : '<i><font color="red">WARNING:</font></i> Event logs are delayed by 5 minutes.'
         }];
         Ung.GridEventLog.superclass.initComponent.call(this);
         var columnModel=this.getColumnModel();
