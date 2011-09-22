@@ -255,7 +255,7 @@ INSERT INTO reports.hnames (date, hname)
         sql_helper.create_partitioned_table("""\
 CREATE TABLE reports.sessions (
         pl_endp_id int8 NOT NULL,
-        event_id serial132,
+        event_id serial,
         time_stamp timestamp NOT NULL,
         end_time timestamp NOT NULL,
         hname text,
