@@ -24,7 +24,7 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class ProtoFilterAllFilter implements SimpleEventFilter<ProtoFilterLogEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Protocol Events (from reports tables)"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events"));
 
     private static final String WARM_QUERY
         = "FROM SessionLogEventFromReports evt " +

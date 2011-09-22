@@ -210,31 +210,22 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
         },
         // Event Log
         buildEventLog : function() {
-            var asAction = function(value) {
-                return value ? this.i18n._("blocked") : this.i18n._("passed");
-            }.createDelegate(this);
-            var asReason = function(value) {
-                return value ? this.i18n._("blocked in block list") : this.i18n._("not blocked in block list");
-            }.createDelegate(this);
-
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
                 fields : [{
                     name : 'timeStamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'action',
-                    mapping : 'pfBlocked',
-                    convert : asAction,
-                    type : 'string'
+                    name : 'blocked',
+                    mapping : 'pfBlocked'
                 }, {
                     name : 'reason',
-                    mapping : 'pfBlocked',
-                    convert : asReason,
-                    type : 'string'
+                    mapping : 'pfProtocol'
                 }, {
                     name : 'client',
                     mapping : 'CClientAddr'
+                }, {
+                    name : 'uid'
                 }, {
                     name : 'server',
                     mapping : 'CServerAddr'
@@ -252,20 +243,25 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("action"),
-                    width : 120,
-                    sortable : true,
-                    dataIndex : 'action'
-                }, {
                     header : this.i18n._("client"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
+                    header : this.i18n._("username"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'uid'
+                }, {
                     header : this.i18n._("protocol"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'protocol'
+                }, {
+                    header : this.i18n._("blocked"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'blocked'
                 }, {
                     header : this.i18n._("reason for action"),
                     width : 150,
