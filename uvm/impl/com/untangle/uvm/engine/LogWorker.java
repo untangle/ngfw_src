@@ -265,6 +265,9 @@ class LogWorker implements Runnable
             };
 
         boolean s = LocalUvmContextFactory.context().runTransaction(tw);
+
+        logger.info("persist(): wrote " + logQueue.size() + " events to DB...");
+        
         if (!s) {
             logger.error("could not log events");
         }
