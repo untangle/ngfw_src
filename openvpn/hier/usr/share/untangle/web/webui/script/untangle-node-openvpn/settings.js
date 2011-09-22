@@ -565,9 +565,18 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name : 'end',
                     mapping : 'endTime',
                     sortType : Ung.SortTypes.asTimestamp
-                },{
+                }, {
                     name : 'duration',
                     mapping : 'seconds'
+                }, {
+                    name : 'name',
+                    mapping : 'clientName'
+                }, {
+                    name : 'port',
+                    mapping : 'remotePort'
+                }, {
+                    name : 'address',
+                    mapping : 'remoteAddress'
                 }, {
                     name : 'bytesTx',
                     mapping : 'txBytes',
@@ -597,6 +606,17 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }.createDelegate( this )
+                }, {
+                    header : this.i18n._("name"),
+                    sortable : true,
+                    dataIndex : 'name'
+                }, {
+                    header : this.i18n._("address"),
+                    sortable : true,
+                    dataIndex : 'address'
+                }, {
+                    header : this.i18n._("port"),
+                    dataIndex : 'port'
                 }, {
                     header : this.i18n._("duration (in seconds)"),
                     width : 130,

@@ -7,7 +7,7 @@ import com.untangle.uvm.util.I18nUtil;
 public class ClientConnectEventAllFilter
     implements SimpleEventFilter<ClientConnectEvent> {
 
-    public static final String REPOSITORY_NAME = I18nUtil.marktr("Closed Sessions (from reports tables)");
+    public static final String REPOSITORY_NAME = I18nUtil.marktr("Closed Clients");
 
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc(REPOSITORY_NAME);
 

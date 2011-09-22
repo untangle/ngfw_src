@@ -37,6 +37,9 @@ import com.untangle.uvm.node.PipelineEndpoints;
         private Float seconds;
         private Date endTime;
         private Date startTime;
+        private InetAddress remoteAddress;
+        private Integer remotePort;
+        private String clientName;
 
         @Column(name="rx_bytes")
             public Long getRxBytes() { return rxBytes; }
@@ -59,6 +62,19 @@ import com.untangle.uvm.node.PipelineEndpoints;
         @Column(name="start_time")
         public Date getStartTime() { return startTime; }
         public void setStartTime(Date startTime) { this.startTime = startTime; }
+
+        @Column(name="remote_address")
+        @Type(type="com.untangle.uvm.type.InetAddressUserType")
+            public InetAddress getRemoteAddress() { return remoteAddress; }
+        public void setRemoteAddress(InetAddress remoteAddress) { this.remoteAddress = remoteAddress; }
+
+        @Column(name="remote_port")
+            public Integer getRemotePort() { return remotePort; }
+        public void setRemotePort(Integer remotePort) { this.remotePort = remotePort; }
+
+        @Column(name="client_name")
+            public String getClientName() { return clientName; }
+        public void setClientName(String clientName) { this.clientName = clientName; }
 
         public void appendSyslog(SyslogBuilder sb) // FIXME: not called for now
         {

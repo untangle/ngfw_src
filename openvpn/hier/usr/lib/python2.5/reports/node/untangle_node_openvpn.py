@@ -97,12 +97,18 @@ CREATE TABLE reports.n_openvpn_stats (
     rx_bytes bigint,
     tx_bytes bigint,
     seconds double precision,
+    remote_address inet,
+    remote_port integer,
+    client_name text,
     event_id serial
 )""", 'time_stamp', start_date, end_date)
 
         sql_helper.add_column('reports.n_openvpn_stats', 'event_id', 'serial')
         sql_helper.add_column('reports.n_openvpn_stats', 'start_time', 'timestamp without time zone')
         sql_helper.add_column('reports.n_openvpn_stats', 'end_time', 'timestamp without time zone')
+        sql_helper.add_column('reports.n_openvpn_stats', 'remote_address', 'inet')
+        sql_helper.add_column('reports.n_openvpn_stats', 'remote_port', 'integer')
+        sql_helper.add_column('reports.n_openvpn_stats', 'client_name', 'text')
 
         sd = TimestampFromMx(sql_helper.get_update_info('reports.n_openvpn_stats',
                                                    start_date))
@@ -112,10 +118,11 @@ CREATE TABLE reports.n_openvpn_stats (
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.n_openvpn_stats
-      (time_stamp, start_time, end_time, rx_bytes, tx_bytes, seconds, event_id)
+      (time_stamp, start_time, end_time, rx_bytes, tx_bytes, seconds,
+       remote_address, remote_port, client_name)
     SELECT time_stamp, start_time, end_time, rx_bytes, tx_bytes,
            extract('epoch' from (end_time - start_time)) AS seconds,
-           event_id
+           remote_address, remote_port, client_name
     FROM events.n_openvpn_connect_evt evt
     WHERE evt.end_time >= %s AND evt.end_time < %s""",
                                (sd, ed), connection=conn, auto_commit=False)
