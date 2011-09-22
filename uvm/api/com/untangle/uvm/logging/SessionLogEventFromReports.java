@@ -48,6 +48,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
         private Long s2pBytes;
         private Long p2sBytes;
         private Long bandwidthPriority;
+        private Long bandwidthRule;
         private Boolean firewallWasBlocked;
         private Integer firewallRuleIndex;
         private String firewallRuleDescription;
@@ -129,6 +130,10 @@ import com.untangle.uvm.node.PipelineEndpoints;
         @Column(name="bandwidth_priority")
         public Long getBandwidthPriority() { return bandwidthPriority; }
         public void setBandwidthPriority(Long bandwidthPriority) { this.bandwidthPriority = bandwidthPriority; }
+
+        @Column(name="bandwidth_rule")
+        public Long getBandwidthRule() { return bandwidthRule; }
+        public void setBandwidthRule(Long bandwidthRule) { this.bandwidthRule = bandwidthRule; }
 
         @Column(name="firewall_was_blocked")
         public Boolean getFirewallWasBlocked() { return firewallWasBlocked; }

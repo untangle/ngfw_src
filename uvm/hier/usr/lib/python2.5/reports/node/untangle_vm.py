@@ -255,7 +255,7 @@ INSERT INTO reports.hnames (date, hname)
         sql_helper.create_partitioned_table("""\
 CREATE TABLE reports.sessions (
         pl_endp_id int8 NOT NULL,
-        event_id serial,
+        event_id serial132,
         time_stamp timestamp NOT NULL,
         end_time timestamp NOT NULL,
         hname text,
@@ -275,9 +275,7 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports.sessions', 'policy_id', 'bigint')
         sql_helper.add_column('reports.sessions', 'server_intf', 'int2')
         sql_helper.add_column('reports.sessions', 'bandwidth_priority', 'bigint')
-        sql_helper.add_column('reports.sessions', 'bandwidth_priority', 'bigint')
-        sql_helper.add_column('reports.sessions', 'bandwidth_priority', 'bigint')
-        sql_helper.add_column('reports.sessions', 'bandwidth_priority', 'bigint')
+        sql_helper.add_column('reports.sessions', 'bandwidth_rule', 'bigint')
         sql_helper.add_column('reports.sessions', 'firewall_was_blocked', 'boolean')
         sql_helper.add_column('reports.sessions', 'firewall_rule_index', 'integer')
         sql_helper.add_column('reports.sessions', 'firewall_rule_description', 'text')
