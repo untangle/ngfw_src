@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -25,6 +26,8 @@ import com.untangle.uvm.vnet.PipeSpec;
 
 public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 {
+    private final Logger logger = Logger.getLogger(getClass());
+
     private ReportingSettings settings;
 
     private String REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-reports.py";
@@ -77,6 +80,33 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
         }
     }
 
+    public void flushEvents()
+    {
+        try {
+            logger.info("Flushing queued events...");
+
+            LocalUvmContextFactory.context().loggingManager().forceFlush();
+
+            logger.info("Running incremental report...");
+            
+            SimpleExec.SimpleExecResult result = SimpleExec.exec(REPORTS_SCRIPT, new String[] { "-m", "-i" },
+                                                                 null,//env
+                                                                 null,//rootDir
+                                                                 true,//stdout
+                                                                 true,//stderr
+                                                                 1000*900); // 15 minutes timeout
+
+            if (result.exitCode != 0) {
+                throw new Exception("Unable to run daily reports: \nReturn code: " +
+                                    result.exitCode + ", stdout \"" +
+                                    new String(result.stdOut) + "\", stderr \"" +
+                                    new String(result.stdErr) + "\"");
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to run incremental report: ", e);
+        }
+    }
+    
     @Override
     protected PipeSpec[] getPipeSpecs()
     {
@@ -114,6 +144,9 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
         };
 
         getNodeContext().runTransaction(tw);
+
+        //run incremental reports to create the schemas for the first time        
+        flushEvents(); 
     }
 
     protected void preStart()

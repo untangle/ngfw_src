@@ -51,7 +51,8 @@ class LogWorker implements Runnable
     private static final int LONG_SYNC_TIME = 120000; /* 2 minutes */
     private static final int SHORT_SYNC_TIME = 15000; /* 15 seconds */
     private static int RUNTIME_SYNC_TIME;
-
+    private static boolean forceFlush = false;
+    
     static { // initialize RUNTIME_SYNC_TIME
         String p = System.getProperty("uvm.logging.synctime");
         int i = -1;
@@ -109,7 +110,7 @@ class LogWorker implements Runnable
             long t = System.currentTimeMillis();
 
             if (t < nextSync) {
-                LogEventDesc event;
+                LogEventDesc event = null;
 
                 synchronized (this) {
                     interruptable = true;
@@ -125,18 +126,17 @@ class LogWorker implements Runnable
                     } else {
                         event = inputQueue.take();
                     }
-                } catch (InterruptedException exn) {
-                    continue;
-                }
+                } catch (InterruptedException exn) {}
 
                 synchronized (this) {
                     interruptable = false;
                 }
 
-                accept(event);
+                if (event != null)
+                    accept(event);
             }
 
-            if (logQueue.size() >= BATCH_SIZE || t >= nextSync) {
+            if (logQueue.size() >= BATCH_SIZE || t >= nextSync || forceFlush) {
                 if (loggingManager.isConversionComplete()) {
                     try {
                         persist();
@@ -147,6 +147,7 @@ class LogWorker implements Runnable
 
                 lastSync = System.currentTimeMillis();
                 nextSync = lastSync + getSyncTime();
+                forceFlush = false;
             }
         }
 
@@ -157,6 +158,16 @@ class LogWorker implements Runnable
         }
     }
 
+    /**
+     * Force currently queued events to the DB
+     */
+    public void forceFlush()
+    {
+        forceFlush = true;
+        logger.info("forceFlush()");
+        thread.interrupt();
+    }
+    
     /*
      * Only calculate the load every LONG_SYNC_TIME
      */

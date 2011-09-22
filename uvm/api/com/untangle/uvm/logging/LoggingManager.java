@@ -24,4 +24,10 @@ public interface LoggingManager
     void resetAllLogs();
 
     void logError(String errorText);
+
+    /**
+     * Force currently queued hibernate events to be flushed to the DB
+     */
+    void forceFlush();
+    
 }

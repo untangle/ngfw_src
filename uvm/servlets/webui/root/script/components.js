@@ -2525,6 +2525,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                 }
                 else {
                     Ext.MessageBox.wait(i18n._("Refreshing..."), i18n._("Please wait"));
+                    rpc.nodeManager.node("untangle-node-reporting").flushEvents(); // TESTING XXX
                     this.refreshList();
                 }
             }.createDelegate(this)
@@ -2615,6 +2616,9 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         if(this!=null && this.rendered && this.autoRefreshEnabled) {
             if(this==this.settingsCmp.tabs.getActiveTab()) {
                 this.autorefreshList.defer(5000,this);
+                var reports = rpc.nodeManager.node("untangle-node-reporting");
+                if (reports !== null)
+                    reports.flushEvents();
             } else {
                 this.stopAutoRefresh(true);
             }
@@ -2653,26 +2657,18 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                         displayStyle="display:none;";
                     }
                     var out = [];
-                    out.push('<select name="Event Type" id="selectRepository_' + this.getId() + '_' + this.settingsCmp.node.nodeId
-                            + '" style="'+displayStyle+'">');
-
+                    out.push('<select name="Event Type" id="selectRepository_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '" style="'+displayStyle+'">');
                     for (var i = 0; i < repList.length; i++) {
                         var repDesc = repList[i];
                         var selOpt = (i === 0) ? "selected" : "";
-                        out.push('<option value="' + repDesc.name + '" ' + selOpt + '>' + this.settingsCmp.i18n._(repDesc.name)
-                                + '</option>');
+                        out.push('<option value="' + repDesc.name + '" ' + selOpt + '>' + this.settingsCmp.i18n._(repDesc.name) + '</option>');
                     }
                     out.push('</select>');
-                    var boxRepositoryDescEventLog = document.getElementById('boxRepository_' + this.getId() + '_'
-                            + this.settingsCmp.node.nodeId);
+                    var boxRepositoryDescEventLog = document.getElementById('boxRepository_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
                     boxRepositoryDescEventLog.innerHTML = out.join("");
                 }
             }.createDelegate(this));
-        }
-        if (this.refreshOnRender) {
-            Ext.MessageBox.wait(i18n._("Refreshing..."), i18n._("Please wait"));
-            this.refreshList();
-        }
+        } 
     },
     // get selected repository
     getSelectedRepository : function() {

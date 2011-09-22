@@ -121,6 +121,11 @@ class LoggingManagerImpl implements LoggingManager
         return;
     }
 
+    public void forceFlush()
+    {
+        this.logWorker.forceFlush();
+    }
+    
     // package protected methods ----------------------------------------------
 
     void start()
