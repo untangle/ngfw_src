@@ -9,16 +9,12 @@ velocity: ??
 commons-fileupload: ??
 commons-io: ??
 commons-httpclient: ??
-AjaxTK: ??
 commons-codec: ??
-je: BDB - used in web filter and spyware blocker
 xmlrpc: used by UI/uvm
 slf4j: ??
 python-jsonrpc: used by ucl
 dnsjava: used in the untangle-vm
 jradius: used by directory connector
-jaf: ??
-junit: ??
 postgres-jdbc: used to connect to postgres
 javamail: used to send mail
 xstream-distribution: ??

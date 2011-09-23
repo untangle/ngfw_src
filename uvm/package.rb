@@ -47,7 +47,7 @@ BuildEnv::SRC.installTarget.install_jars(jt, uvm_lib.getWebappDir('webstart'), n
 jts << JarTarget.build_target(uvm_lib, Jars::Base + [uvm_lib['api']], 'localapi', "./uvm/localapi")
 
 ## Implementation
-deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Dom4j + Jars::Activation + Jars::JFreeChart + 
+deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Dom4j + Jars::JFreeChart + 
   [ uvm_lib['bootstrap'], uvm_lib['api'], uvm_lib['localapi'], jnetcap['impl'], jvector['impl']]
 
 jts << JarTarget.build_target(uvm_lib, deps, 'impl', "./uvm/impl")
@@ -97,7 +97,6 @@ BuildEnv::SRC.installTarget.install_jars(Jars::Base, "#{thirdparty.distDirectory
 BuildEnv::SRC.installTarget.install_jars(Jars::Bcel, "#{thirdparty.distDirectory}/usr/share/java/uvm")
 BuildEnv::SRC.installTarget.install_jars(Jars::JRadius, "#{thirdparty.distDirectory}/usr/share/java/uvm")
 BuildEnv::SRC.installTarget.install_jars(Jars::Ant, "#{thirdparty.distDirectory}/usr/share/java/uvm")
-BuildEnv::SRC.installTarget.install_jars(Jars::Junit, "#{thirdparty.distDirectory}/usr/share/java/uvm")
 
 BuildEnv::SRC.installTarget.install_dirs("#{uvm_lib.distDirectory}/usr/share/untangle/toolbox")
 
@@ -141,7 +140,7 @@ end
 
 BuildEnv::SRC.installTarget.register_dependency(uvm_cacerts)
 
-deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Dom4j + Jars::Activation + Jars::Junit +
+deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Dom4j +  
   [ uvm_lib['bootstrap'], uvm_lib['api'], uvm_lib['localapi'], uvm_lib['impl'], jnetcap['impl'], jvector['impl']]
 
 JarTarget.build_target(BuildEnv::SRC["unittest"], deps, 'untangle-libuvm', "./uvm/unittest")

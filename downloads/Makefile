@@ -20,15 +20,13 @@ tarballs_gz=apache-ant-1.6.5.tar.gz \
 	logging-log4j-1.2.16.tar.gz \
 	bcel-5.2.tar.gz c3p0-0.9.1.2.tar.gz velocity-1.4.tar.gz \
 	commons-fileupload-1.1.tar.gz commons-io-1.1.tar.gz \
-	commons-httpclient-3.0.tar.gz AjaxTK-3.1.1_GA_394-src.tar.gz \
+	commons-httpclient-3.0.tar.gz \
 	commons-codec-1.3.tar.gz \
 	xmlrpc-current-bin.tar.gz slf4j-1.4.3.tar.gz \
 	python-jsonrpc-r19.tar.gz dnsjava-2.0.6.tar.gz \
 	jradius-1.1.0-client.tar.gz
 
-tarballs_bz2=jaf-1.0.2.tar.bz2 \
-	junit4.1.tar.bz2  \
-	postgres-jdbc-7.4_215.tar.bz2 
+tarballs_bz2=postgres-jdbc-7.4_215.tar.bz2 
 
 zips=javamail-1_3_3_01.zip xstream-distribution-1.3-bin.zip \
 	jabsorb-1.2.2-src.zip 
@@ -44,7 +42,6 @@ packages+=$(patsubst %.tar.bz2,$(OUTPUT_DIRECTORY)/%,$(tarballs_bz2))
 packages+=$(patsubst %.jar,$(OUTPUT_DIRECTORY)/%,$(jars))
 
 $(OUTPUT_DIRECTORY)/jabsorb-1.2.2-src: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5 jabsorb-1.2.2-src.patch
-$(OUTPUT_DIRECTORY)/AjaxTK-3.1.1_GA_394-src: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5
 
 all: $(packages) ;
 # remove files and directories with spaces in names

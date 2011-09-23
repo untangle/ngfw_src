@@ -131,7 +131,6 @@ class Jars
                          Jars.downloadTarget('bcel-5.2/bcel-5.2.jar') ])
 
     ## Jars required to run/compile unit tests
-    const_set(:Junit, [ Jars.downloadTarget('junit4.1/junit-4.1.jar') ])
     const_set(:DnsJava, [ Jars.downloadTarget('dnsjava-2.0.6/dnsjava-2.0.6.jar') ])
 
     const_set(:HttpClient, [ Jars.downloadTarget('commons-httpclient-3.0/commons-httpclient-3.0.jar'),
