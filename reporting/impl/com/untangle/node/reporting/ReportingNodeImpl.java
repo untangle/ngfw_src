@@ -28,9 +28,13 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 {
     private final Logger logger = Logger.getLogger(getClass());
 
+    private static final String REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-reports.py";
+    private static final int    MAX_FLUSH_FREQUENCY = 30*1000; /* 30 seconds */
+
     private ReportingSettings settings;
 
-    private String REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-reports.py";
+    private long lastFlushTime = 0;
+    
 
     public ReportingNodeImpl() {}
 
@@ -82,28 +86,36 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 
     public void flushEvents()
     {
-        try {
-            logger.info("Flushing queued events...");
+        long currentTime  = System.currentTimeMillis();
 
-            LocalUvmContextFactory.context().loggingManager().forceFlush();
-
-            logger.info("Running incremental report...");
+        if (currentTime - lastFlushTime < MAX_FLUSH_FREQUENCY) {
+            logger.info("Ignoring flushEvents call (not enough time has elasped)");
+        } else {
+            try {
+                lastFlushTime = System.currentTimeMillis();
             
-            SimpleExec.SimpleExecResult result = SimpleExec.exec(REPORTS_SCRIPT, new String[] { "-m", "-i" },
-                                                                 null,//env
-                                                                 null,//rootDir
-                                                                 true,//stdout
-                                                                 true,//stderr
-                                                                 1000*900); // 15 minutes timeout
+                logger.info("Flushing queued events...");
 
-            if (result.exitCode != 0) {
-                throw new Exception("Unable to run daily reports: \nReturn code: " +
-                                    result.exitCode + ", stdout \"" +
-                                    new String(result.stdOut) + "\", stderr \"" +
-                                    new String(result.stdErr) + "\"");
+                LocalUvmContextFactory.context().loggingManager().forceFlush();
+
+                logger.info("Running incremental report...");
+            
+                SimpleExec.SimpleExecResult result = SimpleExec.exec(REPORTS_SCRIPT, new String[] { "-m", "-i" },
+                                                                     null,//env
+                                                                     null,//rootDir
+                                                                     true,//stdout
+                                                                     true,//stderr
+                                                                     1000*900); // 15 minutes timeout
+
+                if (result.exitCode != 0) {
+                    throw new Exception("Unable to run daily reports: \nReturn code: " +
+                                        result.exitCode + ", stdout \"" +
+                                        new String(result.stdOut) + "\", stderr \"" +
+                                        new String(result.stdErr) + "\"");
+                }
+            } catch (Exception e) {
+                logger.warn("Failed to run incremental report: ", e);
             }
-        } catch (Exception e) {
-            logger.warn("Failed to run incremental report: ", e);
         }
     }
     
