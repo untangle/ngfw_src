@@ -6,6 +6,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
         gridExceptions : null,
         gridEventLog : null,
         initComponent : function(container, position) {
+            Ung.Util.generateListIds(this.getSettings().rules.list);
             // builds the 3 tabs
             this.buildStatus();
             this.buildExceptions();
@@ -54,7 +55,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
             // enable is a check column
             var enableColumn = new Ext.grid.CheckColumn({
                 header : this.i18n._("enable"),
-                dataIndex : 'live',
+                dataIndex : 'enabled',
                 fixed : true
             });
 
@@ -67,9 +68,9 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 helpSource : 'exceptions',
                 // the total records is set from the base settings
                 // shieldNodeRulesLength field
-                totalRecords : this.getBaseSettings().shieldNodeRulesLength,
+                totalRecords : this.getSettings().shieldNodeRulesLength,
                 emptyRow : {
-                    "live" : true,
+                    "enabled" : true,
                     "address" : "1.2.3.4",
                     "divider" : 5,
                     "description" : i18n._("[no description]")
@@ -77,16 +78,15 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 title : this.i18n._("Exceptions"),
                 // the column is autoexpanded if the grid width permits
                 autoExpandColumn : 'description',
-                recordJavaClass : "com.untangle.node.shield.ShieldNodeRule",
-                // this is the function used by Ung.RpcProxy to retrive data
-                // from the server
-                proxyRpcFn : this.getRpcNode().getShieldNodeRules,
+                recordJavaClass : "com.untangle.node.shield.ShieldRule",
+                paginated : false,
+                data:this.getSettings().rules.list,
 
                 // the list of fields
                 fields : [{
                     name : 'id'
                 }, {
-                    name : 'live'
+                    name : 'enabled'
                 }, {
                     name : 'address'
                 }, {
@@ -148,7 +148,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 // the row input lines used by the row editor window
                 rowEditorInputLines : [new Ext.form.Checkbox({
                     name : "Enable",
-                    dataIndex : "live",
+                    dataIndex : "enabled",
                     fieldLabel : this.i18n._("Enable")
                 }), new Ext.form.TextField({
                     name : "Address",
@@ -274,27 +274,31 @@ if (!Ung.hasResource["Ung.Shield"]) {
         // save function
         saveAction : function(keepWindowOpen) {
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-            this.getRpcNode().updateAll(function(result, exception) {
+
+            if(this.gridExceptions) {
+                this.getSettings().rules.list = this.gridExceptions.getFullSaveList();
+            }
+            
+            this.getRpcNode().setSettings(function(result, exception) {
                 Ext.MessageBox.hide();
                 if(Ung.Util.handleException(exception)) return;
                 // exit settings screen
-                if(!keepWindowOpen){
+                if(!keepWindowOpen) {
                     Ext.MessageBox.hide();                    
                     this.closeWindow();
-                }else{
+                } else {
                 //refresh the settings
                     Ext.MessageBox.hide();
                     //refresh the settings
-                    this.getRpcNode().getBaseSettings(function(result2,exception2) {
-                        Ext.MessageBox.hide();                            
-                        this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
-                        this.gridExceptions.setTotalRecords(result2.shieldNodeRulesLength);
-                        this.gridExceptions.reloadGrid();
+                    this.getRpcNode().getSettings(function(result,exception) {
+                        Ext.MessageBox.hide();
+                        if(Ung.Util.handleException(exception)) return;
+                        Ung.Util.generateListIds(result.rules.list);
+                        this.gridExceptions.reloadGrid({data:result.rules.list});                        
                     }.createDelegate(this));                        
-                    //this.gridEventLog.reloadGrid();                            
                 }
                 
-            }.createDelegate(this), this.gridExceptions.getSaveList());
+            }.createDelegate(this), this.getSettings());
         },
         isDirty : function() {
             return this.gridExceptions.isDirty();
