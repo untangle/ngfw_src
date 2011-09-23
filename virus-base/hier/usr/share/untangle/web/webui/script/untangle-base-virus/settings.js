@@ -627,6 +627,8 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name : 'client',
                     mapping : 'CClientAddr'
                 }, {
+                    name : 'uid',
+                }, {
                     name : 'server',
                     mapping : 'CServerAddr'
                 }, {
@@ -647,6 +649,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     width : 120,
                     sortable : true,
                     dataIndex : 'client'
+                }, {
+                    header : this.i18n._("username"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'uid'
                 }, {
                     header : this.i18n._("reason for action"),
                     width : 140,

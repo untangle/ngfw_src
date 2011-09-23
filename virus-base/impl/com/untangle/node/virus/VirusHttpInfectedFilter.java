@@ -21,7 +21,7 @@ import com.untangle.uvm.util.I18nUtil;
  */
 public class VirusHttpInfectedFilter implements SimpleEventFilter<HttpLogEventFromReports>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("HTTP Events (from reports tables)"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("HTTP Events"));
 
     private final String vendor;
     private final String logQuery;
