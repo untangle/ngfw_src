@@ -234,6 +234,7 @@ ok:
   StrCmp $1 "2003" goodwinver
   StrCmp $1 "VISTA" goodwinver
   StrCmp $1 "7" goodwinver
+  StrCmp $1 "8" goodwinver
 
   Messagebox MB_OK "Sorry, ${PRODUCT_NAME} does not currently support Windows $1"
   Abort
