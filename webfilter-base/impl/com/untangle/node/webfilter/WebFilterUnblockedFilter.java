@@ -1,6 +1,3 @@
-/*
- * $HeadURL: svn://chef/work/src/webfilter-base/impl/com/untangle/node/webfilter/UnblockEventAllFilter.java $
- */
 package com.untangle.node.webfilter;
 
 import com.untangle.uvm.logging.RepositoryDesc;
@@ -17,7 +14,7 @@ public class WebFilterUnblockedFilter
     implements SimpleEventFilter<UnblockEvent>
 {
     private static final RepositoryDesc REPO_DESC
-        = new RepositoryDesc(I18nUtil.marktr("All unblock events (from reports tables)"));
+        = new RepositoryDesc(I18nUtil.marktr("Passlisted Web Events"));
 
     private final String evtQuery;
 

@@ -11,7 +11,7 @@ import com.untangle.uvm.util.I18nUtil;
 public class WebFilterBlockedFilter
     implements SimpleEventFilter<WebFilterEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Blocked HTTP Traffic(from reports tables"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Blocked Web Traffic"));
 
     private final String evtQuery;
 

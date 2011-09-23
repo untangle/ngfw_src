@@ -1000,6 +1000,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     name : 'client',
                     mapping : 'CClientAddr'
                 }, {
+                    name : 'uid'
+                }, {
                     name : 'server',
                     mapping : 'CServerAddr'
                 }, {
@@ -1063,6 +1065,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     sortable : true,
                     dataIndex : 'client'
                 }, {
+                    header : this.i18n._("username"),
+                    width : 100,
+                    sortable : true,
+                    dataIndex : 'uid'
+                }, {
                     id: 'host',
                     header : this.i18n._("host"),
                     width : 120,
@@ -1108,6 +1115,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                              mapping : 'CServerAddr'
                         }, { name : 'host',
                              mapping : 'host'
+                        }, { name : 'uid'
                         }, { name : 'uri',
                              mapping : 'uri'
                         }],
@@ -1122,6 +1130,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     }
                 }, {
                     header : this.i18n._("client"),
+                    width : 120,
+                    sortable : true
+                }, {
+                    header : this.i18n._("username"),
+                    dataIndex : 'uid',
                     width : 120,
                     sortable : true
                 }, {
