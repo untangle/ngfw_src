@@ -7,7 +7,7 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class SpywareCookieFilter implements SimpleEventFilter<HttpLogEventFromReports>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Cookie Events (from reports tables)"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Cookie Events"));
 
     private static final String logQuery = "FROM HttpLogEventFromReports evt" + 
             " WHERE evt.swCookieIdent IS NOT NULL" + 

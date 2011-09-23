@@ -7,7 +7,7 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class SpywareAllFilter implements SimpleEventFilter<SessionLogEventFromReports>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events (from reports tables)"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events"));
 
     private static final String logQuery = "FROM SessionLogEventFromReports evt " +
         "WHERE evt.policyId = :policyId " +

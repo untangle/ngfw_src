@@ -7,7 +7,7 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class SpywareBlacklistFilter implements SimpleEventFilter<HttpLogEventFromReports>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Balcklisted Events (from reports tables)"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Blacklisted Events"));
 
     private static final String logQuery = "FROM HttpLogEventFromReports evt" + 
             " WHERE evt.swBlacklisted IS TRUE" + 

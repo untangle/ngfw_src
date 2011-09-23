@@ -604,6 +604,19 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     name : 'timeStamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
+                    name : 'uid',
+                },
+                // FIXME: the 3 fields below (sw*) can be null
+                // depending on what dropdown valu has been
+                // selected (All, Cookie, Blacklisted). Not sure
+                // how to display the columns accordingly
+                   {
+                    name : 'swBlacklisted'
+                }, {
+                    name : 'swCookie'
+                }, {
+                    name : 'swAccessIdent'
+                }, {
                     name : 'client',
                     mapping : 'CClientAddr'
                 }, {
@@ -623,6 +636,10 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     width : 120,
                     sortable : true,
                     dataIndex : 'client'
+                }, {
+                    header : this.i18n._("username"),
+                    sortable : true,
+                    dataIndex : 'uid'
                 }, {
                     header : this.i18n._("server"),
                     width : 120,
