@@ -30,14 +30,15 @@ public class WebFilterSettings implements Serializable
 
     private Integer version = new Integer(1);
 
-    private boolean enableHttps = false;
-    private boolean unblockPasswordEnabled = false;
-    private boolean unblockPasswordAdmin = false;
+    private Boolean enableHttps = false;
+    private Boolean unblockPasswordEnabled = false;
+    private Boolean unblockPasswordAdmin = false;
     private String  unblockPassword = "";
     private String  unblockMode = UNBLOCK_MODE_NONE;
-    private boolean enforceSafeSearch = true;
-    private boolean blockAllIpHosts = true;
-
+    private Integer unblockTimeout = 60*60; /* 1 hour */
+    private Boolean enforceSafeSearch = true;
+    private Boolean blockAllIpHosts = true;
+    
     private List<GenericRule> passedClients = new LinkedList<GenericRule>();
     private List<GenericRule> passedUrls = new LinkedList<GenericRule>();
     private List<GenericRule> blockedUrls = new LinkedList<GenericRule>();
@@ -154,12 +155,12 @@ public class WebFilterSettings implements Serializable
      *
      * @return true when IP requests are blocked.
      */
-    public boolean getBlockAllIpHosts()
+    public Boolean getBlockAllIpHosts()
     {
         return blockAllIpHosts;
     }
 
-    public void setBlockAllIpHosts(boolean blockAllIpHosts)
+    public void setBlockAllIpHosts(Boolean blockAllIpHosts)
     {
         this.blockAllIpHosts = blockAllIpHosts;
     }
@@ -169,12 +170,12 @@ public class WebFilterSettings implements Serializable
      *
      * @return true to block.
      */
-    public boolean getEnableHttps()
+    public Boolean getEnableHttps()
     {
         return enableHttps;
     }
 
-    public void setEnableHttps(boolean enableHttps)
+    public void setEnableHttps(Boolean enableHttps)
     {
         this.enableHttps = enableHttps;
     }
@@ -184,12 +185,12 @@ public class WebFilterSettings implements Serializable
      *
      * @return true to block.
      */
-    public boolean getEnforceSafeSearch()
+    public Boolean getEnforceSafeSearch()
     {
         return enforceSafeSearch;
     }
 
-    public void setEnforceSafeSearch(boolean enforceSafeSearch)
+    public void setEnforceSafeSearch(Boolean enforceSafeSearch)
     {
         this.enforceSafeSearch = enforceSafeSearch;
     }
@@ -199,12 +200,12 @@ public class WebFilterSettings implements Serializable
      *
      * @return true to block.
      */
-    public boolean getUnblockPasswordEnabled()
+    public Boolean getUnblockPasswordEnabled()
     {
         return this.unblockPasswordEnabled;
     }
 
-    public void setUnblockPasswordEnabled(boolean newValue)
+    public void setUnblockPasswordEnabled(Boolean newValue)
     {
         this.unblockPasswordEnabled = newValue;
     }
@@ -214,12 +215,12 @@ public class WebFilterSettings implements Serializable
      *
      * @return true to block.
      */
-    public boolean getUnblockPasswordAdmin()
+    public Boolean getUnblockPasswordAdmin()
     {
         return this.unblockPasswordAdmin;
     }
 
-    public void setUnblockPasswordAdmin(boolean newValue)
+    public void setUnblockPasswordAdmin(Boolean newValue)
     {
         this.unblockPasswordAdmin = newValue;
     }
@@ -242,7 +243,7 @@ public class WebFilterSettings implements Serializable
     /**
      * The mode for bypass
      *
-     * @return The bypass settings
+     * @return The unblock mode
      */
     public String getUnblockMode()
     {
@@ -254,6 +255,22 @@ public class WebFilterSettings implements Serializable
         this.unblockMode = unblockMode;
     }
 
+    /**
+     * The timeout for bypass (seconds)
+     * If unblock mode is set to Host, then the unblock will last for this many seconds
+     *
+     * @return The unblock timeout
+     */
+    public Integer getUnblockTimeout()
+    {
+        return this.unblockTimeout;
+    }
+
+    public void setUnblockTimeout(Integer unblockTimeout)
+    {
+        this.unblockTimeout = unblockTimeout;
+    }
+    
 
     public String toJSONString()
     {
