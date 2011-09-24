@@ -4,17 +4,21 @@ hibernate-annotations: used in the untangle-vm for events & settings
 apache-tomcat: used in the untangle-vm (servlets)
 jfreechart: used in reports
 logging-log4j: used in the untangle-vm (logging)
-bcel: build
+bcel: ??
 velocity: ??
 commons-fileupload: ??
 commons-io: ??
 commons-httpclient: ??
+AjaxTK: ??
 commons-codec: ??
+je: BDB - used in web filter and spyware blocker
 xmlrpc: used by UI/uvm
 slf4j: ??
 python-jsonrpc: used by ucl
 dnsjava: used in the untangle-vm
 jradius: used by directory connector
+jaf: ??
+junit: ??
 postgres-jdbc: used to connect to postgres
 javamail: used to send mail
 xstream-distribution: ??
