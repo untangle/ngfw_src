@@ -1,3 +1,3 @@
 #! /bin/sh
 
-exec python @UVM_HOME@/pycli/jscli.py "$@"
+exec python @UVM_HOME@/bin/ut-pycli "$@"

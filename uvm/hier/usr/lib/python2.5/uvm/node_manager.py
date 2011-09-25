@@ -41,7 +41,6 @@ class NodeManager(Manager):
             
             nodes.append( (tid['id'], nodeContext.getNodeDesc()["name"], policy, node.getRunState()) )
         
-        print nodes
         nodes =  sorted( nodes, key=lambda v: v[2]) # sort by rack/policy
         return nodes
 

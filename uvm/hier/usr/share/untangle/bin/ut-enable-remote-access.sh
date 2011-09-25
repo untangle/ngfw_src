@@ -1,4 +1,4 @@
-#!@PREFIX@/usr/share/untangle/bin/ut-pycli
+#!@PREFIX@/usr/share/untangle/bin/ut-pycli -f 
 
 nm = uvm.networkManager()
 
