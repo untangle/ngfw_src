@@ -56,6 +56,7 @@ class ArgumentParser(object):
         self.policy_name = None
         self.verbosity = 0
         self.filename = None
+        self.command = None
 
     def set_hostname( self, arg ):
         self.hostname = arg
@@ -75,6 +76,9 @@ class ArgumentParser(object):
     def set_filename( self, arg ):
         self.filename = arg
 
+    def set_command( self, arg ):
+        self.command = arg
+
     def increase_verbosity( self, arg ):
         self.verbosity += 1
 
@@ -86,10 +90,11 @@ class ArgumentParser(object):
             '-t' : self.set_timeout,
             '-p' : self.set_policy,
             '-f' : self.set_filename,
+            '-c' : self.set_command,
             '-v' : self.increase_verbosity
         }
 
-        (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:w:t:p:f:v')
+        (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:w:t:p:c:f:v')
         for opt in optlist:
             handlers[opt[0]](opt[1])
         return args
@@ -99,6 +104,7 @@ def printUsage():
 %s Usage:
   optional args:
     -f file
+    -c commands to exec
     -h hostname
     -u username
     -w password
@@ -183,6 +189,11 @@ if __name__ == "__main__":
   except JSONRPCException:
       print "ERROR: Failed to communicate with the untangle-vm. Is it running? Are you root?"
       sys.exit(1)
+
+  # If -c is specified exec the command and exit
+  if parser.command != None:
+      exec(parser.command);
+      sys.exit(0);
 
   # If -f is specified exec the file and exit
   if parser.filename != None:
