@@ -47,16 +47,16 @@ class CurlRequestHandler(object):
     
 
 class Uvm:
-    def getUvmContext( self, parser, timeout=30 ):
+    def getUvmContext( self, hostname="127.0.0.1", username=None, password=None, timeout=30 ):
         handler = CurlRequestHandler( timeout )
 
         try:
-            if ( parser.username != None and parser.password != None ):
-                handler.make_request( "http://" + parser.hostname  + "/auth/login", urllib.urlencode({ "username" : parser.username, "password" : parser.password }))
+            if ( username != None and password != None ):
+                handler.make_request( "http://" + hostname  + "/auth/login", urllib.urlencode({ "username" : username, "password" : password }))
         except JSONRPCException:
             pass
         
-        proxy = ServiceProxy( "http://" + parser.hostname +  "/webui/JSON-RPC", None, handler )
+        proxy = ServiceProxy( "http://" + hostname +  "/webui/JSON-RPC", None, handler )
 
         return proxy.RemoteUvmContext
 
