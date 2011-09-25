@@ -186,8 +186,11 @@ if __name__ == "__main__":
   # check that we can connect to the untangle-vm
   try:
       version = uvmContext.version()
-  except JSONRPCException:
-      print "ERROR: Failed to communicate with the untangle-vm. Is it running? Are you root?"
+  except JSONRPCException, e:
+      errorstr = repr(e.error)
+      print "ERROR: Failed to communicate with the untangle-vm: %s" % errorstr
+      if (errorstr.find("password") != -1):
+          print "Is the untangle-vm running? Are you root? Did you supply a username/password?"
       sys.exit(1)
 
   # If -c is specified exec the command and exit
