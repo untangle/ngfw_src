@@ -96,7 +96,7 @@ def printUsage():
     ucli register <package-name - register a new package 
     ucli unregister <package-name> - unregister a package
   DEBUGGING:
-    ucli instances - list all nodes
+    ucli instances - list all nodes 
     ucli sessions <node_id> - list all sessions for a given node
     ucli available - shows available packages
     ucli installed - shows installed packages
@@ -128,7 +128,7 @@ if __name__ == "__main__":
       printUsage()
       sys.exit(1)
 
-  uvmContext = Uvm().getUvmContext( parser, parser.timeout )
+  uvmContext = Uvm().getUvmContext( hostname=parser.hostname, username=parser.username, password=parser.password, timeout=parser.timeout )
   uvm = uvmContext
 
   if ( parser.policy_name != None ):

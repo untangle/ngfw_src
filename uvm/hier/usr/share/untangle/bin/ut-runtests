@@ -1,15 +1,13 @@
 #!@PREFIX@/usr/share/untangle/bin/ut-pycli -f 
-
 import sys
-import unittest
-
 sys.path.append('@PREFIX@/usr/lib/python2.5/')
+
+import unittest
+import uvm
 import untangle_tests
 from   untangle_tests import *
 
-print uvmContext
-
 # Verify the test enviroment is setup correctly
-suite = unittest.TestLoader().loadTestsFromTestCase(TestEnvironment)
+suite = unittest.TestLoader().loadTestsFromTestCase(TestEnvironmentTests)
 unittest.TextTestRunner(verbosity=2).run(suite)
-print "done"
+

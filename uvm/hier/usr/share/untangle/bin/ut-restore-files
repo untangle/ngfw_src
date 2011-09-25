@@ -145,4 +145,4 @@ if [ -x /etc/init.d/untangle-reports ]; then
 fi
 
 # Inform the UVM that the DB settings have changed, give it a chance to write out config files.
-/usr/bin/rush -e "Untangle::RemoteUvmContext.syncConfigFiles()"
+/usr/share/untangle/bin/ut-pycli -c "uvmContext.syncConfigFiles()"
