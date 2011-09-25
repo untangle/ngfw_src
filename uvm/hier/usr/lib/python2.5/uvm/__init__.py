@@ -8,3 +8,4 @@ from uvm.uvm_manager import UvmManager
 from uvm.message_manager import MessageManager
 
 from uvm.manager import Manager
+from uvm.untangle_vm import Uvm

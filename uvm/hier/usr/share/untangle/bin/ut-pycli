@@ -12,40 +12,7 @@ from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 import uvm
 from uvm import Manager
-
-
-# Always use pycurl.
-# 1. cookies are supported on python 2.3 (not supported cleanly in
-# urllib2)
-# 2. persistent sessions are supported in all version of python.  Up
-# to 2.4 this hasn't made it in yet.  There is keepalive from
-# urlgrabber, it doesn't support cookies which are required in order
-# for java callable references to work.
-class CurlRequestHandler(object):
-    def __init__( self, timeout=30 ):
-        self.__curl = pycurl.Curl()
-        self.__curl.setopt( pycurl.POST, 1 )
-        self.__curl.setopt( pycurl.NOSIGNAL, 1 )
-        self.__curl.setopt( pycurl.CONNECTTIMEOUT, 30 )
-        self.__curl.setopt( pycurl.TIMEOUT, timeout )
-        self.__curl.setopt( pycurl.COOKIEFILE, "" )
-        self.__curl.setopt( pycurl.FOLLOWLOCATION, 0 )
-
-    def make_request(self, url, postdata, content_type = None ):
-        response = StringIO()
-
-        self.__curl.setopt( pycurl.URL, url )
-        self.__curl.setopt( pycurl.POST, 1 )
-        if content_type != None:
-            self.__curl.setopt( pycurl.HTTPHEADER, [ "Content-Type: %s" % content_type ] )
-        self.__curl.setopt( pycurl.VERBOSE, False )
-        self.__curl.setopt( pycurl.POSTFIELDS, postdata.encode( "utf-8" ))
-        self.__curl.setopt( pycurl.WRITEFUNCTION, response.write )
-        self.__curl.perform()
-
-        if ( self.__curl.getinfo( pycurl.HTTP_CODE ) != 200 ): raise JSONRPCException("Invalid username or password")
-
-        return response.getvalue()
+from uvm import Uvm
 
 class ArgumentParser(object):
     def __init__(self):
@@ -139,18 +106,7 @@ def printUsage():
     ucli get_message_queue - show the message queue (to UI)
 """ % sys.argv[0] )
 
-def make_proxy( parser, timeout=30 ):
-    handler = CurlRequestHandler( timeout )
 
-    try:
-        if ( parser.username != None and parser.password != None ):
-            handler.make_request( "http://" + parser.hostname  + "/auth/login", urllib.urlencode({ "username" : parser.username, "password" : parser.password }))
-    except JSONRPCException:
-        pass
-
-    proxy = ServiceProxy( "http://" + parser.hostname +  "/webui/JSON-RPC", None, handler )
-
-    return proxy
 
 if __name__ == "__main__":
   parser = ArgumentParser()
@@ -172,8 +128,7 @@ if __name__ == "__main__":
       printUsage()
       sys.exit(1)
 
-  proxy = make_proxy( parser, parser.timeout )
-  uvmContext = proxy.RemoteUvmContext
+  uvmContext = Uvm().getUvmContext( parser, parser.timeout )
   uvm = uvmContext
 
   if ( parser.policy_name != None ):
