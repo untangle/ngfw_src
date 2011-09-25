@@ -1,15 +1,14 @@
-echo '
-require "untangle/remote_uvm_context"
+#!@PREFIX@/usr/share/untangle/bin/ut-pycli
 
-nm = Untangle::RemoteUvmContext.networkManager()
+nm = uvm.networkManager()
+
 access_settings =  nm.getAccessSettings()
-
 is_enabled = access_settings["isOutsideAdministrationEnabled"]
-puts "remote administration is currently #{is_enabled ? "enabled" : "disabled"}"
+print('remote administration is currently: %s' % is_enabled)
 
-access_settings["isOutsideAdministrationEnabled"] = ( ARGV[0] != "false" )
+access_settings["isOutsideAdministrationEnabled"] = True;
 nm.setAccessSettings( access_settings )
 
 access_settings =  nm.getAccessSettings()
 is_enabled = access_settings["isOutsideAdministrationEnabled"]
-puts "remote administration is now #{is_enabled ? "enabled" : "disabled"}"' | /usr/bin/rush
+print('remote administration is now      : %s' % is_enabled)

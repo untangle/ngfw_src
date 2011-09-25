@@ -1,7 +1,7 @@
 from time import strftime, gmtime
 
 class Manager(object):
-    __protocols = { 6 : [ "TCP", "T" ], 17 : [ "UDP", "U" ] }
+    __protocols = { 6 : [ "TCP", "TCP" ], 17 : [ "UDP", "UDP" ] }
     __states = { 0 : "CLOSED", 4 : "OPEN", 5 : "H_IN", 6 : "H_OUT" }
 
     managers = []
@@ -24,7 +24,8 @@ class Manager(object):
         return { 'javaClass' : 'java.util.Date', 'time' : ( seconds * 1000 ) }
 
     def getPolicyString(self,policy):
-        return "Policy(%s: %s)" % ( [ "non-default", "default" ][policy["default"]], policy["name"] )
+        #return "Policy (%s: %s)" % ( [ "non-default", "default" ][policy["default"]], policy["name"] )
+        return "%s" % ( policy["name"] )
 
     def formatProtocol(self,protocol):
         return Manager.__protocols[int(protocol)]

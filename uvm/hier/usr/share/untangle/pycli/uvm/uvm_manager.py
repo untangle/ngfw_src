@@ -1,10 +1,10 @@
 from uvm.manager import Manager
 
 class UvmManager(Manager):
-    def __init__( self, remoteContext):
-        self.__remoteContext = remoteContext
+    def __init__( self, uvmContext):
+        self.__uvmContext = uvmContext
 
     def api_gc( self ):
-        self.__remoteContext.doFullGC()
+        self.__uvmContext.doFullGC()
 
 Manager.managers.append( UvmManager )

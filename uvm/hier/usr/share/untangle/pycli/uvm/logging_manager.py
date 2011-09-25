@@ -2,9 +2,9 @@ from uvm.manager import Manager
 import string
 
 class LoggingManager(Manager):
-    def __init__(self, remoteContext):
-        self.__remoteContext = remoteContext
-        self.__loggingManager = self.__remoteContext.loggingManager()
+    def __init__(self, uvmContext):
+        self.__uvmContext = uvmContext
+        self.__loggingManager = self.__uvmContext.loggingManager()
 
     def api_resetlogs(self):
         self.__loggingManager.resetAllLogs()

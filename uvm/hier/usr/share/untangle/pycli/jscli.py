@@ -98,50 +98,32 @@ def printUsage():
     -t timeout (default 120000)
     -p policy
     -v
-  toolbox commands:
-    ucli install mackage-name
-    ucli uninstall mackage-name
-    ucli update
-    ucli upgrade
-    ucli requestInstall mackage-name
-  toolbox lists:
-    ucli available
-    ucli installed
-    ucli uninstalled
-    ucli upgradable
-    ucli uptodate
-  node manager commands:
-    ucli instantiate mackage-name [ args ]
-    ucli start TID
-    ucli stop TID
-    ucli destroy TID
-  node manager lists:
-    ucli instances
-  node live sessions:
-    ucli sessions [ TID ]
-  admin manager:
-    ucli who
-    ucli passwd [ -a | -d ] login [ password ]
-  uvm commands:
-    ucli shutdown
-    ucli serverStats
-    ucli gc
-  policy manager:
-    ucli addPolicy name [notes]
-    ucli listPolicies
-    ucli killAllSessions
-  reporting manager:
-    ucli isReportingEnabled
-    ucli areReportsAvailable
-  logging manager:
-    ucli userLogs tid
-    ucli resetLogs
-    ucli logError [text]
-  apt commands:
-    ucli register mackage-name
-    ucli unregister mackage-name
-  debugging commands:
-    ucli aptTail
+  COMMANDS:
+    ucli install <package-name> - installs the given package
+    ucli uninstall <package-name> - uninstall the given package
+    ucli update - updates the package list
+    ucli upgrade - initiates an upgrade (if available)
+    ucli requestInstall <package-name> - ask the UI to initiate an install
+    ucli instantiate <package-name> [ args ] - instantiates a node in the rack
+    ucli start <node_id> - starts a node
+    ucli stop <node_id> - stops a node
+    ucli destroy <node_id> - destroys a node
+    ucli passwd [ -a | -d ] <login> <password> - adds or deletes a given admin
+    ucli shutdown - shuts down the server
+    ucli resetLogs - refresh & reconfigure log4j 
+    ucli gc - force a garbage collection
+    ucli logError - log an error to uvm.log
+    ucli register <package-name - register a new package 
+    ucli unregister <package-name> - unregister a package
+  DEBUGGING:
+    ucli instances - list all nodes
+    ucli sessions <node_id> - list all sessions for a given node
+    ucli available - shows available packages
+    ucli installed - shows installed packages
+    ucli uninstalled - shows uninstalled packages
+    ucli isReportingEnabled - shows if reports installed
+    ucli areReportsAvailable - shows if reports are available
+    ucli get_message_queue - show the message queue (to UI)
 """ % sys.argv[0] )
 
 def make_proxy( parser, timeout=30 ):
@@ -178,10 +160,10 @@ if __name__ == "__main__":
       sys.exit(1)
 
   proxy = make_proxy( parser, parser.timeout )
-  remoteContext = proxy.RemoteUvmContext
+  uvmContext = proxy.RemoteUvmContext
 
   if ( parser.policy_name != None ):
-      Manager.policy = remoteContext.policyManager().getPolicy(parser.policy_name)
+      Manager.policy = uvmContext.policyManager().getPolicy(parser.policy_name)
 
   Manager.verbosity = parser.verbosity
 
@@ -201,7 +183,7 @@ if __name__ == "__main__":
 
       calledMethod = True
       try:
-          remoteManager = manager(remoteContext)
+          remoteManager = manager(uvmContext)
           getattr( remoteManager, "api_" + method )( *script_args )
       except JSONRPCException, e:
           sys.stderr.write( "Unable to make the request: (%s)\n" % e.error )

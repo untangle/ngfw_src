@@ -4,9 +4,9 @@ from time import strptime
 from string import atoi
 
 class ReportingManager(Manager):
-    def __init__(self, remoteContext):
-        self.__remoteContext = remoteContext
-        self.__reportingManager = self.__remoteContext.reportingManager()
+    def __init__(self, uvmContext):
+        self.__uvmContext = uvmContext
+        self.__reportingManager = self.__uvmContext.reportingManager()
 
     def api_isreportingenabled(self):
         print ('%s' % self.__reportingManager.isReportingEnabled()).lower()

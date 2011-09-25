@@ -6,12 +6,12 @@ import random
 import getpass
 
 class AdminManager(Manager):
-    def __init__(self, remoteContext):
-        self.__remoteContext = remoteContext
-        self.__adminManager = self.__remoteContext.adminManager()
+    def __init__(self, uvmContext):
+        self.__uvmContext = uvmContext
+        self.__adminManager = self.__uvmContext.adminManager()
 
     def api_shutdown(self):
-        self.__remoteContext.shutdown()
+        self.__uvmContext.shutdown()
 
     def api_passwd(self, *passwd_args):
         add_user = False

@@ -32,7 +32,9 @@ uvm.registerTarget('hier', cf)
 ms = [ MoveSpec.new("#{BuildEnv::downloads}/python-jsonrpc-r19", 'jsonrpc/*.py', "#{uvm.distDirectory}/usr/share/untangle/pycli/") ]
 cf = CopyFiles.new(uvm, ms, 'python-jsonrpc', BuildEnv::SRC.filterset)
 uvm.registerTarget('python-jsonrpc', cf)
-
+ms = [ MoveSpec.new("#{BuildEnv::downloads}/python-jsonrpc-r19", 'jsonrpc/*.py', "#{uvm.distDirectory}/usr/local/lib/python/") ]
+cf = CopyFiles.new(uvm, ms, 'python-jsonrpc', BuildEnv::SRC.filterset)
+uvm.registerTarget('python-jsonrpc2', cf)
 
 jts = []
 
