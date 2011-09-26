@@ -24,7 +24,7 @@ if license == None:
     print "False (no license found)"
     sys.exit(1)
 else:
-    if license['valid'] == 'True':
+    if license.has_key('valid') and license['valid'] == 'True':
         print "True (license valid)"
         sys.exit(0)
 
