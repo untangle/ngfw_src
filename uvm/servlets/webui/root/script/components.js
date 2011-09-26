@@ -900,6 +900,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
 
         this.progressBar = new Ext.ProgressBar({
             text : '',
+            ctCls : 'progress-bar-text',
             id : 'progressBar_' + this.getId(),
             renderTo : "state_" + this.getId(),
             height : 17,
@@ -953,84 +954,102 @@ Ung.AppItem = Ext.extend(Ext.Component, {
         }
         return nodeName;
     },
+    // hack because I cant figure out how to tell extjs to apply style to progress text
+    stylizeProgressText : function (str) {
+        return "<p style=\"font-size:xx-small;text-align:left;align:left\">&nbsp;&nbsp;" + str + "</p>";
+    },
+    // set the state of the progress bar
     setState : function(newState, options) {
+        var progressString = "";
         switch (newState) {
-            case null:
-            case "installed" :
-                this.displayButtonsOrProgress(true);
-                this.download=null;
-                break;
-            case "unactivating" :
-                this.displayButtonsOrProgress(false);
+          case null:
+          case "installed" :
+            this.displayButtonsOrProgress(true);
+            this.download=null;
+            break;
+          case "unactivating" :
+            this.displayButtonsOrProgress(false);
+            this.progressBar.reset();
+            progressString = this.stylizeProgressText(i18n._("Unactivating..."));
+            this.progressBar.waitDefault(progressString);
+            break;
+          case "download" :
+            this.displayButtonsOrProgress(false);
+            this.progressBar.reset();
+            progressString = this.stylizeProgressText(i18n._("Downloading..."));
+            Ung.MessageManager.setFrequency(Ung.MessageManager.highFrequency);
+            this.progressBar.updateProgress(0, progressString);
+            this.progressBar.waitDefault(progressString);
+            break;
+          case "download_summary" :
+            this.displayButtonsOrProgress(false);
+            this.download={
+                summary:options,
+                completeSize:0,
+                completePackages:0
+            };
+            progressString = this.stylizeProgressText(String.format(i18n._("{0} Packages"), this.download.summary.count));
+            this.progressBar.reset();
+            this.progressBar.updateProgress(0, progressString);
+            break;
+          case "download_complete" :
+            if(this.download!=null && this.download.summary!=null) {
+                this.download.completePackages++;
+                var currentPercentComplete = parseFloat(this.download.completePackages) / parseFloat(this.download.summary.size > 0 ? this.download.summary.size : 1);
+                var progressIndex = parseFloat(0.99 * currentPercentComplete);
+                progressString = this.stylizeProgressText(String.format(i18n._("Pkg {0}/{1} done"), this.download.completePackages, this.download.summary.count));
+                //the progress bar works better without these updates
+                //this.progressBar.reset();
+                //this.progressBar.updateProgress(progressIndex, progressString);
+            }
+            break;
+          case "download_progress" :
+            this.displayButtonsOrProgress(false);
+            if(this.download!=null && this.download.summary!=null) {
+                this.download.completeSize=options.bytesDownloaded;
+                var currentPercentComplete = parseFloat(options.bytesDownloaded) / parseFloat(options.size != 0 ? options.size : 1);
+                var progressIndex = parseFloat(0.99 * currentPercentComplete);
+                progressString = this.stylizeProgressText(String.format(i18n._("Pkg {0}/{1} @ {2} KB/s"), this.download.completePackages, this.download.summary.count, options.speed));
                 this.progressBar.reset();
-                this.progressBar.waitDefault(i18n._("Unactivating..."));
-                break;
-            case "download" :
-                this.displayButtonsOrProgress(false);
+                this.progressBar.updateProgress(progressIndex, progressString);
+            }
+            break;
+          case "apt_progress" :
+            this.displayButtonsOrProgress(false);
+            if(this.download!=null && this.download.summary!=null) {
+                var action = "";
+                if (options.action.indexOf("unpack") != -1) {
+                    action = i18n._("Unpacking");
+                } 
+                var currentPercentComplete = parseFloat(options.count) / parseFloat(options.totalCount != 0 ? options.totalCount : 1);
+                var progressIndex = parseFloat(0.99 * currentPercentComplete);
+                //progressString = this.stylizeProgressText(action + " " + String.format("{0}/{1}", options.count, options.totalCount));
+                progressString = this.stylizeProgressText(action + " " + String.format("{0}%", Math.round(progressIndex*100)) + "&nbsp;");
                 this.progressBar.reset();
-                Ung.MessageManager.setFrequency(Ung.MessageManager.highFrequency);
-                this.progressBar.updateProgress(0, i18n._("Downloading..."));
-                this.progressBar.waitDefault(i18n._("Downloading..."));
-                break;
-            case "download_summary" :
-                this.displayButtonsOrProgress(false);
-                this.download={
-                    summary:options,
-                    completeSize:0,
-                    completePackages:0
-                };
-                this.progressBar.reset();
-                this.progressBar.updateProgress(0, String.format(i18n._("{0} Packages"), this.download.summary.count));
-                break;
-            case "download_complete" :
-                if(this.download!=null && this.download.summary!=null) {
-                    this.download.completePackages++;
-                    var currentPercentComplete = parseFloat(this.download.completePackages) / parseFloat(this.download.summary.size > 0 ? this.download.summary.size : 1);
-                    var progressIndex = parseFloat(0.99 * currentPercentComplete);
-                    var progressString = String.format(i18n._("Pkg {0}/{1} done"), this.download.completePackages, this.download.summary.count);
-                    this.progressBar.reset();
-                    this.progressBar.updateProgress(progressIndex, progressString);
-                }
-                break;
-            case "download_progress" :
-                this.displayButtonsOrProgress(false);
-                if(this.download!=null && this.download.summary!=null) {
-                    this.download.completeSize=options.bytesDownloaded;
-                    var currentPercentComplete = parseFloat(options.bytesDownloaded) / parseFloat(options.size != 0 ? options.size : 1);
-                    var progressIndex = parseFloat(0.99 * currentPercentComplete);
-                    var progressString = String.format(i18n._("Pkg {0}/{1} @ {2} KB/s"), this.download.completePackages, this.download.summary.count, options.speed);
-                    this.progressBar.reset();
-                    this.progressBar.updateProgress(progressIndex, progressString);
-                }
-                break;
-            case "apt_progress" :
-                this.displayButtonsOrProgress(false);
-                if(this.download!=null && this.download.summary!=null) {
-                    var action = "";
-                    if (options.action.indexOf("unpack") != -1) {
-                        action = i18n._("Unpacking");
-                    } 
-                    var currentPercentComplete = parseFloat(options.count) / parseFloat(options.totalCount != 0 ? options.totalCount : 1);
-                    var progressIndex = parseFloat(0.99 * currentPercentComplete);
-                    //var progressString = action + " " + String.format("{0}/{1}", options.count, options.totalCount);
-                    var progressString = action + " " + String.format("{0}%", Math.round(progressIndex*100)) + "&nbsp;";
-                    this.progressBar.reset();
-                    this.progressBar.updateProgress(progressIndex, progressString);
-                }
-                break;
-            case "loadapps" :
-                this.displayButtonsOrProgress(false);
-                this.progressBar.waitDefault(i18n._("Loading Apps..."));
-                break;
-            case "activate_timeout" :
-                this.displayButtonsOrProgress(false);
-                this.progressBar.reset();
-                this.progressBar.updateProgress(1, i18n._("Activate timeout."));
-                break;
+                this.progressBar.updateProgress(progressIndex, progressString);
+            }
+            break;
+          case "loadapps" :
+            this.displayButtonsOrProgress(false);
+            progressString = this.stylizeProgressText(i18n._("Loading Apps..."));
+            this.progressBar.waitDefault(progressString);
+            break;
+          case "loadapp" :
+            this.displayButtonsOrProgress(false);
+            progressString = this.stylizeProgressText(i18n._("Loading App..."));
+            this.progressBar.waitDefault(progressString);
+            break;
+          case "activate_timeout" :
+            this.displayButtonsOrProgress(false);
+            progressString = this.stylizeProgressText(i18n._("Activate timeout."));
+            this.progressBar.reset();
+            this.progressBar.updateProgress(1, progressString);
+            break;
         }
         this.state = newState;
 
     },
+
     // before Destroy
     beforeDestroy : function() {
         this.actionEl.removeAllListeners();

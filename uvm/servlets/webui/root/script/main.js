@@ -854,7 +854,7 @@ Ung.Main=Ext.extend(Object, {
             return;
         }
         
-        Ung.AppItem.updateState(packageDesc.displayName, "installing");
+        Ung.AppItem.updateState(packageDesc.displayName, "loadapp");
         main.addNodePreview(packageDesc);
         rpc.nodeManager.instantiateAndStart(function (result, exception) {
             if(Ung.Util.handleException(exception)) {
