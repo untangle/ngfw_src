@@ -11,25 +11,40 @@ clientControl = ClientControl()
 
 class TestEnvironmentTests(unittest.TestCase):
 
-    # tests that the test suite can connect to the untangle-vm
-    def test_uvmConnectivity(self):
+    # verify connectivity to untangle-vm
+    def test_01_uvmConnectivity(self):
         global uvmContext
         try:
             version = uvmContext.version()
         except JSONRPCException, e:
             raise AssertionError("Failed to connect to untangle-vm")
 
-    # tests that the test suite can connect to the client and run a command
-    def test_clientConnectivity(self):
+    # verify connectivity to client
+    def test_10_clientConnectivity(self):
         result = clientControl.runCommand("/bin/true")
         assert (result == 0)
 
-    # tests that the test suite can connect to the client and run a command and get return codes
-    def test_shellReturnCode(self):
+    # verify client can exec commands and return code
+    def test_11_clientShellReturnCode(self):
         result = clientControl.runCommand("/bin/true")
         assert (result == 0)
         result = clientControl.runCommand("/bin/false")
         assert (result == 1)
+
+    # verify client has necessary tools
+    def test_12_clientHasNecessaryTools(self):
+        result = clientControl.runCommand("which wget")
+        assert (result == 0)
+        result = clientControl.runCommand("which curl")
+        assert (result == 0)
+        result = clientControl.runCommand("which netcat")
+        assert (result == 0)
+
+    # verify client is online
+    def test_13_clientIsOnline(self):
+        result = clientControl.runCommand("wget -o /dev/null http://google.com/")
+        assert (result == 0)
+
 
 
 

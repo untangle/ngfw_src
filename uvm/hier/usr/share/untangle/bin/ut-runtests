@@ -14,6 +14,7 @@ class ArgumentParser(object):
         self.hostUsername = None
         self.hostKeyFile = None
         self.verbosity = 0
+        self.logfile = '/tmp/unittest.log'
 
     def set_hostIP( self, arg ):
         self.hostIP = arg
@@ -24,8 +25,8 @@ class ArgumentParser(object):
     def set_keyfile( self, arg ):
         self.password = arg
 
-    def set_filename( self, arg ):
-        self.filename = arg
+    def set_logfile( self, arg ):
+        self.logfile = arg
 
     def increase_verbosity( self, arg ):
         self.verbosity += 1
@@ -35,10 +36,11 @@ class ArgumentParser(object):
             '-h' : self.set_hostIP,
             '-u' : self.set_username,
             '-i' : self.set_keyfile,
+            '-l' : self.set_logfile,
             '-v' : self.increase_verbosity
         }
 
-        (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:v')
+        (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:v')
         for opt in optlist:
             handlers[opt[0]](opt[1])
         return args
@@ -50,11 +52,19 @@ def printUsage():
     -h client host IP (behind Untangle)
     -u client host SSH login
     -i client host SSH identity (key) file
+    -l log file
     -v
 """ % sys.argv[0] )
-    
+
+def exit(code):
+    global parser
+    if (code != 0):
+        print "More details found in %s" % parser.logfile
+    sys.exit(code)
+
 parser = ArgumentParser()
 script_args = parser.parse_args()
+logfile = open(parser.logfile, 'w')
 
 if (parser.hostIP != None):
     ClientControl.hostIP       = parser.hostIP
@@ -66,5 +76,14 @@ ClientControl.verbosity = parser.verbosity;
 
 # Verify the test enviroment is setup correctly
 suite = unittest.TestLoader().loadTestsFromTestCase(TestEnvironmentTests)
-unittest.TextTestRunner(verbosity=parser.verbosity).run(suite)
+#results = unittest.TextTestRunner(verbosity=parser.verbosity).run(suite)
+
+for test in suite:
+    results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
+    if (len(results.failures) > 0):
+        print "Test FAILED: %s\n\n" % test
+        print "The test enviroment is not configured correctly. Aborting..."
+        exit(1)
+
+
 
