@@ -89,20 +89,6 @@ tar zxf $tarfile -C /
 # update the things also kept in kernel (bug 5533)
 hostname `cat /etc/hostname`
 
-# restore the LDAP configuration
-SLAPD_CONFIG=/etc/untangle-ldap/slapd.conf
-SLAPD_LIB_DIR=/var/lib/untangle-ldap
-UNTANGLE_SLAPD_CONFIG_DIR=/usr/share/untangle-ldap-server
-if [ -f $SLAPD_CONFIG -a -f /usr/share/untangle/conf/dirbackup.ldif ]; then
-    /etc/init.d/untangle-slapd stop
-    rm -rf ${SLAPD_LIB_DIR}
-    mkdir -p ${SLAPD_LIB_DIR}
-    cp ${UNTANGLE_SLAPD_CONFIG_DIR}/DB_CONFIG ${SLAPD_LIB_DIR}/DB_CONFIG
-    slapadd -f $SLAPD_CONFIG -l /usr/share/untangle/conf/dirbackup.ldif
-    slapindex -f $SLAPD_CONFIG
-    /etc/init.d/untangle-slapd start
-fi
-
 # try to download needed files, this may fail because the network settings may not be correct
 restore_packages $instfile
 
