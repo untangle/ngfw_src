@@ -629,7 +629,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name : 'client',
                     mapping : 'CClientAddr'
                 }, {
-                    name : 'uid',
+                    name : 'uid'
                 }, {
                     name : 'server',
                     mapping : 'CServerAddr'
