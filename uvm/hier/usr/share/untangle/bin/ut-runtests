@@ -72,12 +72,14 @@ if (parser.hostUsername != None):
     ClientControl.hostUsername = parser.hostUsername
 if (parser.hostKeyFile != None):
     ClientControl.hostKeyFile  = parser.hostKeyFile
-ClientControl.verbosity = parser.verbosity;
+ClientControl.verbosity   = parser.verbosity;
+ClientControl.logfile = logfile;
 
 # Verify the test enviroment is setup correctly
 suite = unittest.TestLoader().loadTestsFromTestCase(TestEnvironmentTests)
 #results = unittest.TextTestRunner(verbosity=parser.verbosity).run(suite)
 
+# run each test individually for the basic tests
 for test in suite:
     results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
     if (len(results.failures) > 0):
