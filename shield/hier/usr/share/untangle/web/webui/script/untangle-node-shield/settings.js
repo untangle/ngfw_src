@@ -293,7 +293,6 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     this.getRpcNode().getSettings(function(result,exception) {
                         Ext.MessageBox.hide();
                         if(Ung.Util.handleException(exception)) return;
-                        Ung.Util.generateListIds(result.rules.list);
                         this.gridExceptions.reloadGrid({data:result.rules.list});                        
                     }.createDelegate(this));                        
                 }

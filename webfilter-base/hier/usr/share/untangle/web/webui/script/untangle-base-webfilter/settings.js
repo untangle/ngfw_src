@@ -152,7 +152,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 title : settingsCmp.i18n._("Categories")
                             }],
                             grid : settingsCmp.gridCategories,
-                            applyAction : function(forceLoad){
+                            applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 var saveList = {
                                     javaClass : "java.util.LinkedList",
@@ -163,9 +163,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     this.getRpcNode().getCategories(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
-                                        Ung.Util.generateListIds(result.list);
                                         this.gridCategories.reloadGrid({data:result.list});
                                         this.getSettings().categories = result;
+                                        if(callback != null) {
+                                            callback();
+                                        }
                                     }.createDelegate(this));
                                 }.createDelegate(settingsCmp), saveList);
                             }                                                        
@@ -198,7 +200,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 title : settingsCmp.i18n._("Sites")
                             }],
                             grid : settingsCmp.gridBlockedUrls,
-                            applyAction : function(forceLoad){
+                            applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 var saveList = {
                                     javaClass : "java.util.LinkedList",
@@ -210,9 +212,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     this.getRpcNode().getBlockedUrls(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
-                                        Ung.Util.generateListIds(result.list);
                                         this.gridBlockedUrls.reloadGrid({data:result.list});
                                         this.getSettings().blockedUrls = result;
+                                        if(callback != null) {
+                                            callback();
+                                        }
                                     }.createDelegate(this));
                                 }.createDelegate(settingsCmp), saveList);
                             }                                                        
@@ -245,7 +249,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 title : settingsCmp.i18n._("File Types")
                             }],
                             grid : settingsCmp.gridBlockedExtensions,
-                            applyAction : function(forceLoad){
+                            applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 var saveList = {
                                         javaClass : "java.util.LinkedList",
@@ -257,9 +261,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     this.getRpcNode().getBlockedExtensions(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
-                                        Ung.Util.generateListIds(result.list);
                                         this.gridBlockedExtensions.reloadGrid({data:result.list});
                                         this.getSettings().blockedExtensions = result;
+                                        if(callback != null) {
+                                            callback();
+                                        }
                                     }.createDelegate(this));
                                 }.createDelegate(settingsCmp), saveList);
                             }                                                        
@@ -292,7 +298,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 title : settingsCmp.i18n._("MIME Types")
                             }],
                             grid : settingsCmp.gridBlockedMimeTypes,
-                            applyAction : function(forceLoad){
+                            applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 var saveList = {
                                         javaClass : "java.util.LinkedList",
@@ -304,9 +310,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     this.getRpcNode().getBlockedMimeTypes(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
-                                        Ung.Util.generateListIds(result.list);
                                         this.gridBlockedMimeTypes.reloadGrid({data:result.list});
                                         this.getSettings().blockedMimeTypes = result;
+                                        if(callback != null) {
+                                            callback();
+                                        }
                                     }.createDelegate(this));
                                 }.createDelegate(settingsCmp), saveList);
                             }
@@ -734,7 +742,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 title : settingsCmp.i18n._("Sites")
                             }],
                             grid : settingsCmp.gridPassedUrls,
-                            applyAction : function(forceLoad){
+                            applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 var saveList = {
                                         javaClass : "java.util.LinkedList",
@@ -747,9 +755,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     this.getRpcNode().getPassedUrls(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
-                                        Ung.Util.generateListIds(result.list);
                                         this.gridPassedUrls.reloadGrid({data:result.list});
                                         this.getSettings().passedUrls = result;
+                                        if(callback != null) {
+                                            callback();
+                                        }
                                     }.createDelegate(this));
                                 }.createDelegate(settingsCmp), saveList);
                             }                            
@@ -782,20 +792,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 title : settingsCmp.i18n._("Client IP addresses")
                             }],
                             grid : settingsCmp.gridPassedClients,
-                            saveAction : function()
-                            {
-                                this.commitSettings(this.completeSaveAction.createDelegate(this));
-                            },
-                            completeSaveAction : function()
-                            {
-                                Ext.MessageBox.hide();
-                                this.closeWindow();
-                            },
-                            applyAction : function()
-                            {
-                                this.commitSettings();
-                            },
-                            commitSettings : function(callback){
+                            applyAction : function(callback){
                                 var validateSaveList = settingsCmp.gridPassedClients.getSaveList();
                                 if ( !settingsCmp.validateServer(validateSaveList)) {
                                     return;
@@ -812,7 +809,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     this.getRpcNode().getPassedClients(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
-                                        Ung.Util.generateListIds(result.list);
                                         this.gridPassedClients.reloadGrid({data:result.list});
                                         this.getSettings().passedClients = result;
                                         if(callback != null) {

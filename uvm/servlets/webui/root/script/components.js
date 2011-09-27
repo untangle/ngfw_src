@@ -3161,7 +3161,7 @@ Ung.UpdateWindow = Ext.extend(Ung.Window, {
                 iconCls : 'save-icon',
                 text : i18n._('Save'),
                 handler : function() {
-                    this.saveAction.defer(1, this,[true]);
+                    this.saveAction.defer(1, this);
                 }.createDelegate(this)
             },'-',{
                 name : "Cancel",
@@ -3177,7 +3177,7 @@ Ung.UpdateWindow = Ext.extend(Ung.Window, {
                 iconCls : 'apply-icon',
                 text : i18n._('Apply'),
                 handler : function() {
-                    this.applyAction.defer(1, this,[true]);
+                    this.applyAction.defer(1, this, []);
                 }.createDelegate(this)
             },'-'];
         }
@@ -3189,10 +3189,10 @@ Ung.UpdateWindow = Ext.extend(Ung.Window, {
         Ung.Util.todo();
     },
     saveAction : function(){
-        Ung.Util.todo();    
+        Ung.Util.todo();
     },
     applyAction : function(){
-        Ung.Util.todo();            
+        Ung.Util.todo();
     }
 });
 
@@ -3204,9 +3204,10 @@ Ung.ManageListWindow = Ext.extend(Ung.UpdateWindow, {
         this.items=this.grid;
         Ung.ManageListWindow.superclass.initComponent.call(this);
     },
-    closeWindow : function() {
-        this.grid.changedData = Ext.decode(this.initialChangedData);
-        this.grid.initialLoad();
+    closeWindow : function(skipLoad) {
+        if(!skipLoad) {
+            this.grid.reloadGrid();
+        }
         this.hide();
     },
     isDirty : function() {
@@ -3216,15 +3217,7 @@ Ung.ManageListWindow = Ext.extend(Ung.UpdateWindow, {
         this.hide();
     },
     saveAction : function(){
-        this.applyAction(true);
-        this.closeWindow();        
-    },
-    listeners : {
-        'show' : {
-            fn : function() {
-                this.initialChangedData = Ext.encode(this.grid.changedData);
-            }
-        }
+        this.applyAction(this.hide.createDelegate(this));
     }
 });
 
@@ -3961,7 +3954,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     }
                 }
             });
-            this.getStore().loadData(this.data);
+            this.getStore().reload();
             this.totalRecords=this.data.length;
         }
         if(this.paginated) {
@@ -4180,11 +4173,11 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     },
     reloadGrid : function(options){
         this.clearChangedData();
-        if(options){
-            this.store.loadData(options.data,false);
-        }else{
-            this.store.reload();           
-        }                                             
+        if(options && options.data){
+            Ung.Util.generateListIds(options.data);                
+            this.store.proxy.data = options.data;
+        }
+        this.store.reload();           
     },
     beforeDestroy : function() {
         Ext.each(this.subCmps, Ext.destroy);
