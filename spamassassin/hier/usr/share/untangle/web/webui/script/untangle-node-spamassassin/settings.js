@@ -990,19 +990,26 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             }
             return valid;
         },
+        //apply function 
+        applyAction : function(){
+            this.saveAction(true);
+        },            
         // save function
-        saveAction : function() {
+        saveAction : function(keepWindowOpen) {
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 this.getRpcNode().setSettings(function(result, exception) {
                     Ext.MessageBox.hide();
                     if(Ung.Util.handleException(exception)) return;
                     // exit settings screen
-                    this.closeWindow();
+                    if(!keepWindowOpen) {
+                        this.closeWindow();
+                    } else {
+                        this.initialNodeSettings = Ung.Util.clone(this.getNodeSettings());
+                    }         
                 }.createDelegate(this), this.getNodeSettings());
             }
         },
-
         isDirty : function() {
             return !Ung.Util.equals(this.getNodeSettings(), this.initialNodeSettings);
         }
