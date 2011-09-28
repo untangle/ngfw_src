@@ -154,22 +154,20 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             grid : settingsCmp.gridCategories,
                             applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = {
-                                    javaClass : "java.util.LinkedList",
-                                    list : settingsCmp.gridCategories.getFullSaveList()
-                                };
-                                settingsCmp.getRpcNode().setCategories(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)) return;
-                                    this.getRpcNode().getCategories(function(result, exception) {
-                                        Ext.MessageBox.hide();
+                                settingsCmp.gridCategories.getGridSaveList(function(saveList) {
+                                    this.getRpcNode().setCategories(function(result, exception) {
                                         if(Ung.Util.handleException(exception)) return;
-                                        this.gridCategories.reloadGrid({data:result.list});
-                                        this.getSettings().categories = result;
-                                        if(callback != null) {
-                                            callback();
-                                        }
-                                    }.createDelegate(this));
-                                }.createDelegate(settingsCmp), saveList);
+                                        this.getRpcNode().getCategories(function(result, exception) {
+                                            Ext.MessageBox.hide();
+                                            if(Ung.Util.handleException(exception)) return;
+                                            this.gridCategories.reloadGrid({data:result.list});
+                                            this.getSettings().categories = result;
+                                            if(callback != null) {
+                                                callback();
+                                            }
+                                        }.createDelegate(this));
+                                    }.createDelegate(this), saveList);
+                                }.createDelegate(settingsCmp));
                             }                                                        
                         });
                     }
@@ -202,23 +200,21 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             grid : settingsCmp.gridBlockedUrls,
                             applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = {
-                                    javaClass : "java.util.LinkedList",
-                                    list : settingsCmp.gridBlockedUrls.getFullSaveList()
-                                };
-                                settingsCmp.alterUrls(saveList);
-                                settingsCmp.getRpcNode().setBlockedUrls(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)) return;
-                                    this.getRpcNode().getBlockedUrls(function(result, exception) {
-                                        Ext.MessageBox.hide();
+                                settingsCmp.gridBlockedUrls.getGridSaveList(function(saveList) {
+                                    this.alterUrls(saveList);
+                                    this.getRpcNode().setBlockedUrls(function(result, exception) {
                                         if(Ung.Util.handleException(exception)) return;
-                                        this.gridBlockedUrls.reloadGrid({data:result.list});
-                                        this.getSettings().blockedUrls = result;
-                                        if(callback != null) {
-                                            callback();
-                                        }
-                                    }.createDelegate(this));
-                                }.createDelegate(settingsCmp), saveList);
+                                        this.getRpcNode().getBlockedUrls(function(result, exception) {
+                                            Ext.MessageBox.hide();
+                                            if(Ung.Util.handleException(exception)) return;
+                                            this.gridBlockedUrls.reloadGrid({data:result.list});
+                                            this.getSettings().blockedUrls = result;
+                                            if(callback != null) {
+                                                callback();
+                                            }
+                                        }.createDelegate(this));
+                                    }.createDelegate(this), saveList);
+                                }.createDelegate(settingsCmp));
                             }                                                        
                         });
                     }
@@ -251,23 +247,21 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             grid : settingsCmp.gridBlockedExtensions,
                             applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = {
-                                        javaClass : "java.util.LinkedList",
-                                        list : settingsCmp.gridBlockedExtensions.getFullSaveList()
-                                    };
-                                settingsCmp.getRpcNode().setBlockedExtensions(function(result, exception) {
-                                    Ext.MessageBox.hide();
-                                    if(Ung.Util.handleException(exception)) return;
-                                    this.getRpcNode().getBlockedExtensions(function(result, exception) {
+                                settingsCmp.gridBlockedExtensions.getGridSaveList(function(saveList) {
+                                    this.getRpcNode().setBlockedExtensions(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
-                                        this.gridBlockedExtensions.reloadGrid({data:result.list});
-                                        this.getSettings().blockedExtensions = result;
-                                        if(callback != null) {
-                                            callback();
-                                        }
-                                    }.createDelegate(this));
-                                }.createDelegate(settingsCmp), saveList);
+                                        this.getRpcNode().getBlockedExtensions(function(result, exception) {
+                                            Ext.MessageBox.hide();
+                                            if(Ung.Util.handleException(exception)) return;
+                                            this.gridBlockedExtensions.reloadGrid({data:result.list});
+                                            this.getSettings().blockedExtensions = result;
+                                            if(callback != null) {
+                                                callback();
+                                            }
+                                        }.createDelegate(this));
+                                    }.createDelegate(this), saveList);
+                                }.createDelegate(settingsCmp));
                             }                                                        
                         });
                     }
@@ -300,23 +294,21 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             grid : settingsCmp.gridBlockedMimeTypes,
                             applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = {
-                                        javaClass : "java.util.LinkedList",
-                                        list : settingsCmp.gridBlockedMimeTypes.getFullSaveList()
-                                    };
-                                settingsCmp.getRpcNode().setBlockedMimeTypes(function(result, exception) {
-                                    Ext.MessageBox.hide();
-                                    if(Ung.Util.handleException(exception)) return;
-                                    this.getRpcNode().getBlockedMimeTypes(function(result, exception) {
+                                settingsCmp.gridBlockedMimeTypes.getGridSaveList(function(saveList) {
+                                    this.getRpcNode().setBlockedMimeTypes(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
-                                        this.gridBlockedMimeTypes.reloadGrid({data:result.list});
-                                        this.getSettings().blockedMimeTypes = result;
-                                        if(callback != null) {
-                                            callback();
-                                        }
-                                    }.createDelegate(this));
-                                }.createDelegate(settingsCmp), saveList);
+                                        this.getRpcNode().getBlockedMimeTypes(function(result, exception) {
+                                            Ext.MessageBox.hide();
+                                            if(Ung.Util.handleException(exception)) return;
+                                            this.gridBlockedMimeTypes.reloadGrid({data:result.list});
+                                            this.getSettings().blockedMimeTypes = result;
+                                            if(callback != null) {
+                                                callback();
+                                            }
+                                        }.createDelegate(this));
+                                    }.createDelegate(this), saveList);
+                                }.createDelegate(settingsCmp));
                             }
                         });
                     }
@@ -357,7 +349,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 data: this.getSettings().categories.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
-                paginated : false,
                 columns : [{
                     id : 'name',
                     header : this.i18n._("category"),
@@ -534,7 +525,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 data : this.getSettings().blockedExtensions.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
-                //paginated: false,
                 columns : [{
                     id : 'string',
                     header : this.i18n._("file type"),
@@ -620,7 +610,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 title : this.i18n._("MIME Types"),
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
-                //paginated: false,
                 data : this.getSettings().blockedMimeTypes.list,
                 columns : [{
                     id : 'string',
@@ -744,24 +733,22 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                             grid : settingsCmp.gridPassedUrls,
                             applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = {
-                                        javaClass : "java.util.LinkedList",
-                                        list : settingsCmp.gridPassedUrls.getFullSaveList()
-                                    };
-                                settingsCmp.alterUrls(saveList);
-                                settingsCmp.getRpcNode().setPassedUrls(function(result, exception) {
-                                    Ext.MessageBox.hide();
-                                    if(Ung.Util.handleException(exception)) return;
-                                    this.getRpcNode().getPassedUrls(function(result, exception) {
+                                settingsCmp.gridPassedUrls.getGridSaveList(function(saveList) {
+                                    this.alterUrls(saveList);
+                                    this.getRpcNode().setPassedUrls(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
-                                        this.gridPassedUrls.reloadGrid({data:result.list});
-                                        this.getSettings().passedUrls = result;
-                                        if(callback != null) {
-                                            callback();
-                                        }
-                                    }.createDelegate(this));
-                                }.createDelegate(settingsCmp), saveList);
+                                        this.getRpcNode().getPassedUrls(function(result, exception) {
+                                            Ext.MessageBox.hide();
+                                            if(Ung.Util.handleException(exception)) return;
+                                            this.gridPassedUrls.reloadGrid({data:result.list});
+                                            this.getSettings().passedUrls = result;
+                                            if(callback != null) {
+                                                callback();
+                                            }
+                                        }.createDelegate(this));
+                                    }.createDelegate(this), saveList);
+                                }.createDelegate(settingsCmp));
                             }                            
                         });
                     }
@@ -799,23 +786,21 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                 }
                                 
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = {
-                                        javaClass : "java.util.LinkedList",
-                                        list : settingsCmp.gridPassedClients.getFullSaveList()
-                                    };
-                                settingsCmp.getRpcNode().setPassedClients(function(result, exception) {
-                                    Ext.MessageBox.hide();
-                                    if(Ung.Util.handleException(exception)) return;
-                                    this.getRpcNode().getPassedClients(function(result, exception) {
+                                settingsCmp.gridPassedClients.getGridSaveList(function(saveList) {
+                                    this.getRpcNode().setPassedClients(function(result, exception) {
                                         Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
-                                        this.gridPassedClients.reloadGrid({data:result.list});
-                                        this.getSettings().passedClients = result;
-                                        if(callback != null) {
-                                            callback();
-                                        }
-                                    }.createDelegate(this));
-                                }.createDelegate(settingsCmp), saveList);
+                                        this.getRpcNode().getPassedClients(function(result, exception) {
+                                            Ext.MessageBox.hide();
+                                            if(Ung.Util.handleException(exception)) return;
+                                            this.gridPassedClients.reloadGrid({data:result.list});
+                                            this.getSettings().passedClients = result;
+                                            if(callback != null) {
+                                                callback();
+                                            }
+                                        }.createDelegate(this));
+                                    }.createDelegate(this), saveList);
+                                }.createDelegate(settingsCmp));
                             }                                                 
                         });
                     }
@@ -866,7 +851,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 data: this.getSettings().passedUrls.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
-                paginated: false,
                 columns : [{
                     id : 'string',
                     header : this.i18n._("site"),
@@ -932,7 +916,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 data: this.getSettings().passedClients.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
-                paginated: false,
                 columns : [{
                     id : 'string',
                     header : this.i18n._("IP address/range"),

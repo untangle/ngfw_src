@@ -4176,6 +4176,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
         if(options && options.data){
             Ung.Util.generateListIds(options.data);                
             this.store.proxy.data = options.data;
+            this.setTotalRecords(this.store.proxy.data.length);
         }
         this.store.reload();           
     },
@@ -4479,6 +4480,54 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
 
         return list;
     },
+    getGridSaveList : function(handler, skipRepagination) {
+        if(this.isPaginated()) {
+            var oldSettings=null;
+            if(!skipRepagination) {
+                oldSettings = {
+                    changedData : Ext.decode(Ext.encode(this.changedData)),
+                    minPaginateCount: this.minPaginateCount,
+                    pageStart : this.getPageStart()
+                };
+            };
+            //to remove bottom pagination bar
+            this.minPaginateCount = Ung.Util.maxRowCount;
+            if(skipRepagination) {
+                this.setTotalRecords(this.totalRecords);
+            }
+    
+            //make all cahnged data apear in first page
+            for (id in this.changedData) {
+                var cd = this.changedData[id];
+                cd.pageStart=0;
+            }
+            //reload grid
+            this.loadPage(0, function() {
+                var result=this.getFullSaveList();
+                if(!skipRepagination) {
+                    this.changedData = oldSettings.changedData;
+                    this.minPaginateCount = oldSettings.minPaginateCount;
+                    this.loadPage(oldSettings.pageStart, function() {
+                        handler({
+                            javaClass : "java.util.LinkedList",
+                            list : result
+                        });
+                    }.createDelegate(this), this);
+                } else {
+                    handler({
+                        javaClass : "java.util.LinkedList",
+                        list : result
+                    });
+                };
+            }.createDelegate(this), this);
+        } else {
+            handler({
+                javaClass : "java.util.LinkedList",
+                list : this.getFullSaveList()
+            });
+        }
+    },
+
     getDeletedList : function() {
         var list=[];
         var records=this.store.getRange();
