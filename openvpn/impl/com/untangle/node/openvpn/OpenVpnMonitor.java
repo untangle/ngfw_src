@@ -60,8 +60,8 @@ class OpenVpnMonitor implements Runnable
     private static final int START_INDEX   = 7;
     private static final int TOTAL_INDEX   = 8;
 
-    private static final String ACTIVE_SESSIONS_REPO_NAME = I18nUtil.marktr("Active Sessions");
-    private static final String ALL_SESSIONS_REPO_NAME = I18nUtil.marktr("All Sessions");
+    private static final String ACTIVE_SESSIONS_REPO_NAME = I18nUtil.marktr("Active Clients");
+    private static final String ALL_SESSIONS_REPO_NAME = I18nUtil.marktr("All Clients");
 
     private final EventLogger<ClientConnectEvent> clientConnectLogger;
     private final EventLogger<VpnStatisticEvent> vpnStatsDistLogger;
@@ -98,7 +98,7 @@ class OpenVpnMonitor implements Runnable
         //Add repositories to make UI log reading from cache happen
         clientConnectLogger.addEventRepository(new AllEventsCache(clientConnectLogger));//For "all" events
         clientConnectLogger.addEventRepository(new ActiveEventCache());//For "open" events
-        clientConnectLogger.addSimpleEventFilter(new ClientConnectEventAllFilter());//For "closed" events
+        clientConnectLogger.addSimpleEventFilter(new ClientConnectEventClosedFilter());//For "closed" events
 
         this.localContext = LocalUvmContextFactory.context();
         this.node = node;
