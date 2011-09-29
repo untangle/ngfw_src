@@ -14,15 +14,14 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             Ung.Util.generateListIds(this.getSettings().cookies.list);
             Ung.Util.generateListIds(this.getSettings().subnets.list);
             Ung.Util.generateListIds(this.getSettings().passedUrls.list);
-
-            // keep initial  settings
-            this.initialSettings = Ung.Util.clone(this.getSettings());
-
             this.buildBlockLists();
             this.buildPassList();
             this.buildEventLog();
             // builds a tab panel with the 3 panels
             this.buildTabPanel([this.panelBlockLists, this.gridPassList, this.gridEventLog]);
+
+            // keep initial  settings
+            this.initialSettings = Ung.Util.clone(this.getSettings());
             Ung.Spyware.superclass.initComponent.call(this);
         },
         // Block lists panel
@@ -183,23 +182,21 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             grid : settingsCmp.gridCookiesList,
                             applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = {
-                                    javaClass : "java.util.LinkedList",
-                                    list : settingsCmp.gridCookiesList.getFullSaveList()
-                                };
-                                settingsCmp.alterUrls(saveList.list);
-                                settingsCmp.getRpcNode().setCookies(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)) return;
-                                    this.getRpcNode().getCookies(function(result, exception) {
-                                        Ext.MessageBox.hide();
+                                settingsCmp.gridCookiesList.getGridSaveList(function(saveList) {
+                                    this.alterUrls(saveList.list);
+                                    this.getRpcNode().setCookies(function(result, exception) {
                                         if(Ung.Util.handleException(exception)) return;
-                                        this.gridCookiesList.reloadGrid({data:result.list});
-                                        this.getSettings().cookies = result;
-                                        if(callback != null) {
-                                            callback();
-                                        }
-                                    }.createDelegate(this));
-                                }.createDelegate(settingsCmp), saveList);
+                                        this.getRpcNode().getCookies(function(result, exception) {
+                                            Ext.MessageBox.hide();
+                                            if(Ung.Util.handleException(exception)) return;
+                                            this.gridCookiesList.reloadGrid({data:result.list});
+                                            this.getSettings().cookies = result;
+                                            if(callback != null) {
+                                                callback();
+                                            }
+                                        }.createDelegate(this));
+                                    }.createDelegate(this), saveList);
+                                }.createDelegate(settingsCmp));
                             }    
                         });
                     }
@@ -237,23 +234,21 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             grid : settingsCmp.gridSubnetList,
                             applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = {
-                                    javaClass : "java.util.LinkedList",
-                                    list : settingsCmp.gridSubnetList.getFullSaveList()
-                                };
-                                settingsCmp.alterUrls(saveList);
-                                settingsCmp.getRpcNode().setSubnets(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)) return;
-                                    this.getRpcNode().getSubnets(function(result, exception) {
-                                        Ext.MessageBox.hide();
+                                settingsCmp.gridSubnetList.getGridSaveList(function(saveList) {
+                                    this.alterUrls(saveList);
+                                    this.getRpcNode().setSubnets(function(result, exception) {
                                         if(Ung.Util.handleException(exception)) return;
-                                        this.gridSubnetList.reloadGrid({data:result.list});
-                                        this.getSettings().subnets = result;
-                                        if(callback != null) {
-                                            callback();
-                                        }
-                                    }.createDelegate(this));
-                                }.createDelegate(settingsCmp), saveList);
+                                        this.getRpcNode().getSubnets(function(result, exception) {
+                                            Ext.MessageBox.hide();
+                                            if(Ung.Util.handleException(exception)) return;
+                                            this.gridSubnetList.reloadGrid({data:result.list});
+                                            this.getSettings().subnets = result;
+                                            if(callback != null) {
+                                                callback();
+                                            }
+                                        }.createDelegate(this));
+                                    }.createDelegate(this), saveList);
+                                }.createDelegate(settingsCmp));
                             }
                         });
                     }
@@ -469,7 +464,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     name : 'timeStamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'uid',
+                    name : 'uid'
                 },
                 // FIXME: the 3 fields below (sw*) can be null
                 // depending on what dropdown valu has been
@@ -514,19 +509,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             });
         },
 
-        // validation functions
-        validateClient : function() {
-            // no need for validation here...just alter the URLs
-            if (this.gridPassList) {
-                var saveList = {
-                    javaClass : "java.util.LinkedList",
-                    list : this.gridPassList.getFullSaveList()
-                };
-                this.getSettings().passedUrls = saveList;
-                this.alterUrls(saveList.list);
-            }
-            return true;
-        },
         // private method
         alterUrls : function(list) {
             if (list != null) {
@@ -613,30 +595,33 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             // validate first
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.getRpcNode().setSettings(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    // exit settings screen
-                    if(keepWindowOpen!== true){
-                        Ext.MessageBox.hide();                    
-                        this.closeWindow();
-                    }else{
-                        //refresh the settings
-                        this.getSettings(true);
-                        Ung.Util.generateListIds(this.getSettings().cookies.list);
-                        Ung.Util.generateListIds(this.getSettings().subnets.list);
-                        Ung.Util.generateListIds(this.getSettings().passedUrls.list);
-
-                        // keep initial  settings
-                        this.initialSettings = Ung.Util.clone(this.getSettings());
-                        this.gridPassList.reloadGrid({data:this.getSettings().passedUrls.list});
-                        Ext.MessageBox.hide();
-                    }
-                }.createDelegate(this), this.getSettings());
+                this.gridPassList.getGridSaveList(function(saveList) {
+                    this.alterUrls(saveList.list);
+                    this.getSettings().passedUrls = saveList;
+                    this.getRpcNode().setSettings(function(result, exception) {
+                        if(Ung.Util.handleException(exception)) return;
+                        // exit settings screen
+                        if(keepWindowOpen!== true){
+                            Ext.MessageBox.hide();                    
+                            this.closeWindow();
+                        }else{
+                            //refresh the settings
+                            this.getSettings(true);
+                            Ung.Util.generateListIds(this.getSettings().cookies.list);
+                            Ung.Util.generateListIds(this.getSettings().subnets.list);
+                            Ung.Util.generateListIds(this.getSettings().passedUrls.list);
+    
+                            this.gridPassList.reloadGrid({data:this.getSettings().passedUrls.list});
+                            // keep initial  settings
+                            this.initialSettings = Ung.Util.clone(this.getSettings());
+                            Ext.MessageBox.hide();
+                        }
+                    }.createDelegate(this), this.getSettings());
+                }.createDelegate(this));                  
             }
         },
         isDirty : function() {
-            return !Ung.Util.equals(this.getSettings(), this.initialSettings)
-                || this.gridPassList.isDirty();
+            return !Ung.Util.equals(this.getSettings(), this.initialSettings) || this.gridPassList.isDirty();
                 
         }
     });

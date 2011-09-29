@@ -4407,7 +4407,9 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                 this.getBottomToolbar().hide();
                 this.getBottomToolbar().disable();
             }
-            this.getBottomToolbar().syncSize();
+            if(this.rendered) {
+                this.getBottomToolbar().syncSize();
+            }
         }
     },
     findFirstChangedDataByFieldValue : function(field, value) {

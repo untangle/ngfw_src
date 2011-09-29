@@ -14,10 +14,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             Ung.Util.generateListIds(this.getSettings().blockedMimeTypes.list);
             Ung.Util.generateListIds(this.getSettings().passedUrls.list);
             Ung.Util.generateListIds(this.getSettings().passedClients.list);
-
-            // keep initial base settings
-            this.initialSettings = Ung.Util.clone(this.getSettings());
-            
             this.buildBlockLists();
             this.buildPassLists();
             this.buildEventLog();
@@ -25,6 +21,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelBlockLists, this.panelPassLists, 
                 this.gridEventLog, this.gridUnblockEventLog]);
+ 
+            // keep initial base settings
+            this.initialSettings = Ung.Util.clone(this.getSettings());
+            
             Ung.BaseWebFilter.superclass.initComponent.call(this);
         },
         // Block Lists Panel
@@ -162,6 +162,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                             if(Ung.Util.handleException(exception)) return;
                                             this.gridCategories.reloadGrid({data:result.list});
                                             this.getSettings().categories = result;
+                                            this.initialSettings.categories = result;
                                             if(callback != null) {
                                                 callback();
                                             }
@@ -209,6 +210,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                             if(Ung.Util.handleException(exception)) return;
                                             this.gridBlockedUrls.reloadGrid({data:result.list});
                                             this.getSettings().blockedUrls = result;
+                                            this.initialSettings.blockedUrls = result;
                                             if(callback != null) {
                                                 callback();
                                             }
@@ -256,6 +258,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                             if(Ung.Util.handleException(exception)) return;
                                             this.gridBlockedExtensions.reloadGrid({data:result.list});
                                             this.getSettings().blockedExtensions = result;
+                                            this.initialSettings.blockedExtensions = result;
                                             if(callback != null) {
                                                 callback();
                                             }
@@ -303,6 +306,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                             if(Ung.Util.handleException(exception)) return;
                                             this.gridBlockedMimeTypes.reloadGrid({data:result.list});
                                             this.getSettings().blockedMimeTypes = result;
+                                            this.initialSettings.blockedMimeTypes = result;
                                             if(callback != null) {
                                                 callback();
                                             }
@@ -743,6 +747,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                             if(Ung.Util.handleException(exception)) return;
                                             this.gridPassedUrls.reloadGrid({data:result.list});
                                             this.getSettings().passedUrls = result;
+                                            this.initialSettings.passedUrls = result;
                                             if(callback != null) {
                                                 callback();
                                             }
@@ -795,6 +800,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                             if(Ung.Util.handleException(exception)) return;
                                             this.gridPassedClients.reloadGrid({data:result.list});
                                             this.getSettings().passedClients = result;
+                                            this.initialSettings.passedClients = result;
                                             if(callback != null) {
                                                 callback();
                                             }
@@ -1208,36 +1214,30 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             }
             return true;
         },
-        validate : function()
-        {
-            return true;
-        },
-        saveAction : function()
-        {
-            this.commitSettings(this.completeSaveAction.createDelegate(this));
-        },
-        completeSaveAction : function()
-        {
-            Ext.MessageBox.hide();
-            // exit settings screen
-            this.closeWindow();
-        },
+        applyAction : function(){
+            this.saveAction(true);
+        },        
         // save function
-        commitSettings : function(callback)
-        {
-            if (!this.validate()) {
-                return;
+        saveAction : function(keepWindowOpen) {
+            // validate first
+            if (this.validate()) {
+                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                this.getRpcNode().setSettings(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    // exit settings screen
+                    if(!keepWindowOpen){
+                        Ext.MessageBox.hide();                    
+                        this.closeWindow();
+                    }else{
+                        //refresh the settings
+                        this.getSettings(true);
+                        // keep initial  settings
+                        this.initialSettings = Ung.Util.clone(this.getSettings());
+                        Ext.MessageBox.hide();
+                    }
+                }.createDelegate(this), this.getSettings());
             }
-            
-            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-            this.getRpcNode().setSettings(function(result, exception) {
-                if(Ung.Util.handleException(exception)) {
-                    return;
-                }
-                
-                callback();
-            }.createDelegate(this), this.getSettings());
-        },
+        },        
         isDirty : function() {
             return !Ung.Util.equals(this.getSettings(), this.initialSettings);
         }
