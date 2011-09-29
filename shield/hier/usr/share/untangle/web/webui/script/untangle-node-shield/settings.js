@@ -79,7 +79,6 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 // the column is autoexpanded if the grid width permits
                 autoExpandColumn : 'description',
                 recordJavaClass : "com.untangle.node.shield.ShieldRule",
-                paginated : false,
                 data:this.getSettings().rules.list,
 
                 // the list of fields
@@ -274,30 +273,25 @@ if (!Ung.hasResource["Ung.Shield"]) {
         // save function
         saveAction : function(keepWindowOpen) {
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-
-            if(this.gridExceptions) {
-                this.getSettings().rules.list = this.gridExceptions.getFullSaveList();
-            }
-            
-            this.getRpcNode().setSettings(function(result, exception) {
-                Ext.MessageBox.hide();
-                if(Ung.Util.handleException(exception)) return;
-                // exit settings screen
-                if(!keepWindowOpen) {
-                    Ext.MessageBox.hide();                    
-                    this.closeWindow();
-                } else {
-                //refresh the settings
+            this.gridExceptions.getGridSaveList(function(saveList) {
+                this.getSettings().rules = saveList;
+                this.getRpcNode().setSettings(function(result, exception) {
                     Ext.MessageBox.hide();
-                    //refresh the settings
-                    this.getRpcNode().getSettings(function(result,exception) {
-                        Ext.MessageBox.hide();
-                        if(Ung.Util.handleException(exception)) return;
-                        this.gridExceptions.reloadGrid({data:result.rules.list});                        
-                    }.createDelegate(this));                        
-                }
-                
-            }.createDelegate(this), this.getSettings());
+                    if(Ung.Util.handleException(exception)) return;
+                    // exit settings screen
+                    if(!keepWindowOpen) {
+                        Ext.MessageBox.hide();                    
+                        this.closeWindow();
+                    } else {
+                        //refresh the settings
+                        this.getRpcNode().getSettings(function(result,exception) {
+                            Ext.MessageBox.hide();
+                            if(Ung.Util.handleException(exception)) return;
+                            this.gridExceptions.reloadGrid({data:result.rules.list});                        
+                        }.createDelegate(this));                        
+                    }
+                }.createDelegate(this), this.getSettings());
+            }.createDelegate(this));                        
         },
         isDirty : function() {
             return this.gridExceptions.isDirty();

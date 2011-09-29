@@ -241,6 +241,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelRules, this.gridEventLog]);
+            
             Ung.Firewall.superclass.initComponent.call(this);
         },
         // Rules Panel
@@ -509,26 +510,23 @@ if (!Ung.hasResource["Ung.Firewall"]) {
         // save function
         saveAction : function(keepWindowOpen) {
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-            if(this.gridRules) {
-                this.getSettings().rules.list = this.gridRules.getFullSaveList();
-            }
-            this.getRpcNode().setSettings(function(result, exception) {
-                Ext.MessageBox.hide();
-                if(Ung.Util.handleException(exception)) return;
-                // exit settings screen
-                if(!keepWindowOpen) {
-                    Ext.MessageBox.hide();                    
-                    this.closeWindow();
-                } else {
-                    //refresh the settings
-                    Ext.MessageBox.hide();
-                    //refresh the settings
-                    this.getRpcNode().getSettings(function(result,exception){
-                        Ext.MessageBox.hide();
-                        this.gridRules.reloadGrid({data:result.rules.list});
-                    }.createDelegate(this));                       
-                }
-            }.createDelegate(this), this.getSettings());
+            this.gridRules.getGridSaveList(function(saveList) {
+                this.getSettings().rules = saveList;
+                this.getRpcNode().setSettings(function(result, exception) {
+                    if(Ung.Util.handleException(exception)) return;
+                    // exit settings screen
+                    if(!keepWindowOpen) {
+                        Ext.MessageBox.hide();                    
+                        this.closeWindow();
+                    } else {
+                        //refresh the settings
+                        this.getRpcNode().getSettings(function(result,exception){
+                            Ext.MessageBox.hide();
+                            this.gridRules.reloadGrid({data:result.rules.list});
+                        }.createDelegate(this));                       
+                    }
+                }.createDelegate(this), this.getSettings());
+            }.createDelegate(this));                       
         },
         isDirty : function() {
             return this.gridRules.isDirty();
