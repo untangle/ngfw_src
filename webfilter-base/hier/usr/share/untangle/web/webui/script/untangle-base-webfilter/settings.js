@@ -1031,14 +1031,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("flagged"),
-                    width : 60,
-                    dataIndex : 'flagged'
-                }, {
-                    header : this.i18n._("blocked"),
-                    width : 60,
-                    dataIndex : 'blocked'
-                }, {
                     header : this.i18n._("client"),
                     width : 100,
                     sortable : true,
@@ -1060,6 +1052,14 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     width : 300,
                     sortable : true,
                     dataIndex : 'uri'
+                }, {
+                    header : this.i18n._("blocked"),
+                    width : 60,
+                    dataIndex : 'blocked'
+                }, {
+                    header : this.i18n._("flagged"),
+                    width : 60,
+                    dataIndex : 'flagged'
                 }, {
                     header : this.i18n._("reason for action"),
                     width : 150,
