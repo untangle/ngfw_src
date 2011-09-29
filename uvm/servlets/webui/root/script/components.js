@@ -997,7 +997,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 this.download.completePackages++;
                 var currentPercentComplete = parseFloat(this.download.completePackages) / parseFloat(this.download.summary.size > 0 ? this.download.summary.size : 1);
                 var progressIndex = parseFloat(0.99 * currentPercentComplete);
-                progressString = this.stylizeProgressText(i18n._("Package") + String.format(" {0}/{1} ",this.download.completePackages, this.download.summary.count) + i18n._("done"));
+                progressString = this.stylizeProgressText(i18n._("DL") + String.format(" {0}/{1} ",this.download.completePackages, this.download.summary.count) + i18n._("done"));
                 //the progress bar works better without these updates
                 //this.progressBar.reset();
                 //this.progressBar.updateProgress(progressIndex, progressString);
@@ -1009,7 +1009,7 @@ Ung.AppItem = Ext.extend(Ext.Component, {
                 this.download.completeSize=options.bytesDownloaded;
                 var currentPercentComplete = parseFloat(options.bytesDownloaded) / parseFloat(options.size != 0 ? options.size : 1);
                 var progressIndex = parseFloat(0.99 * currentPercentComplete);
-                progressString = this.stylizeProgressText(i18n._("Package") + String.format(" {0}/{1} @ {2} KB/s", this.download.completePackages, this.download.summary.count, options.speed));
+                progressString = this.stylizeProgressText(i18n._("DL") + String.format(" {0}/{1} @ {2} KB/s", this.download.completePackages, this.download.summary.count, options.speed));
                 this.progressBar.reset();
                 this.progressBar.updateProgress(progressIndex, progressString);
             }
