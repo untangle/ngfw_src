@@ -367,11 +367,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             data : []
         });
 
-        var refreshButton = new Ext.Button( {
-            text : i18n._( "Refresh" ),
-            handler : this.refreshInterfaces.createDelegate( this ),
-            iconCls : 'icon-autorefresh'
-        });
+        this.enableAutoRefresh = true;
 
         this.interfaceGrid = new Ext.grid.GridPanel({
             store : this.interfaceStore,
@@ -387,7 +383,6 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
             ddText : '',
             height : 300,
             width : 555,
-            tbar : [ refreshButton ],
             viewConfig : {
                 forceFit : true
             },
@@ -396,7 +391,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                 dataIndex : 'name',
                 sortable : false,
                 fixed : true,
-                width : 100,
+                width : 80,
                 renderer : function( value ) {
                     return i18n._( value );
                 }
@@ -435,7 +430,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         panelText += "<br/>";
 
         panelText += "<b>" + i18n._("Step 1: ") + "</b>";
-        panelText += i18n._( "Plug an active cable into one network card and hit <i>Refresh</i> to determine which network card it is.");
+        panelText += i18n._( "Plug an active cable into one network card to determine which network card it is.");
         panelText += "<br/>";
         
         panelText += "<b>" + i18n._("Step 2: ") + "</b>";
@@ -472,6 +467,9 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                 }
                 this.isDragAndDropInitialized = true;
 
+                this.enableAutoRefresh = true;
+                this.autoRefreshInterfaces();
+                
                 complete();
             }.createDelegate( this ),
 
@@ -577,6 +575,9 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
 
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
 
+        /* disable auto refresh */
+        this.enableAutoRefresh = false;
+        
         /* do this before the next step */
         rpc.setup.refreshNetworkConfig();
     },
@@ -613,10 +614,27 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
     refreshInterfaces : function()
     {
         Ext.MessageBox.wait( i18n._( "Refreshing Network Interfaces" ), i18n._( "Please wait" ));
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.arRefreshInterfaces.createDelegate( this ));
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.refreshInterfaces.createDelegate( this ));
     },
 
-    arRefreshInterfaces : function()
+    autoRefreshInterfacesCallback : function( result, exception ) {
+        if(exception != null) {
+            Ext.MessageBox.alert(exception);
+            return;
+        }
+
+        if (this.enableAutoRefresh) {
+            this.autoRefreshInterfaces.defer(3000,this);
+            this.completeRefreshInterfaces( result, exception );
+        }
+    },
+    
+    autoRefreshInterfaces : function() {
+        rpc.networkManager.updateLinkStatus();
+        rpc.networkManager.getNetworkConfiguration( this.autoRefreshInterfacesCallback.createDelegate( this ) );
+    },
+    
+    refreshInterfaces : function()
     {
         rpc.networkManager.updateLinkStatus();
         rpc.networkManager.getNetworkConfiguration( this.completeRefreshInterfaces.createDelegate( this ) );
@@ -645,7 +663,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
         if ( interfaceList.length < 2) {
             Ext.MessageBox.alert( i18n._( "Missing interfaces" ), i18n._ ( "Untangle requires two or more network cards. Please reinstall with at least two network cards." ), "" );
             return;
-            }
+        }
         
         var statusHash = {};
         /* XXX This status array is brittle and should be refactored. XXXX */
@@ -1814,7 +1832,7 @@ Ung.Setup = {
         if ( false ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = function() {
-                this.wizard.goToPage( 5 );
+                this.wizard.goToPage( 2 );
             }.createDelegate( this );
             var ss = new Ung.SetupWizard.SettingsSaver( null, debugHandler );
 
