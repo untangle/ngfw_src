@@ -222,9 +222,9 @@ def get_update_info(tablename, default=None):
         curs = conn.cursor()
 
         curs.execute("""\
-SELECT last_update FROM reports.table_updates WHERE tablename = %s
+SELECT last_update + interval '10 millisecond' FROM reports.table_updates WHERE tablename = %s
 """, (tablename,))
-
+        
         row = curs.fetchone()
 
         if row:
@@ -516,5 +516,5 @@ def __get_tablename(table_ddl):
 def date_convert(t):
     try:
         return mx.DateTime.DateTime(t.year,t.month,t.day,t.hour,t.minute,t.second+1e-6*t.microsecond)
-    except:
-        return mx.DateTime.DateTime(t.year,t.month,t.day,t.hour,t.minute,t.second)    
+    except Exception, e:
+        return t
