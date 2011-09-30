@@ -11,16 +11,25 @@ if [ $MEM -gt 4900000 ] ; then
     MAX_VIRTUAL_SIZE=`echo $MEM | awk '{printf int($1 * 1  / 1000) "m"}'`
     GC_SAFETY_FACTOR=10
     GC_MIN_CYCLE=0
+    EVENTS_LONG_SYNC=40 # seconds
+    EVENTS_SHORT_SYNC=5 # seconds
+    REPORTS_INTERVAL=1 #minutes
 elif [ $MEM -gt 3900000 ] ; then
     MAX_HEAP_SIZE=2200m
     MAX_VIRTUAL_SIZE=4400m
     GC_SAFETY_FACTOR=10
     GC_MIN_CYCLE=0
+    EVENTS_LONG_SYNC=50
+    EVENTS_SHORT_SYNC=7
+    REPORTS_INTERVAL=2 #minutes
 elif [ $MEM -gt 2900000 ] ; then
     MAX_HEAP_SIZE=1500m
     MAX_VIRTUAL_SIZE=3000m
     GC_SAFETY_FACTOR=20
     GC_MIN_CYCLE=5
+    EVENTS_LONG_SYNC=60
+    EVENTS_SHORT_SYNC=9
+    REPORTS_INTERVAL=3 #minutes
 elif [ $MEM -gt 1900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=720m
@@ -31,6 +40,9 @@ elif [ $MEM -gt 1900000 ] ; then
     fi
     GC_SAFETY_FACTOR=50
     GC_MIN_CYCLE=10
+    EVENTS_LONG_SYNC=90
+    EVENTS_SHORT_SYNC=12
+    REPORTS_INTERVAL=4 #minutes
 elif [ $MEM -gt 900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=360m
@@ -41,6 +53,9 @@ elif [ $MEM -gt 900000 ] ; then
     fi
     GC_SAFETY_FACTOR=90
     GC_MIN_CYCLE=10
+    EVENTS_LONG_SYNC=110
+    EVENTS_SHORT_SYNC=14
+    REPORTS_INTERVAL=5 #minutes
 else
     if [ $ARCH = 'x86_64' ]; then
         MAX_HEAP_SIZE=260m
@@ -51,9 +66,16 @@ else
     fi
     GC_SAFETY_FACTOR=90
     GC_MIN_CYCLE=10
+    EVENTS_LONG_SYNC=120
+    EVENTS_SHORT_SYNC=15
+    REPORTS_INTERVAL=6 #minutes
 fi
 
+perl -i -pe 's|(?<=\*/)\d+|'${REPORTS_INTERVAL}'|' /etc/cron.d/untangle-reports-incremental
+
 MAX_VIRTUAL_SIZE=$(( ${MAX_VIRTUAL_SIZE/m} * 1000 ))
+EVENTS_SHORT_SYNC=$(( ${EVENTS_SHORT_SYNC} * 1000 ))
+EVENTS_LONG_SYNC=$(( ${EVENTS_LONG_SYNC} * 1000 ))
 
 echo "    Maximum heap size    -> ${MAX_HEAP_SIZE}"
 echo "    Maximum virtual size -> ${MAX_VIRTUAL_SIZE}"
@@ -66,4 +88,6 @@ max_heap_size="$MAX_HEAP_SIZE"
 max_virtual_size="$MAX_VIRTUAL_SIZE"
 gc_safety_factor="$GC_SAFETY_FACTOR"
 gc_min_cycle="$GC_MIN_CYCLE"
+events_long_sync = "$EVENTS_LONG_SYNC"
+events_short_sync = "$EVENTS_SHORT_SYNC"
 EOF

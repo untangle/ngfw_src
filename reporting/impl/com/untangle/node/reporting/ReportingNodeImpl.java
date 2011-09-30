@@ -29,7 +29,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final String REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-reports.py";
-    private static final int    MAX_FLUSH_FREQUENCY = 30*1000; /* 30 seconds */
+    private static final int MAX_FLUSH_FREQUENCY = (int)Integer.getInteger("uvm.event.short_sync"); /* in seconds */
 
     private ReportingSettings settings;
 

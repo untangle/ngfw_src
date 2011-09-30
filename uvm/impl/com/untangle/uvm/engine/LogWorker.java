@@ -48,8 +48,8 @@ class LogWorker implements Runnable
 
     private static final int QUEUE_SIZE = 10000;
     private static final int BATCH_SIZE = QUEUE_SIZE;
-    private static final int LONG_SYNC_TIME = 120000; /* 2 minutes */
-    private static final int SHORT_SYNC_TIME = 15000; /* 15 seconds */
+    private static final int LONG_SYNC_TIME = (int)Integer.getInteger("uvm.events.long_sync");
+    private static final int SHORT_SYNC_TIME = (int)Integer.getInteger("uvm.events.short_sync");
     private static int RUNTIME_SYNC_TIME;
     private static boolean forceFlush = false;
     
