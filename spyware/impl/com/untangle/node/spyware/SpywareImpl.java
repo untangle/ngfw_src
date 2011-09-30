@@ -1,6 +1,3 @@
-/**
- * $Id$
- */
 package com.untangle.node.spyware;
 
 import java.io.IOException;
@@ -77,7 +74,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
     private final TokenAdaptor tokenAdaptor = new TokenAdaptor(this, factory);
     private final SpywareEventHandler streamHandler = new SpywareEventHandler(this);
 
-    private final EventLogger<SpywareEvent> eventLogger;
+    private final EventLogger<SpywareEvent> eventCookieLogger;
+    private final EventLogger<SpywareEvent> eventBlacklistLogger;
+    private final EventLogger<SpywareEvent> eventSuspiciousLogger;
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[] {
         new SoloPipeSpec("spyware-http", this, tokenAdaptor,
@@ -108,15 +107,17 @@ public class SpywareImpl extends AbstractNode implements Spyware
         replacementGenerator = new SpywareReplacementGenerator(getNodeId());
 
         NodeContext nodeContext = getNodeContext();
-        eventLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
+        eventCookieLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
+        eventBlacklistLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
+        eventSuspiciousLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
         statisticManager = new SpywareStatisticManager(nodeContext);
 
-        SimpleEventFilter ef = new SpywareAllFilter();
-        eventLogger.addSimpleEventFilter(ef);
+        SimpleEventFilter ef = new SpywareSuspiciousFilter();
+        eventSuspiciousLogger.addSimpleEventFilter(ef);
         ef = new SpywareBlacklistFilter();
-        eventLogger.addSimpleEventFilter(ef);
+        eventBlacklistLogger.addSimpleEventFilter(ef);
         ef = new SpywareCookieFilter();
-        eventLogger.addSimpleEventFilter(ef);
+        eventCookieLogger.addSimpleEventFilter(ef);
 
         MessageManager lmm = LocalUvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
@@ -238,9 +239,17 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
     }
 
-    public EventManager<SpywareEvent> getEventManager()
+    public EventManager<SpywareEvent> getEventCookieManager()
     {
-        return eventLogger;
+        return eventCookieLogger;
+    }
+    public EventManager<SpywareEvent> getEventBlacklistManager()
+    {
+        return eventBlacklistLogger;
+    }
+    public EventManager<SpywareEvent> getEventSuspiciousManager()
+    {
+        return eventSuspiciousLogger;
     }
 
     public Date getLastSignatureUpdate()
@@ -495,7 +504,16 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     void log(SpywareEvent se)
     {
-        eventLogger.log(se);
+        String type = se.getType();
+
+        if (type == "Access")
+            eventSuspiciousLogger.log(se);
+        else if (type == "Blacklist")
+            eventBlacklistLogger.log(se);
+        else if (type == "Cookie")
+            eventCookieLogger.log(se);
+        else
+            logger.error("Type of spyware event not handled: " + type);
     }
 
     // private methods ---------------------------------------------------------

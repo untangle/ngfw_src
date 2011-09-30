@@ -8,7 +8,9 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         gridSubnetList : null,
         panelBlockLists : null,
         gridPassList : null,
-        gridEventLog : null,
+        gridCookieEventLog : null,
+        gridSuspiciousEventLog : null,
+        gridBlacklistEventLog : null,
         initComponent : function() {
             this.genericRuleFields = Ung.Util.getGenericRuleFields(this);
             Ung.Util.generateListIds(this.getSettings().cookies.list);
@@ -16,9 +18,14 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             Ung.Util.generateListIds(this.getSettings().passedUrls.list);
             this.buildBlockLists();
             this.buildPassList();
-            this.buildEventLog();
+            this.buildCookieEventLog();
+            this.buildSuspiciousEventLog();
+            this.buildBlacklistEventLog();
             // builds a tab panel with the 3 panels
-            this.buildTabPanel([this.panelBlockLists, this.gridPassList, this.gridEventLog]);
+            this.buildTabPanel([this.panelBlockLists, this.gridPassList, 
+                                this.gridCookieEventLog,
+                                this.gridBlacklistEventLog,
+                                this.gridSuspiciousEventLog]);
 
             // keep initial  settings
             this.initialSettings = Ung.Util.clone(this.getSettings());
@@ -456,21 +463,147 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 })]
             });
         },
-        // Event Log
-        buildEventLog : function() {
-            this.gridEventLog = new Ung.GridEventLog({
+
+        // Event Logs
+        buildCookieEventLog : function() {
+            this.gridCookieEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
+                eventManagerFn : this.getRpcNode().getEventCookieManager(),
+                name : "Cookie Log",
+                title : i18n._('Cookie Log'),
                 fields : [{
                     name : 'timeStamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
                     name : 'uid'
-                },
-                // FIXME: the 3 fields below (sw*) can be null
-                // depending on what dropdown valu has been
-                // selected (All, Cookie, Blacklisted). Not sure
-                // how to display the columns accordingly
-                   {
+                }, {
+                    name : 'swBlacklisted'
+                }, {
+                    name : 'swCookie'
+                }, {
+                    name : 'swAccessIdent'
+                }, {
+                    name : 'uri'
+                }, {
+                    name : 'host'
+                }, {
+                    name : 'client',
+                    mapping : 'CClientAddr'
+                }, {
+                    name : 'server',
+                    mapping : 'CServerAddr'
+                }],
+                columns : [{
+                    header : this.i18n._("timestamp"),
+                    width : 130,
+                    sortable : true,
+                    dataIndex : 'timeStamp',
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header : this.i18n._("client"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'client'
+                }, {
+                    header : this.i18n._("username"),
+                    sortable : true,
+                    dataIndex : 'uid'
+                }, {
+                    header : this.i18n._("host"),
+                    sortable : true,
+                    dataIndex : 'host',
+                }, {
+                    header : this.i18n._("URL"),
+                    sortable : true,
+                    dataIndex : 'uri',
+                }, {
+                    header : this.i18n._("cookie"),
+                    sortable : true,
+                }, {
+                    header : this.i18n._("server"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'server'
+                }]
+            });
+        },
+
+        buildBlacklistEventLog : function() {
+            this.gridBlacklistEventLog = new Ung.GridEventLog({
+                settingsCmp : this,
+                eventManagerFn : this.getRpcNode().getEventBlacklistManager(),
+                name : "URL Blacklist Log",
+                title : i18n._('URL Blacklist Log'),
+                fields : [{
+                    name : 'timeStamp',
+                    sortType : Ung.SortTypes.asTimestamp
+                }, {
+                    name : 'uid'
+                }, {
+                    name : 'swBlacklisted'
+                }, {
+                    name : 'swCookie'
+                }, {
+                    name : 'swAccessIdent'
+                }, {
+                    name : 'uri'
+                }, {
+                    name : 'host'
+                }, {
+                    name : 'client',
+                    mapping : 'CClientAddr'
+                }, {
+                    name : 'server',
+                    mapping : 'CServerAddr'
+                }],
+                columns : [{
+                    header : this.i18n._("timestamp"),
+                    width : 130,
+                    sortable : true,
+                    dataIndex : 'timeStamp',
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header : this.i18n._("client"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'client'
+                }, {
+                    header : this.i18n._("username"),
+                    sortable : true,
+                    dataIndex : 'uid'
+                }, {
+                    header : this.i18n._("host"),
+                    sortable : true,
+                    dataIndex : 'host',
+                }, {
+                    header : this.i18n._("URL"),
+                    sortable : true,
+                    dataIndex : 'uri',
+                }, {
+                    header : this.i18n._("server"),
+                    width : 120,
+                    sortable : true,
+                    dataIndex : 'server'
+                }]
+            });
+        },
+
+        buildSuspiciousEventLog : function() {
+            this.gridSuspiciousEventLog = new Ung.GridEventLog({
+                settingsCmp : this,
+                eventManagerFn : this.getRpcNode().getEventSuspiciousManager(),
+                name : "Suspicious Log",
+                title : i18n._('Suspicious Log'),
+                fields : [{
+                    name : 'timeStamp',
+                    sortType : Ung.SortTypes.asTimestamp
+                }, {
+                    name : 'uid'
+                }, {
                     name : 'swBlacklisted'
                 }, {
                     name : 'swCookie'
@@ -500,6 +633,10 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     header : this.i18n._("username"),
                     sortable : true,
                     dataIndex : 'uid'
+                }, {
+                    header : this.i18n._("reason"),
+                    sortable : true,
+                    dataIndex : 'swAccessIdent'
                 }, {
                     header : this.i18n._("server"),
                     width : 120,
