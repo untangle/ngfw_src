@@ -36,14 +36,16 @@ class ClientControl:
         result = 1
         try:
             sshCommand = "ssh -i %s %s@%s \"%s %s\" %s" % (ClientControl.hostKeyFile, ClientControl.hostUsername, ClientControl.hostIP, command, shellRedirect, shellRedirect)
+            if (ClientControl.verbosity > 1):
+                print "\nRunning command          : %s" % sshCommand
             if (ClientControl.verbosity > 0):
-                print "\nRunning command on client: \"%s\"" % command
-           #result = os.system(sshCommand)
-            child_stdin, child_stdout, child_stderr = os.popen3(sshCommand)
-            child_stdin.close()
-            print child_stdout.read()
-            print child_stderr.read()
-            result = os.wait()
+                print "\nRunning command on client: %s" % command
+            result = os.system(sshCommand)
+            #child_stdin, child_stdout, child_stderr = os.popen3(sshCommand)
+            #child_stdin.close()
+            #print child_stdout.read()
+            #print child_stderr.read()
+            #result = os.wait()
         finally:
             if (ClientControl.logfile != None):
                 self.restoreOutput()

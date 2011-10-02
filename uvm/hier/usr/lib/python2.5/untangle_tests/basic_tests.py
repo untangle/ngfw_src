@@ -33,11 +33,11 @@ class TestEnvironmentTests(unittest.TestCase):
 
     # verify client has necessary tools
     def test_12_clientHasNecessaryTools(self):
-        result = clientControl.runCommand("which wget")
+        result = clientControl.runCommand("which wget >/dev/null")
         assert (result == 0)
-        result = clientControl.runCommand("which curl")
+        result = clientControl.runCommand("which curl >/dev/null")
         assert (result == 0)
-        result = clientControl.runCommand("which netcat")
+        result = clientControl.runCommand("which netcat >/dev/null")
         assert (result == 0)
 
     # verify client is online

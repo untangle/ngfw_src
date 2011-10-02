@@ -8,6 +8,8 @@ import uvm
 import untangle_tests
 from   untangle_tests import *
 
+from   untangle_tests.webfilter_tests import WebFilterTests
+
 class ArgumentParser(object):
     def __init__(self):
         self.hostIP = None
@@ -77,15 +79,30 @@ ClientControl.logfile = logfile;
 
 # Verify the test enviroment is setup correctly
 suite = unittest.TestLoader().loadTestsFromTestCase(TestEnvironmentTests)
-#results = unittest.TextTestRunner(verbosity=parser.verbosity).run(suite)
+# results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( suite )
 
 # run each test individually for the basic tests
+print "Testing Test Environment:"
 for test in suite:
     results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
     if (len(results.failures) > 0):
-        print "Test FAILED: %s\n\n" % test
+        print "Test FAILED  : %s " % test._testMethodName
         print "The test enviroment is not configured correctly. Aborting..."
         exit(1)
+    else:
+        print "Test success : %s " % test._testMethodName
+print "done"
+
+print "Testing Web Filter Base:"
+suite = unittest.TestLoader().loadTestsFromTestCase(WebFilterTests)
+for test in suite:
+    results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
+    if (len(results.failures) > 0):
+        print "Test FAILED  : %s " % test._testMethodName
+    else:
+        print "Test success : %s " % test._testMethodName
+print "done"
 
 
-
+print ""
+print "More details found in %s" % parser.logfile
