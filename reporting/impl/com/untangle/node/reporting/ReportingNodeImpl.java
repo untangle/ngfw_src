@@ -26,16 +26,30 @@ import com.untangle.uvm.vnet.PipeSpec;
 
 public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private static final Logger logger = Logger.getLogger(ReportingNodeImpl.class);
 
     private static final String REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-reports.py";
-    private static final int MAX_FLUSH_FREQUENCY = (int)Integer.getInteger("uvm.event.short_sync"); /* in seconds */
+    private static int MAX_FLUSH_FREQUENCY;
 
+    static {
+        String shortSyncStr = System.getProperty("uvm.event.short_sync");
+        if (shortSyncStr != null) {
+            try {
+                MAX_FLUSH_FREQUENCY = Integer.valueOf(shortSyncStr); 
+            }
+            catch (Exception e) {
+                logger.warn("Invalid Flush Frequency: " + shortSyncStr);
+                MAX_FLUSH_FREQUENCY = 30*1000; /* 30 seconds */
+            }
+        } else {
+            MAX_FLUSH_FREQUENCY = 30*1000; /* 30 seconds */
+        }
+    }
+    
     private ReportingSettings settings;
 
     private long lastFlushTime = 0;
     
-
     public ReportingNodeImpl() {}
 
     public void setReportingSettings(final ReportingSettings settings)
