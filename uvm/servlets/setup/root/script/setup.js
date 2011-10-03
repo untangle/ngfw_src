@@ -1801,7 +1801,7 @@ Ung.Setup = {
         var settings = new Ung.SetupWizard.Settings();
         var interfaces = new Ung.SetupWizard.Interfaces();
         var internet = new Ung.SetupWizard.Internet();
-            var email = new Ung.SetupWizard.Email();
+        var email = new Ung.SetupWizard.Email();
         var complete = new Ung.SetupWizard.Complete();
 
         var cards = [];

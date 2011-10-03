@@ -1,21 +1,6 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id$
  */
-
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
@@ -100,20 +85,16 @@ public class TomcatManagerImpl implements LocalTomcatManager
             // set Engine properties
             baseEngine.setName("tomcat");
             baseEngine.setDefaultHost(hostname);
-
             baseEngine.setParentClassLoader(tomcatParent);
 
             // create Host
-            baseHost = (StandardHost)emb
-                .createHost(hostname, webAppRoot);
+            baseHost = (StandardHost)emb.createHost(hostname, webAppRoot);
             baseHost.setUnpackWARs(true);
             baseHost.setDeployOnStartup(true);
             baseHost.setAutoDeploy(true);
             baseHost.setErrorReportValveClass("com.untangle.uvm.engine.UvmErrorReportValve");
             OurSingleSignOn ourSsoWorkaroundValve = new OurSingleSignOn();
-
-            SingleSignOn ssoValve = new SpecialSingleSignOn(uvmContext, "",
-                                                            "/reports", "/library" );
+            SingleSignOn ssoValve = new SpecialSingleSignOn(uvmContext, "", "/reports", "/library" );
 
             // ssoValve.setRequireReauthentication(true);
             baseHost.getPipeline().addValve(ourSsoWorkaroundValve);
@@ -128,20 +109,15 @@ public class TomcatManagerImpl implements LocalTomcatManager
 
             //loadSystemApp("/session-dumper", "session-dumper", new WebAppOptions(new AdministrationOutsideAccessValve()));
             loadSystemApp("/blockpage", "blockpage");
-            loadSystemApp("/reports", "reports",
-                          new WebAppOptions(true,
-                                            new ReportingOutsideAccessValve()));
-            loadSystemApp("/alpaca", "alpaca",
-                          new WebAppOptions(true, new AdministrationOutsideAccessValve()));
-            ServletContext ctx = loadSystemApp("/webui", "webui",
-                                               new WebAppOptions(new AdministrationOutsideAccessValve()));
+            loadSystemApp("/reports", "reports", new WebAppOptions(true, new ReportingOutsideAccessValve()));
+            loadSystemApp("/alpaca", "alpaca", new WebAppOptions(true, new AdministrationOutsideAccessValve()));
+            ServletContext ctx = loadSystemApp("/webui", "webui", new WebAppOptions(new AdministrationOutsideAccessValve()));
             ctx.setAttribute("threadRequest", threadRequest);
 
-            ctx = loadSystemApp("/setup", "setup",
-                                new WebAppOptions(new AdministrationOutsideAccessValve()));
+            ctx = loadSystemApp("/setup", "setup", new WebAppOptions(new AdministrationOutsideAccessValve()));
             ctx.setAttribute("threadRequest", threadRequest);
-            loadSystemApp("/library", "library",
-                          new WebAppOptions(true,new AdministrationOutsideAccessValve()));
+            loadSystemApp("/library", "library", new WebAppOptions(true,new AdministrationOutsideAccessValve()));
+            
         } finally {
             Thread.currentThread().setContextClassLoader(uvmCl);
             // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -240,15 +216,13 @@ public class TomcatManagerImpl implements LocalTomcatManager
                     try {
                         ((StandardContext)c).destroy();
                     } catch (Exception x) {
-                        logger.warn("Exception destroying web app \"" +
-                                    contextRoot + "\"", x);
+                        logger.warn("Exception destroying web app \"" + contextRoot + "\"", x);
                     }
                     return true;
                 }
             }
         } catch(Exception ex) {
-            logger.error("Unable to unload web app \"" +
-                         contextRoot + "\"", ex);
+            logger.error("Unable to unload web app \"" + contextRoot + "\"", ex);
         }
         return false;
     }
@@ -437,8 +411,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
 
         logger.info("Adding web app " + fqRoot);
         try {
-            StandardContext ctx = (StandardContext)emb
-                .createContext(urlBase, fqRoot);
+            StandardContext ctx = (StandardContext)emb.createContext(urlBase, fqRoot);
             if (options.allowLinking)
                 ctx.setAllowLinking(true);
             ctx.setCrossContext(true);
@@ -465,8 +438,7 @@ public class TomcatManagerImpl implements LocalTomcatManager
 
             return ctx.getServletContext();
         } catch(Exception ex) {
-            logger.error("Unable to deploy webapp \"" + urlBase
-                         + "\" from directory \"" + fqRoot + "\"", ex);
+            logger.error("Unable to deploy webapp \"" + urlBase + "\" from directory \"" + fqRoot + "\"", ex);
             return null;
         }
     }
