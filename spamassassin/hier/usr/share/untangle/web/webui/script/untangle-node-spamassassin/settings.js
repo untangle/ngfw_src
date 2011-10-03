@@ -990,12 +990,16 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             }
             return valid;
         },
-        //apply function 
+        //apply function
         applyAction : function(){
             this.saveAction(true);
-        },            
+        },
         // save function
         saveAction : function(keepWindowOpen) {
+             if (this.isDirty() === false) {
+                 if (!keepWindowOpen) { this.closeWindow(); }
+                 return;
+             }
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 this.getRpcNode().setSettings(function(result, exception) {
@@ -1006,7 +1010,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         this.closeWindow();
                     } else {
                         this.initialNodeSettings = Ung.Util.clone(this.getNodeSettings());
-                    }         
+                    }
                 }.createDelegate(this), this.getNodeSettings());
             }
         },
