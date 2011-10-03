@@ -13,7 +13,7 @@ public class WebFilterImpl extends WebFilterBase
      * The WebFilterDecisionEngine is rather big as it loads the database
      * It is lazily initialized in case there are no running Web Filter apps
      */
-    private static WebFilterDecisionEngine engine = null; 
+    private WebFilterDecisionEngine engine = null; 
     
     @Override
     public synchronized DecisionEngine getDecisionEngine()
