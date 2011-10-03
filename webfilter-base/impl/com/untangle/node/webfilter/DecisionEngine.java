@@ -336,7 +336,7 @@ public abstract class DecisionEngine
     {
         String dom;
         for ( dom = host ; null != dom ; dom = nextHost(dom) ) {
-            GenericRule sr = findMatchingRule(node.getSettings().getPassedUrls(), dom + uri);
+            GenericRule sr = findMatchingRule(node.getSettings().getPassedUrls(), dom, uri.toString());
             String category = null == sr ? null : sr.getDescription();
 
             if (null != category) {
@@ -395,11 +395,13 @@ public abstract class DecisionEngine
     {
         String dom;
         GenericRule rule = null;
+
+        logger.debug("checkUrlList( " + host + " , " + uri + " ...)");
         
         //iterate through domains & subdomains
         for ( dom = host ; dom != null ; dom = nextHost(dom) ) {
             String url = dom + uri;
-            rule = findMatchingRule(node.getSettings().getBlockedUrls(), url);
+            rule = findMatchingRule(node.getSettings().getBlockedUrls(), dom, uri);
             if (rule != null)
                 break;
         }
@@ -537,12 +539,11 @@ public abstract class DecisionEngine
     /**
      * Finds a matching active rule from the ruleset that matches the given value
      */
-    private GenericRule findMatchingRule( List<GenericRule> rules, String value )
+    private GenericRule findMatchingRule( List<GenericRule> rules, String domain, String uri )
     {
-        String oldVal = value;
-        value = normalizeDomain(value);
+        String value = normalizeDomain(domain) + uri;
         
-        logger.debug("findMatchRule: rules = '" + rules +"', value = '" + value + "' (normalized from '" + oldVal + ";");
+        logger.debug("findMatchRule: rules = '" + rules +"', value = '" + value + "' (normalized from '" + domain + uri + ";");
 
         for (GenericRule rule : rules) {
             if (rule.getEnabled() != null && !rule.getEnabled()) 
@@ -562,6 +563,8 @@ public abstract class DecisionEngine
 
             // match
             try {
+                logger.debug("Checking rule: " + rule.getString() + " (re: " + re + ") against " + value);
+                
                 if (Pattern.matches(re, value)) {
                     logger.debug("findMatchRule: ** matches pattern '" + re + "'");
                     return rule; // done, we do not care if others match too
