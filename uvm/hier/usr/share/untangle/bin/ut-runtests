@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-sys.path.append('@PREFIX@/usr/lib/python2.5/')
+sys.path.insert(0, '@PREFIX@/usr/lib/python2.5/')
 import getopt
 
 import unittest
@@ -42,10 +42,15 @@ class ArgumentParser(object):
             '-v' : self.increase_verbosity
         }
 
-        (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:v')
-        for opt in optlist:
-            handlers[opt[0]](opt[1])
-        return args
+        try:
+            (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:v')
+            for opt in optlist:
+                handlers[opt[0]](opt[1])
+            return args
+        except getopt.GetoptError, exc:
+            print exc
+            printUsage()
+            exit(1)
 
 def printUsage():
     sys.stderr.write( """\
@@ -85,7 +90,7 @@ suite = unittest.TestLoader().loadTestsFromTestCase(TestEnvironmentTests)
 print "Testing Test Environment:"
 for test in suite:
     results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
-    if (len(results.failures) > 0):
+    if (len(results.failures) > 0 or len(results.errors) > 0):
         print "Test FAILED  : %s " % test._testMethodName
         print "The test enviroment is not configured correctly. Aborting..."
         exit(1)
@@ -97,10 +102,11 @@ print "Testing Web Filter Base:"
 suite = unittest.TestLoader().loadTestsFromTestCase(WebFilterTests)
 for test in suite:
     results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
-    if (len(results.failures) > 0):
+    if (len(results.failures) > 0 or len(results.errors) > 0):
         print "Test FAILED  : %s " % test._testMethodName
     else:
         print "Test success : %s " % test._testMethodName
+
 print "done"
 
 
