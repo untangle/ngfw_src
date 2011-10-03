@@ -72,8 +72,6 @@ public class BlockPageUtil
 
         
         String mode = (params.getUnblockMode() == null ? "" : params.getUnblockMode()).trim().toLowerCase();
-        logger.warn("Current Unblock mode: " + mode);
-        logger.warn("Test against    mode: " + BlockPageParameters.UNBLOCK_MODE_NONE);
 
         if ((!BlockPageParameters.UNBLOCK_MODE_NONE.equals(mode)) && ( null != bd ) && ( null != bd.getWhitelistHost())) {
             request.setAttribute( "showUnblockNow", true );
@@ -85,6 +83,7 @@ public class BlockPageUtil
         try {
             servlet.getServletConfig().getServletContext().getContext("/blockpage").getRequestDispatcher("/blockpage_template.jspx").forward(request, response);
         } catch ( IOException e ) {
+            logger.warn( "Unable to render blockpage template.", e );
             throw new ServletException( "Unable to render blockpage template.", e );
         }
     }

@@ -53,10 +53,6 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
 
     public T getNonceData(String nonce)
     {
-        if ( "untangle-test-nonce".equalsIgnoreCase( nonce )) {
-            return this.getTestData();
-        }
-
         return nonceFactory.getNonceData(nonce);
     }
 
@@ -120,9 +116,6 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
     protected abstract String getReplacement(T data);
     protected abstract String getRedirectUrl(String nonce, String host, NodeId tid);
 
-    /* This returns a test nonce that can be used to test the blockpage */
-    protected abstract T getTestData();
-    
     protected NodeId getNodeId()
     {
         return this.tid;

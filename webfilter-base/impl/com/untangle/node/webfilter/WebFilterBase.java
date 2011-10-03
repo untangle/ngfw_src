@@ -620,7 +620,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     protected static synchronized void deployWebAppIfRequired( Logger logger )
     {
-        if (0 != deployCount++) {
+        deployCount = deployCount + 1;
+        if (deployCount != 1) {
             return;
         }
 
@@ -650,7 +651,8 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     protected static synchronized void unDeployWebAppIfRequired( Logger logger )
     {
-        if (0 != --deployCount) {
+        deployCount = deployCount - 1;
+        if (deployCount != 0) {
             return;
         }
 

@@ -2,11 +2,12 @@ package com.untangle.node.webfilter;
 
 import java.io.IOException;
 import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.node.http.BlockPageUtil;
 import com.untangle.uvm.BrandingManager;
@@ -20,7 +21,8 @@ import com.untangle.uvm.util.I18nUtil;
 @SuppressWarnings("serial")
 public class BlockPageServlet extends HttpServlet
 {
-    // HttpServlet methods ----------------------------------------------------
+    private final Logger logger = Logger.getLogger(getClass());
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {

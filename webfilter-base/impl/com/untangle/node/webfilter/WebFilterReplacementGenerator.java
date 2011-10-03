@@ -24,14 +24,10 @@ public class WebFilterReplacementGenerator extends ReplacementGenerator<WebFilte
         + "<p>Please contact %s</p>"
         + "</BODY></HTML>";
 
-    // constructors -----------------------------------------------------------
-
     public WebFilterReplacementGenerator(NodeId tid)
     {
         super(tid);
     }
-
-    // ReplacementGenerator methods -------------------------------------------
 
     @Override
     protected String getReplacement(WebFilterBlockDetails details)
@@ -49,23 +45,4 @@ public class WebFilterReplacementGenerator extends ReplacementGenerator<WebFilte
     {
         return "http://" + host + "/webfilter/blockpage?nonce=" + nonce + "&tid=" + tid;
     }
-
-    @Override
-    protected WebFilterBlockDetails getTestData()
-    {
-        try {
-            WebFilterBase wf = (WebFilterBase)LocalUvmContextFactory.context().nodeManager().nodeContext(getNodeId()).node();
-
-            return new WebFilterBlockDetails( wf.getSettings(),
-                                              "test-host.example.com", 
-                                              "/sample-webfilter", 
-                                              "testing",
-                                              InetAddress.getByName( "192.168.1.101" ),
-                                              "untangle-base-webfilter",
-                                              "foo" );
-        } catch ( Exception e ) {
-            return null;
-        }
-    }
-
 }
