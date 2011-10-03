@@ -87,7 +87,7 @@ suite = unittest.TestLoader().loadTestsFromTestCase(TestEnvironmentTests)
 # results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( suite )
 
 # run each test individually for the basic tests
-print "Testing Test Environment:"
+print "== Testing Test Environment =="
 for test in suite:
     results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
     if (len(results.failures) > 0 or len(results.errors) > 0):
@@ -96,9 +96,11 @@ for test in suite:
         exit(1)
     else:
         print "Test success : %s " % test._testMethodName
-print "done"
+print "== Testing Test Environment =="
 
-print "Testing Web Filter Base:"
+print ""
+
+print "== Testing Web Filter =="
 suite = unittest.TestLoader().loadTestsFromTestCase(WebFilterTests)
 for test in suite:
     results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
@@ -106,8 +108,9 @@ for test in suite:
         print "Test FAILED  : %s " % test._testMethodName
     else:
         print "Test success : %s " % test._testMethodName
+print "== Testing Web Filter =="
 
-print "done"
+
 
 
 print ""
