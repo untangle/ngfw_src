@@ -53,7 +53,7 @@ class WebFilterDecisionEngine extends DecisionEngine
     {
         String url = domain + uri;
 
-        logger.info("Web Filter Category Lookup: " + url); 
+        logger.debug("Web Filter Category Lookup: " + url); 
         List<Integer> categories = urlDatabase.get(url);
         List<String> results = null;
 

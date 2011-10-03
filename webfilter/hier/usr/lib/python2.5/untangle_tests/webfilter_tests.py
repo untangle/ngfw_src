@@ -19,6 +19,13 @@ def addBlockedSite(site):
     blockedUrls["list"].append(newUrl)
     node.setBlockedUrls(blockedUrls)
 
+def nukeBlockedSiteList():
+    global node
+
+    blockedUrls = node.getBlockedUrls()
+    blockedUrls["list"] = []
+    node.setBlockedUrls(blockedUrls)
+
 
 class WebFilterTests(unittest.TestCase):
 
@@ -43,18 +50,80 @@ class WebFilterTests(unittest.TestCase):
 
     # verify metaloft site is not blocked in default config
     def test_12_defaultMetaloftIsNotBlocked(self):
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test.html 2>&1 | grep -q success")
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q text123")
         assert (result == 0)
 
     # verify blocked site url list works
-    def test_13_blockedUrl(self):
-        addBlockedSite("metaloft.com/test.html")
+    def test_13_blockedSpecificUrl(self):
+        addBlockedSite("metaloft.com/test/testPage1.html")
         # this test URL should now be blocked
-        result = clientControl.runCommand("wget http://metaloft.com/test.html 2>&1 | grep -q blockpage")
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
         assert (result == 0)
-        # this test2 URL should NOT be blocked
-        result = clientControl.runCommand("wget http://metaloft.com/test2.html 2>&1 | grep -q blockpage")
-        assert (result != 0)
+        nukeBlockedSiteList()
+
+    # verify that a block list entry does not match when the URI doesnt match exactly
+    def test_14_blockedSpecificUrl(self):
+        addBlockedSite("metaloft.com/test/testPage1.html")
+        # this test URL should NOT be blocked (testPage1 vs testPage2)
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage2.html 2>&1 | grep -q text123")
+        assert (result == 0)
+        nukeBlockedSiteList()
+
+    # verify that a block list entry does not match when the URI capitalization is different
+    def test_15_blockedSpecificUrlCapitalization(self):
+        addBlockedSite("metaloft.com/test/testPage1.html")
+        # this test URL should NOT be blocked (capitalization is different)
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testpage1.html 2>&1 | grep -q text123")
+        assert (result == 0)
+        nukeBlockedSiteList()
+
+    # verify that a block list glob functions with * at the end
+    def test_16_blockedSpecificUrlGlobStar(self):
+        addBlockedSite("metaloft.com/test/test*")
+        # this test URL should be blocked 
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        assert (result == 0)
+        nukeBlockedSiteList()
+
+    # verify that a block list glob functions with * at the end and at the beginning
+    def test_17_blockedSpecificUrlGlobStar(self):
+        addBlockedSite("*loft.com/test/test*")
+        # this test URL should be blocked 
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        assert (result == 0)
+        nukeBlockedSiteList()
+
+    # verify that a block list glob functions with * at the end and at the beginning and in the middle
+    def test_18_blockedSpecificUrlGlobStar(self):
+        addBlockedSite("*et*loft.com/test/test*")
+        # this test URL should be blocked 
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        assert (result == 0)
+        nukeBlockedSiteList()
+
+    # verify that a block list glob matches the whole URL
+    def test_19_blockedSpecificUrlGlobStar(self):
+        addBlockedSite("metaloft.com*")
+        # this test URL should be blocked 
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        assert (result == 0)
+        nukeBlockedSiteList()
+
+    # verify that a block list glob * matches zero characters
+    def test_20_blockedSpecificUrlGlobStar(self):
+        addBlockedSite("meta*loft.com*")
+        # this test URL should NOT be blocked 
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        assert (result == 0)
+        nukeBlockedSiteList()
+
+    # verify that a block list glob * doesnt overmatch
+    def test_21_blockedSpecificUrlGlobStar(self):
+        addBlockedSite("metaloft.com/test/testP*.html")
+        # this test URL should NOT be blocked (uri is different)
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.html 2>&1 | grep -q text123")
+        assert (result == 0)
+        nukeBlockedSiteList()
 
 
     def test_999_finalTearDown(self):
