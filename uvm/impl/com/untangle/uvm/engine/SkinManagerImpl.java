@@ -57,7 +57,7 @@ import com.untangle.uvm.util.TransactionWork;
  */
 class SkinManagerImpl implements SkinManager
 {
-    private static final String SKINS_DIR;
+    private static final String SKINS_DIR = System.getProperty("uvm.skins.dir");;
     private static final String DEFAULT_SKIN = "default";
     private static final String DEFAULT_ADMIN_SKIN = DEFAULT_SKIN;
     private static final String DEFAULT_USER_SKIN = DEFAULT_SKIN;
@@ -293,10 +293,6 @@ class SkinManagerImpl implements SkinManager
         processedSkinFolders.add(dir);
     }
         
-    static {
-        SKINS_DIR = System.getProperty("uvm.skins.dir");
-    }
-    
     private class SkinUploadHandler implements UploadHandler
     {
         @Override

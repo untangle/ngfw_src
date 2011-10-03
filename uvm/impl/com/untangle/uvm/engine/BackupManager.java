@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/*
+ * $Id$
+ */
 package com.untangle.uvm.engine;
 
 import java.io.File;
@@ -16,15 +18,10 @@ import com.untangle.node.util.SimpleExec;
  */
 class BackupManager
 {
-    private static final String BACKUP_SCRIPT;
-    private static final String RESTORE_SCRIPT;
+    private static final String BACKUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-backup-bundled.sh";;
+    private static final String RESTORE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-restore-bundled.sh";
 
-    private final Logger m_logger = Logger.getLogger(BackupManager.class);
-
-    static {
-        BACKUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-backup-bundled.sh";
-        RESTORE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-restore-bundled.sh";
-    }
+    private final Logger logger = Logger.getLogger(BackupManager.class);
 
     /**
      * Restore from a previous {@link #createBackup backup}.
@@ -49,7 +46,7 @@ class BackupManager
             fileData.read(bytes);
             restoreBackup(bytes);
         } catch (FileNotFoundException ex) {
-            m_logger.error("Exception performing restore from file", ex);
+            logger.error("Exception performing restore from file", ex);
         }
     }
 
@@ -76,7 +73,7 @@ class BackupManager
                                      true,//stdout
                                      true,//stderr
                                      1000*60,//timeout
-                                     m_logger,//log-into
+                                     logger,//log-into
                                      true);//use UVM threads
 
             // We no longer delete the file since it's a race.  jdi 7/06
@@ -86,7 +83,7 @@ class BackupManager
         catch(IOException ex) {
             //Delete our temp file
             IOUtil.delete(tempFile);
-            m_logger.error("Exception performing restore", ex);
+            logger.error("Exception performing restore", ex);
             throw ex;
         }
 
@@ -127,7 +124,7 @@ class BackupManager
                                 true,//stdout
                                 true,//stderr
                                 1000*30,//timeout
-                                m_logger,//log-into
+                                logger,//log-into
                                 true);//use UVM threads
 
             if(result.exitCode != 0) {
@@ -145,7 +142,7 @@ class BackupManager
         catch(IOException ex) {
             //Don't forget to delete the temp file
             IOUtil.delete(tempFile);
-            m_logger.error("Exception creating backup for transfer to client", ex);
+            logger.error("Exception creating backup for transfer to client", ex);
             throw new IOException("Unable to create backup file - can't transfer to client.");//Generic, in case it ever gets shown in the UI
         }
     }

@@ -72,9 +72,9 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private static final String UPGRADE_PID_FILE = "/var/run/uvm-upgrade.pid";
     private static final String UPGRADE_SPLASH_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-show-upgrade-splash";;
 
-    private static final String CREATE_UID_SCRIPT;
-    private static final String UID_FILE;
-    private static final String WIZARD_COMPLETE_FLAG_FILE;
+    private static final String CREATE_UID_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-createUID";
+    private static final String UID_FILE = System.getProperty("uvm.conf.dir") + "/uid";
+    private static final String WIZARD_COMPLETE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/wizard-complete-flag";
 
     private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel"; /* devel Env */
     private static final String PROPERTY_IS_INSIDE_VM = "com.untangle.isInsideVM"; /* vmWare */
@@ -1048,11 +1048,4 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         }
     }
     
-    // static initializer -----------------------------------------------------
-
-    static {
-        CREATE_UID_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-createUID";
-        UID_FILE = System.getProperty("uvm.conf.dir") + "/uid";
-        WIZARD_COMPLETE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/wizard-complete-flag";
-    }
 }
