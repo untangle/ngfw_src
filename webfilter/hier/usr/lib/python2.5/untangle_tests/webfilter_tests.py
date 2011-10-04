@@ -11,17 +11,15 @@ clientControl = ClientControl()
 nodeDesc = None
 node = None
 
-def addBlockedSite(site):
+def addBlockedSite(site, blocked=True, flagged=True, description="description"):
     global node
-    newUrl =  { "blocked": True, "description": "description", "flagged": True, "javaClass": "com.untangle.uvm.node.GenericRule", "string": site }
-
+    newUrl =  { "blocked": blocked, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": site }
     blockedUrls = node.getBlockedUrls()
     blockedUrls["list"].append(newUrl)
     node.setBlockedUrls(blockedUrls)
 
 def nukeBlockedSiteList():
     global node
-
     blockedUrls = node.getBlockedUrls()
     blockedUrls["list"] = []
     node.setBlockedUrls(blockedUrls)
@@ -122,6 +120,40 @@ class WebFilterTests(unittest.TestCase):
         addBlockedSite("metaloft.com/test/testP*.html")
         # this test URL should NOT be blocked (uri is different)
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.html 2>&1 | grep -q text123")
+        assert (result == 0)
+        nukeBlockedSiteList()
+
+    # verify that a block list glob ? matches a single character
+    def test_22_blockedSpecificUrlGlobQuestionMark(self):
+        addBlockedSite("metalo?t.com/test/testP?ge1.html")
+        # this test URL should be blocked 
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        assert (result == 0)
+        nukeBlockedSiteList()
+
+    # verify that a block list glob ? matches ONLY single character (but not two or more)
+    def test_23_blockedSpecificUrlGlobQuestionMark(self):
+        addBlockedSite("metalo?t.com/test/testP?.html")
+        # this test URL should NOT be blocked 
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q text123")
+        assert (result == 0)
+        nukeBlockedSiteList()
+
+    # verify that a the action in taken from the first rule
+    def test_24_blockedSpecificUrlRuleOrder(self):
+        addBlockedSite("metaloft.com/test/testPage1.html", blocked=False, flagged=True)
+        addBlockedSite("metaloft.com", blocked=True, flagged=True)
+        # this test URL should NOT be blocked 
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q text123")
+        assert (result == 0)
+        nukeBlockedSiteList()
+
+    # verify that a the action in taken from the second rule (first rule doesn't match)
+    def test_25_blockedSpecificUrlRuleOrder(self):
+        addBlockedSite("metaloft.com/test/testPage1.html", blocked=False, flagged=True)
+        addBlockedSite("metaloft.com", blocked=True, flagged=True)
+        # this test URL should NOT be blocked 
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage2.html 2>&1 | grep -q blockpage")
         assert (result == 0)
         nukeBlockedSiteList()
 
