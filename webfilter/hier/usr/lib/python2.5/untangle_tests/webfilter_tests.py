@@ -63,15 +63,18 @@ def nukeBlockedExtensions():
     rules["list"] = []
     node.setBlockedExtensions(rules)
 
-class WebFilterTests(unittest.TestCase):
+class WebFilterLiteTests(unittest.TestCase):
 
+    @staticmethod
+    def nodeName():
+        return "untangle-node-webfilter"
 
     def setUp(self):
         global nodeDesc, node
         if nodeDesc == None:
-            if (uvmContext.nodeManager().isInstantiated("untangle-node-webfilter")):
-                raise Exception('node webfilter already instantiated')
-            nodeDesc = uvmContext.nodeManager().instantiateAndStart("untangle-node-webfilter", uvmContext.policyManager().getDefaultPolicy())
+            if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+                raise Exception('node %s already instantiated' % self.nodeName())
+            nodeDesc = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), uvmContext.policyManager().getDefaultPolicy())
             node = uvmContext.nodeManager().nodeContext(nodeDesc['nodeId']).node()
 
     # verify client is online

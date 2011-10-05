@@ -7,8 +7,7 @@ import unittest
 import uvm
 import untangle_tests
 from   untangle_tests import *
-
-from   untangle_tests.webfilter_tests import WebFilterTests
+from   untangle_tests.webfilter_tests import WebFilterLiteTests
 
 class ArgumentParser(object):
     def __init__(self):
@@ -72,8 +71,44 @@ def printUsage():
 def exit(code):
     global parser
     if (code != 0):
+        print ""
         print "More details found in %s" % parser.logfile
     sys.exit(code)
+
+def runTestSuite(suite):
+    global parser
+    global logfile
+    print "== Testing %s ==" % suite.nodeName()
+    tests = unittest.TestLoader().loadTestsFromTestCase(suite)
+    for test in tests:
+        results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
+        if (len(results.failures) > 0 or len(results.errors) > 0):
+            print "Test FAILED  : %s " % test._testMethodName
+            if (parser.fastfail): 
+                exit(1)
+        else:
+            print "Test success : %s " % test._testMethodName
+    print "== Testing %s ==" % suite.__class__
+
+# Verify the test enviroment is setup correctly
+def runTestEnvironmentTests():
+    global parser
+    global logfile
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestEnvironmentTests)
+    # results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( suite )
+    print "== Testing Test Environment =="
+    for test in suite:
+        results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
+        if (len(results.failures) > 0 or len(results.errors) > 0):
+            print "Test FAILED  : %s " % test._testMethodName
+            print "The test enviroment is not configured correctly. Aborting..."
+            exit(1) # always fast fail on basic test environment tests
+        else:
+            print "Test success : %s " % test._testMethodName
+    print "== Testing Test Environment =="
+
+
+
 
 parser = ArgumentParser()
 script_args = parser.parse_args()
@@ -88,36 +123,9 @@ if (parser.hostKeyFile != None):
 ClientControl.verbosity   = parser.verbosity;
 ClientControl.logfile = logfile;
 
-# Verify the test enviroment is setup correctly
-suite = unittest.TestLoader().loadTestsFromTestCase(TestEnvironmentTests)
-# results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( suite )
 
-# run each test individually for the basic tests
-print "== Testing Test Environment =="
-for test in suite:
-    results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
-    if (len(results.failures) > 0 or len(results.errors) > 0):
-        print "Test FAILED  : %s " % test._testMethodName
-        print "The test enviroment is not configured correctly. Aborting..."
-        exit(1) # always fast fail on basic test environment tests
-    else:
-        print "Test success : %s " % test._testMethodName
-print "== Testing Test Environment =="
-
-print ""
-
-print "== Testing Web Filter Lite =="
-suite = unittest.TestLoader().loadTestsFromTestCase(WebFilterTests)
-for test in suite:
-    results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
-    if (len(results.failures) > 0 or len(results.errors) > 0):
-        print "Test FAILED  : %s " % test._testMethodName
-        if (parser.fastfail): 
-            exit(1)
-    else:
-        print "Test success : %s " % test._testMethodName
-print "== Testing Web Filter Lite =="
-
+runTestEnvironmentTests()
+runTestSuite(WebFilterLiteTests)
 
 
 
