@@ -13,31 +13,55 @@ node = None
 
 def addBlockedUrl(url, blocked=True, flagged=True, description="description"):
     global node
-    newUrl =  { "blocked": blocked, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
-    blockedUrls = node.getBlockedUrls()
-    blockedUrls["list"].append(newUrl)
-    node.setBlockedUrls(blockedUrls)
-
+    newRule = { "blocked": blocked, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
+    rules = node.getBlockedUrls()
+    rules["list"].append(newRule)
+    node.setBlockedUrls(rules)
 
 def nukeBlockedUrlList():
     global node
-    blockedUrls = node.getBlockedUrls()
-    blockedUrls["list"] = []
-    node.setBlockedUrls(blockedUrls)
+    rules = node.getBlockedUrls()
+    rules["list"] = []
+    node.setBlockedUrls(rules)
 
 def addPassedUrl(url, enabled=True, description="description"):
     global node
-    newUrl =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
-    passedUrls = node.getPassedUrls()
-    passedUrls["list"].append(newUrl)
-    node.setPassedUrls(passedUrls)
+    newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
+    rules = node.getPassedUrls()
+    rules["list"].append(newRule)
+    node.setPassedUrls(rules)
 
 def nukePassedUrlList():
     global node
-    passedUrls = node.getPassedUrls()
-    passedUrls["list"] = []
-    node.setPassedUrls(passedUrls)
+    rules = node.getPassedUrls()
+    rules["list"] = []
+    node.setPassedUrls(rules)
 
+def addBlockedMimeType(mimetype, blocked=True, flagged=True, category="category", description="description"):
+    global node
+    newRule =  { "blocked": blocked, "category": category, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": mimetype, "name": mimetype }
+    rules = node.getBlockedMimeTypes()
+    rules["list"].append(newRule)
+    node.setBlockedMimeTypes(rules)
+
+def nukeBlockedMimeTypes():
+    global node
+    rules = node.getBlockedMimeTypes()
+    rules["list"] = []
+    node.setBlockedMimeTypes(rules)
+
+def addBlockedExtension(mimetype, blocked=True, flagged=True, category="category", description="description"):
+    global node
+    newRule =  { "blocked": blocked, "category": category, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": mimetype, "name": mimetype }
+    rules = node.getBlockedExtensions()
+    rules["list"].append(newRule)
+    node.setBlockedExtensions(rules)
+
+def nukeBlockedExtensions():
+    global node
+    rules = node.getBlockedExtensions()
+    rules["list"] = []
+    node.setBlockedExtensions(rules)
 
 class WebFilterTests(unittest.TestCase):
 
@@ -191,10 +215,77 @@ class WebFilterTests(unittest.TestCase):
     def test_41_passedUrlOverridesBlockedUrl(self):
         addBlockedUrl("metaloft.com")
         addPassedUrl("metaloft.com/test/")
-        # this test URL should NOT be blocked (porn is blocked by default, but playboy.com now on pass list
+        # this test URL should NOT be blocked
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q text123")
         nukeBlockedUrlList()
         nukePassedUrlList()
+        assert (result == 0)
+
+    # verify that an entry in the pass list overrides a blocked category
+    def test_42_passedUrlOverridesBlockedMimeType(self):
+        nukeBlockedMimeTypes()
+        addBlockedMimeType("text/plain")
+        addPassedUrl("metaloft.com/test/")
+        # this test URL should NOT be blocked 
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.txt 2>&1 | grep -q text123")
+        nukeBlockedUrlList()
+        nukePassedUrlList()
+        assert (result == 0)
+
+    # verify that an entry in the pass list overrides a blocked category
+    def test_43_passedUrlOverridesBlockedExtension(self):
+        nukeBlockedExtensions()
+        addBlockedExtension("txt")
+        addPassedUrl("metaloft.com/test/")
+        # this test URL should NOT be blocked 
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.txt 2>&1 | grep -q text123")
+        nukeBlockedUrlList()
+        nukePassedUrlList()
+        assert (result == 0)
+
+    # verify that an entry in the mime type block list functions
+    def test_50_blockedMimeType(self):
+        nukeBlockedMimeTypes()
+        addBlockedMimeType("text/plain")
+        # this test URL should be blocked
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.txt 2>&1 | grep -q blockpage")
+        nukeBlockedMimeTypes()
+        assert (result == 0)
+
+    # verify that an entry in the mime type block list doesn't overmatch
+    def test_51_blockedMimeType(self):
+        nukeBlockedMimeTypes()
+        addBlockedMimeType("text/plain")
+        # this test URL should NOT be blocked (its text/html not text/plain)
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.html 2>&1 | grep -q text123")
+        nukeBlockedMimeTypes()
+        assert (result == 0)
+
+    # verify that an entry in the mime type block list functions
+    def test_60_blockedExtension(self):
+        nukeBlockedExtensions()
+        addBlockedExtension("txt")
+        # this test URL should be blocked
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.txt 2>&1 | grep -q blockpage")
+        nukeBlockedExtensions()
+        assert (result == 0)
+
+    # verify that an entry in the mime type block list doesn't overmatch
+    def test_61_blockedExtension(self):
+        nukeBlockedExtensions()
+        addBlockedExtension("txt")
+        # this test URL should NOT be blocked (its text/html not text/plain)
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.html 2>&1 | grep -q text123")
+        nukeBlockedExtensions()
+        assert (result == 0)
+
+    # verify that an entry in the mime type block list doesn't overmatch
+    def test_62_blockedExtension(self):
+        nukeBlockedExtensions()
+        addBlockedExtension("tml") # not this should only block ".tml" not ".html"
+        # this test URL should NOT be blocked (its text/html not text/plain)
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.html 2>&1 | grep -q text123")
+        nukeBlockedExtensions()
         assert (result == 0)
 
     def test_999_finalTearDown(self):

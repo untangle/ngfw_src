@@ -106,7 +106,7 @@ print "== Testing Test Environment =="
 
 print ""
 
-print "== Testing Web Filter =="
+print "== Testing Web Filter Lite =="
 suite = unittest.TestLoader().loadTestsFromTestCase(WebFilterTests)
 for test in suite:
     results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
@@ -116,7 +116,7 @@ for test in suite:
             exit(1)
     else:
         print "Test success : %s " % test._testMethodName
-print "== Testing Web Filter =="
+print "== Testing Web Filter Lite =="
 
 
 
