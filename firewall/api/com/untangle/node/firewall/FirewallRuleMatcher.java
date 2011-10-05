@@ -23,6 +23,7 @@ import com.untangle.uvm.node.UserMatcher;
 import com.untangle.uvm.node.ProtocolMatcher;
 import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.node.DirectoryConnector;
+import com.untangle.node.util.GlobUtil;
 
 /**
  * This is a matching criteria for a Firewall Rule
@@ -273,12 +274,12 @@ public class FirewallRuleMatcher implements JSONString, Serializable
             } catch (Exception e) {
                 logger.warn("Invalid User Matcher: " + value, e);
             }
-            this.regex = globToRegex(value);
+            this.regex = GlobUtil.globToRegex(value);
 
             break;
             
         case DIRECTORY_CONNECTOR_GROUP:
-            this.regex = globToRegex(value);
+            this.regex = GlobUtil.globToRegex(value);
 
             break;
 
@@ -294,16 +295,5 @@ public class FirewallRuleMatcher implements JSONString, Serializable
         default:
             logger.warn("Unknown Matcher type: " + this.matcherType + " - ignoring precomputing");
         }
-    }
-
-    private String globToRegex(String regex)
-    {
-        String glob = regex;
-        if (glob == null)
-            return null;
-        glob = glob.replaceAll(Pattern.quote("."), "\\.");
-        glob = glob.replaceAll(Pattern.quote("*"), ".*");
-        glob = glob.replaceAll(Pattern.quote("?"), ".");
-        return glob;
     }
 }
