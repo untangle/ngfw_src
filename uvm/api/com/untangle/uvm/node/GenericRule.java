@@ -7,7 +7,8 @@ package com.untangle.uvm.node;
 public class GenericRule extends BaseRule implements java.io.Serializable
 {
     String string = null;
-
+    Object attachment = null;
+    
     public GenericRule() {}
 
     public GenericRule(String string, String name, String category, String description, Boolean enabled, Boolean blocked, Boolean flagged)

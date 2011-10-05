@@ -13,6 +13,7 @@ public class BaseRule implements java.io.Serializable
     Boolean enabled = null;
     Boolean blocked = null;
     Boolean flagged = null;
+    Object attachment = null;
 
     public BaseRule() {}
 
@@ -115,5 +116,30 @@ public class BaseRule implements java.io.Serializable
     {
         this.name = name;
     }
-    
+
+    /**
+     * Attach an object to this rule.
+     * This is just a utility for saving some state about this rule
+     * It will not be saved with the Rule, nor is it ever guaranteed to be there
+     * If you use the attachment you should always check to see if it is null first
+     *
+     * This is used in cases where the rule may store a regular expression that needs to be compiled
+     * The regex can be compiled and attached, if the attachment is null then just recompile a new regex and attach
+     *
+     * Note: These do not use getAttachment and setAttachment getters and setters to prevent them from being serialized to JSON
+     */
+    public void attach(Object o)
+    {
+        this.attachment = o;
+    }
+
+    /**
+     * Returns the current attachment to this rule (if any)
+     *
+     * Note: These do not use getAttachment and setAttachment getters and setters to prevent them from being serialized to JSON
+     */
+    public Object attachment()
+    {
+        return attachment;
+    }
 }

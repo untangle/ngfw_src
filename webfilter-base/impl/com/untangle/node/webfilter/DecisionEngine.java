@@ -58,14 +58,11 @@ public abstract class DecisionEngine
     private final Map<InetAddress, Set<String>> unblockedDomains = new HashMap<InetAddress, Set<String>>();
 
 
-    //---------------------------------------------
-    //----------------- public  -------------------
-    //---------------------------------------------
-    
     public DecisionEngine( WebFilterBase node )
     {
         this.node = node;
     }
+
     
     /**
      * This must be overridden by the specific implementation of the Decision Engine
@@ -82,6 +79,7 @@ public abstract class DecisionEngine
      */
     protected abstract boolean getLookupSubdomains();
 
+    
     /**
      * Checks if the request should be blocked, giving an appropriate response if it should.
      */
@@ -321,10 +319,6 @@ public abstract class DecisionEngine
     }
 
 
-    //---------------------------------------------
-    //----------------- private -------------------
-    //---------------------------------------------
-    
     /**
      * checkSitePassList checks the host+uri against the pass list
      *
@@ -535,7 +529,6 @@ public abstract class DecisionEngine
         return null;
     }
 
-    
     /**
      * Finds a matching active rule from the ruleset that matches the given value
      */
@@ -548,36 +541,53 @@ public abstract class DecisionEngine
         for (GenericRule rule : rules) {
             if (rule.getEnabled() != null && !rule.getEnabled()) 
                 continue;
-            
-            String re = rule.getString();
-            // remove potential '\*\.?' at the beginning
-            re = re.replaceAll("^"+Pattern.quote("*."), "");
-            // next 3: transform globbing operators into regex ones
-            re = re.replaceAll(Pattern.quote("."), "\\.");
-            re = re.replaceAll(Pattern.quote("*"), ".*");
-            re = re.replaceAll(Pattern.quote("?"), ".");
-            // possibly some path after a domain name... People
-            // specifying 'google.com' certainly want to block
-            // '"google.com/whatever"
-            // if the URL already ends in '/' just add .*
-            // if it does not end in '/' add /.*
-            if ( re.charAt(re.length()-1) == '/' )
-                re = re + "(.*)?";
-            else
-                re = re + "(/.*)?";
 
-            // match
+            Object  regexO = rule.attachment();
+            Pattern regex  = null;
+
+            /**
+             * If the regex is not attached to the rule, compile a new one and attach it
+             * Otherwise just use the regex already compiled and attached to the rule
+             */
+            if (regexO == null || !(regexO instanceof Pattern)) {
+                String re = rule.getString();
+                // remove potential '\*\.?' at the beginning
+                re = re.replaceAll("^"+Pattern.quote("*."), "");
+                // next 3: transform globbing operators into regex ones
+                re = re.replaceAll(Pattern.quote("."), "\\.");
+                re = re.replaceAll(Pattern.quote("*"), ".*");
+                re = re.replaceAll(Pattern.quote("?"), ".");
+                // possibly some path after a domain name... People
+                // specifying 'google.com' certainly want to block
+                // '"google.com/whatever"
+                // if the URL already ends in '/' just add .*
+                // if it does not end in '/' add /.*
+                if ( re.charAt(re.length()-1) == '/' )
+                    re = re + "(.*)?";
+                else
+                    re = re + "(/.*)?";
+
+                logger.debug("Compile  rule: " + re );
+                regex = Pattern.compile(re);
+                rule.attach(regex);
+            } else {
+                regex = (Pattern)regexO;
+            }
+            
+            /**
+             * Check the match
+             */
             try {
-                logger.debug("Checking rule: " + rule.getString() + " (re: " + re + ") against " + value);
+                logger.debug("Checking rule: " + rule.getString() + " (re: " + regex + ") against " + value);
                 
-                if (Pattern.matches(re, value)) {
-                    logger.debug("findMatchRule: ** matches pattern '" + re + "'");
+                if (regex.matcher(value).matches()) {
+                    logger.debug("findMatchRule: ** matches pattern '" + regex + "'");
                     return rule; // done, we do not care if others match too
                 } else {
-                    logger.debug("findMatchRule: ** does not match '" + re + "'");		
+                    logger.debug("findMatchRule: ** does not match '" + regex + "'");		
                 }
             } catch (PatternSyntaxException e) {
-                logger.error("findMatchRule: ** invalid pattern '" + re + "'");		
+                logger.error("findMatchRule: ** invalid pattern '" + regex + "'");		
             }
             
         }
