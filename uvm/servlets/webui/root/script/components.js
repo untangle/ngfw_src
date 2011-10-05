@@ -1161,7 +1161,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     // is powered on,
     powerOn : null,
     // running state
-    runState : null, // RUNNING, INITIALIZED
+    runState : null, // RUNNING, INITIALIZED, DESTROYED
 
     // settings Component
     settings : null,
@@ -1318,9 +1318,24 @@ Ung.Node = Ext.extend(Ext.Component, {
     updateRunState : function(runState, force) {
         if(runState!=this.runState || force) {
             this.runState = runState;
-            var isRunning = this.isRunning();
-            this.setPowerOn(isRunning);
-            this.setState(isRunning ? "on" : "off");
+            switch ( runState ) {
+              case "RUNNING":
+                this.setPowerOn(true);
+                this.setState("on");
+                break;
+              case "INITIALIZED":
+                this.setPowerOn(false);
+                this.setState("off");
+                break;
+              case "DESTROYED":
+                //update app display
+                main.updateSeparator();
+                main.loadApps();
+                main.loadRackView();
+                break;
+            default:
+                alert("Unknown runState: " + runState);
+            }
         }
     },
     updateBlingers : function() {
