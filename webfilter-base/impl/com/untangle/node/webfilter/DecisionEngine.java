@@ -38,7 +38,7 @@ import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
  */
 public abstract class DecisionEngine
 {
-    private final Logger logger = Logger.getLogger(DecisionEngine.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     /**
      * This regex matches any URL that is IP based - http://1.2.3.4/
@@ -559,7 +559,12 @@ public abstract class DecisionEngine
             // possibly some path after a domain name... People
             // specifying 'google.com' certainly want to block
             // '"google.com/whatever"
-            re = re + "(/.*)?";
+            // if the URL already ends in '/' just add .*
+            // if it does not end in '/' add /.*
+            if ( re.charAt(re.length()-1) == '/' )
+                re = re + "(.*)?";
+            else
+                re = re + "(/.*)?";
 
             // match
             try {
