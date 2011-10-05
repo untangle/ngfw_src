@@ -17,6 +17,7 @@ class ArgumentParser(object):
         self.hostKeyFile = None
         self.verbosity = 0
         self.logfile = '/tmp/unittest.log'
+        self.fastfail = False
 
     def set_hostIP( self, arg ):
         self.hostIP = arg
@@ -30,6 +31,9 @@ class ArgumentParser(object):
     def set_logfile( self, arg ):
         self.logfile = arg
 
+    def set_fastfail( self, arg ):
+        self.fastfail = True
+
     def increase_verbosity( self, arg ):
         self.verbosity += 1
 
@@ -39,11 +43,12 @@ class ArgumentParser(object):
             '-u' : self.set_username,
             '-i' : self.set_keyfile,
             '-l' : self.set_logfile,
-            '-v' : self.increase_verbosity
+            '-v' : self.increase_verbosity,
+            '-q' : self.set_fastfail
         }
 
         try:
-            (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:v')
+            (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:vq')
             for opt in optlist:
                 handlers[opt[0]](opt[1])
             return args
@@ -60,7 +65,8 @@ def printUsage():
     -u client host SSH login
     -i client host SSH identity (key) file
     -l log file
-    -v
+    -v veborse (can be specified more than one time)
+    -q quit on first failure
 """ % sys.argv[0] )
 
 def exit(code):
@@ -93,7 +99,7 @@ for test in suite:
     if (len(results.failures) > 0 or len(results.errors) > 0):
         print "Test FAILED  : %s " % test._testMethodName
         print "The test enviroment is not configured correctly. Aborting..."
-        exit(1)
+        exit(1) # always fast fail on basic test environment tests
     else:
         print "Test success : %s " % test._testMethodName
 print "== Testing Test Environment =="
@@ -106,6 +112,8 @@ for test in suite:
     results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
     if (len(results.failures) > 0 or len(results.errors) > 0):
         print "Test FAILED  : %s " % test._testMethodName
+        if (parser.fastfail): 
+            exit(1)
     else:
         print "Test success : %s " % test._testMethodName
 print "== Testing Web Filter =="
