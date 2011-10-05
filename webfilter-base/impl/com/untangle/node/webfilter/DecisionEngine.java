@@ -25,6 +25,7 @@ import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.GenericRule;
+import com.untangle.node.util.GlobUtil;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.vnet.TCPSession;
@@ -550,22 +551,7 @@ public abstract class DecisionEngine
              * Otherwise just use the regex already compiled and attached to the rule
              */
             if (regexO == null || !(regexO instanceof Pattern)) {
-                String re = rule.getString();
-                // remove potential '\*\.?' at the beginning
-                re = re.replaceAll("^"+Pattern.quote("*."), "");
-                // next 3: transform globbing operators into regex ones
-                re = re.replaceAll(Pattern.quote("."), "\\.");
-                re = re.replaceAll(Pattern.quote("*"), ".*");
-                re = re.replaceAll(Pattern.quote("?"), ".");
-                // possibly some path after a domain name... People
-                // specifying 'google.com' certainly want to block
-                // '"google.com/whatever"
-                // if the URL already ends in '/' just add .*
-                // if it does not end in '/' add /.*
-                if ( re.charAt(re.length()-1) == '/' )
-                    re = re + "(.*)?";
-                else
-                    re = re + "(/.*)?";
+                String re = GlobUtil.urlGlobToRegex(rule.getString());
 
                 logger.debug("Compile  rule: " + re );
                 regex = Pattern.compile(re);

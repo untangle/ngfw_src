@@ -1,34 +1,5 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
+ * $Id$
  */
 package com.untangle.node.util;
 
@@ -42,10 +13,9 @@ import java.io.OutputStream;
 /**
  * Useful IO routines.
  */
-public class IOUtil {
-
+public class IOUtil
+{
     private static final int DEF_BUF_SZ = 1024*4;
-
 
     /**
      * Copy a file (a "real" file, not directory).  Details on
@@ -97,8 +67,8 @@ public class IOUtil {
      *
      * @exception IOException if something goes wrong from the file system
      */
-    public static void copyFile(File source,
-                                File dest) throws IOException {
+    public static void copyFile(File source, File dest) throws IOException
+    {
 
         //Check for blank source
         if(!source.exists()) {
@@ -166,9 +136,9 @@ public class IOUtil {
      *         did not exist).  False if <code>dir</code>
      *         is not a directory or it could not be deleted.
      */
-    public static boolean rmDir(File dir) {
-        //TODO bscott it is likely much faster
-        //on Unix just to exec "rm -rf".
+    public static boolean rmDir(File dir)
+    {
+        //TODO bscott it is likely much faster on Unix just to exec "rm -rf".
         if(!dir.exists()) {
             return true;
         }
@@ -190,7 +160,6 @@ public class IOUtil {
         return dir.delete();
     }
 
-
     /**
      * Reads the contents of a file as a byte[].  Obviously be careful
      * with memory.
@@ -198,10 +167,8 @@ public class IOUtil {
      * @param f the file
      * @return the byte[] with the bytes of the file
      */
-    public static byte[] fileToBytes(
-                                     File source)
-        throws IOException {
-
+    public static byte[] fileToBytes(File source) throws IOException
+    {
         FileInputStream fIn = null;
 
         try {
@@ -233,13 +200,10 @@ public class IOUtil {
      * @param bytes the bytes
      * @param writeTo the target file
      */
-    public static void bytesToFile(
-                                   byte[] bytes,
-                                   File writeTo)
-        throws IOException {
+    public static void bytesToFile(byte[] bytes, File writeTo) throws IOException
+    {
         bytesToFile(bytes, 0, bytes.length, writeTo, false);
     }
-
 
     /**
      * Write the bytes to the file in a single operation.  If an exception
@@ -252,14 +216,8 @@ public class IOUtil {
      * @param append should these bytes be appended if the file
      *        already exists
      */
-    public static void bytesToFile(
-                                   byte[] bytes,
-                                   int start,
-                                   int len,
-                                   File writeTo,
-                                   boolean append)
-        throws IOException {
-
+    public static void bytesToFile(byte[] bytes, int start, int len, File writeTo, boolean append) throws IOException
+    {
         FileOutputStream fOut = null;
 
         try {
@@ -275,23 +233,18 @@ public class IOUtil {
 
     }
 
-    public static long pipe(final InputStream in,
-                            final OutputStream out) throws IOException {
-
+    public static long pipe(final InputStream in, final OutputStream out) throws IOException
+    {
         return pipe(in, out, new byte[DEF_BUF_SZ], Long.MAX_VALUE);
     }
 
-    public static long pipe(final InputStream in,
-                            final OutputStream out,
-                            final long maxTransfer) throws IOException {
-
+    public static long pipe(final InputStream in, final OutputStream out, final long maxTransfer) throws IOException
+    {
         return pipe(in, out, new byte[DEF_BUF_SZ], maxTransfer);
     }
 
-    public static long pipe(final InputStream in,
-                            final OutputStream out,
-                            final byte[] transferBuf) throws IOException {
-
+    public static long pipe(final InputStream in, final OutputStream out, final byte[] transferBuf) throws IOException
+    {
         return pipe(in, out, transferBuf, Long.MAX_VALUE);
     }
 
@@ -308,11 +261,8 @@ public class IOUtil {
      *
      * @exception IOException from the underlying streams.
      */
-    public static long pipe(final InputStream in,
-                            final OutputStream out,
-                            final byte[] transferBuf,
-                            final long maxTransfer) throws IOException {
-
+    public static long pipe(final InputStream in, final OutputStream out, final byte[] transferBuf, final long maxTransfer) throws IOException
+    {
         final int bufLen = transferBuf.length;
         long ret = 0;
 
@@ -337,7 +287,8 @@ public class IOUtil {
      *
      * @param out the stream to close
      */
-    public static void close(OutputStream out) {
+    public static void close(OutputStream out)
+    {
         try {out.close();}
         catch(Exception ignore){}
     }
@@ -348,7 +299,8 @@ public class IOUtil {
      *
      * @param in the stream to close
      */
-    public static void close(InputStream in) {
+    public static void close(InputStream in)
+    {
         try {in.close();}
         catch(Exception ignore){}
     }
@@ -362,7 +314,8 @@ public class IOUtil {
      * @return the outcome of <code>f.close</code>,
      *         or true if <code>f</code> is null.
      */
-    public static boolean delete(File f) {
+    public static boolean delete(File f)
+    {
         if(f == null) {
             return true;
         }
