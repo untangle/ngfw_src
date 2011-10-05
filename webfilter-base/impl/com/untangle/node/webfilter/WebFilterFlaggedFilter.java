@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.node.webfilter;
 
 import java.util.Iterator;
@@ -20,40 +23,34 @@ import com.untangle.uvm.util.I18nUtil;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class WebFilterPassedFilter implements SimpleEventFilter<WebFilterEvent>
+public class WebFilterFlaggedFilter implements SimpleEventFilter<WebFilterEvent>
 {
-    private final String evtQuery;
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Flagged Web Traffic"));
 
-    private static final RepositoryDesc REPO_DESC
-        = new RepositoryDesc(I18nUtil.marktr("Flagged Web Traffic"));
+    private final String evtQuery;
 
     private final String vendorName;
     private final String capitalizedVendorName;
 
-    public WebFilterPassedFilter(WebFilterBase node)
+    WebFilterFlaggedFilter(WebFilterBase node)
     {
         this.vendorName = node.getVendor();
         this.capitalizedVendorName = vendorName.substring(0, 1).toUpperCase() + 
             vendorName.substring(1);
 
         evtQuery = "FROM HttpLogEventFromReports evt " + 
-            "WHERE evt.wf" + capitalizedVendorName + "Category IS NOT NULL " + 
-            "AND evt.wf" + capitalizedVendorName + "Reason = 'I' " + 
+            "WHERE evt.wf" + capitalizedVendorName + "Flagged IS TRUE " + 
             "AND evt.policyId = :policyId ";
     }
 
+    // SimpleEventFilter methods ----------------------------------------------
     public RepositoryDesc getRepositoryDesc()
     {
         return REPO_DESC;
     }
 
-    public boolean accept(WebFilterEvent e)
-    {
-        return !e.getBlocked();
-    }
-
     public String[] getQueries()
     {
-        return new String[] { evtQuery }; 
+        return new String[] { evtQuery };
     }
 }

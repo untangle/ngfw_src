@@ -1,3 +1,6 @@
+/**
+ * $Id: WebFilterUnblockedFilter.java,v 1.00 2011/10/05 14:15:53 dmorris Exp $
+ */
 package com.untangle.node.webfilter;
 
 import com.untangle.uvm.logging.RepositoryDesc;
@@ -13,8 +16,7 @@ import com.untangle.uvm.util.I18nUtil;
 public class WebFilterUnblockedFilter
     implements SimpleEventFilter<UnblockEvent>
 {
-    private static final RepositoryDesc REPO_DESC
-        = new RepositoryDesc(I18nUtil.marktr("Passlisted Web Events"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Passlisted Web Events"));
 
     private final String evtQuery;
 

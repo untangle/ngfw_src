@@ -85,12 +85,9 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         this.replacementGenerator = buildReplacementGenerator();
         NodeContext tctx = getNodeContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
-        SimpleEventFilter<WebFilterEvent> sef = new WebFilterBlockedFilter(this);
-        eventLogger.addSimpleEventFilter(sef);
-        sef = new WebFilterAllFilter(this);
-        eventLogger.addSimpleEventFilter(sef);
-        sef = new WebFilterPassedFilter(this);
-        eventLogger.addSimpleEventFilter(sef);
+        eventLogger.addSimpleEventFilter(new WebFilterBlockedFilter(this));
+        eventLogger.addSimpleEventFilter(new WebFilterFlaggedFilter(this));
+        eventLogger.addSimpleEventFilter(new WebFilterAllFilter(this));
 
         unblockEventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
         WebFilterUnblockedFilter ueaf = new WebFilterUnblockedFilter(this);
