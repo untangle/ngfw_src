@@ -34,7 +34,7 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class SpamLogFilter implements ListEventFilter<MailLogEventFromReports>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Quarantined Events (from reports tables)"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Quarantined Events"));
 
     private final String vendor;
     private final String logQuery;
@@ -50,6 +50,7 @@ public class SpamLogFilter implements ListEventFilter<MailLogEventFromReports>
 
         logQuery = "FROM MailLogEventFromReports evt" +
             " WHERE evt." + this.vendor + "Action = 'Q'" + 
+            " AND evt.addrKind = 'T'" +
             " AND evt.policyId = :policyId" + 
             " ORDER BY evt.timeStamp DESC";
     }

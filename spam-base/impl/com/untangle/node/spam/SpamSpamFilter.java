@@ -36,7 +36,7 @@ public class SpamSpamFilter implements ListEventFilter<MailLogEventFromReports>
 {
     private static final RepositoryDesc SPAM_REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Spam Events"));
     // XXX Hack - specify clamphish label here
-    private static final RepositoryDesc CLAM_REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Identity Theft Events (from reports tables)"));
+    private static final RepositoryDesc CLAM_REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Identity Theft Events"));
 
     private final String vendor;
     private final String logQuery;
@@ -53,6 +53,7 @@ public class SpamSpamFilter implements ListEventFilter<MailLogEventFromReports>
 
         logQuery = "FROM MailLogEventFromReports evt" + 
             " WHERE evt." + this.vendor + "IsSpam IS TRUE" + 
+            " AND evt.addrKind = 'T'" +
             " AND evt.policyId = :policyId" + 
             " ORDER BY evt.timeStamp DESC";
 
