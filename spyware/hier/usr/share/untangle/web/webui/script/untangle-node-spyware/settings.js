@@ -10,7 +10,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         gridPassList : null,
         gridCookieEventLog : null,
         gridSuspiciousEventLog : null,
-        gridBlacklistEventLog : null,
+        gridUrlEventLog : null,
         initComponent : function() {
             this.genericRuleFields = Ung.Util.getGenericRuleFields(this);
             Ung.Util.generateListIds(this.getSettings().cookies.list);
@@ -18,13 +18,13 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             Ung.Util.generateListIds(this.getSettings().passedUrls.list);
             this.buildBlockLists();
             this.buildPassList();
+            this.buildUrlEventLog();
             this.buildCookieEventLog();
             this.buildSuspiciousEventLog();
-            this.buildBlacklistEventLog();
             // builds a tab panel with the 3 panels
             this.buildTabPanel([this.panelBlockLists, this.gridPassList, 
+                                this.gridUrlEventLog,
                                 this.gridCookieEventLog,
-                                this.gridBlacklistEventLog,
                                 this.gridSuspiciousEventLog]);
 
             // keep initial  settings
@@ -471,8 +471,8 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             this.gridCookieEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
                 eventManagerFn : this.getRpcNode().getEventCookieManager(),
-                name : "Cookie Log",
-                title : i18n._('Cookie Log'),
+                name : "Cookie Event Log",
+                title : i18n._('Cookie Event Log'),
                 fields : [{
                     name : 'timeStamp',
                     sortType : Ung.SortTypes.asTimestamp
@@ -515,14 +515,14 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }, {
                     header : this.i18n._("host"),
                     sortable : true,
-                    dataIndex : 'host',
+                    dataIndex : 'host'
                 }, {
                     header : this.i18n._("URL"),
                     sortable : true,
-                    dataIndex : 'uri',
+                    dataIndex : 'uri'
                 }, {
                     header : this.i18n._("cookie"),
-                    sortable : true,
+                    sortable : true
                 }, {
                     header : this.i18n._("server"),
                     width : 120,
@@ -532,12 +532,12 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             });
         },
 
-        buildBlacklistEventLog : function() {
-            this.gridBlacklistEventLog = new Ung.GridEventLog({
+        buildUrlEventLog : function() {
+            this.gridUrlEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
                 eventManagerFn : this.getRpcNode().getEventBlacklistManager(),
-                name : "URL Blacklist Log",
-                title : i18n._('URL Blacklist Log'),
+                name : "Web Event Log",
+                title : i18n._('Web Event Log'),
                 fields : [{
                     name : 'timeStamp',
                     sortType : Ung.SortTypes.asTimestamp
@@ -580,11 +580,11 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }, {
                     header : this.i18n._("host"),
                     sortable : true,
-                    dataIndex : 'host',
+                    dataIndex : 'host'
                 }, {
                     header : this.i18n._("URL"),
                     sortable : true,
-                    dataIndex : 'uri',
+                    dataIndex : 'uri'
                 }, {
                     header : this.i18n._("server"),
                     width : 120,
@@ -598,8 +598,8 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             this.gridSuspiciousEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
                 eventManagerFn : this.getRpcNode().getEventSuspiciousManager(),
-                name : "Suspicious Log",
-                title : i18n._('Suspicious Log'),
+                name : "Traffic Event Log",
+                title : i18n._('Traffic Event Log'),
                 fields : [{
                     name : 'timeStamp',
                     sortType : Ung.SortTypes.asTimestamp
