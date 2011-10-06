@@ -72,6 +72,9 @@ import com.untangle.uvm.node.PipelineEndpoints;
         private Float saScore;
         private Boolean saIsSpam;
         private String saAction;
+        private Float ctScore;
+        private Boolean ctIsSpam;
+        private String ctAction;
         private Boolean virusKasperskyClean;
         private String virusKasperskyName;
         private Boolean virusCommtouchClean;
@@ -238,6 +241,18 @@ import com.untangle.uvm.node.PipelineEndpoints;
         @Column(name="sa_action")
             public String getSaAction() { return saAction; }
         public void setSaAction(String saAction) { this.saAction = saAction; }
+
+        @Column(name="ct_score")
+            public Float getCtScore() { return ctScore; }
+        public void setCtScore(Float ctScore) { this.ctScore = ctScore; }
+
+        @Column(name="ct_is_spam")
+            public Boolean getCtIsSpam() { return ctIsSpam; }
+        public void setCtIsSpam(Boolean ctIsSpam) { this.ctIsSpam = ctIsSpam; }
+
+        @Column(name="ct_action")
+            public String getCtAction() { return ctAction; }
+        public void setCtAction(String ctAction) { this.ctAction = ctAction; }
 
         @Column(name="virus_kaspersky_clean")
             public Boolean getVirusKasperskyClean() { return virusKasperskyClean; }

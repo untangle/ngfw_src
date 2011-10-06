@@ -110,6 +110,9 @@ CREATE TABLE reports.n_mail_addrs (
     sa_score real,
     sa_is_spam boolean,
     sa_action character,
+    ct_score real,
+    ct_is_spam boolean,
+    ct_action character,
     virus_kaspersky_clean boolean,
     virus_kaspersky_name text,
     phish_score real,
@@ -125,6 +128,9 @@ CREATE TABLE reports.n_mail_addrs (
         sql_helper.add_column('reports.n_mail_addrs', 'sa_score', 'real')
         sql_helper.add_column('reports.n_mail_addrs', 'sa_is_spam', 'boolean')
         sql_helper.add_column('reports.n_mail_addrs', 'sa_action', 'character')
+        sql_helper.add_column('reports.n_mail_addrs', 'ct_score', 'real')
+        sql_helper.add_column('reports.n_mail_addrs', 'ct_is_spam', 'boolean')
+        sql_helper.add_column('reports.n_mail_addrs', 'ct_action', 'character')
         sql_helper.add_column('reports.n_mail_addrs', 'virus_kaspersky_clean', 'boolean')
         sql_helper.add_column('reports.n_mail_addrs', 'virus_kaspersky_name', 'text')
         sql_helper.add_column('reports.n_mail_addrs', 'phish_score', 'real')
@@ -250,6 +256,9 @@ CREATE TABLE reports.n_mail_msgs (
     sa_score real,
     sa_is_spam boolean,
     sa_action character,
+    ct_score real,
+    ct_is_spam boolean,
+    ct_action character,
     virus_kaspersky_clean boolean,
     virus_kaspersky_name text,
     phish_score real,
@@ -265,6 +274,9 @@ CREATE TABLE reports.n_mail_msgs (
         sql_helper.add_column('reports.n_mail_msgs', 'sa_score', 'real')
         sql_helper.add_column('reports.n_mail_msgs', 'sa_is_spam', 'boolean')
         sql_helper.add_column('reports.n_mail_msgs', 'sa_action', 'character')
+        sql_helper.add_column('reports.n_mail_msgs', 'ct_score', 'real')
+        sql_helper.add_column('reports.n_mail_msgs', 'ct_is_spam', 'boolean')
+        sql_helper.add_column('reports.n_mail_msgs', 'ct_action', 'character')
         sql_helper.add_column('reports.n_mail_msgs', 'virus_kaspersky_clean', 'boolean')
         sql_helper.add_column('reports.n_mail_msgs', 'virus_kaspersky_name', 'text')
         sql_helper.add_column('reports.n_mail_msgs', 'phish_score', 'real')

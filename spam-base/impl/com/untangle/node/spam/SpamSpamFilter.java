@@ -48,6 +48,8 @@ public class SpamSpamFilter implements ListEventFilter<MailLogEventFromReports>
     {
         if (vendor.equals("SpamAssassin")) //FIXME: more cases
             this.vendor = "sa";
+        else if (vendor.equals("CommtouchAs"))
+            this.vendor = "ct";
         else
             this.vendor = vendor;
 
