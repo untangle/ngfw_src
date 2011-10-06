@@ -18,7 +18,7 @@ def addBlockedUrl(url, blocked=True, flagged=True, description="description"):
     rules["list"].append(newRule)
     node.setBlockedUrls(rules)
 
-def nukeBlockedUrlList():
+def nukeBlockedUrls():
     global node
     rules = node.getBlockedUrls()
     rules["list"] = []
@@ -31,7 +31,7 @@ def addPassedUrl(url, enabled=True, description="description"):
     rules["list"].append(newRule)
     node.setPassedUrls(rules)
 
-def nukePassedUrlList():
+def nukePassedUrls():
     global node
     rules = node.getPassedUrls()
     rules["list"] = []
@@ -63,6 +63,11 @@ def nukeBlockedExtensions():
     rules["list"] = []
     node.setBlockedExtensions(rules)
 
+#
+# TESTS TO ADD:
+# eventlog (events are logged properly)
+# passed client IP (overrides other blocks)
+#
 class WebFilterLiteTests(unittest.TestCase):
 
     @staticmethod
@@ -78,176 +83,176 @@ class WebFilterLiteTests(unittest.TestCase):
             node = uvmContext.nodeManager().nodeContext(nodeDesc['nodeId']).node()
 
     # verify client is online
-    def test_10_clientIsOnline(self):
+    def test_010_clientIsOnline(self):
         result = clientControl.runCommand("wget -o /dev/null http://google.com/")
         assert (result == 0)
 
     # verify porn site is blocked in default config
-    def test_11_defaultPornIsBlocked(self):
+    def test_011_defaultPornIsBlocked(self):
         result = clientControl.runCommand("wget -q -O - http://playboy.com/ 2>&1 | grep -q blockpage")
         assert (result == 0)
 
     # verify metaloft site is not blocked in default config
-    def test_12_defaultMetaloftIsNotBlocked(self):
+    def test_012_defaultMetaloftIsNotBlocked(self):
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q text123")
         assert (result == 0)
 
     # verify blocked site url list works
-    def test_13_blockedUrl(self):
+    def test_013_blockedUrl(self):
         addBlockedUrl("metaloft.com/test/testPage1.html")
         # this test URL should now be blocked
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
-        nukeBlockedUrlList()
+        nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list entry does not match when the URI doesnt match exactly
-    def test_14_blockedUrl(self):
+    def test_014_blockedUrl(self):
         addBlockedUrl("metaloft.com/test/testPage1.html")
         # this test URL should NOT be blocked (testPage1 vs testPage2)
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage2.html 2>&1 | grep -q text123")
-        nukeBlockedUrlList()
+        nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list entry correctly appends "(/.*)?" to the rigth side anchor
-    def test_14_blockedUrlRightSideAnchor(self):
+    def test_014_blockedUrlRightSideAnchor(self):
         addBlockedUrl("metaloft.com/test")
         # this test URL should NOT be blocked (testPage1 vs testPage2)
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/testPage1.html 2>&1 | grep -q text123")
-        nukeBlockedUrlList()
+        nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list entry does not match when the URI capitalization is different
-    def test_15_blockedUrlCapitalization(self):
+    def test_015_blockedUrlCapitalization(self):
         addBlockedUrl("metaloft.com/test/testPage1.html")
         # this test URL should NOT be blocked (capitalization is different)
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testpage1.html 2>&1 | grep -q text123")
-        nukeBlockedUrlList()
+        nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list glob functions with * at the end
-    def test_20_blockedUrlGlobStar(self):
+    def test_020_blockedUrlGlobStar(self):
         addBlockedUrl("metaloft.com/test/test*")
         # this test URL should be blocked 
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
-        nukeBlockedUrlList()
+        nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list glob functions with * at the end and at the beginning
-    def test_21_blockedUrlGlobStar(self):
+    def test_021_blockedUrlGlobStar(self):
         addBlockedUrl("*loft.com/test/test*")
         # this test URL should be blocked 
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
-        nukeBlockedUrlList()
+        nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list glob functions with * at the end and at the beginning and in the middle
-    def test_22_blockedUrlGlobStar(self):
+    def test_022_blockedUrlGlobStar(self):
         addBlockedUrl("*et*loft.com/test/test*")
         # this test URL should be blocked 
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
-        nukeBlockedUrlList()
+        nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list glob matches the whole URL
-    def test_23_blockedUrlGlobStar(self):
+    def test_023_blockedUrlGlobStar(self):
         addBlockedUrl("metaloft.com*")
         # this test URL should be blocked 
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
-        nukeBlockedUrlList()
+        nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list glob * matches zero characters
-    def test_24_blockedUrlGlobStar(self):
+    def test_024_blockedUrlGlobStar(self):
         addBlockedUrl("meta*loft.com*")
         # this test URL should NOT be blocked 
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
-        nukeBlockedUrlList()
+        nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list glob * doesnt overmatch
-    def test_25_blockedUrlGlobStar(self):
+    def test_025_blockedUrlGlobStar(self):
         addBlockedUrl("metaloft.com/test/testP*.html")
         # this test URL should NOT be blocked (uri is different)
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.html 2>&1 | grep -q text123")
-        nukeBlockedUrlList()
+        nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list glob ? matches a single character
-    def test_26_blockedUrlGlobQuestionMark(self):
+    def test_026_blockedUrlGlobQuestionMark(self):
         addBlockedUrl("metalo?t.com/test/testP?ge1.html")
         # this test URL should be blocked 
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
-        nukeBlockedUrlList()
+        nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list glob ? matches ONLY single character (but not two or more)
-    def test_27_blockedUrlGlobQuestionMark(self):
+    def test_027_blockedUrlGlobQuestionMark(self):
         addBlockedUrl("metalo?t.com/test/testP?.html")
         # this test URL should NOT be blocked 
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q text123")
-        nukeBlockedUrlList()
+        nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a the action in taken from the first rule
-    def test_28_blockedUrlRuleOrder(self):
+    def test_028_blockedUrlRuleOrder(self):
         addBlockedUrl("metaloft.com/test/testPage1.html", blocked=False, flagged=True)
         addBlockedUrl("metaloft.com", blocked=True, flagged=True)
         # this test URL should NOT be blocked 
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q text123")
-        nukeBlockedUrlList()
+        nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a the action in taken from the second rule (first rule doesn't match)
-    def test_29_blockedUrlRuleOrder(self):
+    def test_029_blockedUrlRuleOrder(self):
         addBlockedUrl("metaloft.com/test/testPage1.html", blocked=False, flagged=True)
         addBlockedUrl("metaloft.com", blocked=True, flagged=True)
         # this test URL should NOT be blocked 
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage2.html 2>&1 | grep -q blockpage")
-        nukeBlockedUrlList()
+        nukeBlockedUrls()
         assert (result == 0)
 
     # verify that an entry in the pass list overrides a blocked category
-    def test_40_passedUrlOverridesBlockedCategory(self):
+    def test_040_passedUrlOverridesBlockedCategory(self):
         addPassedUrl("playboy.com")
         # this test URL should NOT be blocked (porn is blocked by default, but playboy.com now on pass list
         result = clientControl.runCommand("wget -q -O - http://playboy.com/ 2>&1 | grep -q 'Nude Girls'")
-        nukePassedUrlList()
+        nukePassedUrls()
         assert (result == 0)
 
     # verify that an entry in the pass list overrides a blocked category
-    def test_41_passedUrlOverridesBlockedUrl(self):
+    def test_041_passedUrlOverridesBlockedUrl(self):
         addBlockedUrl("metaloft.com")
         addPassedUrl("metaloft.com/test/")
         # this test URL should NOT be blocked
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q text123")
-        nukeBlockedUrlList()
-        nukePassedUrlList()
+        nukeBlockedUrls()
+        nukePassedUrls()
         assert (result == 0)
 
     # verify that an entry in the pass list overrides a blocked category
-    def test_42_passedUrlOverridesBlockedMimeType(self):
+    def test_042_passedUrlOverridesBlockedMimeType(self):
         nukeBlockedMimeTypes()
         addBlockedMimeType("text/plain")
         addPassedUrl("metaloft.com/test/")
         # this test URL should NOT be blocked 
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.txt 2>&1 | grep -q text123")
-        nukeBlockedUrlList()
-        nukePassedUrlList()
+        nukeBlockedUrls()
+        nukePassedUrls()
         assert (result == 0)
 
     # verify that an entry in the pass list overrides a blocked category
-    def test_43_passedUrlOverridesBlockedExtension(self):
+    def test_043_passedUrlOverridesBlockedExtension(self):
         nukeBlockedExtensions()
         addBlockedExtension("txt")
         addPassedUrl("metaloft.com/test/")
         # this test URL should NOT be blocked 
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.txt 2>&1 | grep -q text123")
-        nukeBlockedUrlList()
-        nukePassedUrlList()
+        nukeBlockedUrls()
+        nukePassedUrls()
         assert (result == 0)
 
     # verify that an entry in the mime type block list functions
-    def test_50_blockedMimeType(self):
+    def test_050_blockedMimeType(self):
         nukeBlockedMimeTypes()
         addBlockedMimeType("text/plain")
         # this test URL should be blocked
@@ -256,7 +261,7 @@ class WebFilterLiteTests(unittest.TestCase):
         assert (result == 0)
 
     # verify that an entry in the mime type block list doesn't overmatch
-    def test_51_blockedMimeType(self):
+    def test_051_blockedMimeType(self):
         nukeBlockedMimeTypes()
         addBlockedMimeType("text/plain")
         # this test URL should NOT be blocked (its text/html not text/plain)
@@ -265,7 +270,7 @@ class WebFilterLiteTests(unittest.TestCase):
         assert (result == 0)
 
     # verify that an entry in the mime type block list functions
-    def test_60_blockedExtension(self):
+    def test_060_blockedExtension(self):
         nukeBlockedExtensions()
         addBlockedExtension("txt")
         # this test URL should be blocked
@@ -274,7 +279,7 @@ class WebFilterLiteTests(unittest.TestCase):
         assert (result == 0)
 
     # verify that an entry in the mime type block list doesn't overmatch
-    def test_61_blockedExtension(self):
+    def test_061_blockedExtension(self):
         nukeBlockedExtensions()
         addBlockedExtension("txt")
         # this test URL should NOT be blocked (its text/html not text/plain)
@@ -283,13 +288,27 @@ class WebFilterLiteTests(unittest.TestCase):
         assert (result == 0)
 
     # verify that an entry in the mime type block list doesn't overmatch
-    def test_62_blockedExtension(self):
+    def test_062_blockedExtension(self):
         nukeBlockedExtensions()
         addBlockedExtension("tml") # not this should only block ".tml" not ".html"
         # this test URL should NOT be blocked (its text/html not text/plain)
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.html 2>&1 | grep -q text123")
         nukeBlockedExtensions()
         assert (result == 0)
+
+#     def test_100_eventlog(self):
+#         global node
+#         nukeBlockedUrls();
+#         addBlockedUrl("metaloft.com/test/testPage1.html", blocked=True, flagged=True)
+#         addBlockedUrl("metaloft.com/test/testPage2.html", blocked=False, flagged=True)
+#         result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
+#         result2 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage2.html 2>&1 | grep -q text123")
+#         print "sleeping..."
+#         time.sleep(5)
+#         print "sleeping...done"
+#         eventMan = node.getEventManager()
+#         print eventMan
+#         print eventMan.getRepositories()
 
     def test_999_finalTearDown(self):
         global nodeDesc
