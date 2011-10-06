@@ -62,7 +62,7 @@ public class PhishHttpHandler extends HttpStateMachine
         }
         host = host.toLowerCase();
 
-        if (!node.getPhishSettings().getEnableGooglePhishList() || node.isDomainUnblocked(host, getSession().clientAddr())) 
+        if (!node.getSettings().getEnableGooglePhishList() || node.isDomainUnblocked(host, getSession().clientAddr())) 
             isBlocked = false;
         else {
             /**

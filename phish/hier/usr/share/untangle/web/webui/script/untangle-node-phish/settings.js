@@ -16,7 +16,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
         getNodeSettings : function(forceReload) {
             if (forceReload || this.rpc.nodeSettings === undefined) {
                 try {
-                   this.rpc.nodeSettings = this.getRpcNode().getPhishSettings();
+                   this.rpc.nodeSettings = this.getRpcNode().getSettings();
                    this.lastUpdate = this.getRpcNode().getLastUpdate();
                    this.lastCheck = this.getRpcNode().getLastUpdateCheck();
                    this.signatureVer = this.getRpcNode().getSignatureVersion();
@@ -335,6 +335,8 @@ if (!Ung.hasResource["Ung.Phish"]) {
             this.gridEmailEventLog = new Ung.GridEventLog({
                 name : 'Email Event Log',
                 helpSource : 'email_event_log',
+                settingsCmp : this,
+                title : this.i18n._("Email Event Log"),
                 fields : [{
                     name : 'timeStamp',
                     sortType : Ung.SortTypes.asTimestamp
@@ -463,7 +465,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
         commitSettings : function(callback)
         {
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-            this.getRpcNode().setPhishSettings(function(result, exception) {
+            this.getRpcNode().setSettings(function(result, exception) {
 
                 if(Ung.Util.handleException(exception)) return;
                 callback();

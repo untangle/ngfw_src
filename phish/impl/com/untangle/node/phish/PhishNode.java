@@ -151,7 +151,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
             if (readSettings == null) {
                 logger.warn("No database or json settings found... initializing with defaults");
                 initializeSettings();
-                writeNodeSettings(getPhishSettings());
+                writeNodeSettings(getSettings());
             }
             
             else {
@@ -186,16 +186,16 @@ public class PhishNode extends SpamNodeImpl implements Phish
         return phishHttpEventLogger;
     }
 
-    public PhishSettings getPhishSettings()
+    public PhishSettings getSettings()
     {
-        logger.info("getPhishSettings()");
-        return (PhishSettings)getSettings();
+        logger.info("getSettings()");
+        return (PhishSettings)super.getSettings();
     }
 
-    public void setPhishSettings(PhishSettings spamSettings)
+    public void setSettings(PhishSettings spamSettings)
     {
-        logger.info("setPhishSettings()");
-        setSettings(spamSettings);
+        logger.info("setSettings()");
+        super.setSettings(spamSettings);
         writeNodeSettings(spamSettings);
     }
 
