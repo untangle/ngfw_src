@@ -268,7 +268,7 @@ def get_settings(tid, debug=False):
     str += '\t"blockIpHosts": "%s",\n' % block_all_ip_hosts
     str += '\t"unblockMode": "%s",\n' % user_whitelist_mode
     str += '\t"unblockTimeout": "3600",\n'
-    str += '\t"unblockPasswordRequired": "%s",\n' % unblock_password_enabled
+    str += '\t"unblockPasswordEnabled": "%s",\n' % unblock_password_enabled
     str += '\t"unblockPasswordAdmin": "%s",\n' % unblock_password_admin
     str += '\t"unblockPassword": "%s",\n' % unblock_password
     str += '\t"categories": %s,\n' % get_category_settings(tid, settings_id, debug=debug)
