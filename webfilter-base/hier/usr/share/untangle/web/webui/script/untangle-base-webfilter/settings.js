@@ -1089,8 +1089,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             this.gridUnblockEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
         eventManagerFn : this.getRpcNode().getUnblockEventManager(),
-        name : "Unblock Log",
-        title : i18n._('Unblock Log'),
+        name : "Unblock Event Log",
+        title : i18n._('Unblock Event Log'),
                 fields : [{ name : 'timeStamp',
                             mapping : 'timeStamp',
                             sortType : Ung.SortTypes.asTimestamp
