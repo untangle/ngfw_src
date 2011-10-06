@@ -1,16 +1,7 @@
 #! /usr/bin/env python 
 
-import getopt
-import logging
-import mx
-import os
-import re
-import sys
-import tempfile
-import shutil
-
+import getopt, logging, mx, os, os.path, re, sys, tempfile, shutil
 from subprocess import Popen, PIPE
-
 from psycopg2.extensions import DateFromMx
 
 def usage():
@@ -32,7 +23,34 @@ Options:
   -d y-m-d | --date=y-m-d\
 """ % sys.argv[0]
 
-# main
+## main
+PREFIX = '@PREFIX@'
+REPORTS_PYTHON_DIR = '%s/usr/lib/python2.5' % PREFIX
+REPORTS_OUTPUT_BASE = '%s/usr/share/untangle/web/reports' % PREFIX
+NODE_MODULE_DIR = '%s/reports/node' % REPORTS_PYTHON_DIR
+LOCKFILE = "/var/run/untangle-reports.pid"
+
+if (PREFIX != ''):
+     sys.path.insert(0, REPORTS_PYTHON_DIR)
+
+from reports.log import *
+logger = getLogger(__name__)
+
+# lock 1st
+if os.path.isfile(LOCKFILE):
+     pid = open(LOCKFILE).readline().strip()
+     cmdFile = "/proc/%s/cmdline" % pid
+     if os.path.isfile(cmdFile) and open(cmdFile).readline().find(sys.argv[0]) > 0:
+          logger.error("Reports are already running (pid %s), aborting..." % pid)
+          sys.exit(1)
+     else:
+          logger.warning("Removing leftover pidfile (pid %s)" % pid)
+          os.remove(LOCKFILE)
+
+f = open(LOCKFILE, "w")
+f.write("%s\n" % os.getpid())
+f.close()
+logger.info("wrote pidfile")
 
 try:
      opts, args = getopt.getopt(sys.argv[1:], "hncgpmiaver:d:l:t:s:",
@@ -47,17 +65,6 @@ except getopt.GetoptError, err:
      print str(err)
      usage()
      sys.exit(2)
-
-PREFIX = '@PREFIX@'
-REPORTS_PYTHON_DIR = '%s/usr/lib/python2.5' % PREFIX
-REPORTS_OUTPUT_BASE = '%s/usr/share/untangle/web/reports' % PREFIX
-NODE_MODULE_DIR = '%s/reports/node' % REPORTS_PYTHON_DIR
-
-if (PREFIX != ''):
-     sys.path.insert(0, REPORTS_PYTHON_DIR)
-
-from reports.log import *
-logger = getLogger(__name__)
 
 report_lengths = None
 no_migration = False
