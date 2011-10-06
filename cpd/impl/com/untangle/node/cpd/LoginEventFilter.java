@@ -6,7 +6,7 @@ import com.untangle.uvm.util.I18nUtil;
 
 class LoginEventFilter implements SimpleEventFilter<CPDLoginEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Captive Portal Login Events (from reports tables)"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Login Events"));
 
     private static final String WARM_QUERY = "FROM CpdLoginEventsFromReports evt ORDER BY evt.timeStamp DESC";
 

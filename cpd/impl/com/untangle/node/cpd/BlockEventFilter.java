@@ -8,7 +8,7 @@ class BlockEventFilter implements SimpleEventFilter<BlockEvent>
 {
     private final CPDImpl cpd;
     
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Captive Portal Block Events (from reports tables)"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Block Events"));
 
     private static final String QUERY = "FROM CpdBlockEventsFromReports evt ORDER BY evt.timeStamp DESC";
     
