@@ -828,7 +828,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     mapping : 'vendor'
                 }, {
                     name : 'displayAction',
-                    mapping : 'saAction', // FIXME: vendor name ?
+                    mapping :  this.getRpcNode().getVendor() + 'Action',
                     type : 'string',
                     convert : function(value, rec ) { // FIXME: make that a switch
                             if (value == 'P') { // PASSED
@@ -870,7 +870,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     type : 'string'
                 }, {
                     name : 'score',
-                    mapping : 'saScore'// FIXME : vendor name ?
+                    mapping : this.getRpcNode().getVendor() + 'Score'
                 }],
                 // the list of columns
                 columns : [{

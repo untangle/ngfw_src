@@ -130,4 +130,8 @@ public class SpamAssassinNode extends SpamNodeImpl
         SpamSettings ps = getSettings();
         initSpamRBLList(ps);
     }
+
+    public String getVendor() {
+        return "sa";
+    }
 }

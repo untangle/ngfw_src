@@ -1,6 +1,3 @@
-/*
- * $Id$
- */
 package com.untangle.node.spam;
 
 import java.util.Date;
@@ -295,6 +292,9 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     }
 
     // AbstractNode methods ----------------------------------------------
+    public String getVendor() {
+        return "sa";
+    }
 
     @Override
     protected PipeSpec[] getPipeSpecs()
