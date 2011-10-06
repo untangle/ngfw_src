@@ -121,8 +121,8 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         }
                     }],
                     buttons : [{
-                        name : 'Cookies manage list',
-                        text : this.i18n._("manage list"),
+                        name : 'Edit Cookies List',
+                        text : this.i18n._("Edit Cookie List"),
                         handler : function() {
                             this.panelBlockLists.onManageCookiesList();
                         }.createDelegate(this)
@@ -144,8 +144,8 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         }
                     }],
                     buttons : [{
-                        name : 'Traffic manage list',
-                        text : this.i18n._("manage list"),
+                        name : 'Edit Traffic List',
+                        text : this.i18n._("Edit Traffic List"),
                         handler : function() {
                             this.panelBlockLists.onManageSubnetList();
                         }.createDelegate(this)
