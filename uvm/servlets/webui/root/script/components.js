@@ -1324,6 +1324,7 @@ Ung.Node = Ext.extend(Ext.Component, {
                 this.setState("on");
                 break;
               case "INITIALIZED":
+              case "LOADED":
                 this.setPowerOn(false);
                 this.setState("off");
                 break;
