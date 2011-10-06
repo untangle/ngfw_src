@@ -153,8 +153,8 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }, {
                     cls: 'description',
                     html : this.i18n._("Spyware Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()) :
-                            this.i18n._("Unknown"))
+                        + ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()) :
+                           this.i18n._("Unknown"))
                 }],
 
                 onManageCookiesList : function() {
@@ -166,11 +166,11 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
                                     Ung.Window.cancelAction(
-                                       this.gridCookiesList.isDirty() || this.isDirty(),
-                                       function() {
+                                        this.gridCookiesList.isDirty() || this.isDirty(),
+                                        function() {
                                             this.panelBlockLists.winCookiesList.closeWindow();
                                             this.closeWindow();
-                                       }.createDelegate(this)
+                                        }.createDelegate(this)
                                     );
                                 }.createDelegate(settingsCmp)
                             }, {
@@ -218,11 +218,11 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                                 title : i18n._(rpc.currentPolicy.name),
                                 action : function() {
                                     Ung.Window.cancelAction(
-                                       this.gridSubnetList.isDirty() || this.isDirty(),
-                                       function() {
+                                        this.gridSubnetList.isDirty() || this.isDirty(),
+                                        function() {
                                             this.panelBlockLists.winSubnetList.closeWindow();
                                             this.closeWindow();
-                                       }.createDelegate(this)
+                                        }.createDelegate(this)
                                     );
                                 }.createDelegate(settingsCmp)
                             }, {
@@ -281,6 +281,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             this.gridCookiesList = new Ung.EditorGrid({
                 name : 'Cookies List',
                 settingsCmp : this,
+                paginated : false,
                 emptyRow : {
                     "string" : this.i18n._("[no identification]"),
                     "enabled" : true,
@@ -328,6 +329,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             this.gridSubnetList = new Ung.EditorGrid({
                 name : 'Subnet List',
                 settingsCmp : this,
+                paginated : false,
                 emptyRow : {
                     "string" : "1.2.3.4/5",
                     "name" : this.i18n._("[no name]"),
@@ -695,11 +697,11 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         if (!result.valid) {
                             var errorMsg = "";
                             switch (result.errorCode) {
-                                case 'INVALID_IPMADDR' :
-                                    errorMsg = this.i18n._("Invalid subnet specified") + ": " + result.cause;
+                              case 'INVALID_IPMADDR' :
+                                errorMsg = this.i18n._("Invalid subnet specified") + ": " + result.cause;
                                 break;
-                                default :
-                                    errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
+                            default :
+                                errorMsg = this.i18n._(result.errorCode) + ": " + result.cause;
                             }
 
                             this.panelBlockLists.onManageSubnetList();
@@ -747,7 +749,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                             Ung.Util.generateListIds(this.getSettings().cookies.list);
                             Ung.Util.generateListIds(this.getSettings().subnets.list);
                             Ung.Util.generateListIds(this.getSettings().passedUrls.list);
-    
+                            
                             this.gridPassList.reloadGrid({data:this.getSettings().passedUrls.list});
                             // keep initial  settings
                             this.initialSettings = Ung.Util.clone(this.getSettings());
@@ -759,7 +761,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         },
         isDirty : function() {
             return !Ung.Util.equals(this.getSettings(), this.initialSettings) || this.gridPassList.isDirty();
-                
+            
         }
     });
 }

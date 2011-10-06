@@ -150,6 +150,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     public void setCookies( List<GenericRule> newCookies )
     {
         this.settings.setCookies(newCookies);
+        _setSettings(this.settings);
     }
     
     public List<GenericRule> getSubnets()
@@ -160,6 +161,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     public void setSubnets( List<GenericRule> newSubnets )
     {
         this.settings.setSubnets(newSubnets);
+        _setSettings(this.settings);
     }
     
     public List<GenericRule> getPassedUrls()
@@ -170,6 +172,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     public void setPassedUrls( List<GenericRule> newPassedUrls )
     {
         this.settings.setPassedUrls(newPassedUrls);
+        _setSettings(this.settings);
     }
 
     public String getUnblockMode()
@@ -282,7 +285,11 @@ public class SpywareImpl extends AbstractNode implements Spyware
         Set<String> cookieList = initList(COOKIE_LIST);
         List<GenericRule> cookieRules = new LinkedList<GenericRule>();
         for ( String cookie : cookieList) {
-            cookieRules.add(new GenericRule(cookie, cookie, null, null, true));
+            String cook = cookie;
+            /* ignore / at end if present */
+            if (cookie.charAt(cookie.length()-1) == '/') 
+                cook = cookie.substring(0,cookie.length()-1);
+            cookieRules.add(new GenericRule(cook, cook, null, null, true));
         }
         settings.setCookies(cookieRules);
 
@@ -485,8 +492,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             return false;
         }
 
-        domain = domain.startsWith(".") && 1 < domain.length()
-            ? domain.substring(1) : domain;
+        domain = domain.startsWith(".") && 1 < domain.length() ? domain.substring(1) : domain;
 
         if (null == cookieRules || !settings.getScanCookies()) {
             return false;
@@ -495,7 +501,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         boolean match = false;
 
         for (String d = domain; !match && null != d; d = nextHost(d)) {
-            GenericRule sr = cookieRules.get(d);
+            GenericRule sr = cookieRules.get(d); /* FIXME */
             match = null != sr && sr.getEnabled();
         }
 
@@ -700,7 +706,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             return null;
         }
         
-        GenericRule rule = new GenericRule(addr, addr, "[no category]", description, true);
+        GenericRule rule = new GenericRule(addr, name, "[no category]", description, true);
         rule.setFlagged(true);
         rule.setBlocked(false);
 
