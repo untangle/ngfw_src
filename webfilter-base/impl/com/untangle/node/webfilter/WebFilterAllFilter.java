@@ -38,7 +38,8 @@ public class WebFilterAllFilter implements SimpleEventFilter<WebFilterEvent>
 
         evtQuery = "FROM HttpLogEventFromReports evt " + 
             "WHERE evt.wf" + capitalizedVendorName + "Category IS NOT NULL " + 
-            "AND evt.policyId = :policyId ";
+            "AND evt.policyId = :policyId " +
+            "ORDER BY evt.timeStamp DESC";
     }
 
     public RepositoryDesc getRepositoryDesc()

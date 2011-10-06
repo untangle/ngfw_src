@@ -40,7 +40,8 @@ public class WebFilterFlaggedFilter implements SimpleEventFilter<WebFilterEvent>
 
         evtQuery = "FROM HttpLogEventFromReports evt " + 
             "WHERE evt.wf" + capitalizedVendorName + "Flagged IS TRUE " + 
-            "AND evt.policyId = :policyId ";
+            "AND evt.policyId = :policyId " +
+            "ORDER BY evt.timeStamp DESC";
     }
 
     // SimpleEventFilter methods ----------------------------------------------

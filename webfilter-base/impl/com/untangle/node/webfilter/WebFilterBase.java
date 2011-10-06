@@ -1,6 +1,3 @@
-/**
- * $Id$
- */
 package com.untangle.node.webfilter;
 
 import java.net.InetAddress;
