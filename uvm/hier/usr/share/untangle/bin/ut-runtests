@@ -88,7 +88,7 @@ def runTestSuite(suite):
                 exit(1)
         else:
             print "Test success : %s " % test._testMethodName
-    print "== Testing %s ==" % suite.__class__
+    print "== Testing %s ==" % suite.nodeName()
 
 # Verify the test enviroment is setup correctly
 def runTestEnvironmentTests():
