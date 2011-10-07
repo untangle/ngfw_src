@@ -113,7 +113,7 @@ FROM events.n_firewall_evt
 WHERE reports.sessions.time_stamp >= %s
 AND reports.sessions.time_stamp < %s
 AND reports.sessions.pl_endp_id = events.n_firewall_evt.pl_endp_id""",
-                               (sd, ed), connection=conn, auto_commit=False, debug=True)
+                               (sd, ed), connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('sessions[firewall]', ed,
                                        connection=conn, auto_commit=False)

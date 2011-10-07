@@ -358,7 +358,7 @@ SELECT (date_trunc('minute', time_stamp)
 FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s
 GROUP BY time, uid, hname, client_intf, server_intf
-""", (sd, ed), connection=conn, auto_commit=False, debug=True)
+""", (sd, ed), connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('reports.session_counts', ed,
                                        connection=conn, auto_commit=False)
