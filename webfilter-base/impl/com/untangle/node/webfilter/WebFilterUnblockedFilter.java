@@ -31,7 +31,8 @@ public class WebFilterUnblockedFilter
 
         evtQuery = "FROM HttpLogEventFromReports evt " + 
             "WHERE evt.wf" + capitalizedVendorName + "Category = 'unblocked' " + 
-            "AND evt.policyId = :policyId ";
+            "AND evt.policyId = :policyId " + 
+            "ORDER BY evt.timeStamp DESC" ;
     }
 
     // SimpleEventFilter methods ----------------------------------------------
