@@ -37,7 +37,7 @@ public class WebFilterAllFilter implements SimpleEventFilter<WebFilterEvent>
             vendorName.substring(1);
 
         evtQuery = "FROM HttpLogEventFromReports evt " + 
-            "WHERE evt.wf" + capitalizedVendorName + "Category IS NOT NULL " + 
+            "WHERE evt.wf" + capitalizedVendorName + "Blocked IS NOT NULL " + 
             "AND evt.policyId = :policyId " +
             "ORDER BY evt.timeStamp DESC";
     }

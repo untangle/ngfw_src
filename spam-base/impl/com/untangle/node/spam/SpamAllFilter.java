@@ -45,11 +45,14 @@ public class SpamAllFilter implements ListEventFilter<MailLogEventFromReports>
     {
         if (vendor.equals("SpamAssassin")) //FIXME: more cases
             this.vendor = "sa";
+        else if (vendor.equals("CommtouchAs"))
+            this.vendor = "ct";
         else
             this.vendor = vendor;
          
         logQuery = "FROM MailLogEventFromReports AS evt" +
             " WHERE evt.addrKind = 'T'" +
+            " AND evt." + this.vendor + "Action IS NOT NULL" +
             " AND evt.policyId = :policyId" + 
             " ORDER BY evt.timeStamp DESC";
     }
