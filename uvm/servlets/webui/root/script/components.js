@@ -2554,16 +2554,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             name : "Refresh",
             tooltip : i18n._('Refresh'),
             iconCls : 'icon-refresh',
-            handler : function() {
-                if (!rpc.nodeManager.isInstantiated("untangle-node-reporting")) {
-        	        Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install the Reports application."));
-                }
-                else {
-                    Ext.MessageBox.wait(i18n._("Refreshing..."), i18n._("Please wait"));
-                    rpc.nodeManager.node("untangle-node-reporting").flushEvents(); // TESTING XXX
-                    this.refreshList();
-                }
-            }.createDelegate(this)
+            handler : this.refreshHandler.createDelegate(this)
         }, {
             xtype : 'tbbutton',
             hidden : !this.hasAutoRefresh,
@@ -2619,7 +2610,6 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         var refreshButton=Ext.getCmp("refresh_"+this.getId());
         refreshButton.disable();
         this.autorefreshList();
-
     },
     stopAutoRefresh: function(setButton) {
         this.autoRefreshEnabled=false;
@@ -2651,9 +2641,9 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         if(this!=null && this.rendered && this.autoRefreshEnabled) {
             if(this==this.settingsCmp.tabs.getActiveTab()) {
                 this.autorefreshList.defer(5000,this);
-                var reports = rpc.nodeManager.node("untangle-node-reporting");
-                if (reports !== null)
-                    reports.flushEvents(); // TESTING XXX
+                if (this.isReportsAppInstalled()) {
+                    this.getUntangleNodeReporting().flushEvents(); // TESTING XXX
+                }
             } else {
                 this.stopAutoRefresh(true);
             }
@@ -2720,6 +2710,17 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             elems[i].unselectable = "off";
         }
     },
+    refreshHandler: function (skipReportInstallWarning) {
+        if (!this.isReportsAppInstalled()) {
+            if (!skipReportInstallWarning) {
+                Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install the Reports application."));
+            }
+        } else {
+            Ext.MessageBox.wait(i18n._("Refreshing..."), i18n._("Please wait"));
+            this.getUntangleNodeReporting().flushEvents(); // TESTING XXX
+            this.refreshList();
+        }
+    },
     // Refresh the events list
     refreshCallback : function(result, exception) {
         if(Ung.Util.handleException(exception)) return;
@@ -2751,8 +2752,44 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                 }
             }
         }
+    },
+    // is reports node installed
+    isReportsAppInstalled : function(forceReload) {
+        if (forceReload || this.reportsAppInstalled === undefined) {
+            try {
+                this.reportsAppInstalled = rpc.nodeManager.isInstantiated("untangle-node-reporting");
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return this.reportsAppInstalled;
+    },
+    // get untangle node reporting
+    getUntangleNodeReporting : function(forceReload) {
+        if (forceReload || this.untangleNodeReporting === undefined) {
+            try {
+                this.untangleNodeReporting = rpc.nodeManager.node("untangle-node-reporting");
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return this.untangleNodeReporting;
+    },
+    
+    listeners: {
+        "activate": {
+            fn: function() {
+                this.refreshHandler(true);
+            }
+        },
+        "deactivate" : {
+            fn: function() {
+                if(this.autoRefreshEnabled) {
+                    this.stopAutoRefresh(true);
+                }
+            }
+        }
     }
-
 });
 
 // Standard Ung window
