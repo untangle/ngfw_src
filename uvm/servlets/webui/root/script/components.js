@@ -3988,7 +3988,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     field : this.sortField,
                     direction : this.sortOrder ? this.sortOrder : "ASC"
                 } : null,
-                remoteSort : false,
+                remoteSort : this.paginated,
                 reader : new Ext.data.JsonReader({
                     totalProperty : "totalRecords",
                     root : this.dataRoot,
