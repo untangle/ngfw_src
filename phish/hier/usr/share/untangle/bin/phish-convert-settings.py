@@ -69,7 +69,7 @@ def get_smtp_config(sid, debug=False):
     str += '\t\t"scan": %s,\n' % scan
     str += '\t\t"scanLimit": %s,\n' % limit_scans
     str += '\t\t"scanWanMail": %s,\n' % scan_wan_mail
-    str += '\t\t"strengh": %s,\n' % strength
+    str += '\t\t"strength": %s,\n' % strength
     str += '\t\t"superSpamStrength": %s,\n' % superspam_strength
     str += '\t\t"tarpit": %s,\n' % tarpit
     str += '\t\t"tarpitTimeout": %s,\n' % tarpit_timeout
@@ -105,7 +105,7 @@ def get_imap_config(sid, debug=False):
     str += '\t\t"msgAction": "%s",\n' % action_string(msg_action)
     str += '\t\t"msgSizeLimit": %s,\n' % msg_size_limit
     str += '\t\t"scan": %s,\n' % scan
-    str += '\t\t"strengh": %s,\n' % strength
+    str += '\t\t"strength": %s,\n' % strength
     str += '\t},\n'
 
     return str
@@ -138,7 +138,7 @@ def get_pop_config(sid, debug=False):
     str += '\t\t"msgAction": "%s",\n' % action_string(msg_action)
     str += '\t\t"msgSizeLimit": %s,\n' % msg_size_limit
     str += '\t\t"scan": %s,\n' % scan
-    str += '\t\t"strengh": %s,\n' % strength
+    str += '\t\t"strength": %s,\n' % strength
     str += '\t},\n'
 
     return str
