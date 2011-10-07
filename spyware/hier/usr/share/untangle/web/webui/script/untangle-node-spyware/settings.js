@@ -281,7 +281,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             this.gridCookiesList = new Ung.EditorGrid({
                 name : 'Cookies List',
                 settingsCmp : this,
-                paginated : false,
                 emptyRow : {
                     "string" : this.i18n._("[no identification]"),
                     "enabled" : true,
@@ -329,7 +328,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             this.gridSubnetList = new Ung.EditorGrid({
                 name : 'Subnet List',
                 settingsCmp : this,
-                paginated : false,
                 emptyRow : {
                     "string" : "1.2.3.4/5",
                     "name" : this.i18n._("[no name]"),
