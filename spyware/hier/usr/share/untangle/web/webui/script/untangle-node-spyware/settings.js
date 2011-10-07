@@ -198,6 +198,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                                             if(Ung.Util.handleException(exception)) return;
                                             this.gridCookiesList.reloadGrid({data:result.list});
                                             this.getSettings().cookies = result;
+                                            this.initialSettings.cookies = result;
                                             if(callback != null) {
                                                 callback();
                                             }
@@ -250,6 +251,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                                             if(Ung.Util.handleException(exception)) return;
                                             this.gridSubnetList.reloadGrid({data:result.list});
                                             this.getSettings().subnets = result;
+                                            this.initialSettings.subnets = result;
                                             if(callback != null) {
                                                 callback();
                                             }
