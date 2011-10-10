@@ -331,7 +331,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 name : 'Subnet List',
                 settingsCmp : this,
                 emptyRow : {
-                    "string" : "1.2.3.4/5",
+                    "string" : "1.2.3.4/24",
                     "name" : this.i18n._("[no name]"),
                     "flagged" : true,
                     description : this.i18n._("[no description]")
