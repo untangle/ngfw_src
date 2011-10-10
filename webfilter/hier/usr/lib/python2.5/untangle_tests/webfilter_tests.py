@@ -339,6 +339,23 @@ class WebFilterLiteTests(unittest.TestCase):
         assert(events['list'][0]['wfUntangleBlocked'] == False)
         assert(events['list'][0]['wfUntangleFlagged'] == True)
 
+    def test_102_eventlog_allUrls(self):
+        global node
+        fname = sys._getframe().f_code.co_name
+        nukeBlockedUrls();
+        # specify a test_100 argument so it isn't confused with other events
+        result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
+        time.sleep(1)
+        flushEvents()
+        eventMan = node.getEventManager()
+        events = eventMan.getRepository('All Web Traffic').getEvents(1)
+        assert(events != None)
+        assert(events['list'] != None)
+        assert(events['list'][0]['host'] == "metaloft.com")
+        assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
+        assert(events['list'][0]['wfUntangleBlocked'] == False)
+        assert(events['list'][0]['wfUntangleFlagged'] == False)
+
     def test_999_finalTearDown(self):
         global nodeDesc
         uvmContext.nodeManager().destroy(nodeDesc['nodeId']);
