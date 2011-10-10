@@ -309,7 +309,7 @@ class WebFilterLiteTests(unittest.TestCase):
         fname = sys._getframe().f_code.co_name
         nukeBlockedUrls();
         addBlockedUrl("metaloft.com/test/testPage1.html", blocked=True, flagged=True)
-        # specify a test_100 argument so it isn't confused with other events
+        # specify an argument so it isn't confused with other events
         result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1)
         flushEvents()
@@ -326,7 +326,7 @@ class WebFilterLiteTests(unittest.TestCase):
         fname = sys._getframe().f_code.co_name
         nukeBlockedUrls();
         addBlockedUrl("metaloft.com/test/testPage1.html", blocked=False, flagged=True)
-        # specify a test_100 argument so it isn't confused with other events
+        # specify an argument so it isn't confused with other events
         result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1)
         flushEvents()
@@ -343,7 +343,7 @@ class WebFilterLiteTests(unittest.TestCase):
         global node
         fname = sys._getframe().f_code.co_name
         nukeBlockedUrls();
-        # specify a test_100 argument so it isn't confused with other events
+        # specify an argument so it isn't confused with other events
         result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1)
         flushEvents()
