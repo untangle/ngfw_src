@@ -209,6 +209,7 @@ class RealApt
       return r
     end
     cmd_to_stderr("monit -c /etc/untangle/monit.conf unmonitor all")
+    sleep 5 # sleep so that the untangle-vm has time to send messages to UI before shutting down
     r = cmd_to_stderr("apt-get dist-upgrade #{UPGD_OPTS}")
     log "done #{@stamp}"
     cmd_to_stderr("monit -c /etc/untangle/monit.conf monitor all")
