@@ -1,5 +1,6 @@
 import unittest
 import time
+import sys
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
@@ -62,6 +63,13 @@ def nukeBlockedExtensions():
     rules = node.getBlockedExtensions()
     rules["list"] = []
     node.setBlockedExtensions(rules)
+
+def flushEvents():
+    global uvmContext
+    reports = uvmContext.nodeManager().node("untangle-node-reporting")
+    if (reports != None):
+        reports.flushEvents()
+
 
 #
 # TESTS TO ADD:
@@ -295,20 +303,26 @@ class WebFilterLiteTests(unittest.TestCase):
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.html 2>&1 | grep -q text123")
         nukeBlockedExtensions()
         assert (result == 0)
-
-#     def test_100_eventlog(self):
-#         global node
-#         nukeBlockedUrls();
-#         addBlockedUrl("metaloft.com/test/testPage1.html", blocked=True, flagged=True)
-#         addBlockedUrl("metaloft.com/test/testPage2.html", blocked=False, flagged=True)
-#         result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
-#         result2 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage2.html 2>&1 | grep -q text123")
-#         print "sleeping..."
-#         time.sleep(5)
-#         print "sleeping...done"
-#         eventMan = node.getEventManager()
-#         print eventMan
-#         print eventMan.getRepositories()
+        
+    def test_100_eventlog(self):
+        global node
+        fname = sys._getframe().f_code.co_name
+        nukeBlockedUrls();
+        addBlockedUrl("metaloft.com/test/testPage1.html", blocked=True, flagged=True)
+        # specify a test_100 argument so it isn't confused with other events
+        result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
+        time.sleep(1)
+        flushEvents()
+        eventMan = node.getEventManager()
+        events = eventMan.getRepository('Blocked Web Traffic').getEvents(1)
+        assert(events != None)
+        assert(events['list'] != None)
+        assert(events['list'][0]['host'] != None)
+        assert(events['list'][0]['host'] == "metaloft.com")
+        assert(events['list'][0]['uri'] != None)
+        assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
+        assert(events['list'][0]['wfUntangleBlocked'] != None)
+        assert(events['list'][0]['wfUntangleBlocked'] == True)
 
     def test_999_finalTearDown(self):
         global nodeDesc
