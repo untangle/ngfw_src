@@ -68,7 +68,7 @@ def flushEvents():
     global uvmContext
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
     if (reports != None):
-        reports.flushEvents()
+        reports.flushEvents(True)
 
 
 #
@@ -304,7 +304,7 @@ class WebFilterLiteTests(unittest.TestCase):
         nukeBlockedExtensions()
         assert (result == 0)
         
-    def test_100_eventlog(self):
+    def test_100_eventlog_blockedUrl(self):
         global node
         fname = sys._getframe().f_code.co_name
         nukeBlockedUrls();
@@ -317,12 +317,27 @@ class WebFilterLiteTests(unittest.TestCase):
         events = eventMan.getRepository('Blocked Web Traffic').getEvents(1)
         assert(events != None)
         assert(events['list'] != None)
-        assert(events['list'][0]['host'] != None)
         assert(events['list'][0]['host'] == "metaloft.com")
-        assert(events['list'][0]['uri'] != None)
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
-        assert(events['list'][0]['wfUntangleBlocked'] != None)
         assert(events['list'][0]['wfUntangleBlocked'] == True)
+
+    def test_101_eventlog_flaggedUrl(self):
+        global node
+        fname = sys._getframe().f_code.co_name
+        nukeBlockedUrls();
+        addBlockedUrl("metaloft.com/test/testPage1.html", blocked=False, flagged=True)
+        # specify a test_100 argument so it isn't confused with other events
+        result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
+        time.sleep(1)
+        flushEvents()
+        eventMan = node.getEventManager()
+        events = eventMan.getRepository('Flagged Web Traffic').getEvents(1)
+        assert(events != None)
+        assert(events['list'] != None)
+        assert(events['list'][0]['host'] == "metaloft.com")
+        assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
+        assert(events['list'][0]['wfUntangleBlocked'] == False)
+        assert(events['list'][0]['wfUntangleFlagged'] == True)
 
     def test_999_finalTearDown(self):
         global nodeDesc

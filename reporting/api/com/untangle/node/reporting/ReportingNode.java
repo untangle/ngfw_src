@@ -17,6 +17,7 @@ public interface ReportingNode extends Node
     void runDailyReport() throws Exception;
 
     void flushEvents();
+    void flushEvents(boolean force);
     
     Validator getValidator();    
 }

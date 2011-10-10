@@ -100,9 +100,14 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 
     public void flushEvents()
     {
+        flushEvents(false);
+    }
+
+    public void flushEvents(boolean force)
+    {
         long currentTime  = System.currentTimeMillis();
 
-        if (currentTime - lastFlushTime < MAX_FLUSH_FREQUENCY) {
+        if (!force && currentTime - lastFlushTime < MAX_FLUSH_FREQUENCY) {
             logger.info("Ignoring flushEvents call (not enough time has elasped)");
         } else {
             try {
