@@ -1896,7 +1896,7 @@ Ung.MessageManager = {
                                     Ext.MessageBox.wait(i18n._("Initializing..."), i18n._("Please wait"), {
                                         interval : 500,
                                         increment : 60,
-                                        duration: 30000,
+                                        duration: 60000,
                                         fn: function() {
                                             Ext.MessageBox.alert(
                                                 i18n._("Applying Upgrade"),
