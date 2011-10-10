@@ -353,6 +353,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 data: this.getSettings().categories.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
+                paginated : false,
                 columns : [{
                     id : 'name',
                     header : this.i18n._("category"),
