@@ -218,7 +218,7 @@ Description: Attack Blocker
 
 Package: untangle-node-spyware
 Architecture: all
-Depends: untangle-vm, untangle-casing-http, untangle-google-safebrowsing
+Depends: untangle-vm, untangle-casing-http, untangle-google-safebrowsing, untangle-webfilter-init
 XB-Display-Name: Spyware Blocker
 XB-View-Position: 50
 XB-Untangle-Pkg-Type: node
