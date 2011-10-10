@@ -37,7 +37,7 @@ public class WebFilterSettings implements Serializable
     private String  unblockMode = UNBLOCK_MODE_NONE;
     private Integer unblockTimeout = 60*60; /* 1 hour */
     private Boolean enforceSafeSearch = true;
-    private Boolean blockAllIpHosts = true;
+    private Boolean blockAllIpHosts = false;
     
     private List<GenericRule> passedClients = new LinkedList<GenericRule>();
     private List<GenericRule> passedUrls = new LinkedList<GenericRule>();
