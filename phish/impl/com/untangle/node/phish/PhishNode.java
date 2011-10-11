@@ -188,7 +188,6 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
     public PhishSettings getSettings()
     {
-        logger.info("getSettings()");
         return (PhishSettings)super.getSettings();
     }
 
