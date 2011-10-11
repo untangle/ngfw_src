@@ -175,7 +175,7 @@ class WebFilterDecisionEngine extends DecisionEngine
             categoryId = categoryIDs.get(i);
             fileName = fileNames.get(i);
 
-            logger.debug("Loading Category \"" + categoryName + "\" from \"" + fileName + "\"");
+            logger.info("Loading Category \"" + categoryName + "\" from \"" + fileName + "\"");
             try {
                 BufferedReader in = new BufferedReader(new FileReader(fileName));
                 String url;
