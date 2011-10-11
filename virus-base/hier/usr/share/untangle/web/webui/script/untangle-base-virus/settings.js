@@ -638,6 +638,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     mapping : 'virus' + main.capitalize(this.getRpcNode().getVendor()) + 'Name'
                 }],
                 // the list of columns
+                autoExpandColumn: 'reason',
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : 130,
@@ -647,23 +648,27 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
+                    id : 'client',
                     header : this.i18n._("client"),
-                    width : 120,
+                    width : 100,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
+                    id : 'username',
                     header : this.i18n._("username"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'uid'
                 }, {
+                    id : 'reason',
                     header : this.i18n._("reason for action"),
                     width : 140,
                     sortable : true,
                     dataIndex : 'reason'
                 }, {
+                    id : 'server',
                     header : this.i18n._("server"),
-                    width : 120,
+                    width : 100,
                     sortable : true,
                     dataIndex : 'server'
                 }]

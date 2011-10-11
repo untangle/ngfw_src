@@ -2493,6 +2493,8 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     // for internal use
     rpc : null,
     helpSource : 'event_log',
+    // mask to show during refresh
+    loadMask : {msg: i18n._("Refreshing...")},
     // called when the component is initialized
     initComponent : function() {
         this.rpc = {};
@@ -2547,7 +2549,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             name : "Refresh",
             tooltip : i18n._('Refresh'),
             iconCls : 'icon-refresh',
-            handler : this.refreshButtonHandler.createDelegate(this)
+            handler : this.refreshHandler.createDelegate(this)
         }, {
             xtype : 'tbbutton',
             hidden : !this.hasAutoRefresh,
@@ -2703,17 +2705,12 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             elems[i].unselectable = "off";
         }
     },
-    refreshButtonHandler: function (skipReportInstallWarning) {
-        this.refreshHandler(false);
-    }, 
-    refreshHandler: function (skipReportInstallWarning) {
+    refreshHandler: function () {
         if (!this.isReportsAppInstalled()) {
-            if (!skipReportInstallWarning) {
-                Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install the Reports application."));
-            }
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install the Reports application."));
         } else {
-            Ext.MessageBox.wait(i18n._("Refreshing..."), i18n._("Please wait"));
-            this.getUntangleNodeReporting().flushEvents(); // TESTING XXX
+            this.loadMask.show();
+            this.getUntangleNodeReporting().flushEvents(); 
             this.refreshList();
         }
     },
@@ -2730,7 +2727,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                 }
             });
         }
-        Ext.MessageBox.hide();
+        this.loadMask.hide();
         this.makeSelectable();
     },
     refreshList : function() {
@@ -2746,6 +2743,8 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                 } else {
                     this.rpc.repository[selRepository].getEvents(this.refreshCallback.createDelegate(this));
                 }
+            } else {
+                this.loadMask.hide();
             }
         }
     },
@@ -2775,7 +2774,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     listeners: {
         "activate": {
             fn: function() {
-                this.refreshHandler(true);
+                this.refreshHandler();
             }
         },
         "deactivate" : {
