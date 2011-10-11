@@ -44,7 +44,7 @@ if os.path.isfile(LOCKFILE):
           logger.error("Reports are already running (pid %s), aborting..." % pid)
           sys.exit(1)
      else:
-          logger.warning("Removing leftover pidfile (pid %s)" % pid)
+          logger.info("Removing leftover pidfile (pid %s)" % pid)
           os.remove(LOCKFILE)
 
 f = open(LOCKFILE, "w")
@@ -163,7 +163,6 @@ WHERE target_state = 'running' OR target_state = 'initialized'
             conn.commit()
 
             curs = conn.cursor()
-            logger.warn("settings_id: %s" % (setting_id,))
             curs.execute("""
 SELECT day
 FROM settings.n_reporting_wk_sched_rule rule
