@@ -3,20 +3,20 @@ if (!Ung.hasResource["Ung.Firewall"]) {
     Ung.NodeWin.registerClassName('untangle-node-firewall', 'Ung.Firewall');
 
     Ung.FirewallUtil={
-            getMatchers : function (settingsCmp) {
-                return [
-                    {name:"DST_ADDR",displayName: settingsCmp.i18n._("Destination Address"), type: "text", visible: true},
-                    {name:"DST_PORT",displayName: settingsCmp.i18n._("Destination Port"), type: "text",vtype:"port", visible: true},
-                    {name:"DST_INTF",displayName: settingsCmp.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
-                    {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text", visible: true},
-                    {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"port", visible: false},
-                    {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
-                    {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["TCP,UDP","TCP,UDP"],["any","any"]], visible: true},
-                    {name:"DIRECTORY_CONNECTOR_USERNAME",displayName: settingsCmp.i18n._("Directory Connector: Username"), type: "text", visible: true},
-                    {name:"DIRECTORY_CONNECTOR_GROUP",displayName: settingsCmp.i18n._("Directory Connector: User in Group"), type: "text", visible: true}
-                ];
-            }
-        };
+        getMatchers : function (settingsCmp) {
+            return [
+                {name:"DST_ADDR",displayName: settingsCmp.i18n._("Destination Address"), type: "text", visible: true},
+                {name:"DST_PORT",displayName: settingsCmp.i18n._("Destination Port"), type: "text",vtype:"port", visible: true},
+                {name:"DST_INTF",displayName: settingsCmp.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
+                {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text", visible: true},
+                {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"port", visible: false},
+                {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
+                {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["TCP,UDP","TCP,UDP"],["any","any"]], visible: true},
+                {name:"DIRECTORY_CONNECTOR_USERNAME",displayName: settingsCmp.i18n._("Directory Connector: Username"), type: "text", visible: true},
+                {name:"DIRECTORY_CONNECTOR_GROUP",displayName: settingsCmp.i18n._("Directory Connector: User in Group"), type: "text", visible: true}
+            ];
+        }
+    };
     // FirewallRuleBuilder
     Ung.FirewallRuleBuilder = Ext.extend(Ext.grid.EditorGridPanel, {
         settingsCmp: null,
@@ -252,6 +252,16 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 dataIndex : 'enabled',
                 fixed : true
             });
+            var blockedColumn = new Ext.grid.CheckColumn({
+                header : this.i18n._("Block"),
+                dataIndex : 'block',
+                fixed : true
+            });
+            var logColumn = new Ext.grid.CheckColumn({
+                header : this.i18n._("Log"),
+                dataIndex : 'log',
+                fixed : true
+            });
 
             this.panelRules = new Ext.Panel({
                 name : 'panelRules',
@@ -275,169 +285,168 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     bodyStyle : 'padding:5px 5px 5px; 5px;',
                     html : String.format(this.i18n._(" <b>Firewall</b> is a simple application designed to block and log network traffic based on a set of rules. To learn more click on the <b>Help</b> button below.<br/> Routing and Port Forwarding functionality can be found elsewhere in Config->Networking."),main.getBrandingManager().getCompanyName())
                 },
-                this.gridRules= new Ung.EditorGrid({
-                        name : 'Rules',
-                        settingsCmp : this,
-                        height : 500,
-                        paginated : false,
-                        hasReorder : true,
-                        emptyRow : {
-                            "id" : 0,
-                            "enabled" : true,
-                            "block" : false,
-                            "log" : true,
-                            "description" : this.i18n._("[no description]"),
-                            "javaClass" : "com.untangle.node.firewall.FirewallRule"
-                        },
-                        title : this.i18n._("Rules"),
-                        recordJavaClass : "com.untangle.node.firewall.FirewallRule",
-                        data:this.getSettings().rules.list,
-                        fields : [{
-                            name : 'id'
-                        }, {
-                            name : 'enabled'
-                        }, {
-                            name : 'block'
-                        }, {
-                            name : 'log'
-                        }, {
-                            name : 'matchers'
-                        },{
-                            name : 'description'
-                        }, {
-                            name : 'javaClass'
-                        }],
-                        columns : [{
-                            id : 'id',
-                            header : this.i18n._("Rule Id"),
-                            width : 50,
-                            dataIndex : 'id'
-                        }, enabledColumn, {
-                            id : 'description',
-                            header : this.i18n._("Description"),
-                            width : 200,
-                            dataIndex : 'description'
-                        }],
-                        columnsDefaultSortable : false,
-                        autoExpandColumn : 'description',
-                        plugins : [enabledColumn],
+                         this.gridRules= new Ung.EditorGrid({
+                             name : 'Rules',
+                             settingsCmp : this,
+                             height : 500,
+                             paginated : false,
+                             hasReorder : true,
+                             emptyRow : {
+                                 "id" : 0,
+                                 "enabled" : true,
+                                 "block" : false,
+                                 "log" : true,
+                                 "description" : this.i18n._("[no description]"),
+                                 "javaClass" : "com.untangle.node.firewall.FirewallRule"
+                             },
+                             title : this.i18n._("Rules"),
+                             recordJavaClass : "com.untangle.node.firewall.FirewallRule",
+                             data:this.getSettings().rules.list,
+                             fields : [{
+                                 name : 'id'
+                             }, {
+                                 name : 'enabled'
+                             }, {
+                                 name : 'block'
+                             }, {
+                                 name : 'log'
+                             }, {
+                                 name : 'matchers'
+                             },{
+                                 name : 'description'
+                             }, {
+                                 name : 'javaClass'
+                             }],
+                             columns : [{
+                                 id : 'id',
+                                 header : this.i18n._("Rule Id"),
+                                 width : 50,
+                                 dataIndex : 'id'
+                             }, enabledColumn, {
+                                 id : 'description',
+                                 header : this.i18n._("Description"),
+                                 width : 200,
+                                 dataIndex : 'description'
+                             }, logColumn, blockedColumn],
+                             columnsDefaultSortable : false,
+                             autoExpandColumn : 'description',
+                             plugins : [enabledColumn, logColumn, blockedColumn],
 
-                        initComponent : function() {
-                            this.rowEditor = new Ung.RowEditorWindow({
-                                grid : this,
-                                sizeToComponent : this.settingsCmp,
-                                inputLines : this.rowEditorInputLines,
-                                rowEditorLabelWidth : 100,
-                                populate : function(record, addMode) {
-                                    return this.populateTree(record, addMode);
-                                },
-                                // updateAction is called to update the record after the edit
-                                updateAction : function() {
-                                    return this.updateActionTree();
-                                },
-                                isDirty : function() {
-                                    if (this.record !== null) {
-                                        if (this.inputLines) {
-                                            for (var i = 0; i < this.inputLines.length; i++) {
-                                                var inputLine = this.inputLines[i];
-                                                if(inputLine.dataIndex!=null) {
-                                                    if (this.record.get(inputLine.dataIndex) != inputLine.getValue()) {
-                                                        return true;
-                                                    }
-                                                }
-                                                /* for fieldsets */
-                                                if(inputLine.items !=null && inputLine.items.dataIndex != null) {
-                                                    if (this.record.get(inputLine.items.dataIndex) != inputLine.items.getValue()) {
-                                                        return true;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    return false;
-                                },
-                                isFormValid : function() {
-                                    for (var i = 0; i < this.inputLines.length; i++) {
-                                        var item = null;
-                                        if ( this.inputLines.get != null ) {
-                                            item = this.inputLines.get(i);
-                                        } else {
-                                            item = this.inputLines[i];
-                                        }
-                                        if ( item == null ) {
-                                            continue;
-                                        }
+                             initComponent : function() {
+                                 this.rowEditor = new Ung.RowEditorWindow({
+                                     grid : this,
+                                     sizeToComponent : this.settingsCmp,
+                                     inputLines : this.rowEditorInputLines,
+                                     rowEditorLabelWidth : 100,
+                                     populate : function(record, addMode) {
+                                         return this.populateTree(record, addMode);
+                                     },
+                                     // updateAction is called to update the record after the edit
+                                     updateAction : function() {
+                                         return this.updateActionTree();
+                                     },
+                                     isDirty : function() {
+                                         if (this.record !== null) {
+                                             if (this.inputLines) {
+                                                 for (var i = 0; i < this.inputLines.length; i++) {
+                                                     var inputLine = this.inputLines[i];
+                                                     if(inputLine.dataIndex!=null) {
+                                                         if (this.record.get(inputLine.dataIndex) != inputLine.getValue()) {
+                                                             return true;
+                                                         }
+                                                     }
+                                                     /* for fieldsets */
+                                                     if(inputLine.items !=null && inputLine.items.dataIndex != null) {
+                                                         if (this.record.get(inputLine.items.dataIndex) != inputLine.items.getValue()) {
+                                                             return true;
+                                                         }
+                                                     }
+                                                 }
+                                             }
+                                         }
+                                         return false;
+                                     },
+                                     isFormValid : function() {
+                                         for (var i = 0; i < this.inputLines.length; i++) {
+                                             var item = null;
+                                             if ( this.inputLines.get != null ) {
+                                                 item = this.inputLines.get(i);
+                                             } else {
+                                                 item = this.inputLines[i];
+                                             }
+                                             if ( item == null ) {
+                                                 continue;
+                                             }
 
-                                        if ( item.isValid != null) {
-                                            if(!item.isValid()) {
-                                                return false;
-                                            }
-                                        } else if(item.items !=null && item.items.getCount()>0) {
-                                            /* for fieldsets */
-                                            for (var j = 0; j < item.items.getCount(); j++) {
-                                                var subitem=item.items.get(j);
-                                                if ( subitem == null ) {
-                                                    continue;
-                                                }
+                                             if ( item.isValid != null) {
+                                                 if(!item.isValid()) {
+                                                     return false;
+                                                 }
+                                             } else if(item.items !=null && item.items.getCount()>0) {
+                                                 /* for fieldsets */
+                                                 for (var j = 0; j < item.items.getCount(); j++) {
+                                                     var subitem=item.items.get(j);
+                                                     if ( subitem == null ) {
+                                                         continue;
+                                                     }
 
-                                                if ( subitem.isValid != null && !subitem.isValid()) {
-                                                    return false;
-                                                }
-                                            }                                    
-                                        }
-                                        
-                                    }
-                                    return true;
-                                }
-                            });
-                            Ung.EditorGrid.prototype.initComponent.call(this);
-                        },
+                                                     if ( subitem.isValid != null && !subitem.isValid()) {
+                                                         return false;
+                                                     }
+                                                 }                                    
+                                             }
+                                             
+                                         }
+                                         return true;
+                                     }
+                                 });
+                                 Ung.EditorGrid.prototype.initComponent.call(this);
+                             },
 
-                        rowEditorInputLines : [new Ext.form.Checkbox({
-                            name : "Enable Rule",
-                            dataIndex: "enabled",
-                            fieldLabel : this.i18n._("Enable Rule"),
-                            itemCls:'firewall-spacing-1'
-                        }),
-                        new Ext.form.TextField({
-                            name : "Description",
-                            dataIndex: "description",
-                            fieldLabel : this.i18n._("Description"),
-                            itemCls:'firewall-spacing-1',
-                            width : 400
-                        }),
-                        new Ext.form.FieldSet({
-                            title : this.i18n._("Rule") ,
-                            cls:'firewall-spacing-2',
-                            autoHeight : true,
-                            title: "If all of the following conditions are met:",
-                            items:[{
-                                xtype:"firewallrulebuilder",
-                                settingsCmp: this,
-                                anchor:"98%",
-                                width: 900,
-                                dataIndex: "matchers",
-                                rules : Ung.FirewallUtil.getMatchers(this)
-                            }]
-                        }), {
-                            xtype : 'fieldset',
-                            autoHeight: true,
-                            cls:'description',
-                            title : i18n._('Perform the following action(s):'),
-                            border: false
-                        }, new Ext.form.Checkbox({
-                            name : "Block",
-                            dataIndex: "block",
-                            itemCls:'firewall-spacing-1',
-                            fieldLabel : this.i18n._("Block")
-                        }), new Ext.form.Checkbox({
-                            name : "Log",
-                            dataIndex: "log",
-                            itemCls:'firewall-spacing-1',
-                            fieldLabel : this.i18n._("Log")
-                        })
-]                    })
-                ]
+                             rowEditorInputLines : [new Ext.form.Checkbox({
+                                 name : "Enable Rule",
+                                 dataIndex: "enabled",
+                                 fieldLabel : this.i18n._("Enable Rule"),
+                                 itemCls:'firewall-spacing-1'
+                             }),
+                                                    new Ext.form.TextField({
+                                                        name : "Description",
+                                                        dataIndex: "description",
+                                                        fieldLabel : this.i18n._("Description"),
+                                                        itemCls:'firewall-spacing-1',
+                                                        width : 400
+                                                    }),
+                                                    new Ext.form.FieldSet({
+                                                        title : this.i18n._("Rule") ,
+                                                        cls:'firewall-spacing-2',
+                                                        autoHeight : true,
+                                                        title: "If all of the following conditions are met:",
+                                                        items:[{
+                                                            xtype:"firewallrulebuilder",
+                                                            settingsCmp: this,
+                                                            anchor:"98%",
+                                                            width: 900,
+                                                            dataIndex: "matchers",
+                                                            rules : Ung.FirewallUtil.getMatchers(this)
+                                                        }]
+                                                    }), {
+                                                        xtype : 'fieldset',
+                                                        autoHeight: true,
+                                                        cls:'description',
+                                                        title : i18n._('Perform the following action(s):'),
+                                                        border: false
+                                                    }, new Ext.form.Checkbox({
+                                                        name : "Log",
+                                                        dataIndex: "log",
+                                                        itemCls:'firewall-spacing-1',
+                                                        fieldLabel : this.i18n._("Log")
+                                                    }), new Ext.form.Checkbox({
+                                                        name : "Block",
+                                                        dataIndex: "block",
+                                                        itemCls:'firewall-spacing-1',
+                                                        fieldLabel : this.i18n._("Block")
+                                                    })]
+                         })]
             });
         },
         // Event Log
