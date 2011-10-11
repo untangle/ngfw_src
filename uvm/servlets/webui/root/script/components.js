@@ -2547,7 +2547,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             name : "Refresh",
             tooltip : i18n._('Refresh'),
             iconCls : 'icon-refresh',
-            handler : this.refreshHandler.createDelegate(this)
+            handler : this.refreshButtonHandler.createDelegate(this)
         }, {
             xtype : 'tbbutton',
             hidden : !this.hasAutoRefresh,
@@ -2635,7 +2635,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             if(this==this.settingsCmp.tabs.getActiveTab()) {
                 this.autorefreshList.defer(5000,this);
                 if (this.isReportsAppInstalled()) {
-                    this.getUntangleNodeReporting().flushEvents(); // TESTING XXX
+                    this.getUntangleNodeReporting().flushEvents(); 
                 }
             } else {
                 this.stopAutoRefresh(true);
@@ -2703,6 +2703,9 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             elems[i].unselectable = "off";
         }
     },
+    refreshButtonHandler: function (skipReportInstallWarning) {
+        this.refreshHandler(false);
+    }, 
     refreshHandler: function (skipReportInstallWarning) {
         if (!this.isReportsAppInstalled()) {
             if (!skipReportInstallWarning) {
