@@ -15,7 +15,7 @@ if [ $MEM -gt 4900000 ] ; then
     EVENTS_SHORT_SYNC=5 # seconds
     REPORTS_INTERVAL=1 #minutes
 elif [ $MEM -gt 3900000 ] ; then
-    MAX_HEAP_SIZE=2200m
+    MAX_HEAP_SIZE=2400m
     MAX_VIRTUAL_SIZE=4400m
     GC_SAFETY_FACTOR=10
     GC_MIN_CYCLE=0
@@ -23,7 +23,7 @@ elif [ $MEM -gt 3900000 ] ; then
     EVENTS_SHORT_SYNC=7
     REPORTS_INTERVAL=2 #minutes
 elif [ $MEM -gt 2900000 ] ; then
-    MAX_HEAP_SIZE=1500m
+    MAX_HEAP_SIZE=1600m
     MAX_VIRTUAL_SIZE=3000m
     GC_SAFETY_FACTOR=20
     GC_MIN_CYCLE=5
@@ -32,10 +32,10 @@ elif [ $MEM -gt 2900000 ] ; then
     REPORTS_INTERVAL=3 #minutes
 elif [ $MEM -gt 1900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
-        MAX_HEAP_SIZE=720m
+        MAX_HEAP_SIZE=820m
         MAX_VIRTUAL_SIZE=2500m
     else
-        MAX_HEAP_SIZE=720m
+        MAX_HEAP_SIZE=820m
         MAX_VIRTUAL_SIZE=1500m
     fi
     GC_SAFETY_FACTOR=50
@@ -45,10 +45,10 @@ elif [ $MEM -gt 1900000 ] ; then
     REPORTS_INTERVAL=4 #minutes
 elif [ $MEM -gt 900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
-        MAX_HEAP_SIZE=360m
+        MAX_HEAP_SIZE=420m
         MAX_VIRTUAL_SIZE=1500m
     else
-        MAX_HEAP_SIZE=360m
+        MAX_HEAP_SIZE=420m
         MAX_VIRTUAL_SIZE=1000m
     fi
     GC_SAFETY_FACTOR=90
@@ -58,10 +58,10 @@ elif [ $MEM -gt 900000 ] ; then
     REPORTS_INTERVAL=5 #minutes
 else
     if [ $ARCH = 'x86_64' ]; then
-        MAX_HEAP_SIZE=260m
+        MAX_HEAP_SIZE=320m
         MAX_VIRTUAL_SIZE=1500m
     else
-        MAX_HEAP_SIZE=220m
+        MAX_HEAP_SIZE=320m
         MAX_VIRTUAL_SIZE=1000m
     fi
     GC_SAFETY_FACTOR=90

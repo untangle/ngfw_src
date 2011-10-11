@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +29,9 @@ class WebFilterDecisionEngine extends DecisionEngine
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private boolean unconfigured = true;
-
     private static final File INIT_HOME = new File("/usr/share/untangle-webfilter-init/");
 
-    private static HashMap<String,List<Integer>> urlDatabase = null;
+    private static HashMap<String, Integer> urlDatabase = null;
     private static HashMap<Integer, String> idToCategoryName = null;
         
     public WebFilterDecisionEngine( WebFilterBase node )
@@ -51,30 +50,38 @@ class WebFilterDecisionEngine extends DecisionEngine
 
     protected List<String> categorizeSite(String domain, int port, String uri)
     {
+        List<String> results = null;
+        LinkedList<Integer> categories = new LinkedList<Integer>();
         String url = domain + uri;
 
         logger.debug("Web Filter Category Lookup: " + url); 
-        List<Integer> categories = urlDatabase.get(url);
-        List<String> results = null;
+
+        Integer category = urlDatabase.get(url);
+        if (category != null)
+            categories.add(category);
 
         /**
          * Lookup just the domain (no URI)
          * For example example.com is categorized as a whole
          * So example.com/foo won't be in the database specifically
          */
-        if (categories == null || categories.size() == 0) {
+        if (categories.size() == 0) {
             String dom;
             for ( dom = domain ; null != dom ; dom = nextHost(dom) ) {
-                categories = urlDatabase.get(dom + "/");
-                if (categories != null)
+                category = urlDatabase.get(url);
+                if (category != null)
+                    categories.add(category);
+
+                if (category != null) {
                     break;
+                }
             }
         }
 
-        if (categories == null || categories.size() == 0) {
+        if (categories.size() == 0) {
             results = Collections.singletonList("uncategorized");
         } else {
-            results = new LinkedList<String>();
+            results = new ArrayList<String>();
 
             for (Integer categoryId : categories) {
                 String categoryName = idToCategoryName.get(categoryId);
@@ -100,12 +107,12 @@ class WebFilterDecisionEngine extends DecisionEngine
 
         logger.info("Initializing urlDatabase...");
 
-        this.urlDatabase = new HashMap<String,List<Integer>>();
+        this.urlDatabase = new HashMap<String,Integer>();
         this.idToCategoryName = new HashMap<Integer,String>();
         
-        List<String>  fileNames = new LinkedList<String>();
-        List<String>  categoryNames = new LinkedList<String>();
-        List<Integer> categoryIDs = new LinkedList<Integer>();
+        List<String>  fileNames = new ArrayList<String>();
+        List<String>  categoryNames = new ArrayList<String>();
+        List<Integer> categoryIDs = new ArrayList<Integer>();
         
         fileNames.add("/usr/share/untangle-webfilter-init/aggressive-url");
         fileNames.add("/usr/share/untangle-webfilter-init/dating-url");
@@ -122,20 +129,25 @@ class WebFilterDecisionEngine extends DecisionEngine
         fileNames.add("/usr/share/untangle-webfilter-init/vacation-url");
         fileNames.add("/usr/share/untangle-webfilter-init/violence-url");
 
+        /**
+         * These are put in this order because we only store one categorization per URL
+         * and we use the first categorization found
+         * As such, we should put the more "dominate" categories at the top
+         */
+        categoryNames.add("Pornography");
+        categoryNames.add("Proxy Sites");
         categoryNames.add("Hate and Aggression");
-        categoryNames.add("Dating");
+        categoryNames.add("Violence");
         categoryNames.add("Illegal Drugs");
-        categoryNames.add("Shopping");
+        categoryNames.add("Social Networking");
+        categoryNames.add("Dating");
         categoryNames.add("Gambling");
+        categoryNames.add("Shopping");
         categoryNames.add("Hacking");
         categoryNames.add("Job Search");
         categoryNames.add("Web Mail");
-        categoryNames.add("Pornography");
-        categoryNames.add("Proxy Sites");
-        categoryNames.add("Social Networking");
         categoryNames.add("Sports");
         categoryNames.add("Vacation");
-        categoryNames.add("Violence");
 
         categoryIDs.add(1);
         categoryIDs.add(2);
@@ -175,24 +187,27 @@ class WebFilterDecisionEngine extends DecisionEngine
             categoryId = categoryIDs.get(i);
             fileName = fileNames.get(i);
 
+            int urlCount = 0;
+            int stringLength = 0;
             logger.info("Loading Category \"" + categoryName + "\" from \"" + fileName + "\"");
             try {
                 BufferedReader in = new BufferedReader(new FileReader(fileName));
                 String url;
                 while ((url = in.readLine()) != null) {
-                    List<Integer> currentCategorization = urlDatabase.get(url);
+                    urlCount++;
+                    stringLength += url.length();
+                    Integer currentCategorization = urlDatabase.get(url);
 
                     if (currentCategorization != null) {
-                        //logger.debug("Adding   categorization for " + url + " -> " + categoryName + "(" + categoryId + ")");
-                        currentCategorization.add(categoryId);
+                        logger.debug( "Ignoring categorization for " + url + " -> " + categoryName + "(" + categoryId + ")" + " already categorized: " + idToCategoryName.get(currentCategorization) + "(" + currentCategorization + ")" );
                     } else {
-                        //logger.debug("Creating categorization for " + url + " -> " + categoryName + "(" + categoryId + ")");
-                        List<Integer> newCategorization = new LinkedList<Integer>();
-                        newCategorization.add(categoryId);
-                        urlDatabase.put(url, newCategorization);
+                        logger.debug( "Adding   categorization for " + url + " -> " + categoryName + "(" + categoryId + ")");
+                        urlDatabase.put(url, categoryId); 
                     }
                 }
                 in.close();
+                logger.info("Loaded  Category \"" + categoryName + "\" from \"" + fileName + "\" : " + urlCount + " urls. " + stringLength + " stringLength");
+
             }
             catch (IOException e) {
                 logger.error("Error loading category from file: " + fileName, e);
