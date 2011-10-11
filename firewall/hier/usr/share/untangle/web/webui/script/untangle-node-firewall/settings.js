@@ -7,10 +7,10 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 return [
                     {name:"DST_ADDR",displayName: settingsCmp.i18n._("Destination Address"), type: "text", visible: true},
                     {name:"DST_PORT",displayName: settingsCmp.i18n._("Destination Port"), type: "text",vtype:"port", visible: true},
-                    {name:"DST_INTF",displayName: settingsCmp.i18n._("Destination Interface"), type: "checkgroup", values: [["External","External"],["any","any"]], visible: true},
+                    {name:"DST_INTF",displayName: settingsCmp.i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
                     {name:"SRC_ADDR",displayName: settingsCmp.i18n._("Source Address"), type: "text", visible: true},
                     {name:"SRC_PORT",displayName: settingsCmp.i18n._("Source Port"), type: "text",vtype:"port", visible: false},
-                    {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: [["External","External"],["any","any"]], visible: true},
+                    {name:"SRC_INTF",displayName: settingsCmp.i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
                     {name:"PROTOCOL",displayName: settingsCmp.i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["TCP,UDP","TCP,UDP"],["any","any"]], visible: true},
                     {name:"DIRECTORY_CONNECTOR_USERNAME",displayName: settingsCmp.i18n._("Directory Connector: Username"), type: "text", visible: true},
                     {name:"DIRECTORY_CONNECTOR_GROUP",displayName: settingsCmp.i18n._("Directory Connector: User in Group"), type: "text", visible: true}
