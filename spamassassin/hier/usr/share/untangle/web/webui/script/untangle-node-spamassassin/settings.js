@@ -873,9 +873,10 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     mapping : this.getRpcNode().getVendor() + 'Score'
                 }],
                 // the list of columns
+                autoExpandColumn : 'subject',
                 columns : [{
                     header : this.i18n._("timestamp"),
-                    width : 120,
+                    width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'timeStamp',
                     renderer : function(value) {
@@ -883,15 +884,16 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     }
                 }, {
                     header : this.i18n._("receiver"),
-                    width : 150,
+                    width : Ung.Util.emailFieldWidth,
                     sortable : true,
                     dataIndex : 'addr'
                 }, {
                     header : this.i18n._("sender"),
-                    width : 120,
+                    width : Ung.Util.emailFieldWidth,
                     sortable : true,
                     dataIndex : 'sender'
                 }, {
+                    id : 'subject',
                     header : this.i18n._("subject"),
                     width : 150,
                     sortable : true,
@@ -908,12 +910,12 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     dataIndex : 'score'
                 }, {
                     header : this.i18n._("client"),
-                    width : 120,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
                     header : this.i18n._("server"),
-                    width : 120,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'
                 }]
@@ -950,7 +952,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 // the list of columns
                 columns : [{
                     header : this.i18n._("timestamp"),
-                    width : 120,
+                    width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'timeStamp',
                     renderer : function(value) {

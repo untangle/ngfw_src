@@ -497,7 +497,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }],
                 columns : [{
                     header : this.i18n._("timestamp"),
-                    width : 130,
+                    width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'timeStamp',
                     renderer : function(value) {
@@ -505,27 +505,32 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     }
                 }, {
                     header : this.i18n._("client"),
-                    width : 120,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
                     header : this.i18n._("username"),
+                    width : Ung.Util.usernameFieldWidth,
                     sortable : true,
                     dataIndex : 'uid'
                 }, {
                     header : this.i18n._("host"),
+                    width : Ung.Util.hostnameFieldWidth,
                     sortable : true,
                     dataIndex : 'host'
                 }, {
-                    header : this.i18n._("URL"),
+                    header : this.i18n._("Uri"),
+                    width : Ung.Util.uriFieldWidth,
                     sortable : true,
                     dataIndex : 'uri'
                 }, {
                     header : this.i18n._("cookie"),
-                    sortable : true
+                    width : 100,
+                    sortable : true,
+                    dataIndex : 'swCookie'
                 }, {
                     header : this.i18n._("server"),
-                    width : 120,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'
                 }]
@@ -560,9 +565,10 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     name : 'server',
                     mapping : 'CServerAddr'
                 }],
+                autoExpandColumn: 'uri',
                 columns : [{
                     header : this.i18n._("timestamp"),
-                    width : 130,
+                    width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'timeStamp',
                     renderer : function(value) {
@@ -570,24 +576,28 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     }
                 }, {
                     header : this.i18n._("client"),
-                    width : 120,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
                     header : this.i18n._("username"),
+                    width : Ung.Util.usernameFieldWidth,
                     sortable : true,
                     dataIndex : 'uid'
                 }, {
                     header : this.i18n._("host"),
+                    width : Ung.Util.hostnameFieldWidth,
                     sortable : true,
                     dataIndex : 'host'
                 }, {
-                    header : this.i18n._("URL"),
+                    id: 'uri',
+                    header : this.i18n._("Uri"),
+                    width : Ung.Util.uriFieldWidth,
                     sortable : true,
                     dataIndex : 'uri'
                 }, {
                     header : this.i18n._("server"),
-                    width : 120,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'
                 }]
@@ -620,7 +630,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }],
                 columns : [{
                     header : this.i18n._("timestamp"),
-                    width : 130,
+                    width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'timeStamp',
                     renderer : function(value) {
@@ -628,20 +638,22 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     }
                 }, {
                     header : this.i18n._("client"),
-                    width : 120,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
                     header : this.i18n._("username"),
+                    width : Ung.Util.usernameFieldWidth,
                     sortable : true,
                     dataIndex : 'uid'
                 }, {
                     header : this.i18n._("reason"),
+                    width : 120,
                     sortable : true,
                     dataIndex : 'swAccessIdent'
                 }, {
                     header : this.i18n._("server"),
-                    width : 120,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'
                 }]

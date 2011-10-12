@@ -472,9 +472,10 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     name : 'server',
                     mapping : 'CServerAddr'
                 }],
+                autoExpandColumn: 'ruleIndex',
                 columns : [{
                     header : this.i18n._("timestamp"),
-                    width : 130,
+                    width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'timeStamp',
                     renderer : function(value) {
@@ -482,17 +483,17 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     }
                 }, {
                     header : this.i18n._("client"),
-                    width : 165,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
                     header : this.i18n._("username"),
-                    width : 165,
+                    width : Ung.Util.usernameFieldWidth,
                     sortable : true,
                     dataIndex : 'uid'
                 }, {
                     header : this.i18n._("blocked"),
-                    width : 100,
+                    width : Ung.Util.booleanFieldWidth,
                     sortable : true,
                     dataIndex : 'blocked'
                 }, {
@@ -503,12 +504,10 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     dataIndex : 'firewallRuleIndex'
                 }, {
                     header : this.i18n._("server"),
-                    width : 165,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'
-                }],
-                autoExpandColumn: 'ruleIndex'
-
+                }]
             });
         },
 

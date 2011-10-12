@@ -1090,7 +1090,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
                 columns : [{
                     header : this.i18n._("timestamp"),
-                    width : 130,
+                    width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : "timeStamp",
                     renderer : function(value) {
@@ -1098,13 +1098,13 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     }
                 },{
                     header : this.i18n._("client"),
-                    width : 100,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : "clientAddr"
                 },{
                     header : this.i18n._("username"),
                     id : "username",
-                    width : 165,
+                    width : Ung.Util.usernameFieldWidth,
                     sortable : true,
                     dataIndex : "loginName"
                 },{
@@ -1181,7 +1181,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
                 columns : [{
                     header : this.i18n._("timestamp"),
-                    width : 130,
+                    width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : "timeStamp",
                     renderer : function(value) {
@@ -1196,7 +1196,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     }.createDelegate( this )
                 },{
                     header : this.i18n._("client"),
-                    width : 130,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : "client"
                 },{
@@ -1209,7 +1209,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     }.createDelegate( this )
                 },{
                     header : this.i18n._("server"),
-                    width : 130,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : "server"
                 }]

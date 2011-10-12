@@ -592,7 +592,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }],
                 columns : [{
                     header : this.i18n._("start time"),
-                    width : 130,
+                    width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'start',
                     renderer : function(value) {
@@ -600,7 +600,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }.createDelegate( this )
                 }, {
                     header : this.i18n._("end time"),
-                    width : 130,
+                    width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'end',
                     renderer : function(value) {

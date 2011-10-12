@@ -1031,7 +1031,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 autoExpandColumn: 'uri',
                 columns : [{
                     header : this.i18n._("timestamp"),
-                    width : 130,
+                    width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'timeStamp',
                     renderer : function(value) {
@@ -1039,33 +1039,33 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     }
                 }, {
                     header : this.i18n._("client"),
-                    width : 100,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
                     header : this.i18n._("username"),
-                    width : 100,
+                    width : Ung.Util.usernameFieldWidth,
                     sortable : true,
                     dataIndex : 'uid'
                 }, {
                     id: 'host',
                     header : this.i18n._("host"),
-                    width : 120,
+                    width : Ung.Util.hostnameFieldWidth,
                     sortable : true,
                     dataIndex : 'host'
                 }, {
                     id: 'uri',
                     header : this.i18n._("uri"),
-                    width : 300,
+                    width : Ung.Util.uriFieldWidth,
                     sortable : true,
                     dataIndex : 'uri'
                 }, {
                     header : this.i18n._("blocked"),
-                    width : 60,
+                    width : Ung.Util.booleanFieldWidth,
                     dataIndex : 'blocked'
                 }, {
                     header : this.i18n._("flagged"),
-                    width : 60,
+                    width : Ung.Util.booleanFieldWidth,
                     dataIndex : 'flagged'
                 }, {
                     header : this.i18n._("reason for action"),
@@ -1079,7 +1079,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex : 'category'
                 }, {
                     header : this.i18n._("server"),
-                    width : 120,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'
                 }]
@@ -1105,10 +1105,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         }, { name : 'uri',
                              mapping : 'uri'
                         }],
-                autoExpandColumn: 'host',
+                autoExpandColumn: 'uri',
                 columns : [{
                     header : this.i18n._("timestamp"),
-                    width : 120,
+                    width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'timeStamp',
                     renderer : function(value) {
@@ -1116,27 +1116,27 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     }
                 }, {
                     header : this.i18n._("client"),
-                    width : 120,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true
                 }, {
                     header : this.i18n._("username"),
                     dataIndex : 'uid',
-                    width : 120,
+                    width : Ung.Util.usernameFieldWidth,
                     sortable : true
                 }, {
                     id : "host",
                     header : this.i18n._("host"),
-                    width : 200,
+                    width : Ung.Util.hostnameFieldWidth,
                     sortable : true
                 }, {
                     id : "uri",
                     header : this.i18n._("uri"),
-                    width : 200,
+                    width : Ung.Util.uriFieldWidth,
                     sortable : true
                 }, {
                     id : "server",
                     header : this.i18n._("server"),
-                    width : 200,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true
                 }]
             });

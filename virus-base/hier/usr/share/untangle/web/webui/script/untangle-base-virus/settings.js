@@ -641,7 +641,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 autoExpandColumn: 'reason',
                 columns : [{
                     header : this.i18n._("timestamp"),
-                    width : 130,
+                    width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'timeStamp',
                     renderer : function(value) {
@@ -650,25 +650,25 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 }, {
                     id : 'client',
                     header : this.i18n._("client"),
-                    width : 100,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
                     id : 'username',
                     header : this.i18n._("username"),
-                    width : 120,
+                    width : Ung.Util.usernameFieldWidth,
                     sortable : true,
                     dataIndex : 'uid'
                 }, {
                     id : 'reason',
-                    header : this.i18n._("reason for action"),
+                    header : this.i18n._("virus name"),
                     width : 140,
                     sortable : true,
                     dataIndex : 'reason'
                 }, {
                     id : 'server',
                     header : this.i18n._("server"),
-                    width : 100,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'
                 }]

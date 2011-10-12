@@ -627,7 +627,14 @@ Ung.Util= {
                 name : 'flagged'
             }];
     },
-    maxRowCount : 2147483647
+    maxRowCount : 2147483647,
+    timestampFieldWidth : 130,
+    ipFieldWidth : 100,
+    hostnameFieldWidth : 120,
+    uriFieldWidth : 200,
+    usernameFieldWidth : 120,
+    booleanFieldWidth : 60,
+    emailFieldWidth : 150
 };
 
 Ung.Util.RetryHandler = {

@@ -219,9 +219,6 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     name : 'blocked',
                     mapping : 'pfBlocked'
                 }, {
-                    name : 'reason',
-                    mapping : 'pfProtocol'
-                }, {
                     name : 'client',
                     mapping : 'CClientAddr'
                 }, {
@@ -234,9 +231,10 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     type : 'string',
                     mapping : 'pfProtocol'
                 }],
+                autoExpandColumn : 'protocol',
                 columns : [{
                     header : this.i18n._("timestamp"),
-                    width : 120,
+                    width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'timeStamp',
                     renderer : function(value) {
@@ -244,32 +242,28 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     }
                 }, {
                     header : this.i18n._("client"),
-                    width : 120,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
                     header : this.i18n._("username"),
-                    width : 120,
+                    width : Ung.Util.usernameFieldWidth,
                     sortable : true,
                     dataIndex : 'uid'
                 }, {
+                    id : 'protocol',
                     header : this.i18n._("protocol"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'protocol'
                 }, {
                     header : this.i18n._("blocked"),
-                    width : 120,
+                    width : Ung.Util.booleanFieldWidth,
                     sortable : true,
                     dataIndex : 'blocked'
                 }, {
-                    header : this.i18n._("reason for action"),
-                    width : 150,
-                    sortable : true,
-                    dataIndex : 'reason'
-                }, {
                     header : this.i18n._("server"),
-                    width : 120,
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'server'
                 }]
