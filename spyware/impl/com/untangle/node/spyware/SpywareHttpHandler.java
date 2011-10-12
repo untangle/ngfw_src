@@ -102,9 +102,11 @@ public class SpywareHttpHandler extends HttpStateMachine
             InetAddress addr = getSession().clientAddr();
             String uriStr = uri.toString();
             SpywareBlockDetails bd = new SpywareBlockDetails(host, uriStr, addr);
-            Token[] resp = node.generateResponse(bd, getSession(),
-                                                      uriStr, requestHeader,
-                                                      isRequestPersistent());
+
+            //bug #9164 - always close connection after writing redirect despite if the connection is persistent
+            //Token[] resp = node.generateResponse(bd, getSession(), uriStr, requestHeader, isRequestPersistent());
+            Token[] resp = node.generateResponse(bd, getSession(), uriStr, requestHeader, false);
+
             blockRequest(resp);
             return requestHeader;
         } else {

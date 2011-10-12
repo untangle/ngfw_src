@@ -1,21 +1,6 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id$
  */
-
 package com.untangle.node.webfilter;
 
 import org.apache.log4j.Logger;
@@ -74,10 +59,12 @@ public class WebFilterHandler extends HttpStateMachine
             releaseRequest();
         } else {
             node.incrementBlockCount();
-            boolean p = isRequestPersistent();
             String uri = getRequestLine().getRequestUri().toString();
-            Token[] response = node.generateResponse(nonce, sess, uri,
-                                                     requestHeader, p);
+
+            //bug #9164 - always close connection after writing redirect despite if the connection is persistent
+            //Token[] response = node.generateResponse(nonce, sess, uri, requestHeader, isRequestPersistent());
+            Token[] response = node.generateResponse(nonce, sess, uri, requestHeader, false);
+
             blockRequest(response);
         }
 

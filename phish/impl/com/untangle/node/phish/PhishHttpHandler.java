@@ -85,7 +85,6 @@ public class PhishHttpHandler extends HttpStateMachine
         if (isBlocked) {
             node.incrementBlockCount();
                 
-            // XXX change this category value
             node.logHttp(new PhishHttpEvent(rlToken.getRequestLine(), Action.BLOCK, "Google Safe Browsing"));
 
             InetAddress clientIp = getSession().clientAddr();
@@ -93,8 +92,9 @@ public class PhishHttpHandler extends HttpStateMachine
             PhishBlockDetails bd = new PhishBlockDetails
                 (host, uri.toString(), clientIp);
 
-            Token[] r = node.generateResponse(bd, getSession(),
-                                              isRequestPersistent());
+            //bug #9164 - always close connection after writing redirect despite if the connection is persistent
+            //Token[] r = node.generateResponse(bd, getSession(), isRequestPersistent());
+            Token[] r = node.generateResponse(bd, getSession(), false);
 
             blockRequest(r);
             return requestHeader;

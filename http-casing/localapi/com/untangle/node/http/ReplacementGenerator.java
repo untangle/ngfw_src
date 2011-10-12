@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.node.http;
 
 import java.net.InetAddress;
@@ -61,29 +64,23 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         return nonceFactory.removeNonce(nonce);
     }
 
-    public Token[] generateResponse(T o, TCPSession session,
-                                    boolean persistent)
+    public Token[] generateResponse(T o, TCPSession session, boolean persistent)
     {
         return generateResponse(o, session, null, null, persistent);
     }
 
-    public Token[] generateResponse(T o, TCPSession session,
-                                    String uri, Header requestHeader,
-                                    boolean persistent)
+    public Token[] generateResponse(T o, TCPSession session, String uri, Header requestHeader, boolean persistent)
     {
         String n = generateNonce(o);
         return generateResponse(n, session, uri, requestHeader, persistent);
     }
 
-    public Token[] generateResponse(String nonce, TCPSession session,
-                                    boolean persistent)
+    public Token[] generateResponse(String nonce, TCPSession session, boolean persistent)
     {
         return generateResponse(nonce, session, null, null, persistent);
     }
 
-    public Token[] generateResponse(String nonce, TCPSession session,
-                                    String uri, Header requestHeader,
-                                    boolean persistent)
+    public Token[] generateResponse(String nonce, TCPSession session, String uri, Header requestHeader, boolean persistent)
     {
         if (imagePreferred(uri, requestHeader)) {
             return generateSimplePage(nonce, persistent, true);
@@ -106,8 +103,8 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         }
     }
 
-    public Token[] generateSimpleResponse(String nonce, TCPSession session,
-            String uri, Header requestHeader, boolean persistent) {
+    public Token[] generateSimpleResponse(String nonce, TCPSession session, String uri, Header requestHeader, boolean persistent)
+    {
         return generateSimplePage(nonce, persistent, imagePreferred(uri, requestHeader));
     }
     
@@ -123,8 +120,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
 
     // private methods --------------------------------------------------------
 
-    private Token[] generateSimplePage(String nonce, boolean persistent,
-                                       boolean gif)
+    private Token[] generateSimplePage(String nonce, boolean persistent, boolean gif)
     {
         Chunk chunk;
         if (gif) {
@@ -157,8 +153,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         return response;
     }
 
-    private Token[] generateRedirect(String nonce, String host,
-                                     boolean persistent)
+    private Token[] generateRedirect(String nonce, String host, boolean persistent)
     {
         Token response[] = new Token[4];
 

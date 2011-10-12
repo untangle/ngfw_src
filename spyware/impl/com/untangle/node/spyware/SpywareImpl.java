@@ -502,7 +502,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
         for (String d = domain; !match && null != d; d = nextHost(d)) {
             GenericRule sr = cookieRules.get(d); /* FIXME */
-            match = null != sr && sr.getEnabled();
+            match = (sr != null && sr.getEnabled());
         }
 
         return match;
