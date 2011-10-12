@@ -105,6 +105,9 @@ try:
     file.write(settings_str)
     file.close()
 
+    os.system('/etc/init.d/untangle-slapd stop')
+    os.system('update-rc.d -f untangle-slapd remove')
+
 except Exception, e:
     print("could not get result",e);
     sys.exit(1)
