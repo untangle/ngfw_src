@@ -58,9 +58,9 @@ public class PartialListUtil
 
     /* Just a helper function for the most common case of listing from a node. */
     @SuppressWarnings("unchecked")
-    public List getItems( String queryString, NodeContext nodeContext, NodeId tid, int start, int limit, String ... sortColumns)
+    public List getItems( String queryString, NodeContext nodeContext, NodeId nodeId, int start, int limit, String ... sortColumns)
     {
-        return getItems( queryString, nodeContext, tid, null, start, limit, sortColumns );
+        return getItems( queryString, nodeContext, nodeId, null, start, limit, sortColumns );
     }
 
     @SuppressWarnings("unchecked")
@@ -77,10 +77,9 @@ public class PartialListUtil
 
     /* Just a helper function for the most common case of listing from a node. */
     @SuppressWarnings("unchecked")
-    public List getItems( String queryString, NodeContext nodeContext, NodeId tid, String alias, int start, int limit, String ... sortColumns)
+    public List getItems( String queryString, NodeContext nodeContext, NodeId nodeId, String alias, int start, int limit, String ... sortColumns)
     {
-        return getItems( queryString, nodeContext, new Parameter[] { new Parameter( "tid", tid ) },
-                         alias, start, limit, sortColumns );
+        return getItems( queryString, nodeContext, new Parameter[] { new Parameter( "nodeId", nodeId )}, alias, start, limit, sortColumns );
     }
 
     @SuppressWarnings("unchecked")
