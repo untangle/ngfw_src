@@ -64,7 +64,7 @@ def printUsage():
     -u client host SSH login
     -i client host SSH identity (key) file
     -l log file
-    -v veborse (can be specified more than one time)
+    -v verbose (can be specified more than one time)
     -q quit on first failure
 """ % sys.argv[0] )
 
