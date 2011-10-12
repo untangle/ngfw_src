@@ -137,23 +137,8 @@ public class SpywareEventHandler extends AbstractEventHandler
             logger.info("----------------------------------------------------------");
         }
 
-        ipr.attach(new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), new IPMaskedAddress(ir.getString()), ir.getEnabled()));
-
-        /**
-         * Blocking has been disabled due to the poor quality of the list and support headaches associated with it.
-         */
-        /**
-        if (ir.getEnabled()) {
-            node.incrementSubnetBlock();
-            if (ipr instanceof TCPNewSessionRequest) {
-                ((TCPNewSessionRequest)ipr).rejectReturnRst(true);
-            }
-            if (ipr instanceof UDPNewSessionRequest) {
-                ipr.rejectReturnUnreachable(IPNewSessionRequest.PROHIBITED,true);
-            }
-            return;
-        }
-        */
+        SpywareAccessEvent evt = new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), new IPMaskedAddress(ir.getString()), ir.getEnabled());
+        ipr.attach(evt);
 
         if (release) { ipr.release(true); }
     }

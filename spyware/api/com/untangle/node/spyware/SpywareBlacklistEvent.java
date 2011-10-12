@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.node.spyware;
 
 import javax.persistence.CascadeType;
@@ -20,83 +23,83 @@ import com.untangle.node.http.RequestLine;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="n_spyware_evt_blacklist", schema="events")
+@Table(name="n_spyware_evt_blacklist", schema="events")
 @SuppressWarnings("serial")
-    public class SpywareBlacklistEvent extends SpywareEvent
+public class SpywareBlacklistEvent extends SpywareEvent
+{
+    private RequestLine requestLine; // pipeline endpoints & location
+
+    // constructors -----------------------------------------------------------
+
+    public SpywareBlacklistEvent() { }
+
+    public SpywareBlacklistEvent(RequestLine requestLine)
     {
-        private RequestLine requestLine; // pipeline endpoints & location
-
-        // constructors -----------------------------------------------------------
-
-        public SpywareBlacklistEvent() { }
-
-        public SpywareBlacklistEvent(RequestLine requestLine)
-        {
-            this.requestLine = requestLine;
-        }
-
-        // SpywareEvent methods ---------------------------------------------------
-
-        @Transient
-        public String getType()
-        {
-            return "Blacklist";
-        }
-
-        @Transient
-        public String getReason()
-        {
-            return "in URL List";
-        }
-
-        @Transient
-        public String getIdentification()
-        {
-            HttpRequestEvent hre = requestLine.getHttpRequestEvent();
-            String host = null == hre
-                ? getPipelineEndpoints().getSServerAddr().toString()
-                : hre.getHost();
-            return "http://" + host + requestLine.getRequestUri().toString();
-        }
-
-        @Transient
-        public boolean isBlocked()
-        {
-            return true;
-        }
-
-        @Transient
-        public String getLocation()
-        {
-            return requestLine.getUrl().toString();
-        }
-
-        @Transient
-        public PipelineEndpoints getPipelineEndpoints()
-        {
-            return requestLine.getPipelineEndpoints();
-        }
-
-        // accessors --------------------------------------------------------------
-
-        /**
-         * Request line for this HTTP response pair.
-         *
-         * @return the request line.
-         */
-        @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-        @JoinColumn(name="request_id")
-        public RequestLine getRequestLine()
-        {
-            return requestLine;
-        }
-
-        public void setRequestLine(RequestLine requestLine)
-        {
-            this.requestLine = requestLine;
-        }
-
-        // Syslog methods ---------------------------------------------------------
-
-        // use SpywareEvent appendSyslog, getSyslogId and getSyslogPriority
+        this.requestLine = requestLine;
     }
+
+    // SpywareEvent methods ---------------------------------------------------
+
+    @Transient
+    public String getType()
+    {
+        return "Blacklist";
+    }
+
+    @Transient
+    public String getReason()
+    {
+        return "in URL List";
+    }
+
+    @Transient
+    public String getIdentification()
+    {
+        HttpRequestEvent hre = requestLine.getHttpRequestEvent();
+        String host = null == hre
+            ? getPipelineEndpoints().getSServerAddr().toString()
+            : hre.getHost();
+        return "http://" + host + requestLine.getRequestUri().toString();
+    }
+
+    @Transient
+    public Boolean isBlocked()
+    {
+        return true;
+    }
+
+    @Transient
+    public String getLocation()
+    {
+        return requestLine.getUrl().toString();
+    }
+
+    @Transient
+    public PipelineEndpoints getPipelineEndpoints()
+    {
+        return requestLine.getPipelineEndpoints();
+    }
+
+    // accessors --------------------------------------------------------------
+
+    /**
+     * Request line for this HTTP response pair.
+     *
+     * @return the request line.
+     */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="request_id")
+    public RequestLine getRequestLine()
+    {
+        return requestLine;
+    }
+
+    public void setRequestLine(RequestLine requestLine)
+    {
+        this.requestLine = requestLine;
+    }
+
+    // Syslog methods ---------------------------------------------------------
+
+    // use SpywareEvent appendSyslog, getSyslogId and getSyslogPriority
+}
