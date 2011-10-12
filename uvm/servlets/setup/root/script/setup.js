@@ -280,7 +280,7 @@ Ung.SetupWizard.Settings = Ext.extend(Object, {
     },
     saveSettings : function( handler )
     {
-        Ext.MessageBox.wait( i18n._( "Saving Settings" ), i18n._( "Please wait" ));
+        Ext.MessageBox.wait( i18n._( "Saving Settings" ), i18n._( "Please Wait" ));
         var saver = new Ung.SetupWizard.SettingsSaver( this.panel, handler );
         saver.savePassword();
     }
@@ -571,7 +571,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
 
     saveInterfaceList : function( handler )
     {
-        Ext.MessageBox.wait( i18n._( "Remapping Network Interfaces" ), i18n._( "Please wait" ));
+        Ext.MessageBox.wait( i18n._( "Remapping Network Interfaces" ), i18n._( "Please Wait" ));
 
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
 
@@ -613,7 +613,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
 
     refreshInterfaces : function()
     {
-        Ext.MessageBox.wait( i18n._( "Refreshing Network Interfaces" ), i18n._( "Please wait" ));
+        Ext.MessageBox.wait( i18n._( "Refreshing Network Interfaces" ), i18n._( "Please Wait" ));
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.refreshInterfaces.createDelegate( this ));
     },
 
@@ -963,7 +963,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
 
     saveSettings : function( handler )
     {
-        Ext.MessageBox.wait( i18n._( "Saving Internet Connection Settings" ), i18n._( "Please wait" ));
+        Ext.MessageBox.wait( i18n._( "Saving Internet Connection Settings" ), i18n._( "Please Wait" ));
 
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
     },
@@ -1059,7 +1059,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
     /* Refresh the current network settings (lease or whatever) */
     refresh : function()
     {
-        Ext.MessageBox.wait(i18n._("Refreshing..."), i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Refreshing..."), i18n._("Please Wait"));
 
         var handler = function() {
             Ext.MessageBox.hide();
@@ -1081,7 +1081,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             return;
         }
 
-        Ext.MessageBox.wait(i18n._("Testing Connectivity..."), i18n._("Please wait"));
+        Ext.MessageBox.wait(i18n._("Testing Connectivity..."), i18n._("Please Wait"));
 
         var handler = this.execConnectivityTest.createDelegate( this );
 
@@ -1368,7 +1368,7 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
             return;
         }
 
-        Ext.MessageBox.wait( i18n._( "Saving Internal Network Settings" ), i18n._( "Please wait" ));
+        Ext.MessageBox.wait( i18n._( "Saving Internal Network Settings" ), i18n._( "Please Wait" ));
 
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
     },
@@ -1674,7 +1674,7 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
 
     saveSettings : function( handler )
     {
-        Ext.MessageBox.wait( i18n._( "Saving Email Configuration..." ), i18n._( "Please wait" ));
+        Ext.MessageBox.wait( i18n._( "Saving Email Configuration..." ), i18n._( "Please Wait" ));
 
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
     },
@@ -1746,7 +1746,7 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
 
     openUserInterface : function( handler )
     {
-        Ext.MessageBox.wait( i18n._( "Loading User Interface..." ), i18n._( "Please wait" ));
+        Ext.MessageBox.wait( i18n._( "Loading User Interface..." ), i18n._( "Please Wait" ));
 
         //now that we are done, create the UID
         rpc.jsonrpc.RemoteUvmContext.createUID();
