@@ -418,7 +418,7 @@ Ung.SetupWizard.Interfaces = Ext.extend( Object, {
                     
                     return "<div class='" + divClass + "'>" + status + "</div>";
                 },
-                width : 460
+                width : 475
             }])
         });
 
