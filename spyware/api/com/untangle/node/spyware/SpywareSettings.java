@@ -30,7 +30,7 @@ public class SpywareSettings implements Serializable
     private Boolean scanUrls  = Boolean.TRUE;
     private Boolean scanGoogleSafeBrowsing  = Boolean.TRUE;
 
-    private String unblockMode = UNBLOCK_MODE_NONE;
+    private String unblockMode = UNBLOCK_MODE_HOST;
 
     private List<GenericRule> cookies = new LinkedList<GenericRule>();
     private List<GenericRule> subnets = new LinkedList<GenericRule>();
