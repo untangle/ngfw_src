@@ -4,8 +4,6 @@ tar_files()
 {
     tarfile=$1
 
-    [ -x /usr/sbin/slapcat ] && /usr/sbin/slapcat -f /etc/untangle-ldap/slapd.conf -l /usr/share/untangle/conf/dirbackup.ldif
-
     [ -x  /usr/share/untangle-net-alpaca/scripts/backup ] && /usr/share/untangle-net-alpaca/scripts/backup /usr/share/untangle/conf/alpaca-backup.uab "UVM Backup"
 
     tar zcf $tarfile --ignore-failed-read -C / \
