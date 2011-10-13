@@ -137,7 +137,7 @@ public class SpywareEventHandler extends AbstractEventHandler
             logger.info("----------------------------------------------------------");
         }
 
-        SpywareAccessEvent evt = new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), new IPMaskedAddress(ir.getString()), ir.getEnabled());
+        SpywareAccessEvent evt = new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), new IPMaskedAddress(ir.getString()), Boolean.FALSE);
         ipr.attach(evt);
 
         if (release) { ipr.release(true); }
