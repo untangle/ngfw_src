@@ -137,8 +137,7 @@ class VirusHttpHandler extends HttpStateMachine
 
             this.scan = matchesMimeType(mimeType);
             if (logger.isDebugEnabled()) {
-                logger.debug("content-type: " + mimeType
-                             + "matches mime-type: " + scan);
+                logger.debug("content-type: " + mimeType + "matches mime-type: " + scan);
             }
 
             reason = mimeType;
@@ -174,8 +173,7 @@ class VirusHttpHandler extends HttpStateMachine
             }
             scanFile();
             if (getResponseMode() == Mode.QUEUEING) {
-                logger.warn("still queueing after scanFile, buffering: "
-                            + getResponseMode());
+                logger.warn("still queueing after scanFile, buffering: " + getResponseMode());
                 releaseResponse();
             }
         } else {
@@ -216,9 +214,9 @@ class VirusHttpHandler extends HttpStateMachine
             node.incrementPassCount();
 
             if (result.isVirusCleaned()) {
-                logger.info("Cleaned infected file");
+                logger.info("Cleaned infected file:" + scanfile);
             } else {
-                logger.info("Clean");
+                logger.debug("Clean");
             }
 
             if (Mode.QUEUEING == getResponseMode()) {
@@ -228,14 +226,13 @@ class VirusHttpHandler extends HttpStateMachine
             }
 
         } else {
-            logger.info("Virus found, killing session");
-            // Todo: Quarantine (for now, don't delete the file) XXX
             node.incrementBlockCount();
 
             if (Mode.QUEUEING == getResponseMode()) {
                 RequestLineToken rl = getResponseRequest();
                 String uri = null != rl ? rl.getRequestUri().toString() : "";
                 String host = getResponseHost();
+                logger.info("Virus found: " + host + uri + " = " + result.getVirusName());
                 VirusBlockDetails bd = new VirusBlockDetails(host,uri,null,this.vendor);
                                                              
                 String nonce = node.generateNonce(bd);
@@ -247,6 +244,7 @@ class VirusHttpHandler extends HttpStateMachine
                 
                 blockResponse(response);
             } else {
+                logger.info("Virus found: " + result.getVirusName());
                 TCPSession s = getSession();
                 s.shutdownClient();
                 s.shutdownServer();
@@ -320,7 +318,7 @@ class VirusHttpHandler extends HttpStateMachine
 
     private void setupFile(String reason)
     {
-        logger.info("VIRUS: Scanning because of: " + reason);
+        logger.debug("VIRUS: Scanning because of: " + reason);
         try {
             TempFileFactory tff = new TempFileFactory(getPipeline());
             File fileBuf = tff.createFile("http-virus");
