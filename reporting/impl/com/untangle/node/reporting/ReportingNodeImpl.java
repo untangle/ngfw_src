@@ -124,7 +124,10 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
                                                                      null,//rootDir
                                                                      true,//stdout
                                                                      true,//stderr
-                                                                     1000*900); // 15 minutes timeout
+                                                                     1000*30*60); // 30 minutes timeout
+
+                /* set the time again, this is because the process itself can take a while */
+                lastFlushTime = System.currentTimeMillis();
 
                 if (result.exitCode != 0) {
                     throw new Exception("Unable to run daily reports: \nReturn code: " +
