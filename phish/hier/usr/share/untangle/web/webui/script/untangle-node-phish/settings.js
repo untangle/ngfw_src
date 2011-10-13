@@ -347,7 +347,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     mapping : 'vendor'
                 }, {
                     name : 'displayAction',
-                    mapping : 'saAction', // FIXME: vendor name ?
+                    mapping : 'phishAction',
                     type : 'string',
                     convert : function(value, rec ) { // FIXME: make that a switch
                             if (value == 'P') { // PASSED
@@ -387,9 +387,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 }, {
                     name : 'sender',
                     type : 'string'
-                }, {
-                    name : 'score',
-                    mapping : 'saScore'// FIXME : vendor name ?
                 }],
                 // the list of columns
                 autoExpandColumn : 'subject',
@@ -422,11 +419,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     width : 125,
                     sortable : true,
                     dataIndex : 'displayAction'
-                }, {
-                    header : this.i18n._("spam score"),
-                    width : 70,
-                    sortable : true,
-                    dataIndex : 'score'
                 }, {
                     header : this.i18n._("client"),
                     width : Ung.Util.ipFieldWidth,

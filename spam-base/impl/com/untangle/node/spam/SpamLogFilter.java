@@ -29,6 +29,8 @@ public class SpamLogFilter implements ListEventFilter<MailLogEventFromReports>
             this.vendor = "sa";
         else if (vendor.equals("CommtouchAs"))
             this.vendor = "ct";
+        else if (vendor.equals("Clam"))
+            this.vendor = "phish";
         else
             this.vendor = vendor;
 
