@@ -24,7 +24,7 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class PhishHttpBlockedFilter implements SimpleEventFilter<PhishHttpEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Blocked Phish HTTP Traffic"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Phish Blocked Web Events"));
 
     private static final String WARM_QUERY
         = "FROM PhishHttpEvent evt WHERE evt.action = 'B' AND evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";

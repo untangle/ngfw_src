@@ -17,8 +17,7 @@ import com.untangle.uvm.util.I18nUtil;
 public class SpamSpamFilter implements ListEventFilter<MailLogEventFromReports>
 {
     private static final RepositoryDesc SPAM_REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Spam Events"));
-    // XXX Hack - specify clamphish label here
-    private static final RepositoryDesc CLAM_REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Identity Theft Events"));
+    private static final RepositoryDesc CLAM_REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Phish Email Events"));
 
     private final String vendor;
     private final String logQuery;
@@ -41,7 +40,6 @@ public class SpamSpamFilter implements ListEventFilter<MailLogEventFromReports>
             " AND evt.policyId = :policyId" + 
             " ORDER BY evt.timeStamp DESC";
 
-        // XXX Hack - specify clamphish vendor name here (see ClamPhishScanner)
         if (false == vendor.equals("Clam")) {
             repoDesc = SPAM_REPO_DESC;
         } else {

@@ -35,7 +35,7 @@ public class PhishHttpPassedFilter implements ListEventFilter<PhishHttpEvent>
     private static final String RL_QUERY = "FROM RequestLine rl ORDER BY rl.httpRequestEvent.timeStamp DESC";
     private static final String EVT_QUERY = "FROM PhishHttpEvent evt WHERE evt.requestLine = :requestLine";
 
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Passed Phish HTTP Traffic"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Passed Phish Web Events"));
 
     public RepositoryDesc getRepositoryDesc()
     {

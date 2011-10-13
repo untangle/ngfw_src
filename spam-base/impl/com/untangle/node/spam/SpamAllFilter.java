@@ -1,21 +1,3 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
 package com.untangle.node.spam;
 
 import java.util.Iterator;
@@ -34,10 +16,12 @@ import com.untangle.uvm.util.I18nUtil;
 
 public class SpamAllFilter implements ListEventFilter<MailLogEventFromReports>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events"));
+    private static final RepositoryDesc SPAM_REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Events"));
+    private static final RepositoryDesc CLAM_REPO_DESC = new RepositoryDesc(I18nUtil.marktr("All Email Events"));
 
     private final String vendor;
     private final String logQuery;
+    private final RepositoryDesc repoDesc;
 
     // constructors -----------------------------------------------------------
 
@@ -55,13 +39,19 @@ public class SpamAllFilter implements ListEventFilter<MailLogEventFromReports>
             " AND evt." + this.vendor + "Action IS NOT NULL" +
             " AND evt.policyId = :policyId" + 
             " ORDER BY evt.timeStamp DESC";
+
+        if (false == vendor.equals("Clam")) {
+            repoDesc = SPAM_REPO_DESC;
+        } else {
+            repoDesc = CLAM_REPO_DESC;
+        }
     }
 
     // SimpleEventFilter methods ----------------------------------------------
 
     public RepositoryDesc getRepositoryDesc()
     {
-        return REPO_DESC;
+        return repoDesc;
     }
 
     @SuppressWarnings("unchecked") //Query
