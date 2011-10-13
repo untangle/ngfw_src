@@ -21,7 +21,7 @@ import com.untangle.uvm.util.I18nUtil;
  */
 public class VirusSmtpInfectedFilter implements ListEventFilter<MailLogEventFromReports>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Mail Events"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Email Events"));
 
     private final String vendor;
     private final String logQuery;
