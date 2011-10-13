@@ -2484,8 +2484,8 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     settingsCmp : null,
     // if the event log has more than one repositories that can be selected
     hasRepositories : true,
-    // refresh on render
-    refreshOnRender : true,
+    // refresh on activate Tab (each time the tab is clicked)
+    refreshOnActivate : true,
     // Event manager rpc function to call
     // default is getEventManager() from settingsCmp
     eventManagerFn : null,
@@ -2781,7 +2781,9 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     listeners: {
         "activate": {
             fn: function() {
-                this.refreshHandler();
+                if( this.refreshOnActivate ) {
+                    this.refreshHandler.defer(1,this)
+                }
             }
         },
         "deactivate" : {
