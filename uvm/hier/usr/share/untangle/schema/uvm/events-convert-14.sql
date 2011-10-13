@@ -1,0 +1,14 @@
+ALTER TABLE events.pl_stats ADD COLUMN session_id int4;
+ALTER TABLE events.pl_stats ADD COLUMN proto int2;
+ALTER TABLE events.pl_stats ADD COLUMN client_intf int2;
+ALTER TABLE events.pl_stats ADD COLUMN server_intf int2;
+ALTER TABLE events.pl_stats ADD COLUMN c_client_addr inet;
+ALTER TABLE events.pl_stats ADD COLUMN s_client_addr inet;
+ALTER TABLE events.pl_stats ADD COLUMN c_server_addr inet;
+ALTER TABLE events.pl_stats ADD COLUMN s_server_addr inet;
+ALTER TABLE events.pl_stats ADD COLUMN c_client_port int4;
+ALTER TABLE events.pl_stats ADD COLUMN s_client_port int4;
+ALTER TABLE events.pl_stats ADD COLUMN c_server_port int4;
+ALTER TABLE events.pl_stats ADD COLUMN s_server_port int4;
+ALTER TABLE events.pl_stats ADD COLUMN policy_id int8;
+ALTER TABLE events.pl_stats ADD COLUMN policy_inbound bool;
