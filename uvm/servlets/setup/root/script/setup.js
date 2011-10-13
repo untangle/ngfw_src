@@ -1424,7 +1424,6 @@ Ung.SetupWizard.Email = Ext.extend( Object, {
                 xtype : 'button',
                 text : i18n._( 'Verify Email Configuration' ),
                 handler : this.emailTest.createDelegate( this ),
-                iconCls : ' email-tester',
                 cls : 'spacing-margin-1 email-tester'
             },{
                 xtype : 'label',
@@ -1832,7 +1831,7 @@ Ung.Setup = {
         if ( false ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = function() {
-                this.wizard.goToPage( 2 );
+                this.wizard.goToPage( 5 );
             }.createDelegate( this );
             var ss = new Ung.SetupWizard.SettingsSaver( null, debugHandler );
 
