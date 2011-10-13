@@ -1131,7 +1131,7 @@ Ung.AppItem.updateState = function(displayName, state, options) {
     if (app != null) {
         app.setState(state, options);
     }
-}
+};
 // get the app item having a item name
 Ung.AppItem.getApp = function(displayName) {
     if (main.apps !== null) {
@@ -1646,7 +1646,7 @@ Ung.Node.getStatusTip = function() {
                 + i18n._('indicates that the application is saving or refreshing settings.'), '<BR>',
         '<b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the application is "off", and may be turned "on" by the user.'),
         '</div>'].join('');
-}
+};
 Ung.Node.getPowerTip = function() {
     return i18n._('The <B>Power Button</B> allows you to turn a application "on" and "off".');
 };
@@ -2272,7 +2272,7 @@ Ung.SystemBlinger = Ext.extend(Ext.Component, {
 
     onRender : function(container, position) {
         Ung.SystemBlinger.superclass.onRender.call(this, container, position);
-        this.getEl().addClass("system-blinger")
+        this.getEl().addClass("system-blinger");
         var templateHTML = Ung.SystemBlinger.template.applyTemplate({
             'id' : this.getId(),
             'blingerName' : i18n._("system")
@@ -2782,7 +2782,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         "activate": {
             fn: function() {
                 if( this.refreshOnActivate ) {
-                    this.refreshHandler.defer(1,this)
+                    this.refreshHandler.defer(1,this);
                 }
             }
         },
