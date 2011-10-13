@@ -647,7 +647,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     sortable : true,
                     dataIndex : 'uid'
                 }, {
-                    header : this.i18n._("reason"),
+                    header : this.i18n._("subnet"),
                     width : 120,
                     sortable : true,
                     dataIndex : 'swAccessIdent'
