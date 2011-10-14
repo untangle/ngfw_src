@@ -107,7 +107,7 @@ DELETE FROM events.n_server_evt WHERE time_stamp < %s""", (cutoff,))
     def get_report(self):
         sections = []
         s = SummarySection('summary', _('Summary Report'),
-                           [LoadUsage(), CpuUsage(),
+                           [LoadUsage(), #CpuUsage(),
                             MemoryUsage(), SwapUsage(),
                             DiskUsage()])
         sections.append(s)
