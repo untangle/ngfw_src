@@ -5,13 +5,15 @@ MODULE_NAME = 'reports'
 
 # line format
 format = '%(asctime)s [%(name)s] %(levelname)s: %(message)s'
+syslogFormat = '[%(name)s] %(levelname)s: %(message)s'
 dateFmt = '%Y-%m-%d %H:%M:%S'
 formatter = logging.Formatter(format, dateFmt)
+syslogFormatter = logging.Formatter(syslogFormat)
 
 # file logging
 f = SysLogHandler(facility = SysLogHandler.LOG_LOCAL4)
 f.setLevel(logging.DEBUG)
-f.setFormatter(formatter)
+f.setFormatter(syslogFormatter)
 logging.getLogger('').addHandler(f)
 
 # stdout logging
