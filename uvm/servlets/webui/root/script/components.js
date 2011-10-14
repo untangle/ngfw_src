@@ -2674,27 +2674,22 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         this.getGridEl().child("div[class*=x-grid3-viewport]").set({'name' : "Table"});
         this.pagingToolbar.loading.hide();
         if (this.hasRepositories) {
-            this.eventManagerFn.getRepositoryDescs(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                if (this.settingsCmp) {
-                    this.rpc.repositoryDescs = result;
-                    var repList = this.rpc.repositoryDescs.list;
-                    var displayStyle="";
-                    if(repList.length==1) {
-                        displayStyle="display:none;";
-                    }
-                    var out = [];
-                    out.push('<select name="Event Type" id="selectRepository_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '" style="'+displayStyle+'">');
-                    for (var i = 0; i < repList.length; i++) {
-                        var repDesc = repList[i];
-                        var selOpt = (i === 0) ? "selected" : "";
-                        out.push('<option value="' + repDesc.name + '" ' + selOpt + '>' + this.settingsCmp.i18n._(repDesc.name) + '</option>');
-                    }
-                    out.push('</select>');
-                    var boxRepositoryDescEventLog = document.getElementById('boxRepository_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
-                    boxRepositoryDescEventLog.innerHTML = out.join("");
-                }
-            }.createDelegate(this));
+            this.rpc.repositoryDescs=this.eventManagerFn.getRepositoryDescs();
+            var repList = this.rpc.repositoryDescs.list;
+            var displayStyle="";
+            if(repList.length==1) {
+                displayStyle="display:none;";
+            }
+            var out = [];
+            out.push('<select name="Event Type" id="selectRepository_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '" style="'+displayStyle+'">');
+            for (var i = 0; i < repList.length; i++) {
+                var repDesc = repList[i];
+                var selOpt = (i === 0) ? "selected" : "";
+                out.push('<option value="' + repDesc.name + '" ' + selOpt + '>' + this.settingsCmp.i18n._(repDesc.name) + '</option>');
+            }
+            out.push('</select>');
+            var boxRepositoryDescEventLog = document.getElementById('boxRepository_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
+            boxRepositoryDescEventLog.innerHTML = out.join("");
         } 
     },
     // get selected repository
