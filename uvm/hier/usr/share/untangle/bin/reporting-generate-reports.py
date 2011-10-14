@@ -8,19 +8,20 @@ def usage():
      print """\
 usage: %s [options]
 Options:
-  -h | --help                 help
-  -n | --no-migration         skip schema migration
-  -g | --no-data-gen          skip graph data processing
-  -p | --no-plot-gen          skip graph image processing
-  -m | --no-mail              skip mailing
-  -i | --incremental          only update fact tables, do not generate reports themselves
-  -a | --attach-csv           attach events as csv
-  -t | --trial-report         only report on given trial
-  -e | --events-retention     number of days in events schema to keep
-  -r | --report-length        number of days to report on
-  -l | --locale               locale
-  -s cs | --simulate=cs       run reports of the remote DB specified by the connection string
-  -d y-m-d | --date=y-m-d\
+  -h | --help                   help
+  -n | --no-migration           skip schema migration
+  -g | --no-data-gen            skip graph data processing
+  -p | --no-plot-gen            skip graph image processing
+  -m | --no-mail                skip mailing
+  -i | --incremental            only update fact tables, do not generate reports themselves
+  -a | --attach-csv             attach events as csv
+  -t | --trial-report           only report on given trial
+  -e | --events-retention       number of days in events schema to keep
+  -r | --report-length          number of days to report on
+  -l | --locale                 locale
+  -b <load> | --behave <load>   do not run if load is greated than the specified amount
+  -s <cs> | --simulate=<cs>     run reports of the remote DB specified by the connection string
+  -d <y-m-d> | --date=<y-m-d>   run reports for the specific date
 """ % sys.argv[0]
 
 ## main
@@ -53,13 +54,13 @@ f.close()
 logger.info("wrote pidfile")
 
 try:
-     opts, args = getopt.getopt(sys.argv[1:], "hncgpmiaver:d:l:t:s:",
+     opts, args = getopt.getopt(sys.argv[1:], "hncgpmiaver:d:l:t:s:b:",
                                 ['help', 'no-migration', 'no-cleanup',
                                  'no-data-gen', 'no-mail', 'incremental',
                                  'no-plot-gen', 'verbose', 'attach-csv',
                                  'events-retention', 'report-length',
-                                 'date=', 'locale=', 'simulate='
-                                 'trial-report='])
+                                 'date=', 'locale=', 'trial-report=',
+                                 'simulate=', 'behave='])
 
 except getopt.GetoptError, err:
      print str(err)
@@ -78,6 +79,7 @@ attachment_size_limit = 10
 events_retention = 3
 end_date = mx.DateTime.today()
 locale = None
+maxLoad = None
 db_retention = None
 file_retention = None
 trial_report = None
@@ -107,6 +109,8 @@ for opt in opts:
           no_cleanup = True
      elif k == '-e' or k == '--events-retention':
           events_retention = int(v)
+     elif k == '-b' or k == '--behave':
+          maxLoad = float(v)
      elif k == '-r' or k == '--report-length':
           report_lengths = [int(v)]
      elif k == '-v' or k == '--verbose':
@@ -126,6 +130,9 @@ import reports.sql_helper as sql_helper
 if simulate:
      sql_helper.SCHEMA = 'reports_simulation'
      sql_helper.CONNECTION_STRING = simulate
+
+def getLoad():
+     return float(open("/proc/loadavg").read().split(" ")[0])
      
 def get_report_lengths(date):
     lengths = []
@@ -262,6 +269,14 @@ INSERT INTO reports.reports_state (last_cutoff) VALUES (%s)""", (date,))
 
 ## main
 
+currentLoad = getLoad()
+if maxLoad is not None:
+     if currentLoad >= maxLoad:
+          logger.warning("Current load %d is higher than %d, exiting" % (currentLoad, maxLoad))
+          sys.exit(0)
+     else:
+          logger.info("Current load %d is lower than %d, going ahead" % (currentLoad, maxLoad))
+
 running = False
 for instance in Popen(["ucli", "instances"], stdout=PIPE).communicate()[0].split('\n'):
      if re.search(r'untangle-node-reporting.+RUNNING', instance):
@@ -269,7 +284,7 @@ for instance in Popen(["ucli", "instances"], stdout=PIPE).communicate()[0].split
           break
 
 if not running:
-     print "Reports node is not installed or not running, exiting."
+     logger.error("Reports node is not installed or not running, exiting.")
      sys.exit(0)
 
 if not report_lengths:
