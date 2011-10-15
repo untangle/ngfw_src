@@ -2711,9 +2711,28 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         if (!this.isReportsAppInstalled()) {
             Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install the Reports application."));
         } else {
+
+            this.loadMask.disabled = false;
+            this.loadMask.msg = i18n._('Compiling Database Tables...');
             this.loadMask.show();
-            this.getUntangleNodeReporting().flushEvents(); 
-            this.refreshList();
+            this.getUntangleNodeReporting().flushEvents(function(result, exception) {
+                this.loadMask.msg = i18n._('Refreshing Events...');
+                this.loadMask.show();
+                this.refreshList();
+            }.createDelegate(this));
+
+            this.updateFunction = function(){
+                var statusStr = this.getUntangleNodeReporting().getCurrentStatus();
+                if(this.loadMask.disabled) 
+                    return;
+                else {
+                    this.loadMask.msg = i18n._('Compiling Database Tables... ') + statusStr;
+                    this.loadMask.show();
+                    window.setTimeout(this.updateFunction, 1000);
+                }
+            }.createDelegate(this);
+
+            window.setTimeout(this.updateFunction, 2000);
         }
     },
     // Refresh the events list
@@ -2729,6 +2748,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                 }
             });
         }
+        this.loadMask.disabled = true;
         this.loadMask.hide();
         this.makeSelectable();
     },
@@ -2746,6 +2766,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                     this.rpc.repository[selRepository].getEvents(this.refreshCallback.createDelegate(this));
                 }
             } else {
+                this.loadMask.disabled = true;
                 this.loadMask.hide();
             }
         }

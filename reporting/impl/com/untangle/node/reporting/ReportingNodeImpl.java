@@ -3,13 +3,22 @@
  */
 package com.untangle.node.reporting;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -28,7 +37,10 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 {
     private static final Logger logger = Logger.getLogger(ReportingNodeImpl.class);
 
-    private static final String REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-reports.py";
+    private static final String  REPORTS_SCRIPT = System.getProperty("uvm.home") + "/bin/reporting-generate-reports.py";
+    private static final String  REPORTER_LOG_FILE = "/var/log/uvm/reporter.log";
+    private static final long    REPORTER_LOG_FILE_READ_TIMEOUT = 180 * 1000; /* 180 seconds */
+    private static final Pattern REPORTER_LOG_PROGRESS_PATTERN = Pattern.compile(".*PROGRESS\\s*\\[(.*)\\]");
     private static int MAX_FLUSH_FREQUENCY;
 
     static {
@@ -45,7 +57,9 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
             MAX_FLUSH_FREQUENCY = 30*1000; /* 30 seconds */
         }
     }
-    
+
+    private String currentStatus = "";
+
     private ReportingSettings settings;
 
     private long lastFlushTime = 0;
@@ -82,19 +96,21 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
         cal.add(Calendar.DATE, 1); // tomorrow
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String ts = df.format(cal.getTime());
-        boolean failed = false;
-        SimpleExec.SimpleExecResult result = SimpleExec.exec(REPORTS_SCRIPT, new String[] {"-r", "1", "-m", "-d", ts},
-                                                             null,//env
-                                                             null,//rootDir
-                                                             true,//stdout
-                                                             true,//stderr
-                                                             1000*900); // 15 minutes timeout
 
-        if (result.exitCode != 0) {
-            throw new Exception("Unable to run daily reports: \nReturn code: " +
-                                result.exitCode + ", stdout \"" +
-                                new String(result.stdOut) + "\", stderr \"" +
-                                new String(result.stdErr) + "\"");
+        int exitCode = -1;
+        logger.info("Running daily report...");
+        try {
+            String args[] = { REPORTS_SCRIPT, "-r", "1", "-m", "-d", ts };
+            Process proc = LocalUvmContextFactory.context().exec(args);
+            tailLog(REPORTER_LOG_FILE, REPORTER_LOG_FILE_READ_TIMEOUT, proc);
+            exitCode = proc.waitFor();
+            proc.destroy();
+        } catch (Exception e) {
+            logger.error("Unable to run daily reports", e );
+        }
+        
+        if (exitCode != 0) {
+            throw new Exception("Unable to run daily reports: \nReturn code: " + exitCode);
         }
     }
 
@@ -103,43 +119,64 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
         flushEvents(false);
     }
 
-    public void flushEvents(boolean force)
+    public String getCurrentStatus()
+    {
+        return this.currentStatus;
+    }
+
+    public synchronized void flushEvents(boolean force)
     {
         long currentTime  = System.currentTimeMillis();
-
+        
         if (!force && currentTime - lastFlushTime < MAX_FLUSH_FREQUENCY) {
-            logger.info("Ignoring flushEvents call (not enough time has elasped)");
-        } else {
-            try {
-                lastFlushTime = System.currentTimeMillis();
+            logger.info("Ignoring flushEvents call (not enough time has elasped: " + MAX_FLUSH_FREQUENCY/1000 + " seconds)");
+            return;
+        } 
+
+        int exitCode = -1;
+        this.currentStatus = "";
             
-                logger.info("Flushing queued events...");
+        logger.info("Flushing queued events...");
+        LocalUvmContextFactory.context().loggingManager().forceFlush();
 
-                LocalUvmContextFactory.context().loggingManager().forceFlush();
+        logger.info("Running incremental report...");
+        try {
+            String args[] = { REPORTS_SCRIPT, "-m", "-i" };
+            Process proc = LocalUvmContextFactory.context().exec(args);
+            tailLog(REPORTER_LOG_FILE, REPORTER_LOG_FILE_READ_TIMEOUT, proc);
+            exitCode = proc.waitFor();
+            proc.destroy();
+        } catch (Exception e) {
+            logger.error("Unable to run incremental reports", e );
+        }
 
-                logger.info("Running incremental report...");
-            
-                SimpleExec.SimpleExecResult result = SimpleExec.exec(REPORTS_SCRIPT, new String[] { "-m", "-i" },
-                                                                     null,//env
-                                                                     null,//rootDir
-                                                                     true,//stdout
-                                                                     true,//stderr
-                                                                     1000*30*60); // 30 minutes timeout
-
-                /* set the time again, this is because the process itself can take a while */
-                lastFlushTime = System.currentTimeMillis();
-
-                if (result.exitCode != 0) {
-                    throw new Exception("Unable to run daily reports: \nReturn code: " +
-                                        result.exitCode + ", stdout \"" +
-                                        new String(result.stdOut) + "\", stderr \"" +
-                                        new String(result.stdErr) + "\"");
-                }
-            } catch (Exception e) {
-                logger.warn("Failed to run incremental report: ", e);
-            }
+        this.currentStatus = "";
+        lastFlushTime = System.currentTimeMillis();
+                
+        if (exitCode != 0) {
+            logger.warn("Incremental reports exited with non-zero return code: " + exitCode);
         }
     }
+    
+    public void initializeSettings()
+    {
+        setReportingSettings(initSettings());
+    }
+
+    public Validator getValidator() {
+        return new ReportingValidator();
+    }
+
+    public Object getSettings()
+    {
+        return getReportingSettings();
+    }
+
+    public void setSettings(Object settings)
+    {
+        setReportingSettings((ReportingSettings)settings);
+    }
+
     
     @Override
     protected PipeSpec[] getPipeSpecs()
@@ -178,9 +215,6 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
         };
 
         getNodeContext().runTransaction(tw);
-
-        //run incremental reports to create the schemas for the first time        
-        flushEvents(); 
     }
 
     protected void preStart()
@@ -191,6 +225,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
         }
     }
 
+
     private ReportingSettings initSettings()
     {
         ReportingSettings settings = new ReportingSettings();
@@ -200,28 +235,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 
         return settings;
     }
-
-    public void initializeSettings()
-    {
-        setReportingSettings(initSettings());
-    }
-
-    public Validator getValidator() {
-        return new ReportingValidator();
-    }
-
-    // XXX soon to be deprecated ----------------------------------------------
-
-    public Object getSettings()
-    {
-        return getReportingSettings();
-    }
-
-    public void setSettings(Object settings)
-    {
-        setReportingSettings((ReportingSettings)settings);
-    }
-
+    
     /*
      * Add admin users to the list of reporting users, and set them up for
      * emailed reports.
@@ -264,4 +278,88 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
         // also sign them up for emailed reports
         adminManager.getMailSettings().setReportEmail(reportEmail);
     }
+
+    private void tailLog(String logFile, long timeout, Process proc)
+    {
+        try {
+            File file = new File(logFile);
+            if (!file.exists()) {
+                logger.warn(logFile + " not found.");
+            }
+
+            RandomAccessFile raf = new RandomAccessFile(file, "r");
+            raf.seek(file.length()); // seek to end
+                
+            String line = null;
+            while ((line = readLine(raf, timeout, proc)) != null) {
+                Matcher match = REPORTER_LOG_PROGRESS_PATTERN.matcher(line);
+                if (match.matches()) {
+                    currentStatus = match.group(1);
+                    logger.info("update currentStatus: " + currentStatus);
+                }
+            }
+        } catch (IOException e) {
+            logger.error("Unable to read log file.", e);
+        }
+        
+        logger.info("tailLog() complete");
+    }
+
+    /**
+     * This attempts to a read line
+     *
+     * It returns a line if successful
+     * null if the process exits
+     * null if the timeout expires
+     */
+    private String readLine(RandomAccessFile raf, long timeout, Process proc)
+    {
+        long lastActivity = -1;
+
+        try {
+            while (true) {
+                long currentTime = System.currentTimeMillis();
+                if (0 > lastActivity) {
+                    lastActivity = currentTime;
+                }
+                String line = raf.readLine();
+
+                if (line == null) {
+                    try {
+                        if (currentTime - lastActivity > timeout) {
+                            // just end the thread adding TimeoutEvent
+                            logger.warn("readLine timing out: " + (currentTime - lastActivity));
+                            return null;
+                        } else {
+                            Thread.sleep(100);
+
+                            if (isProcessComplete(proc)) 
+                                return null; // if no more is coming just return
+                        }
+                    } catch (InterruptedException exn) { }
+                } else {
+                    lastActivity = currentTime;
+                    return line;
+                } 
+            }
+        } catch (IOException exn) {
+            logger.warn("could not read apt.log", exn);
+            throw new RuntimeException("could not read apt-log", exn);
+        } catch (Exception exn) {
+            logger.warn("could not read apt.log", exn);
+            throw new RuntimeException("could not read apt-log", exn);
+        }
+    }
+
+    private boolean isProcessComplete(Process proc)
+    {
+        try {
+            int foo = proc.exitValue();
+            return true;
+        } catch (java.lang.IllegalThreadStateException e) {
+            return false;
+        }
+    }
+
+
 }

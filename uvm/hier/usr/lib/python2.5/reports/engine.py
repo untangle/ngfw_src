@@ -27,6 +27,7 @@ import shutil
 import reports.sql_helper as sql_helper
 import string
 import sys
+import time
 
 from mx.DateTime import DateTimeDelta
 from psycopg2.extensions import DateFromMx
@@ -392,8 +393,11 @@ def init_engine(node_module_dir):
 def setup(start_date, end_date):
     global __nodes
 
+    count = 0.0
     for name in __get_node_partial_order():
         try:
+            count = count+1.0 
+            logger.debug('PROGRESS [%2.1f%%]' % (count * 100.0 / len(__get_node_partial_order())))
             logger.debug('doing setup for: %s (%s -> %s)' % (name, start_date, end_date))
             node = __nodes.get(name, None)
 

@@ -100,20 +100,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         cls: 'description',
                         border: false
                     }, {
-                        xtype : 'checkbox',
-                        boxLabel : this.i18n._('I understand the risks.'),
-                        name : 'Understand Checkbox',
-                        id : 'risks',
-                        hideLabel : true,
-                        checked : false,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, newValue) {
-                                    this.getReportingSettings().emailDetail = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
-                    }, {
                         buttonAlign: 'center',
                         footer: false,
                         border: false,
@@ -123,17 +109,24 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             name: 'Generate Reports',
                             iconCls: 'action-icon',
                             handler: function(callback) {
-                                var understand = Ext.getCmp('risks').getValue();
+                                Ext.MessageBox.progress(i18n._("Please wait"), i18n._("Generating today's reports..."));
+                                this.getRpcNode().runDailyReport(function(result, exception) {
+                                    this.afterRun(exception, callback);
+                                }.createDelegate(this));
 
-                                if (understand == false) {
-                                    Ext.MessageBox.alert(this.i18n._("Error"), this.i18n._("You must check \"I understand the risks\""));
-                                }
-                                else {
-                                    Ext.MessageBox.wait(i18n._("Generating today's reports..."), i18n._("Please wait"));
-                                    this.getRpcNode().runDailyReport(function(result, exception) {
-                                        this.afterRun(exception, callback);
-                                    }.createDelegate(this));
-                                }
+                                this.updateFunction = function(){
+                                    var statusStr = this.getRpcNode().getCurrentStatus();
+                                    var floatPercent = parseFloat(statusStr.replace("%",""));
+                                    if(!Ext.MessageBox.isVisible()) 
+                                        return;
+                                    else {
+                                        Ext.MessageBox.updateProgress(floatPercent/100.0, "", i18n._("Generating today's reports...") + " " + statusStr);
+                                        window.setTimeout(this.updateFunction, 1000);
+                                    }
+                                }.createDelegate(this);
+
+                                window.setTimeout(this.updateFunction, 2000);
+                                
                             }.createDelegate(this)
                         }]
                     }]
