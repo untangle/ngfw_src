@@ -2723,13 +2723,17 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 
             this.updateFunction = function(){
                 var statusStr = this.getUntangleNodeReporting().getCurrentStatus();
+                //if the loadMask is no longer shown, stop this task
                 if(this.loadMask.disabled) 
                     return;
-                else {
-                    this.loadMask.msg = i18n._('Compiling Database Tables... ') + statusStr;
-                    this.loadMask.show();
-                    window.setTimeout(this.updateFunction, 1000);
-                }
+                //if the loadMask has moved on to a different phase, stop this task
+                if(this.loadMask.msg.indexOf("Compiling") == -1)
+                    return;
+                
+                this.loadMask.msg = i18n._('Compiling Database Tables... ') + statusStr;
+                this.loadMask.show();
+                window.setTimeout(this.updateFunction, 1000);
+
             }.createDelegate(this);
 
             window.setTimeout(this.updateFunction, 2000);
@@ -2737,16 +2741,19 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     },
     // Refresh the events list
     refreshCallback : function(result, exception) {
-        if(Ung.Util.handleException(exception)) return;
-        var events = result;
-        if (this.settingsCmp !== null) {
-            this.getStore().proxy.data = events;
-            this.getStore().load({
-                params : {
-                    start : 0,
-                    limit : this.recordsPerPage
-                }
-            });
+        if (exception != null) {
+           Ung.Util.handleException(exception);
+        } else {
+            var events = result;
+            if (this.settingsCmp !== null) {
+                this.getStore().proxy.data = events;
+                this.getStore().load({
+                    params : {
+                        start : 0,
+                        limit : this.recordsPerPage
+                    }
+                });
+            }
         }
         this.loadMask.disabled = true;
         this.loadMask.hide();
