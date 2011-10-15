@@ -1,7 +1,6 @@
 /*
  * $Id$
  */
-
 package com.untangle.node.spyware;
 
 import javax.persistence.CascadeType;
@@ -38,10 +37,7 @@ public class SpywareAccessEvent extends SpywareEvent
 
     public SpywareAccessEvent() { }
 
-    public SpywareAccessEvent(PipelineEndpoints pe,
-                              String identification,
-                              IPMaskedAddress ipMaddr,
-                              Boolean blocked)
+    public SpywareAccessEvent(PipelineEndpoints pe, String identification, IPMaskedAddress ipMaddr, Boolean blocked)
     {
         this.pipelineEndpoints = pe;
         this.identification = identification;
