@@ -2556,7 +2556,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             name : "Refresh",
             tooltip : i18n._('Refresh'),
             iconCls : 'icon-refresh',
-            handler : this.refreshHandler.createDelegate(this)
+            handler : this.refreshHandler.createDelegate(this, [true])
         }, {
             xtype : 'tbbutton',
             hidden : !this.hasAutoRefresh,
@@ -2707,36 +2707,39 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             elems[i].unselectable = "off";
         }
     },
-    refreshHandler: function () {
+    refreshHandler: function (forceFlush) {
         if (!this.isReportsAppInstalled()) {
             Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install the Reports application."));
         } else {
-
-            this.loadMask.disabled = false;
-            this.loadMask.msg = i18n._('Compiling Database Tables...');
-            this.loadMask.show();
-            this.getUntangleNodeReporting().flushEvents(function(result, exception) {
-                this.loadMask.msg = i18n._('Refreshing Events...');
-                this.loadMask.show();
+            if (!forceFlush) {
                 this.refreshList();
-            }.createDelegate(this));
-
-            this.updateFunction = function(){
-                var statusStr = this.getUntangleNodeReporting().getCurrentStatus();
-                //if the loadMask is no longer shown, stop this task
-                if(this.loadMask.disabled) 
-                    return;
-                //if the loadMask has moved on to a different phase, stop this task
-                if(this.loadMask.msg.indexOf("Compiling") == -1)
-                    return;
-                
-                this.loadMask.msg = i18n._('Compiling Database Tables... ') + statusStr;
+            } else {
+                this.loadMask.disabled = false;
+                this.loadMask.msg = i18n._('Compiling Database Tables...');
                 this.loadMask.show();
-                window.setTimeout(this.updateFunction, 1000);
+                this.getUntangleNodeReporting().flushEvents(function(result, exception) {
+                    this.loadMask.msg = i18n._('Refreshing Events...');
+                    this.loadMask.show();
+                    this.refreshList();
+                }.createDelegate(this));
 
-            }.createDelegate(this);
+                this.updateFunction = function(){
+                    var statusStr = this.getUntangleNodeReporting().getCurrentStatus();
+                    //if the loadMask is no longer shown, stop this task
+                    if(this.loadMask.disabled) 
+                        return;
+                    //if the loadMask has moved on to a different phase, stop this task
+                    if(this.loadMask.msg.indexOf("Compiling") == -1)
+                        return;
+                    
+                    this.loadMask.msg = i18n._('Compiling Database Tables... ') + statusStr;
+                    this.loadMask.show();
+                    window.setTimeout(this.updateFunction, 1000);
 
-            window.setTimeout(this.updateFunction, 2000);
+                }.createDelegate(this);
+
+                window.setTimeout(this.updateFunction, 2000);
+            }
         }
     },
     // Refresh the events list
@@ -2805,7 +2808,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         "activate": {
             fn: function() {
                 if( this.refreshOnActivate ) {
-                    this.refreshHandler.defer(1,this);
+                    this.refreshHandler.defer(1, this, [false]);
                 }
             }
         },
