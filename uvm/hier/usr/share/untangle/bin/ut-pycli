@@ -24,6 +24,7 @@ class ArgumentParser(object):
         self.verbosity = 0
         self.filename = None
         self.command = None
+        self.quiet = False
 
     def set_hostname( self, arg ):
         self.hostname = arg
@@ -49,6 +50,9 @@ class ArgumentParser(object):
     def increase_verbosity( self, arg ):
         self.verbosity += 1
 
+    def set_quiet( self, arg ):
+        self.quiet = True
+
     def parse_args( self ):
         handlers = {
             '-h' : self.set_hostname,
@@ -58,10 +62,11 @@ class ArgumentParser(object):
             '-p' : self.set_policy,
             '-f' : self.set_filename,
             '-c' : self.set_command,
-            '-v' : self.increase_verbosity
+            '-v' : self.increase_verbosity,
+            '-q' : self.set_quiet
         }
 
-        (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:w:t:p:c:f:v')
+        (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:w:t:p:c:f:vq')
         for opt in optlist:
             handlers[opt[0]](opt[1])
         return args
@@ -77,7 +82,8 @@ def printUsage():
     -w password
     -t timeout (default 120000)
     -p policy
-    -v
+    -v (increase verbosity)
+    -q (quiet, fails silently)
   COMMANDS:
     ucli install <package-name> - installs the given package
     ucli uninstall <package-name> - uninstall the given package
@@ -143,9 +149,10 @@ if __name__ == "__main__":
       version = uvmContext.version()
   except JSONRPCException, e:
       errorstr = repr(e.error)
-      print "ERROR: Failed to communicate with the untangle-vm: %s" % errorstr
-      if (errorstr.find("password") != -1):
-          print "Is the untangle-vm running? Are you root? Did you supply a username/password?"
+      if (not parser.quiet):
+          print "ERROR: Failed to communicate with the untangle-vm: %s" % errorstr
+          if (errorstr.find("password") != -1):
+              print "Is the untangle-vm running? Are you root? Did you supply a username/password?"
       sys.exit(1)
 
   # If -c is specified exec the command and exit

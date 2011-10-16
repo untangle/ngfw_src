@@ -1,7 +1,7 @@
 #! /bin/bash
 # This file automatically created - do not modify
 
-/usr/bin/ucli -t 30 register untangle-node-spamassassin 2>/dev/null || true
+/usr/bin/ucli -q -t 30 register untangle-node-spamassassin 2>/dev/null || true
 
 touch /etc/untangle/reports-to-restart
 
