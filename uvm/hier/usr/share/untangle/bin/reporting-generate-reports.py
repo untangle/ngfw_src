@@ -272,10 +272,10 @@ INSERT INTO reports.reports_state (last_cutoff) VALUES (%s)""", (date,))
 currentLoad = getLoad()
 if maxLoad is not None:
      if currentLoad >= maxLoad:
-          logger.warning("Current load %d is higher than %d, exiting" % (currentLoad, maxLoad))
+          logger.warning("Current load (%.2f) is higher than %.2f, exiting" % (currentLoad, maxLoad))
           sys.exit(0)
      else:
-          logger.info("Current load %d is lower than %d, going ahead" % (currentLoad, maxLoad))
+          logger.info("Current load %.2f is lower than %.2f, going ahead" % (currentLoad, maxLoad))
 
 running = False
 for instance in Popen(["ucli", "instances"], stdout=PIPE).communicate()[0].split('\n'):
