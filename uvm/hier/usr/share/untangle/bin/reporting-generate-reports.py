@@ -275,7 +275,7 @@ if maxLoad is not None:
           logger.warning("Current load (%.2f) is higher than %.2f, exiting" % (currentLoad, maxLoad))
           sys.exit(0)
      else:
-          logger.info("Current load %.2f is lower than %.2f, going ahead" % (currentLoad, maxLoad))
+          logger.info("Current load (%.2f) is lower than %.2f, going ahead" % (currentLoad, maxLoad))
 
 running = False
 for instance in Popen(["ucli", "instances"], stdout=PIPE).communicate()[0].split('\n'):
