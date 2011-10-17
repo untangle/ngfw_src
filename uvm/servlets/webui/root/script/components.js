@@ -2592,7 +2592,12 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         };
         var cmConfig = this.getColumnModel().config;
         for (i in cmConfig) {
-            cmConfig[i].initialSortable = cmConfig[i].sortable;
+            if (cmConfig[i].sortable == true || cmConfig[i].sortable == null) {
+                cmConfig[i].sortable = true;
+                cmConfig[i].initialSortable = true;
+            } else {
+                cmConfig[i].initialSortable = false;
+            }
         }
     },
     autoRefreshEnabled:true,
