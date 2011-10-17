@@ -527,15 +527,23 @@ class ToolboxManagerImpl implements ToolboxManager
 
         LocalUvmContextFactory.context().newThread(alt).start();
 
-        try {
-            upgrading = true;
-            execApt("upgrade", alt.getKey());
-        } catch (PackageException exn) {
-            logger.warn("could not upgrade", exn);
-            throw exn;
-        } finally {
-            upgrading = false;
-        }
+        FutureTask<Object> f = new FutureTask<Object>(new Callable<Object>() {
+                public Object call() throws Exception
+                {
+                    try {
+                        upgrading = true;
+                        execApt("upgrade", alt.getKey());
+                    } catch (PackageException exn) {
+                        logger.warn("could not upgrade", exn);
+                        throw exn;
+                    } finally {
+                        upgrading = false;
+                    }
+                    return this;
+                }
+            });
+
+        LocalUvmContextFactory.context().newThread(f).start();
         
         return;
     }
