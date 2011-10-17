@@ -45,7 +45,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 
     static {
         String syncStr = System.getProperty("uvm.event.long_sync");
-        if (shortSyncStr != null) {
+        if (syncStr != null) {
             try {
                 MAX_FLUSH_FREQUENCY = Integer.valueOf(syncStr); 
             }
