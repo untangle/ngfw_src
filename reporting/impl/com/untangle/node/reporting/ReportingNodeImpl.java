@@ -44,13 +44,13 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
     private static int MAX_FLUSH_FREQUENCY;
 
     static {
-        String shortSyncStr = System.getProperty("uvm.event.short_sync");
+        String syncStr = System.getProperty("uvm.event.long_sync");
         if (shortSyncStr != null) {
             try {
-                MAX_FLUSH_FREQUENCY = Integer.valueOf(shortSyncStr); 
+                MAX_FLUSH_FREQUENCY = Integer.valueOf(syncStr); 
             }
             catch (Exception e) {
-                logger.warn("Invalid Flush Frequency: " + shortSyncStr);
+                logger.warn("Invalid Flush Frequency: " + syncStr);
                 MAX_FLUSH_FREQUENCY = 30*1000; /* 30 seconds */
             }
         } else {
