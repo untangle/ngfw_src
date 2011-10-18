@@ -13,25 +13,28 @@ if [ $MEM -gt 4900000 ] ; then
     GC_MIN_CYCLE=0
     EVENTS_LONG_SYNC=40 # seconds
     EVENTS_SHORT_SYNC=5 # seconds
-    REPORTS_INTERVAL=1 #minutes
+    REPORTS_INTERVAL_MIN=5 # minutes
+    REPORTS_INTERVAL_HOUR=1 # hour
     REPORTS_MAX_LOAD=1
 elif [ $MEM -gt 3900000 ] ; then
     MAX_HEAP_SIZE=2400m
     MAX_VIRTUAL_SIZE=4400m
     GC_SAFETY_FACTOR=10
     GC_MIN_CYCLE=0
-    EVENTS_LONG_SYNC=50
-    EVENTS_SHORT_SYNC=7
-    REPORTS_INTERVAL=2 #minutes
-    REPORTS_MAX_LOAD=1
+    EVENTS_LONG_SYNC=50 # seconds
+    EVENTS_SHORT_SYNC=7 # seconds
+    REPORTS_INTERVAL_MIN=10 # minutes
+    REPORTS_INTERVAL_HOUR=1 # hour
+    REPORTS_MAX_LOAD=5
 elif [ $MEM -gt 2900000 ] ; then
     MAX_HEAP_SIZE=1600m
     MAX_VIRTUAL_SIZE=3000m
     GC_SAFETY_FACTOR=20
     GC_MIN_CYCLE=5
-    EVENTS_LONG_SYNC=60
-    EVENTS_SHORT_SYNC=9
-    REPORTS_INTERVAL=3 #minutes
+    EVENTS_LONG_SYNC=60 # seconds
+    EVENTS_SHORT_SYNC=9 # seconds
+    REPORTS_INTERVAL_MIN=15 # minutes
+    REPORTS_INTERVAL_HOUR=1 # hour
     REPORTS_MAX_LOAD=1
 elif [ $MEM -gt 1900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
@@ -43,9 +46,10 @@ elif [ $MEM -gt 1900000 ] ; then
     fi
     GC_SAFETY_FACTOR=50
     GC_MIN_CYCLE=10
-    EVENTS_LONG_SYNC=90
-    EVENTS_SHORT_SYNC=12
-    REPORTS_INTERVAL=4 #minutes
+    EVENTS_LONG_SYNC=90 # seconds
+    EVENTS_SHORT_SYNC=12 # seconds
+    REPORTS_INTERVAL_MIN=30 # minutes
+    REPORTS_INTERVAL_HOUR=1 # hour
     REPORTS_MAX_LOAD=1
 elif [ $MEM -gt 900000 ] ; then
     if [ $ARCH = 'x86_64' ]; then
@@ -57,9 +61,10 @@ elif [ $MEM -gt 900000 ] ; then
     fi
     GC_SAFETY_FACTOR=90
     GC_MIN_CYCLE=10
-    EVENTS_LONG_SYNC=110
-    EVENTS_SHORT_SYNC=14
-    REPORTS_INTERVAL=5 #minutes
+    EVENTS_LONG_SYNC=110 # seconds
+    EVENTS_SHORT_SYNC=14 # seconds
+    REPORTS_INTERVAL_MIN=60 # minutes
+    REPORTS_INTERVAL_HOUR=2 # hour
     REPORTS_MAX_LOAD=1
 else
     if [ $ARCH = 'x86_64' ]; then
@@ -71,13 +76,12 @@ else
     fi
     GC_SAFETY_FACTOR=90
     GC_MIN_CYCLE=10
-    EVENTS_LONG_SYNC=120
-    EVENTS_SHORT_SYNC=15
-    REPORTS_INTERVAL=6 #minutes
+    EVENTS_LONG_SYNC=120 # seconds
+    EVENTS_SHORT_SYNC=15 # seconds
+    REPORTS_INTERVAL_MIN=60 # minutes
+    REPORTS_INTERVAL_HOUR=12 # hour
     REPORTS_MAX_LOAD=1
 fi
-
-perl -i -pe 's|(?<=\*/)\d+|'${REPORTS_INTERVAL}'| ; s|(?<=-b )\d+|'${REPORTS_MAX_LOAD}'|' /etc/cron.d/untangle-reports-incremental
 
 MAX_VIRTUAL_SIZE=$(( ${MAX_VIRTUAL_SIZE/m} * 1000 ))
 EVENTS_SHORT_SYNC=$(( ${EVENTS_SHORT_SYNC} * 1000 ))
@@ -87,8 +91,13 @@ echo "    Maximum heap size        -> ${MAX_HEAP_SIZE}"
 echo "    Maximum virtual size     -> ${MAX_VIRTUAL_SIZE}"
 echo "    GC safety factor         -> ${GC_SAFETY_FACTOR}"
 echo "    GC minimum cycle         -> ${GC_MIN_CYCLE}"
-echo "    Interval between reports -> ${REPORTS_INTERVAL}"
+echo "    Reports interval (hour)  -> ${REPORTS_INTERVAL_HOUR}"
+echo "    Reports interval (min)   -> ${REPORTS_INTERVAL_MIN}"
 echo "    Max load for reports     -> ${REPORTS_MAX_LOAD}"
+echo "    Events short sync        -> ${EVENTS_SHORT_SYNC}"
+echo "    Events long  sync        -> ${EVENTS_LONG_SYNC}"
+
+perl -i -pe 's|(?<=\*/)\d+|'${REPORTS_INTERVAL_MIN}'| ; s|(?<= \*/)\d+|'${REPORTS_INTERVAL_HOUR}'| ; s|(?<=-b )\d+|'${REPORTS_MAX_LOAD}'|' /etc/cron.d/untangle-reports-incremental
 
 mkdir -p `dirname $FILE`
 cat >| $FILE <<EOF
