@@ -132,7 +132,7 @@ if simulate:
      sql_helper.CONNECTION_STRING = simulate
 
 def getLoad():
-     return float(open("/proc/loadavg").read().split(" ")[2])
+     return float(open("/proc/loadavg").read().split(" ")[1])
      
 def get_report_lengths(date):
     lengths = []
