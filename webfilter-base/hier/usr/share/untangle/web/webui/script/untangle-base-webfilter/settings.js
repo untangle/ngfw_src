@@ -1080,22 +1080,28 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         buildUnblockEventLog : function() {
             this.gridUnblockEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-        eventManagerFn : this.getRpcNode().getUnblockEventManager(),
-        name : "Unblock Event Log",
-        title : i18n._('Unblock Event Log'),
-                fields : [{ name : 'timeStamp',
-                            mapping : 'timeStamp',
-                            sortType : Ung.SortTypes.asTimestamp
-                        }, { name : 'client',
-                             mapping : 'CClientAddr'
-                        }, { name : 'server',
-                             mapping : 'CServerAddr'
-                        }, { name : 'host',
-                             mapping : 'host'
-                        }, { name : 'uid'
-                        }, { name : 'uri',
-                             mapping : 'uri'
-                        }],
+                eventManagerFn : this.getRpcNode().getUnblockEventManager(),
+                name : "Unblock Event Log",
+                title : i18n._('Unblock Event Log'),
+                fields : [{
+                    name : 'timeStamp',
+                    mapping : 'timeStamp',
+                    sortType : Ung.SortTypes.asTimestamp
+                }, {
+                    name : 'client',
+                    mapping : 'CClientAddr'
+                }, {
+                    name : 'server',
+                    mapping : 'CServerAddr'
+                }, {
+                    name : 'host',
+                    mapping : 'host'
+                }, {
+                    name : 'uid'
+                }, {
+                    name : 'uri',
+                    mapping : 'uri'
+                }],
                 autoExpandColumn: 'uri',
                 columns : [{
                     header : this.i18n._("timestamp"),
@@ -1106,23 +1112,23 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     }
                 }, {
                     header : this.i18n._("client"),
-                    width : Ung.Util.ipFieldWidth,
+                    width : Ung.Util.ipFieldWidth
                 }, {
                     header : this.i18n._("username"),
                     dataIndex : 'uid',
-                    width : Ung.Util.usernameFieldWidth,
+                    width : Ung.Util.usernameFieldWidth
                 }, {
                     id : "host",
                     header : this.i18n._("host"),
-                    width : Ung.Util.hostnameFieldWidth,
+                    width : Ung.Util.hostnameFieldWidth
                 }, {
                     id : "uri",
                     header : this.i18n._("uri"),
-                    width : Ung.Util.uriFieldWidth,
+                    width : Ung.Util.uriFieldWidth
                 }, {
                     id : "server",
                     header : this.i18n._("server"),
-                    width : Ung.Util.ipFieldWidth,
+                    width : Ung.Util.ipFieldWidth
                 }]
             });
         },
