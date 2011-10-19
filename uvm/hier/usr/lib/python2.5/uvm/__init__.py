@@ -6,6 +6,7 @@ from uvm.reporting_manager import ReportingManager
 from uvm.network_manager import NetworkManager
 from uvm.uvm_manager import UvmManager
 from uvm.message_manager import MessageManager
+from uvm.license_manager import LicenseManager
 
 from uvm.manager import Manager
 from uvm.untangle_vm import Uvm
