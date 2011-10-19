@@ -75,7 +75,7 @@ public class BlockPageUtil
 
         if ((!BlockPageParameters.UNBLOCK_MODE_NONE.equals(mode)) && ( null != bd ) && ( null != bd.getWhitelistHost())) {
             request.setAttribute( "showUnblockNow", true );
-            if (BlockPageParameters.UNBLOCK_MODE_GLOBAL == mode) {
+            if (BlockPageParameters.UNBLOCK_MODE_GLOBAL.equals(mode)) {
                 request.setAttribute( "showUnblockGlobal", true );
             }
         }
