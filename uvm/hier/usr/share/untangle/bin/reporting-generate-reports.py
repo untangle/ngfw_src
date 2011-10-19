@@ -51,7 +51,7 @@ if os.path.isfile(LOCKFILE):
 f = open(LOCKFILE, "w")
 f.write("%s\n" % os.getpid())
 f.close()
-logger.info("wrote pidfile")
+logger.info("Wrote pidfile (pid: %s)" % os.getpid())
 
 try:
      opts, args = getopt.getopt(sys.argv[1:], "hncgpmiaver:d:l:t:s:b:",
