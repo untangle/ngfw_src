@@ -1,19 +1,5 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
 package com.untangle.node.router;
 
@@ -31,7 +17,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.MACAddress;
@@ -250,7 +235,7 @@ class DhcpMonitor implements Runnable
         str = str.trim();
         String strArray[] = str.split( DHCP_LEASE_DELIM );
         String tmp;
-        HostName host;
+        String host;
         Date eol;
         MACAddress mac;
         IPAddress ip;
@@ -288,15 +273,10 @@ class DhcpMonitor implements Runnable
         }
 
         tmp = strArray[DHCP_LEASE_ENTRY_HOST];
-        try {
-            if ( tmp.equals( DHCP_EMPTY_HOSTNAME )) {
-                host = HostName.getEmptyHostName();
-            } else {
-                host = HostName.parse( tmp );
-            }
-        } catch ( ParseException e ) {
-            logger.warn( "Invalid hostname: " + tmp );
-            return;
+        if ( tmp.equals( DHCP_EMPTY_HOSTNAME )) {
+            host = "";
+        } else {
+            host = tmp;
         }
 
         if ( absoluteEvent == null ) {
@@ -315,7 +295,7 @@ class DhcpMonitor implements Runnable
         deletedSet.remove( ip.getAddr());
     }
 
-    private void logDhcpLease( Date eol, MACAddress mac, IPAddress ip, HostName host, Date now )
+    private void logDhcpLease( Date eol, MACAddress mac, IPAddress ip, String host, Date now )
     {
         /* Determine if this lease is already being tracked */
         DhcpLease lease = currentLeaseMap.get( ip.getAddr());

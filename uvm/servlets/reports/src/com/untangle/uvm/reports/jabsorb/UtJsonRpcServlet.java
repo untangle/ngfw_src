@@ -14,7 +14,6 @@ import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.ExtendedListSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.ExtendedSetSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.HostAddressSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.HostNameSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPMaskedAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPAddressSerializer;
@@ -122,7 +121,6 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 // uvm related serializers
                 b.registerSerializer(new IPMaskedAddressSerializer());
                 b.registerSerializer(new IPAddressSerializer());
-                b.registerSerializer(new HostNameSerializer());
                 b.registerSerializer(new HostAddressSerializer());
                 b.registerSerializer(new TimeZoneSerializer());
 

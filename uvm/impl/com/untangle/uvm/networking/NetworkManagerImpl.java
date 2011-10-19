@@ -25,7 +25,6 @@ import com.untangle.jnetcap.Netcap;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ValidateException;
@@ -283,14 +282,9 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /* Get the current hostname */
-    public HostName getHostname()
+    public String getHostname()
     {
-        try {
-            return HostName.parse(this.networkConfiguration.getHostname());
-        } catch (com.untangle.uvm.node.ParseException e) {
-            logger.warn("Invalid hostname",e);
-            return null;
-        }
+        return this.networkConfiguration.getHostname();
     }
 
     public String getPublicAddress()

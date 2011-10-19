@@ -9,7 +9,6 @@ import com.untangle.uvm.webui.jabsorb.serializer.EnumSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.ExtendedListSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.ExtendedSetSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.HostAddressSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.HostNameSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPMaskedAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPAddressSerializer;
@@ -64,7 +63,6 @@ public class ServletUtils
         // uvm related serializers
         registrator.registerSerializer(root, new IPMaskedAddressSerializer());
         registrator.registerSerializer(root, new IPAddressSerializer());
-        registrator.registerSerializer(root, new HostNameSerializer());
         registrator.registerSerializer(root, new HostAddressSerializer());
         registrator.registerSerializer(root, new TimeZoneSerializer());
 

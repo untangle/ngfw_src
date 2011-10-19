@@ -30,7 +30,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;

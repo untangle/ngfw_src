@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/** 
+ * $Id$
+ */
 package com.untangle.uvm.networking;
 
 import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_HTTPS_PORT;
@@ -23,7 +25,6 @@ import org.hibernate.Query;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.node.HostAddress;
-import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.HostAddress;

@@ -27,7 +27,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.MACAddress;
 import org.hibernate.annotations.Type;
@@ -48,7 +47,7 @@ import org.hibernate.annotations.Type;
 
         private Long id;
         private MACAddress mac;
-        private HostName   hostname;
+        private String   hostname;
         private IPAddress     ip;
         private Date       endOfLease;
         private int        eventType;
@@ -101,13 +100,12 @@ import org.hibernate.annotations.Type;
          *
          * @return the host name.
          */
-        @Type(type="com.untangle.uvm.type.HostNameUserType")
-        public HostName getHostname()
+        public String getHostname()
         {
             return hostname;
         }
 
-        public void setHostname( HostName hostname )
+        public void setHostname( String hostname )
         {
             this.hostname = hostname;
         }

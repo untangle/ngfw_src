@@ -45,7 +45,6 @@ import javax.persistence.Transient;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Type;
 
-import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.Validatable;
@@ -73,9 +72,6 @@ public class AddressSettings implements Serializable, Validatable
     /* An additional HTTPS port that the web server will bind to */
     private int httpsPort;
 
-    /* The hostname of the box */
-    private HostName hostname;
-
     /* True if the hostname is resolvable on the internet */
     private boolean isHostnamePublic;
 
@@ -102,7 +98,6 @@ public class AddressSettings implements Serializable, Validatable
     public AddressSettings( AddressSettings settings )
     {
         this.httpsPort = settings.httpsPort;
-        this.hostname = settings.hostname;
         this.isHostnamePublic = settings.isHostnamePublic;
         this.isPublicAddressEnabled = settings.isPublicAddressEnabled;
         this.publicIPAddress = settings.publicIPAddress;
@@ -297,10 +292,10 @@ public class AddressSettings implements Serializable, Validatable
             
         } else if ( this.getIsHostNamePublic() )  {
             /* no public address, use the primary address, and the hostname */
-            HostName name = com.untangle.uvm.RemoteUvmContextFactory.context().networkManager().getHostname();
+            String name = com.untangle.uvm.RemoteUvmContextFactory.context().networkManager().getHostname();
             
             /* If a hostname is available, and qualified, then use the hostname */
-            if (( name != null ) && !name.isEmpty() && name.isQualified()) {
+            if (( name != null ) && !name.equals("")) {
                 address = new HostAddress( primaryAddress, name );
             }
         }

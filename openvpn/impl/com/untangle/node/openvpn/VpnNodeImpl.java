@@ -16,7 +16,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -26,7 +25,6 @@ import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.HostAddress;
-import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.ValidateException;
@@ -51,7 +49,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
     private static final String CLEANUP_SCRIPT = Constants.SCRIPT_DIR + "/cleanup";
 
-    private static final HostAddress EMPTY_HOST_ADDRESS = new HostAddress( HostName.getEmptyHostName());
+    private static final HostAddress EMPTY_HOST_ADDRESS = new HostAddress( "" );
 
     private static final String SERVICE_NAME = "openvpn";
 

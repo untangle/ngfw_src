@@ -18,8 +18,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.localapi.ArgonInterface;
-import com.untangle.uvm.node.HostName;
-import com.untangle.uvm.node.HostNameList;
 import com.untangle.uvm.node.IPNullAddr;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
@@ -88,35 +86,6 @@ class NetworkUtilPriv extends NetworkUtil
         return dnsServers;
     }
 
-    /* Get the hostname of the box from the /etc/hostname file */
-    HostName loadHostname()
-    {
-        HostName hostname = NetworkUtil.DEFAULT_HOSTNAME;
-
-        BufferedReader in = null;
-
-        /* Open up the interfaces file */
-        try {
-            in = new BufferedReader(new FileReader( HOST_NAME_FILE ));
-            String str;
-            str = in.readLine().trim();
-
-            /* Try to parse the hostname, throws an exception if it fails */
-            hostname = HostName.parse( str );
-        } catch ( Exception ex ) {
-            /* Go to the default */
-            hostname = NetworkUtil.DEFAULT_HOSTNAME;
-        }
-
-        try {
-            if ( in != null ) in.close();
-        } catch ( Exception e ) {
-            logger.error( "Error closing file: " + e );
-        }
-
-        return hostname;
-    }
-
     static NetworkUtilPriv getPrivInstance()
     {
         return INSTANCE;
@@ -147,19 +116,5 @@ class NetworkUtilPriv extends NetworkUtil
     private boolean parseBoolean( Properties properties, String property )
     {
         return Boolean.parseBoolean( properties.getProperty( property ));
-    }
-
-    private HostName parseHostname( Properties properties, String property )
-    {
-        String value = properties.getProperty( property );
-        if ( value == null ) return null;
-
-        try {
-            return HostName.parse( value );
-        } catch ( ParseException e ) {
-            logger.warn( "Unable to parse hostname: '" + value + "'", e );
-        }
-        
-        return null;
     }
 }

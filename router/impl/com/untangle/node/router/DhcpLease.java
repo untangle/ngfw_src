@@ -1,26 +1,10 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id$
  */
-
 package com.untangle.node.router;
 
 import java.util.Date;
 
-import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.MACAddress;
 import org.apache.log4j.Logger;
@@ -34,7 +18,7 @@ public class DhcpLease
     private final Logger logger = Logger.getLogger(getClass());
 
     private MACAddress mac        = null;
-    private HostName   hostname   = HostName.getEmptyHostName();
+    private String     hostname   = "";
     private IPAddress     ip         = null;
     private Date       endOfLease = null;
     private int        state      = EXPIRED;
@@ -47,7 +31,7 @@ public class DhcpLease
     {
     }
 
-    public DhcpLease( Date endOfLease, MACAddress mac, IPAddress ip, HostName hostname, Date now )
+    public DhcpLease( Date endOfLease, MACAddress mac, IPAddress ip, String hostname, Date now )
     {
         this.endOfLease = endOfLease;
         this.mac        = mac;
@@ -59,7 +43,7 @@ public class DhcpLease
     /**
      * @return true if the passed in parameters are different from the current parameters
      */
-    boolean hasChanged( Date endOfLease, MACAddress mac, IPAddress ip, HostName hostname, Date now )
+    boolean hasChanged( Date endOfLease, MACAddress mac, IPAddress ip, String hostname, Date now )
     {
         int state = this.state;
         updateState( now );
@@ -83,7 +67,7 @@ public class DhcpLease
     /**
      * Returns true if these new values represent a lease renewal
      */
-    boolean isRenewal( MACAddress mac, HostName hostname )
+    boolean isRenewal( MACAddress mac, String hostname )
     {
         /* renewal if the previous lease was active, and mac and hostname have not changed */
         return isActive() && this.mac.equals( mac ) && this.hostname.equals( hostname );
@@ -97,7 +81,7 @@ public class DhcpLease
         return ( state == ACTIVE ) ? true : false;
     }
 
-    void set( Date endOfLease, MACAddress mac, IPAddress ip, HostName hostname, Date now )
+    void set( Date endOfLease, MACAddress mac, IPAddress ip, String hostname, Date now )
     {
         this.endOfLease = endOfLease;
         this.mac        = mac;
@@ -121,12 +105,12 @@ public class DhcpLease
         this.mac = mac;
     }
 
-    public HostName getHostname()
+    public String getHostname()
     {
         return hostname;
     }
 
-    public void setHostname( HostName hostname )
+    public void setHostname( String hostname )
     {
         this.hostname = hostname;
     }

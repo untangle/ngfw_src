@@ -12,7 +12,6 @@ import javax.xml.bind.ValidationException;
 
 import com.untangle.uvm.node.AddressRange;
 import com.untangle.uvm.node.AddressValidator;
-import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
@@ -38,9 +37,6 @@ public class NetworkUtil
     /* Default address for the outside restricted outside netmask */
     public static final IPAddress  DEF_OUTSIDE_NETMASK;
 
-    /* Default local domain */
-    public static final HostName LOCAL_DOMAIN_DEFAULT;
-
     /* The address to use when a DHCP request fails */
     public static final IPAddress  BOGUS_DHCP_ADDRESS;
 
@@ -63,9 +59,6 @@ public class NetworkUtil
     public static final IPAddress SETUP_ADDRESS;
 
     public static final IPAddress BOGUS_ADDRESS;
-
-    /* ??? which one */
-    public static final HostName DEFAULT_HOSTNAME;
 
     /* Default lease time for the DHCP server */
     public static int DEFAULT_LEASE_TIME_SEC = 4 * 60 * 60;
@@ -272,8 +265,6 @@ public class NetworkUtil
 
         IPAddress setupAddress     = null;
 
-        HostName h, l;
-
         try {
             emptyAddr        = IPAddress.parse( "0.0.0.0" );
             outsideNetwork   = IPAddress.parse( "1.2.3.4" );
@@ -298,15 +289,6 @@ public class NetworkUtil
             /* THIS SHOULD NEVER HAPPEN */
         }
 
-        try {
-            h = HostName.parse( "example.com" );
-            l = HostName.parse( "example.com" );
-        } catch ( ParseException e ) {
-            /* This should never happen */
-            System.err.println( "Unable to initialize LOCAL_DOMAIN_DEFAULT: " + e );
-            h = null;
-            l = null;
-        }
         EMPTY_IPADDR        = emptyAddr;
         DEF_OUTSIDE_NETWORK = outsideNetwork;
         DEF_OUTSIDE_NETMASK = outsideNetmask;
@@ -323,9 +305,6 @@ public class NetworkUtil
         DEFAULT_NAT_NETMASK = natNetmask;
 
         SETUP_ADDRESS = setupAddress;
-
-        LOCAL_DOMAIN_DEFAULT = h;
-        DEFAULT_HOSTNAME = l;
 
         INSTANCE = new NetworkUtil();
     }
