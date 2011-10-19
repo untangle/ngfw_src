@@ -240,6 +240,10 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                 return;
             }
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+
+            //nothing to be saved
+
+            callback();
         },
         isDirty : function()
         {
