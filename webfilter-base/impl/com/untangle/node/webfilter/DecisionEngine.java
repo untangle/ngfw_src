@@ -117,7 +117,9 @@ public abstract class DecisionEngine
         }
         host = normalizeHostname(host);
 
-        String username = (String) sess.globalAttachment(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME);
+        String username = null;
+        if (sess != null)
+            username = (String) sess.globalAttachment(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME);
 
         // depending on the context, the uri can be either a full
         // hierarchical one, or just the path relative to the host; if
@@ -168,8 +170,7 @@ public abstract class DecisionEngine
                 Map<String,String> i18nMap = LocalUvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(),
                                                                      I18nUtil.tr("host name is an IP address ({0})", host, i18nMap),
-                                                                     clientIp, node.getNodeTitle(),
-                                                                     (String) sess.globalAttachment(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME));
+                                                                     clientIp, node.getNodeTitle(), username);
                 return node.generateNonce(bd);
             }
         }
