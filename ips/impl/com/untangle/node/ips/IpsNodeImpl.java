@@ -143,7 +143,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
     @SuppressWarnings("unchecked") //getItems
     public List<IpsRule> getRules(final int start, final int limit, final String... sortColumns)
     {
-        List<IpsRule> rules = listUtil.getItems("select s.rules from IpsSettings s where s.nodeId = :tid ",
+        List<IpsRule> rules = listUtil.getItems("select s.rules from IpsSettings s where s.nodeId = :nodeId ",
                                  getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
         if (rules == null) {
@@ -166,7 +166,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
     @SuppressWarnings("unchecked") //getItems
     public List<IpsVariable> getVariables(final int start, final int limit, final String... sortColumns)
     {
-        return listUtil.getItems("select s.variables from IpsSettings s where s.nodeId = :tid ",
+        return listUtil.getItems("select s.variables from IpsSettings s where s.nodeId = :nodeId ",
                                  getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
     }
@@ -179,7 +179,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
     @SuppressWarnings("unchecked") //getItems
     public List<IpsVariable> getImmutableVariables(final int start, final int limit, final String... sortColumns)
     {
-        return listUtil.getItems("select s.immutableVariables from IpsSettings s where s.nodeId = :tid ",
+        return listUtil.getItems("select s.immutableVariables from IpsSettings s where s.nodeId = :nodeId ",
                                  getNodeContext(), getNodeId(), start, limit,
                                  sortColumns);
     }
