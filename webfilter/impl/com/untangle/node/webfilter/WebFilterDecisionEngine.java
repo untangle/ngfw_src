@@ -88,13 +88,13 @@ class WebFilterDecisionEngine extends DecisionEngine
                 if (categoryName == null)
                     logger.warn("Unknown category: " + categoryId);
                 else {
-                    logger.info("Web Filter Category Lookup: " + url + " -> " + categoryName); 
+                    logger.debug("Web Filter Category Lookup: " + url + " -> " + categoryName); 
                     results.add(categoryName);
                 }
             }
         }
 
-        logger.info("Web Filter Category Lookup: " + url + " = " + results); 
+        logger.debug("Web Filter Category Lookup: " + url + " = " + results); 
         return results;
     }
 
