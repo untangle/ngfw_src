@@ -260,7 +260,7 @@ def set_update_info(tablename, last_update, connection=None,
             curs.execute("SELECT max(time_stamp) FROM reports.%s" % (origin_tablename,))
         except psycopg2.ProgrammingError, e:
             connection.rollback()
-            if str(e).find('column "time_stamp" does not exist') > 0:
+            if e.pgerror.find('column "time_stamp" does not exist') > 0:
                 try:
                     curs = connection.cursor()
                     curs.execute("SELECT max(trunc_time) FROM reports.%s" % (origin_tablename,))
@@ -273,9 +273,9 @@ def set_update_info(tablename, last_update, connection=None,
         else:
             last_update = last_update[0]
             
-        logger.debug("About to set last_update to %s (instead of %s) for %s" % (last_update,
-                                                                                last_update_origin,
-                                                                                tablename))
+        logger.debug("About to set last_update to %s (last was %s) for %s" % (last_update,
+                                                                              last_update_origin,
+                                                                              tablename))
 
         curs = connection.cursor()
         curs.execute("""\
