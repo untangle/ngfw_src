@@ -69,6 +69,8 @@ class SimpleEventFilterAdaptor<E extends LogEvent>
         int c = 0;
         for (Iterator<E> i = q.iterate(); i.hasNext() && ++c < limit; ) {
             E sb = i.next();
+            if (sb == null)
+                logger.warn("Query (" + query + ") returned null item");
             Hibernate.initialize(sb);
             l.add(sb);
         }

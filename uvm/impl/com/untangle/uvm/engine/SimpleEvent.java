@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import com.untangle.uvm.LocalUvmContextFactory;
@@ -28,6 +29,8 @@ import com.untangle.uvm.util.TransactionWork;
  */
 class SimpleEvent<E extends LogEvent> implements EventRepository<E>
 {
+    private final Logger logger = Logger.getLogger(getClass());
+
     private EventLoggerImpl<E> eventLogger;
     private final ListEventFilter<E> eventFilter;
 
