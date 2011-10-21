@@ -1,19 +1,3 @@
-# $HeadURL: svn://chef/work/src/buildtools/rake-util.rb $
-# Copyright (c) 2003-2009 Untangle, Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, version 2,
-# as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful, but
-# AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
-# NONINFRINGEMENT.  See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
-
 import gettext
 import logging
 import mx
@@ -110,8 +94,8 @@ UPDATE reports.sessions
 SET pf_protocol = protocol,
   pf_blocked = blocked
 FROM events.n_protofilter_evt
-WHERE reports.sessions.time_stamp >= %s
-  AND reports.sessions.time_stamp < %s
+WHERE events.n_protofilter_evt.time_stamp >= %s
+  AND events.n_protofilter_evt.time_stamp < %s
   AND reports.sessions.pl_endp_id = events.n_protofilter_evt.pl_endp_id""",
                                (sd, ed), connection=conn, auto_commit=False)
 

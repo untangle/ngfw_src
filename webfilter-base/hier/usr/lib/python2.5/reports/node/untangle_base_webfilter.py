@@ -124,8 +124,8 @@ SET wf_%s_blocked = blocked,
     wf_%s_reason = reason,
     wf_%s_category = category
 FROM events.n_webfilter_evt
-WHERE reports.n_http_events.time_stamp >= %%s
-  AND reports.n_http_events.time_stamp < %%s
+WHERE events.n_webfilter_evt.time_stamp >= %%s
+  AND events.n_webfilter_evt.time_stamp < %%s
   AND events.n_webfilter_evt.vendor_name = %%s
   AND reports.n_http_events.request_id = events.n_webfilter_evt.request_id"""
                                % (4 * (self.__vendor_name,)),

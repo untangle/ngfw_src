@@ -1,19 +1,3 @@
-# $HeadURL: svn://chef/work/src/buildtools/rake-util.rb $
-# Copyright (c) 2003-2009 Untangle, Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, version 2,
-# as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful, but
-# AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
-# NONINFRINGEMENT.  See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
-
 import gettext
 import logging
 import mx
@@ -125,8 +109,8 @@ DELETE FROM events.n_spyware_evt_cookie
 UPDATE reports.sessions
 SET sw_access_ident = ident
 FROM events.n_spyware_evt_access
-WHERE reports.sessions.time_stamp >= %s
-  AND reports.sessions.time_stamp < %s
+WHERE events.n_spyware_evt_access.time_stamp >= %s
+  AND events.n_spyware_evt_access.time_stamp < %s
   AND reports.sessions.pl_endp_id = events.n_spyware_evt_access.pl_endp_id""",
                                (sd, ed), connection=conn, auto_commit=False)
 
@@ -155,8 +139,8 @@ WHERE reports.sessions.time_stamp >= %s
 UPDATE reports.n_http_events
 SET sw_blacklisted = true
 FROM events.n_spyware_evt_blacklist
-WHERE reports.n_http_events.time_stamp >= %s
-  AND reports.n_http_events.time_stamp < %s
+WHERE events.n_spyware_evt_blacklist.time_stamp >= %s
+  AND events.n_spyware_evt_blacklist.time_stamp < %s
   AND reports.n_http_events.request_id = events.n_spyware_evt_blacklist.request_id""",
                                (sd, ed), connection=conn, auto_commit=False)
 
@@ -184,8 +168,8 @@ WHERE reports.n_http_events.time_stamp >= %s
 UPDATE reports.n_http_events
 SET sw_cookie_ident = ident
 FROM events.n_spyware_evt_cookie
-WHERE reports.n_http_events.time_stamp >= %s
-  AND reports.n_http_events.time_stamp < %s
+WHERE events.n_spyware_evt_cookie.time_stamp >= %s
+  AND events.n_spyware_evt_cookie.time_stamp < %s
   AND reports.n_http_events.request_id = events.n_spyware_evt_cookie.request_id""",
                                (sd, ed), connection=conn, auto_commit=False)
 

@@ -1,19 +1,3 @@
-# $HeadURL: svn://chef/work/src/buildtools/rake-util.rb $
-# Copyright (c) 2003-2009 Untangle, Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, version 2,
-# as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful, but
-# AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
-# NONINFRINGEMENT.  See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
-
 import gettext
 import logging
 import mx
@@ -162,8 +146,8 @@ UPDATE reports.n_http_events
 SET virus_"""+self.__vendor_name+"""_clean = clean,
   virus_"""+self.__vendor_name+"""_name = virus_name
 FROM events.n_virus_evt_http
-WHERE reports.n_http_events.time_stamp >= %s
-  AND reports.n_http_events.time_stamp < %s
+WHERE events.n_virus_evt_http.time_stamp >= %s
+  AND events.n_virus_evt_http.time_stamp < %s
   AND reports.n_http_events.request_id = events.n_virus_evt_http.request_line and events.n_virus_evt_http.vendor_name = %s""", (sd, ed, string.capwords(self.__vendor_name)), connection=conn, auto_commit=False)
 
             sql_helper.set_update_info('reports.n_http_events[%s]' % self.name, ed,
@@ -187,11 +171,11 @@ UPDATE reports.%s
 SET virus_%s_clean = clean,
   virus_%s_name = virus_name
 FROM events.n_virus_evt_mail
-WHERE reports.%s.time_stamp >= %%s
-  AND reports.%s.time_stamp < %%s
+WHERE events.n_virus_evt_mail.time_stamp >= %%s
+  AND events.n_virus_evt_mail.time_stamp < %%s
   AND reports.%s.msg_id = events.n_virus_evt_mail.msg_id
   AND events.n_virus_evt_mail.vendor_name = %%s
-""" % (tablename, self.__vendor_name, self.__vendor_name, tablename, tablename,
+""" % (tablename, self.__vendor_name, self.__vendor_name,
        tablename),
                                (sd, ed, string.capwords(self.__vendor_name)),
                                connection=conn, auto_commit=False)
@@ -213,11 +197,11 @@ UPDATE reports.%s
 SET virus_%s_clean = clean,
   virus_%s_name = virus_name
 FROM events.n_virus_evt_smtp
-WHERE reports.%s.time_stamp >= %%s
-  AND reports.%s.time_stamp < %%s
+WHERE events.n_virus_evt_smtp.time_stamp >= %%s
+  AND events.n_virus_evt_smtp.time_stamp < %%s
   AND reports.%s.msg_id = events.n_virus_evt_smtp.msg_id
   AND events.n_virus_evt_smtp.vendor_name = %%s
-""" % (tablename, self.__vendor_name, self.__vendor_name, tablename, tablename,
+""" % (tablename, self.__vendor_name, self.__vendor_name,
        tablename),
                                (sd, ed, string.capwords(self.__vendor_name)),
                                connection=conn, auto_commit=False)
