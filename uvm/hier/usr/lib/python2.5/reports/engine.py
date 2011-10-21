@@ -356,13 +356,12 @@ def generate_plots(report_base, end_date, report_days=1):
 @print_timing
 def events_cleanup(cutoff):
     logger.info("Cleaning-up events data for all dates < %s" % (cutoff,))
-    co = DateFromMx(cutoff)
 
     for name in __get_node_partial_order():
         try:
             node = __nodes.get(name, None)
             logger.debug("** about to clean events for %s" % (name,))            
-            node.events_cleanup(co)
+            node.events_cleanup(cutoff)
         except:
             logger.warn('count not cleanup events for: %s' % name,
                          exc_info=True)

@@ -2,7 +2,7 @@
 
 import getopt, logging, mx, os, os.path, re, sys, tempfile, shutil
 from subprocess import Popen, PIPE
-from psycopg2.extensions import DateFromMx
+from psycopg2.extensions import DateFromMx, TimestampFromMx
 
 def usage():
      print """\
@@ -16,7 +16,7 @@ Options:
   -i | --incremental            only update fact tables, do not generate reports themselves
   -a | --attach-csv             attach events as csv
   -t | --trial-report           only report on given trial
-  -e | --events-retention       number of days in events schema to keep
+  -e | --events-retention       number of minutes in events schema to keep (default is 0)
   -r | --report-length          number of days to report on
   -l | --locale                 locale
   -b <load> | --behave <load>   do not run if load is greated than the specified amount
@@ -78,6 +78,7 @@ attach_csv = False
 attachment_size_limit = 10
 events_retention = 3
 end_date = mx.DateTime.today()
+start_time = mx.DateTime.now()
 locale = None
 maxLoad = None
 db_retention = None
@@ -265,7 +266,7 @@ INSERT INTO reports.reports_state (last_cutoff) VALUES (%s)""", (date,))
           conn.commit()
      except Exception, e:
           conn.rollback()
-          logger.warn("could not get db_retention", exc_info=True)
+          logger.warn("could not set reports' last_cutoff", exc_info=True)
 
 ## main
 
@@ -364,39 +365,38 @@ if not no_migration:
      reports.engine.process_fact_tables(init_date, end_date)
      reports.engine.post_facttable_setup(init_date, end_date)
 
-if incremental:
+if not incremental:
+     mail_reports = []
+
+     try:
+         for report_days in report_lengths:
+              if not no_data_gen:
+                   logger.info("Generating reports for %s days" % (report_days,))
+                   mail_reports = reports.engine.generate_reports(reports_output_base,
+                                                                  end_date, report_days)
+
+              if not no_plot_gen:
+                   logger.info("Generating plots for %s days" % (report_days,))          
+                   reports.engine.generate_plots(reports_output_base, end_date,
+                                                 report_days)
+
+              if not no_mail and not simulate:
+                   logger.info("About to email reports for %s days" % (report_days,))          
+                   f = reports.pdf.generate_pdf(reports_output_base, end_date,
+                                                report_days, mail_reports,
+                                                trial_report)
+                   reports.mailer.mail_reports(end_date, report_days, f, mail_reports,
+                                               attach_csv=attach_csv,
+                                               attachment_size_limit=attachment_size_limit)
+                   os.remove(f)
+     except Exception, e:
+          logger.critical("Exception while building report: %s" % (e,),
+                      exc_info=True)
+else:
      logger.info("Incremental mode, not generating reports themselves")
-     sys.exit(0)
-
-mail_reports = []
-
-try:
-    for report_days in report_lengths:
-         if not no_data_gen:
-              logger.info("Generating reports for %s days" % (report_days,))
-              mail_reports = reports.engine.generate_reports(reports_output_base,
-                                                             end_date, report_days)
-
-         if not no_plot_gen:
-              logger.info("Generating plots for %s days" % (report_days,))          
-              reports.engine.generate_plots(reports_output_base, end_date,
-                                            report_days)
-
-         if not no_mail and not simulate:
-              logger.info("About to email reports for %s days" % (report_days,))          
-              f = reports.pdf.generate_pdf(reports_output_base, end_date,
-                                           report_days, mail_reports,
-                                           trial_report)
-              reports.mailer.mail_reports(end_date, report_days, f, mail_reports,
-                                          attach_csv=attach_csv,
-                                          attachment_size_limit=attachment_size_limit)
-              os.remove(f)
-except Exception, e:
-     logger.critical("Exception while building report: %s" % (e,),
-                     exc_info=True)
 
 if not no_cleanup and not simulate:
-    events_cutoff = end_date - mx.DateTime.DateTimeDelta(events_retention)
+    events_cutoff = start_time - mx.DateTime.DateTimeDeltaFromSeconds(60 * events_retention)
     reports.engine.events_cleanup(events_cutoff)
 
     reports_cutoff = end_date - mx.DateTime.DateTimeDelta(db_retention)
