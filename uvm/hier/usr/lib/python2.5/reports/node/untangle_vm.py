@@ -170,7 +170,8 @@ CREATE TABLE reports.users (
         PRIMARY KEY (date, username));
 """, 'date', start_date, end_date)
 
-        sd = TimestampFromMx(sql_helper.get_update_info('reports.users', start_date))
+        sd = TimestampFromMx(sql_helper.get_update_info('reports.users',
+                                                        start_date, delay=60))
         ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
@@ -201,7 +202,7 @@ CREATE TABLE reports.hnames (
 """, 'date', start_date, end_date)
 
         sd = TimestampFromMx(sql_helper.get_update_info('reports.hnames',
-                                                   start_date))
+                                                        start_date, delay=60))
         ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()

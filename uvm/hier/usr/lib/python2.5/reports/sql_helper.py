@@ -189,7 +189,7 @@ def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date):
 
     __drop_trigger(schema, tablename, timestamp_column)
 
-def get_update_info(tablename, default=None):
+def get_update_info(tablename, default=None, delay=0):
     conn = get_connection()
     try:
         curs = conn.cursor()
@@ -208,7 +208,7 @@ SELECT last_update + interval '10 millisecond' FROM reports.table_updates WHERE 
     finally:
         conn.commit()
 
-    return date_convert(rv)
+    return date_convert(rv, delay)
 
 def set_update_info(tablename, last_update, connection=None,
                     auto_commit=True):
@@ -494,8 +494,8 @@ def __get_tablename(table_ddl):
     else:
       raise ValueError("Cannot find table in: %s" % table_ddl)
 
-def date_convert(t):
+def date_convert(t, delay=0):
     try:
-        return mx.DateTime.DateTime(t.year,t.month,t.day,t.hour,t.minute,t.second+1e-6*t.microsecond)
+        return mx.DateTime.DateTime(t.year,t.month,t.day,t.hour,t.minute,t.second+1e-6*t.microsecond) + mx.DateTime.DateTimeDeltaFromSeconds(delay)
     except Exception, e:
-        return t
+        return t + mx.DateTime.DateTimeDeltaFromSeconds(delay)
