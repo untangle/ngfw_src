@@ -172,8 +172,7 @@ def clear_partitioned_tables(start_date, end_date, tablename=None):
     run_sql("UPDATE reports.table_updates SET last_update = %s",
             (DateFromMx(date_convert(start_date)),))
 
-def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
-                             clear_tables=False):
+def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date):
     (schema, tablename) = __get_tablename(table_ddl)
     
     if schema:
@@ -185,36 +184,10 @@ def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date,
     if not table_exists(schema, tablename):
         run_sql(table_ddl)
 
-    existing_dates = Set()
-
     for t, date in find_partitioned_tables(tablename):
-        if date >= start_date and date <= end_date:
-            existing_dates.add(date)
-        elif clear_tables:
-            drop_table(t, schema=SCHEMA)
+        drop_table(t, schema=SCHEMA)
 
-    all_dates = Set(get_date_range(start_date, end_date))
-
-    created_tables = []
-
-    for d in all_dates - existing_dates:
-        tn = __tablename_for_date(full_tablename, d)
-        created_tables.append(tn)
-
-        run_sql("""\
-CREATE TABLE %s
-(CHECK (%s >= %%s AND %s < %%s))
-INHERITS (%s)""" % (tn, timestamp_column, timestamp_column, full_tablename),
-                (DateFromMx(date_convert(d)),
-                 DateFromMx(date_convert(d + mx.DateTime.DateTimeDelta(1)))))
-        logger.debug("created partitioned table %s" % (__tablename_for_date(full_tablename, d)))
-
-    if clear_tables:
-        clear_partitioned_tables(start_date, end_date, tablename)
-
-    __make_trigger(schema, tablename, timestamp_column, all_dates)
-
-    return created_tables
+    __drop_trigger(schema, tablename, timestamp_column)
 
 def get_update_info(tablename, default=None):
     conn = get_connection()
@@ -440,6 +413,14 @@ ORDER BY time ASC"""
         logger.debug((query % params_regular) % params_to_quote)
     
     return query % params_regular, params_to_quote
+
+def __drop_trigger(schema, tablename, timestamp_column):
+    full_tablename = '%s.%s' % (schema, tablename)
+    for trigger in ('%s_insert_trigger', 'insert_%s_trigger'):
+        trigger = trigger % tablename
+        run_sql("DROP TRIGGER IF EXISTS %s ON %s.%s CASCADE" % (trigger, schema, tablename),
+                force_propagate=True)
+        run_sql("DROP FUNCTION IF EXISTS %s() CASCADE" % trigger, force_propagate=True)
 
 def __make_trigger(schema, tablename, timestamp_column, all_dates):
     full_tablename = '%s.%s' % (schema, tablename)
