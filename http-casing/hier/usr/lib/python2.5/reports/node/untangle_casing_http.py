@@ -91,6 +91,8 @@ CREATE TABLE reports.n_http_events (
             sql_helper.add_column('reports.n_http_events', 'virus_%s_clean' % vendor, 'boolean')
             sql_helper.add_column('reports.n_http_events', 'virus_%s_name' % vendor, 'text')
 
+        sql_helper.run_sql('CREATE INDEX n_http_events_request_id_idx ON reports.n_http_events(request_id)')
+
         sd = TimestampFromMx(sql_helper.get_update_info('reports.n_http_events', start_date))
         ed = TimestampFromMx(mx.DateTime.now())
 
