@@ -93,9 +93,6 @@ CREATE TABLE reports.n_http_events (
 
         sql_helper.run_sql('CREATE INDEX n_http_events_request_id_idx ON reports.n_http_events(request_id)')
 
-        sd = TimestampFromMx(sql_helper.get_update_info('reports.n_http_events', start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
@@ -130,13 +127,8 @@ INSERT INTO reports.n_http_events
     JOIN events.n_http_evt_req er ON er.request_id = req.request_id
     LEFT OUTER JOIN events.n_http_evt_resp resp on req.request_id = resp.request_id
     LEFT OUTER JOIN reports.merged_address_map mam
-        ON ps.c_client_addr = mam.addr AND ps.time_stamp >= mam.start_time AND ps.time_stamp < mam.end_time
-    WHERE ps.time_stamp >= %s AND ps.time_stamp < %s""",
-                               (sd, ed), connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info('reports.n_http_events', ed,
-                                       connection=conn, auto_commit=False)
-
+        ON ps.c_client_addr = mam.addr AND ps.time_stamp >= mam.start_time AND ps.time_stamp < mam.end_time""",
+                               (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()

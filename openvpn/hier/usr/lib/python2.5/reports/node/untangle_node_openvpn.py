@@ -110,10 +110,6 @@ CREATE TABLE reports.n_openvpn_stats (
         sql_helper.add_column('reports.n_openvpn_stats', 'remote_port', 'integer')
         sql_helper.add_column('reports.n_openvpn_stats', 'client_name', 'text')
 
-        sd = TimestampFromMx(sql_helper.get_update_info('reports.n_openvpn_stats',
-                                                   start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
@@ -123,13 +119,8 @@ INSERT INTO reports.n_openvpn_stats
     SELECT time_stamp, start_time, end_time, rx_bytes, tx_bytes,
            extract('epoch' from (end_time - start_time)) AS seconds,
            remote_address, remote_port, client_name
-    FROM events.n_openvpn_connect_evt evt
-    WHERE evt.end_time >= %s AND evt.end_time < %s""",
-                               (sd, ed), connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info('reports.n_openvpn_stats', ed,
-                                       connection=conn, auto_commit=False)
-
+    FROM events.n_openvpn_connect_evt evt""",
+                               (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()

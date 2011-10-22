@@ -119,22 +119,18 @@ class ShieldHighlight(Highlight):
         if host or user or email:
             return None
 
-        ed = DateFromMx(end_date)
-        one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
-
         query = """
 SELECT COALESCE(sum(accepted+limited+dropped+rejected), 0) AS sessions,
        COALESCE(sum(limited), 0) AS limited,
        COALESCE(sum(dropped), 0) AS dropped
-FROM reports.n_shield_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+FROM reports.n_shield_totals"""
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
 
         h = {}
         try:
-            curs.execute(query, (one_week, ed))
+            curs.execute(query, ())
 
             h = sql_helper.get_result_dictionary(curs)
                 

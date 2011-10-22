@@ -136,9 +136,6 @@ DELETE FROM events.n_virus_evt WHERE time_stamp < %s""", (cutoff,))
 
     @sql_helper.print_timing
     def __update_n_http_events(self, start_date, end_date):
-        sd = TimestampFromMx(sql_helper.get_update_info('n_http_events[%s]' % self.name, start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
@@ -146,13 +143,9 @@ UPDATE reports.n_http_events
 SET virus_"""+self.__vendor_name+"""_clean = clean,
   virus_"""+self.__vendor_name+"""_name = virus_name
 FROM events.n_virus_evt_http
-WHERE events.n_virus_evt_http.time_stamp >= %s
-  AND events.n_virus_evt_http.time_stamp < %s
-  AND reports.n_http_events.request_id = events.n_virus_evt_http.request_line and events.n_virus_evt_http.vendor_name = %s""", (sd, ed, string.capwords(self.__vendor_name)), connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info('reports.n_http_events[%s]' % self.name, ed,
-                                       connection=conn, auto_commit=False)
-
+WHERE reports.n_http_events.request_id = events.n_virus_evt_http.request_line 
+AND events.n_virus_evt_http.vendor_name = %s""",
+                               (string.capwords(self.__vendor_name),), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()
@@ -160,10 +153,6 @@ WHERE events.n_virus_evt_http.time_stamp >= %s
 
     @sql_helper.print_timing
     def __update_n_mail_table(self, tablename, start_date, end_date):
-        update_name = 'reports.%s-mail[%s]' % (tablename, self.name)
-        sd = TimestampFromMx(sql_helper.get_update_info(update_name, start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
@@ -171,44 +160,27 @@ UPDATE reports.%s
 SET virus_%s_clean = clean,
   virus_%s_name = virus_name
 FROM events.n_virus_evt_mail
-WHERE events.n_virus_evt_mail.time_stamp >= %%s
-  AND events.n_virus_evt_mail.time_stamp < %%s
-  AND reports.%s.msg_id = events.n_virus_evt_mail.msg_id
-  AND events.n_virus_evt_mail.vendor_name = %%s
-""" % (tablename, self.__vendor_name, self.__vendor_name,
-       tablename),
-                               (sd, ed, string.capwords(self.__vendor_name)),
+WHERE reports.%s.msg_id = events.n_virus_evt_mail.msg_id
+AND events.n_virus_evt_mail.vendor_name = %%s""" %
+                               (tablename, self.__vendor_name, self.__vendor_name, tablename),
+                               (string.capwords(self.__vendor_name),),
                                connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info(update_name, ed, connection=conn,
-                                       auto_commit=False)
-
             conn.commit()
         except Exception, e:
             conn.rollback()
             raise e
 
         try:
-            update_name = 'reports.%s-smtp[%s]' % (tablename, self.name)
-            sd = TimestampFromMx(sql_helper.get_update_info(update_name, start_date))
-
             sql_helper.run_sql("""\
 UPDATE reports.%s
 SET virus_%s_clean = clean,
   virus_%s_name = virus_name
 FROM events.n_virus_evt_smtp
-WHERE events.n_virus_evt_smtp.time_stamp >= %%s
-  AND events.n_virus_evt_smtp.time_stamp < %%s
-  AND reports.%s.msg_id = events.n_virus_evt_smtp.msg_id
-  AND events.n_virus_evt_smtp.vendor_name = %%s
-""" % (tablename, self.__vendor_name, self.__vendor_name,
-       tablename),
-                               (sd, ed, string.capwords(self.__vendor_name)),
+WHERE reports.%s.msg_id = events.n_virus_evt_smtp.msg_id
+AND events.n_virus_evt_smtp.vendor_name = %%s""" %
+                               (tablename, self.__vendor_name, self.__vendor_name, tablename),
+                               (string.capwords(self.__vendor_name),),
                                connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info(update_name, ed, connection=conn,
-                                       auto_commit=False)
-
             conn.commit()
         except Exception, e:
             conn.rollback()

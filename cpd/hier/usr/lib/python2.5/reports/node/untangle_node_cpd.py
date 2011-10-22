@@ -130,22 +130,14 @@ CREATE TABLE reports.n_cpd_login_events (
 
         sql_helper.add_column('reports.n_cpd_login_events', 'event_id', 'serial')
 
-        sd = TimestampFromMx(sql_helper.get_update_info('reports.n_cpd_login_events', start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.n_cpd_login_events
       (time_stamp, login_name, event, auth_type, client_addr)
 SELECT time_stamp, login_name, event, auth_type, client_addr
-FROM events.n_cpd_login_evt
-WHERE time_stamp >= %s AND time_stamp < %s""",
-                               (sd, ed), connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info('reports.n_cpd_login_events', ed,
-                                       connection=conn, auto_commit=False)
-
+FROM events.n_cpd_login_evt""",
+                               (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()
@@ -166,22 +158,14 @@ CREATE TABLE reports.n_cpd_block_events (
 
         sql_helper.add_column('reports.n_cpd_block_events', 'event_id', 'serial')
 
-        sd = TimestampFromMx(sql_helper.get_update_info('reports.n_cpd_block_events', start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.n_cpd_block_events
       (time_stamp, proto, client_intf, client_address, client_port, server_address, server_port)
 SELECT time_stamp, proto, client_intf, client_address, client_port, server_address, server_port
-FROM events.n_cpd_block_evt
-WHERE time_stamp >= %s AND time_stamp < %s""",
-                               (sd, ed), connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info('reports.n_cpd_block_events', ed,
-                                       connection=conn, auto_commit=False)
-
+FROM events.n_cpd_block_evt""",
+                               (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()

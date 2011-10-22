@@ -142,9 +142,6 @@ CREATE TABLE reports.n_mail_addrs (
 
         sql_helper.run_sql('CREATE INDEX n_mail_addrs_msg_id_idx ON reports.n_mail_addrs(msg_id)')
 
-        sd = TimestampFromMx(sql_helper.get_update_info('reports.n_mail_addrs', start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
@@ -181,16 +178,8 @@ INSERT INTO reports.n_mail_addrs
     LEFT OUTER JOIN events.n_mail_message_stats mms ON mms.msg_id = mi.id
     LEFT OUTER JOIN reports.merged_address_map mam
         ON ps.c_client_addr = mam.addr AND ps.time_stamp >= mam.start_time
-           AND ps.time_stamp < mam.end_time
-    WHERE ps.time_stamp >= %s AND ps.time_stamp < %s
-    AND mi.time_stamp >= %s and mi.time_stamp < %s
---    AND mia.time_stamp >= %s and mia.time_stamp < %s
---    AND mms.time_stamp >= %s and mms.time_stamp < %s""",
-                               (sd, ed, sd, ed, sd, ed, sd, ed), connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info('reports.n_mail_addrs', ed,
-                                       connection=conn, auto_commit=False)
-
+           AND ps.time_stamp < mam.end_time""",
+                               (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()
@@ -205,24 +194,15 @@ CREATE TABLE reports.email (
         PRIMARY KEY (date, email));
 """, 'date', start_date, end_date)
 
-        sd = TimestampFromMx(sql_helper.get_update_info('reports.email',
-                                                   start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.email (date, email)
     SELECT DISTINCT date_trunc('day', trunc_time)::date, addr
     FROM reports.n_mail_addr_totals
-    WHERE trunc_time >= %s AND trunc_time < %s
-          AND client_intf = 0 AND addr_kind = 'T'
-          AND NOT addr ISNULL""", (sd, ed),
-                               connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info('reports.email', ed,
-                                       connection=conn, auto_commit=False)
-
+    WHERE client_intf = 0 AND addr_kind = 'T'
+    AND NOT addr ISNULL""",
+                               (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             print e
@@ -290,9 +270,6 @@ CREATE TABLE reports.n_mail_msgs (
 
         sql_helper.run_sql('CREATE INDEX n_mail_msgs_msg_id_idx ON reports.n_mail_msgs(msg_id)')
 
-        sd = TimestampFromMx(sql_helper.get_update_info('reports.n_mail_msgs', start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
@@ -324,15 +301,8 @@ INSERT INTO reports.n_mail_msgs
     JOIN events.n_mail_message_info mi ON mi.pl_endp_id = ps.pl_endp_id
     LEFT OUTER JOIN events.n_mail_message_stats mms ON mms.msg_id = mi.id
     LEFT OUTER JOIN reports.merged_address_map mam
-        ON ps.c_client_addr = mam.addr AND ps.time_stamp >= mam.start_time AND ps.time_stamp < mam.end_time
-    WHERE ps.time_stamp >= %s AND ps.time_stamp < %s
-    AND mi.time_stamp >= %s and mi.time_stamp < %s
---    AND mms.time_stamp >= %s and mms.time_stamp < %s""",
-                               (sd, ed, sd, ed, sd, ed), connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info('reports.n_mail_msgs', ed,
-                                       connection=conn, auto_commit=False)
-
+        ON ps.c_client_addr = mam.addr AND ps.time_stamp >= mam.start_time AND ps.time_stamp < mam.end_time""",
+                               (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()

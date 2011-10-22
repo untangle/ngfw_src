@@ -131,10 +131,6 @@ CREATE TABLE reports.n_server_events (
     swap_total 	INT8,
     swap_free 	INT8)""", 'time_stamp', start_date, end_date)
 
-        sd = TimestampFromMx(sql_helper.get_update_info('reports.n_server_events',
-                                                   start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
@@ -151,13 +147,8 @@ SELECT time_stamp, mem_free,
       cpu_user, cpu_system,
       disk_total, disk_free,
       swap_total, swap_free
-FROM events.n_server_evt
-WHERE time_stamp >= %s AND time_stamp < %s""",
-                               (sd, ed), connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info('reports.n_server_events', ed,
-                                       connection=conn, auto_commit=False)
-
+FROM events.n_server_evt""",
+                               (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()

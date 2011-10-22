@@ -93,23 +93,14 @@ CREATE TABLE reports.n_admin_logins (
     succeeded boolean,
     reason char(1) )""", 'time_stamp', start_date, end_date)
 
-        sd = TimestampFromMx(sql_helper.get_update_info('reports.n_admin_logins',
-                                                        start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.n_admin_logins
       (time_stamp, login, local, client_addr, succeeded, reason)
     SELECT time_stamp, login, local, client_addr, succeeded, reason
-    FROM events.u_login_evt evt
-    WHERE evt.time_stamp >= %s AND evt.time_stamp < %s""",
-                               (sd, ed), connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info('reports.n_admin_logins', ed,
-                                       connection=conn, auto_commit=False)
-
+    FROM events.u_login_evt evt""",
+                               (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()
@@ -272,10 +263,6 @@ CREATE TABLE reports.sessions (
 
         sql_helper.run_sql('CREATE INDEX sessions_pl_endp_id_idx ON reports.sessions(pl_endp_id)')
 
-        sd = TimestampFromMx(sql_helper.get_update_info('reports.sessions',
-                                                        start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""
@@ -287,9 +274,7 @@ CREATE TEMPORARY TABLE newsessions AS
     FROM events.pl_stats stats
     LEFT OUTER JOIN reports.merged_address_map mam
       ON (stats.c_client_addr = mam.addr AND stats.time_stamp >= mam.start_time
-         AND stats.time_stamp < mam.end_time)
-    WHERE stats.time_stamp >= %s AND stats.time_stamp < %s
-""", (sd, ed), connection=conn, auto_commit=False)
+         AND stats.time_stamp < mam.end_time)""", (), connection=conn, auto_commit=False)
 
             sql_helper.run_sql("""
 INSERT INTO reports.sessions
@@ -303,10 +288,6 @@ INSERT INTO reports.sessions
          ses.p2c_bytes, ses.s2p_bytes, ses.p2s_bytes
     FROM newsessions ses""",
                                connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info('reports.sessions', ed,
-                                       connection=conn, auto_commit=False)
-
             conn.commit()
         except Exception, e:
             conn.rollback()
@@ -328,10 +309,6 @@ CREATE TABLE reports.session_counts (
         sql_helper.add_column('reports.session_counts', 'server_intf',
                               'smallint')
 
-        sd = TimestampFromMx(sql_helper.get_update_info('reports.session_counts',
-                                                   start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
@@ -342,13 +319,8 @@ SELECT (date_trunc('minute', time_stamp)
         / 60)::int) || ' minutes')::interval) AS time, uid, hname,
         client_intf, server_intf, count(*)
 FROM reports.sessions
-WHERE time_stamp >= %s AND time_stamp < %s
 GROUP BY time, uid, hname, client_intf, server_intf
-""", (sd, ed), connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info('reports.session_counts', ed,
-                                       connection=conn, auto_commit=False)
-
+""", (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()

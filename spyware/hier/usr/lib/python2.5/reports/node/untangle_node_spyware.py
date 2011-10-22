@@ -99,24 +99,14 @@ DELETE FROM events.n_spyware_evt_cookie
 
     @print_timing
     def __update_access(self, start_date, end_date):
-        sd = TimestampFromMx(sql_helper.get_update_info('sessions[spyware-access]',
-                                                        start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
 UPDATE reports.sessions
 SET sw_access_ident = ident
 FROM events.n_spyware_evt_access
-WHERE events.n_spyware_evt_access.time_stamp >= %s
-  AND events.n_spyware_evt_access.time_stamp < %s
-  AND reports.sessions.pl_endp_id = events.n_spyware_evt_access.pl_endp_id""",
-                               (sd, ed), connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info('sessions[spyware-access]', ed,
-                                       connection=conn, auto_commit=False)
-
+WHERE reports.sessions.pl_endp_id = events.n_spyware_evt_access.pl_endp_id""",
+                               (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()
@@ -129,24 +119,14 @@ WHERE events.n_spyware_evt_access.time_stamp >= %s
 
     @print_timing
     def __update_blacklist(self, start_date, end_date):
-        sd = TimestampFromMx(sql_helper.get_update_info('n_http_events[spyware-blacklist]',
-                                                   start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
 UPDATE reports.n_http_events
 SET sw_blacklisted = true
 FROM events.n_spyware_evt_blacklist
-WHERE events.n_spyware_evt_blacklist.time_stamp >= %s
-  AND events.n_spyware_evt_blacklist.time_stamp < %s
-  AND reports.n_http_events.request_id = events.n_spyware_evt_blacklist.request_id""",
-                               (sd, ed), connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info('n_http_events[spyware-blacklist]', ed,
-                                       connection=conn, auto_commit=False)
-
+WHERE reports.n_http_events.request_id = events.n_spyware_evt_blacklist.request_id""",
+                               (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()
@@ -158,24 +138,14 @@ WHERE events.n_spyware_evt_blacklist.time_stamp >= %s
 
     @print_timing
     def __update_cookie(self, start_date, end_date):
-        sd = TimestampFromMx(sql_helper.get_update_info('n_http_events[spyware-cookie]',
-                                                   start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
 UPDATE reports.n_http_events
 SET sw_cookie_ident = ident
 FROM events.n_spyware_evt_cookie
-WHERE events.n_spyware_evt_cookie.time_stamp >= %s
-  AND events.n_spyware_evt_cookie.time_stamp < %s
-  AND reports.n_http_events.request_id = events.n_spyware_evt_cookie.request_id""",
-                               (sd, ed), connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info('n_http_events[spyware-cookie]', ed,
-                                       connection=conn, auto_commit=False)
-
+WHERE reports.n_http_events.request_id = events.n_spyware_evt_cookie.request_id""",
+                               (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()

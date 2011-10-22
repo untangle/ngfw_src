@@ -136,11 +136,6 @@ DELETE FROM events.n_spam_smtp_rbl_evt WHERE time_stamp < %s""", (cutoff,))
     @print_timing
     def __update_n_mail_events(self, src_table, target_table, protocol,
                                start_date, end_date):
-        sd = TimestampFromMx(sql_helper.get_update_info('%s[%s.%s]' % (target_table,
-                                                                       self.name,
-                                                                       protocol),
-                                                        start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:
@@ -150,20 +145,13 @@ SET %s_score = score,
   %s_is_spam = is_spam,
   %s_action = action
 FROM %s
-WHERE %s.time_stamp >= %%s
-  AND %s.time_stamp < %%s
-  AND %s.vendor_name = %%s
-  AND %s.msg_id = %s.msg_id""" % (target_table, self.__short_name,
-                                  self.__short_name, self.__short_name,
-                                  src_table, target_table,
-                                  target_table, src_table, target_table,
-                                  src_table),
-                               (sd, ed, self.__vendor_name), connection=conn,
+WHERE %s.vendor_name = %%s
+AND %s.msg_id = %s.msg_id""" % (target_table, self.__short_name,
+                                self.__short_name, self.__short_name,
+                                src_table, src_table,
+                                target_table, src_table),
+                               (self.__vendor_name,), connection=conn,
                                auto_commit=False)
-
-            sql_helper.set_update_info('%s[%s.%s]' % (target_table, self.name,
-                                                      protocol),
-                                       ed, connection=conn, auto_commit=False)
 
             conn.commit()
         except Exception, e:
