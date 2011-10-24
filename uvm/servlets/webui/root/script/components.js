@@ -198,7 +198,7 @@ Ung.Util= {
             if(exception.code==550 ||exception.code == 12029 || exception.code == 12019) {
                 Ext.MessageBox.alert(i18n._("Warning"),i18n._("The Session has expired. You will be redirected to the start page."), Ung.Util.goToStartPage);
                 return true;
-            }else {
+            } else {
                 var message=null;
 
                 /* build decent message for generic errors */
@@ -211,12 +211,12 @@ Ung.Util= {
 
                 /* build better message for specific errors */
                 if (exception.name == "com.untangle.uvm.toolbox.PackageInstallException" && (exception.message.indexOf("exited with") >= 0)) {
-                    message =  i18n._("Unable to contact app store") + ":<br/>";
-                    message += i18n._("An error has occured: ") + exception.message + "<br/>";
-                    message += i18n._("<br/>");
                     message += i18n._("The server is unable to properly communicate with the app store.") + "<br/>";
                     message += i18n._("Check internet connectivity and network settings.") + "<br/>";
                     message += i18n._("Check that the server is fully up to date.") + "<br/>";
+                    message += i18n._("<br/>");
+                    message =  i18n._("Unable to contact app store") + ":<br/>";
+                    message += i18n._("An error has occured: ") + exception.message + "<br/>";
                 }
                 if (exception.name == "com.untangle.uvm.toolbox.PackageException" && (exception.message.indexOf("timed out") >= 0)) {
                     message =  i18n._("Unable to contact app store") + ":<br/>";
@@ -232,6 +232,12 @@ Ung.Util= {
                     message =  i18n._("Unexpected response from server") + ":<br/>";
                     message += "No Such Method Error:<br/>";
                     message += exception.message;
+                }
+                if (exception.message.indexOf("method not found") >= 0) {
+                    message += i18n._("The connection to the server has been lost.") + "<br/>";
+                    message += i18n._("It may be necessary to refresh the browser and log in again.") + "<br/>";
+                    message += i18n._("<br/>");
+                    message += i18n._("An error has occured: ") + exception.message + "<br/>";
                 }
 
                 /* worst case - just say something */
