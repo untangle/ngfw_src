@@ -120,6 +120,9 @@ public class GoogleSafeBrowsingHashSet
             }
             in.close();
         }
+        catch (java.io.FileNotFoundException e) {
+            logger.error("Error loading category from missing file: " + filename);
+        }
         catch (IOException e) {
             logger.error("Error loading category from file: " + filename, e);
         }
