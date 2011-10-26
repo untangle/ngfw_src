@@ -201,15 +201,7 @@ Ung.Util= {
             } else {
                 var message=null;
 
-                /* build decent message for generic errors */
-                if (exception.name && exception.message) {
-                    message = i18n._("An error has occurred") + ":<br/>" + exception.name + ":<br/> " + exception.message;
-                }
-                if (exception.name && (exception.message == null)) {
-                    message = i18n._("An error has occurred") + ":<br/>" + exception.name;
-                }
-
-                /* build better message for specific errors */
+                /* special text for apt error */
                 if (exception.name == "com.untangle.uvm.toolbox.PackageInstallException" && (exception.message.indexOf("exited with") >= 0)) {
                     message += i18n._("The server is unable to properly communicate with the app store.") + "<br/>";
                     message += i18n._("Check internet connectivity and network settings.") + "<br/>";
@@ -218,35 +210,42 @@ Ung.Util= {
                     message =  i18n._("Unable to contact app store") + ":<br/>";
                     message += i18n._("An error has occured: ") + exception.message + "<br/>";
                 }
+                /* special text for apt error */
                 if (exception.name == "com.untangle.uvm.toolbox.PackageException" && (exception.message.indexOf("timed out") >= 0)) {
                     message =  i18n._("Unable to contact app store") + ":<br/>";
                     message += i18n._("Connection timed out") + "<br/>";
                     message += i18n._("<br/>");
                     message += i18n._("Check internet connectivity and network settings.");
                 }
+                /* special text for rack error */
                 if (exception.name == "com.untangle.uvm.node.DeployException" && (exception.message.indexOf("already exists in Policy") >= 0)) {
                     message =  i18n._("This application already exists in this policy/rack.") + ":<br/>";
                     message += i18n._("Each application can only be installed once in each policy/rack.");
                 }
-                if (exception.name == "java.lang.NoSuchMethodError") {
-                    message =  i18n._("Unexpected response from server") + ":<br/>";
-                    message += "No Such Method Error:<br/>";
-                    message += exception.message;
-                }
-                /* handle "method not found" and "Service Temporarily Unavailable" */
+                /* special text for "method not found" and "Service Temporarily Unavailable" */
                 if (exception.message.indexOf("ethod not found") >= 0 || exception.message.indexOf("ervice Temporarily Unavailable") >= 0) {
                     message = i18n._("The connection to the server has been lost.") + "<br/>";
                     message += i18n._("It may be necessary to refresh the browser and log in again.") + "<br/>";
                     message += i18n._("<br/>");
-                    message += i18n._("An error has occured: ") + exception.name + ": " + exception.message + "<br/>";
+                    message += i18n._("An error has occured") + ": " + exception.name + ": " + exception.message + "<br/>";
                 }
-
+                /* otherwise just describe the exception */
+                if (message == null && exception != null) {
+                    message = i18n._("An exception has occurred") + ":" + "<br/>";
+                    message += i18n._("<br/>");
+                    if (exception.name != null)
+                        message += exception.name + "<br/>";
+                    if (exception.message != null)
+                        message += exception.message + "<br/>";
+                    if (exception.stack != null) {
+                        message += "<br/>";
+                        message += exception.stack + "<br/>";
+                    }
+                }
                 /* worst case - just say something */
-                if (message == null && exception.stack != null) {
-                    message = exception.stack;
-                }
-                if (message == null || message == "Unknown") {
-                    message = i18n._("Please Try Again");
+                if (message == null) {
+                    message = i18n._("An unknown error has occurred.") + "<br/>";
+                    message += i18n._("Please Try Again");
                 }
                 
                 if (handler==null) {
