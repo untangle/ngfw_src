@@ -287,7 +287,7 @@ class OpenVpnMonitor implements Runnable
 
             /* First kill all of the undefined connections if necessary */
             if ( killUndef ) {
-                logger.info( "Killing all undefined clients" );
+                logger.debug( "Killing all undefined clients" );
                 writeCommandAndFlush( out, in, KILL_UNDEF );
             }
 
