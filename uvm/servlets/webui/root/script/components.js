@@ -233,11 +233,12 @@ Ung.Util= {
                     message += "No Such Method Error:<br/>";
                     message += exception.message;
                 }
-                if (exception.message.indexOf("method not found") >= 0) {
-                    message += i18n._("The connection to the server has been lost.") + "<br/>";
+                /* handle "method not found" and "Service Temporarily Unavailable" */
+                if (exception.message.indexOf("ethod not found") >= 0 || exception.message.indexOf("ervice Temporarily Unavailable") >= 0) {
+                    message = i18n._("The connection to the server has been lost.") + "<br/>";
                     message += i18n._("It may be necessary to refresh the browser and log in again.") + "<br/>";
                     message += i18n._("<br/>");
-                    message += i18n._("An error has occured: ") + exception.message + "<br/>";
+                    message += i18n._("An error has occured: ") + exception.name + ": " + exception.message + "<br/>";
                 }
 
                 /* worst case - just say something */
@@ -1762,12 +1763,9 @@ Ung.MessageManager = {
                     }.createDelegate(this));
                     return;
                 }
-                var message = exception.message;
-                if (message == null || message == "Unknown") {
-                  message = i18n._("Please Try Again");
-                }
 
-                Ext.MessageBox.alert(i18n._("Warning"), message, function() {
+                // otherwise call handleException but without "noAlert"
+                Ung.Util.handleException(exception, function() {
                     this.cycleCompleted = true;
                 }.createDelegate(this));
             }.createDelegate(this),"noAlert")) return;
