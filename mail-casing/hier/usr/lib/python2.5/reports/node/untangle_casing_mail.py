@@ -237,6 +237,7 @@ CREATE TABLE reports.n_mail_msgs (
     virus_commtouch_name text)""", 'time_stamp', start_date, end_date)
 
         sql_helper.add_column('reports.n_mail_msgs', 'event_id', 'serial')
+        sql_helper.add_column('reports.n_mail_msgs', 'sender', 'text')
         sql_helper.add_column('reports.n_mail_msgs', 'virus_clam_clean', 'boolean')
         sql_helper.add_column('reports.n_mail_msgs', 'virus_clam_name', 'text')
         sql_helper.add_column('reports.n_mail_msgs', 'sa_score', 'real')
