@@ -226,8 +226,8 @@ def needToRestart(pid):
         debug("*** Frequent CMF failures (%i)" % (cmf_count));
         return True;
 
-    # check Tomcat port is correct (8010 is NOT correct)
-    p = os.popen('tail -150 %s | grep -i "ajp13 listening on /127.0.0.1:8010"' % uvm_uvm_log);
+    # check Tomcat port is correct (8009 is correct, 8010-8019 is NOT correct)
+    p = os.popen('tail -150 %s | grep -i "ajp13 listening on /127.0.0.1:801[0-9]"' % uvm_uvm_log);
     output = p.readline();
     if not (output == ""):
         debug("*** Tomcat bound to wrong port: %s " % output.rstrip());
