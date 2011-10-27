@@ -362,8 +362,9 @@ if trial_report:
 if not no_migration:
      init_date = end_date - mx.DateTime.DateTimeDelta(max(report_lengths))
      reports.engine.setup(init_date, end_date)
-     reports.engine.process_fact_tables(init_date, end_date)
-     reports.engine.post_facttable_setup(init_date, end_date)
+     if not incremental:
+          reports.engine.process_fact_tables(init_date, end_date)
+          reports.engine.post_facttable_setup(init_date, end_date)
 
 if not incremental:
      mail_reports = []

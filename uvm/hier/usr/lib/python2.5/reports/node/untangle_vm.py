@@ -170,22 +170,14 @@ CREATE TABLE reports.users (
         PRIMARY KEY (date, username));
 """, 'date', start_date, end_date)
 
-        sd = TimestampFromMx(sql_helper.get_update_info('reports.users',
-                                                        start_date, delay=60))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.users (date, username)
     SELECT DISTINCT date_trunc('day', trunc_time)::date AS day, uid
     FROM reports.session_totals
-    WHERE trunc_time >= %s AND trunc_time < %s AND NOT uid ISNULL""",
-                               (sd, ed), connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info('reports.users', ed, connection=conn,
-                                       auto_commit=False)
-
+    WHERE NOT uid ISNULL""",
+                               (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             print e
@@ -201,25 +193,16 @@ CREATE TABLE reports.hnames (
         PRIMARY KEY (date, hname));
 """, 'date', start_date, end_date)
 
-        sd = TimestampFromMx(sql_helper.get_update_info('reports.hnames',
-                                                        start_date, delay=60))
-        ed = TimestampFromMx(mx.DateTime.now())
-
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.hnames (date, hname)
     SELECT DISTINCT date_trunc('day', trunc_time)::date, hname
     FROM reports.session_totals
-    WHERE trunc_time >= %s AND trunc_time < %s
-    AND server_intf IN """ + get_wan_clause() + """
+    WHERE server_intf IN """ + get_wan_clause() + """
     AND client_intf NOT IN """ + get_wan_clause() + """
-    AND NOT hname ISNULL""", (sd, ed),
+    AND NOT hname ISNULL""", (),
                                connection=conn, auto_commit=False)
-
-            sql_helper.set_update_info('reports.hnames', ed,
-                                       connection=conn, auto_commit=False)
-
             conn.commit()
         except Exception, e:
             print e
