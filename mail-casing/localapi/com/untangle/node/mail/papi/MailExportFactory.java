@@ -75,7 +75,7 @@ public class MailExportFactory
     {
         synchronized (this) {
             if (null != export) {
-                logger.warn("replacing export");
+                logger.debug("replacing export");
             }
 
             this.export = (MailExport)ProxyGenerator
