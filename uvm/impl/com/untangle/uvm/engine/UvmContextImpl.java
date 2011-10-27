@@ -117,6 +117,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
     private BackupManager backupManager;
     private LocalDirectoryImpl localDirectory;
     
+    private volatile boolean sessionFactoryNeedsRebuild = true;
     private volatile SessionFactory sessionFactory;
     private volatile TransactionRunner transactionRunner;
     private volatile List<String> annotatedClasses = new LinkedList<String>();
@@ -278,6 +279,14 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     public boolean runTransaction(TransactionWork<?> tw)
     {
+        synchronized(this) {
+            if (this.sessionFactoryNeedsRebuild == true) {
+                this.sessionFactory = this.makeSessionFactory(getClass().getClassLoader());
+                this.transactionRunner = new TransactionRunner(sessionFactory);
+                this.sessionFactoryNeedsRebuild = false;
+            }
+        }
+        
         return transactionRunner.runTransaction(tw);
     }
 
@@ -817,9 +826,18 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
 
     void refreshSessionFactory()
     {
+        /**
+         * This no longer immediately rebuilds the sessionFactory and transaction Runner.
+         * It sets a flag that the sessionFactory needs to be rebuilt and next time
+         * the transactionRunner is used this flag is checked and it is rebuilt at that time if necessary.
+         *
+         * Rebuilding the session factory is extremely slow and lazily rebuilding it saves many rebuilds
+         * and reduces startup time significantly.
+         */
         synchronized (this) {
-            sessionFactory = this.makeSessionFactory(getClass().getClassLoader());
-            transactionRunner = new TransactionRunner(sessionFactory);
+            this.sessionFactoryNeedsRebuild = true;
+            //this.sessionFactory = this.makeSessionFactory(getClass().getClassLoader());
+            //this.transactionRunner = new TransactionRunner(sessionFactory);
         }
     }
 
