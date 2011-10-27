@@ -351,6 +351,7 @@ Ung.Reports = Ext.extend(Object,{
                     title : i18n._('Reports'),
                     enableDD: false,
                     enableDrag: false,
+                    width: "179",
                     root : new Ext.tree.AsyncTreeNode({
                         draggable : false,
                         //id : 'source',
