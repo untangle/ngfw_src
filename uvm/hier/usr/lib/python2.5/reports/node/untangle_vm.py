@@ -236,6 +236,7 @@ CREATE TABLE reports.sessions (
         s2p_bytes int8,
         p2s_bytes int8)""", 'time_stamp', start_date, end_date)
 
+        sql_helper.add_column('reports.sessions', 'event_id', 'serial')
         sql_helper.add_column('reports.sessions', 'policy_id', 'bigint')
         sql_helper.add_column('reports.sessions', 'server_intf', 'int2')
         sql_helper.add_column('reports.sessions', 'bandwidth_priority', 'bigint')
