@@ -52,7 +52,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
 
     private final PartialListUtil listUtil = new PartialListUtil();
 
-    private volatile SpamSettings spamSettings;
+    protected volatile SpamSettings spamSettings;
 
     private final BlingBlinger emailReceivedBlinger;
     private final BlingBlinger spamDetectedBlinger;
