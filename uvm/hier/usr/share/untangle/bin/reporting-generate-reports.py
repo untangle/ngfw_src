@@ -399,13 +399,14 @@ if not no_cleanup and not simulate:
     events_cutoff = start_time - mx.DateTime.DateTimeDeltaFromSeconds(60 * events_retention)
     reports.engine.events_cleanup(events_cutoff)
 
-    reports_cutoff = end_date - mx.DateTime.DateTimeDelta(db_retention)
-    reports.engine.reports_cleanup(reports_cutoff)     
-    write_cutoff_date(DateFromMx(reports_cutoff))
+    if not incremental:
+      reports_cutoff = end_date - mx.DateTime.DateTimeDelta(db_retention)
+      reports.engine.reports_cleanup(reports_cutoff)     
+      write_cutoff_date(DateFromMx(reports_cutoff))
 
-    files_cutoff = end_date - mx.DateTime.DateTimeDelta(file_retention)
-    reports.engine.delete_old_reports('%s/data' % REPORTS_OUTPUT_BASE,
-                                      files_cutoff)
+      files_cutoff = end_date - mx.DateTime.DateTimeDelta(file_retention)
+      reports.engine.delete_old_reports('%s/data' % REPORTS_OUTPUT_BASE,
+                                        files_cutoff)
 
 # These are only for end of trial, a reboot will delete these files since they are in /tmp
 # if trial_report and ( reports_output_base != REPORTS_OUTPUT_BASE ):
