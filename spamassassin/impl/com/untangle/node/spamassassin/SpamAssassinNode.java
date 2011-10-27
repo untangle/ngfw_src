@@ -80,8 +80,7 @@ public class SpamAssassinNode extends SpamNodeImpl
             if (readSettings != null) logger.warn("Database settings successfully imported");
         }
 
-        try
-        {
+        try {
             if (readSettings == null) {
                 logger.warn("No database or json settings found... initializing with defaults");
                 initializeSettings();
@@ -89,13 +88,11 @@ public class SpamAssassinNode extends SpamNodeImpl
                 initSpamRBLList(ps);
                 writeNodeSettings(getSettings());
             }
-            
             else {
-                setSettings(readSettings);
-                initSpamRBLList(readSettings);
+                this.spamSettings = readSettings;
+                initSpamRBLList(this.spamSettings);
             }
         }
-        
         catch (Exception exn) {
             logger.error("Could not apply node settings", exn);
         }
