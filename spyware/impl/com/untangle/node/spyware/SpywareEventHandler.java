@@ -124,17 +124,17 @@ public class SpywareEventHandler extends AbstractEventHandler
 
         node.incrementSubnetScan();
 
-        if (logger.isInfoEnabled()) {
-            logger.info("-------------------- Detected Subnet --------------------");
-            logger.info("Subnet Name  : " + ir.getName());
-            logger.info("Host          : " + ipr.clientAddr().getHostAddress() + ":" + ipr.clientPort());
-            logger.info("Suspicious IP : " + ipr.serverAddr().getHostAddress() + ":" + ipr.serverPort());
-            logger.info("Matches       : " + ir.getString());
+        if (logger.isDebugEnabled()) {
+            logger.debug("-------------------- Detected Subnet --------------------");
+            logger.debug("Subnet Name  : " + ir.getName());
+            logger.debug("Host          : " + ipr.clientAddr().getHostAddress() + ":" + ipr.clientPort());
+            logger.debug("Suspicious IP : " + ipr.serverAddr().getHostAddress() + ":" + ipr.serverPort());
+            logger.debug("Matches       : " + ir.getString());
             if (ipr instanceof TCPNewSessionRequest)
-                logger.info("Protocol      : TCP");
+                logger.debug("Protocol      : TCP");
             if (ipr instanceof UDPNewSessionRequest)
-                logger.info("Protocol      : UDP");
-            logger.info("----------------------------------------------------------");
+                logger.debug("Protocol      : UDP");
+            logger.debug("----------------------------------------------------------");
         }
 
         SpywareAccessEvent evt = new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), new IPMaskedAddress(ir.getString()), Boolean.FALSE);
