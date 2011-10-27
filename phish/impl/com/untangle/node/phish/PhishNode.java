@@ -146,19 +146,16 @@ public class PhishNode extends SpamNodeImpl implements Phish
             if (readSettings != null) logger.warn("Database settings successfully imported");
         }
 
-        try
-        {
+        try {
             if (readSettings == null) {
                 logger.warn("No database or json settings found... initializing with defaults");
                 initializeSettings();
                 writeNodeSettings(getSettings());
             }
-            
             else {
-                setSettings(readSettings);
+                this.spamSettings = readSettings;
             }
         }
-        
         catch (Exception exn) {
             logger.error("Could not apply node settings", exn);
         }
@@ -261,7 +258,6 @@ public class PhishNode extends SpamNodeImpl implements Phish
         readNodeSettings();
         SpamSettings ps = getSettings();
         ps.getSmtpConfig().setBlockSuperSpam(false);
-        setSettings(ps);
         initSpamRBLList(ps);
     }
 
