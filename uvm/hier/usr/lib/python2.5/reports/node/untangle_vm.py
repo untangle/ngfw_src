@@ -170,14 +170,16 @@ CREATE TABLE reports.users (
         PRIMARY KEY (date, username));
 """, 'date', start_date, end_date)
 
+        sd = sql_helper.get_max_timestamp_with_interval('reports.users')
+
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.users (date, username)
     SELECT DISTINCT date_trunc('day', trunc_time)::date AS day, uid
     FROM reports.session_totals
-    WHERE NOT uid ISNULL""",
-                               (), connection=conn, auto_commit=False)
+    WHERE trunc_time >= %s
+    AND NOT uid ISNULL""", (sd,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             print e
@@ -193,15 +195,18 @@ CREATE TABLE reports.hnames (
         PRIMARY KEY (date, hname));
 """, 'date', start_date, end_date)
 
+        sd = sql_helper.get_max_timestamp_with_interval('reports.hnames')
+
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.hnames (date, hname)
     SELECT DISTINCT date_trunc('day', trunc_time)::date, hname
     FROM reports.session_totals
-    WHERE server_intf IN """ + get_wan_clause() + """
+    WHERE trunc_time >= %s
+    AND server_intf IN """ + get_wan_clause() + """
     AND client_intf NOT IN """ + get_wan_clause() + """
-    AND NOT hname ISNULL""", (),
+    AND NOT hname ISNULL""", (sd,),
                                connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:

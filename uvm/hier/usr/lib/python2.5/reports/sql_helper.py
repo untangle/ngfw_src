@@ -1,6 +1,3 @@
-# $HeadURL: svn://chef/work/src/buildtools/rake-util.rb $
-# Sebastien Delafond <seb@untangle.com>
-
 import datetime
 import inspect
 import logging
@@ -209,6 +206,25 @@ SELECT last_update + interval '10 millisecond' FROM reports.table_updates WHERE 
         conn.commit()
 
     return date_convert(rv, delay)
+
+def get_max_timestamp_with_interval(table, time_column='date', interval='1 day'):
+    if not connection:
+        connection = get_connection()
+
+    curs = connection.cursor()
+    try:
+        curs.execute("SELECT max(%s) + interval '%s' FROM reports.%s" % (time_column, interval, table))
+        connection.commit()
+    except:
+        connection.rollback()
+        raise
+    
+    sd = curs.fetchone()
+    if not sd or not sd[0]:
+        sd = '1-1-1'
+    else:
+        sd = sd[0]
+    return sd
 
 def set_update_info(tablename, last_update, connection=None,
                     auto_commit=True):

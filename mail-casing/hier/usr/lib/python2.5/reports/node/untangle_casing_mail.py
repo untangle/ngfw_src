@@ -1,19 +1,3 @@
-# $HeadURL: svn://chef/work/src/buildtools/rake-util.rb $
-# Copyright (c) 2003-2009 Untangle, Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, version 2,
-# as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful, but
-# AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
-# NONINFRINGEMENT.  See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
-
 import reports.engine
 import reports.sql_helper as sql_helper
 
@@ -194,15 +178,17 @@ CREATE TABLE reports.email (
         PRIMARY KEY (date, email));
 """, 'date', start_date, end_date)
 
+        sd = sql_helper.get_max_timestamp_with_interval('reports.email')
+
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.email (date, email)
     SELECT DISTINCT date_trunc('day', trunc_time)::date, addr
     FROM reports.n_mail_addr_totals
-    WHERE client_intf = 0 AND addr_kind = 'T'
-    AND NOT addr ISNULL""",
-                               (), connection=conn, auto_commit=False)
+    WHERE trunc_time >= %s
+    AND client_intf = 0 AND addr_kind = 'T'
+    AND NOT addr ISNULL""", (sd,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             print e
