@@ -7,6 +7,7 @@
 import conversion.sql_helper as sql_helper
 import sys
 import os
+import string
 
 def build_rule(id, live, description, block, log, protocol_matcher, src_addr_matcher, dst_addr_matcher, src_intf_matcher, dst_intf_matcher, src_port_matcher, dst_port_matcher):
     str = ""
@@ -18,7 +19,7 @@ def build_rule(id, live, description, block, log, protocol_matcher, src_addr_mat
     str += '\t\t\t"block": "%s",\n' % block
     str += '\t\t\t"log": "%s",\n' % log
 
-    str += '\t\t\t"rules": {\n'
+    str += '\t\t\t"matchers": {\n'
     str += '\t\t\t\t"javaClass": "java.util.LinkedList",\n'
     str += '\t\t\t\t"list": [\n'
     
@@ -32,15 +33,19 @@ def build_rule(id, live, description, block, log, protocol_matcher, src_addr_mat
     str += build_rule_matcher("PROTOCOL", protocol_matcher, False)
         
     str += '\t\t\t\t]\n'
-    str += '\t\t\t}'
+    str += '\t\t\t\t}\n'
+    str += '\t\t\t}\n'
     return str
 
 def build_rule_matcher(matcherType, value, comma=True):
+    value = string.replace(value,"tcp","TCP")
+    value = string.replace(value,"udp","UDP")
+
     str = ""
     str += '\t\t\t\t\t{\n'
     str += '\t\t\t\t\t"javaClass": "com.untangle.node.firewall.FirewallRuleMatcher",\n'
     str += '\t\t\t\t\t"matcherType": "%s",\n' % matcherType
-    str += '\t\t\t\t\t"value": "%s",\n' % value
+    str += '\t\t\t\t\t"value": "%s"\n' % value
     if (comma):
         str += '\t\t\t\t\t},\n'
     else:
@@ -88,7 +93,7 @@ def get_rules(tid, settings_id, default_pass, debug=False):
         str += build_rule(id, True, "Default Block", True, True, "any", "any", "any", "any", "any", "any", "any")
 
     str += '\n\t\t]\n'
-    str += '\t\t}'
+    str += '\t\t}\n'
     
     return str
 
