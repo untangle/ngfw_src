@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $Id$
+ */
 package com.untangle.uvm.networking;
 
 import org.apache.log4j.Logger;
@@ -26,6 +28,8 @@ public class RuleManager
     private final Logger logger = Logger.getLogger( getClass());
 
     private boolean isShutdown = false;
+
+    private static final Object lock= new Object();
 
     /* ---------------------- PACKAGE ---------------------- */
 
@@ -73,16 +77,6 @@ public class RuleManager
         scriptWriter.appendLine("# Ports that the Untangle-vm is listening for incoming TCP connections");
         scriptWriter.appendVariable( TCP_REDIRECT_PORT_FLAG, tcp.low() + "-" + tcp.high());
         
-        /* XXX When we want to use custom interfaces we should just redefine INTERFACE_ORDER */
-        /* Setup all of the values for the interfaces */
-        //LocalIntfManager lim = LocalUvmContextFactory.context().localIntfManager();
-        //         for ( ArgonInterface intf : lim.getIntfList()) {
-        //             if ( intf.hasSecondaryName()) {
-        //                 String argonName = IntfConstants.toName( intf.getArgon()).toUpperCase();
-        //                 scriptWriter.appendVariable( "UVM_" + argonName + "_INTF", intf.getSecondaryName());
-        //             }
-        //         }
-        
         /* Add the flag to redirect traffic from 443, to the special internal open port */
         scriptWriter.appendLine("# The local HTTPS port");
         scriptWriter.appendVariable( INTERNAL_OPEN_REDIRECT_FLAG, NetworkUtil.INTERNAL_OPEN_HTTPS_PORT );
@@ -101,7 +95,7 @@ public class RuleManager
     {
         private Exception exception;
         private final Runnable callback;
-
+        
         public GenerateRules( Runnable callback )
         {
             this.callback = callback;
@@ -109,11 +103,28 @@ public class RuleManager
 
         public void run()
         {
-            try {
-                JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "generate_rules", null );
-            } catch ( Exception e ) {
-                logger.error( "Error while generating iptables rules", e );
-                this.exception = e;
+            int tryCount = 0;
+            boolean success = false;
+
+            synchronized(RuleManager.lock) {
+                do {
+                    try {
+                        JsonClient.getInstance().callAlpaca( XMLRPCUtil.CONTROLLER_UVM, "generate_rules", null );
+                        success = true;
+                        break;
+                    } catch ( Exception e ) {
+                        logger.warn( "Error while generating iptables rules (trying again...)", e );
+                        this.exception = e;
+                    }
+
+                    try {Thread.sleep(3000);} catch(Exception e) {}
+                    tryCount++;
+                }
+                while (tryCount < 5);
+            }
+            
+            if (!success) {
+                logger.error( "Failed to generate iptables rules.");
             }
 
             if ( this.callback != null ) this.callback.run();

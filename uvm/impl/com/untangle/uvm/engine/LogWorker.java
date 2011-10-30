@@ -20,6 +20,7 @@ package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.File;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -137,7 +138,18 @@ class LogWorker implements Runnable
             }
 
             if (logQueue.size() >= BATCH_SIZE || t >= nextSync || forceFlush) {
-                if (loggingManager.isConversionComplete()) {
+                boolean persistAllowed = true;
+
+                if (!loggingManager.isConversionComplete()) {
+                    logger.warn("persist() ignored - conversion not complete");
+                    persistAllowed = false;
+                } 
+                if (new File("/tmp/stopdb").exists()) {
+                    logger.warn("persist() ignored - /tmp/stopdb exists");
+                    persistAllowed = false;
+                }
+                
+                if (persistAllowed) {
                     try {
                         persist();
                     } catch (Exception exn) { // never say die
@@ -153,7 +165,7 @@ class LogWorker implements Runnable
 
         while (accept(inputQueue.poll()));
 
-        if (0 < logQueue.size()) {
+        if (logQueue.size() > 0) {
             persist();
         }
     }
