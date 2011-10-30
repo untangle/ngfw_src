@@ -29,13 +29,13 @@ def build_rule(id, live, description, block, log, protocol_matcher, src_addr_mat
     if (src_port_matcher != "any"): str += build_rule_matcher("SRC_PORT",src_port_matcher,True)
     if (dst_port_matcher != "any"): str += build_rule_matcher("DST_PORT",dst_port_matcher,True)
     # always add protocol just to deal with the comma
-    str += build_rule_matcher("PROTOCOL",protocol_matcher,False)
+    str += build_rule_matcher("PROTOCOL", protocol_matcher, False)
         
     str += '\t\t\t\t]\n'
     str += '\t\t\t}'
     return str
 
-def build_rule_matcher(matcherType, value, default_pass, comma=True):
+def build_rule_matcher(matcherType, value, comma=True):
     str = ""
     str += '\t\t\t\t\t{\n'
     str += '\t\t\t\t\t"javaClass": "com.untangle.node.firewall.FirewallRuleMatcher",\n'
