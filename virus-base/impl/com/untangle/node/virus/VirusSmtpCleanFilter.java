@@ -1,3 +1,6 @@
+/**
+ * $Id: VirusSmtpCleanFilter.java,v 1.00 2011/11/01 16:25:18 dmorris Exp $
+ */
 package com.untangle.node.virus;
 
 import java.util.Iterator;
@@ -14,34 +17,24 @@ import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
- * Filter for HTTP virus events.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
+ * Filter for SMTP non-virus events.
  */
-public class VirusSmtpInfectedFilter implements ListEventFilter<MailLogEventFromReports>
+public class VirusSmtpCleanFilter implements ListEventFilter<MailLogEventFromReports>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Infected Email Events"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Clean Email Events"));
 
     private final String vendor;
     private final String logQuery;
 
-    // constructors -----------------------------------------------------------
-
-    VirusSmtpInfectedFilter(String vendor)
+    public VirusSmtpCleanFilter(String vendor)
     {
-        if (vendor.equals("Clam")) //FIXME: more cases
-            this.vendor = "Clam";
-        else
-            this.vendor = vendor;
+        this.vendor = vendor;
 
         logQuery = "FROM MailLogEventFromReports evt" + 
-            " WHERE evt.virus" + this.vendor + "Clean IS FALSE" + 
+            " WHERE evt.virus" + this.vendor + "Clean IS TRUE" + 
             " AND evt.policyId = :policyId" + 
             " ORDER BY evt.timeStamp DESC";
     }
-
-    // SimpleEventFilter methods ----------------------------------------------
 
     public RepositoryDesc getRepositoryDesc()
     {
@@ -49,8 +42,8 @@ public class VirusSmtpInfectedFilter implements ListEventFilter<MailLogEventFrom
     }
 
     @SuppressWarnings("unchecked") //Query
-    public void doGetEvents(Session s, List<MailLogEventFromReports> l,
-                            int limit, Map<String, Object> params) {
+    public void doGetEvents(Session s, List<MailLogEventFromReports> l, int limit, Map<String, Object> params)
+    {
         Query q = s.createQuery(logQuery);
         for (String param : q.getNamedParameters()) {
             Object o = params.get(param);

@@ -1,3 +1,6 @@
+/**
+ * $Id: VirusHttpCleanFilter.java,v 1.00 2011/11/01 16:25:24 dmorris Exp $
+ */
 package com.untangle.node.virus;
 
 import java.util.Iterator;
@@ -14,41 +17,32 @@ import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
- * Filter for HTTP virus events.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
+ * Filter for HTTP non-virus events.
  */
-public class VirusHttpInfectedFilter implements SimpleEventFilter<HttpLogEventFromReports>
+public class VirusHttpCleanFilter implements SimpleEventFilter<HttpLogEventFromReports>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Infected Web Events"));
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(I18nUtil.marktr("Clean Web Events"));
 
     private final String vendor;
     private final String logQuery;
 
-    // constructors -----------------------------------------------------------
-
-    VirusHttpInfectedFilter(String vendor)
+    public VirusHttpCleanFilter(String vendor)
     {
-        if (vendor.equals("Clam")) //FIXME: more cases
-            this.vendor = "Clam";
-        else
-            this.vendor = vendor;
-
+        this.vendor = vendor;
+        
         logQuery = "FROM HttpLogEventFromReports evt" + 
-            " WHERE evt.virus" + this.vendor + "Clean IS FALSE" + 
+            " WHERE evt.virus" + this.vendor + "Clean IS TRUE" + 
             " AND evt.policyId = :policyId" + 
             " ORDER BY evt.timeStamp DESC";
     }
-
-    // SimpleEventFilter methods ----------------------------------------------
 
     public RepositoryDesc getRepositoryDesc()
     {
         return REPO_DESC;
     }
 
-    public String[] getQueries() {
+    public String[] getQueries()
+    {
         return new String[] { logQuery };
     }
 }

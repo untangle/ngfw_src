@@ -172,11 +172,10 @@ public abstract class VirusNodeImpl extends AbstractNode
 
         String vendor = scanner.getVendorName();
 
-        SimpleEventFilter ef = new VirusHttpInfectedFilter(vendor);
-        eventLogger.addSimpleEventFilter(ef);
-
-        ListEventFilter lef = new VirusSmtpInfectedFilter(vendor);
-        eventLogger.addListEventFilter(lef);
+        eventLogger.addSimpleEventFilter(((SimpleEventFilter) new VirusHttpInfectedFilter(vendor)));
+        eventLogger.addSimpleEventFilter(((SimpleEventFilter) new VirusHttpCleanFilter(vendor)));
+        eventLogger.addListEventFilter(((ListEventFilter) new VirusSmtpInfectedFilter(vendor)));
+        eventLogger.addListEventFilter(((ListEventFilter) new VirusSmtpCleanFilter(vendor)));
 
         MessageManager lmm = LocalUvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
