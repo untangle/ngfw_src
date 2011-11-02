@@ -183,7 +183,7 @@ Ung.Util= {
         {
             if(exception.code == 550 || exception.code == 12029 || exception.code == 12019 )
             {
-                Ext.MessageBox.alert(i18n._("Warning"),i18n._("The Session has expired. You will be redirected to the start page."), Ung.Util.goToStartPage);
+                Ext.MessageBox.alert(i18n._("Warning"),i18n._("The connection to the server has been lost. Press OK to return to the login page."), Ung.Util.goToStartPage);
             }
         }
         if(exception) {
@@ -195,71 +195,79 @@ Ung.Util= {
     },
     handleException: function(exception, handler, type, continueExecution) { //type: alertCallback, alert, noAlert
         if(exception) {
-            if(exception.code==550 ||exception.code == 12029 || exception.code == 12019) {
-                Ext.MessageBox.alert(i18n._("Warning"),i18n._("The Session has expired. You will be redirected to the start page."), Ung.Util.goToStartPage);
-                return true;
-            } else {
-                var message=null;
-
-                /* special text for apt error */
-                if (exception.name == "com.untangle.uvm.toolbox.PackageInstallException" && (exception.message.indexOf("exited with") >= 0)) {
-                    message += i18n._("The server is unable to properly communicate with the app store.") + "<br/>";
-                    message += i18n._("Check internet connectivity and network settings.") + "<br/>";
-                    message += i18n._("Check that the server is fully up to date.") + "<br/>";
-                    message += i18n._("<br/>");
-                    message =  i18n._("Unable to contact app store") + ":<br/>";
-                    message += i18n._("An error has occured: ") + exception.message + "<br/>";
-                }
-                /* special text for apt error */
-                if (exception.name == "com.untangle.uvm.toolbox.PackageException" && (exception.message.indexOf("timed out") >= 0)) {
-                    message =  i18n._("Unable to contact app store") + ":<br/>";
-                    message += i18n._("Connection timed out") + "<br/>";
-                    message += i18n._("<br/>");
-                    message += i18n._("Check internet connectivity and network settings.");
-                }
-                /* special text for rack error */
-                if (exception.name == "com.untangle.uvm.node.DeployException" && (exception.message.indexOf("already exists in Policy") >= 0)) {
-                    message =  i18n._("This application already exists in this policy/rack.") + ":<br/>";
-                    message += i18n._("Each application can only be installed once in each policy/rack.");
-                }
-                /* special text for "method not found" and "Service Temporarily Unavailable" */
-                if (exception.message.indexOf("ethod not found") >= 0 || exception.message.indexOf("ervice Temporarily Unavailable") >= 0) {
-                    message = i18n._("The connection to the server has been lost.") + "<br/>";
-                    message += i18n._("It may be necessary to refresh the browser and log in again.") + "<br/>";
-                    message += i18n._("<br/>");
-                    message += i18n._("An error has occured") + ": " + exception.name + ": " + exception.message + "<br/>";
-                }
-                /* otherwise just describe the exception */
-                if (message == null && exception != null) {
-                    message = i18n._("An exception has occurred") + ":" + "<br/>";
-                    message += i18n._("<br/>");
-                    if (exception.name != null)
-                        message += exception.name + "<br/>";
-                    if (exception.message != null)
-                        message += exception.message + "<br/>";
-                    if (exception.stack != null) {
-                        message += "<br/>";
-                        message += exception.stack + "<br/>";
-                    }
-                }
-                /* worst case - just say something */
-                if (message == null) {
-                    message = i18n._("An unknown error has occurred.") + "<br/>";
-                    message += i18n._("Please Try Again");
-                }
-                
-                if (handler==null) {
-                    Ext.MessageBox.alert(i18n._("Warning"), message);
-                } else if(type==null || type== "alertCallback"){
-                    Ext.MessageBox.alert(i18n._("Warning"), message, handler);
-                } else if (type== "alert") {
-                    Ext.MessageBox.alert(i18n._("Warning"), message);
-                    handler();
-                } else if (type== "noAlert") {
-                    handler();
-                }
-                return !continueExecution;
+            var message=null;
+            var gotoStartPage=false;
+            /* special text for apt error */
+            if (exception.name == "com.untangle.uvm.toolbox.PackageInstallException" && (exception.message.indexOf("exited with") >= 0)) {
+                message  = i18n._("The server is unable to properly communicate with the app store.") + "<br/>";
+                message += i18n._("Check internet connectivity and network settings.") + "<br/>";
+                message += i18n._("Check that the server is fully up to date.") + "<br/>";
+                message += i18n._("<br/>");
+                message =  i18n._("Unable to contact app store") + ":<br/>";
+                message += i18n._("An error has occured: ") + exception.message + "<br/>";
             }
+            /* special text for apt error */
+            if (exception.name == "com.untangle.uvm.toolbox.PackageException" && (exception.message.indexOf("timed out") >= 0)) {
+                message  = i18n._("Unable to contact the app store") + ":<br/>";
+                message += i18n._("Connection timed out") + "<br/>";
+                message += i18n._("<br/>");
+                message += i18n._("Check internet connectivity and network settings.") + "<br/>";
+                message += i18n._("An error has occured: ") + exception.message + "<br/>";
+            }
+            /* special text for rack error */
+            if (exception.name == "com.untangle.uvm.node.DeployException" && (exception.message.indexOf("already exists in Policy") >= 0)) {
+                message  = i18n._("This application already exists in this policy/rack.") + ":<br/>";
+                message += i18n._("Each application can only be installed once in each policy/rack.");
+            }
+            /* handle connection lost */
+            if(exception.code==550 || exception.code == 12029 || exception.code == 12019) {
+                message  = i18n._("The connection to the server has been lost.") + "<br/>";
+                message += i18n._("Press OK to return to the login page.") + "<br/>";
+                message += i18n._("<br/>");
+                message += i18n._("An error has occured") + ": " + exception.name + ": " + exception.message + "<br/>";
+                handler = Ung.Util.goToStartPage; //override handler
+                type = null; //override handler
+            }
+            /* special text for "method not found" and "Service Temporarily Unavailable" */
+            if (exception.message.indexOf("ethod not found") >= 0 || exception.message.indexOf("ervice Temporarily Unavailable") >= 0) {
+                message  = i18n._("The connection to the server has been lost.") + "<br/>";
+                message += i18n._("Press OK to return to the login page.") + "<br/>";
+                message += i18n._("<br/>");
+                message += i18n._("An error has occured") + ": " + exception.name + ": " + exception.message + "<br/>";
+                handler = Ung.Util.goToStartPage; //override handler
+                type = null; //override handler
+            }
+
+            /* otherwise just describe the exception */
+            if (message == null && exception != null) {
+                message  = i18n._("An exception has occurred") + ":" + "<br/>";
+                message += i18n._("<br/>");
+                if (exception.name != null)
+                    message += exception.name + "<br/>";
+                if (exception.message != null)
+                    message += exception.message + "<br/>";
+                if (exception.stack != null) {
+                    message += "<br/>";
+                    message += exception.stack + "<br/>";
+                }
+            }
+            /* worst case - just say something */
+            if (message == null) {
+                message = i18n._("An unknown error has occurred.") + "<br/>";
+                message += i18n._("Please Try Again");
+            }
+            
+            if (handler==null) {
+                Ext.MessageBox.alert(i18n._("Warning"), message);
+            } else if(type==null || type== "alertCallback"){
+                Ext.MessageBox.alert(i18n._("Warning"), message, handler);
+            } else if (type== "alert") {
+                Ext.MessageBox.alert(i18n._("Warning"), message);
+                handler();
+            } else if (type== "noAlert") {
+                handler();
+            }
+            return !continueExecution;
         }
         return false;
     },
