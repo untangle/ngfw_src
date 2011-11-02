@@ -225,8 +225,8 @@ Ung.Util= {
                 message += i18n._("Press OK to return to the login page.") + "<br/>";
                 message += i18n._("<br/>");
                 message += i18n._("An error has occured") + ": " + exception.name + ": " + exception.message + "<br/>";
-                handler = Ung.Util.goToStartPage; //override handler
-                type = null; //override handler
+                if (type !== "noAlert")
+                    handler = Ung.Util.goToStartPage; //override handler
             }
             /* special text for "method not found" and "Service Temporarily Unavailable" */
             if (exception.message.indexOf("ethod not found") >= 0 || exception.message.indexOf("ervice Temporarily Unavailable") >= 0) {
@@ -234,8 +234,8 @@ Ung.Util= {
                 message += i18n._("Press OK to return to the login page.") + "<br/>";
                 message += i18n._("<br/>");
                 message += i18n._("An error has occured") + ": " + exception.name + ": " + exception.message + "<br/>";
-                handler = Ung.Util.goToStartPage; //override handler
-                type = null; //override handler
+                if (type !== "noAlert")
+                    handler = Ung.Util.goToStartPage; //override handler
             }
 
             /* otherwise just describe the exception */
