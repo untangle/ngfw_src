@@ -6,7 +6,8 @@ if (!Ung.hasResource["Ung.Virus"]) {
         panelWeb:null,
         panelEmail: null,
         panelFtp: null,
-        gridEventLog : null,
+        gridWebEventLog : null,
+        gridMailEventLog : null,
         // override get base settings object to reload the signature information.
         getBaseSettings : function(forceReload) {
             if (forceReload || this.rpc.baseSettings === undefined) {
@@ -26,9 +27,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
             this.buildWeb();
             this.buildEmail();
             this.buildFtp();
-            this.buildEventLog();
+            this.buildWebEventLog();
+            this.buildMailEventLog();
+            
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelWeb, this.panelEmail, this.panelFtp, this.gridEventLog]);
+            this.buildTabPanel([this.panelWeb, this.panelEmail, this.panelFtp, this.gridWebEventLog, this.gridMailEventLog]);
             Ung.Virus.superclass.initComponent.call(this);
         },
         // Web Panel
@@ -616,10 +619,13 @@ if (!Ung.hasResource["Ung.Virus"]) {
             });
         },
         // Event Log
-        buildEventLog : function() {
-            this.gridEventLog = new Ung.GridEventLog({
+        buildWebEventLog : function() {
+            this.gridWebEventLog = new Ung.GridEventLog({
+                name : 'Web Event Log',
+                helpSource : 'Web_Event_Log',
                 settingsCmp : this,
-                //autoExpandColumn: 'timeStamp',
+                title : this.i18n._("Web Event Log"),
+                eventManagerFn : this.getRpcNode().getWebEventManager(),
 
                 // the list of fields
                 fields : [{
@@ -634,11 +640,19 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name : 'server',
                     mapping : 'CServerAddr'
                 }, {
+                    name : 'host',
+                    mapping : 'host'
+                }, {
+                    name : 'uri',
+                    mapping : 'uri'
+                }, {
+                    name : 'location'
+                }, {
                     name : 'reason',
                     mapping : 'virus' + main.capitalize(this.getRpcNode().getVendor()) + 'Name'
                 }],
                 // the list of columns
-                autoExpandColumn: 'reason',
+                autoExpandColumn: 'uri',
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
@@ -659,6 +673,97 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     width : Ung.Util.usernameFieldWidth,
                     sortable : true,
                     dataIndex : 'uid'
+                }, {
+                    id: 'host',
+                    header : this.i18n._("host"),
+                    width : Ung.Util.hostnameFieldWidth,
+                    dataIndex : 'host'
+                }, {
+                    id: 'uri',
+                    header : this.i18n._("uri"),
+                    width : Ung.Util.uriFieldWidth,
+                    dataIndex : 'uri'
+                }, {
+                    id : 'reason',
+                    header : this.i18n._("virus name"),
+                    width : 140,
+                    sortable : true,
+                    dataIndex : 'reason'
+                }, {
+                    id : 'server',
+                    header : this.i18n._("server"),
+                    width : Ung.Util.ipFieldWidth,
+                    sortable : true,
+                    dataIndex : 'server'
+                }]
+            });
+        },
+        // Event Log
+        buildMailEventLog : function() {
+            this.gridMailEventLog = new Ung.GridEventLog({
+                name : 'Email Event Log',
+                helpSource : 'Email_Event_Log',
+                settingsCmp : this,
+                title : this.i18n._("Email Event Log"),
+                eventManagerFn : this.getRpcNode().getMailEventManager(),
+
+                // the list of fields
+                fields : [{
+                    name : 'timeStamp',
+                    sortType : Ung.SortTypes.asTimestamp
+                }, {
+                    name : 'client',
+                    mapping : 'CClientAddr'
+                }, {
+                    name : 'uid'
+                }, {
+                    name : 'server',
+                    mapping : 'CServerAddr'
+                }, {
+                    name : 'subject',
+                    type : 'string'
+                }, {
+                    name : 'addr',
+                    type : 'string'
+                }, {
+                    name : 'sender',
+                    type : 'string'
+                }, {
+                    name : 'reason',
+                    mapping : 'virus' + main.capitalize(this.getRpcNode().getVendor()) + 'Name'
+                }],
+                // the list of columns
+                autoExpandColumn: 'subject',
+                columns : [{
+                    header : this.i18n._("timestamp"),
+                    width : Ung.Util.timestampFieldWidth,
+                    sortable : true,
+                    dataIndex : 'timeStamp',
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    id : 'client',
+                    header : this.i18n._("client"),
+                    width : Ung.Util.ipFieldWidth,
+                    sortable : true,
+                    dataIndex : 'client'
+                }, {
+                    header : this.i18n._("receiver"),
+                    width : Ung.Util.emailFieldWidth,
+                    sortable : true,
+                    dataIndex : 'addr'
+                }, {
+                    header : this.i18n._("sender"),
+                    width : Ung.Util.emailFieldWidth,
+                    sortable : true,
+                    dataIndex : 'sender'
+                }, {
+                    id : 'subject',
+                    header : this.i18n._("subject"),
+                    width : 150,
+                    sortable : true,
+                    dataIndex : 'subject'
                 }, {
                     id : 'reason',
                     header : this.i18n._("virus name"),

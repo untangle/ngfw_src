@@ -95,7 +95,8 @@ public abstract class VirusNodeImpl extends AbstractNode
     private static final int POP = 3;
 
     private final VirusScanner scanner;
-    private final EventLogger<VirusEvent> eventLogger;
+    private final EventLogger<VirusEvent> webEventLogger;
+    private final EventLogger<VirusEvent> mailEventLogger;
     private final PipeSpec[] pipeSpecs;
     private final VirusReplacementGenerator replacementGenerator;
 
@@ -168,14 +169,15 @@ public abstract class VirusNodeImpl extends AbstractNode
         this.pipeSpecs = initialPipeSpecs();
         this.replacementGenerator = new VirusReplacementGenerator(getNodeId());
 
-        eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
+        this.webEventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
+        this.mailEventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
         String vendor = scanner.getVendorName();
 
-        eventLogger.addSimpleEventFilter(((SimpleEventFilter) new VirusHttpInfectedFilter(vendor)));
-        eventLogger.addSimpleEventFilter(((SimpleEventFilter) new VirusHttpCleanFilter(vendor)));
-        eventLogger.addListEventFilter(((ListEventFilter) new VirusSmtpInfectedFilter(vendor)));
-        eventLogger.addListEventFilter(((ListEventFilter) new VirusSmtpCleanFilter(vendor)));
+        this.webEventLogger.addSimpleEventFilter(((SimpleEventFilter) new VirusHttpInfectedFilter(vendor)));
+        this.webEventLogger.addSimpleEventFilter(((SimpleEventFilter) new VirusHttpCleanFilter(vendor)));
+        this.mailEventLogger.addListEventFilter(((ListEventFilter) new VirusSmtpInfectedFilter(vendor)));
+        this.mailEventLogger.addListEventFilter(((ListEventFilter) new VirusSmtpCleanFilter(vendor)));
 
         MessageManager lmm = LocalUvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
@@ -305,9 +307,14 @@ public abstract class VirusNodeImpl extends AbstractNode
         reconfigure();
     }
 
-    public EventManager<VirusEvent> getEventManager()
+    public EventManager<VirusEvent> getWebEventManager()
     {
-        return eventLogger;
+        return webEventLogger;
+    }
+
+    public EventManager<VirusEvent> getMailEventManager()
+    {
+        return mailEventLogger;
     }
 
     public VirusBlockDetails getDetails(String nonce)
@@ -606,7 +613,7 @@ public abstract class VirusNodeImpl extends AbstractNode
 
     void log(VirusEvent evt)
     {
-        eventLogger.log(evt);
+        mailEventLogger.log(evt);
     }
 
     /**

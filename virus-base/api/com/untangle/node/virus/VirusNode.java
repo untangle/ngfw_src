@@ -52,14 +52,11 @@ public interface VirusNode extends Node
     VirusBaseSettings getBaseSettings();
     VirusBaseSettings getBaseSettings(boolean updateScannerInfo);
 
-    List<MimeTypeRule> getHttpMimeTypes(int start, int limit,
-                                        String... sortColumns);
-    void updateHttpMimeTypes(List<MimeTypeRule> added, List<Long> deleted,
-                             List<MimeTypeRule> modified);
+    List<MimeTypeRule> getHttpMimeTypes(int start, int limit, String... sortColumns);
+    void updateHttpMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified);
 
     List<StringRule> getExtensions(int start, int limit, String... sortColumns);
-    void updateExtensions(List<StringRule> added, List<Long> deleted,
-                          List<StringRule> modified);
+    void updateExtensions(List<StringRule> added, List<Long> deleted, List<StringRule> modified);
 
     /**
      * Update all settings once, in a single transaction
@@ -76,5 +73,6 @@ public interface VirusNode extends Node
 
     String getVendor();
     
-    EventManager<VirusEvent> getEventManager();
+    EventManager<VirusEvent> getWebEventManager();
+    EventManager<VirusEvent> getMailEventManager();
 }
