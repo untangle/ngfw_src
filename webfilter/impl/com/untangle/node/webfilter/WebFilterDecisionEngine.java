@@ -68,7 +68,7 @@ class WebFilterDecisionEngine extends DecisionEngine
         if (categories.size() == 0) {
             String dom;
             for ( dom = domain ; null != dom ; dom = nextHost(dom) ) {
-                category = urlDatabase.get(url);
+                category = urlDatabase.get(dom + uri);
                 if (category != null)
                     categories.add(category);
 
