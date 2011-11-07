@@ -208,12 +208,11 @@ SELECT last_update + interval '10 millisecond' FROM reports.table_updates WHERE 
     return date_convert(rv, delay)
 
 def get_max_timestamp_with_interval(table, time_column='date', interval='1 day'):
-    if not connection:
-        connection = get_connection()
+  connection = get_connection()
 
     curs = connection.cursor()
     try:
-        curs.execute("SELECT max(%s) + interval '%s' FROM reports.%s" % (time_column, interval, table))
+        curs.execute("SELECT max(%s) + interval '%s' FROM %s" % (time_column, interval, table))
         connection.commit()
     except:
         connection.rollback()
