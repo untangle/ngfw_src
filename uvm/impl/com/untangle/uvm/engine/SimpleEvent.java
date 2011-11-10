@@ -82,6 +82,8 @@ class SimpleEvent<E extends LogEvent> implements EventRepository<E>
         synchronized (list) {
             final NodeContext tctx = eventLogger.getNodeContext();
 
+            logger.warn("doGetEvents for " + tctx);
+
             TransactionWork<Void> tw = new TransactionWork<Void>()
                 {
                     public boolean doWork(Session s) throws SQLException
