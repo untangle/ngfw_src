@@ -1,6 +1,3 @@
-/*
- * $Id$
- */
 package com.untangle.node.reporting;
 
 import java.io.BufferedReader;
@@ -141,7 +138,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 
         logger.info("Running incremental report...");
         try {
-            String args[] = { REPORTS_SCRIPT, "-m", "-i" };
+            String args[] = { REPORTS_SCRIPT, "-m", "-i", "-r", "1" };
             Process proc = LocalUvmContextFactory.context().exec(args);
             tailLog(REPORTER_LOG_FILE, REPORTER_LOG_FILE_READ_TIMEOUT, proc);
             exitCode = proc.waitFor();
