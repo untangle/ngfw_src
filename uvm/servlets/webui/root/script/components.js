@@ -2728,6 +2728,8 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install the Reports application."));
         } else {
             if (!forceFlush) {
+                this.loadMask.msg = i18n._('Refreshing Events...');
+                this.loadMask.show();
                 this.refreshList();
             } else {
                 this.loadMask.disabled = false;
