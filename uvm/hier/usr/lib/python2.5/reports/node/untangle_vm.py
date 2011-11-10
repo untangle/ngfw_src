@@ -47,7 +47,6 @@ class UvmNode(Node):
         self.__create_n_admin_logins(start_date, end_date)
 
         self.__make_sessions_table(start_date, end_date)
-        self.__make_session_counts_table(start_date, end_date)
 
         ft = FactTable('reports.session_totals',
                        'reports.sessions',
@@ -107,6 +106,7 @@ INSERT INTO reports.n_admin_logins
             raise e
 
     def post_facttable_setup(self, start_date, end_date):
+        self.__make_session_counts_table(start_date, end_date)
         self.__make_hnames_table(start_date, end_date)
         self.__make_users_table(start_date, end_date)
 
