@@ -378,7 +378,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         gridExports : null,
         gridGroups : null,
         panelAdvanced : null,
-        gridEventLog : null,
+        gridClosedSessionsEventLog : null,
         initComponent : function(container, position) {
             this.configState=this.getRpcNode().getConfigState();
             this.buildStatus();
@@ -401,14 +401,18 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 this.buildClients();
                 this.buildExports();
                 this.buildAdvanced();
-                this.buildEventLog();
+                this.buildClosedSessionsEventLog();
+                this.buildActiveClientsEventLog();
                 tabs.push(this.panelClients);
                 tabs.push(this.gridExports);
                 tabs.push(this.panelAdvanced);
-                tabs.push(this.gridEventLog);
+                tabs.push(this.gridClosedSessionsEventLog);
+                tabs.push(this.gridActiveClientsEventLog);
             } else if (this.configState == "CLIENT") {
-                this.buildEventLog();
-                tabs.push(this.gridEventLog);
+                this.buildClosedSessionsEventLog();
+                this.buildActiveClientsEventLog();
+                tabs.push(this.gridClosedSessionsEventLog);
+                tabs.push(this.gridActiveClientsEventLog);
             }
             this.buildTabPanel(tabs);
             Ung.OpenVPN.superclass.initComponent.call(this);
@@ -553,10 +557,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             return this.node.nodeContext.rpcNode.eventManager;
         },
 
-        // Event Log
-        buildEventLog : function() {
-            this.gridEventLog = new Ung.GridEventLog({
+        // Closed Sessions Event Log
+        buildClosedSessionsEventLog : function() {
+            this.gridClosedSessionsEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
+                name : "Closed Sessions Event Log",
+                title : i18n._('Closed Sessions Event Log'),
                 fields : [{
                     name : 'start',
                     mapping : 'startTime',
@@ -644,6 +650,94 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }]
             });
         },
+        // Active Clients Event Log
+        buildActiveClientsEventLog : function() {
+            this.gridActiveClientsEventLog = new Ung.GridEventLog({
+                settingsCmp : this,
+                name : "Active Clients Event Log",
+                title : i18n._('Active Clients Event Log'),
+                fields : [{
+                    name : 'start',
+                    sortType : Ung.SortTypes.asTimestamp
+                }, {
+                    name : 'end',
+                    sortType : Ung.SortTypes.asTimestamp
+                }, {
+                    name : 'duration',
+                    mapping : 'start',
+                    convert : function(val) {
+                        return "100"
+                        //return parseFloat(val) / 60;
+                    }
+                }, {
+                    name : 'name',
+                    mapping : 'clientName'
+                }, {
+                    name : 'port'
+                }, {
+                    name : 'address'
+                }, {
+                    name : 'bytesTx',
+                    convert : function(val) {
+                        return parseFloat(val) / 1024;
+                    }
+                }, {
+                    name : 'bytesRx',
+                    convert : function(val) {
+                        return parseFloat(val) / 1024;
+                    }
+                }],
+                columns : [{
+                    header : this.i18n._("start time"),
+                    width : Ung.Util.timestampFieldWidth,
+                    sortable : true,
+                    dataIndex : 'start',
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
+                    }.createDelegate( this )
+                }, {
+                    header : this.i18n._("end time"),
+                    width : Ung.Util.timestampFieldWidth,
+                    sortable : true,
+                    dataIndex : 'end',
+                    renderer : function(value) {
+                        return i18n.timestampFormat(value);
+                    }.createDelegate( this )
+                }, {
+                    header : this.i18n._("client name"),
+                    sortable : true,
+                    dataIndex : 'name'
+                }, {
+                    header : this.i18n._("client address"),
+                    sortable : true,
+                    dataIndex : 'address'
+                }, {
+                    header : this.i18n._("port"),
+                    dataIndex : 'port'
+                }, {
+                    header : this.i18n._("duration (min)"),
+                    width : 130,
+                    sortable : true,
+                    dataIndex : 'duration'
+                }, {
+                    header : this.i18n._("KB sent"),
+                    width : 80,
+                    sortable : true,
+                    dataIndex : 'bytesTx',
+                    renderer : function( value ) {
+                        return Math.round(( value + 0.0 ) * 10 ) / 10;
+                    }.createDelegate( this )
+                }, {
+                    header : this.i18n._("KB received"),
+                    width : 80,
+                    sortable : true,
+                    dataIndex : 'bytesRx',
+                    renderer : function( value ) {
+                        return Math.round(( value + 0.0 ) * 10 ) / 10;
+                    }.createDelegate( this )
+                }]
+            });
+        },        
         getDistributeColumn : function() {
             return new Ext.grid.ButtonColumn({
                 width : 110,
