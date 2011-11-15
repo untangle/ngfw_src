@@ -379,6 +379,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         gridGroups : null,
         panelAdvanced : null,
         gridClosedSessionsEventLog : null,
+        gridActiveClientsEventLog : null,
         initComponent : function(container, position) {
             this.configState=this.getRpcNode().getConfigState();
             this.buildStatus();
@@ -549,18 +550,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             });
         },
 
-        // overwrite default event manager
-        getEventManager : function() {
-            if (this.node.nodeContext.rpcNode.eventManager === undefined) {
-                this.node.nodeContext.rpcNode.eventManager = this.node.nodeContext.rpcNode.getClientConnectEventManager();
-            }
-            return this.node.nodeContext.rpcNode.eventManager;
-        },
-
         // Closed Sessions Event Log
         buildClosedSessionsEventLog : function() {
             this.gridClosedSessionsEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
+                eventManagerFn : this.getRpcNode().getClientConnectEventManager(),
                 name : "Closed Sessions Event Log",
                 title : i18n._('Closed Sessions Event Log'),
                 fields : [{
@@ -654,6 +648,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         buildActiveClientsEventLog : function() {
             this.gridActiveClientsEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
+                eventManagerFn : this.getRpcNode().getClientConnectEventManager(),
                 name : "Active Clients Event Log",
                 title : i18n._('Active Clients Event Log'),
                 fields : [{
@@ -666,7 +661,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name : 'duration',
                     mapping : 'start',
                     convert : function(val) {
-                        return "100"
+                        return "TODO:snd-start?"
                         //return parseFloat(val) / 60;
                     }
                 }, {
