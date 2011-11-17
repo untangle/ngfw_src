@@ -1036,7 +1036,7 @@ SELECT time_stamp, hname, uid, wf_%s_category,
        host(s_server_addr), c_client_addr::text
 FROM reports.n_http_events
 WHERE time_stamp >= %s AND time_stamp < %s
-AND wf_%s_flagged OR wf_%s_blocked
+AND (wf_%s_flagged OR wf_%s_blocked)
 """ % (self.__vendor_name, self.__vendor_name, self.__vendor_name,
        DateFromMx(start_date), DateFromMx(end_date),
        self.__vendor_name, self.__vendor_name)
