@@ -838,9 +838,14 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         this.sandbox.setSiteList( parameters );
     }
 
-    public EventManager<ClientConnectEvent> getClientConnectEventManager()
+    public EventManager<ClientConnectEvent> getClientActiveEventManager()
     {
-        return this.openVpnMonitor.getClientConnectLogger();
+        return this.openVpnMonitor.getClientActiveLogger();
+    }
+
+    public EventManager<ClientConnectEvent> getClientClosedEventManager()
+    {
+        return this.openVpnMonitor.getClientClosedLogger();
     }
 
     public EventManager<VpnStatisticEvent> getVpnStatisticEventManager()

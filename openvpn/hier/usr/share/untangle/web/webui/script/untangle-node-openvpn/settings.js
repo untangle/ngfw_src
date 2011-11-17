@@ -554,7 +554,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         buildClosedSessionsEventLog : function() {
             this.gridClosedSessionsEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                eventManagerFn : this.getRpcNode().getClientConnectEventManager(),
+                eventManagerFn : this.getRpcNode().getClientClosedEventManager(),
                 name : "Closed Sessions Event Log",
                 title : i18n._('Closed Sessions Event Log'),
                 fields : [{
@@ -648,7 +648,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         buildActiveClientsEventLog : function() {
             this.gridActiveClientsEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                eventManagerFn : this.getRpcNode().getClientConnectEventManager(),
+                eventManagerFn : this.getRpcNode().getClientActiveEventManager(),
                 name : "Active Clients Event Log",
                 title : i18n._('Active Clients Event Log'),
                 fields : [{

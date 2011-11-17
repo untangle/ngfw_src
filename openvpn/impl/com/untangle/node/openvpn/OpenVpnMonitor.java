@@ -63,7 +63,8 @@ class OpenVpnMonitor implements Runnable
     private static final String ACTIVE_SESSIONS_REPO_NAME = I18nUtil.marktr("Active Clients");
     private static final String ALL_SESSIONS_REPO_NAME = I18nUtil.marktr("All Clients");
 
-    private final EventLogger<ClientConnectEvent> clientConnectLogger;
+    private final EventLogger<ClientConnectEvent> clientActiveLogger;
+    private final EventLogger<ClientConnectEvent> clientClosedLogger;
     private final EventLogger<VpnStatisticEvent> vpnStatsDistLogger;
     private final EventLogger<ClientDistributionEvent> clientDistLogger;
     private final Logger logger = Logger.getLogger( this.getClass());
@@ -93,12 +94,11 @@ class OpenVpnMonitor implements Runnable
     OpenVpnMonitor( VpnNodeImpl node )
     {
         this.vpnStatsDistLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
-        this.clientConnectLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
+        this.clientActiveLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
+        this.clientClosedLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
         this.clientDistLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
-        //Add repositories to make UI log reading from cache happen
-        //        clientConnectLogger.addEventRepository(new AllEventsCache(clientConnectLogger));//For "all" events
-        clientConnectLogger.addEventRepository(new ActiveEventCache());//For "open" events
-        clientConnectLogger.addSimpleEventFilter(new ClientConnectEventClosedFilter());//For "closed" events
+        clientActiveLogger.addEventRepository(new ActiveEventCache());//For "open" events
+        clientClosedLogger.addSimpleEventFilter(new ClientConnectEventClosedFilter());//For "closed" events
 
         this.localContext = LocalUvmContextFactory.context();
         this.node = node;
@@ -108,8 +108,16 @@ class OpenVpnMonitor implements Runnable
      * Accessor for the ClientConnectLogger, for the impl
      * to pass to the UI
      */
-    EventLogger<ClientConnectEvent> getClientConnectLogger() {
-        return clientConnectLogger;
+    EventLogger<ClientConnectEvent> getClientActiveLogger() {
+        return clientActiveLogger;
+    }
+
+    /**
+     * Accessor for the ClientConnectLogger, for the impl
+     * to pass to the UI
+     */
+    EventLogger<ClientConnectEvent> getClientClosedLogger() {
+        return clientClosedLogger;
     }
 
 
@@ -549,7 +557,8 @@ class OpenVpnMonitor implements Runnable
 
     private void logClientConnectEvent(Stats stats) {
         if( stats.logged ) return;
-        clientConnectLogger.log( stats.sessionEvent );
+        // FIXME ?
+        clientActiveLogger.log( stats.sessionEvent );
         stats.logged = true;
     }
 
