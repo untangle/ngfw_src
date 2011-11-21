@@ -5044,7 +5044,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
 
         var loadActiveDirectory = this.loadActiveDirectoryUsers && main.isNodeRunning("untangle-node-adconnector");
         if (loadActiveDirectory){
-            main.getActiveDirectory().getUserEntries(function(result, exception) {
+            rpc.nodeManager.node("untangle-node-adconnector").getActiveDirectoryManager().getActiveDirectoryUserEntries(function(result, exception) {
                 if(Ung.Util.handleException(exception, function() {
                     Ext.MessageBox.alert(i18n._("Warning"), i18n._("There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again."), function(){
                         this.populateCallback();
@@ -5052,13 +5052,13 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 }.createDelegate(this),"noAlert")) return;
                 this.userEntries=this.userEntries.concat(result.list);
                 this.populateCallback();
-            }.createDelegate(this),"MS_ACTIVE_DIRECTORY");
+            }.createDelegate(this));
         } else {
             this.populateSemaphore--;
         }
 
         if (loadActiveDirectory && !this.singleSelectUser){
-            main.getActiveDirectory().getGroupEntries(function(result, exception) {
+            rpc.nodeManager.node("untangle-node-adconnector").getActiveDirectoryManager().getActiveDirectoryGroupEntries(function(result, exception) {
                 if( Ung.Util.handleException(exception, function() {
                     Ext.MessageBox.alert(i18n._("Warning"), i18n._("There was a problem refreshing Active Directory groups.  Please check your Active Directory settings and then try again."), function(){
                         this.populateCallback();
@@ -5067,7 +5067,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 
                 this.userEntries=this.userEntries.concat(result.list);
                 this.populateCallback();
-            }.createDelegate(this),"MS_ACTIVE_DIRECTORY");
+            }.createDelegate(this),false);
         } else {
             this.populateSemaphore--;
         }
