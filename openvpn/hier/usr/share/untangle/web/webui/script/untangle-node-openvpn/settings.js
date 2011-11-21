@@ -655,13 +655,10 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name : 'start',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'end',
-                    sortType : Ung.SortTypes.asTimestamp
-                }, {
                     name : 'duration',
                     mapping : 'start',
                     convert : function(val) {
-                        return "TODO:snd-start?"
+                        return "";
                         //return parseFloat(val) / 60;
                     }
                 }, {
@@ -687,14 +684,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width : Ung.Util.timestampFieldWidth,
                     sortable : true,
                     dataIndex : 'start',
-                    renderer : function(value) {
-                        return i18n.timestampFormat(value);
-                    }.createDelegate( this )
-                }, {
-                    header : this.i18n._("end time"),
-                    width : Ung.Util.timestampFieldWidth,
-                    sortable : true,
-                    dataIndex : 'end',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }.createDelegate( this )
