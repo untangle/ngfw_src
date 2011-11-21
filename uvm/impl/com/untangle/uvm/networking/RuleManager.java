@@ -29,8 +29,8 @@ public class RuleManager
 
     private boolean isShutdown = false;
 
-    private static final Object lock= new Object();
-
+    private static final Object lock = new Object();
+    
     /* ---------------------- PACKAGE ---------------------- */
 
     /* Call the script to generate all of the iptables rules */
