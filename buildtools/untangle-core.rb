@@ -1,28 +1,8 @@
 # -*-ruby-*-
-# $HeadURL$
-# Copyright (c) 2003-2007 Untangle, Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, version 2,
-# as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful, but
-# AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
-# NONINFRINGEMENT.  See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
-#
-
-# Robert Scott <rbscott@untangle.com>
-# Aaron Read <amread@untangle.com>
+# $Id$
 
 ## Require all of the sub packages.
 ## Done manually because order matters.
-## XXX Could create a new helper method that sets a prefix directory before
-## calling require and then unsets it afterwards.
 require "#{SRC_HOME}/libmvutil/package.rb"
 require "#{SRC_HOME}/libnetcap/package.rb"
 require "#{SRC_HOME}/libvector/package.rb"
@@ -37,7 +17,6 @@ require "#{SRC_HOME}/http-casing/package.rb"
 require "#{SRC_HOME}/mail-casing/package.rb"
 require "#{SRC_HOME}/spyware/package.rb"
 require "#{SRC_HOME}/router/package.rb"
-
 require "#{SRC_HOME}/shield/package.rb"
 require "#{SRC_HOME}/firewall/package.rb"
 require "#{SRC_HOME}/openvpn/package.rb"
@@ -51,14 +30,14 @@ require "#{SRC_HOME}/virus-base/package.rb"
 require "#{SRC_HOME}/clam-base/package.rb"
 require "#{SRC_HOME}/webfilter-base/package.rb"
 
-## SPAM based nodes
+## Spam based nodes
 require "#{SRC_HOME}/phish/package.rb"
 require "#{SRC_HOME}/spamassassin/package.rb"
 
 ## Webfilter based nodes
 require "#{SRC_HOME}/webfilter/package.rb"
 
-# Ad Blocker node
+## Ad Blocker node
 require "#{SRC_HOME}/adblocker/package.rb"
 
 ## Virus based nodes

@@ -1,23 +1,4 @@
 # -*-ruby-*-
-# $HeadURL$
-# Copyright (c) 2003-2007 Untangle, Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, version 2,
-# as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful, but
-# AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
-# NONINFRINGEMENT.  See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
-#
-
-# Robert Scott <rbscott@untangle.com>
-# Aaron Read <amread@untangle.com>
 
 class NodeBuilder
 
@@ -28,14 +9,12 @@ class NodeBuilder
 
   def NodeBuilder.makeCasing(buildEnv, name, location, depsImpl = [],
                              depsLocalApi = [], baseHash = {})
-    makePackage(buildEnv, name, location, depsImpl, depsLocalApi,
-                baseHash)
+    makePackage(buildEnv, name, location, depsImpl, depsLocalApi, baseHash)
   end
 
   def NodeBuilder.makeBase(buildEnv, name, location, depsImpl = [],
                            depsLocalApi = [], baseHash = {})
-    makePackage(buildEnv, name, location, depsImpl, depsLocalApi,
-                baseHash)
+    makePackage(buildEnv, name, location, depsImpl, depsLocalApi, baseHash)
   end
 
   private
@@ -53,26 +32,26 @@ class NodeBuilder
     localApiJar = nil
 
     ## If there is a local API, build it first
-    localApi = FileList["#{home}/#{dirName}/localapi/**/*.java"]
+    localApi = FileList["#{home}/#{dirName}/api/**/*.java"]
     baseHash.each_pair do |bd, bn|
-      localApi += FileList["#{bn.buildEnv.home}/#{bd}/localapi/**/*.java"]
+      localApi += FileList["#{bn.buildEnv.home}/#{bd}/api/**/*.java"]
     end
 
     if (localApi.length > 0)
       deps  = baseJarsLocalApi + depsLocalApi
 
       paths = baseHash.map { |bd, bn| ["#{bn.buildEnv.home}/#{bd}/api",
-          "#{bn.buildEnv.home}/#{bd}/localapi"] }.flatten
+          "#{bn.buildEnv.home}/#{bd}/api"] }.flatten
 
-      localApiJar = JarTarget.build_target(node, deps, 'localapi',
-                                          ["#{home}/#{dirName}/api", "#{home}/#{dirName}/localapi"] + paths)
+      localApiJar = JarTarget.build_target(node, deps, 'api',
+                                          ["#{home}/#{dirName}/api"] + paths)
       buildEnv.installTarget.install_jars(localApiJar, "#{node.distDirectory}/usr/share/untangle/toolbox")
     end
 
-    ## Build the IMPL jar.
+    ## Build the impl jar.
     deps = baseJarsImpl + depsImpl
 
-    ## Make the IMPL dependent on the localapi if a jar exists.
+    ## Make the impl dependent on the api if a jar exists.
     directories= ["#{home}/#{dirName}/impl"]
     if (localApiJar.nil?)
       ## Only include the API if the localJarApi doesn't exist

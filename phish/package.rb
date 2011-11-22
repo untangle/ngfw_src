@@ -23,10 +23,10 @@ clam = BuildEnv::SRC['untangle-base-clam']
 phish = BuildEnv::SRC['untangle-node-phish']
 
 NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-phish', 'phish',
-                     [mail['localapi'], http['localapi']],
-                     [], { 'spam-base' => spam, 'clam-base' => clam })
+                     [mail['api'], http['api']],
+                     [mail['api'], http['api']], { 'spam-base' => spam, 'clam-base' => clam })
 
-deps = [http['localapi'], phish['impl'], spam['impl']]
+deps = [http['api'], phish['impl'], phish['api'], spam['impl']]
 
 ServletBuilder.new(phish, 'com.untangle.node.phish.jsp',
                    "./phish/servlets/phish", [],

@@ -1,9 +1,5 @@
 # -*-ruby-*-
 
-implDeps = []
+mail = BuildEnv::SRC['untangle-casing-mail']
 
-%w(untangle-casing-mail).each do |c|
-  implDeps << BuildEnv::SRC[c]['localapi']
-end
-
-NodeBuilder.makeBase(BuildEnv::SRC, 'untangle-base-spam', 'spam-base', implDeps)
+NodeBuilder.makeBase(BuildEnv::SRC, 'untangle-base-spam', 'spam-base', [mail["api"]], [mail["api"]])
