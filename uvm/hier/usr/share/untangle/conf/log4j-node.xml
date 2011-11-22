@@ -186,6 +186,9 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.node.classd">
+    <priority value="DEBUG"/>
+  </category>
 
   <category name="com.untangle.node">
     <priority value="INFO"/>

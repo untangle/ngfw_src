@@ -34,6 +34,7 @@ public class License implements Serializable
     public static final String SITEFILTER = "untangle-node-sitefilter";
     public static final String SPLITD = "untangle-node-splitd";
     public static final String WEBCACHE = "untangle-node-webcache";
+    public static final String CLASSD = "untangle-node-classd";
     
     /** Identifier for the product this license is for */
     private String name;
