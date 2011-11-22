@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-09 16:23-0800\n"
+"POT-Creation-Date: 2010-11-10 18:15-0800\n"
 "PO-Revision-Date: 2010-03-31 07:13-0700\n"
 "Last-Translator: Thomas Prévot <prevot.thomas@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -187,126 +187,143 @@ msgstr "Evènements bloqués"
 msgid "All Events"
 msgstr "Tous les évènements"
 
-#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:97
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:95
 msgid "Sessions scanned"
 msgstr "Sessions scannées"
 
-#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:97
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:95
 msgid "SCAN"
 msgstr "SCANNER"
 
-#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:98
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:96
 msgid "Sessions logged"
 msgstr "Sessions enregistrées"
 
-#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:98
-msgid "DETECT"
-msgstr "DETECTER"
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:96
+msgid "LOG"
+msgstr ""
 
-#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:99
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:97
 msgid "Sessions blocked"
 msgstr "Sessions bloquées"
 
-#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:99
+#: ../impl/com/untangle/node/ips/IpsNodeImpl.java:97
 msgid "BLOCK"
 msgstr "BLOQUER"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:74
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:76
 msgid "Summary Report"
 msgstr "Rapport sommaire"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:144
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:146
 msgid "scanned"
 msgstr "a scanné"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:145
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:147
 msgid "sessions and detected"
 msgstr "sessions et détecté"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:146
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:148
 msgid "attacks of which"
 msgstr "attaques, dont"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:147
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:149
 msgid "were blocked"
 msgstr "ont été bloquées"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:191
-msgid "Top Ten Attacks By Hits"
-msgstr "Top 10 des Attaques par Hits"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:193
+msgid "Top Attacks (by Hits)"
+msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:232
-msgid "hits"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:234
+#, fuzzy
+msgid "Hits"
 msgstr "hits"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:239
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:241
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:250
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:312
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:316
 msgid "Attacks"
 msgstr "Attaques"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:240
-msgid "Hits per Day"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:242
+#, fuzzy
+msgid "Hits Per Day"
 msgstr "Hits par Jour"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:248
-msgid "Daily Attacks"
-msgstr "Attaques quotidiennes"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:302
+msgid "Avg Attacks Blocked"
+msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:289
-msgid "Avg Attacks"
-msgstr "Moyenne d'attaques"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:304
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:307
+#, fuzzy
+msgid "Blocks"
+msgstr "Bloque"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:289
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:291
-msgid "attacks/day"
-msgstr "attaques/jour"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:306
+msgid "Max Attacks Blocked"
+msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:291
-msgid "Max Attacks"
-msgstr "Max d'attaques"
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:349
-msgid "Date"
-msgstr "Date"
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:350
-msgid "Attacks per Day"
-msgstr "Attaques par jour"
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:354
-msgid "attacks"
-msgstr "attaques"
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:360
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:324
 msgid "Attack Events"
 msgstr "Evènements d'Attaques"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:366
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:330
 msgid "Time"
 msgstr "Heure"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:369
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:333
 msgid "Client"
 msgstr "Client"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:371
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:335
 msgid "User"
 msgstr "Utilisateur"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:373
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:337
 msgid "SID:description"
 msgstr "SID:description"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:374
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:338
 msgid "Blocked"
 msgstr "Bloqué(es)"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:375
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:339
 msgid "Server"
 msgstr "Serveur"
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:376
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_ips.py:340
 msgid "Port"
 msgstr "Port"
+
+#~ msgid "Top Ten Attacks By Hits"
+#~ msgstr "Top 10 des Attaques par Hits"
+
+#~ msgid "Daily Attacks"
+#~ msgstr "Attaques quotidiennes"
+
+#~ msgid "Avg Attacks"
+#~ msgstr "Moyenne d'attaques"
+
+#~ msgid "attacks/day"
+#~ msgstr "attaques/jour"
+
+#~ msgid "Max Attacks"
+#~ msgstr "Max d'attaques"
+
+#~ msgid "Date"
+#~ msgstr "Date"
+
+#~ msgid "Attacks per Day"
+#~ msgstr "Attaques par jour"
+
+#~ msgid "attacks"
+#~ msgstr "attaques"
+
+#~ msgid "DETECT"
+#~ msgstr "DETECTER"
 
 #~ msgid "max attacks (7-days)"
 #~ msgstr "max attaques (7 jours)"
