@@ -20,7 +20,6 @@ import com.untangle.uvm.node.ParseException;
 
 import com.untangle.uvm.ArgonException;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 
 public class LogIteration

@@ -9,7 +9,6 @@ import com.untangle.jnetcap.Netcap;
 import com.untangle.jnetcap.PortRange;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;

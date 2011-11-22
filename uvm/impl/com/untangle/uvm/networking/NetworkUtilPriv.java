@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.localapi.ArgonInterface;
 import com.untangle.uvm.node.IPNullAddr;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
