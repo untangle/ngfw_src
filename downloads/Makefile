@@ -29,7 +29,7 @@ tarballs_gz=apache-ant-1.6.5.tar.gz \
 tarballs_bz2=postgres-jdbc-7.4_215.tar.bz2 
 
 zips=javamail-1_3_3_01.zip xstream-distribution-1.3-bin.zip \
-	jabsorb-1.3.1-src.zip 
+	jabsorb-1.2.2-src.zip 
 
 jars=hibernate-client.jar gettext-commons-0.9.1.jar
 
@@ -41,7 +41,7 @@ packages+=$(patsubst %.tar.gz,$(OUTPUT_DIRECTORY)/%,$(tarballs_gz))
 packages+=$(patsubst %.tar.bz2,$(OUTPUT_DIRECTORY)/%,$(tarballs_bz2))
 packages+=$(patsubst %.jar,$(OUTPUT_DIRECTORY)/%,$(jars))
 
-$(OUTPUT_DIRECTORY)/jabsorb-1.3.1-src: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5 
+$(OUTPUT_DIRECTORY)/jabsorb-1.2.2-src: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5 jabsorb-1.2.2-src.patch
 $(OUTPUT_DIRECTORY)/AjaxTK-3.1.1_GA_394-src: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5
 
 all: $(packages) ;

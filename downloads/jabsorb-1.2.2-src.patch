@@ -1,0 +1,824 @@
+diff -Naur jabsorb-1.2.2/build.xml jabsorb-1.2.2.patched/build.xml
+--- jabsorb-1.2.2/build.xml	2008-01-16 17:47:54.000000000 -0800
++++ jabsorb-1.2.2.patched/build.xml	2010-02-16 19:07:59.000000000 -0800
+@@ -53,13 +53,14 @@
+   </target>
+ 
+   <target name="compile" depends="init,init-build" description="Compiles the source into the build directory">
+-    <javac debug="true" source="1.4" srcdir="${src}" destdir="${build}">
++    <javac debug="true" source="1.5" srcdir="${src}" destdir="${build}">
+       <classpath refid="default-classpath" />
+     </javac>
+   </target>
+ 
+   <target name="dist" depends="compile,compress-web-content,init-build" description="Puts the compiled source into a jar">
+-    <jar destfile="${app-jar}" basedir="${build}" excludes="*~" />
++    <jar destfile="${app-jar}" basedir="${build}" excludes="*~" includes="org/jabsorb/**/*.class"/>
++    <jar destfile="json.jar" basedir="${build}" excludes="*~" includes="org/json/**/*.class"/>
+   </target>
+ 
+   <target name="test.init" depends="init" description="Makes directories needed for the test jsps">
+@@ -69,7 +70,7 @@
+   </target>
+ 
+   <target name="compile.test" depends="test.init, dist, init" description="Compiles the testing classes">
+-    <javac debug="true" source="1.4" srcdir="${test.src}" destdir="${test.classes}">
++    <javac debug="true" source="1.5" srcdir="${test.src}" destdir="${test.classes}">
+       <classpath>
+       	<path refid="jarClasspath" />
+         <fileset dir="${lib-test}">
+@@ -146,6 +147,7 @@
+   <target name="clean" depends="init" description="Cleans all files produced by ant">
+     <delete file="${app-war}" />
+     <delete file="${app-jar}" />
++    <delete file="json.jar"/>
+     <delete file="${webapp}/WEB-INF/web.xml.out" />
+     <delete file="${webapp}/WEB-INF/web.xml.generated" />
+     <delete file="${webapp}/Test.java.txt" />
+diff -Naur jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2.patched/src/org/jabsorb/JSONRPCBridge.java
+--- jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java	2008-01-16 17:47:54.000000000 -0800
++++ jabsorb-1.2.2.patched/src/org/jabsorb/JSONRPCBridge.java	2010-02-16 19:07:59.000000000 -0800
+@@ -108,8 +108,18 @@
+  * <code>JSONRPCBridge.getGlobalBridge().registerClass("MyClass",
+  * com.example.MyClass.class);</code>
+  */
+-public class JSONRPCBridge implements Serializable
++public class JSONRPCBridge
+ {
++    public JSONRPCBridge()
++    {
++        try {
++            ser.registerDefaultSerializers();
++        }
++        catch (Exception e) {
++            e.printStackTrace();
++        }
++    }
++
+ 
+   /**
+    * Used to determine whether two methods match
+@@ -208,11 +218,6 @@
+   }
+ 
+   /**
+-   * Unique serialisation id. 
+-   */
+-  private final static long serialVersionUID = 2;
+-
+-  /**
+    * A simple transformer that makes no change
+    */
+   private static final ExceptionTransformer IDENTITY_EXCEPTION_TRANSFORMER = new ExceptionTransformer()
+@@ -242,18 +247,10 @@
+   /**
+    * Global JSONSerializer instance
+    */
+-  private static JSONSerializer ser = new JSONSerializer();
++  private JSONSerializer ser = new JSONSerializer();
+ 
+   static
+   {
+-    try
+-    {
+-      ser.registerDefaultSerializers();
+-    }
+-    catch (Exception e)
+-    {
+-      e.printStackTrace();
+-    }
+   }
+ 
+   /**
+@@ -269,11 +266,11 @@
+   }
+ 
+   /**
+-   * Get the global JSONSerializer object.
++   * Get the JSONSerializer object.
+    * 
+    * @return the global JSONSerializer object.
+    */
+-  public static JSONSerializer getSerializer()
++  public JSONSerializer getSerializer()
+   {
+     return ser;
+   }
+@@ -299,13 +296,13 @@
+   }
+ 
+   /**
+-   * Set the global JSONSerializer object.
++   * Set the JSONSerializer object.
+    * 
+-   * @param ser the global JSONSerializer object.
++   * @param ser the JSONSerializer object.
+    */
+-  public static void setSerializer(JSONSerializer ser)
++  public void setSerializer(JSONSerializer newValue)
+   {
+-    JSONRPCBridge.ser = ser;
++      this.ser = newValue;
+   }
+ 
+   /* Implementation */
+@@ -645,7 +642,6 @@
+           cbc.preInvokeCallback(context[i], itsThis, method, javaArgs);
+         }
+       }
+-
+       // Invoke the method
+       Object returnObj = method.invoke(itsThis, javaArgs);
+ 
+diff -Naur jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2.patched/src/org/jabsorb/JSONSerializer.java
+--- jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java	2008-01-16 17:47:54.000000000 -0800
++++ jabsorb-1.2.2.patched/src/org/jabsorb/JSONSerializer.java	2010-02-16 19:07:59.000000000 -0800
+@@ -718,7 +718,7 @@
+       try
+       {
+         className = ((JSONObject) o).getString("javaClass");
+-        return Class.forName(className);
++        return Class.forName(className,true,Thread.currentThread().getContextClassLoader());
+       }
+       catch (Exception e)
+       {
+@@ -746,9 +746,9 @@
+       {
+         if (compClazz.isArray())
+         {
+-          return Class.forName("[" + compClazz.getName());
++            return Class.forName("[" + compClazz.getName(),true,Thread.currentThread().getContextClassLoader());
+         }
+-        return Class.forName("[L" + compClazz.getName() + ";");
++        return Class.forName("[L" + compClazz.getName() + ";",true,Thread.currentThread().getContextClassLoader());
+       }
+       catch (ClassNotFoundException e)
+       {
+diff -Naur jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java jabsorb-1.2.2.patched/src/org/jabsorb/reflect/ClassAnalyzer.java
+--- jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java	2008-01-16 17:47:52.000000000 -0800
++++ jabsorb-1.2.2.patched/src/org/jabsorb/reflect/ClassAnalyzer.java	2010-02-16 19:07:59.000000000 -0800
+@@ -30,8 +30,11 @@
+ import java.lang.reflect.Modifier;
+ import java.util.ArrayList;
+ import java.util.HashMap;
++import java.util.HashSet;
+ import java.util.Iterator;
++import java.util.List;
+ import java.util.Map;
++import java.util.Set;
+ 
+ import org.jabsorb.localarg.LocalArgController;
+ import org.slf4j.Logger;
+@@ -106,21 +109,30 @@
+   private static ClassData analyzeClass(Class clazz)
+   {
+     log.info("analyzing " + clazz.getName());
+-    Method methods[] = clazz.getMethods();
++
++    List methods = new ArrayList();
++
++    for (Iterator i = interfaces(clazz).iterator(); i.hasNext(); ) {
++        Class iface = (Class)i.next();
++        Method[] ms = iface.getMethods();
++        for (int j = 0; j < ms.length; j++) {
++            methods.add(ms[j]);
++        }
++    }
++
+     ClassData cd = new ClassData();
+     cd.clazz = clazz;
+ 
+     // Create temporary method map
+     HashMap staticMethodMap = new HashMap();
+     HashMap methodMap = new HashMap();
+-    for (int i = 0; i < methods.length; i++)
+-    {
+-      Method method = methods[i];
++    for (Iterator i = methods.iterator(); i.hasNext(); ) {
++        Method method = (Method)i.next();
+       if (method.getDeclaringClass() == Object.class)
+       {
+         continue;
+       }
+-      int mod = methods[i].getModifiers();
++      int mod = method.getModifiers();
+       if (!Modifier.isPublic(mod))
+       {
+         continue;
+@@ -192,4 +204,31 @@
+     }
+     return cd;
+   }
++
++
++    private static Set interfaces(Class c)
++    {
++        Set s = new HashSet();
++        return interfaces(c, s);
++    }
++
++    private static Set interfaces(Class c, Set s)
++    {
++        // XXX Is there are more structural way of accomplishing this
++        if (c.isInterface() && !c.getName().endsWith("Priv")) {
++            s.add(c);
++        }
++
++        Class[] ifaces = c.getInterfaces();
++        for (int i = 0; i < ifaces.length; i++) {
++            interfaces(ifaces[i], s);
++        }
++
++        Class superclass = c.getSuperclass();
++        if (null != superclass) {
++            interfaces(superclass, s);
++        }
++
++        return s;
++    }
+ }
+diff -Naur jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java jabsorb-1.2.2.patched/src/org/jabsorb/serializer/impl/BooleanSerializer.java
+--- jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2008-01-16 17:47:54.000000000 -0800
++++ jabsorb-1.2.2.patched/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2010-03-09 16:22:20.000000000 -0800
+@@ -97,6 +97,11 @@
+     {
+       returnValue = (Boolean) jso;
+     }
++    else if (clazz == Boolean.class)
++    {
++      returnValue = (Boolean)jso;
++    }
++
+ 
+     state.setSerialized(jso, returnValue);
+     return returnValue;
+diff -Naur jabsorb-1.2.2/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java jabsorb-1.2.2.patched/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java
+--- jabsorb-1.2.2/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java	1969-12-31 16:00:00.000000000 -0800
++++ jabsorb-1.2.2.patched/src/org/jabsorb/serializer/impl/JSONBeanSerializer.java	2010-02-16 19:07:59.000000000 -0800
+@@ -0,0 +1,461 @@
++/*
++ * jabsorb - a Java to JavaScript Advanced Object Request Broker
++ * http://www.jabsorb.org
++ *
++ * Copyright 2007 The jabsorb team
++ *
++ * based on original code from
++ * JSON-RPC-Java - a JSON-RPC to Java Bridge with dynamic invocation
++ *
++ * Copyright Metaparadigm Pte. Ltd. 2004.
++ * Michael Clark <michael@metaparadigm.com>
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *    http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ *
++ */
++
++package org.jabsorb.serializer.impl;
++
++
++import java.beans.BeanInfo;
++import java.beans.IntrospectionException;
++import java.beans.Introspector;
++import java.beans.PropertyDescriptor;
++import java.lang.reflect.InvocationTargetException;
++import java.lang.reflect.Method;
++import java.util.HashMap;
++import java.util.Iterator;
++import java.util.Map;
++
++import org.json.JSONBean;
++
++import org.jabsorb.JSONSerializer;
++import org.jabsorb.serializer.AbstractSerializer;
++import org.jabsorb.serializer.MarshallException;
++import org.jabsorb.serializer.ObjectMatch;
++import org.jabsorb.serializer.SerializerState;
++import org.jabsorb.serializer.UnmarshallException;
++import org.json.JSONException;
++import org.json.JSONObject;
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
++
++/**
++ * Serialises java beans that are known to have readable and writable properties
++ */
++public class JSONBeanSerializer extends AbstractSerializer
++{
++  /**
++   * Stores the readable and writable properties for the Bean.
++   */
++  protected static class BeanData
++  {
++    // TODO: Legacy comment. WTF?
++    // in absence of getters and setters, these fields are
++    // public to allow subclasses to access.
++    /**
++     * The bean info for a certain bean
++     */
++    public BeanInfo beanInfo;
++
++    /**
++     * The readable properties of the bean.
++     */
++    public Map readableProps;
++
++    /**
++     * The writable properties of the bean.
++     */
++    public Map writableProps;
++  }
++
++  /**
++   * The logger for this class
++   */
++  private final static Logger log = LoggerFactory
++      .getLogger(JSONBeanSerializer.class);
++
++  /**
++   * Caches analysed beans
++   */
++  private static HashMap beanCache = new HashMap();
++
++  /**
++   * Classes that this can serialise.
++   * 
++   * TODO: Yay for bloat!
++   */
++  private static Class[] _serializableClasses = new Class[] {};
++
++  /**
++   * Classes that this can serialise to.
++   * 
++   * TODO: Yay for bloat!
++   */
++  private static Class[] _JSONClasses = new Class[] {};
++
++  /**
++   * Analyses a bean, returning a BeanData with the data extracted from it.
++   * 
++   * @param clazz The class of the bean to analyse
++   * @return A populated BeanData
++   * @throws IntrospectionException If a problem occurs during getting the bean
++   *           info.
++   */
++  public static BeanData analyzeBean(Class clazz) throws IntrospectionException
++  {
++    log.info("analyzing " + clazz.getName());
++    BeanData bd = new BeanData();
++    bd.beanInfo = Introspector.getBeanInfo(clazz, Object.class);
++    PropertyDescriptor props[] = bd.beanInfo.getPropertyDescriptors();
++    bd.readableProps = new HashMap();
++    bd.writableProps = new HashMap();
++    for (int i = 0; i < props.length; i++)
++    {
++      if (props[i].getWriteMethod() != null)
++      {
++        bd.writableProps.put(props[i].getName(), props[i].getWriteMethod());
++      }
++      if (props[i].getReadMethod() != null)
++      {
++        bd.readableProps.put(props[i].getName(), props[i].getReadMethod());
++      }
++    }
++
++    for ( Method method : clazz.getMethods()) {
++        JSONBean.Getter getter = method.getAnnotation( JSONBean.Getter.class );
++        if ( getter != null ) {
++            String name = getter.property();
++            if ( name == null || name.length() == 0 ) name = method.getName();
++
++            bd.readableProps.put( name, method );
++        }
++
++        JSONBean.Setter setter = method.getAnnotation( JSONBean.Setter.class );
++        if ( setter != null ) {
++            String name = setter.property();
++            if ( name == null || name.length() == 0 ) name = method.getName();
++
++            bd.writableProps.put( name, method );
++        }
++    }
++    return bd;
++  }
++
++  /**
++   * Gets the bean data from cache if possible, otherwise analyses the bean.
++   * 
++   * @param clazz The class of the bean to analyse
++   * @return A populated BeanData
++   * @throws IntrospectionException If a problem occurs during getting the bean
++   *           info.
++   */
++  public static BeanData getBeanData(Class clazz) throws IntrospectionException
++  {
++    BeanData bd;
++    synchronized (beanCache)
++    {
++      bd = (BeanData) beanCache.get(clazz);
++      if (bd == null)
++      {
++        bd = analyzeBean(clazz);
++        beanCache.put(clazz, bd);
++      }
++    }
++    return bd;
++  }
++
++  public boolean canSerialize(Class clazz, Class jsonClazz)
++  {
++      return (!clazz.isArray() && !clazz.isPrimitive() && !clazz.isInterface() && (jsonClazz == null || jsonClazz == JSONObject.class)) && ( clazz.getAnnotation( JSONBean.Marker.class ) != null );
++  }
++
++  public Class[] getJSONClasses()
++  {
++    return _JSONClasses;
++  }
++
++  public Class[] getSerializableClasses()
++  {
++    return _serializableClasses;
++  }
++
++  public Object marshall(SerializerState state, Object p, Object o)
++      throws MarshallException
++  {
++    BeanData bd;
++    try
++    {
++      bd = getBeanData(o.getClass());
++    }
++    catch (IntrospectionException e)
++    {
++      throw new MarshallException(o.getClass().getName() +
++        " is not a bean", e);
++    }
++
++    JSONObject val = new JSONObject();
++    if (ser.getMarshallClassHints())
++    {
++      try
++      {
++        val.put("javaClass", o.getClass().getName());
++      }
++      catch (JSONException e)
++      {
++        throw new MarshallException(
++          "JSONException: " + e.getMessage(), e);
++      }
++    }
++    Iterator i = bd.readableProps.entrySet().iterator();
++    Object args[] = new Object[0];
++    Object result;
++    while (i.hasNext())
++    {
++      Map.Entry ent = (Map.Entry) i.next();
++      String prop = (String) ent.getKey();
++      Method getMethod = (Method) ent.getValue();
++      if (log.isDebugEnabled())
++      {
++        log.debug("invoking " + getMethod.getName() + "()");
++      }
++      try
++      {
++        result = getMethod.invoke(o, args);
++      }
++      catch (Throwable e)
++      {
++        if (e instanceof InvocationTargetException)
++        {
++          e = ((InvocationTargetException) e).getTargetException();
++        }
++        throw new MarshallException("bean " + o.getClass().getName()
++            + " can't invoke " + getMethod.getName() + ": " + e.getMessage(), e);
++      }
++      try
++      {
++        if (result != null || ser.getMarshallNullAttributes())
++        {
++          try
++          {
++            Object json = ser.marshall(state, o, result, prop);
++
++            // omit the object entirely if it's a circular reference or duplicate
++            // it will be regenerated in the fixups phase
++            if (JSONSerializer.CIRC_REF_OR_DUPLICATE != json)
++            {
++              val.put(prop, json);
++            }
++          }
++          catch (JSONException e)
++          {
++            throw new MarshallException(
++              "JSONException: " + e.getMessage(), e);
++          }
++        }
++      }
++      catch (MarshallException e)
++      {
++        throw new MarshallException("bean " + o.getClass().getName() + " "
++            + e.getMessage(), e);
++      }
++    }
++
++    return val;
++  }
++
++  public ObjectMatch tryUnmarshall(SerializerState state, Class clazz, Object o)
++      throws UnmarshallException
++  {
++    JSONObject jso = (JSONObject) o;
++    BeanData bd;
++    try
++    {
++      bd = getBeanData(clazz);
++    }
++    catch (IntrospectionException e)
++    {
++      throw new UnmarshallException(clazz.getName() + " is not a bean", e);
++    }
++
++    int match = 0;
++    int mismatch = 0;
++    Iterator i = bd.writableProps.entrySet().iterator();
++    while (i.hasNext())
++    {
++      Map.Entry ent = (Map.Entry) i.next();
++      String prop = (String) ent.getKey();
++      if (jso.has(prop))
++      {
++        match++;
++      }
++      else
++      {
++        mismatch++;
++      }
++    }
++    if (match == 0)
++    {
++      throw new UnmarshallException("bean has no matches");
++    }
++
++    // create a concrete ObjectMatch that is always returned in order to satisfy circular reference requirements
++    ObjectMatch returnValue = new ObjectMatch(-1);
++    state.setSerialized(o, returnValue);
++
++    ObjectMatch m = null;
++    ObjectMatch tmp;
++    i = jso.keys();
++    while (i.hasNext())
++    {
++      String field = (String) i.next();
++      Method setMethod = (Method) bd.writableProps.get(field);
++      if (setMethod != null)
++      {
++        try
++        {
++          Class param[] = setMethod.getParameterTypes();
++          if (param.length != 1)
++          {
++            throw new UnmarshallException("bean " + clazz.getName()
++                + " method " + setMethod.getName() + " does not have one arg");
++          }
++          tmp = ser.tryUnmarshall(state, param[0], jso.get(field));
++          if (m == null)
++          {
++            m = tmp;
++          }
++          else
++          {
++            m = m.max(tmp);
++          }
++        }
++        catch (UnmarshallException e)
++        {
++          throw new UnmarshallException("bean " + clazz.getName() + " "
++              + e.getMessage(), e);
++        }
++        catch (JSONException e)
++        {
++          throw new UnmarshallException("bean " + clazz.getName() + " "
++              + e.getMessage(), e);
++        }
++      }
++      else
++      {
++        mismatch++;
++      }
++    }
++    if (m != null)
++    {
++      returnValue.setMismatch(m.max(new ObjectMatch(mismatch)).getMismatch());
++    }
++    else
++    {
++      returnValue.setMismatch(mismatch);
++    }
++    return returnValue;
++  }
++
++  public Object unmarshall(SerializerState state, Class clazz, Object o)
++      throws UnmarshallException
++  {
++    JSONObject jso = (JSONObject) o;
++    BeanData bd;
++    try
++    {
++      bd = getBeanData(clazz);
++    }
++    catch (IntrospectionException e)
++    {
++      throw new UnmarshallException(clazz.getName() + " is not a bean", e);
++    }
++    if (log.isDebugEnabled())
++    {
++      log.debug("instantiating " + clazz.getName());
++    }
++    Object instance;
++    try
++    {
++      instance = clazz.newInstance();
++    }
++    catch (InstantiationException e)
++    {
++      throw new UnmarshallException(
++        "could not instantiate bean of type " + 
++        clazz.getName() + ", make sure it has a no argument " +
++        "constructor and that it is not an interface or " +
++        "abstract class", e);
++    }
++    catch (IllegalAccessException e)
++    {
++      throw new UnmarshallException(
++        "could not instantiate bean of type " + 
++        clazz.getName(), e);
++    }
++    catch (RuntimeException e)
++    {
++      throw new UnmarshallException(
++        "could not instantiate bean of type " + 
++        clazz.getName(), e);
++    }
++    state.setSerialized(o, instance);
++    Object invokeArgs[] = new Object[1];
++    Object fieldVal;
++    Iterator i = jso.keys();
++    while (i.hasNext())
++    {
++      String field = (String) i.next();
++      Method setMethod = (Method) bd.writableProps.get(field);
++      if (setMethod != null)
++      {
++        try
++        {
++          Class param[] = setMethod.getParameterTypes();
++          fieldVal = ser.unmarshall(state, param[0], jso.get(field));
++        }
++        catch (UnmarshallException e)
++        {
++          throw new UnmarshallException(
++            "could not unmarshall field \"" + field + "\" of bean " + 
++            clazz.getName(), e);
++        }
++        catch (JSONException e)
++        {
++          throw new UnmarshallException(
++              "could not unmarshall field \"" + field + "\" of bean " + 
++              clazz.getName(), e);
++        }
++        if (log.isDebugEnabled())
++        {
++          log.debug("invoking " + setMethod.getName() + "(" + fieldVal + ")");
++        }
++        invokeArgs[0] = fieldVal;
++        try
++        {
++          setMethod.invoke(instance, invokeArgs);
++        }
++        catch (Throwable e)
++        {
++          if (e instanceof InvocationTargetException)
++          {
++            e = ((InvocationTargetException) e).getTargetException();
++          }
++          throw new UnmarshallException("bean " + clazz.getName()
++              + "can't invoke " + setMethod.getName() + ": " + e.getMessage(), e);
++        }
++      }
++    }
++    return instance;
++  }
++}
+diff -Naur jabsorb-1.2.2/src/org/jabsorb/serializer/impl/SetSerializer.java jabsorb-1.2.2.patched/src/org/jabsorb/serializer/impl/SetSerializer.java
+--- jabsorb-1.2.2/src/org/jabsorb/serializer/impl/SetSerializer.java	2008-01-16 17:47:54.000000000 -0800
++++ jabsorb-1.2.2.patched/src/org/jabsorb/serializer/impl/SetSerializer.java	2010-03-09 14:30:57.000000000 -0800
+@@ -117,7 +117,13 @@
+       while (i.hasNext())
+       {
+         key = i.next();
+-        String keyString = key.toString();  // only support String keys
++        String keyString = null;
++        if ( key instanceof KeyMaker ) {
++            keyString = ((KeyMaker)key).makeKey();
++        } else {
++            keyString = key.toString();  // only support String keys
++        }
++        
+         Object json = ser.marshall(state, setdata, key, keyString);
+ 
+         // omit the object entirely if it's a circular reference or duplicate
+@@ -281,4 +287,9 @@
+     return abset;
+   }
+ 
++    /* The keymaker class is used to add more reasonable set keys to a class */
++    public static interface KeyMaker {
++        /* Build a key for this object */
++        public String makeKey();
++    }
+ }
+diff -Naur jabsorb-1.2.2/src/org/json/JSONBean.java jabsorb-1.2.2.patched/src/org/json/JSONBean.java
+--- jabsorb-1.2.2/src/org/json/JSONBean.java	1969-12-31 16:00:00.000000000 -0800
++++ jabsorb-1.2.2.patched/src/org/json/JSONBean.java	2010-02-16 19:07:59.000000000 -0800
+@@ -0,0 +1,59 @@
++/*
++Copyright (c) 2008
++
++Permission is hereby granted, free of charge, to any person obtaining a copy
++of this software and associated documentation files (the "Software"), to deal
++in the Software without restriction, including without limitation the rights
++to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++copies of the Software, and to permit persons to whom the Software is
++furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in all
++copies or substantial portions of the Software.
++
++The Software shall be used for Good, not Evil.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++SOFTWARE.
++*/
++
++package org.json;
++
++import java.lang.annotation.ElementType;
++import java.lang.annotation.Inherited;
++import java.lang.annotation.Retention;
++import java.lang.annotation.RetentionPolicy;
++import java.lang.annotation.Target;
++
++public class JSONBean
++{
++    @Target({ElementType.TYPE})
++    @Inherited
++    @Retention(RetentionPolicy.RUNTIME)
++    public static @interface Marker
++    {
++    }
++
++    @Target({ElementType.METHOD})
++    @Retention(RetentionPolicy.RUNTIME)
++    public static @interface Getter
++    {
++        /* Name of the property to serialize this value to, use "" to default to the name of the
++         * property, (minus get if it follows the bean pattern) */
++        String property() default "";
++    }
++
++    @Target({ElementType.METHOD})
++    @Retention(RetentionPolicy.RUNTIME)
++    public static @interface Setter
++    {
++        /* Name of the property to serialize this value from, use "" to default to the name of the
++         * property, (minus set if it follows the bean pattern) */
++        String property() default "";
++    }
++}
+diff -urN jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java jabsorb-1.2.2-patched/src/org/jabsorb/serializer/ObjectMatch.java
+--- jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java   2008-01-16 17:47:54.000000000 -0800
++++ jabsorb-1.2.2-patched/src/org/jabsorb/serializer/ObjectMatch.java   2010-04-16 16:43:10.000000000 -0700
+@@ -102,6 +102,10 @@
+    */
+   public ObjectMatch max(ObjectMatch m)
+   {
++      if (m == null)
++          {
++              return this;
++          }
+     if (this.mismatch > m.mismatch)
+     {
+       return this;
