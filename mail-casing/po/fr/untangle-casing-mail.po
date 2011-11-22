@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-15 14:27-0700\n"
+"POT-Creation-Date: 2010-11-10 18:15-0800\n"
 "PO-Revision-Date: 2009-11-02 01:22-0800\n"
 "Last-Translator: Thierry D'AMBROSIO <thierry@dambrosio.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,14 +33,14 @@ msgid "Move to Inbox (0  messages)"
 msgstr "Déplacer dans la boite de réception (0  messages)"
 
 #: ../servlets/quarantine/root/quarantine.js:255
+#: ../servlets/quarantine/root/quarantine.js:422
+msgid "Move to Inbox & Add to Safelist (0  Senders)"
+msgstr ""
+
+#: ../servlets/quarantine/root/quarantine.js:262
 #: ../servlets/quarantine/root/quarantine.js:404
 msgid "Delete (0  messages)"
 msgstr "Effacer (0  messages)"
-
-#: ../servlets/quarantine/root/quarantine.js:262
-#: ../servlets/quarantine/root/quarantine.js:422
-msgid "Add to Safelist (0  Senders)"
-msgstr "Ajouter à la liste de confiance (0  Expéditeurs)"
 
 #: ../servlets/quarantine/root/quarantine.js:365
 msgid "Deleted one Message"
@@ -83,12 +83,12 @@ msgid "Move to Inbox ({0} messages)"
 msgstr "Déplacer dans la boite de réception ({0} messages)"
 
 #: ../servlets/quarantine/root/quarantine.js:425
-msgid "Add to Safelist (1  Sender)"
-msgstr "Ajouter à la liste de confiance (1  Expéditeur)"
+msgid "Move to Inbox & Add to Safelist (1  Sender)"
+msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:428
-msgid "Add to Safelist ({0} Senders)"
-msgstr "Ajouter à la liste de confiance ({0} Expéditeurs)"
+msgid "Move to Inbox & Add to Safelist ({0} Senders)"
+msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:539
 msgid "From"
@@ -295,21 +295,26 @@ msgstr ""
 "Les courriels mis en quarantaine peuvent être libérés dans votre boîte de "
 "réception ou supprimés en utilisant le lien de quarantaine du spam."
 
-#: ../servlets/quarantine/root/inbox.jspx:34
-msgid "Quarantine Digest for: {0}"
-msgstr "Résumé des Quarantaines pour: {0}"
+#~ msgid "Add to Safelist (0  Senders)"
+#~ msgstr "Ajouter à la liste de confiance (0  Expéditeurs)"
 
-#: ../servlets/quarantine/root/inbox.jspx:39
-msgid "{0} | Quarantine Digest for: {1}"
-msgstr "{0} | Résumé des Quarantaines pour: {1}"
+#~ msgid "Add to Safelist (1  Sender)"
+#~ msgstr "Ajouter à la liste de confiance (1  Expéditeur)"
 
-#: ../servlets/quarantine/root/request.jspx:36
-msgid "Request Quarantine Digest Emails"
-msgstr "Demande de courriels de résumé des quarantaines"
+#~ msgid "Add to Safelist ({0} Senders)"
+#~ msgstr "Ajouter à la liste de confiance ({0} Expéditeurs)"
 
-#: ../servlets/quarantine/root/request.jspx:40
-msgid "{0} | Request Quarantine Digest Email"
-msgstr "{0} | Demande de courriel de résumé des quarantaines"
+#~ msgid "Quarantine Digest for: {0}"
+#~ msgstr "Résumé des Quarantaines pour: {0}"
+
+#~ msgid "{0} | Quarantine Digest for: {1}"
+#~ msgstr "{0} | Résumé des Quarantaines pour: {1}"
+
+#~ msgid "Request Quarantine Digest Emails"
+#~ msgstr "Demande de courriels de résumé des quarantaines"
+
+#~ msgid "{0} | Request Quarantine Digest Email"
+#~ msgstr "{0} | Demande de courriel de résumé des quarantaines"
 
 #~ msgid "Move to Inbox"
 #~ msgstr "Déplacer dans la boite de réception"

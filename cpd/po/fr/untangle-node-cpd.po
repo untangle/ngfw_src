@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-18 16:02-0700\n"
+"POT-Creation-Date: 2010-11-16 14:44-0700\n"
 "PO-Revision-Date: 2010-03-31 05:39-0700\n"
 "Last-Translator: Thomas Prévot <prevot.thomas@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -11,559 +11,609 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Pootle 1.1.0\n"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:30
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1131
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1154
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1164
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1173
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1184
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:33
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1268
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1291
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1301
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1310
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1321
 msgid "Warning"
 msgstr "Attention"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:31
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1131
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:34
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1268
 msgid "The current settings have an error, previous values may be lost."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:61
-msgid "Captive Hosts"
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:66
-msgid "Note"
-msgstr "Note"
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:69
-msgid ""
-"The <b>Capture Rules</b> are a  set of rules to define which hosts and "
-"traffic are subject to the Captive Portal.  The rules are evailuated in "
-"order."
-msgstr ""
-
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:75
-msgid "Capture Bypassed Traffic"
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:63
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:71
+msgid "Status"
 msgstr ""
 
 #: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:76
+msgid ""
+"Captive Portal allows administrators to require network users to complete a "
+"defined process, such as logging in or accepting a network usage policy, "
+"before accessing the internet."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:100
+msgid "Control"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:106
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:40
+msgid "Logout"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:124
+msgid "Active Sessions"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:125
+msgid "The Active Sessions list shows authenticated users."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:133
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:135
+msgid "Refresh"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:163
+msgid "IP Address"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:167
+msgid "User Name"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:171
+msgid "Last Session"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:176
+msgid "Current Session"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:181
+msgid "Expiration"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:198
+msgid "Captive Hosts"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:203
+msgid "Note"
+msgstr "Note"
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:206
+msgid ""
+"The <b>Capture Rules</b> are a  set of rules to define which hosts and "
+"traffic are subject to the Captive Portal.  The rules are evaluated in order."
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:212
+msgid "Capture Bypassed Traffic"
+msgstr ""
+
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:213
 msgid ""
 "If enabled, traffic that is bypassed in Bypass Rules will also captured "
 "until the host is authenticated."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:94
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:381
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:231
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:518
 msgid "Enable"
 msgstr "Autorisé"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:101
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:193
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:238
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:330
 msgid "Capture"
 msgstr "Capturé"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:121
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:397
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:258
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:534
 msgid "[no name]"
 msgstr "[sans nom]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:122
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:398
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:259
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:535
 msgid "[no category]"
 msgstr "[sans catégorie]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:123
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:399
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:260
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:536
 msgid "[no description]"
 msgstr "[sans description]"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:126
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:263
 msgid "Capture Rules"
 msgstr "Règles de Capture"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:127
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:264
 msgid ""
 "The Capture Rules are a set of rules to define which hosts and traffic are "
 "subject to the Captive Portal. All enabled rules are evaluated in order."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:162
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:200
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:424
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:299
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:337
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:561
 msgid "Description"
 msgstr "Description"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:182
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:319
 msgid "Capture Rule"
 msgstr "Règle de Capture"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:187
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:324
 msgid "Enabled"
 msgstr "Activé"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:204
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:341
 msgid "Interface"
 msgstr "Interface"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:209
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:346
 msgid "The ethernet interface (NIC)."
 msgstr "L'interface ethernet (NIC)"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:213
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:229
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:350
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:366
 msgid "Client"
 msgstr "Client"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:219
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:432
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:356
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:569
 msgid "Address"
 msgstr "Adresse"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:224
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:361
 msgid "The IP addresses."
 msgstr "Les IP adresses."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:235
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:372
 msgid "Server"
 msgstr "Serveur"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:241
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:378
 msgid "Time of Day"
 msgstr "Moment de la journée"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:245
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:382
 msgid "The time of day."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:250
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:387
 msgid "Start Time"
 msgstr "Heure de début"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:257
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:394
 msgid "End Time"
 msgstr "Heure de fin"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:263
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:400
 msgid "Days of Week"
 msgstr "Jours de la semaine"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:267
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:404
 msgid "The days of the week."
 msgstr "Les jours de la semaine."
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:272
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:409
 msgid "Sunday"
 msgstr "Dimanche"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:278
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:415
 msgid "Monday"
 msgstr "Lundi"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:284
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:421
 msgid "Tuesday"
 msgstr "Mardi"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:290
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:427
 msgid "Wednesday"
 msgstr "Mercredi"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:296
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:433
 msgid "Thursday"
 msgstr "Jeudi"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:302
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:439
 msgid "Friday"
 msgstr "Vendredi"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:308
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:445
 msgid "Saturday"
 msgstr "Samedi"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:352
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:489
 msgid "Pass Listed Client Addresses"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:359
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:496
 msgid "Pass Listed Server Addresses"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:369
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:506
 msgid "Passed Hosts"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:464
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:471
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:601
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:608
 msgid "User Authentication"
 msgstr "Authentification de l'utilisateur"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:474
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1015
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:611
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1152
 msgid "None"
 msgstr "aucun"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:484
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1017
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:621
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1154
 msgid "Local Directory"
 msgstr "Annuaire Local"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:495
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:632
 msgid "Configure Local Directory"
 msgstr "Configurer l'Annuaire Local"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:499
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:636
 msgid "RADIUS {0}(requires Directory Connector){1}"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:513
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:650
 msgid "Configure RADIUS"
 msgstr "Configurer RADIUS"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:517
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:654
 msgid "Active Directory {0}(requires Directory Connector){1}"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:531
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:668
 msgid "Configure Active Directory"
 msgstr "Configurer Active Directory"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:537
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:674
 msgid "Session Settings"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:545
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:682
 msgid "The Idle Timeout must be between 0 minutes and 24 hours."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:546
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:683
 msgid "Idle Timeout"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:547
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:563
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:684
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:700
 msgid "minutes"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:548
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:685
 msgid ""
 "Clients will be unauthenticated after this amount of idle time. They may re-"
 "authenticate immediately."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:562
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:699
 msgid "Timeout"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:564
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:701
 msgid "The Timeout must be between 5 minutes and 24 hours."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:565
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:702
 msgid ""
 "Clients will be unauthenticated after this amount of time regardless of "
 "activity. They may re-authenticate immediately."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:574
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:711
 msgid "Logout Button Popup"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:575
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:712
 msgid ""
 "Clients will have a logout button pop-up after authentication to provide a "
 "way to instantly logout."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:585
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:722
 msgid "Allow Concurrent Logins"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:586
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:723
 msgid ""
 "This will allow multiple hosts to use the same username & password "
 "concurrently."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:637
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:774
 msgid "Captive Page"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:647
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:784
 msgid "Captive Portal Page"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:650
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:787
 msgid "Basic Message"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:659
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:796
 msgid "Basic Login"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:668
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:805
 msgid "Custom"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:679
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:816
 msgid "Captive Portal Page Configuration"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:684
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:760
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:821
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:897
 msgid "Page Title"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:696
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:773
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:833
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:910
 msgid "Welcome Text"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:709
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:846
 msgid "Username Text"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:721
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:858
 msgid "Password Text"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:735
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:788
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:872
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:925
 msgid "Message Text"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:747
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:825
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:884
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:962
 msgid "Lower Text"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:800
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:937
 msgid "Agree Checkbox"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:812
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:949
 msgid "Agree Text"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:844
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:981
 msgid "File"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:851
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:988
 msgid "Upload File"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:862
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:999
 msgid "View Page"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:866
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1003
 msgid "Captive Portal is Disabled"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:867
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1004
 msgid "You must turn on the Captive Portal to preview the Captive Page."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:872
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1009
 msgid "Unsaved Changes"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:873
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1010
 msgid "You must save your settings before previewing the page."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:883
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1020
 msgid "Session Redirect"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:888
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1025
 msgid "Redirect URL"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:889
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1026
 msgid ""
 "Users will be redirected to this page immediately after authentication. "
 "Blank sends the user to their original destination."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:898
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1035
 msgid "Redirect HTTP traffic to HTTPS captive page"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:899
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1036
 msgid ""
 "If unchecked, HTTP traffic to unauthenticated hosts will be redirect to the "
 "HTTP Captive page. If checked, users will be redirected to an HTTPS captive "
 "page."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:909
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1046
 msgid "Redirect HTTPS traffic to HTTPS captive page"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:910
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1047
 msgid ""
 "If unchecked, HTTPS traffic for unauthenticated users is blocked. If checked "
 "HTTPS traffic will be redirected to the HTTPS captive page. Warning: This "
 "will cause certificate warning errors in the browser."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:928
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1065
 msgid "Please wait while uploading your custom captive portal page..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:936
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1073
 msgid "Succeeded"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:936
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1073
 msgid "Uploading Custom Captive Portal Page succeeded"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:943
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:40
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1080
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:41
 msgid "Failed"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:944
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1081
 msgid "There was an error uploading the Custom Captive Portal Page."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:949
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1086
 msgid "Login Event Log"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:970
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1063
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1107
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1200
 msgid "timestamp"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:978
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1078
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1115
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1215
+#, fuzzy
 msgid "client"
-msgstr ""
+msgstr "Client"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:983
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1120
 msgid "username"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:989
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1071
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1126
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1208
 msgid "action"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:996
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1133
 msgid "authenticated"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:998
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1135
 msgid "access denied"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1000
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1137
 msgid "re-authenticated"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1003
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1140
 msgid "logout"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1008
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1145
 msgid "Authentication"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1019
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1156
 msgid "Active Directory"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1021
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1158
 msgid "RADIUS"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1032
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1169
 msgid "Block Event Log"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1075
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1212
 msgid "block"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1083
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1220
 msgid "reason"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1088
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1225
 msgid "unauthenticated"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1091
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1228
+#, fuzzy
 msgid "server"
-msgstr ""
+msgstr "Serveur"
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1155
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1292
 msgid "Please correct any highlighted fields."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1165
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1302
 msgid "When using 'Basic Message', 'Authentication' must be set to 'None'."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1174
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1311
 msgid "When using 'Basic Message', 'Allow Concurrent Logins' must be enabled."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1185
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1322
 msgid "When using 'Basic Login', 'Authentication' cannot be set to 'None'."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1199
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1336
 msgid "Saving..."
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1199
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1244
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1336
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1381
 msgid "Please wait"
 msgstr ""
 
-#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1243
+#: ../hier/usr/share/untangle/web/webui/script/untangle-node-cpd/settings.js:1380
 msgid "Loading Config..."
 msgstr ""
 
-#: ../impl/com/untangle/node/cpd/BlockEventFilter.java:11
+#: ../impl/com/untangle/node/cpd/BlockEventFilter.java:12
 msgid "Captive Portal Block Events"
 msgstr ""
 
-#: ../impl/com/untangle/node/cpd/CPDImpl.java:99
+#: ../impl/com/untangle/node/cpd/CPDImpl.java:108
 msgid "Blocked Sessions"
 msgstr ""
 
-#: ../impl/com/untangle/node/cpd/CPDImpl.java:99
+#: ../impl/com/untangle/node/cpd/CPDImpl.java:108
 msgid "BLOCK"
 msgstr ""
 
-#: ../impl/com/untangle/node/cpd/CPDImpl.java:100
+#: ../impl/com/untangle/node/cpd/CPDImpl.java:109
 msgid "Authorized Clients"
 msgstr ""
 
-#: ../impl/com/untangle/node/cpd/CPDImpl.java:100
+#: ../impl/com/untangle/node/cpd/CPDImpl.java:109
 msgid "AUTHORIZE"
 msgstr ""
 
 #: ../impl/com/untangle/node/cpd/LoginEventFilter.java:27
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:324
 msgid "Login Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:37
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:38
 msgid "Login"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:38
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:39
 msgid "Update"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:39
-msgid "Logout"
-msgstr ""
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:96
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:97
 msgid "Summary Report"
 msgstr ""
 
@@ -576,102 +626,102 @@ msgid "user login events"
 msgstr ""
 
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:224
-msgid "Daily Usage"
+msgid "Usage"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:265
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:299
 msgid "Average Logins"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:267
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:302
 msgid "Max Logins"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:269
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:304
 msgid "Average Logouts"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:271
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:307
 msgid "Max Logouts"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:273
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:310
 msgid "Average Failures"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:275
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:313
 msgid "Max Failures"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:277
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:316
 msgid "Average Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:279
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:319
 msgid "Max Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:323
-msgid "Date"
-msgstr ""
-
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:327
-msgid "logins"
-msgstr ""
-
 #: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:329
-msgid "logouts"
+msgid "Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:331
-msgid "failures"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:332
+msgid "Logins"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:339
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:334
+msgid "Logouts"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:336
+msgid "Failures"
+msgstr ""
+
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:344
 msgid "Top Captive Portal Users"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:385
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:391
 msgid "Top Blocked Clients"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:416
-msgid "blocks"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:421
+msgid "Blocks"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:432
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:437
 msgid "CPD Login Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:438
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:469
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:443
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:474
 msgid "Time"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:439
-msgid "Login name"
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:444
+msgid "Login Name"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:440
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:445
 msgid "Type"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:463
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:468
 msgid "CPD Blocked Events"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:470
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:475
 msgid "Client Address"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:471
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:476
 msgid "Client Port"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:472
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:477
 msgid "Server Address"
 msgstr ""
 
-#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:473
+#: ../hier/usr/lib/python2.5/reports/node/untangle_node_cpd.py:478
 msgid "Server Port"
 msgstr ""
