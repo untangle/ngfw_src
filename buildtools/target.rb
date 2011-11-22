@@ -373,7 +373,7 @@ class ServletBuilder < Target
     uvm_lib = BuildEnv::SRC['untangle-libuvm']
 
     jardeps = libdeps + @nodedeps + Jars::Base + FileList["#{@destRoot}/WEB-INF/lib/*.jar"]
-    jardeps << uvm_lib["api"] << uvm_lib["localapi"]
+    jardeps << uvm_lib["api"] 
 
     @srcJar = JarTarget.build_target(package, jardeps, name, "#{path}/src",
                                      false)
@@ -410,7 +410,7 @@ class ServletBuilder < Target
     cp = @nodedeps.map { |j| j.filename }
     cp += JspcClassPath
     cp += Jars::Base.map { |j| j.filename }
-    cp += [uvm_lib["api"], uvm_lib["localapi"]].map { |t| t.filename }
+    cp += [uvm_lib["api"]].map { |t| t.filename }
     cp += Jars::Base.map {|f| f.filename }
     cp += [SRC_HOME+"/buildtools"] unless SRC_HOME.nil?
 

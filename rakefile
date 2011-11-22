@@ -71,7 +71,7 @@ end
 task :install => [:devel, :i18n, :jslint, :debian_init_files]
 
 task :javadoc do
-  dirs = 'uvm/api:uvm/localapi'
+  dirs = 'uvm/api'
   cpath = FileList['staging/*'].map { |e| "#{e}/" }.join(':') + ":" + FileList['downloads/output/**/*jar'].join(':')
   css = "./buildtools/javadoc.css"
 
