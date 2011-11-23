@@ -25,7 +25,7 @@ import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
@@ -105,7 +105,7 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
 
         /* Reload the licenses */
         try {
-            LocalUvmContextFactory.context().licenseManager().reloadLicenses();
+            UvmContextFactory.context().licenseManager().reloadLicenses();
         } catch ( Exception ex ) {
             logger.warn( "Unable to reload the licenses." );
         }
@@ -158,7 +158,7 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
          * Assume all licenses are valid
          * This should be removed if you want to test the licensing in the dev environment
          */
-        if (LocalUvmContextFactory.context().isDevel()) {
+        if (UvmContextFactory.context().isDevel()) {
             logger.warn("Creating development license: " + identifier);
             license = new License(identifier, "0000-0000-0000-0000", identifier, "Development", 0, 9999999999l, "development", 1, Boolean.TRUE, "Developer");
             this.licenseMap.put(identifier,license);
@@ -208,7 +208,7 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
      */
     private synchronized void _readLicenses()
     {
-        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         
         try {
             this.settings = settingsManager.load( LicenseSettings.class, System.getProperty("uvm.conf.dir") + "/licenses/licenses" );
@@ -230,13 +230,13 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
     @SuppressWarnings("unchecked") //LinkedList<LicenseRevocation> <-> LinkedList
     private synchronized void _checkRevocations()
     {
-        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         LinkedList<LicenseRevocation> revocations;
 
         logger.info("REFRESH: Checking Revocations...");
         
         try {
-            String urlStr = _getLicenseUrl() + "?" + "action=getRevocations" + "&" + "uid=" + LocalUvmContextFactory.context().getServerUID();
+            String urlStr = _getLicenseUrl() + "?" + "action=getRevocations" + "&" + "uid=" + UvmContextFactory.context().getServerUID();
             logger.info("Downloading: \"" + urlStr + "\"");
 
             Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
@@ -296,16 +296,16 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
     @SuppressWarnings("unchecked") //LinkedList<License> <-> LinkedList
     private synchronized void _downloadLicenses()
     {
-        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         LinkedList<License> licenses;
 
         int numDevices = _getEstimatedNumDevices();
-        String uvmVersion = LocalUvmContextFactory.context().version();
+        String uvmVersion = UvmContextFactory.context().version();
         
         logger.info("REFRESH: Downloading new Licenses...");
         
         try {
-            String urlStr = _getLicenseUrl() + "?" + "action=getLicenses" + "&" + "uid=" + LocalUvmContextFactory.context().getServerUID() + "&" + "numDevices=" + numDevices + "&" + "version=" + uvmVersion;
+            String urlStr = _getLicenseUrl() + "?" + "action=getLicenses" + "&" + "uid=" + UvmContextFactory.context().getServerUID() + "&" + "numDevices=" + numDevices + "&" + "version=" + uvmVersion;
             logger.info("Downloading: \"" + urlStr + "\"");
 
             Object o = settingsManager.loadUrl(LinkedList.class, urlStr);
@@ -474,8 +474,8 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
         }
 
         /* check the UID */
-        if (license.getUID() == null || !license.getUID().equals(LocalUvmContextFactory.context().getServerUID())) {
-            logger.warn( "The license: " + license + " does not match this server's UID (" + license.getUID() + " != " + LocalUvmContextFactory.context().getServerUID() + ")");
+        if (license.getUID() == null || !license.getUID().equals(UvmContextFactory.context().getServerUID())) {
+            logger.warn( "The license: " + license + " does not match this server's UID (" + license.getUID() + " != " + UvmContextFactory.context().getServerUID() + ")");
             license.setStatus("Invalid (UID Mismatch)"); /* XXX i18n */
             return false;
         }
@@ -542,7 +542,7 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
         /**
          * Save the settings
          */
-        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
             settingsManager.save(LicenseSettings.class, System.getProperty("uvm.conf.dir") + "/licenses/licenses", newSettings);
         } catch (SettingsManager.SettingsException e) {
@@ -564,7 +564,7 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
     {
         try {
             String command = System.getProperty("uvm.bin.dir") + "/" + LICENSE_SCRIPT_NUMUSERS;
-            Process proc = LocalUvmContextFactory.context().exec(command);
+            Process proc = UvmContextFactory.context().exec(command);
             InputStream is  = proc.getInputStream();
             OutputStream os = proc.getOutputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(is));
@@ -611,7 +611,7 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
         synchronized (LicenseManagerImpl.this) {
             _readLicenses();
 
-            if (! LocalUvmContextFactory.context().isDevel()) {
+            if (! UvmContextFactory.context().isDevel()) {
                 _downloadLicenses();
                 _checkRevocations();
             }
