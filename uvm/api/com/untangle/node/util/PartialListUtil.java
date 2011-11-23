@@ -40,7 +40,7 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.security.NodeId;
@@ -70,7 +70,7 @@ public class PartialListUtil
     }
 
     @SuppressWarnings("unchecked")
-    public List getItems( String queryString, LocalUvmContext localContext, Parameter[] parameters, int start, int limit, String ... sortColumns)
+    public List getItems( String queryString, UvmContext localContext, Parameter[] parameters, int start, int limit, String ... sortColumns)
     {
         return getItems(queryString, localContext, parameters, null, start, limit, sortColumns);
     }
@@ -95,7 +95,7 @@ public class PartialListUtil
     }
     
     @SuppressWarnings("unchecked")
-    public List getItems( String queryString, LocalUvmContext localContext, Parameter[] parameters, String alias, int start, int limit, String ... sortColumns)
+    public List getItems( String queryString, UvmContext localContext, Parameter[] parameters, String alias, int start, int limit, String ... sortColumns)
     {
         TransactionWork<List> tw = getItemsTransactionWork( queryString, parameters,
                                                             alias, start, limit, sortColumns );

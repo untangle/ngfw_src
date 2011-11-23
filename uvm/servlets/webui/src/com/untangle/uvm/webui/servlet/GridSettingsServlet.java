@@ -38,8 +38,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
@@ -125,7 +125,7 @@ public class GridSettingsServlet extends HttpServlet {
 	
 	private String importFailedMessage()
     {
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
         Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
         return I18nUtil.tr("Import failed. Settings must be formatted as a JSON Array.", i18n_map);
     }

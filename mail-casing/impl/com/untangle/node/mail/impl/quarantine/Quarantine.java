@@ -63,7 +63,7 @@ import com.untangle.node.mime.EmailAddress;
 import com.untangle.node.util.IOUtil;
 import com.untangle.node.util.Pair;
 import com.untangle.uvm.CronJob;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.util.I18nUtil;
 
@@ -175,7 +175,7 @@ public class Quarantine
                                 cronCallback();
                             }
                         };
-                    m_cronJob = LocalUvmContextFactory.context().makeCronJob(p, r);
+                    m_cronJob = UvmContextFactory.context().makeCronJob(p, r);
                 }
             }
         }
@@ -266,7 +266,7 @@ public class Quarantine
 
         //If we do not have an internal IP, then
         //don't even bother quarantining
-        if(LocalUvmContextFactory.context().networkManager().getPublicAddress() == null) {
+        if(UvmContextFactory.context().networkManager().getPublicAddress() == null) {
             m_logger.warn("No valid IP, so no way for folks to connect to quarantine.  Abort quarantining");
             return false;
         }
@@ -743,9 +743,9 @@ public class Quarantine
     private boolean sendDigestEmail(String account,
                                     InboxIndex index) {
 
-        Map<String,String> i18nMap = LocalUvmContextFactory.context().languageManager().getTranslations("untangle-casing-mail");
+        Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-casing-mail");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
-        String internalHost = LocalUvmContextFactory.context().networkManager().getPublicAddress();
+        String internalHost = UvmContextFactory.context().networkManager().getPublicAddress();
 
         if(internalHost == null) {
             m_logger.warn("Unable to determine internal interface");
@@ -757,7 +757,7 @@ public class Quarantine
         String bodyHtml = m_digestGenerator.generateMsgBody(internalHost, account, m_atm, i18nUtil);
 
         // Attempt the send
-        boolean ret = LocalUvmContextFactory.context().mailSender().sendHtmlMessage(recipients, subject, bodyHtml);
+        boolean ret = UvmContextFactory.context().mailSender().sendHtmlMessage(recipients, subject, bodyHtml);
 
         return ret;
     }
@@ -827,7 +827,7 @@ public class Quarantine
             try {
                 fIn = new FileInputStream(data);
                 BufferedInputStream bufIn = new BufferedInputStream(fIn);
-                boolean success = LocalUvmContextFactory.context().mailSender().sendMessage(bufIn, recipients);
+                boolean success = UvmContextFactory.context().mailSender().sendMessage(bufIn, recipients);
                 if(success) {
                     m_logger.debug("Released mail \"" + record.getMailID() + "\" for " + recipients.length +
                                    " recipients from inbox \"" + inboxAddress + "\"");

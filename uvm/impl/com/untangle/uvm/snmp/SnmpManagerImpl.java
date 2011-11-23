@@ -9,7 +9,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.node.util.IOUtil;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.HasConfigFiles;
 import com.untangle.uvm.util.TransactionWork;
 
@@ -59,7 +59,7 @@ public class SnmpManagerImpl implements SnmpManager, HasConfigFiles
 
             public Object getResult() { return null; }
         };
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         logger.info("Initialized SnmpManager");
         if(!isSnmpInstalled()) {
@@ -87,7 +87,7 @@ public class SnmpManagerImpl implements SnmpManager, HasConfigFiles
 
             public Object getResult() { return null; }
         };
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
         this.settings = settings;
 
         if (!isSnmpInstalled()) {
@@ -222,7 +222,7 @@ public class SnmpManagerImpl implements SnmpManager, HasConfigFiles
     {
         try {
             logger.debug("Restarting the snmpd...");
-            Process p = LocalUvmContextFactory.context().exec(new String[] {
+            Process p = UvmContextFactory.context().exec(new String[] {
                     WRAPPER_NAME });
             p.waitFor();
             logger.debug("Restart of SNMPD exited with " +

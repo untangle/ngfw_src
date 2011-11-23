@@ -19,8 +19,8 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
@@ -132,7 +132,7 @@ class NodeContextImpl implements NodeContext
 
         UvmContextImpl uctx = UvmContextImpl.getInstance();
 
-        final LocalUvmContext mctx = LocalUvmContextFactory.context();
+        final UvmContext mctx = UvmContextFactory.context();
         try {
             nodeManager.registerThreadContext(this);
 
@@ -257,7 +257,7 @@ class NodeContextImpl implements NodeContext
     @Deprecated
     public boolean runTransaction(TransactionWork<?> tw)
     {
-        return LocalUvmContextFactory.context().runTransaction(tw);
+        return UvmContextFactory.context().runTransaction(tw);
     }
 
     public boolean resourceExists(String res)
@@ -379,7 +379,7 @@ class NodeContextImpl implements NodeContext
 
                 public Object getResult() { return null; }
             };
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
     }
 
     // private classes --------------------------------------------------------

@@ -7,8 +7,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import com.untangle.node.http.ReplacementGenerator;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.security.NodeId;
 
 class PhishReplacementGenerator extends ReplacementGenerator<PhishBlockDetails>
@@ -33,7 +33,7 @@ class PhishReplacementGenerator extends ReplacementGenerator<PhishBlockDetails>
     @Override
     protected String getReplacement(PhishBlockDetails details)
     {
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
 
         return String.format(BLOCK_TEMPLATE, details.getHost(),
                              details.getUri(), uvm.brandingManager().getContactHtml());

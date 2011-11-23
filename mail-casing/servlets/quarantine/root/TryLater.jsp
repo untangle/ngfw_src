@@ -19,7 +19,7 @@
 --%>
 
 <%                    
-LocalUvmContext uvm = LocalUvmContextFactory.context();
+UvmContext uvm = UvmContextFactory.context();
 String company = uvm.brandingManager().getCompanyName();
 String companyUrl = uvm.brandingManager().getCompanyUrl();
 %>            

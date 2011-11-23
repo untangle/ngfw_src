@@ -7,8 +7,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import com.untangle.node.http.ReplacementGenerator;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.security.NodeId;
 
 public class SpywareReplacementGenerator extends ReplacementGenerator<SpywareBlockDetails>
@@ -36,7 +36,7 @@ public class SpywareReplacementGenerator extends ReplacementGenerator<SpywareBlo
 
     protected String getReplacement(SpywareBlockDetails bd)
     {
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
         String contactHtml = uvm.brandingManager().getContactHtml();
         return String.format(SIMPLE_BLOCK_TEMPLATE, bd.getHost(), bd.getUrl(), contactHtml);
     }

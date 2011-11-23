@@ -48,8 +48,8 @@ import org.apache.catalina.valves.ValveBase;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LocalAppServerManager;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.networking.AccessSettings;
 import com.untangle.uvm.networking.AddressSettings;
@@ -91,12 +91,12 @@ public abstract class OutsideValve extends ValveBase
 
     protected AccessSettings getAccessSettings()
     {
-        return LocalUvmContextFactory.context().networkManager().getAccessSettings();
+        return UvmContextFactory.context().networkManager().getAccessSettings();
     }
 
     protected AddressSettings getAddressSettings()
     {
-        return LocalUvmContextFactory.context().networkManager().getAddressSettings();
+        return UvmContextFactory.context().networkManager().getAddressSettings();
     }
 
 
@@ -112,14 +112,14 @@ public abstract class OutsideValve extends ValveBase
     /* Unified way to get an error string */
     protected String outsideErrorMessage()
     {
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
         Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
         return I18nUtil.tr("Off-site administration is disabled.", i18n_map);
     }
 
     protected String httpErrorMessage()
     {
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
         Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
         return I18nUtil.tr("standard access", i18n_map);
     }
@@ -147,7 +147,7 @@ public abstract class OutsideValve extends ValveBase
             return isInsecureAccessAllowed;
         }
 
-        int blockPagePort = LocalUvmContextFactory.context().networkManager().getAccessSettings().getBlockPagePort();
+        int blockPagePort = UvmContextFactory.context().networkManager().getAccessSettings().getBlockPagePort();
         
         if ( port == blockPagePort ) {
             return isInsecureAccessAllowed;

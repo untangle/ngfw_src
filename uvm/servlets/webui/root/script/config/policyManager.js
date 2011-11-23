@@ -72,7 +72,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             if (forceReload || this.rpc.policyConfiguration === undefined) {
                 try {
                     /* Force a reload of the policy manager */
-                    var policyManager = rpc.jsonrpc.RemoteUvmContext.policyManager();
+                    var policyManager = rpc.jsonrpc.UvmContext.policyManager();
                     rpc.policyManager = policyManager;
                     this.rpc.policyConfiguration = rpc.policyManager.getPolicyConfiguration();
 

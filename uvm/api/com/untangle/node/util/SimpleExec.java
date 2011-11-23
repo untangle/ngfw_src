@@ -40,7 +40,7 @@ import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 
 /**
  * Wrapper around a simple exec (short-lived) which takes care of
@@ -184,7 +184,7 @@ public final class SimpleExec
         fullCmd[0] = cmd;
         System.arraycopy(args, 0, fullCmd, 1, args.length);
 
-        m_process = useUVMThread ? LocalUvmContextFactory.context().exec(fullCmd, env, rootDir) : Runtime.getRuntime().exec(fullCmd, env, rootDir);
+        m_process = useUVMThread ? UvmContextFactory.context().exec(fullCmd, env, rootDir) : Runtime.getRuntime().exec(fullCmd, env, rootDir);
 
         //If we're here, we created a process
         try {
@@ -251,7 +251,7 @@ public final class SimpleExec
     }
 
     private Thread createThread(Runnable r, boolean useUVMThread) {
-        return useUVMThread?LocalUvmContextFactory.context().newThread(r):new Thread(r);
+        return useUVMThread?UvmContextFactory.context().newThread(r):new Thread(r);
     }
 
     /**

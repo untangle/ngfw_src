@@ -18,7 +18,7 @@ import com.untangle.jvector.Sink;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
 import com.untangle.uvm.node.PipelineEndpoints;
@@ -63,7 +63,7 @@ public abstract class ArgonHook implements Runnable
 
     protected Policy policy = null;
 
-    protected static final PipelineFoundryImpl pipelineFoundry = (PipelineFoundryImpl)LocalUvmContextFactory.context().pipelineFoundry();
+    protected static final PipelineFoundryImpl pipelineFoundry = (PipelineFoundryImpl)UvmContextFactory.context().pipelineFoundry();
     
     private static final NodeId TOTALS = new NodeId(0l);
 
@@ -91,7 +91,7 @@ public abstract class ArgonHook implements Runnable
                 logger.debug( "New thread for session id: " + netcapSession.id() + " " + sessionGlobalState );
             }
 
-            NetworkManager lnm = LocalUvmContextFactory.context().networkManager();
+            NetworkManager lnm = UvmContextFactory.context().networkManager();
 	    
             int clientIntf = netcapSession.clientSide().interfaceId();
             int serverIntf = netcapSession.serverSide().interfaceId();
@@ -106,7 +106,7 @@ public abstract class ArgonHook implements Runnable
             if ( serverIntf == IntfConstants.UNKNOWN_INTF ) {
                 /* Update the server interface */
                 String serverIntfName = netcapSession.determineServerIntf();
-                InterfaceConfiguration intfConf = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findBySystemName(serverIntfName);
+                InterfaceConfiguration intfConf = UvmContextFactory.context().networkManager().getNetworkConfiguration().findBySystemName(serverIntfName);
 
                 if ( intfConf != null ) {
                     Integer i = intfConf.getInterfaceId();
@@ -143,7 +143,7 @@ public abstract class ArgonHook implements Runnable
             serverSide = clientSide;
 
             /* lookup the user information */
-            DirectoryConnector adconnector = (DirectoryConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+            DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
             if (adconnector != null) {
                 String username = adconnector.getIpUsernameMap().tryLookupUser( clientSide.clientAddr() );
                 if (username != null && username.length() > 0 ) { 

@@ -9,8 +9,8 @@ import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.event.SessionEventListener;
@@ -172,6 +172,6 @@ public class SoloPipeSpec extends PipeSpec
     // static initialization --------------------------------------------------
 
     static {
-        FOUNDRY = LocalUvmContextFactory.context().pipelineFoundry();
+        FOUNDRY = UvmContextFactory.context().pipelineFoundry();
     }
 }

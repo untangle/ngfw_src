@@ -28,7 +28,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.net.SyslogAppender;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.LoggingSettings;
@@ -98,7 +98,7 @@ class SyslogManagerImpl implements SyslogManager
 
     void postInit()
     {
-        final NetworkManager nmi = LocalUvmContextFactory.context().networkManager();
+        final NetworkManager nmi = UvmContextFactory.context().networkManager();
 
         nmi.registerListener(new NetworkConfigurationListener() {
                 public void event(NetworkConfiguration s)

@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.user.IpUsernameMapAssistant;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.Pulse;
@@ -140,7 +140,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
         }
         logger.debug( "Add    Cache Entry: (IP " + addr + ") (Username " + username + ")");
 
-        DirectoryConnector adconnector = (DirectoryConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) {
             adconnector.getIpUsernameMap().lookupUser( addr );
         }
@@ -162,7 +162,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
             logger.debug( "Failed Remove Cache Entry: (IP " + addr + ") - Missing key");
         }
 
-        DirectoryConnector adconnector = (DirectoryConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) {
             adconnector.getIpUsernameMap().expireUser( addr );
         }
@@ -172,7 +172,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
     {
         this.stopDatabaseReader();
 
-        DirectoryConnector adconnector = (DirectoryConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) {
             adconnector.getIpUsernameMap().unregisterAssistant( this );
             logger.debug("CPDIpUsernameMapAssistant unregistered");
@@ -219,7 +219,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
                     public boolean doWork(Session s)
                     {
                         if (!registered) {
-                            DirectoryConnector adconnector = (DirectoryConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+                            DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
                             if (adconnector != null) {
                                 adconnector.getIpUsernameMap().registerAssistant( assistant );
                                 logger.debug("CPDIpUsernameMapAssistant registered");

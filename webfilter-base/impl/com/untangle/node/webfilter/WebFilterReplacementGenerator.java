@@ -3,8 +3,8 @@ package com.untangle.node.webfilter;
 import java.net.InetAddress;
 
 import com.untangle.node.http.ReplacementGenerator;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.security.NodeId;
 
 /**
@@ -32,7 +32,7 @@ public class WebFilterReplacementGenerator extends ReplacementGenerator<WebFilte
     @Override
     protected String getReplacement(WebFilterBlockDetails details)
     {
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
 
         return String.format(BLOCK_TEMPLATE, details.getHeader(),
                              details.getHost(), details.getUri(),

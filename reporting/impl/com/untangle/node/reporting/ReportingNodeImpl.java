@@ -22,7 +22,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.node.util.SimpleExec;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.User;
@@ -98,7 +98,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
         logger.info("Running daily report...");
         try {
             String args[] = { REPORTS_SCRIPT, "-r", "1", "-m", "-d", ts };
-            Process proc = LocalUvmContextFactory.context().exec(args);
+            Process proc = UvmContextFactory.context().exec(args);
             tailLog(REPORTER_LOG_FILE, REPORTER_LOG_FILE_READ_TIMEOUT, proc);
             exitCode = proc.waitFor();
             proc.destroy();
@@ -134,12 +134,12 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
         this.currentStatus = "";
             
         logger.info("Flushing queued events...");
-        LocalUvmContextFactory.context().loggingManager().forceFlush();
+        UvmContextFactory.context().loggingManager().forceFlush();
 
         logger.info("Running incremental report...");
         try {
             String args[] = { REPORTS_SCRIPT, "-m", "-i", "-r", "1" };
-            Process proc = LocalUvmContextFactory.context().exec(args);
+            Process proc = UvmContextFactory.context().exec(args);
             tailLog(REPORTER_LOG_FILE, REPORTER_LOG_FILE_READ_TIMEOUT, proc);
             exitCode = proc.waitFor();
             proc.destroy();
@@ -242,7 +242,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
      * comma-separated string at the very end of this method. */
     private void loadReportingUsers(ReportingSettings s)
     {
-        AdminManager adminManager = LocalUvmContextFactory.context().adminManager();
+        AdminManager adminManager = UvmContextFactory.context().adminManager();
         String reportEmail = adminManager.getMailSettings().getReportEmail();
         Set<String> res = new HashSet<String>();
         if ((reportEmail != null) && (!reportEmail.isEmpty())) {

@@ -30,7 +30,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.networking.NetworkUtil;
@@ -91,7 +91,7 @@ public class Sandbox
             this.clientList=new ClientList();
             this.siteList=new SiteList();
         }
-        i18nUtil = new I18nUtil(LocalUvmContextFactory.context().languageManager().getTranslations("untangle-node-openvpn"));
+        i18nUtil = new I18nUtil(UvmContextFactory.context().languageManager().getTranslations("untangle-node-openvpn"));
     }
 
     void installClientConfig( String path ) throws Exception
@@ -185,7 +185,7 @@ public class Sandbox
      * network settings. */
     void autoDetectAddressPool() throws ValidateException
     {
-        NetworkConfiguration networkSettings = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration();
+        NetworkConfiguration networkSettings = UvmContextFactory.context().networkManager().getNetworkConfiguration();
         
         /* Load the list of networks. */
         List<AddressRange> currentNetwork = new LinkedList<AddressRange>();
@@ -255,7 +255,7 @@ public class Sandbox
     void autoDetectExportList() throws ValidateException
     {
         /* Load the list of networks. */
-        NetworkConfiguration networkSettings = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration();
+        NetworkConfiguration networkSettings = UvmContextFactory.context().networkManager().getNetworkConfiguration();
         
         List<ServerSiteNetwork> networkList = new LinkedList<ServerSiteNetwork>();
         LinkedList<AddressRange> rangeList = new LinkedList<AddressRange>();

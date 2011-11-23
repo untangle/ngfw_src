@@ -35,7 +35,7 @@ package com.untangle.uvm.util;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.UvmContext;
 
 public class WorkerRunner
 {
@@ -46,19 +46,19 @@ public class WorkerRunner
     private static final int MAX_STOP_INTERRUPT_COUNT = 5;
 
     private final Worker worker;
-    private final LocalUvmContext localContext;
+    private final UvmContext localContext;
     private final long stopDelayMillis;
 
     private Thread thread;
 
     private final Logger logger = Logger.getLogger( this.getClass());
 
-    public WorkerRunner( Worker worker, LocalUvmContext localContext )
+    public WorkerRunner( Worker worker, UvmContext localContext )
     {
         this( worker, localContext, DEFAULT_STOP_DELAY_MILLIS );
     }
 
-    public WorkerRunner( Worker worker, LocalUvmContext localContext, long stopDelayMillis )
+    public WorkerRunner( Worker worker, UvmContext localContext, long stopDelayMillis )
     {
         this.worker = worker;
         this.localContext = localContext;

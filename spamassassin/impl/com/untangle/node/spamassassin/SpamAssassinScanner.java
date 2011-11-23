@@ -24,7 +24,7 @@ import java.util.Date;
 import com.untangle.node.spam.SpamReport;
 import com.untangle.node.spam.SpamScanner;
 import com.untangle.uvm.node.script.ScriptRunner;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
 
 public class SpamAssassinScanner implements SpamScanner
@@ -61,7 +61,7 @@ public class SpamAssassinScanner implements SpamScanner
             synchronized(activeScanMonitor) {
                 activeScanCount++;
             }
-            Thread thread = LocalUvmContextFactory.context().newThread(client);
+            Thread thread = UvmContextFactory.context().newThread(client);
             client.setThread(thread);
             client.startScan();
             client.checkProgress(SpamAssassinScanner.timeout);

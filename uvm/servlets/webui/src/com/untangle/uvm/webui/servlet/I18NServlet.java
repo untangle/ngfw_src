@@ -30,8 +30,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.untangle.uvm.LanguageManager;
-import com.untangle.uvm.RemoteUvmContextFactory;
-import com.untangle.uvm.RemoteUvmContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmContext;
 
 /**
  * A servlet that when given a module name returns a javascript hash containing
@@ -50,7 +50,7 @@ public class I18NServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
-        RemoteUvmContext uvm = RemoteUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
         LanguageManager languageManager = uvm.languageManager();
 
         String module = req.getParameter("module");

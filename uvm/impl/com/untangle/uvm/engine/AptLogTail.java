@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.AptMessage;
 import com.untangle.uvm.toolbox.DownloadComplete;
@@ -114,7 +114,7 @@ class AptLogTail implements Runnable
     public void processLog()
     {
         int c=0;
-        MessageManager mm = LocalUvmContextFactory.context().messageManager();
+        MessageManager mm = UvmContextFactory.context().messageManager();
         
         // find `start key'
         logger.debug("AptLogTail(" + key + ")" + " finding start key: \"start " + key + "\"");

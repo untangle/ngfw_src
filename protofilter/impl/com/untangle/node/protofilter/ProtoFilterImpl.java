@@ -24,7 +24,7 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -61,7 +61,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         ef = new ProtoFilterBlockedFilter();
         eventLogger.addSimpleEventFilter(ef);
 
-        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
+        MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Chunks scanned"), null, I18nUtil.marktr("SCAN"));
         detectBlinger = c.addActivity("detect", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("LOG"));
@@ -82,7 +82,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     {
         this.nodeSettings = settings;
         
-        SettingsManager setman = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager setman = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeId().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-protofilter/settings_" + nodeID;
 
@@ -165,7 +165,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
     protected void postInit(String[] args)
     {
-        SettingsManager setman = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager setman = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeId().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-protofilter/settings_" + nodeID;
         String settingsFile = settingsBase + ".js";

@@ -16,8 +16,8 @@ import org.jabsorb.JSONSerializer;
 
 import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.UvmState;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.SessionEndpoints;
@@ -41,11 +41,11 @@ class SessionMonitorImpl implements SessionMonitor
 
     private static JSONSerializer serializer = null;
 
-    LocalUvmContext uvmContext;
+    UvmContext uvmContext;
     
     public SessionMonitorImpl ()
     {
-        uvmContext = LocalUvmContextFactory.context();
+        uvmContext = UvmContextFactory.context();
     }
 
     /**

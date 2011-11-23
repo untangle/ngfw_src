@@ -40,7 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -73,7 +73,7 @@ public class CasingAdaptor extends AbstractEventHandler
 
     private final Map<Session,CasingDesc> casings = new ConcurrentHashMap<Session,CasingDesc>();
 
-    private final PipelineFoundry pipeFoundry = LocalUvmContextFactory.context().pipelineFoundry();
+    private final PipelineFoundry pipeFoundry = UvmContextFactory.context().pipelineFoundry();
 
     private final BlingBlinger s2nBytes;
     private final BlingBlinger c2nBytes;
@@ -91,7 +91,7 @@ public class CasingAdaptor extends AbstractEventHandler
         this.clientSide = clientSide;
         this.releaseParseExceptions = releaseParseExceptions;
 
-        MessageManager lmm = LocalUvmContextFactory.context()
+        MessageManager lmm = UvmContextFactory.context()
             .messageManager();
         Counters c = lmm.getCounters(node.getNodeId());
         s2nBytes = c.getBlingBlinger("s2nBytes");

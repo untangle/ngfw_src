@@ -19,7 +19,7 @@
 package com.untangle.uvm.engine;
 
 import com.untangle.uvm.BrandingManager;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.vnet.AbstractNode;
 
@@ -46,7 +46,7 @@ class BrandingManagerImpl implements BrandingManager
         /**
          * If there is an OEM name specified - use it instead
          */
-        String oemName = LocalUvmContextFactory.context().oemManager().getOemName();
+        String oemName = UvmContextFactory.context().oemManager().getOemName();
         if (oemName != null)
             ret = oemName;
 
@@ -71,7 +71,7 @@ class BrandingManagerImpl implements BrandingManager
         /**
          * If there is an OEM name specified - use it instead
          */
-        String oemUrl = LocalUvmContextFactory.context().oemManager().getOemUrl();
+        String oemUrl = UvmContextFactory.context().oemManager().getOemUrl();
         if (oemUrl != null)
             ret = oemUrl;
 
@@ -105,7 +105,7 @@ class BrandingManagerImpl implements BrandingManager
     
     private BrandingManager getBrandingManager()
     {
-        BrandingManager bnode = (BrandingManager)LocalUvmContextFactory.context().nodeManager().node("untangle-node-branding");
+        BrandingManager bnode = (BrandingManager)UvmContextFactory.context().nodeManager().node("untangle-node-branding");
         if (bnode != null && (((AbstractNode)bnode).getRunState() == NodeState.RUNNING)) {
             return bnode;
         }

@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.RemoteUvmContextFactory;
-import com.untangle.uvm.RemoteUvmContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmContext;
 
 /**
  * A servlet for backup UVM configuration
@@ -29,7 +29,7 @@ public class BackupServlet extends HttpServlet {
 
 		String action = req.getParameter("action");
 		if (ACTION_REQUEST_BACKUP.equals(action)) {
-			RemoteUvmContext uvm = RemoteUvmContextFactory.context();
+			UvmContext uvm = UvmContextFactory.context();
 			byte[] backupData = uvm.createBackup();
 			req.getSession().setAttribute(ATTR_BACKUP_DATA, backupData);
 		} else {

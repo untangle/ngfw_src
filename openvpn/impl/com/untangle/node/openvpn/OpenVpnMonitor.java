@@ -20,8 +20,8 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventRepository;
@@ -89,7 +89,7 @@ class OpenVpnMonitor implements Runnable
     /* Whether or not openvpn is started */
     private volatile boolean isEnabled = false;
 
-    private final LocalUvmContext localContext;
+    private final UvmContext localContext;
 
     OpenVpnMonitor( VpnNodeImpl node )
     {
@@ -100,7 +100,7 @@ class OpenVpnMonitor implements Runnable
         clientActiveLogger.addEventRepository(new ActiveEventCache());//For "open" events
         clientClosedLogger.addSimpleEventFilter(new ClientConnectEventClosedFilter());//For "closed" events
 
-        this.localContext = LocalUvmContextFactory.context();
+        this.localContext = UvmContextFactory.context();
         this.node = node;
     }
 

@@ -51,7 +51,7 @@ public class UvmState implements Serializable
     /**
      * Booted, but not initialized. This is a transient state, just
      * after the world has been instantiated, but before
-     * LocalUvmContext.init() has been called.
+     * UvmContext.init() has been called.
      */
     public static final UvmState LOADED;
 

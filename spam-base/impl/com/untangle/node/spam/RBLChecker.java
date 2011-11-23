@@ -27,7 +27,7 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
 /**
@@ -193,7 +193,7 @@ public class RBLChecker
     private RBLClient createClient(RBLClientContext cContext) 
     {
         RBLClient client = new RBLClient(cContext);
-        Thread thread = LocalUvmContextFactory.context().newThread(client);
+        Thread thread = UvmContextFactory.context().newThread(client);
         client.setThread(thread);
         clientMap.put(client, cContext);
         return client;

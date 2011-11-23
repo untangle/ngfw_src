@@ -35,7 +35,7 @@ package com.untangle.uvm.util;
 
 import org.hibernate.Session;
 
-import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.node.NodeContext;
 
 
@@ -51,7 +51,7 @@ public class DataSaver<T>
 
     /* One of these must be null, use the non-null one */
     private final NodeContext nodeContext;
-    private final LocalUvmContext localContext;
+    private final UvmContext localContext;
     
     public DataSaver( NodeContext node ) 
     {
@@ -60,7 +60,7 @@ public class DataSaver<T>
         this.data = null;
     }
 
-    public DataSaver( LocalUvmContext local ) 
+    public DataSaver( UvmContext local ) 
     {
         this.nodeContext = null;
         this.localContext = local;

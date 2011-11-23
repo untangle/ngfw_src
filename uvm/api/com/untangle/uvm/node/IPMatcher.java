@@ -7,8 +7,8 @@ import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.RemoteUvmContextFactory;
-import com.untangle.uvm.RemoteUvmContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
@@ -282,11 +282,11 @@ public class IPMatcher
          * start the network listener
          */
         if (listener == null) {
-            RemoteUvmContext context = RemoteUvmContextFactory.context();
+            UvmContext context = UvmContextFactory.context();
             if (context == null)
                 return;
             
-            NetworkManager netMan = RemoteUvmContextFactory.context().networkManager();
+            NetworkManager netMan = UvmContextFactory.context().networkManager();
             if (netMan == null)
                 return;
                     

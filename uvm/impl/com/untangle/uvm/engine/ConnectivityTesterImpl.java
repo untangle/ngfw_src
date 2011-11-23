@@ -25,7 +25,7 @@ import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ConnectivityTester;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.ConnectionStatus;
@@ -70,7 +70,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
      */
     public Status getStatus()
     {
-        NetworkConfiguration networkSettings = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration();
+        NetworkConfiguration networkSettings = UvmContextFactory.context().networkManager().getNetworkConfiguration();
         InterfaceConfiguration wan = networkSettings.findFirstWAN();
         
         InetAddress dnsPrimary   = wan.getDns1();

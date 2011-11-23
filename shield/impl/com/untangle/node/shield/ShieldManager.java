@@ -10,7 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.JsonClient;
@@ -39,7 +39,7 @@ public class ShieldManager
     EventLogger<ShieldStatisticEvent> statisticLogger;
     EventLogger<ShieldRejectionEvent> rejectionLogger;
 
-    private final WorkerRunner monitor = new WorkerRunner( new Monitor(), LocalUvmContextFactory.context());
+    private final WorkerRunner monitor = new WorkerRunner( new Monitor(), UvmContextFactory.context());
 
     ShieldManager( EventLogger<ShieldStatisticEvent> statisticLogger,
                    EventLogger<ShieldRejectionEvent> rejectionLogger )

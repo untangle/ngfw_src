@@ -27,7 +27,7 @@ import javax.servlet.jsp.tagext.SimpleTagSupport;
 /* Ideally this would take care of everything and load the skin from the UVM context.
  * but since global tags are loaded in a different classloader, they cannot see
  * the UVM classes, and so the template has to pass in the name of the skin. */
-// LocalUvmContext uvm = LocalUvmContextFactory.context();
+// UvmContext uvm = UvmContextFactory.context();
 // SkinSettings ss = uvm.skinManager().getSkinSettings();
 
 

@@ -33,7 +33,7 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.security.UvmPrincipal;
 
 class SpecialSingleSignOn extends SingleSignOn
@@ -42,11 +42,11 @@ class SpecialSingleSignOn extends SingleSignOn
     /* Dirty hack designed to ignore sessions that are in this context path */
     private final Set<String> uvmContextSet;
 
-    private final LocalUvmContext uvmContext;
+    private final UvmContext uvmContext;
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    SpecialSingleSignOn(LocalUvmContext uvmContext, String ... contextPathArray )
+    SpecialSingleSignOn(UvmContext uvmContext, String ... contextPathArray )
     {
         Set<String> contextSet = new HashSet<String>();
 

@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.uvm.BrandingManager;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 
 import  com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
@@ -33,10 +33,10 @@ public class BlockPageServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException
     {
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
         NodeManager nm = uvm.nodeManager();
 
-        Map<String,String> i18n_map = LocalUvmContextFactory.context().
+        Map<String,String> i18n_map = UvmContextFactory.context().
             languageManager().getTranslations( "untangle-base-virus" );
         
         NodeId tid = new NodeId(Long.parseLong(request.getParameter( "tid" )));

@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.token.Header;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.MimeType;
@@ -167,7 +167,7 @@ public abstract class DecisionEngine
                 logger.debug("LOG: block all IPs: " + requestLine.getRequestLine());
                 node.log(hbe, host, port, event);
 
-                Map<String,String> i18nMap = LocalUvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
+                Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(),
                                                                      I18nUtil.tr("host name is an IP address ({0})", host, i18nMap),
                                                                      clientIp, node.getNodeTitle(), username);
@@ -244,7 +244,7 @@ public abstract class DecisionEngine
                     node.log(hbe);
                 }
 
-                Map<String,String> i18nMap = LocalUvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
+                Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
 
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(),
                                                                      I18nUtil.tr("Mime-Type ({0})", contentType, i18nMap),

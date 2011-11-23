@@ -23,7 +23,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.uvm.ArgonManager;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.SystemStatEvent;
@@ -713,7 +713,7 @@ class MessageManagerImpl implements MessageManager
                     if (matcher.find()) {
                         String iface = matcher.group(1);
                         
-                        NetworkConfiguration netConf = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration();
+                        NetworkConfiguration netConf = UvmContextFactory.context().networkManager().getNetworkConfiguration();
                         if (netConf == null) {
                             logger.warn("Failed to read network configuration");
                             continue;

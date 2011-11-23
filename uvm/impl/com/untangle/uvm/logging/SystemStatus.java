@@ -24,7 +24,7 @@ import java.io.InputStreamReader;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.node.NodeManager;
@@ -139,13 +139,13 @@ public class SystemStatus
         boolean hasUID = false;
         try {
             hasUID = appendUID(sb);
-            String version = LocalUvmContextFactory.context().getFullVersion();
+            String version = UvmContextFactory.context().getFullVersion();
             sb.append("full version: " + version + "\n");
             /**
              * Uname info
              */
             sb.append(SPACER);
-            proc = LocalUvmContextFactory.context().exec("/bin/uname -a");
+            proc = UvmContextFactory.context().exec("/bin/uname -a");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -156,7 +156,7 @@ public class SystemStatus
              * lspci
              */
             sb.append(SPACER);
-            proc = LocalUvmContextFactory.context().exec("/usr/bin/lspci");
+            proc = UvmContextFactory.context().exec("/usr/bin/lspci");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -196,7 +196,7 @@ public class SystemStatus
              * uptime
              */
             sb.append(SPACER);
-            proc = LocalUvmContextFactory.context().exec("/usr/bin/uptime");
+            proc = UvmContextFactory.context().exec("/usr/bin/uptime");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -217,7 +217,7 @@ public class SystemStatus
              * uvm uptime
              */
             sb.append(SPACER);
-            proc = LocalUvmContextFactory.context().exec("/usr/share/untangle/bin/ut-uvm-uptime");
+            proc = UvmContextFactory.context().exec("/usr/share/untangle/bin/ut-uvm-uptime");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append("UVM uptime: " + line + RETCHAR);
@@ -271,7 +271,7 @@ public class SystemStatus
              * free -m
              */
             sb.append(SPACER);
-            proc = LocalUvmContextFactory.context().exec("/usr/bin/free -m");
+            proc = UvmContextFactory.context().exec("/usr/bin/free -m");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -307,7 +307,7 @@ public class SystemStatus
              * df
              */
             sb.append(SPACER);
-            proc = LocalUvmContextFactory.context().exec("/bin/df -h");
+            proc = UvmContextFactory.context().exec("/bin/df -h");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -328,7 +328,7 @@ public class SystemStatus
              * ps aux
              */
             sb.append(SPACER);
-            proc = LocalUvmContextFactory.context().exec("/bin/ps --sort -rss aux");
+            proc = UvmContextFactory.context().exec("/bin/ps --sort -rss aux");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -349,7 +349,7 @@ public class SystemStatus
              * mii-tool
              */
             sb.append(SPACER);
-            proc = LocalUvmContextFactory.context().exec("/sbin/mii-tool");
+            proc = UvmContextFactory.context().exec("/sbin/mii-tool");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -375,7 +375,7 @@ public class SystemStatus
         boolean result;
 
         sb.append(SPACER);
-        String key = LocalUvmContextFactory.context().getServerUID();
+        String key = UvmContextFactory.context().getServerUID();
         if ((key==null) || (key.length()==0)) {
             key = "unset";
             result = false;
@@ -398,7 +398,7 @@ public class SystemStatus
              * Network Config
              */
             sb.append(SPACER);
-            NetworkConfiguration netConf = ((NetworkManagerImpl) LocalUvmContextFactory.context().networkManager()).getNetworkConfiguration();
+            NetworkConfiguration netConf = ((NetworkManagerImpl) UvmContextFactory.context().networkManager()).getNetworkConfiguration();
             sb.append(netConf.toString());
             sb.append(RETCHAR);
 
@@ -406,7 +406,7 @@ public class SystemStatus
              * Node Config
              */
             sb.append(SPACER);
-            NodeManager tm = LocalUvmContextFactory.context().nodeManager();
+            NodeManager tm = UvmContextFactory.context().nodeManager();
             for (NodeId t : tm.nodeInstances()) {
                 NodeContext tctx = tm.nodeContext(t);
                 if (tctx == null) {
@@ -428,7 +428,7 @@ public class SystemStatus
              */
             sb.append(SPACER);
             sb.append("Estimated Sesssion Count: ");
-            sb.append(LocalUvmContextFactory.context().argonManager().getSessionCount());
+            sb.append(UvmContextFactory.context().argonManager().getSessionCount());
             sb.append(RETCHAR);
             /* Insert anything else here */
         }

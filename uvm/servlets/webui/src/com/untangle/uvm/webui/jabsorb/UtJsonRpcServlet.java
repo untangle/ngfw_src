@@ -29,8 +29,8 @@ import org.apache.log4j.Logger;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONRPCServlet;
 
-import com.untangle.uvm.RemoteUvmContextFactory;
-import com.untangle.uvm.RemoteUvmContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.servlet.ServletUtils;
 
 /**
@@ -93,8 +93,8 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 
             b.setCallbackController(new UtCallbackController(b));
 
-            RemoteUvmContext uvm = RemoteUvmContextFactory.context();
-            b.registerObject("RemoteUvmContext", uvm, RemoteUvmContext.class);
+            UvmContext uvm = UvmContextFactory.context();
+            b.registerObject("UvmContext", uvm, UvmContext.class);
         }
     }
 }

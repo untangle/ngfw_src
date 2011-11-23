@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.security.NodeId;
@@ -31,7 +31,7 @@ public class UnblockerServlet extends HttpServlet
         boolean global = Boolean.parseBoolean(req.getParameter("global"));
 
         try {
-            NodeManager tman = LocalUvmContextFactory.context().nodeManager();
+            NodeManager tman = UvmContextFactory.context().nodeManager();
             NodeId tid = new NodeId(Long.parseLong(tidStr));
             NodeContext tctx = tman.nodeContext(tid);
             WebFilter tran = (WebFilter)tctx.node();

@@ -51,7 +51,7 @@ import com.untangle.node.token.ParseException;
 import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.Token;
 import com.untangle.node.util.AsciiCharBuffer;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
 
@@ -88,7 +88,7 @@ public class PopServerParser extends AbstractParser
         super(session, true);
         lineBuffering(false);
 
-        pipeline = LocalUvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
+        pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
         this.zCasing = zCasing;
         zMBScanner = new MessageBoundaryScanner();
 

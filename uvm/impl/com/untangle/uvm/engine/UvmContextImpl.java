@@ -25,7 +25,7 @@ import org.jabsorb.JSONSerializer;
 
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.LocalTomcatManager;
 import com.untangle.uvm.LocalDirectory;
 import com.untangle.uvm.Period;
@@ -58,12 +58,12 @@ import com.untangle.uvm.util.XMLRPCUtil;
 import com.untangle.uvm.util.JsonClient;
 
 /**
- * Implements LocalUvmContext.
+ * Implements UvmContext.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
+public class UvmContextImpl extends UvmContextBase implements UvmContext
 {
     private static final UvmContextImpl CONTEXT = new UvmContextImpl();
 
@@ -139,7 +139,7 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         return CONTEXT;
     }
 
-    public static LocalUvmContext context()
+    public static UvmContext context()
     {
         return CONTEXT;
     }

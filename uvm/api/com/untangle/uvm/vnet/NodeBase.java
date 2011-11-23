@@ -12,8 +12,8 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SessionMatcherFactory;
 import com.untangle.uvm.message.Counters;
@@ -51,7 +51,7 @@ public abstract class NodeBase implements Node
 
     protected NodeBase()
     {
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
         nodeManager = uvm.nodeManager();
         nodeContext = nodeManager.threadContext();
         tid = nodeContext.getNodeId();
@@ -340,7 +340,7 @@ public abstract class NodeBase implements Node
                 wasStarted = true;
             }
 
-            MessageManager mm = LocalUvmContextFactory.context().messageManager();
+            MessageManager mm = UvmContextFactory.context().messageManager();
             NodeStateChange nsc = new NodeStateChange(nodeContext.getNodeDesc(), ts);
             mm.submitMessage(nsc);
 
@@ -351,8 +351,8 @@ public abstract class NodeBase implements Node
                 }
             }
             
-            LocalUvmContextFactory.context().nodeManager().flushNodeStateCache();
-            LocalUvmContextFactory.context().pipelineFoundry().clearChains();
+            UvmContextFactory.context().nodeManager().flushNodeStateCache();
+            UvmContextFactory.context().pipelineFoundry().clearChains();
         }
     }
 
@@ -507,6 +507,6 @@ public abstract class NodeBase implements Node
         if (matcher == null)
             return;
         
-        LocalUvmContextFactory.context().argonManager().shutdownMatches(matcher);
+        UvmContextFactory.context().argonManager().shutdownMatches(matcher);
     }
 }

@@ -28,7 +28,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.argon.ArgonIPSession;
 import com.untangle.uvm.argon.ArgonUDPSession;
@@ -195,7 +195,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
         liveSessions = new ConcurrentHashMap<IPSession,IPSession>();
 
-        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
+        MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(node.getNodeId());
         udpLiveSessionCounter = c.makeLoadCounter("udpLiveSessionCounter", "UDP sessions");
         tcpLiveSessionCounter = c.makeLoadCounter("tcpLiveSessionCounter", "TCP sessions");

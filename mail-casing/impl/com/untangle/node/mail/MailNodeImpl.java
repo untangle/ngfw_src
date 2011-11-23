@@ -57,8 +57,8 @@ import com.untangle.node.mail.papi.safelist.SafelistManipulation;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;
 import com.untangle.node.mail.papi.safelist.SafelistSettings;
 import com.untangle.node.mime.EmailAddress;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.CasingPipeSpec;
@@ -125,7 +125,7 @@ public class MailNodeImpl extends AbstractNode
 
     private static synchronized void deployWebAppIfRequired(Logger logger) {
         if(!s_deployedWebApp) {
-            if (null != LocalUvmContextFactory.context().localAppServerManager().loadQuarantineApp("/quarantine", "quarantine")) {
+            if (null != UvmContextFactory.context().localAppServerManager().loadQuarantineApp("/quarantine", "quarantine")) {
                 logger.debug("Deployed Quarantine web app");
             }
             else {
@@ -137,7 +137,7 @@ public class MailNodeImpl extends AbstractNode
 
     private static synchronized void unDeployWebAppIfRequired(Logger logger) {
         if(!s_unDeployedWebApp) {
-            if (LocalUvmContextFactory.context().localAppServerManager().unloadWebApp("/quarantine")) {
+            if (UvmContextFactory.context().localAppServerManager().unloadWebApp("/quarantine")) {
                 logger.debug("Unloaded Quarantine web app");
             }
             else {

@@ -47,7 +47,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 qtip : this.i18n._("This shows all current sessions."),
                 paginated : false,
                 recordJavaClass : "com.untangle.uvm.SessionMonitorEntry",
-                proxyRpcFn : rpc.jsonrpc.RemoteUvmContext.sessionMonitor().getMergedSessions,
+                proxyRpcFn : rpc.jsonrpc.UvmContext.sessionMonitor().getMergedSessions,
                 fields : [{
                     name : "id"
                 },{

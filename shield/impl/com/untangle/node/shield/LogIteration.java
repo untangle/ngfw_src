@@ -19,7 +19,7 @@ import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 
 import com.untangle.uvm.ArgonException;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 
 public class LogIteration
@@ -147,9 +147,9 @@ public class LogIteration
             InterfaceConfiguration clientIntf = null;
 
             try {
-                clientIntf = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findBySystemName( temp_js.optString( 0, "" ));
+                clientIntf = UvmContextFactory.context().networkManager().getNetworkConfiguration().findBySystemName( temp_js.optString( 0, "" ));
             } catch ( Exception e ) {
-                clientIntf = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findByName("Internal");
+                clientIntf = UvmContextFactory.context().networkManager().getNetworkConfiguration().findByName("Internal");
             }
 
             int mode = 0;

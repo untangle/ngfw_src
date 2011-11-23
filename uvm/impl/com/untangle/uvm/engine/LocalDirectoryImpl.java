@@ -9,7 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.LocalDirectory;
 import com.untangle.uvm.LocalDirectoryUser;
@@ -104,7 +104,7 @@ class LocalDirectoryImpl implements LocalDirectory
     
     private void saveUsersList()
     {
-        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
 
         if (this.currentList == null)
             this.currentList = new LinkedList<LocalDirectoryUser>();
@@ -121,7 +121,7 @@ class LocalDirectoryImpl implements LocalDirectory
     @SuppressWarnings("unchecked")
     private void loadUsersList()
     {
-        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         LinkedList<LocalDirectoryUser> users = null;
         
         // Read the settings from file

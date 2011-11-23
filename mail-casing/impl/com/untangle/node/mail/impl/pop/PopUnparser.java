@@ -50,7 +50,7 @@ import com.untangle.node.token.UnparseException;
 import com.untangle.node.token.UnparseResult;
 import com.untangle.node.util.AsciiCharBuffer;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
 
@@ -75,7 +75,7 @@ public class PopUnparser extends AbstractUnparser
 
         zMsgDataReply = null;
         zByteStuffer = null;
-        zTempFactory = new TempFileFactory(LocalUvmContextFactory.context().pipelineFoundry()
+        zTempFactory = new TempFileFactory(UvmContextFactory.context().pipelineFoundry()
                                            .getPipeline(session.id()));
     }
 

@@ -1,8 +1,8 @@
 /* $HeadURL$ */
 package com.untangle.node.router;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.StatisticEvent;
 import com.untangle.uvm.node.NodeContext;
@@ -40,7 +40,7 @@ class RouterStatisticManager extends StatisticManager
 
     void incrRedirect(Protocol protocol, IPNewSessionRequest request)
     {
-        LocalUvmContext uc = LocalUvmContextFactory.context();
+        UvmContext uc = UvmContextFactory.context();
 
         /**
          * FIXME this needs to be rewritten

@@ -27,8 +27,8 @@ import com.untangle.node.mail.papi.MailNode;
 import com.untangle.node.mail.papi.quarantine.QuarantineSettings;
 import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
 import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
-import com.untangle.uvm.RemoteUvmContext;
-import com.untangle.uvm.RemoteUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.security.NodeId;
 import org.apache.log4j.Logger;
@@ -165,7 +165,7 @@ public class QuarantineEnduserServlet extends HttpServlet
     private void initRemoteRefs()
     {
         try {
-            RemoteUvmContext ctx = RemoteUvmContextFactory.context();
+            UvmContext ctx = UvmContextFactory.context();
             NodeId tid = ctx.nodeManager().nodeInstances("untangle-casing-mail").get(0);
             NodeContext tc = ctx.nodeManager().nodeContext(tid);
             MailNode mt = (MailNode) tc.node();

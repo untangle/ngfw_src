@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 
 /**
  * A servlet which will display the start page
@@ -44,7 +44,7 @@ public class Welcome extends HttpServlet
         String url = WEBUI_URL;
 
         /* If the server is not activated send them to the setup page. */
-        if ( !LocalUvmContextFactory.context().isWizardComplete() ) url = SETUP_URL;
+        if ( !UvmContextFactory.context().isWizardComplete() ) url = SETUP_URL;
 
         if (request.getParameter("console") != null && request.getParameter("console").equals("1")) {
             url = url + "?console=1";

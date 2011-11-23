@@ -7,8 +7,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.networking.NetworkConfiguration;
-import com.untangle.uvm.RemoteUvmContextFactory;
-import com.untangle.uvm.RemoteUvmContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmContext;
 
 
 /**
@@ -78,7 +78,7 @@ public class IntfMatcher
      */
     public boolean isMatch(int interfaceId)
     {
-        NetworkConfiguration netConf = RemoteUvmContextFactory.context().networkManager().getNetworkConfiguration();
+        NetworkConfiguration netConf = UvmContextFactory.context().networkManager().getNetworkConfiguration();
         
         if (netConf == null) {
             logger.warn("Failed to match interface: null network configuration");

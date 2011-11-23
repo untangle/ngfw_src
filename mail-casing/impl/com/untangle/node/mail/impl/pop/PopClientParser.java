@@ -58,7 +58,7 @@ public class PopClientParser extends AbstractParser
         super(session, true);
         lineBuffering(false);
 
-        //unused// pipeline = LocalUvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
+        //unused// pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
         this.zCasing = zCasing;
 
         state = State.COMMAND;

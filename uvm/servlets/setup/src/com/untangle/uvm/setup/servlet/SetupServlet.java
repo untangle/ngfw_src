@@ -34,8 +34,8 @@ import org.apache.log4j.Logger;
 
 import org.json.JSONObject;
 
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmContext;
 
 /**
  * A servlet which will display the start page
@@ -50,7 +50,7 @@ public class SetupServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException 
     {
-        LocalUvmContext context = LocalUvmContextFactory.context();
+        UvmContext context = UvmContextFactory.context();
         request.setAttribute( "ss", context.skinManager().getSkinSettings());
         request.setAttribute( "timezone", context.adminManager().getTimeZone());
 

@@ -29,8 +29,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.LocalAppServerManager;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
@@ -119,7 +119,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         ef = new SpywareCookieFilter();
         eventCookieLogger.addSimpleEventFilter(ef);
 
-        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
+        MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Pages scanned"), null, I18nUtil.marktr("SCAN"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Pages blocked"), null, I18nUtil.marktr("BLOCK"));
@@ -310,7 +310,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     protected void postInit(String[] args)
     {
-        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeId().getId().toString();
         SpywareSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-spyware/" + "settings_" + nodeID;
@@ -574,7 +574,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             return;
         }
 
-        LocalUvmContext uvmContext = LocalUvmContextFactory.context();
+        UvmContext uvmContext = UvmContextFactory.context();
         LocalAppServerManager asm = uvmContext.localAppServerManager();
 
         Valve v = new OutsideValve()
@@ -604,7 +604,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
             return;
         }
 
-        LocalUvmContext uvmContext = LocalUvmContextFactory.context();
+        UvmContext uvmContext = UvmContextFactory.context();
         LocalAppServerManager asm = uvmContext.localAppServerManager();
 
         if (asm.unloadWebApp("/spyware")) {
@@ -672,7 +672,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         /**
          * Save the settings
          */
-        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeId().getId().toString();
         try {
             settingsManager.save(SpywareSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-spyware/" + "settings_"  + nodeID, newSettings);

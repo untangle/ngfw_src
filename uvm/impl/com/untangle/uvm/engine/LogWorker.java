@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.util.TransactionWork;
@@ -78,7 +78,7 @@ class LogWorker implements Runnable
      */
     private final BlockingQueue<LogEventDesc> inputQueue = new LinkedBlockingQueue<LogEventDesc>();
 
-    private final SyslogManager syslogManager = LocalUvmContextFactory.context().syslogManager();
+    private final SyslogManager syslogManager = UvmContextFactory.context().syslogManager();
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -278,7 +278,7 @@ class LogWorker implements Runnable
         int count = logQueue.size();
         long t0 = System.currentTimeMillis();
 
-        boolean s = LocalUvmContextFactory.context().runTransaction(tw);
+        boolean s = UvmContextFactory.context().runTransaction(tw);
 
         long t1 = System.currentTimeMillis();
 
@@ -294,7 +294,7 @@ class LogWorker implements Runnable
     void start()
     {
         if (!LoggingManagerImpl.isLoggingDisabled()) {
-            LocalUvmContextFactory.context().newThread(this).start();
+            UvmContextFactory.context().newThread(this).start();
         }
     }
 

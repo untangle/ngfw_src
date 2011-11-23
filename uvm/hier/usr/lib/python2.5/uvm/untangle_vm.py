@@ -58,7 +58,7 @@ class Uvm:
         
         proxy = ServiceProxy( "http://" + hostname +  "/webui/JSON-RPC", None, handler )
 
-        return proxy.RemoteUvmContext
+        return proxy.UvmContext
 
 
 

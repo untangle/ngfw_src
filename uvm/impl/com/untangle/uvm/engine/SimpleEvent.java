@@ -15,7 +15,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventRepository;
 import com.untangle.uvm.logging.ListEventFilter;
 import com.untangle.uvm.logging.LogEvent;
@@ -109,7 +109,7 @@ class SimpleEvent<E extends LogEvent> implements EventRepository<E>
                 };
 
             if (null == tctx) {
-                LocalUvmContextFactory.context().runTransaction(tw);
+                UvmContextFactory.context().runTransaction(tw);
             } else {
                 tctx.runTransaction(tw);
             }

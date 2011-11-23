@@ -37,7 +37,7 @@ import static com.untangle.node.token.CasingAdaptor.TOKEN_SIZE;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -60,7 +60,7 @@ class TokenStreamerWrapper implements TokenStreamer
     {
         this.tokenStreamer = tokenStreamer;
 
-        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
+        MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(session.argonConnector().node().getNodeId());
         if (s2c) {
             blinger = c.getBlingBlinger("n2cBytes");

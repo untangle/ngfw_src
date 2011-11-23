@@ -28,7 +28,7 @@ import com.untangle.node.token.Chunk;
 import com.untangle.node.token.ParseException;
 import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.TokenStreamer;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
 
@@ -62,7 +62,7 @@ public abstract class AbstractMailParser
         m_trace = parent.isTrace();
         m_protocol = protocolName;
         m_parentCasing = parent;
-        m_pipeline = LocalUvmContextFactory.context().
+        m_pipeline = UvmContextFactory.context().
             pipelineFoundry().getPipeline(session.id());
     }
 

@@ -22,7 +22,7 @@ import org.json.JSONObject;
 import org.hibernate.Session;
 import org.hibernate.Query;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPAddress;
@@ -95,7 +95,7 @@ class AddressManagerImpl implements LocalAddressManager
                     return true;
                 }
             };
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
         
         synchronized ( this ) {
             /* Rebind https to the new port */
@@ -118,7 +118,7 @@ class AddressManagerImpl implements LocalAddressManager
                 }
             };
 
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
         
         if ( this.addressSettings == null ) {
             logger.warn( "There are no address settings in the database, initializing" );
@@ -200,10 +200,10 @@ class AddressManagerImpl implements LocalAddressManager
 
         try {
             logger.info("Rebinding HTTPS port ...");
-            LocalUvmContextFactory.context().localAppServerManager().rebindExternalHttpsPort( port );
+            UvmContextFactory.context().localAppServerManager().rebindExternalHttpsPort( port );
             logger.info("Rebinding HTTPS port done.");
         } catch ( Exception e ) {
-            if ( !LocalUvmContextFactory.context().state().equals( UvmState.RUNNING )) {
+            if ( !UvmContextFactory.context().state().equals( UvmState.RUNNING )) {
                 logger.info( "unable to rebind port at startup, expected. " + e );
             } else {
                 logger.warn( "unable to rebind https to port: " + port, e );

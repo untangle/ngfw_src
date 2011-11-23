@@ -45,8 +45,8 @@ import com.untangle.uvm.security.RFC2253Name;
  * applications.
  *
  * Instances of this interface are obtained via {@link
- * com.untangle.uvm.LocalUvmContext#appServerManager
- * LocalUvmContext}.
+ * com.untangle.uvm.UvmContext#appServerManager
+ * UvmContext}.
  */
 public interface LocalAppServerManager
 {

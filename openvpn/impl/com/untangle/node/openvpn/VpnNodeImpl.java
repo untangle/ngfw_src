@@ -17,8 +17,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.message.BlingBlinger;
@@ -107,7 +107,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
 
 
-        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
+        MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Clients blocked"), null, I18nUtil.marktr("BLOCK"));
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Clients passed"), null, I18nUtil.marktr("PASS"));
@@ -201,7 +201,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
                 }
 
                 /* Make an asynchronous request */
-                LocalUvmContextFactory.context().newThread( new GenerateRules( null )).start();
+                UvmContextFactory.context().newThread( new GenerateRules( null )).start();
             }
 
         } catch ( Exception exn ) {
@@ -349,7 +349,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         throws Exception
     {
         try {
-            LocalUvmContext uvm = LocalUvmContextFactory.context();
+            UvmContext uvm = UvmContextFactory.context();
             MailSender mailSender = uvm.mailSender();
             Map<String,String> i18nMap = uvm.languageManager().getTranslations("untangle-node-openvpn");
             String subject = I18nUtil.tr("OpenVPN Client", i18nMap);
@@ -518,7 +518,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     private synchronized void deployWebApp()
     {
         if ( !isWebAppDeployed ) {
-            if (null != LocalUvmContextFactory.context().localAppServerManager().loadInsecureApp( WEB_APP_PATH, WEB_APP)) {
+            if (null != UvmContextFactory.context().localAppServerManager().loadInsecureApp( WEB_APP_PATH, WEB_APP)) {
                 logger.debug( "Deployed openvpn web app" );
             }
             else logger.warn( "Unable to deploy openvpn web app" );
@@ -527,14 +527,14 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
         /* unregister the service with the UVM */
         /* Make sure to leave this in because it reloads the iptables rules. */
-        //LocalUvmContextFactory.context().networkManager().registerService( SERVICE_NAME );
-        LocalUvmContextFactory.context().networkManager().refreshIptablesRules();
+        //UvmContextFactory.context().networkManager().registerService( SERVICE_NAME );
+        UvmContextFactory.context().networkManager().refreshIptablesRules();
     }
 
     private synchronized void unDeployWebApp()
     {
         if ( isWebAppDeployed ) {
-            if( LocalUvmContextFactory.context().localAppServerManager().unloadWebApp(WEB_APP_PATH )) {
+            if( UvmContextFactory.context().localAppServerManager().unloadWebApp(WEB_APP_PATH )) {
                 logger.debug( "Unloaded openvpn web app" );
             } else logger.warn( "Unable to unload openvpn web app" );
         }
@@ -542,7 +542,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
         /* unregister the service with the UVM */
         /* Make sure to leave this in because it reloads the iptables rules. */
-        // LocalUvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
+        // UvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
     }
 
     // AbstractNode methods ----------------------------------------------
@@ -566,7 +566,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         // XXX ALPACA_INTEGRATION
         /* Initially use tun0, even though it could eventually be configured to the tap interface  */
 //         try {
-//             LocalUvmContextFactory.context().localIntfManager().registerIntf( "tun0", IntfConstants.VPN_INTF );
+//             UvmContextFactory.context().localIntfManager().registerIntf( "tun0", IntfConstants.VPN_INTF );
 //         } catch ( ArgonException e ) {
 //             throw new Exception( "Unable to register VPN interface", e );
 //         }
@@ -597,7 +597,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     {
         super.preStart();
 
-        Map<String,String> i18nMap = LocalUvmContextFactory.context().languageManager().getTranslations("untangle-node-openvpn");
+        Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-openvpn");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
 
         if ( this.settings == null ) {
@@ -667,8 +667,8 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
         /* unregister the service with the UVM */
         /* Make sure to leave this in because it reloads the iptables rules. */
-        //LocalUvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
-        LocalUvmContextFactory.context().networkManager().refreshIptablesRules();
+        //UvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
+        UvmContextFactory.context().networkManager().refreshIptablesRules();
     }
 
     @Override protected void postDestroy() throws Exception
@@ -692,7 +692,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         unDeployWebApp();
 
 //         try {
-//             LocalUvmContextFactory.context().localIntfManager().unregisterIntf( IntfConstants.VPN_INTF );
+//             UvmContextFactory.context().localIntfManager().unregisterIntf( IntfConstants.VPN_INTF );
 //         } catch ( Exception e ) {
 //             /* There is nothing else to do but print out the message */
 //             logger.error( "Unable to deregister vpn interface", e );

@@ -38,8 +38,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.RemoteUvmContext;
-import com.untangle.uvm.RemoteUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.security.NodeId;
 
 /**
@@ -147,7 +147,7 @@ public class Counters
 
     public StatDescs getStatDescs()
     {
-        RemoteUvmContext mctx = RemoteUvmContextFactory.context();
+        UvmContext mctx = UvmContextFactory.context();
         List<ActiveStat> activeStats = mctx.messageManager().getActiveMetrics(tid);
         return new StatDescs(metrics.values(), activities.values(), activeStats);
     }

@@ -13,8 +13,8 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.LocalAppServerManager;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
@@ -90,7 +90,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         WebFilterUnblockedFilter ueaf = new WebFilterUnblockedFilter(this);
         unblockEventLogger.addSimpleEventFilter(ueaf);
 
-        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
+        MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Pages scanned"), null, I18nUtil.marktr("SCAN"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Pages blocked"), null, I18nUtil.marktr("BLOCK"));
@@ -501,7 +501,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     @Override
     protected void postInit(String[] args)
     {
-        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeId().getId().toString();
         WebFilterSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getName() + "/" + "settings_" + nodeID;
@@ -614,7 +614,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
             return;
         }
 
-        LocalUvmContext mctx = LocalUvmContextFactory.context();
+        UvmContext mctx = UvmContextFactory.context();
         LocalAppServerManager asm = mctx.localAppServerManager();
 
         org.apache.catalina.Valve v = new com.untangle.uvm.util.OutsideValve()
@@ -645,7 +645,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
             return;
         }
 
-        LocalUvmContext mctx = LocalUvmContextFactory.context();
+        UvmContext mctx = UvmContextFactory.context();
         LocalAppServerManager asm = mctx.localAppServerManager();
 
         if (asm.unloadWebApp("/webfilter")) {
@@ -689,7 +689,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         /**
          * Save the settings
          */
-        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeId().getId().toString();
         try {
             settingsManager.save(WebFilterSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-" + this.getName() + "/" + "settings_" + nodeID, newSettings);

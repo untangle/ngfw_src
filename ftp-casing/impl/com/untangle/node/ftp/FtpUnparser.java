@@ -27,7 +27,7 @@ import com.untangle.node.token.ParseException;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.UnparseException;
 import com.untangle.node.token.UnparseResult;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.event.TCPStreamer;
@@ -97,7 +97,7 @@ class FtpUnparser extends AbstractUnparser
         }
 
         if (null != socketAddress) {
-            LocalUvmContextFactory.context().pipelineFoundry()
+            UvmContextFactory.context().pipelineFoundry()
                 .registerConnection(socketAddress, Fitting.FTP_DATA_STREAM);
         }
 

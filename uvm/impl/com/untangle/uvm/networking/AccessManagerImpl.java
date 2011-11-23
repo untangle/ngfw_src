@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Query;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.util.TransactionWork;
@@ -68,7 +68,7 @@ class AccessManagerImpl implements LocalAccessManager
                     return true;
                 }
             };
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
         
         setSupportAccess( this.accessSettings );
     }
@@ -88,7 +88,7 @@ class AccessManagerImpl implements LocalAccessManager
                 }
             };
 
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
         
         if ( accessSettings == null ) {
             logger.info( "There are no access settings in the database, must initialize from files." );
@@ -193,7 +193,7 @@ class AccessManagerImpl implements LocalAccessManager
     private void enableService(String name) 
     {
         try {
-            LocalUvmContextFactory.context().toolboxManager().install(name);
+            UvmContextFactory.context().toolboxManager().install(name);
         }
         catch (com.untangle.uvm.toolbox.PackageInstallException exc) {
             logger.warn("Failed to install package: " + name, exc );
@@ -203,7 +203,7 @@ class AccessManagerImpl implements LocalAccessManager
     private void disableService(String name)
     {
         try {
-            LocalUvmContextFactory.context().toolboxManager().uninstall(name);
+            UvmContextFactory.context().toolboxManager().uninstall(name);
         }
         catch (com.untangle.uvm.toolbox.PackageUninstallException exc) {
             logger.warn("Failed to uninstall package: " + name, exc );

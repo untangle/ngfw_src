@@ -14,7 +14,7 @@ import org.hibernate.Session;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.PartialListUtil;
 import com.untangle.node.util.PartialListUtil.Handler;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
@@ -75,7 +75,7 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
         engine.setClassifications(classifications);
 
 
-        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
+        MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Sessions scanned"), null, I18nUtil.marktr("SCAN"));
         detectBlinger = c.addActivity("detect", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("LOG"));

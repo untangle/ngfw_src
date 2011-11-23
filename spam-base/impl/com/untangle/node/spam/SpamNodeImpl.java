@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.PartialListUtil;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
@@ -98,7 +98,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
         ef = new RBLSkippedFilter();
         rblEventLogger.addSimpleEventFilter(ef);
 
-        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
+        MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Messages passed"), null, I18nUtil.marktr("PASS"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Messages dropped"), null, I18nUtil.marktr("DROP"));

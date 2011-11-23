@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Query;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.util.TransactionWork;
 
@@ -46,7 +46,7 @@ class MiscManagerImpl implements LocalMiscManager
                     return true;
                 }
             };
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
     }
 
     /* ---------------------- PACKAGE ---------------------- */
@@ -64,7 +64,7 @@ class MiscManagerImpl implements LocalMiscManager
                 }
             };
 
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         if ( this.miscSettings == null ) {
             logger.info( "There are no misc settings in the database, must initialize from files." );

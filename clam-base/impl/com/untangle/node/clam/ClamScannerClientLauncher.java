@@ -19,7 +19,7 @@ package com.untangle.node.clam;
 
 import java.io.File;
 import java.lang.Thread;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.virus.VirusClientContext;
 import com.untangle.node.virus.VirusClientSocket;
 import com.untangle.node.virus.VirusScannerClientLauncher;
@@ -91,7 +91,7 @@ public class ClamScannerClientLauncher extends VirusScannerClientLauncher
     {
         cContext = new VirusClientContext(msgFile, VirusClientSocket.CLAMD_DEFHOST, VirusClientSocket.CLAMD_DEFPORT);
         client = new ClamClient(cContext);
-        Thread thread = LocalUvmContextFactory.context().newThread(client);
+        Thread thread = UvmContextFactory.context().newThread(client);
         client.setThread(thread);
         return client;
     }

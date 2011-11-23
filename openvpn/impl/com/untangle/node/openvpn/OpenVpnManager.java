@@ -27,8 +27,8 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.script.ScriptRunner;
@@ -179,15 +179,15 @@ public class OpenVpnManager
         try {
             // XXX ALPACA_INTEGRATION
             /* ** XXXXXXX Bridge mode is unsupported */
-//             LocalUvmContextFactory.context().localIntfManager().
+//             UvmContextFactory.context().localIntfManager().
 //                 registerIntf( DEVICE_ROUTING, IntfConstants.VPN_INTF );
 
             /* ** XXXXXXX Bridge mode is unsupported */
 
             // if ( isBridgeMode ) {
-            // am.enableInternalBridgeIntf( LocalUvmContextFactory.context().networkingManager().get(), intf );
+            // am.enableInternalBridgeIntf( UvmContextFactory.context().networkingManager().get(), intf );
             // }
-            LocalUvmContextFactory.context().networkManager().refreshNetworkConfig();
+            UvmContextFactory.context().networkManager().refreshNetworkConfig();
 //         } catch ( ArgonException e ) {
 //             throw new Exception( e );
         } catch ( Exception e ) {
@@ -208,8 +208,8 @@ public class OpenVpnManager
 
         try {
             //
-            // am.disableInternalBridgeIntf( LocalUvmContextFactory.context().networkingManager().get());
-            LocalUvmContextFactory.context().networkManager().refreshNetworkConfig();
+            // am.disableInternalBridgeIntf( UvmContextFactory.context().networkingManager().get());
+            UvmContextFactory.context().networkManager().refreshNetworkConfig();
         } catch ( Exception e ) {
             throw new Exception( e );
         }
@@ -322,7 +322,7 @@ public class OpenVpnManager
     void writeClientConfigurationFiles( VpnSettings settings, VpnClientBase client, String method )
         throws Exception
     {
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
         NetworkManager nm = uvm.networkManager();
 
         Map<String,String> i18nMap = uvm.languageManager().getTranslations("untangle-node-openvpn");
@@ -388,7 +388,7 @@ public class OpenVpnManager
         sw.appendVariable( FLAG_CA,   CLI_KEY_DIR + "/" + siteName + "-ca.crt" );
 
         /* VPN configuratoins needs information from the networking settings. */
-        NetworkManager networkManager = LocalUvmContextFactory.context().networkManager();
+        NetworkManager networkManager = UvmContextFactory.context().networkManager();
 
         /* This is kind of janky */
         String publicAddress = networkManager.getPublicAddress();
@@ -422,7 +422,7 @@ public class OpenVpnManager
         } catch ( Exception e ) {
             logger.error( "Unable to delete the previous client configuration files." );
         }
-        NetworkConfiguration networkSettings = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration();
+        NetworkConfiguration networkSettings = UvmContextFactory.context().networkManager().getNetworkConfiguration();
         
         Map<String,VpnGroup> groupMap = buildGroupMap(settings);
 

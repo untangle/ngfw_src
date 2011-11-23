@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.MACAddress;
@@ -68,10 +68,10 @@ class DhcpMonitor implements Runnable
 
     private final Logger logger = Logger.getLogger( this.getClass());
     private final RouterImpl node;
-    private final LocalUvmContext localContext;
+    private final UvmContext localContext;
 
 
-    DhcpMonitor( RouterImpl node, LocalUvmContext localContext )
+    DhcpMonitor( RouterImpl node, UvmContext localContext )
     {
         this.node = node;
         this.localContext = localContext;

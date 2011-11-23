@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.UploadManager;
 
@@ -67,7 +67,7 @@ public class UploadServlet extends HttpServlet
             String uploadType = getUploadType(items);
 
             // Process the uploaded items
-            UploadManager uploadManager = LocalUvmContextFactory.context().uploadManager();
+            UploadManager uploadManager = UvmContextFactory.context().uploadManager();
 
             for ( FileItem item : items ) {
                 if (!item.isFormField()) {

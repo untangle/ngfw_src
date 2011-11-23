@@ -50,8 +50,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.reports.Application;
@@ -692,7 +692,7 @@ class ReportingManagerImpl implements ReportingManager
 
     public boolean isReportingEnabled()
     {
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
         NodeManager nodeManager = uvm.nodeManager();
         List<NodeId> tids = nodeManager.nodeInstances("untangle-node-reporting");
         if(tids == null || tids.size() == 0)

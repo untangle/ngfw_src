@@ -15,7 +15,7 @@ import org.json.JSONObject;
 
 import com.untangle.node.cpd.CPD.BlingerType;
 import com.untangle.node.cpd.CPDSettings.AuthenticationType;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.node.script.ScriptRunner;
@@ -149,7 +149,7 @@ public class CPDManager
             
             case ACTIVE_DIRECTORY:
                 try {
-                    DirectoryConnector adconnector = (DirectoryConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+                    DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
                     if (adconnector != null)
                         isAuthenticated = adconnector.activeDirectoryAuthenticate( u, password );
                 } catch (Exception e) {
@@ -160,7 +160,7 @@ public class CPDManager
             
             case LOCAL_DIRECTORY:
                 try {
-                    isAuthenticated = LocalUvmContextFactory.context().localDirectory().authenticate( u, password );
+                    isAuthenticated = UvmContextFactory.context().localDirectory().authenticate( u, password );
                 } catch (Exception e) {
                     logger.warn( "Unable to authenticate users.", e );
                     isAuthenticated = false;
@@ -169,7 +169,7 @@ public class CPDManager
             
             case RADIUS:
                 try {
-                    DirectoryConnector adconnector = (DirectoryConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+                    DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
                     if (adconnector != null)
                         isAuthenticated = adconnector.radiusAuthenticate( u, password );
                 }
@@ -200,7 +200,7 @@ public class CPDManager
         
         /* Expire the cache on the phonebook */
         /* This will force adconnector to relookup the address and log any associated events */
-        DirectoryConnector adconnector = (DirectoryConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) {
             adconnector.getIpUsernameMap().expireUser( address );
         }
@@ -242,7 +242,7 @@ public class CPDManager
         
         /* Expire the cache on the phonebook */
         /* This will force adconnector to relookup the address and log any associated events */
-        DirectoryConnector adconnector = (DirectoryConnector)LocalUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+        DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) {
             adconnector.getIpUsernameMap().expireUser( address );
         }

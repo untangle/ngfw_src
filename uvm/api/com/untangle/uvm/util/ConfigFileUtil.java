@@ -37,7 +37,7 @@ import java.io.FileWriter;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 
 public class ConfigFileUtil {
 
@@ -77,7 +77,7 @@ public class ConfigFileUtil {
             logger.debug( "Protecting " + fileName );
 
             String command = CHMOD_PROTECT_CMD + fileName;
-            Process p = LocalUvmContextFactory.context().exec(command);
+            Process p = UvmContextFactory.context().exec(command);
             code = p.waitFor();
         } catch ( Exception e ) {
             logger.error( "Unable to protect " + fileName, e );

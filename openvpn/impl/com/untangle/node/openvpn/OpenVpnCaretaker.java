@@ -22,8 +22,8 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.script.ScriptRunner;
 
 class OpenVpnCaretaker implements Runnable
@@ -39,7 +39,7 @@ class OpenVpnCaretaker implements Runnable
     private final Logger logger = Logger.getLogger( this.getClass());
 
     /* Local context */
-    private final LocalUvmContext localContext;
+    private final UvmContext localContext;
 
     /* Status of the monitor */
     private volatile boolean isAlive = false;
@@ -49,7 +49,7 @@ class OpenVpnCaretaker implements Runnable
 
     OpenVpnCaretaker()
     {
-        this.localContext = LocalUvmContextFactory.context();
+        this.localContext = UvmContextFactory.context();
     }
 
     public void run()

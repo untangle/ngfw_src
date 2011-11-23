@@ -54,8 +54,8 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 
 import com.sun.mail.smtp.SMTPTransport;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.MailSettings;
 import com.untangle.uvm.networking.NetworkManagerImpl;
@@ -172,7 +172,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
                         String fromHostname = "unknown.example.com";
                         try {
                             String getMailnameCmd[] = { "/bin/cat", "/etc/mailname" };
-                            Process proc = LocalUvmContextFactory.context().exec(getMailnameCmd);
+                            Process proc = UvmContextFactory.context().exec(getMailnameCmd);
                             BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
                             fromHostname = input.readLine();
                             proc.destroy();
@@ -203,7 +203,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
     // is up and runing
     void postInit()
     {
-        ((NetworkManagerImpl)LocalUvmContextFactory.context().networkManager()).
+        ((NetworkManagerImpl)UvmContextFactory.context().networkManager()).
             registerListener(new NetworkConfigurationListener() {
                     public void event( NetworkConfiguration settings )
                     {
@@ -225,7 +225,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
     private boolean runTransaction(TransactionWork<?> tw)
     {
         if (null == transactionRunner) {
-            return LocalUvmContextFactory.context().runTransaction(tw);
+            return UvmContextFactory.context().runTransaction(tw);
         } else {
             return transactionRunner.runTransaction(tw);
         }
@@ -260,7 +260,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
         File exim_dir = new File(EXIM_CONF_DIR);
         if (exim_dir.isDirectory()) {
 
-            String hostName = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().getHostname().toString();
+            String hostName = UvmContextFactory.context().networkManager().getNetworkConfiguration().getHostname().toString();
             if (hostName == null) {
                 logger.warn("null hostname, using untangle-server");
                 hostName = "untangle-server";
@@ -340,12 +340,12 @@ class MailSenderImpl implements MailSender, HasConfigFiles
                     // insert new "  port = xx"
                     String cmd2[] = {"/bin/sed","-e","s|  driver = smtp|  driver = smtp\\n  port = " + mailSettings.getSmtpPort() + "|g","-i",EXIM_TEMPLATE_FILE};
 
-                    proc = LocalUvmContextFactory.context().exec(cmd1);
+                    proc = UvmContextFactory.context().exec(cmd1);
                     input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
                     while ((line = input.readLine()) != null) {logger.warn(line);}
                     proc.destroy();
                     
-                    proc = LocalUvmContextFactory.context().exec(cmd2);
+                    proc = UvmContextFactory.context().exec(cmd2);
                     input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
                     while ((line = input.readLine()) != null) {logger.warn(line);}
                     proc.destroy();
@@ -426,7 +426,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
 
     private void sendAlertWithAttachment(String subject, String bodyText, List<ByteBuffer> attachment) {
         // Compute the list of recipients from the user list.
-        AdminSettings adminSettings = LocalUvmContextFactory.context().adminManager().getAdminSettings();
+        AdminSettings adminSettings = UvmContextFactory.context().adminManager().getAdminSettings();
         Set<User> users = adminSettings.getUsers();
         List<String> alertableUsers = new ArrayList<String>();
 
@@ -639,7 +639,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
     // Here's where we actually do the sending
     public boolean sendTestMessage(String recipient)
     {
-        LocalUvmContext context = LocalUvmContextFactory.context();
+        UvmContext context = UvmContextFactory.context();
         Map<String,String> i18nMap = context.languageManager().getTranslations("untangle-libuvm");
         String companyName = context.brandingManager().getCompanyName();
         I18nUtil i18nUtil = new I18nUtil(i18nMap);

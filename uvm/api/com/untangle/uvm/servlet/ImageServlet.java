@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.RemoteUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 
 
 /**
@@ -118,7 +118,7 @@ public class ImageServlet extends HttpServlet
          * Look in the apt cache
          */
         if (result == null) {
-            result = RemoteUvmContextFactory.context().toolboxManager().packageDesc(name).descIcon();
+            result = UvmContextFactory.context().toolboxManager().packageDesc(name).descIcon();
         }
 
         /**

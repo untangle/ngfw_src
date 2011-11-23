@@ -1,6 +1,6 @@
 <%@page language="java"%>
-<%@page import="com.untangle.uvm.LocalUvmContext"%>
-<%@page import="com.untangle.uvm.LocalUvmContextFactory"%>
+<%@page import="com.untangle.uvm.UvmContext"%>
+<%@page import="com.untangle.uvm.UvmContextFactory"%>
 <%@page import="com.untangle.node.cpd.CPD"%>
 <%@page import="org.json.JSONObject" %>
 <%--
@@ -22,7 +22,7 @@
 --%>
 <%
 response.setContentType( "application/json" );
-LocalUvmContext uvm = LocalUvmContextFactory.context();
+UvmContext uvm = UvmContextFactory.context();
 CPD cpd = (CPD)uvm.nodeManager().node("untangle-node-cpd");
 
 boolean isAuthenticated = false;

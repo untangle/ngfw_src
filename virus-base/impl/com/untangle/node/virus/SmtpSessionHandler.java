@@ -30,7 +30,7 @@ import com.untangle.node.mime.MIMEMessage;
 import com.untangle.node.mime.MIMEPart;
 import com.untangle.node.mime.MIMEUtil;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
 
@@ -60,7 +60,7 @@ public class SmtpSessionHandler
 
         m_virusImpl = impl;
         m_config = config;
-        m_pipeline = LocalUvmContextFactory.context().
+        m_pipeline = UvmContextFactory.context().
             pipelineFoundry().getPipeline(session.id());
         m_fileFactory = new TempFileFactory(m_pipeline);
     }
@@ -153,7 +153,7 @@ public class SmtpSessionHandler
         if(foundVirus) {
             //Perform notification (if we should)
             if(m_config.getNotificationMessageGenerator().sendNotification(
-                                                                           LocalUvmContextFactory.context().mailSender(),
+                                                                           UvmContextFactory.context().mailSender(),
                                                                            m_config.getNotifyAction(),
                                                                            msg,
                                                                            tx,
@@ -258,7 +258,7 @@ public class SmtpSessionHandler
         if(foundVirus) {
             //Make notification
             if(m_config.getNotificationMessageGenerator().sendNotification(
-                                                                           LocalUvmContextFactory.context().mailSender(),
+                                                                           UvmContextFactory.context().mailSender(),
                                                                            m_config.getNotifyAction(),
                                                                            msg,
                                                                            tx,

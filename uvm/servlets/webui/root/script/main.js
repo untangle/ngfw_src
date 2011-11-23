@@ -54,7 +54,7 @@ Ung.Main=Ext.extend(Object, {
         // get JSONRpcClient
         rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
         // get language manager
-        rpc.jsonrpc.RemoteUvmContext.languageManager(function (result, exception) {
+        rpc.jsonrpc.UvmContext.languageManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.languageManager=result;
             // get translations for main module
@@ -73,7 +73,7 @@ Ung.Main=Ext.extend(Object, {
 
         }.createDelegate(this));
         // get skin manager
-        rpc.jsonrpc.RemoteUvmContext.skinManager(function (result, exception) {
+        rpc.jsonrpc.UvmContext.skinManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.skinManager=result;
             // Load Current Skin
@@ -105,37 +105,37 @@ Ung.Main=Ext.extend(Object, {
             }.createDelegate(this));
         }.createDelegate(this));
         // get node manager
-        rpc.jsonrpc.RemoteUvmContext.nodeManager(function (result, exception) {
+        rpc.jsonrpc.UvmContext.nodeManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.nodeManager=result;
             this.postinit();// 4
         }.createDelegate(this));
         // get policy manager
-        rpc.jsonrpc.RemoteUvmContext.policyManager(function (result, exception) {
+        rpc.jsonrpc.UvmContext.policyManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.policyManager=result;
             this.postinit();// 5
         }.createDelegate(this));
         // get toolbox manager
-        rpc.jsonrpc.RemoteUvmContext.toolboxManager(function (result, exception) {
+        rpc.jsonrpc.UvmContext.toolboxManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.toolboxManager=result;
             this.postinit();// 6
         }.createDelegate(this));
         // get admin manager
-        rpc.jsonrpc.RemoteUvmContext.adminManager(function (result, exception) {
+        rpc.jsonrpc.UvmContext.adminManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.adminManager=result;
             this.postinit();// 7
         }.createDelegate(this));
         // get version
-        rpc.jsonrpc.RemoteUvmContext.version(function (result, exception) {
+        rpc.jsonrpc.UvmContext.version(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.version=result;
             this.postinit();// 8
         }.createDelegate(this));
         // get network manager
-        rpc.jsonrpc.RemoteUvmContext.networkManager(function (result, exception) {
+        rpc.jsonrpc.UvmContext.networkManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.networkManager=result;
             rpc.networkManager.getNetworkConfiguration(function (result, exception) {
@@ -146,7 +146,7 @@ Ung.Main=Ext.extend(Object, {
             }.createDelegate(this));
         }.createDelegate(this));
         // get message manager & message key
-        rpc.jsonrpc.RemoteUvmContext.messageManager(function (result, exception) {
+        rpc.jsonrpc.UvmContext.messageManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.messageManager=result;
             rpc.messageManager.getMessageKey(function (result, exception) {
@@ -156,7 +156,7 @@ Ung.Main=Ext.extend(Object, {
             }.createDelegate(this));
         }.createDelegate(this));
         // get branding manager
-        rpc.jsonrpc.RemoteUvmContext.brandingManager(function (result, exception) {
+        rpc.jsonrpc.UvmContext.brandingManager(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             rpc.brandingManager=result;
             rpc.brandingManager.getCompanyName(function (result, exception) {
@@ -535,7 +535,7 @@ Ung.Main=Ext.extend(Object, {
     getNetworkManager : function(forceReload) {
         if (forceReload || rpc.networkManager === undefined) {
             try {
-                rpc.networkManager = rpc.jsonrpc.RemoteUvmContext.networkManager();
+                rpc.networkManager = rpc.jsonrpc.UvmContext.networkManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -547,7 +547,7 @@ Ung.Main=Ext.extend(Object, {
     getLoggingManager : function(forceReload) {
         if (forceReload || rpc.loggingManager === undefined) {
             try {
-                rpc.loggingManager = rpc.jsonrpc.RemoteUvmContext.loggingManager();
+                rpc.loggingManager = rpc.jsonrpc.UvmContext.loggingManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -559,7 +559,7 @@ Ung.Main=Ext.extend(Object, {
     getAppServerManager : function(forceReload) {
         if (forceReload || rpc.appServerManager === undefined) {
             try {
-                rpc.appServerManager = rpc.jsonrpc.RemoteUvmContext.appServerManager();
+                rpc.appServerManager = rpc.jsonrpc.UvmContext.appServerManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -571,7 +571,7 @@ Ung.Main=Ext.extend(Object, {
     getBrandingManager : function(forceReload) {
         if (forceReload || rpc.brandingManager === undefined) {
             try {
-                rpc.brandingManager = rpc.jsonrpc.RemoteUvmContext.brandingManager();
+                rpc.brandingManager = rpc.jsonrpc.UvmContext.brandingManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -583,7 +583,7 @@ Ung.Main=Ext.extend(Object, {
     getOemManager : function(forceReload) {
         if (forceReload || rpc.oemManager === undefined) {
             try {
-                rpc.oemManager = rpc.jsonrpc.RemoteUvmContext.oemManager();
+                rpc.oemManager = rpc.jsonrpc.UvmContext.oemManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -599,7 +599,7 @@ Ung.Main=Ext.extend(Object, {
         }
         if (forceReload || rpc.licenseManager === undefined) {
             try {
-              rpc.licenseManager = rpc.jsonrpc.RemoteUvmContext.licenseManager();
+              rpc.licenseManager = rpc.jsonrpc.UvmContext.licenseManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -610,7 +610,7 @@ Ung.Main=Ext.extend(Object, {
     getLocalDirectory : function(forceReload) {
         if (forceReload || rpc.localDirectory === undefined) {
             try {
-                rpc.localDirectory = rpc.jsonrpc.RemoteUvmContext.localDirectory();
+                rpc.localDirectory = rpc.jsonrpc.UvmContext.localDirectory();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -621,7 +621,7 @@ Ung.Main=Ext.extend(Object, {
     getMailSender : function(forceReload) {
         if (forceReload || rpc.mailSender === undefined) {
             try {
-                rpc.mailSender = rpc.jsonrpc.RemoteUvmContext.mailSender();
+                rpc.mailSender = rpc.jsonrpc.UvmContext.mailSender();
             } catch (e) {
             Ung.Util.rpcExHandler(e);
             }

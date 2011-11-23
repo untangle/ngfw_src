@@ -39,7 +39,7 @@ import java.io.InputStreamReader;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 
 public class ScriptRunner
 {
@@ -78,7 +78,7 @@ public class ScriptRunner
 
         try {
             int code = 0;
-            Process p = LocalUvmContextFactory.context().exec( input );
+            Process p = UvmContextFactory.context().exec( input );
             StringBuilder sb = new StringBuilder();
             BufferedReader scriptOutput = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line;

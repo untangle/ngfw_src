@@ -1,11 +1,11 @@
 <%@ page import="com.untangle.uvm.util.I18nUtil" %>
-<%@ page import="com.untangle.uvm.LocalUvmContext" %>
-<%@ page import="com.untangle.uvm.LocalUvmContextFactory" %>
+<%@ page import="com.untangle.uvm.UvmContext" %>
+<%@ page import="com.untangle.uvm.UvmContextFactory" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.text.MessageFormat" %>
 
 <% 
-LocalUvmContext uvm = LocalUvmContextFactory.context();
+UvmContext uvm = UvmContextFactory.context();
 Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-vm");
 
 MessageFormat fm = new MessageFormat("");

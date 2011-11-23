@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SessionMatcherFactory;
@@ -110,7 +110,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
         ef = new FirewallBlockedFilter();
         eventLogger.addSimpleEventFilter(ef);
 
-        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
+        MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Sessions passed"), null, I18nUtil.marktr("PASS"));
         loggedBlinger = c.addActivity("log", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("LOG"));
@@ -198,7 +198,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
     protected void postInit(String[] args)
     {
-        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeId().getId().toString();
         FirewallSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-firewall/" + "settings_" + nodeID;
@@ -331,7 +331,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
         /**
          * Save the settings
          */
-        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeId().getId().toString();
         try {
             settingsManager.save(FirewallSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-firewall/" + "settings_"  + nodeID, newSettings);

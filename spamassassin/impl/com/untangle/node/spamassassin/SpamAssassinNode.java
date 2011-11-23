@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.spam.SpamNodeImpl;
 import com.untangle.node.spam.SpamSettings;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.node.util.SimpleExec;
 
@@ -37,7 +37,7 @@ public class SpamAssassinNode extends SpamNodeImpl
 
     private void readNodeSettings()
     {
-        SettingsManager setman = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager setman = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeId().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-spamassassin/settings_" + nodeID;
         String settingsFile = settingsBase + ".js";
@@ -100,7 +100,7 @@ public class SpamAssassinNode extends SpamNodeImpl
 
     private void writeNodeSettings(SpamSettings argSettings)
     {
-        SettingsManager setman = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager setman = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeId().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-spamassassin/settings_" + nodeID;
 

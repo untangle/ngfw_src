@@ -39,7 +39,7 @@ package com.untangle.uvm;
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
- * @see LocalUvmContext#makeCronJob(Period, Runnable)
+ * @see UvmContext#makeCronJob(Period, Runnable)
  */
 public interface CronJob
 {

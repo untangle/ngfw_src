@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.ServletStreamer;
 
 @SuppressWarnings("serial")
@@ -55,9 +55,9 @@ public class ImageInstaller extends HttpServlet
         }
 
         if (action.equals("install"))
-            LocalUvmContextFactory.context().toolboxManager().requestInstall( libitem );
+            UvmContextFactory.context().toolboxManager().requestInstall( libitem );
         else if (action.equals("uninstall"))
-            LocalUvmContextFactory.context().toolboxManager().requestUninstall( libitem );
+            UvmContextFactory.context().toolboxManager().requestUninstall( libitem );
  
         String file = System.getProperty( "uvm.home" ) + "/web/library/images/blank.png";
 

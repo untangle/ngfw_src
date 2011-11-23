@@ -32,7 +32,7 @@ import com.untangle.node.token.ParseResult;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenStreamer;
 import com.untangle.node.util.AsciiCharBuffer;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
@@ -59,7 +59,7 @@ public class FtpServerParser extends AbstractParser
         super(session, false);
         lineBuffering(true);
 
-        Pipeline p = LocalUvmContextFactory.context().pipelineFoundry()
+        Pipeline p = UvmContextFactory.context().pipelineFoundry()
             .getPipeline(session.id());
         fitting = p.getServerFitting(session.argonConnector());
     }

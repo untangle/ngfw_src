@@ -24,8 +24,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.LocalUvmContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmContext;
 import com.untangle.node.mail.papi.quarantine.BadTokenException;
 import com.untangle.node.mail.papi.quarantine.InboxIndex;
 import com.untangle.node.mail.papi.quarantine.InboxRecordComparator;
@@ -133,7 +133,7 @@ public class InboxMaintenenceControler extends HttpServlet
 
 
         /* Setup the cobranding settings. */
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
         req.setAttribute( "companyName", uvm.brandingManager().getCompanyName());
         req.setAttribute( "companyUrl", uvm.brandingManager().getCompanyUrl());
         

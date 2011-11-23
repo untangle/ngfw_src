@@ -49,12 +49,12 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import com.untangle.uvm.LanguageSettings;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.LocaleInfo;
 import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.UvmException;
-import com.untangle.uvm.RemoteUvmContextFactory;
-import com.untangle.uvm.RemoteUvmContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeManager;
@@ -130,7 +130,7 @@ class LanguageManagerImpl implements LanguageManager
         blacklist = loadBlacklist();
         allCountries = loadAllCountries();
         
-        LocalUvmContextFactory.context().uploadManager().registerHandler(new LanguageUploadHandler());
+        UvmContextFactory.context().uploadManager().registerHandler(new LanguageUploadHandler());
     }
 
     // public methods ---------------------------------------------------------
@@ -398,7 +398,7 @@ class LanguageManagerImpl implements LanguageManager
         }
 
         // get translation for base node, if any
-        RemoteUvmContext uvm = RemoteUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
         NodeManager nm = uvm.nodeManager();
         Node node = nm.node(module);
         if (node != null) {
@@ -452,7 +452,7 @@ class LanguageManagerImpl implements LanguageManager
                     return true;
                 }
             };
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
     }
 
     private ArrayList<String> loadBlacklist()

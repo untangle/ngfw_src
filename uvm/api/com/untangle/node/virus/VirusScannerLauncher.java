@@ -36,7 +36,7 @@ import java.io.File;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 
 abstract public class VirusScannerLauncher implements Runnable
 {
@@ -60,7 +60,7 @@ abstract public class VirusScannerLauncher implements Runnable
      */
     public VirusScannerResult doScan(long timeout)
     {
-        Thread thread = LocalUvmContextFactory.context().newThread(this);
+        Thread thread = UvmContextFactory.context().newThread(this);
         long startTime = System.currentTimeMillis();
         try {
             synchronized (this) {

@@ -10,8 +10,8 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.AdminManager;
-import com.untangle.uvm.RemoteUvmContextFactory;
-import com.untangle.uvm.RemoteUvmContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.User;
 import com.untangle.uvm.util.JsonClient;
@@ -21,13 +21,13 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
 {
     private final Logger logger = Logger.getLogger( this.getClass());
 
-    private RemoteUvmContext context;
+    private UvmContext context;
 
     /* Shamelessly lifted from AdminManagerImpl */
     private static final String INITIAL_USER_NAME = "System Administrator";
     private static final String INITIAL_USER_LOGIN = "admin";
 
-    private SetupContextImpl( RemoteUvmContext context )
+    private SetupContextImpl( UvmContext context )
     {
         this.context = context;
     }
@@ -103,7 +103,7 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
     
     public static UtJsonRpcServlet.SetupContext makeSetupContext()
     {
-        RemoteUvmContext uvm = RemoteUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
         return new SetupContextImpl( uvm );
     }
 }

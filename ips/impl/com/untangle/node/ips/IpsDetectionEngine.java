@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
@@ -185,7 +185,7 @@ public class IpsDetectionEngine
         //Check matches
         PipelineEndpoints pe = request.pipelineEndpoints();
         int intfID = pe.getServerIntf()+1; // XXX add one because its argon->id ??
-        InterfaceConfiguration sourceIntf = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findById(intfID);
+        InterfaceConfiguration sourceIntf = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(intfID);
         boolean incoming = true;
         if (sourceIntf == null) {
             logger.warn("Unable to find source interface: " + intfID);

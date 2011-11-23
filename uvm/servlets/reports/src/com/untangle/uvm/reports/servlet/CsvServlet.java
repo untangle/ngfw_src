@@ -37,8 +37,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.RemoteUvmContextFactory;
-import com.untangle.uvm.RemoteUvmContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.engine.DataSourceFactory;
 import com.untangle.uvm.reports.ApplicationData;
 import com.untangle.uvm.reports.ColumnDesc;
@@ -80,7 +80,7 @@ public class CsvServlet extends HttpServlet
             return;
         }
 
-        RemoteUvmContext uvm = RemoteUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
         ReportingManager rm = uvm.reportingManager();
 
         BufferedWriter bw = null;

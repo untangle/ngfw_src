@@ -4,7 +4,7 @@
 package com.untangle.node.router;
 
 import com.untangle.node.token.TokenAdaptor;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SessionMatcherFactory;
 import com.untangle.uvm.logging.EventLogger;
@@ -49,7 +49,7 @@ public class RouterImpl extends AbstractNode implements Router
         this.handler          = new RouterEventHandler(this);
         this.sessionManager   = new RouterSessionManager(this);
         this.statisticManager = new RouterStatisticManager(getNodeContext());
-        this.dhcpMonitor      = new DhcpMonitor( this, LocalUvmContextFactory.context());
+        this.dhcpMonitor      = new DhcpMonitor( this, UvmContextFactory.context());
         this.listener         = new SettingsListener();
 
         /**
@@ -115,7 +115,7 @@ public class RouterImpl extends AbstractNode implements Router
         super.postInit( args );
 
         /* Register a listener, this should hang out until the node is removed dies. */
-        LocalUvmContextFactory.context().networkManager().registerListener( this.listener );
+        UvmContextFactory.context().networkManager().registerListener( this.listener );
     }
 
     protected void preStart() 
@@ -148,7 +148,7 @@ public class RouterImpl extends AbstractNode implements Router
     @Override protected void postDestroy() 
     {
         /* Deregister the network settings listener */
-        LocalUvmContextFactory.context().networkManager().unregisterListener( this.listener );
+        UvmContextFactory.context().networkManager().unregisterListener( this.listener );
     }
 
     public void networkSettingsEvent() 
@@ -156,7 +156,7 @@ public class RouterImpl extends AbstractNode implements Router
         logger.info("networkSettingsEvent");
 
         /* Retrieve the new settings from the network manager */
-        NetworkManager nm = LocalUvmContextFactory.context().networkManager();
+        NetworkManager nm = UvmContextFactory.context().networkManager();
         NetworkConfiguration networkSettings = nm.getNetworkConfiguration();
 
         /* Default to it is disabled */

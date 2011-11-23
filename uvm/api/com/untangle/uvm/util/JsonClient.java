@@ -52,8 +52,8 @@ import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 
 @SuppressWarnings("serial")
 public class JsonClient
@@ -111,13 +111,13 @@ public class JsonClient
         throws ConnectionException, IOException, Exception
     {
         String url = ALPACA_BASE_URL + component + "/" + method + "?argyle=" + getNonce();
-        LocalUvmContextFactory.context().newThread( new AsyncRequestRunner( url, null, object )).start();
+        UvmContextFactory.context().newThread( new AsyncRequestRunner( url, null, object )).start();
     }
 
     public void updateAlpacaSettings()
     {
         try {
-            LocalUvmContext context = LocalUvmContextFactory.context();
+            UvmContext context = UvmContextFactory.context();
             JSONObject object = new JSONObject();
             object.put( "language", context.languageManager().getLanguageSettings().getLanguage());
             object.put( "skin", context.skinManager().getSkinSettings().getAdministrationClientSkin());

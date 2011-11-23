@@ -26,8 +26,8 @@ import com.untangle.node.spam.SpamSettings;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.LocalAppServerManager;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;
@@ -103,7 +103,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
     private void readNodeSettings()
     {
-        SettingsManager setman = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager setman = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeId().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-phish/settings_" + nodeID;
         String settingsFile = settingsBase + ".js";
@@ -163,7 +163,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
     private void writeNodeSettings(PhishSettings argSettings)
     {
-        SettingsManager setman = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager setman = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeId().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-phish/settings_" + nodeID;
 
@@ -332,7 +332,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
             return;
         }
 
-        LocalUvmContext mctx = LocalUvmContextFactory.context();
+        UvmContext mctx = UvmContextFactory.context();
         LocalAppServerManager asm = mctx.localAppServerManager();
 
         Valve v = new OutsideValve()
@@ -362,7 +362,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
             return;
         }
 
-        LocalUvmContext mctx = LocalUvmContextFactory.context();
+        UvmContext mctx = UvmContextFactory.context();
         LocalAppServerManager asm = mctx.localAppServerManager();
 
         if (asm.unloadWebApp("/phish")) {

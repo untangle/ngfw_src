@@ -28,8 +28,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.Version;
 import org.apache.log4j.Logger;
 
@@ -187,7 +187,7 @@ public class Launcher extends HttpServlet
 
     private URL getHelpURL( HttpServletRequest request, String source) throws MalformedURLException
     {
-        LocalUvmContext context = LocalUvmContextFactory.context();
+        UvmContext context = UvmContextFactory.context();
         String lang = context.languageManager().getLanguageSettings().getLanguage();
 
         String url = System.getProperty(PROPERTY_HELP_URL);
@@ -212,7 +212,7 @@ public class Launcher extends HttpServlet
     
     private String getLibraryQuery( HttpServletRequest request, String action )
     {
-        LocalUvmContext context = LocalUvmContextFactory.context();
+        UvmContext context = UvmContextFactory.context();
 
         String protocol = request.getParameter( FIELD_PROTOCOL );
         String host = request.getParameter( FIELD_HOST );

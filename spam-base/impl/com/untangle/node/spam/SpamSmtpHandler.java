@@ -29,7 +29,7 @@ import com.untangle.node.mime.MIMEMessage;
 import com.untangle.node.mime.MIMEOutputStream;
 import com.untangle.node.mime.MIMEUtil;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.TCPSession;
 
 /**
@@ -66,7 +66,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         this.safelist = safelist;
         this.config = config;
         this.session = session;
-        this.fileFactory = new TempFileFactory(LocalUvmContextFactory.context().pipelineFoundry().getPipeline(session.id()));
+        this.fileFactory = new TempFileFactory(UvmContextFactory.context().pipelineFoundry().getPipeline(session.id()));
     }
 
     /**
@@ -133,7 +133,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         }
 
         try {
-            boolean isWan = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.serverIntf()).isWAN();
+            boolean isWan = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.serverIntf()).isWAN();
             if (!config.getScanWanMail() && isWan) {
                 logger.debug("Ignoring WAN-bound SMTP mail");
                 postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.OUTBOUND);
@@ -263,7 +263,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         }
 
         try {
-            boolean isWan = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.serverIntf()).isWAN();
+            boolean isWan = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.serverIntf()).isWAN();
             if (!config.getScanWanMail() && isWan) {
                 logger.debug("Ignoring WAN-bound SMTP mail");
                 postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.SAFELIST);
@@ -294,7 +294,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         SmtpSpamMessageAction action = config.getMsgAction();
 
         // Anything going out External MARK instead of QUARANTINE
-        boolean isWan = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.serverIntf()).isWAN();
+        boolean isWan = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.serverIntf()).isWAN();
         if (action == SmtpSpamMessageAction.QUARANTINE && isWan) {
             // Change action now, as it'll make the event logs
             // more accurate

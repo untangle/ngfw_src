@@ -39,7 +39,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.thoughtworks.xstream.XStream;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SkinManager;
 import com.untangle.uvm.SkinInfo;
 import com.untangle.uvm.SkinSettings;
@@ -274,7 +274,7 @@ class SkinManagerImpl implements SkinManager
                     return true;
                 }
             };
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
     }
     
     private void processSkinFolder(File dir, List<File> processedSkinFolders)

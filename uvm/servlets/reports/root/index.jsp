@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%
-LocalUvmContext uvm = LocalUvmContextFactory.context();
+UvmContext uvm = UvmContextFactory.context();
 Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
 
 String company = uvm.brandingManager().getCompanyName();

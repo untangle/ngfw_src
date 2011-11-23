@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 
 /**
  * A servlet which will display the start page
@@ -47,8 +47,8 @@ public class StartPageServlet extends HttpServlet
         String url="/WEB-INF/jsp/startPage.jsp";
         ServletContext sc = getServletContext();
         RequestDispatcher rd = sc.getRequestDispatcher(url);
-        String companyName = LocalUvmContextFactory.context().brandingManager().getCompanyName();
-        boolean isWizardComplete = LocalUvmContextFactory.context().isWizardComplete();
+        String companyName = UvmContextFactory.context().brandingManager().getCompanyName();
+        boolean isWizardComplete = UvmContextFactory.context().isWizardComplete();
         req.setAttribute( "isWizardComplete", isWizardComplete ? "true" : "false" );
         req.setAttribute( "companyName", companyName );
         req.setAttribute( "storeWindowId", STORE_WINDOW_ID );

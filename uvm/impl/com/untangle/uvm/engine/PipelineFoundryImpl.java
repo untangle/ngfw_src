@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.argon.ArgonIPSessionDesc;
 import com.untangle.uvm.argon.PipelineDesc;
@@ -487,8 +487,8 @@ public class PipelineFoundryImpl implements PipelineFoundry
     
     private void removeDuplicates(Policy policy, List<ArgonConnectorFitting> chain)
     {
-        PolicyManager pmi = LocalUvmContextFactory.context().policyManager();
-        NodeManager nodeManager = LocalUvmContextFactory.context().nodeManager();
+        PolicyManager pmi = UvmContextFactory.context().policyManager();
+        NodeManager nodeManager = UvmContextFactory.context().nodeManager();
 
         Set<String> enabledNodes = nodeManager.getEnabledNodes(policy);
 

@@ -42,7 +42,7 @@ import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 
 /* XXX This should probably be abstracted, up to a script writer and then have a
  * class that is a shell script writer
@@ -238,7 +238,7 @@ public class ScriptWriter
         if ( permissions == null ) return;
 
         try {
-            Process p = LocalUvmContextFactory.context().
+            Process p = UvmContextFactory.context().
                 exec( new String[] { "/bin/chmod", permissions, fileName } );
 
             /* Read out standard error and input */

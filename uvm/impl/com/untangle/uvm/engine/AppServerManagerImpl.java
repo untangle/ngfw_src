@@ -19,7 +19,7 @@ import com.untangle.uvm.security.RFC2253Name;
 import com.untangle.uvm.util.QuarantineOutsideAccessValve;
 import com.untangle.uvm.networking.NetworkConfigurationListener;
 import com.untangle.uvm.networking.NetworkConfiguration;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 
 /**
  * TODO A work in progress (currently a disorganized mess of crap taken

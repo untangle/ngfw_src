@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LoggingSettings;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.logging.UvmRepositorySelector;
@@ -72,7 +72,7 @@ class LoggingManagerImpl implements LoggingManager
                     return true;
                 }
             };
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         SyslogManagerImpl.manager().reconfigure(loggingSettings);
     }
@@ -100,7 +100,7 @@ class LoggingManagerImpl implements LoggingManager
                 }
             };
 
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         SyslogManagerImpl.manager().reconfigure(loggingSettings);
     }

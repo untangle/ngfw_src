@@ -5,8 +5,8 @@ package com.untangle.uvm.node;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.StatisticEvent;
 import com.untangle.uvm.logging.LogEvent;
@@ -27,15 +27,15 @@ public abstract class StatisticManager implements Runnable
 
     protected final EventLogger<LogEvent> eventLogger;
     private final Logger logger = Logger.getLogger( this.getClass());
-    private final LocalUvmContext localContext;
+    private final UvmContext localContext;
 
     protected StatisticManager(EventLogger<LogEvent> eventLogger)
     {
-        this.localContext = LocalUvmContextFactory.context();
+        this.localContext = UvmContextFactory.context();
         this.eventLogger = eventLogger;
     }
 
-    protected StatisticManager(LocalUvmContext localContext, EventLogger<LogEvent> eventLogger)
+    protected StatisticManager(UvmContext localContext, EventLogger<LogEvent> eventLogger)
     {
         this.localContext = localContext;
         this.eventLogger = eventLogger;

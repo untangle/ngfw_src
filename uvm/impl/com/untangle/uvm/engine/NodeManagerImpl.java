@@ -31,7 +31,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.logging.UvmLoggingContext;
@@ -107,7 +107,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
                 public NodeManagerState getResult() { return tms; }
             };
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
         this.nodeManagerState = tw.getResult();
     }
 
@@ -522,7 +522,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
     void restart(String name)
     {
-        ToolboxManager tbm = LocalUvmContextFactory.context().toolboxManager();
+        ToolboxManager tbm = UvmContextFactory.context().toolboxManager();
 
         PackageDesc pd = tbm.packageDesc(name);
         if (pd == null) {
@@ -555,7 +555,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
     void startAutoStart(PackageDesc extraPkg)
     {
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)LocalUvmContextFactory.context().toolboxManager();
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)UvmContextFactory.context().toolboxManager();
 
         List<PackageDesc> mds = new ArrayList<PackageDesc>();
 
@@ -656,7 +656,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
     private void startUnloaded(List<NodePersistentState> startQueue, Map<NodeId, NodeDesc> nodeDescs, Set<String> loadedParents)
     {
-        ToolboxManager tbm = LocalUvmContextFactory.context().toolboxManager();
+        ToolboxManager tbm = UvmContextFactory.context().toolboxManager();
 
         List<Runnable> restarters = new ArrayList<Runnable>(startQueue.size());
 
@@ -711,7 +711,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         try {
             for (Iterator<Runnable> riter = restarters.iterator(); riter.hasNext();) {
                 while (getRunnableCount(threads) < loadLimit && riter.hasNext()) {
-                    Thread t = LocalUvmContextFactory.context().
+                    Thread t = UvmContextFactory.context().
                         newThread(riter.next(), "START_" + startThreadNum++);
                     threads.add(t);
                     t.start();
@@ -787,7 +787,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
     private Map<NodeId, NodeDesc> loadNodeDescs(List<NodePersistentState> unloaded)
     {
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)LocalUvmContextFactory.context().toolboxManager();
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)UvmContextFactory.context().toolboxManager();
 
         Map<NodeId, NodeDesc> nodeDescs = new HashMap<NodeId, NodeDesc>(unloaded.size());
 
@@ -840,7 +840,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
                     return null;
                 }
             };
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         return unloaded;
     }
@@ -854,7 +854,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
      */
     private NodeDesc initNodeDesc(PackageDesc packageDesc, URL[] urls, NodeId nodeId) throws DeployException
     {
-        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         NodeDesc nodeDesc = null;
         try {
             String fileName = System.getProperty("uvm.lib.dir") + "/" + packageDesc.getName() + "/" + "nodeDesc";
@@ -882,14 +882,14 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
     private Policy getDefaultPolicyForNode(String nodeName) throws DeployException
     {
-        ToolboxManager tbm = LocalUvmContextFactory.context().toolboxManager();
+        ToolboxManager tbm = UvmContextFactory.context().toolboxManager();
         PackageDesc packageDesc = tbm.packageDesc(nodeName);
         if (packageDesc == null)
             throw new DeployException("Node named " + nodeName + " not found");
         if (PackageDesc.Type.SERVICE != packageDesc.getType()) {
             return null;
         } else {
-            return LocalUvmContextFactory.context().policyManager().getDefaultPolicy();
+            return UvmContextFactory.context().policyManager().getDefaultPolicy();
         }
     }
 
@@ -911,7 +911,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
                 public Object getResult() { return null; }
             };
-        if (!LocalUvmContextFactory.context().runTransaction(tw))
+        if (!UvmContextFactory.context().runTransaction(tw))
             // We cannot return the new nodeId if updating the database failed,
             // as that would break the invariant of multiple nodes not having
             // the same nodeId.
@@ -922,7 +922,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
     private List<Policy> getAllPolicies(Policy p)
     {
-        PolicyManager lpi = LocalUvmContextFactory.context().policyManager();
+        PolicyManager lpi = UvmContextFactory.context().policyManager();
 
         List<Policy> l = new ArrayList<Policy>();
         while (null != p) {
@@ -1085,7 +1085,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
         public void run()
         {
-            ArgonManager am = LocalUvmContextFactory.context().argonManager();
+            ArgonManager am = UvmContextFactory.context().argonManager();
             am.shutdownMatches(matcher);
         }
     }

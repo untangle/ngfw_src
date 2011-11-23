@@ -23,7 +23,7 @@ import org.json.JSONObject;
 
 import com.untangle.jnetcap.Netcap;
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.IPAddress;
@@ -636,7 +636,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         /* WAN ports never have HTTP open */
-        boolean isWan = LocalUvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.clientIntf()).isWAN();
+        boolean isWan = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(session.clientIntf()).isWAN();
         if ( isWan ) {
             //this is normal no error logged
             return null;
@@ -831,7 +831,7 @@ public class NetworkManagerImpl implements NetworkManager
     /* Load the network configuration */
     private NetworkConfiguration loadNetworkConfiguration()
     {
-        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         NetworkConfiguration settings = null;
         
         try {

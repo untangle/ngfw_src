@@ -16,7 +16,7 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.IPNullAddr;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
@@ -46,7 +46,7 @@ class NetworkUtilPriv extends NetworkUtil
     Properties loadProperties() throws IOException
     {
         String cmd = System.getProperty( "uvm.bin.dir" ) + "/ut-net-properties";
-        Process process = LocalUvmContextFactory.context().exec( cmd );
+        Process process = UvmContextFactory.context().exec( cmd );
         Properties properties = new Properties();
         properties.load( process.getInputStream());
         return properties;

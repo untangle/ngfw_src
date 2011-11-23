@@ -31,7 +31,7 @@ import com.untangle.node.mime.HeaderParseException;
 import com.untangle.node.mime.LCString;
 import com.untangle.node.mime.MIMEMessage;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.TCPSession;
 
 public class SpamImapHandler extends BufferingImapTokenStreamHandler
@@ -65,7 +65,7 @@ public class SpamImapHandler extends BufferingImapTokenStreamHandler
         m_spamImpl = impl;
         m_safelist = safelist;
         m_config = config;
-        m_fileFactory = new TempFileFactory(LocalUvmContextFactory.context().
+        m_fileFactory = new TempFileFactory(UvmContextFactory.context().
                                             pipelineFoundry().getPipeline(session.id()));
     }
 

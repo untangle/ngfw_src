@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import com.untangle.jnetcap.Netcap;
 import com.untangle.jnetcap.PortRange;
 import com.untangle.uvm.IntfConstants;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
@@ -41,7 +41,7 @@ public class RuleManager
         }
 
         /* Make an asynchronous request */
-        LocalUvmContextFactory.context().newThread( new GenerateRules( null )).start();
+        UvmContextFactory.context().newThread( new GenerateRules( null )).start();
     }
 
     synchronized void destroyIptablesRules() throws Exception
@@ -52,7 +52,7 @@ public class RuleManager
         }
 
         /* Make an asynchronous request */
-        LocalUvmContextFactory.context().newThread( new GenerateRules( null )).start();
+        UvmContextFactory.context().newThread( new GenerateRules( null )).start();
     }
 
     synchronized void isShutdown()

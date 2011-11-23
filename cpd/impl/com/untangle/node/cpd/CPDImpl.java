@@ -22,8 +22,8 @@ import org.json.JSONObject;
 
 import com.untangle.node.cpd.CPDSettings.AuthenticationType;
 import com.untangle.uvm.LocalAppServerManager;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.BrandingManager;
@@ -83,7 +83,7 @@ public class CPDImpl extends AbstractNode implements CPD
         this.settings = new CPDSettings();
         this.pipeSpecs = new PipeSpec[0];
         
-        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
+        MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Blocked Sessions"), null, I18nUtil.marktr("BLOCK"));
         authorizeBlinger = c.addActivity("authorize", I18nUtil.marktr("Authorized Clients"), null, I18nUtil.marktr("AUTHORIZE"));
@@ -413,13 +413,13 @@ public class CPDImpl extends AbstractNode implements CPD
         }
         
         if ( !hasCaptureRule ) {
-            Map<String,String> i18nMap = LocalUvmContextFactory.context().languageManager().getTranslations("untangle-node-cpd");
+            Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-cpd");
             I18nUtil i18nUtil = new I18nUtil(i18nMap);
             throw new Exception( i18nUtil.tr( "You must create and enable at least one Capture Rule before turning on the Captive Portal" ));
         }
         reconfigure(true);
            
-        LocalUvmContextFactory.context().uploadManager().registerHandler(this.uploadHandler);
+        UvmContextFactory.context().uploadManager().registerHandler(this.uploadHandler);
         
         super.preStart();
      }
@@ -429,11 +429,11 @@ public class CPDImpl extends AbstractNode implements CPD
     {
         try {
             /* Only stop if requested by the user (not during shutdown). */
-            if ( LocalUvmContextFactory.context().state() != UvmState.DESTROYED ) {
+            if ( UvmContextFactory.context().state() != UvmState.DESTROYED ) {
                 this.manager.clearHostDatabase();
                 
                 /* Flush all of the entries that are in the phonebook XXX */
-                //LocalUvmContextFactory.context().localIpUsernameMap().flushEntries();
+                //UvmContextFactory.context().localIpUsernameMap().flushEntries();
             }
         } catch (JSONException e) {
             logger.warn( "Unable to convert the JSON while clearing the host database, continuing.", e);
@@ -476,7 +476,7 @@ public class CPDImpl extends AbstractNode implements CPD
         
         getNodeContext().runTransaction(tw);
         
-        LocalUvmContextFactory.context().uploadManager().registerHandler(this.uploadHandler);
+        UvmContextFactory.context().uploadManager().registerHandler(this.uploadHandler);
         
         deployWebAppIfRequired(this.logger);
     }
@@ -484,7 +484,7 @@ public class CPDImpl extends AbstractNode implements CPD
     @Override
     protected void preDestroy() throws Exception
     {
-        LocalUvmContextFactory.context().uploadManager().unregisterHandler(this.uploadHandler.getName());
+        UvmContextFactory.context().uploadManager().unregisterHandler(this.uploadHandler.getName());
                 
         unDeployWebAppIfRequired(this.logger);
 
@@ -496,7 +496,7 @@ public class CPDImpl extends AbstractNode implements CPD
     @Override
     protected void uninstall()
     {
-        LocalUvmContextFactory.context().uploadManager().unregisterHandler(this.uploadHandler.getName());
+        UvmContextFactory.context().uploadManager().unregisterHandler(this.uploadHandler.getName());
 
         super.uninstall();
     }
@@ -540,7 +540,7 @@ public class CPDImpl extends AbstractNode implements CPD
     private String getDefaultPageParameters() {
 
         try {
-            BrandingManager brand = LocalUvmContextFactory.context().brandingManager();
+            BrandingManager brand = UvmContextFactory.context().brandingManager();
 
             JSONObject parameters = new JSONObject();
             parameters.put( "basicLoginPageTitle", "Captive Portal");
@@ -586,7 +586,7 @@ public class CPDImpl extends AbstractNode implements CPD
             return;
         }
 
-        LocalUvmContext mctx = LocalUvmContextFactory.context();
+        UvmContext mctx = UvmContextFactory.context();
         LocalAppServerManager asm = mctx.localAppServerManager();
 
         Valve v = new OutsideValve()
@@ -615,7 +615,7 @@ public class CPDImpl extends AbstractNode implements CPD
             return;
         }
 
-        LocalUvmContext mctx = LocalUvmContextFactory.context();
+        UvmContext mctx = UvmContextFactory.context();
         LocalAppServerManager asm = mctx.localAppServerManager();
 
         if (asm.unloadWebApp("/users")) {

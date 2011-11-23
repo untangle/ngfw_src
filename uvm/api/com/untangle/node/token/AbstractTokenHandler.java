@@ -33,7 +33,7 @@
 
 package com.untangle.node.token;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Pipeline;
 import com.untangle.uvm.vnet.TCPSession;
 
@@ -53,7 +53,7 @@ public abstract class AbstractTokenHandler implements TokenHandler
     protected AbstractTokenHandler(TCPSession session)
     {
         this.session = session;
-        this.pipeline = LocalUvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
+        this.pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
     }
 
     // TokenHandler methods ---------------------------------------------------

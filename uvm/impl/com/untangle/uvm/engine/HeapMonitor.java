@@ -31,7 +31,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 
 /**
  * Class that monitors the total memory size and the prints an error message if grows
@@ -164,7 +164,7 @@ class HeapMonitor
 
         logger.debug( "Starting the heap monitor" );
         
-        this.thread = LocalUvmContextFactory.context().newThread(new Task());
+        this.thread = UvmContextFactory.context().newThread(new Task());
     }
     
     synchronized void stop()

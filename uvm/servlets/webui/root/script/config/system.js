@@ -230,7 +230,7 @@ if (!Ung.hasResource["Ung.System"]) {
                                 String.format(this.i18n._("You are about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete."), this.companyName ), 
                                 function(btn) {
                                 if (btn == "yes") {
-                                    rpc.jsonrpc.RemoteUvmContext.rebootBox(function (result, exception) {
+                                    rpc.jsonrpc.UvmContext.rebootBox(function (result, exception) {
                                         if(exception) {
                                             Ext.MessageBox.alert(this.i18n._("Manual Reboot Failure Warning"),String.format(this.i18n._("Error: Unable to reboot {0} Server"),this.companyName)); 
                                         } else {
@@ -261,7 +261,7 @@ if (!Ung.hasResource["Ung.System"]) {
                                 String.format(this.i18n._("You are about to shutdown the {0} Server.  This will stop all network operations."), this.companyName ), 
                                 function(btn) {
                                 if (btn == "yes") {
-                                    rpc.jsonrpc.RemoteUvmContext.shutdownBox(function (result, exception) {
+                                    rpc.jsonrpc.UvmContext.shutdownBox(function (result, exception) {
                                         if(exception) {
                                             Ext.MessageBox.alert(this.i18n._("Manual Shutdown Failure Warning"),String.format(this.i18n._("Error: Unable to shutdown {0} Server"),this.companyName)); 
                                         } else {

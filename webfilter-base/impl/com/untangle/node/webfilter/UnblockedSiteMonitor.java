@@ -14,7 +14,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.Worker;
 import com.untangle.uvm.util.WorkerRunner;
 
@@ -34,7 +34,7 @@ class UnblockedSitesMonitor
     private final WebFilterBase wfb;
     private final Logger logger = Logger.getLogger(getClass());
     private final Monitor monitor = new Monitor();
-    private final WorkerRunner workerRunner = new WorkerRunner(monitor, LocalUvmContextFactory.context());
+    private final WorkerRunner workerRunner = new WorkerRunner(monitor, UvmContextFactory.context());
 
     // constructors -----------------------------------------------
     public UnblockedSitesMonitor(WebFilterBase myWfb)

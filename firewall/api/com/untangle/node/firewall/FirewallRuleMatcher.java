@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.RemoteUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.node.IPMatcher;
@@ -203,7 +203,7 @@ public class FirewallRuleMatcher implements JSONString, Serializable
             if (username == null)
                 return false;
 
-            DirectoryConnector adconnector = (DirectoryConnector)RemoteUvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+            DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
             boolean isMemberOf = false;
 
             if (adconnector.isMemberOf( username, value )) 

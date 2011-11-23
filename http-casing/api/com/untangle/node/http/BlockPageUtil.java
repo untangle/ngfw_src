@@ -15,8 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.BrandingManager;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.util.I18nUtil;
 
@@ -33,7 +33,7 @@ public class BlockPageUtil
     public void handle(HttpServletRequest request, HttpServletResponse response, HttpServlet servlet, BlockPageParameters params)
         throws ServletException
     {
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
         BrandingManager bm = uvm.brandingManager();
 
         String module = params.getI18n();

@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.MarshallException;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.networking.AddressSettings;
 import com.untangle.uvm.networking.NetworkConfiguration;
@@ -34,7 +34,7 @@ public class SetupSettingsServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException
     {
-        LocalUvmContext context = LocalUvmContextFactory.context();
+        UvmContext context = UvmContextFactory.context();
 
         JSONSerializer js = new JSONSerializer();
         try {

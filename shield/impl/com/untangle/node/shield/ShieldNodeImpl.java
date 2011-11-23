@@ -17,7 +17,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.node.NodeContext;
@@ -93,7 +93,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
 
     protected void postInit(String[] args)
     {
-        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeId().getId().toString();
         ShieldSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-shield/" + "settings_" + nodeID;
@@ -216,7 +216,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
         /**
          * Save the settings
          */
-        SettingsManager settingsManager = LocalUvmContextFactory.context().settingsManager();
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeId().getId().toString();
         try {
             settingsManager.save(ShieldSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-shield/" + "settings_"  + nodeID, newSettings);

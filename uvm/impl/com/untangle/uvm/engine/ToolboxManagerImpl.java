@@ -32,7 +32,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.uvm.CronJob;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.LicenseManager;
@@ -132,7 +132,7 @@ class ToolboxManagerImpl implements ToolboxManager
         UpgradeSettings us = getUpgradeSettings();
         Period p = us.getPeriod();
 
-        cronJob = LocalUvmContextFactory.context().makeCronJob(p, updateTask);
+        cronJob = UvmContextFactory.context().makeCronJob(p, updateTask);
     }
 
     void destroy()
@@ -205,13 +205,13 @@ class ToolboxManagerImpl implements ToolboxManager
             } 
         }
 
-        NodeManager nm = LocalUvmContextFactory.context().nodeManager();
+        NodeManager nm = UvmContextFactory.context().nodeManager();
         List<NodeDesc> instances = nm.visibleNodes(p);
 
         Map<NodeId, StatDescs> statDescs = new HashMap<NodeId, StatDescs>(instances.size());
         for (NodeDesc nd : instances) {
             NodeId t = nd.getNodeId();
-            MessageManager lmm = LocalUvmContextFactory.context().messageManager();
+            MessageManager lmm = UvmContextFactory.context().messageManager();
             Counters c = lmm.getCounters(t);
             StatDescs sd = c.getStatDescs();
             statDescs.put(t, sd);
@@ -239,7 +239,7 @@ class ToolboxManagerImpl implements ToolboxManager
         Collections.sort(apps);
 
         Map<String, License> licenseMap = new HashMap<String, License>();
-        LicenseManager lm = LocalUvmContextFactory.context().licenseManager();
+        LicenseManager lm = UvmContextFactory.context().licenseManager();
         for (NodeDesc nd : instances) {
             String n = nd.getName();
             licenseMap.put(n, lm.getLicense(n));
@@ -400,7 +400,7 @@ class ToolboxManagerImpl implements ToolboxManager
             tails.put(i, alt);
         }
 
-        LocalUvmContextFactory.context().newThread(alt).start();
+        UvmContextFactory.context().newThread(alt).start();
 
         try {
             installing = true;
@@ -481,7 +481,7 @@ class ToolboxManagerImpl implements ToolboxManager
     public void uninstall(String name) throws PackageUninstallException
     {
         // stop intances
-        NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().nodeManager();
+        NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
         List<NodeId> tids = nm.nodeInstances(name);
         logger.debug("unloading " + tids.size() + " nodes");
         for (NodeId t : tids) {
@@ -525,7 +525,7 @@ class ToolboxManagerImpl implements ToolboxManager
             tails.put(i, alt);
         }
 
-        LocalUvmContextFactory.context().newThread(alt).start();
+        UvmContextFactory.context().newThread(alt).start();
 
         FutureTask<Object> f = new FutureTask<Object>(new Callable<Object>() {
                 public Object call() throws Exception
@@ -543,7 +543,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 }
             });
 
-        LocalUvmContextFactory.context().newThread(f).start();
+        UvmContextFactory.context().newThread(f).start();
         
         return;
     }
@@ -557,7 +557,7 @@ class ToolboxManagerImpl implements ToolboxManager
         }
 
         PackageInstallRequest mir = new PackageInstallRequest(md,isInstalled(packageName));
-        MessageManager mm = LocalUvmContextFactory.context().messageManager();
+        MessageManager mm = UvmContextFactory.context().messageManager();
 
         // Make sure there isn't an existing outstanding install request for this package.
         for (Message msg : mm.getMessages()) {
@@ -583,7 +583,7 @@ class ToolboxManagerImpl implements ToolboxManager
         }
 
         PackageUninstallRequest mir = new PackageUninstallRequest(md,isInstalled(packageName));
-        MessageManager mm = LocalUvmContextFactory.context().messageManager();
+        MessageManager mm = UvmContextFactory.context().messageManager();
 
         // Make sure there isn't an existing outstanding uninstall request for this package.
         for (Message msg : mm.getMessages()) {
@@ -608,7 +608,7 @@ class ToolboxManagerImpl implements ToolboxManager
         UvmContextImpl uvmContext = UvmContextImpl.getInstance();
         uvmContext.refreshToolbox();
 
-        NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().nodeManager();
+        NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
         nm.restart(pkgName);
         nm.startAutoStart(packageDesc(pkgName));
     }
@@ -619,7 +619,7 @@ class ToolboxManagerImpl implements ToolboxManager
         logger.debug("unregistering package: " + pkgName);
 
         // stop package intances
-        NodeManagerImpl nm = (NodeManagerImpl)LocalUvmContextFactory.context().nodeManager();
+        NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
         List<NodeId> tids = nm.nodeInstances(pkgName);
         logger.debug("unloading " + tids.size() + " nodes");
         for (NodeId t : tids) {
@@ -639,7 +639,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
                 public Object getResult() { return null; }
             };
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         cronJob.reschedule(us.getPeriod());
     }
@@ -670,7 +670,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
                 public UpgradeSettings getResult() { return us; }
             };
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         return tw.getResult();
     }
@@ -747,7 +747,7 @@ class ToolboxManagerImpl implements ToolboxManager
                     return true;
                 }
             };
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         return m;
     }
@@ -768,7 +768,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 }
             });
 
-        LocalUvmContextFactory.context().newThread(f).start();
+        UvmContextFactory.context().newThread(f).start();
 
         boolean tryAgain;
         do {
@@ -848,7 +848,7 @@ class ToolboxManagerImpl implements ToolboxManager
         synchronized(this) {
             try {
                 String cmd = System.getProperty("uvm.bin.dir") + "/ut-apt available";
-                Process p = LocalUvmContextFactory.context().exec(cmd);
+                Process p = UvmContextFactory.context().exec(cmd);
                 pkgs = readPkgList(p.getInputStream(), instList);
             } catch (Exception exn) {
                 logger.fatal("Unable to parse ut-apt available list, proceeding with empty list", exn);
@@ -950,7 +950,7 @@ class ToolboxManagerImpl implements ToolboxManager
         synchronized(this) {
             try {
                 String cmd = System.getProperty("uvm.bin.dir") + "/ut-apt installed";
-                Process p = LocalUvmContextFactory.context().exec(cmd);
+                Process p = UvmContextFactory.context().exec(cmd);
                 instList = readInstalledList(p.getInputStream());
             } catch (IOException exn) {
                 throw new RuntimeException(exn); 
@@ -996,7 +996,7 @@ class ToolboxManagerImpl implements ToolboxManager
         synchronized(this) {
             logger.debug("Running apt: " + cmdStr);
             try {
-                Process proc = LocalUvmContextFactory.context().exec(cmdStr);
+                Process proc = UvmContextFactory.context().exec(cmdStr);
                 InputStream is = proc.getInputStream();
                 byte[] outBuf = new byte[4092];
                 int i;
@@ -1043,7 +1043,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
         synchronized(this) {
             try {
-                Process proc = LocalUvmContextFactory.context().exec(cmd);
+                Process proc = UvmContextFactory.context().exec(cmd);
                 InputStream is = proc.getInputStream();
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
                 String line;

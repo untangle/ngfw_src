@@ -20,8 +20,8 @@ import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.LocalAppServerManager;
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
@@ -179,7 +179,7 @@ public abstract class VirusNodeImpl extends AbstractNode
         this.mailEventLogger.addListEventFilter(((ListEventFilter) new VirusSmtpInfectedFilter(vendor)));
         this.mailEventLogger.addListEventFilter(((ListEventFilter) new VirusSmtpCleanFilter(vendor)));
 
-        MessageManager lmm = LocalUvmContextFactory.context().messageManager();
+        MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
         scanBlinger   = c.addActivity("scan",   I18nUtil.marktr("Documents scanned"),  null, I18nUtil.marktr("SCAN"));
         blockBlinger  = c.addActivity("block",  I18nUtil.marktr("Documents blocked"),  null, I18nUtil.marktr("BLOCK"));
@@ -664,7 +664,7 @@ public abstract class VirusNodeImpl extends AbstractNode
             return;
         }
 
-        LocalUvmContext mctx = LocalUvmContextFactory.context();
+        UvmContext mctx = UvmContextFactory.context();
         LocalAppServerManager asm = mctx.localAppServerManager();
 
         Valve v = new OutsideValve()
@@ -693,7 +693,7 @@ public abstract class VirusNodeImpl extends AbstractNode
             return;
         }
 
-        LocalUvmContext mctx = LocalUvmContextFactory.context();
+        UvmContext mctx = UvmContextFactory.context();
         LocalAppServerManager asm = mctx.localAppServerManager();
 
         if (asm.unloadWebApp("/virus")) {

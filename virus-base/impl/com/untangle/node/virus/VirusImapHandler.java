@@ -29,7 +29,7 @@ import com.untangle.node.mime.MIMEMessage;
 import com.untangle.node.mime.MIMEPart;
 import com.untangle.node.mime.MIMEUtil;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.TCPSession;
 
 /**
@@ -55,7 +55,7 @@ public class VirusImapHandler
         m_virusImpl = node;
         m_config = config;
         m_fileFactory = new TempFileFactory(
-                                            LocalUvmContextFactory.context().
+                                            UvmContextFactory.context().
                                             pipelineFoundry().getPipeline(session.id())
                                             );
     }

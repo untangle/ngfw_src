@@ -283,7 +283,7 @@ public class AddressSettings implements Serializable, Validatable
         /* if using the public address then, get the address from the settings. */
         String publicAddress = this.getPublicAddress();
 
-        IPAddress primaryAddress = com.untangle.uvm.RemoteUvmContextFactory.context().networkManager().getPrimaryAddress();
+        IPAddress primaryAddress = com.untangle.uvm.UvmContextFactory.context().networkManager().getPrimaryAddress();
         
         /* has public address trumps over all other settings */
         if ( this.getIsPublicAddressEnabled() && ( publicAddress != null ) && ( publicAddress.trim().length() > 0 )) {
@@ -292,7 +292,7 @@ public class AddressSettings implements Serializable, Validatable
             
         } else if ( this.getIsHostNamePublic() )  {
             /* no public address, use the primary address, and the hostname */
-            String name = com.untangle.uvm.RemoteUvmContextFactory.context().networkManager().getHostname();
+            String name = com.untangle.uvm.UvmContextFactory.context().networkManager().getHostname();
             
             /* If a hostname is available, and qualified, then use the hostname */
             if (( name != null ) && !name.equals("")) {

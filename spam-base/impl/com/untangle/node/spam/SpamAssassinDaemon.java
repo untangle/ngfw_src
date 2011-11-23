@@ -25,7 +25,7 @@ import java.io.InputStreamReader;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 
 public class SpamAssassinDaemon
 {
@@ -60,7 +60,7 @@ public class SpamAssassinDaemon
     private boolean executeCmd(String cmdStr, String replyStr) {
         Process cmdProcess = null;
         try {
-            cmdProcess = LocalUvmContextFactory.context().exec(cmdStr);
+            cmdProcess = UvmContextFactory.context().exec(cmdStr);
         } catch (Exception e) {
             logger.error(BASE_CMD + " could not be exec'ed: ", e);
             return false;

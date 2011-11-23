@@ -41,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -76,7 +76,7 @@ public class TokenAdaptor extends AbstractEventHandler
     private final TokenHandlerFactory handlerFactory;
     private final Map<Session,HandlerDesc> handlers = new ConcurrentHashMap<Session,HandlerDesc>();
 
-    private final PipelineFoundry pipeFoundry = LocalUvmContextFactory.context().pipelineFoundry();
+    private final PipelineFoundry pipeFoundry = UvmContextFactory.context().pipelineFoundry();
 
     private final BlingBlinger s2nBytes;
     private final BlingBlinger c2nBytes;
@@ -90,7 +90,7 @@ public class TokenAdaptor extends AbstractEventHandler
         super(node);
         this.handlerFactory = thf;
 
-        MessageManager lmm = LocalUvmContextFactory.context()
+        MessageManager lmm = UvmContextFactory.context()
             .messageManager();
         Counters c = lmm.getCounters(node.getNodeId());
         s2nBytes = c.getBlingBlinger("s2nBytes");

@@ -30,8 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
@@ -140,7 +140,7 @@ public class ProxyServlet extends HttpServlet
         } catch (UnknownHostException exn) {
             logger.warn("Unknown host (method: " + method +")", exn);
             try {
-                LocalUvmContext uvm = LocalUvmContextFactory.context();
+                UvmContext uvm = UvmContextFactory.context();
                 Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
                 resp.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, I18nUtil.tr("could not resolve host", i18n_map));
             } catch (IOException e) {
@@ -149,7 +149,7 @@ public class ProxyServlet extends HttpServlet
         } catch (IOException exn) {
             logger.warn("IO Exception", exn);
             try {
-                LocalUvmContext uvm = LocalUvmContextFactory.context();
+                UvmContext uvm = UvmContextFactory.context();
                 Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
                 resp.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, I18nUtil.tr("request timed out", i18n_map));
             } catch (IOException e) {
@@ -176,7 +176,7 @@ public class ProxyServlet extends HttpServlet
 
     private String getUrl(HttpServletRequest req)
     {
-        String alpacaNonce = LocalUvmContextFactory.context()
+        String alpacaNonce = UvmContextFactory.context()
             .adminManager().getAlpacaNonce();
 
         String pi = req.getPathInfo();

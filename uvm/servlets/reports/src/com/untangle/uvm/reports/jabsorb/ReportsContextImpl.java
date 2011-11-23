@@ -29,8 +29,8 @@ import com.untangle.uvm.SkinManager;
 import com.untangle.uvm.SkinInfo;
 import com.untangle.uvm.SkinSettings;
 import com.untangle.uvm.UvmException;
-import com.untangle.uvm.RemoteUvmContextFactory;
-import com.untangle.uvm.RemoteUvmContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.reports.ApplicationData;
 import com.untangle.uvm.reports.DateItem;
 import com.untangle.uvm.reports.Highlight;
@@ -41,14 +41,14 @@ import org.apache.commons.fileupload.FileItem;
 
 public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
 {
-    private final RemoteUvmContext context;
+    private final UvmContext context;
 
     private final SkinManager skinManager = new SkinManagerImpl();
     private final ReportingManager reportingManager = new ReportingManagerImpl();
     private final LanguageManager languageManager = new LanguageManagerImpl();
 
 
-    private ReportsContextImpl( RemoteUvmContext context )
+    private ReportsContextImpl( UvmContext context )
     {
         this.context = context;
     }
@@ -70,7 +70,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
 
     static UtJsonRpcServlet.ReportsContext makeReportsContext()
     {
-        RemoteUvmContext uvm = RemoteUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
         return new ReportsContextImpl( uvm );
     }
 

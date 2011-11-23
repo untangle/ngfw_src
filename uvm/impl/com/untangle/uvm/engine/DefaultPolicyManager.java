@@ -12,7 +12,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.uvm.ArgonManager;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.License;
@@ -94,7 +94,7 @@ class DefaultPolicyManager implements PolicyManager
                 public Object getResult() { return null; }
             };
 
-        LocalUvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         /* This is in a separate function for historical reasons, but could
          * be joined with loading uprs above. */
@@ -164,7 +164,7 @@ class DefaultPolicyManager implements PolicyManager
 
                     public Object getResult() { return null; }
                 };
-            LocalUvmContextFactory.context().runTransaction(tw);
+            UvmContextFactory.context().runTransaction(tw);
         }
         
         updateEngines();
@@ -179,12 +179,12 @@ class DefaultPolicyManager implements PolicyManager
         PolicyConfiguration result = new PolicyConfiguration(pl, cUserRules);
         result.setHasRackManagement(false);
         
-        NodeManager nodeManager = LocalUvmContextFactory.context().nodeManager();
+        NodeManager nodeManager = UvmContextFactory.context().nodeManager();
         List<NodeId> l = nodeManager.nodeInstances( "untangle-node-adconnector" );
         result.setHasUserManagement(false);
         
         if ( l.size() > 0 ) {
-            License ls = LocalUvmContextFactory.context().licenseManager().getLicense(License.ADCONNECTOR);
+            License ls = UvmContextFactory.context().licenseManager().getLicense(License.ADCONNECTOR);
             if ( !ls.getValid()) {
                 result.setHasUserManagement(true);
             }
@@ -229,7 +229,7 @@ class DefaultPolicyManager implements PolicyManager
      */
     public void shutdownSessions(Policy policy)
     {
-        ArgonManager argonManager = LocalUvmContextFactory.context().argonManager();
+        ArgonManager argonManager = UvmContextFactory.context().argonManager();
         argonManager.shutdownMatches(SessionMatcherFactory.makePolicyInstance(policy));
     }
 
@@ -270,7 +270,7 @@ class DefaultPolicyManager implements PolicyManager
 
                     public Object getResult() { return null; }
                 };
-            LocalUvmContextFactory.context().runTransaction(tw);
+            UvmContextFactory.context().runTransaction(tw);
         }
     }
 
@@ -353,12 +353,12 @@ class DefaultPolicyManager implements PolicyManager
     void updateEngines()
     {
         /* At startup, these can be null */
-        NodeManager nodeManager = LocalUvmContextFactory.context().nodeManager();
+        NodeManager nodeManager = UvmContextFactory.context().nodeManager();
         if ( nodeManager != null ) {
             nodeManager.flushNodeStateCache();
         }
         
-        PipelineFoundry pipelineFoundry = LocalUvmContextFactory.context().pipelineFoundry();
+        PipelineFoundry pipelineFoundry = UvmContextFactory.context().pipelineFoundry();
         if ( pipelineFoundry != null ) {
             pipelineFoundry.clearChains();
         }

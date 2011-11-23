@@ -34,8 +34,8 @@ package com.untangle.uvm.util;
 
 import java.util.Map;
 
-import com.untangle.uvm.LocalUvmContext;
-import com.untangle.uvm.LocalUvmContextFactory;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 
 public class ReportingOutsideAccessValve extends OutsideValve
 {
@@ -50,14 +50,14 @@ public class ReportingOutsideAccessValve extends OutsideValve
 
     protected String outsideErrorMessage()
     {
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
         Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
         return I18nUtil.tr("off-site access to reporting is not allowed", i18n_map);
     }
 
     protected String httpErrorMessage()
     {
-        LocalUvmContext uvm = LocalUvmContextFactory.context();
+        UvmContext uvm = UvmContextFactory.context();
         Map<String,String> i18n_map = uvm.languageManager().getTranslations("untangle-libuvm");
         return I18nUtil.tr("standard access to reporting", i18n_map);
     }
