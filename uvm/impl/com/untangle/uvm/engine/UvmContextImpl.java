@@ -545,7 +545,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return cronManager.makeCronJob(p, r);
     }
 
-    public void loadLibrary(String libname) {
+    public void loadLibrary(String libname)
+    {
         System.loadLibrary(libname);
     }
 

@@ -26,11 +26,7 @@ import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.LocalTomcatManager;
 
 /**
- * Provides an interface to get all local UVM components from an UVM
- * instance.  This interface is accessible locally.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
+ * The top-level untangle-vm API
  */
 public interface UvmContext
 {
@@ -170,11 +166,40 @@ public interface UvmContext
     OemManager oemManager();
 
     /**
-     * Shut down the untangle-vm
+     * Get the SyslogManager
      *
+     * @return the SyslogManager
      */
-    void shutdown();
+    SyslogManager syslogManager();
 
+    /**
+     * Get the ArgonManager
+     *
+     * @return the ArgonManager
+     */
+    ArgonManager argonManager();
+
+    /**
+     * Get the UploadManager
+     *
+     * @return the UploadManager
+     */
+    UploadManager uploadManager();
+
+    /**
+     * Get the AppServerManager singleton for this instance
+     *
+     * @return the singleton
+     */
+    LocalAppServerManager localAppServerManager();
+
+    /**
+     * Get the TomcatManager
+     *
+     * @return the TomcatManager
+     */
+    LocalTomcatManager tomcatManager();
+    
     /**
      * Once settings have been restored, and the UVM has been booted, call
      * into here to get the corresponding OS files rewritten.  This calls through
@@ -182,6 +207,12 @@ public interface UvmContext
      * OS config files must implement this.
      */
     void syncConfigFiles();
+
+    /**
+     * Shut down the untangle-vm
+     *
+     */
+    void shutdown();
 
     /**
      * Reboots the Untangle Server. Note that this currently will not reboot a
@@ -204,6 +235,12 @@ public interface UvmContext
      */
     String version();
 
+
+    /**
+     * Return the Full Version
+     */
+    String getFullVersion();
+    
     /**
      * Return true if running in a development environment.
      *
@@ -230,7 +267,8 @@ public interface UvmContext
      * @exception IOException if something goes wrong (a lot can go wrong,
      *            but it is nothing the user did to cause this).
      */
-    byte[] createBackup() throws IOException;
+    byte[] createBackup()
+        throws IOException;
 
     /**
      * Restore from a previous {@link #createBackup backup}.
@@ -261,6 +299,12 @@ public interface UvmContext
     boolean createUID();
 
     /**
+     * Returns the UID of the server
+     * Example: aaaa-bbbb-cccc-dddd
+     */
+    String getServerUID();
+    
+    /**
      * mark the wizard as complete
      * Called by the setup wizard
      */
@@ -273,26 +317,28 @@ public interface UvmContext
      */
     UvmState state();
 
-    SyslogManager syslogManager();
-
-    ArgonManager argonManager();
-
     /**
-     * Get the AppServerManager singleton for this instance
-     *
-     * @return the singleton
+     * Exec utilities
      */
-    LocalAppServerManager localAppServerManager();
-
     Process exec(String cmd) throws IOException;
     Process exec(String[] cmd) throws IOException;
     Process exec(String[] cmd, String[] envp) throws IOException;
     Process exec(String[] cmd, String[] envp, File dir) throws IOException;
 
-    String getFullVersion();
+    /**
+     * Thread utilities
+     */
+    Thread newThread(Runnable runnable);
+    Thread newThread(Runnable runnable, String name);
+
+    /**
+     * Cronjab utilities
+     */
+    CronJob makeCronJob(Period p, Runnable r);
 
     /**
      * The pipeline compiler.
+     * Used by the apps.
      *
      * @return a <code>PipelineFoundry</code> value
      */
@@ -305,33 +351,27 @@ public interface UvmContext
      */
     boolean isWizardComplete();
 
+    /**
+     * Hibernate transaction runner
+     */
     boolean runTransaction(TransactionWork<?> tw);
 
-    Thread newThread(Runnable runnable);
-
-    Thread newThread(Runnable runnable, String name);
-
+    /**
+     * Get the Event Logger
+     * Used by the apps
+     */
     EventLogger<LogEvent> eventLogger();
 
+    /**
+     * blocks until startup is complete
+     */
     void waitForStartup();
 
-    LocalTomcatManager tomcatManager();
-    
-    CronJob makeCronJob(Period p, Runnable r);
-
-    /*
+    /**
      * Loads a shared library (.so) into the UVM classloader.  This
      * is so a node dosen't load it into its own, which doesn't
      * work right.
      */
     void loadLibrary(String libname);
 
-    /**
-     * Returns the UID of the server
-     * Example: aaaa-bbbb-cccc-dddd
-     */
-    String getServerUID();
-    
-    UploadManager uploadManager();
-    
 }
