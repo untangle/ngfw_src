@@ -33,7 +33,7 @@ import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.node.LicenseManager;
-import com.untangle.uvm.localapi.SessionMatcher;
+import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.logging.UvmLoggingContext;
 import com.untangle.uvm.logging.UvmLoggingContextFactory;
 import com.untangle.uvm.logging.UvmRepositorySelector;

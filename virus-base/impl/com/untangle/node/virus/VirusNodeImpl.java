@@ -22,7 +22,7 @@ import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.localapi.SessionMatcher;
+import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;

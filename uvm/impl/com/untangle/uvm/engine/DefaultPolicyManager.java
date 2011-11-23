@@ -16,7 +16,7 @@ import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.License;
-import com.untangle.uvm.localapi.SessionMatcherFactory;
+import com.untangle.uvm.SessionMatcherFactory;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.security.NodeId;

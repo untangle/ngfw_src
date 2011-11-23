@@ -1,4 +1,6 @@
-/* $HeadURL: svn://chef/work/src/http-casing/localapi/com/untangle/node/http/BlockPageUtil.java */
+/**
+ * $Id$
+ */
 package com.untangle.node.http;
 
 import java.io.IOException;

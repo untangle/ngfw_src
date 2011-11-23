@@ -1,7 +1,7 @@
 /*
  * $Id$
  */
-package com.untangle.uvm.localapi;
+package com.untangle.uvm;
 
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.policy.Policy;

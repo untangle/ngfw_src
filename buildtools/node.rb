@@ -3,24 +3,24 @@
 class NodeBuilder
 
   def NodeBuilder.makeNode(buildEnv, name, location, depsImpl = [],
-                           depsLocalApi = [], baseHash = {})
-    makePackage(buildEnv, name, location, depsImpl, depsLocalApi, baseHash)
+                           depsApi = [], baseHash = {})
+    makePackage(buildEnv, name, location, depsImpl, depsApi, baseHash)
   end
 
   def NodeBuilder.makeCasing(buildEnv, name, location, depsImpl = [],
-                             depsLocalApi = [], baseHash = {})
-    makePackage(buildEnv, name, location, depsImpl, depsLocalApi, baseHash)
+                             depsApi = [], baseHash = {})
+    makePackage(buildEnv, name, location, depsImpl, depsApi, baseHash)
   end
 
   def NodeBuilder.makeBase(buildEnv, name, location, depsImpl = [],
-                           depsLocalApi = [], baseHash = {})
-    makePackage(buildEnv, name, location, depsImpl, depsLocalApi, baseHash)
+                           depsApi = [], baseHash = {})
+    makePackage(buildEnv, name, location, depsImpl, depsApi, baseHash)
   end
 
   private
   ## Create the necessary packages and targets to build a node
   def NodeBuilder.makePackage(buildEnv, name, location, depsImpl = [],
-                              depsLocalApi = [], baseHash = {})
+                              depsApi = [], baseHash = {})
     home = buildEnv.home
 
     uvm_lib = BuildEnv::SRC['untangle-libuvm']
@@ -29,23 +29,23 @@ class NodeBuilder
     buildEnv.installTarget.register_dependency(node)
     buildEnv['node'].registerTarget("#{name}", node)
 
-    localApiJar = nil
+    apiJar = nil
 
     ## If there is a local API, build it first
-    localApi = FileList["#{home}/#{dirName}/api/**/*.java"]
+    api = FileList["#{home}/#{dirName}/api/**/*.java"]
     baseHash.each_pair do |bd, bn|
-      localApi += FileList["#{bn.buildEnv.home}/#{bd}/api/**/*.java"]
+      api += FileList["#{bn.buildEnv.home}/#{bd}/api/**/*.java"]
     end
 
-    if (localApi.length > 0)
-      deps  = baseJarsLocalApi + depsLocalApi
+    if (api.length > 0)
+      deps  = baseJarsApi + depsApi
 
       paths = baseHash.map { |bd, bn| ["#{bn.buildEnv.home}/#{bd}/api",
           "#{bn.buildEnv.home}/#{bd}/api"] }.flatten
 
-      localApiJar = JarTarget.build_target(node, deps, 'api',
+      apiJar = JarTarget.build_target(node, deps, 'api',
                                           ["#{home}/#{dirName}/api"] + paths)
-      buildEnv.installTarget.install_jars(localApiJar, "#{node.distDirectory}/usr/share/untangle/toolbox")
+      buildEnv.installTarget.install_jars(apiJar, "#{node.distDirectory}/usr/share/untangle/toolbox")
     end
 
     ## Build the impl jar.
@@ -53,12 +53,12 @@ class NodeBuilder
 
     ## Make the impl dependent on the api if a jar exists.
     directories= ["#{home}/#{dirName}/impl"]
-    if (localApiJar.nil?)
+    if (apiJar.nil?)
       ## Only include the API if the localJarApi doesn't exist
       directories << "#{home}/#{dirName}/api"
       baseHash.each_pair { |bd, bn| directories << "#{bn.buildEnv.home}/#{bd}/api" }
     else
-      deps << localApiJar
+      deps << apiJar
     end
 
     baseHash.each_pair { |bd, bn| directories << "#{bn.buildEnv.home}/#{bd}/impl" }
@@ -96,7 +96,7 @@ class NodeBuilder
   end
 
   ## Helper to retrieve the standard dependencies for local API
-  def NodeBuilder.baseJarsLocalApi
+  def NodeBuilder.baseJarsApi
     ## See no reason to use a different set of jars
     baseJarsImpl
   end

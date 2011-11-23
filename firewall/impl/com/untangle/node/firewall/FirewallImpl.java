@@ -13,8 +13,8 @@ import org.hibernate.Session;
 
 import com.untangle.uvm.LocalUvmContextFactory;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.localapi.SessionMatcher;
-import com.untangle.uvm.localapi.SessionMatcherFactory;
+import com.untangle.uvm.SessionMatcher;
+import com.untangle.uvm.SessionMatcherFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.EventManager;

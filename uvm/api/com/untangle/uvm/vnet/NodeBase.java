@@ -14,8 +14,8 @@ import org.hibernate.Session;
 
 import com.untangle.uvm.LocalUvmContext;
 import com.untangle.uvm.LocalUvmContextFactory;
-import com.untangle.uvm.localapi.SessionMatcher;
-import com.untangle.uvm.localapi.SessionMatcherFactory;
+import com.untangle.uvm.SessionMatcher;
+import com.untangle.uvm.SessionMatcherFactory;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.NodeManager;

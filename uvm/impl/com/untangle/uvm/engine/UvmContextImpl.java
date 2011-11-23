@@ -1027,7 +1027,6 @@ public class UvmContextImpl extends UvmContextBase implements LocalUvmContext
         this.addAnnotatedClass("com.untangle.uvm.security.NodeId");
         this.addAnnotatedClass("com.untangle.uvm.snmp.SnmpSettings");
         this.addAnnotatedClass("com.untangle.uvm.toolbox.UpgradeSettings");
-        /* localapi */
         this.addAnnotatedClass("com.untangle.uvm.policy.UserPolicyRuleSet");
         this.addAnnotatedClass("com.untangle.uvm.node.PipelineStats");
         /* impl */
