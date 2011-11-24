@@ -129,6 +129,7 @@ CREATE TABLE reports.n_cpd_login_events (
     event_id SERIAL)""",  'time_stamp', start_date, end_date)
 
         sql_helper.add_column('reports.n_cpd_login_events', 'event_id', 'serial')
+        sql_helper.run_sql('CREATE INDEX n_cpd_login_events_event_id_idx ON reports.n_cpd_login_events(event_id)')
 
         conn = sql_helper.get_connection()
         try:
@@ -157,7 +158,7 @@ CREATE TABLE reports.n_cpd_block_events (
     event_id SERIAL)""",  'time_stamp', start_date, end_date)
 
         sql_helper.add_column('reports.n_cpd_block_events', 'event_id', 'serial')
-
+        sql_helper.run_sql('CREATE INDEX n_cpd_block_events_event_id_idx ON reports.n_cpd_block_events(event_id)')
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\

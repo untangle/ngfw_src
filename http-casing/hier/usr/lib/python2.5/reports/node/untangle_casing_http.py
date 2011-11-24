@@ -92,6 +92,7 @@ CREATE TABLE reports.n_http_events (
             sql_helper.add_column('reports.n_http_events', 'virus_%s_name' % vendor, 'text')
 
         sql_helper.run_sql('CREATE INDEX n_http_events_request_id_idx ON reports.n_http_events(request_id)')
+        sql_helper.run_sql('CREATE INDEX n_http_events_event_id_idx ON reports.n_http_events(event_id)')
 
         conn = sql_helper.get_connection()
         try:

@@ -252,6 +252,7 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports.sessions', 'sw_access_ident', 'text')
 
         sql_helper.run_sql('CREATE INDEX sessions_pl_endp_id_idx ON reports.sessions(pl_endp_id)')
+        sql_helper.run_sql('CREATE INDEX sessions_event_id_idx ON reports.sessions(event_id)')
 
         conn = sql_helper.get_connection()
         try:
