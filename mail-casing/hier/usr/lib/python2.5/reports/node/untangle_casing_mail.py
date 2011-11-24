@@ -8,6 +8,7 @@ from psycopg2.extensions import DateFromMx
 from psycopg2.extensions import TimestampFromMx
 from reports.engine import Column
 from reports.engine import FactTable
+from reports.engine import get_wan_clause
 from reports.engine import Node
 from reports.sql_helper import print_timing
 
@@ -188,7 +189,8 @@ INSERT INTO reports.email (date, email)
     SELECT DISTINCT date_trunc('day', trunc_time)::date, addr
     FROM reports.n_mail_addr_totals
     WHERE trunc_time >= %s
-    AND client_intf = 0 AND addr_kind = 'T'
+    AND client_intf IN """  + get_wan_clause() + """
+    AND addr_kind = 'T'
     AND NOT addr ISNULL""", (sd,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
