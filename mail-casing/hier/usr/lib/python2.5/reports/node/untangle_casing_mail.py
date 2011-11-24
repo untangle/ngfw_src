@@ -126,6 +126,7 @@ CREATE TABLE reports.n_mail_addrs (
         sql_helper.add_column('reports.n_mail_addrs', 'virus_commtouch_name', 'text')
 
         sql_helper.run_sql('CREATE INDEX n_mail_addrs_msg_id_idx ON reports.n_mail_addrs(msg_id)')
+        sql_helper.run_sql('CREATE INDEX n_mail_addrs_event_id_idx ON reports.n_mail_addrs(event_id)')
 
         conn = sql_helper.get_connection()
         try:
@@ -257,6 +258,7 @@ CREATE TABLE reports.n_mail_msgs (
         sql_helper.add_column('reports.n_mail_msgs', 'virus_commtouch_name', 'text')
 
         sql_helper.run_sql('CREATE INDEX n_mail_msgs_msg_id_idx ON reports.n_mail_msgs(msg_id)')
+        sql_helper.run_sql('CREATE INDEX n_mail_msgs_event_id_idx ON reports.n_mail_msgs(event_id)')
 
         conn = sql_helper.get_connection()
         try:
