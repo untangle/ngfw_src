@@ -655,13 +655,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name : 'start',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'duration',
-                    mapping : 'start',
-                    convert : function(val) {
-                        return "";
-                        //return parseFloat(val) / 60;
-                    }
-                }, {
                     name : 'name',
                     mapping : 'clientName'
                 }, {
@@ -698,11 +691,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 }, {
                     header : this.i18n._("port"),
                     dataIndex : 'port'
-                }, {
-                    header : this.i18n._("duration (min)"),
-                    width : 130,
-                    sortable : true,
-                    dataIndex : 'duration'
                 }, {
                     header : this.i18n._("KB sent"),
                     width : 80,
