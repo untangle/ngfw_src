@@ -45,9 +45,11 @@ case "$1" in
     a2dissite default
     echo $APACHE_UPGRADEDONE_CONFIG >| $APACHE_UPGRADE_CONFIG_FILE
     /etc/init.d/apache2 restart
-    kill $(cat $PIDFILE)
-    rm -f $CONSOLIDATED_UPGRADE_LOG $PIDFILE
-    rm -f $APACHE_UPGRADE_HTML_PAGE $APACHE_UPGRADE_JS_PAGE ;;
+    if [ -f $PIDFILE ] ; then
+        kill $(cat $PIDFILE)
+        rm -f $PIDFILE
+    fi
+    rm -f $CONSOLIDATED_UPGRADE_LOG $APACHE_UPGRADE_HTML_PAGE $APACHE_UPGRADE_JS_PAGE ;;
 esac
 
 exit 0
