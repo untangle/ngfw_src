@@ -618,7 +618,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 helpSource: 'ip_addresses',
                 title: this.i18n._("Name Map"),
                 emptyRow: {
-                    "ipMaddr": "0.0.0.0/32",
+                    "ipMaskedAddress": "1.2.3.4",
                     "name": this.i18n._("[no name]"),
                     "description": this.i18n._("[no description]")
                 },
@@ -633,7 +633,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 fields: [{
                     name: 'id'
                 }, {
-                    name: 'ipMaddr'
+                    name: 'ipMaskedAddress'
                 }, {
                     name: 'name'
                 }, {
@@ -641,10 +641,10 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 }],
                 // the list of columns for the column model
                 columns: [{
-                    id: 'ipMaddr',
+                    id: 'ipMaskedAddress',
                     header: this.i18n._("Name Map"),
                     width: 200,
-                    dataIndex: 'ipMaddr',
+                    dataIndex: 'ipMaskedAddress',
                     editor: new Ext.form.TextField({})
                 }, {
                     id: 'name',
@@ -657,7 +657,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 // the row input lines used by the row editor window
                 rowEditorInputLines: [new Ext.form.TextField({
                     name: "Subnet",
-                    dataIndex: "ipMaddr",
+                    dataIndex: "ipMaskedAddress",
                     fieldLabel: this.i18n._("Name Map"),
                     allowBlank: false,
                     width: 200
@@ -681,26 +681,26 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         },
 */        
         validateServer: function() {
-            // ipMaddr list must be validated server side
+            // ipMaskedAddress list must be validated server side
             var ipMapList = this.gridIpMap.getSaveList();
-            var ipMaddrList = [];
+            var ipMaskedAddressList = [];
             var i;
 
             // added
             for ( i = 0; i < ipMapList[0].list.length; i++) {
-                ipMaddrList.push(ipMapList[0].list[i]["ipMaddr"]);
+                ipMaskedAddressList.push(ipMapList[0].list[i]["ipMaskedAddress"]);
             }
             // modified
             for ( i = 0; i < ipMapList[2].list.length; i++) {
-                ipMaddrList.push(ipMapList[2].list[i]["ipMaddr"]);
+                ipMaskedAddressList.push(ipMapList[2].list[i]["ipMaskedAddress"]);
             }
             
-            if (ipMaddrList.length > 0) {
+            if (ipMaskedAddressList.length > 0) {
                 try {
                     var result=null;
                     try {
                         result = this.getValidator().validate({
-                            list: ipMaddrList,
+                            list: ipMaskedAddressList,
                             "javaClass": "java.util.ArrayList"
                         });
                     } catch (e) {
@@ -717,7 +717,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         }
 
                         this.tabs.activate(this.gridIpMap);
-                        this.gridIpMap.focusFirstChangedDataByFieldValue("ipMaddr", result.cause);
+                        this.gridIpMap.focusFirstChangedDataByFieldValue("ipMaskedAddress", result.cause);
                         Ext.MessageBox.alert(this.i18n._("Validation failed"), errorMsg);
                         return false;
                     }

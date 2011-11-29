@@ -683,24 +683,24 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         },
         // validation
         validateServer : function() {
-            // ipMaddr list must be validated server side
+            // ipMaskedAddress list must be validated server side
             var subnetSaveList = this.gridSubnetList ? this.gridSubnetList.getSaveList() : null;
             if (subnetSaveList != null) {
-                var ipMaddrList = [];
+                var ipMaskedAddressList = [];
                 // added
                 for (var i = 0; i < subnetSaveList[0].list.length; i++) {
-                    ipMaddrList.push(subnetSaveList[0].list[i]["string"]);
+                    ipMaskedAddressList.push(subnetSaveList[0].list[i]["string"]);
                 }
                 // modified
                 for (var i = 0; i < subnetSaveList[2].list.length; i++) {
-                    ipMaddrList.push(subnetSaveList[2].list[i]["string"]);
+                    ipMaskedAddressList.push(subnetSaveList[2].list[i]["string"]);
                 }
-                if (ipMaddrList.length > 0) {
+                if (ipMaskedAddressList.length > 0) {
                     try {
                         var result=null;
                         try {
                             result = this.getValidator().validate({
-                                list : ipMaddrList,
+                                list : ipMaskedAddressList,
                                 "javaClass" : "java.util.LinkedList"
                             });
                         } catch (e) {
