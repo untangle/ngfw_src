@@ -1,5 +1,29 @@
+/var/log/uvm/uvm.log {
+rotate 5
+size 500k
+compress
+notifempty
+copytruncate
+}
+
 /var/log/uvm/console.log {
-rotate 9
+rotate 5
+size 500k
+compress
+notifempty
+copytruncate
+}
+
+/var/log/uvm/events.log {
+rotate 5
+size 500k
+compress
+notifempty
+copytruncate
+}
+
+/var/log/uvm/node*.log {
+rotate 5
 size 500k
 compress
 notifempty
@@ -7,7 +31,7 @@ copytruncate
 }
 
 /var/log/uvm/apt.log {
-rotate 9
+rotate 5
 size 500k
 compress
 notifempty
@@ -15,7 +39,7 @@ copytruncate
 }
 
 /var/log/uvm/schema.log {
-rotate 9
+rotate 5
 size 500k
 compress
 notifempty
@@ -23,24 +47,15 @@ copytruncate
 }
 
 /var/log/uvm/wrapper.log {
-rotate 9
+rotate 5
 size 500k
 compress
 notifempty
 copytruncate
-}
-
-/var/log/uvm/iptables.log {
-rotate 9
-size 500k
-compress
-notifempty
-copytruncate
-missingok
 }
 
 /var/log/uvm/reporter.log {
-rotate 9
+rotate 5
 size 500k
 compress
 notifempty
