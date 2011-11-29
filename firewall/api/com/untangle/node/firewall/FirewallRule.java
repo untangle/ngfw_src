@@ -112,33 +112,6 @@ public class FirewallRule implements JSONString, Serializable
         return jO.toString();
     }
     
-    public boolean isMatch( IPSession sess )
-    {
-        if (!getEnabled())
-            return false;
-
-        /**
-         * If no matchers return true
-         */
-        if (this.matchers == null) {
-            logger.warn("Null matchers - assuming true");
-            return true;
-        }
-
-        /**
-         * IF any matcher doesn't match - return false
-         */
-        for ( FirewallRuleMatcher matcher : matchers ) {
-            if (!matcher.matches(sess))
-                return false;
-        }
-
-        /**
-         * Otherwise all match - so the rule matches
-         */
-        return true;
-    }
-
     public boolean isMatch( short protocol,
                             int srcIntf, int dstIntf,
                             InetAddress srcAddress, InetAddress dstAddress,

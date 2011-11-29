@@ -1,3 +1,5 @@
+
+
 /**
  * $Id: FirewallRuleMatcher.java,v 1.00 2011/08/24 14:54:43 dmorris Exp $
  */
@@ -108,21 +110,6 @@ public class FirewallRuleMatcher implements JSONString, Serializable
         return jO.toString();
     }
     
-    public boolean matches( IPSession sess )
-    {
-        String attachment = null;
-        InetAddress srcAddr = sess.clientAddr();
-        InetAddress dstAddr = sess.serverAddr();
-        int srcIntf = sess.clientIntf();
-        int dstIntf = sess.serverIntf();
-        int srcPort = sess.clientPort();
-        int dstPort = sess.serverPort();
-        short protocol = sess.protocol();
-        String username = (String) sess.globalAttachment(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME);
-
-        return matches(protocol, srcIntf, dstIntf, srcAddr, dstAddr, srcPort, dstPort, username);
-    }
-
     public boolean matches( short protocol,
                             int srcIntf, int dstIntf,
                             InetAddress srcAddress, InetAddress dstAddress,

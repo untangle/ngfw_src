@@ -64,8 +64,8 @@ class EventHandler extends AbstractEventHandler
             ruleIndex++;
             if (rule.isMatch(request.protocol(),
                              request.clientIntf(), request.serverIntf(),
-                             request.clientAddr(),request.serverAddr(),
-                             request.clientPort(), request.serverPort(),
+                             request.clientAddr(), request.getNatToHost(),
+                             request.clientPort(), request.getNatToPort(),
                              (String)request.globalAttachment(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME))) {
                 matchedRule = rule;
                 break;
