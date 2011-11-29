@@ -1156,23 +1156,23 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         },
         validateServer : function(passedClientsSaveList)
         {
-            // ipMaddr list must be validated server side\            
+            // ipMaskedAddress list must be validated server side\            
             if (passedClientsSaveList != null) {
-                var ipMaddrList = [];
+                var ipMaskedAddressList = [];
                 // added
                 for (var i = 0; i < passedClientsSaveList[0].list.length; i++) {
-                    ipMaddrList.push(passedClientsSaveList[0].list[i]["string"]);
+                    ipMaskedAddressList.push(passedClientsSaveList[0].list[i]["string"]);
                 }
                 // modified
                 for (var i = 0; i < passedClientsSaveList[2].list.length; i++) {
-                    ipMaddrList.push(passedClientsSaveList[2].list[i]["string"]);
+                    ipMaskedAddressList.push(passedClientsSaveList[2].list[i]["string"]);
                 }
-                if (ipMaddrList.length > 0) {
+                if (ipMaskedAddressList.length > 0) {
                     try {
                         var result = null;
                         try {
                             result = this.getValidator().validate({
-                                list : ipMaddrList,
+                                list : ipMaskedAddressList,
                                 "javaClass" : "java.util.LinkedList"
                             });
                         } catch (e) {
