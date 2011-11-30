@@ -17,7 +17,7 @@ from psycopg2.extensions import DateFromMx
 DEFAULT_SCHEMA = 'uvm'
 SCHEMA = 'uvm'
 CONNECTION_STRING = "dbname=uvm user=postgres"
-
+EVIL_CHARACTERS = [ '"', "'", "\015" , "\r" , "\n" , "\f", "\t", "\b", "\\", "/"  ]
 
 class Cursor(psycopg2.extensions.cursor):
     def execute(self, sql, args=None):
@@ -40,6 +40,11 @@ class Connection(psycopg2.extensions.connection):
         return psycopg2.extensions.connection.cursor(self, cursor_factory=Cursor)
 
 
+def sanitize_string(str):
+    global EVIL_CHARACTERS
+    for char in EVIL_CHARACTERS:
+        str=str.replace(char,"")
+    return str
 
 def print_timing(func):
 
