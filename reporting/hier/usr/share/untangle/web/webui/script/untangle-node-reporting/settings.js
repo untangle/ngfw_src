@@ -109,24 +109,10 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             name: 'Generate Reports',
                             iconCls: 'action-icon',
                             handler: function(callback) {
-                                Ext.MessageBox.progress(i18n._("Please wait"), i18n._("Generating today's reports..."));
+                                Ext.MessageBox.wait(i18n._("Generating today's reports... This may take a few minutes."), i18n._("Please wait"));
                                 this.getRpcNode().runDailyReport(function(result, exception) {
                                     this.afterRun(exception, callback);
                                 }.createDelegate(this));
-
-                                this.updateFunction = function(){
-                                    var statusStr = this.getRpcNode().getCurrentStatus();
-                                    var floatPercent = parseFloat(statusStr.replace("%",""));
-                                    if(!Ext.MessageBox.isVisible()) 
-                                        return;
-                                    else {
-                                        Ext.MessageBox.updateProgress(floatPercent/100.0, "", i18n._("Generating today's reports...") + " " + statusStr);
-                                        window.setTimeout(this.updateFunction, 1000);
-                                    }
-                                }.createDelegate(this);
-
-                                window.setTimeout(this.updateFunction, 2000);
-                                
                             }.createDelegate(this)
                         }]
                     }]
