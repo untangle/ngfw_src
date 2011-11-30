@@ -18,11 +18,16 @@ public class GlobUtil
 {
     public static String globToRegex(String glob)
     {
-        String re = glob;
-
+        if (glob == null)
+            return null;
+        
+        if ("".equals(glob))
+            return "^$";
+        
         /**
          * transform globbing operators into regex ones
          */
+        String re = glob;
         re = re.replaceAll(Pattern.quote("."), "\\.");
         re = re.replaceAll(Pattern.quote("*"), ".*");
         re = re.replaceAll(Pattern.quote("?"), ".");
@@ -34,6 +39,12 @@ public class GlobUtil
 
     public static String urlGlobToRegex(String glob)
     {
+        if (glob == null)
+            return null;
+        
+        if ("".equals(glob))
+            return "^$";
+
         String re = glob;
 
         /**
