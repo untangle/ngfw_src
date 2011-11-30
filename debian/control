@@ -1158,7 +1158,7 @@ Description: Virus Blocker Base
 
 Package: untangle-base-spam
 Architecture: all
-Depends: untangle-vm, untangle-casing-mail
+Depends: untangle-libuvm, untangle-casing-mail
 XB-Display-Name: Spam Blocker Base
 XB-Untangle-Pkg-Type: base
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
