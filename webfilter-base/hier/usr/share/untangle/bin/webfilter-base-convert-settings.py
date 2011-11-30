@@ -19,7 +19,7 @@ def get_passed_clients_settings(tid, settings_id, debug=False):
     for settings in settings_list:
         string = settings[0]
         enabled = settings[1]
-        description = settings[2]
+        description = sql_helper.sanitize_string(settings[2])
     
         if not first:
             str += ',\n'
@@ -52,7 +52,7 @@ def get_mimetypes_settings(tid, settings_id, debug=False):
     for settings in settings_list:
         string = settings[0]
         name = settings[1]
-        description = settings[2]
+        description = sql_helper.sanitize_string(settings[2])
         category = settings[3]
         blocked = settings[4]
         flagged = settings[5]
@@ -91,7 +91,7 @@ def get_extensions_settings(tid, settings_id, debug=False):
     for settings in settings_list:
         string = settings[0]
         name = settings[1]
-        description = settings[2]
+        description = sql_helper.sanitize_string(settings[2])
         category = settings[3]
         blocked = settings[4]
         flagged = settings[5]
@@ -132,7 +132,7 @@ def get_category_settings(tid, settings_id, debug=False):
         display_name = settings[1]
         blocked = settings[2]
         flagged = settings[3]
-        description = settings[4]
+        description = sql_helper.sanitize_string(settings[4])
 
         # for consistency
         if (nodeName == "webfilter"):
@@ -176,7 +176,7 @@ def get_blocked_urls_settings(tid, settings_id, debug=False):
         string = settings[0]
         blocked = settings[1]
         flagged = settings[2]
-        description = settings[3]
+        description = sql_helper.sanitize_string(settings[3])
     
         if not first:
             str += ',\n'
@@ -210,7 +210,7 @@ def get_passed_urls_settings(tid, settings_id, debug=False):
     for settings in settings_list:
         string = settings[0]
         enabled = settings[1]
-        description = settings[2]
+        description = sql_helper.sanitize_string(settings[2])
     
         if not first:
             str += ',\n'

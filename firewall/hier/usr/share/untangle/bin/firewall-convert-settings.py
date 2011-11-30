@@ -67,8 +67,8 @@ def get_rules(tid, settings_id, default_pass, debug=False):
     for settings in settings_list:
         position = settings[0];
         live = settings[1];
-        name = settings[2]; #unused?
-        description = settings[3];
+        name = sql_helper.sanitize_string(settings[2]); #unused?
+        description = sql_helper.sanitize_string(settings[3]);
         block = settings[4];
         log = settings[5];
         protocol_matcher = settings[6];

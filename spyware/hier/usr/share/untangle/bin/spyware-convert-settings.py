@@ -92,7 +92,7 @@ def get_passed_urls_settings(tid, settings_id, debug=False):
     for settings in settings_list:
         string = settings[0]
         enabled = settings[1]
-        description = settings[2]
+        description = sql_helper.sanitize_string(settings[2])
     
         if not first:
             str += ',\n'

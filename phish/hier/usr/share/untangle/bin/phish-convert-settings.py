@@ -147,7 +147,7 @@ def get_pop_config(sid, debug=False):
 
 def get_rbl_list(sid, debug=False):
     if (debug):
-        print "Getting protofilter_patterns for SID: ",sid
+        print "Getting spam_rbls for SID: ",sid
 
     rbl_list = sql_helper.run_sql("select hostname, active, description from n_spam_rbl where id = '%s'" % sid, debug=debug)
 
