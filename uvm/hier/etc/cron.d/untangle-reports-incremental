@@ -1,1 +1,1 @@
-*/5 */1 * * * root /usr/share/untangle/bin/reporting-generate-reports.py -m -i -b 1 -r 1 > /dev/null 2>&1
+*/5 */1 * * * root /usr/share/untangle/bin/reporting-generate-reports.py -m -i -b `grep -c processor /proc/cpuinfo` -r 1 > /dev/null 2>&1
