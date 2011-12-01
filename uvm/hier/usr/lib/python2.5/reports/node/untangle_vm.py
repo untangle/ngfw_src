@@ -449,7 +449,7 @@ ON min_idx = position""" % (2*(reports.engine.get_wan_clause(),)))
 
     def __generate_leases(self, m, q, start_date, end_date):
         st = DateFromMx(start_date)
-        et = DateFromMx(end_date)
+        et = DateFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:
