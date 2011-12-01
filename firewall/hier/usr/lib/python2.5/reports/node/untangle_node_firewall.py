@@ -1,19 +1,3 @@
-# $HeadURL: svn://chef/work/src/buildtools/rake-util.rb $
-# Copyright (c) 2003-2009 Untangle, Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, version 2,
-# as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful, but
-# AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
-# NONINFRINGEMENT.  See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
-
 import gettext
 import logging
 import mx
@@ -63,7 +47,6 @@ class Firewall(Node):
                                   "count(CASE WHEN firewall_was_blocked THEN 1 ELSE null END)"))
 
         ft.dimensions.append(Column('firewall_rule_index', 'integer'))
-        ft.dimensions.append(Column('firewall_rule_description', 'text'))
 
     def get_toc_membership(self):
         return [TOP_LEVEL, HOST_DRILLDOWN, USER_DRILLDOWN]
@@ -322,7 +305,7 @@ class TopTenBlockingRulesByHits(Graph):
         one_week = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
 
         query = """\
-SELECT firewall_rule_index || ' - ' || firewall_rule_description,
+SELECT firewall_rule_index,
        count(*) as hits_sum
 FROM reports.session_totals
 WHERE trunc_time >= %s AND trunc_time < %s
@@ -334,7 +317,7 @@ AND firewall_rule_index IS NOT NULL"""
         elif user:
             query += " AND uid = %s"
 
-        query = query + " GROUP BY firewall_rule_index, firewall_rule_description ORDER BY hits_sum DESC"
+        query = query + " GROUP BY firewall_rule_index ORDER BY hits_sum DESC"
 
         conn = sql_helper.get_connection()
         try:
