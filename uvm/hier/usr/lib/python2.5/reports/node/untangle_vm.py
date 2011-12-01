@@ -330,7 +330,8 @@ GROUP BY time, uid, hname, client_intf, server_intf
             self.__generate_abs_leases(m, start_date, end_date)
             self.__generate_relative_leases(m, start_date, end_date)
 
-        self.__generate_manual_map(m, start_date, end_date)
+        self.__generate_manual_map(m, start_date, 
+                                   mx.DateTime.now())
 
         self.__write_leases(m)
 
@@ -419,10 +420,10 @@ ORDER BY evt.time_stamp""", start_date, end_date)
 SELECT addr, name
 FROM (SELECT addr, min(position) AS min_idx
       FROM (SELECT c_client_addr AS addr
-            FROM events.pl_endp WHERE pl_endp.client_intf NOT IN %s
+            FROM events.pl_stats WHERE pl_stats.client_intf NOT IN %s
             UNION
             SELECT c_server_addr AS addr
-            FROM events.pl_endp WHERE pl_endp.server_intf NOT IN %s
+            FROM events.pl_stats WHERE pl_stats.server_intf NOT IN %s
             UNION
             SELECT client_addr AS addr
             FROM events.u_login_evt) AS addrs
