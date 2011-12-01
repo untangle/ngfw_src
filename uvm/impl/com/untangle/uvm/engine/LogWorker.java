@@ -85,6 +85,7 @@ class LogWorker implements Runnable
     private volatile Thread thread;
     private boolean interruptable;
 
+    private Double lastLoad;
     private long lastLoadGet;
     private long syncTime;
 
@@ -173,10 +174,10 @@ class LogWorker implements Runnable
      */
     private Double getLoad()
     {
-        Double load =  Double.parseDouble("0");
-
         if ((lastLoadGet == 0)
             || ((System.currentTimeMillis() - lastLoadGet) > LONG_SYNC_TIME)) {
+            Double load =  Double.parseDouble("0");
+
             BufferedReader br = null;
             try {
                 br = new BufferedReader(new FileReader("/proc/loadavg"));
@@ -187,9 +188,11 @@ class LogWorker implements Runnable
                 logger.warn("could not get loadavg", e);
             }
             lastLoadGet = System.currentTimeMillis();
+            lastLoad = load;
+            return load;
+        } else {
+            return lastLoad;
         }
-        
-        return load;
     }
 
     private long getSyncTime()
