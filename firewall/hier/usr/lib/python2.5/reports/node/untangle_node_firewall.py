@@ -440,7 +440,6 @@ class FirewallDetail(DetailSection):
             rv.append(ColumnDesc('uid', _('User'), 'UserLink'))
 
         rv = rv + [ColumnDesc('firewall_rule_index', _('Rule Applied')),
-                   ColumnDesc('firewall_rule_description', _('Rule Description')),
                    ColumnDesc('firewall_was_blocked', _('Blocked')),
                    ColumnDesc('c_server_addr', _('Destination Ip')),
                    ColumnDesc('c_server_port', _('Destination Port')),
@@ -460,7 +459,7 @@ class FirewallDetail(DetailSection):
         if not user:
             sql = sql + "uid, "
 
-        sql = sql + ("""firewall_rule_index, firewall_rule_description, firewall_was_blocked::text, host(c_server_addr), c_server_port, host(c_client_addr), c_client_port
+        sql = sql + ("""firewall_rule_index, firewall_was_blocked::text, host(c_server_addr), c_server_port, host(c_client_addr), c_client_port
 FROM reports.sessions
 WHERE time_stamp >= %s AND time_stamp < %s
 AND NOT firewall_rule_index IS NULL""" % (DateFromMx(start_date),
