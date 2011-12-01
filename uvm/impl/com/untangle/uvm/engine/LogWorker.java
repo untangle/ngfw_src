@@ -206,7 +206,7 @@ class LogWorker implements Runnable
         if (load > MAX_LOAD) {
             syncTime = LONG_SYNC_TIME;
             if (syncTime != oldSyncTime)
-                logger.warn("Current load (" + load + ") is higher than " +
+                logger.info("Current load (" + load + ") is higher than " +
                             MAX_LOAD + ", logging events only every " +
                             syncTime/1000 + " seconds");
         } else {
