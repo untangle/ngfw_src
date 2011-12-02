@@ -63,6 +63,8 @@ class UvmNode(Node):
                         Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')])
         reports.engine.register_fact_table(ft)
 
+        sql_helper.run_sql('CREATE INDEX session_totals_trunc_time_idx ON reports.session_totals(trunc_time)')
+
         self.branded_name = self.__get_branded_name() or self.name
 
     @print_timing
@@ -301,6 +303,8 @@ CREATE TABLE reports.session_counts (
                               'smallint')
         sql_helper.add_column('reports.session_counts', 'server_intf',
                               'smallint')
+
+        sql_helper.run_sql('CREATE INDEX session_counts_trunc_time_idx ON reports.session_counts(trunc_time)')
 
         conn = sql_helper.get_connection()
         try:
