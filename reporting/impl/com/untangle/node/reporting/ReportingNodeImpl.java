@@ -86,7 +86,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
         return settings;
     }
 
-    public void runDailyReport() throws Exception
+    public synchronized void runDailyReport() throws Exception
     {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date()); // now
@@ -96,18 +96,36 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 
         int exitCode = -1;
         logger.info("Running daily report...");
-        try {
-            String args[] = { REPORTS_SCRIPT, "-r", "1", "-m", "-d", ts };
-            Process proc = LocalUvmContextFactory.context().exec(args);
-            tailLog(REPORTER_LOG_FILE, REPORTER_LOG_FILE_READ_TIMEOUT, proc);
-            exitCode = proc.waitFor();
-            proc.destroy();
-        } catch (Exception e) {
-            logger.error("Unable to run daily reports", e );
+        boolean tryAgain = false;
+        int tries = 0;
+ 
+        do {
+            tries++;
+            tryAgain = false;
+             
+            try {
+                String args[] = { REPORTS_SCRIPT, "-r", "1", "-m", "-d", ts };
+                Process proc = LocalUvmContextFactory.context().exec(args);
+                tailLog(REPORTER_LOG_FILE, REPORTER_LOG_FILE_READ_TIMEOUT, proc);
+                exitCode = proc.waitFor();
+                proc.destroy();
+            } catch (Exception e) {
+                logger.error("Unable to run daily reports", e );
+            }
+            /* exitCode == 1 means another reports process is running, just wait and try again. */
+            if (exitCode == 1)  {
+                logger.warn("Report process already running. Waiting and then trying again...");
+                tryAgain = true;
+                Thread.sleep(10000); // sleep 10 seconds
+            }
         }
-        
+        while (tryAgain && tries < 20); // try max 20 times (20 * 10 seconds = 200 seconds)
+          
         if (exitCode != 0) {
-            throw new Exception("Unable to run daily reports: \nReturn code: " + exitCode);
+            if (exitCode == 1) 
+                throw new Exception("A reports process is already running. Please try again later.");
+            else
+                throw new Exception("Unable to create daily reports. (Exit code: " + exitCode + ")");
         }
     }
 
