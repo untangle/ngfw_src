@@ -128,6 +128,8 @@ CREATE TABLE reports.n_mail_addrs (
 
         sql_helper.run_sql('CREATE INDEX n_mail_addrs_msg_id_idx ON reports.n_mail_addrs(msg_id)')
         sql_helper.run_sql('CREATE INDEX n_mail_addrs_event_id_idx ON reports.n_mail_addrs(event_id)')
+        sql_helper.run_sql('CREATE INDEX n_mail_addrs_policy_id_idx ON reports.n_mail_addrs(policy_id)')
+        #sql_helper.run_sql('CREATE INDEX n_mail_addrs_time_stamp_idx ON reports.n_mail_addrs(time_stamp)')
 
         conn = sql_helper.get_connection()
         try:
@@ -261,6 +263,8 @@ CREATE TABLE reports.n_mail_msgs (
 
         sql_helper.run_sql('CREATE INDEX n_mail_msgs_msg_id_idx ON reports.n_mail_msgs(msg_id)')
         sql_helper.run_sql('CREATE INDEX n_mail_msgs_event_id_idx ON reports.n_mail_msgs(event_id)')
+        sql_helper.run_sql('CREATE INDEX n_mail_msgs_policy_id_idx ON reports.n_mail_msgs(policy_id)')
+        #sql_helper.run_sql('CREATE INDEX n_mail_msgs_time_stamp_idx ON reports.n_mail_msgs(time_stamp)')
 
         conn = sql_helper.get_connection()
         try:

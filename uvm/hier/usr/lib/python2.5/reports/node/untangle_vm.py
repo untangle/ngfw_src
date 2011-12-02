@@ -253,6 +253,8 @@ CREATE TABLE reports.sessions (
 
         sql_helper.run_sql('CREATE INDEX sessions_pl_endp_id_idx ON reports.sessions(pl_endp_id)')
         sql_helper.run_sql('CREATE INDEX sessions_event_id_idx ON reports.sessions(event_id)')
+        sql_helper.run_sql('CREATE INDEX sessions_policy_id_idx ON reports.sessions(policy_id)')
+        #sql_helper.run_sql('CREATE INDEX sessions_time_stamp_idx ON reports.sessions(time_stamp)')
 
         conn = sql_helper.get_connection()
         try:
