@@ -569,7 +569,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name : 'duration',
                     mapping : 'seconds',
                     convert : function(val) {
-                        return parseFloat(val) / 60;
+                        return Math.round(parseFloat(val) / 0.6)/100;
                     }
                 }, {
                     name : 'name',
