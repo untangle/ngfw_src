@@ -1,6 +1,8 @@
 
 -- rename table, this table stores all events not just blocks, rename to appropriate
 ALTER TABLE events.n_webfilter_evt_blk RENAME TO n_webfilter_evt;
+ALTER INDEX events.n_webfilter_evt_blk_ts_idx RENAME TO n_webfilter_evt_ts_idx
+ALTER INDEX events.n_webfilter_evt_blk_pkey RENAME TO n_webfilter_evt_pkey
 
 -- add two booleans for each event, blocked (was it blocked?) and flagged (was it a violation)
 ALTER TABLE events.n_webfilter_evt ADD COLUMN flagged bool;

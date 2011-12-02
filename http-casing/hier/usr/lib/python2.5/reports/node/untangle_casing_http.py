@@ -93,6 +93,8 @@ CREATE TABLE reports.n_http_events (
 
         sql_helper.run_sql('CREATE INDEX n_http_events_request_id_idx ON reports.n_http_events(request_id)')
         sql_helper.run_sql('CREATE INDEX n_http_events_event_id_idx ON reports.n_http_events(event_id)')
+        sql_helper.run_sql('CREATE INDEX n_http_events_policy_id_idx ON reports.n_http_events(policy_id)')
+        #sql_helper.run_sql('CREATE INDEX n_http_events_time_stamp_idx ON reports.n_http_events(time_stamp)')
 
         conn = sql_helper.get_connection()
         try:
