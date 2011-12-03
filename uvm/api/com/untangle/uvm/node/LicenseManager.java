@@ -13,14 +13,19 @@ public interface LicenseManager
     public void reloadLicenses();
 
     /**
+     * Return a list of all licenses for this server
+     */
+    public List<License> getLicenses();
+
+    /**
      * Get the status of a license on a product.
      */
     public License getLicense( String productIdentifier );
 
     /**
-     * Return a list of all licenses for this server
+     * Checks is a the license for a given product exists and is currently valid
      */
-    public List<License> getLicenses();
+    public boolean isLicenseValid( String productIdentifier );
 
     /**
      * Return true if the user has any premium products.

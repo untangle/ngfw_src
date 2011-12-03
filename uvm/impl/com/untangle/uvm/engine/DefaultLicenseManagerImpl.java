@@ -32,22 +32,22 @@ public class DefaultLicenseManagerImpl implements LicenseManager
     /**
      * Get the status of a license on a product.
      */
+    public boolean isLicenseValid(String identifier)
+    {
+        if (isGPLApp(identifier))
+            return true;
+        else
+            return false; /* always return false as the real license manager is needed for valid licenses */
+    }
+
+    /**
+     * Get the status of a license on a product.
+     */
     public License getLicense(String identifier)
     {
-        if ("untangle-node-adblocker".equals(identifier)) return null;
-        else if ("untangle-node-clam".equals(identifier)) return null;
-        else if ("untangle-node-cpd".equals(identifier)) return null;
-        else if ("untangle-node-firewall".equals(identifier)) return null;
-        else if ("untangle-node-ips".equals(identifier)) return null;
-        else if ("untangle-node-openvpn".equals(identifier)) return null;
-        else if ("untangle-node-phish".equals(identifier)) return null;
-        else if ("untangle-node-protofilter".equals(identifier)) return null;
-        else if ("untangle-node-reporting".equals(identifier)) return null;
-        else if ("untangle-node-shield".equals(identifier)) return null;
-        else if ("untangle-node-spamassassin".equals(identifier)) return null;
-        else if ("untangle-node-spyware".equals(identifier)) return null;
-        else if ("untangle-node-webfilter".equals(identifier)) return null;
-
+        if (isGPLApp(identifier))
+            return null;
+        
         /**
          * This returns an invalid license for all requests
          * Note: this includes the free apps, however they don't actually check the license so it won't effect behavior
@@ -67,6 +67,25 @@ public class DefaultLicenseManagerImpl implements LicenseManager
      */
     public boolean hasPremiumLicense()
     {
+        return false;
+    }
+
+    private boolean isGPLApp(String identifier)
+    {
+        if ("untangle-node-adblocker".equals(identifier)) return true;
+        else if ("untangle-node-clam".equals(identifier)) return true;
+        else if ("untangle-node-cpd".equals(identifier)) return true;
+        else if ("untangle-node-firewall".equals(identifier)) return true;
+        else if ("untangle-node-ips".equals(identifier)) return true;
+        else if ("untangle-node-openvpn".equals(identifier)) return true;
+        else if ("untangle-node-phish".equals(identifier)) return true;
+        else if ("untangle-node-protofilter".equals(identifier)) return true;
+        else if ("untangle-node-reporting".equals(identifier)) return true;
+        else if ("untangle-node-shield".equals(identifier)) return true;
+        else if ("untangle-node-spamassassin".equals(identifier)) return true;
+        else if ("untangle-node-spyware".equals(identifier)) return true;
+        else if ("untangle-node-webfilter".equals(identifier)) return true;
+
         return false;
     }
 
