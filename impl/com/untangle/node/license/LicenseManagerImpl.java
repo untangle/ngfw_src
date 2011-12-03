@@ -131,23 +131,8 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
     @Override
     public final License getLicense(String identifier)
     {
-        /**
-         * The free apps have no licenses
-         * If they are requestd just return null
-         */
-        if ("untangle-node-adblocker".equals(identifier)) return null;
-        else if ("untangle-node-clam".equals(identifier)) return null;
-        else if ("untangle-node-cpd".equals(identifier)) return null;
-        else if ("untangle-node-firewall".equals(identifier)) return null;
-        else if ("untangle-node-ips".equals(identifier)) return null;
-        else if ("untangle-node-openvpn".equals(identifier)) return null;
-        else if ("untangle-node-phish".equals(identifier)) return null;
-        else if ("untangle-node-protofilter".equals(identifier)) return null;
-        else if ("untangle-node-reporting".equals(identifier)) return null;
-        else if ("untangle-node-shield".equals(identifier)) return null;
-        else if ("untangle-node-spamassassin".equals(identifier)) return null;
-        else if ("untangle-node-spyware".equals(identifier)) return null;
-        else if ("untangle-node-webfilter".equals(identifier)) return null;
+        if (isGPLApp(identifier))
+            return null;
 
         License license = this.licenseMap.get(identifier);
         if (license != null)
@@ -178,6 +163,22 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
     }
 
     @Override
+    public final boolean isLicenseValid(String identifier)
+    {
+        if (isGPLApp(identifier))
+            return true;
+
+        License lic = getLicense(identifier);
+        if (lic == null)
+            return false;
+        Boolean isValid = lic.getValid();
+        if (isValid == null)
+            return false;
+        else
+            return isValid;
+    }
+
+    @Override
     public final List<License> getLicenses()
     {
         return this.licenseList;
@@ -188,6 +189,18 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
     {
         return this.settings.getLicenses().size() > 0;
     }
+
+    public Object getSettings()
+    {
+        /* These are controlled using the methods in the uvm class */
+        return null;
+    }
+
+    public void setSettings(Object settings)
+    {
+        /* These are controlled using the methods in the uvm class */
+    }
+
 
     /**
      * Initialize the settings
@@ -630,16 +643,23 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
         }
     }
     
-
-
-    public Object getSettings()
+    private boolean isGPLApp(String identifier)
     {
-        /* These are controlled using the methods in the uvm class */
-        return null;
+        if ("untangle-node-adblocker".equals(identifier)) return true;
+        else if ("untangle-node-clam".equals(identifier)) return true;
+        else if ("untangle-node-cpd".equals(identifier)) return true;
+        else if ("untangle-node-firewall".equals(identifier)) return true;
+        else if ("untangle-node-ips".equals(identifier)) return true;
+        else if ("untangle-node-openvpn".equals(identifier)) return true;
+        else if ("untangle-node-phish".equals(identifier)) return true;
+        else if ("untangle-node-protofilter".equals(identifier)) return true;
+        else if ("untangle-node-reporting".equals(identifier)) return true;
+        else if ("untangle-node-shield".equals(identifier)) return true;
+        else if ("untangle-node-spamassassin".equals(identifier)) return true;
+        else if ("untangle-node-spyware".equals(identifier)) return true;
+        else if ("untangle-node-webfilter".equals(identifier)) return true;
+
+        return false;
     }
 
-    public void setSettings(Object settings)
-    {
-        /* These are controlled using the methods in the uvm class */
-    }
 }
