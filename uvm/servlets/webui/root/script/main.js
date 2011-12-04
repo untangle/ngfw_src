@@ -50,7 +50,7 @@ Ung.Main=Ext.extend(Object, {
         this.appsLastState={};
         this.nodePreviews={};
         JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
-        JSONRpcClient.max_req_active = 1;
+        JSONRpcClient.max_req_active = 2;
 
         this.initSemaphore=1;
         rpc = {};
