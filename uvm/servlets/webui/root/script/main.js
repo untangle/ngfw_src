@@ -36,6 +36,7 @@ Ung.Main=Ext.extend(Object, {
     constructor: function(config) {
         Ext.apply(this, config);
     },
+
     init: function() {
         if (Ext.isGecko) {
             document.onkeypress = function(e) {
@@ -49,123 +50,81 @@ Ung.Main=Ext.extend(Object, {
         this.appsLastState={};
         this.nodePreviews={};
         JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
-        this.initSemaphore=11;
+        JSONRpcClient.max_req_active = 1;
+
+        this.initSemaphore=1;
         rpc = {};
         // get JSONRpcClient
         rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
-        // get language manager
-        rpc.jsonrpc.UvmContext.languageManager(function (result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.languageManager=result;
-            // get translations for main module
-            rpc.languageManager.getTranslations(function (result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                i18n=new Ung.I18N({"map":result.map});
-                Ext.MessageBox.wait(i18n._("Initializing..."), i18n._("Please wait"));
-                this.postinit();// 1
-            }.createDelegate(this),"untangle-libuvm");
-            // get language settings
-            rpc.languageManager.getLanguageSettings(function (result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                rpc.languageSettings=result;
-                this.postinit();// 2
-            }.createDelegate(this));
 
-        }.createDelegate(this));
-        // get skin manager
-        rpc.jsonrpc.UvmContext.skinManager(function (result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.skinManager=result;
-            // Load Current Skin
-            rpc.skinManager.getSkinSettings(function (result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                var skinSettings=result;
-                Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
-                Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/admin.css");
-                if (skinSettings.outOfDate) {
-                    var win;
-                    win = new Ext.Window({
-                        layout      : 'fit',
-                        width       : 300,
-                        height      : 200,
-                        closeAction :'hide',
-                        plain       : true,
-                        html        :  i18n._('The current custom skin is no longer compatible and has been disabled. The Default skin is temporarily being used. To disable this message change the skin settings under Config Administration. To get more information on how to fix the custom skin: <a href="http://wiki.untangle.com/index.php/Skins" target="_blank">Where can I find updated skins and new skins?</a>'),
-                        title: i18n._('Skin Out of Date'),
-                        buttons: [ {
-                            text     : i18n._('Ok'),
-                            handler  : function(){
-                                win.hide();
-                            }
-                        }]
-                    });
-                   win.show();
-                }
-                this.postinit();// 3
-            }.createDelegate(this));
-        }.createDelegate(this));
+        // below we load all the managers
+        // this used to be done (and should be done asynchronously with each result calling postinit when compelet)
+        // however this seems to cause some issues with the new firebug, which is now the only firebug.
+        // in the meantime I've changed them all to load synchronously.
+        // If we ever figure out the firebug issue we should revert back to the asynchronous loading of all the managers
+        
+        // get the language manager
+        rpc.languageManager = rpc.jsonrpc.UvmContext.languageManager();
+        i18n=new Ung.I18N({"map":rpc.languageManager.getTranslations("untangle-libuvm").map});
+        Ext.MessageBox.wait(i18n._("Initializing..."), i18n._("Please wait"));
+        rpc.languageSettings = rpc.languageManager.getLanguageSettings();
+
+        // get the skin manager
+        rpc.skinManager=rpc.jsonrpc.UvmContext.skinManager();
+        // load the current skin
+        var skinSettings=rpc.skinManager.getSkinSettings();
+        Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
+        Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/admin.css");
+        if (skinSettings.outOfDate) {
+            var win;
+            win = new Ext.Window({
+                layout      : 'fit',
+                width       : 300,
+                height      : 200,
+                closeAction :'hide',
+                plain       : true,
+                html        :  i18n._('The current custom skin is no longer compatible and has been disabled. The Default skin is temporarily being used. To disable this message change the skin settings under Config Administration. To get more information on how to fix the custom skin: <a href="http://wiki.untangle.com/index.php/Skins" target="_blank">Where can I find updated skins and new skins?</a>'),
+                title: i18n._('Skin Out of Date'),
+                buttons: [ {
+                    text     : i18n._('Ok'),
+                    handler  : function(){
+                        win.hide();
+                    }
+                }]
+            });
+            win.show();
+        }
+
         // get node manager
-        rpc.jsonrpc.UvmContext.nodeManager(function (result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.nodeManager=result;
-            this.postinit();// 4
-        }.createDelegate(this));
+        rpc.nodeManager=rpc.jsonrpc.UvmContext.nodeManager();
+
         // get policy manager
-        rpc.jsonrpc.UvmContext.policyManager(function (result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.policyManager=result;
-            this.postinit();// 5
-        }.createDelegate(this));
+        rpc.policyManager=rpc.jsonrpc.UvmContext.policyManager();
+
         // get toolbox manager
-        rpc.jsonrpc.UvmContext.toolboxManager(function (result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.toolboxManager=result;
-            this.postinit();// 6
-        }.createDelegate(this));
+        rpc.toolboxManager=rpc.jsonrpc.UvmContext.toolboxManager();
+
         // get admin manager
-        rpc.jsonrpc.UvmContext.adminManager(function (result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.adminManager=result;
-            this.postinit();// 7
-        }.createDelegate(this));
+        rpc.adminManager=rpc.jsonrpc.UvmContext.adminManager();
+
         // get version
-        rpc.jsonrpc.UvmContext.version(function (result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.version=result;
-            this.postinit();// 8
-        }.createDelegate(this));
+        rpc.version=rpc.jsonrpc.UvmContext.version();
+
         // get network manager
-        rpc.jsonrpc.UvmContext.networkManager(function (result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.networkManager=result;
-            rpc.networkManager.getNetworkConfiguration(function (result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                this.hostName=result.hostname;
-                this.setDocumentTitle();
-                this.postinit();// 9
-            }.createDelegate(this));
-        }.createDelegate(this));
+        rpc.networkManager=rpc.jsonrpc.UvmContext.networkManager();
+        this.hostName = rpc.networkManager.getNetworkConfiguration().hostname; 
+        this.setDocumentTitle();
+
         // get message manager & message key
-        rpc.jsonrpc.UvmContext.messageManager(function (result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.messageManager=result;
-            rpc.messageManager.getMessageKey(function (result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                rpc.messageKey=result;
-                this.postinit();// 10
-            }.createDelegate(this));
-        }.createDelegate(this));
+        rpc.messageManager=rpc.jsonrpc.UvmContext.messageManager();
+        rpc.messageKey = rpc.messageManager.getMessageKey();
+
         // get branding manager
-        rpc.jsonrpc.UvmContext.brandingManager(function (result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.brandingManager=result;
-            rpc.brandingManager.getCompanyName(function (result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                this.companyName=result;
-                this.setDocumentTitle();
-                this.postinit();// 11
-            }.createDelegate(this));
-        }.createDelegate(this));
+        rpc.brandingManager = rpc.jsonrpc.UvmContext.brandingManager();
+        this.companyName = rpc.brandingManager.getCompanyName();
+        this.setDocumentTitle();
+
+        this.postinit(); // 1
     },
     postinit: function() {
         this.initSemaphore--;

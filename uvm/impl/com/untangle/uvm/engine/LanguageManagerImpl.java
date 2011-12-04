@@ -1,21 +1,6 @@
 /*
- * $HeadURL: svn://chef/branch/prod/web-ui/work/src/uvm/impl/com/untangle/uvm/engine/LanguageManagerImpl.java $
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id: LanguageManagerImpl.java,v 1.00 2011/12/04 10:55:07 dmorris Exp $
  */
-
 package com.untangle.uvm.engine;
 
 import java.io.BufferedOutputStream;
@@ -68,7 +53,7 @@ import com.untangle.uvm.util.TransactionWork;
  * @author <a href="mailto:cmatei@untangle.com">Catalin Matei</a>
  * @version 1.0
  */
-class LanguageManagerImpl implements LanguageManager
+public class LanguageManagerImpl implements LanguageManager
 {
     private static final String LANGUAGES_DIR;
     private static final String LANGUAGES_COMMUNITY_DIR;
