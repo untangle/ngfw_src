@@ -289,12 +289,12 @@ if (!Ung.hasResource["Ung.System"]) {
                         iconCls : "reboot-icon",
                         handler : function() {
                             Ext.MessageBox.confirm(this.i18n._("Setup Wizard Warning"),
-                                String.format(this.i18n._("You are about to re-run the Setup Wizard.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), this.companyName, "<b>", "</b>" ), 
-                                function(btn) {
-                                if (btn == "yes") {
-                                    main.showSetupWizardScreen();
-                                }
-                             }.createDelegate(this));
+                                                   String.format(this.i18n._("You are about to re-run the Setup Wizard.  This may reconfigure the {0} Server and {1}overwrite your current settings.{2}"), this.companyName, "<b>", "</b>" ), 
+                                                   function(btn) {
+                                                       if (btn == "yes") {
+                                                           main.showSetupWizardScreen();
+                                                       }
+                                                   }.createDelegate(this));
                         }.createDelegate(this)
                     }]
                 }]
@@ -926,6 +926,7 @@ if (!Ung.hasResource["Ung.System"]) {
                     items : [{
                         html : this.i18n._("time is automatically synced via NTP")
                     }, {
+                        name : "currentTime",
                         html : rpc.adminManager.getDate()
                     }]
                 }, {
@@ -1017,8 +1018,46 @@ if (!Ung.hasResource["Ung.System"]) {
                         }]
                     }
                 }, {
-            html : this.downloadLanguageHTML
-        }],
+                    html : this.downloadLanguageHTML
+                }, {
+                    xtype : "fieldset",
+                    autoHeight : true,
+                    title : this.i18n._("Force Sync Time"),
+                    buttonAlign: "left",
+                    items : [{
+                        border: false,
+                        cls: "description",
+                        html: this.i18n._("Click to force instant time synchronization.")
+                    }],
+                    buttons: [{
+                        xtype : "button",
+                        text : this.i18n._("Synchronize Time"),
+                        name : "Setup Wizard",
+                        iconCls : "reboot-icon",
+                        handler : function() {
+                            Ext.MessageBox.confirm(this.i18n._("Force Time Synchronization"),
+                                                   this.i18n._("Forced time synchronization can cause problems if the current date is far in the future.") + "<br/>" +
+                                                   this.i18n._("A reboot is suggested after time sychronization.") + "<br/>" + "<br/>" +
+                                                   this.i18n._("Continue?"),
+                                                   function(btn) {
+                                                       if (btn == "yes") {
+                                                           Ext.MessageBox.wait(this.i18n._("Syncing time with the internet..."), i18n._("Please wait"));
+                                                           rpc.jsonrpc.UvmContext.forceTimeSync(function (result, exception) {
+                                                               if(Ung.Util.handleException(exception)) return;
+
+                                                               if(result != 0) {
+                                                                   Ext.MessageBox.hide();
+                                                                   Ext.MessageBox.alert(this.i18n._("Warning"),this.i18n._("Time synchronization failed. Return code: ") + result); 
+                                                               } else {
+                                                                   this.panelRegionalSettings.find("name","currentTime")[0].body.update(rpc.adminManager.getDate());
+                                                                   Ext.MessageBox.hide();
+                                                               }
+                                                           }.createDelegate(this));
+                                                       }
+                                                   }.createDelegate(this));
+                        }.createDelegate(this)
+                    }]
+                }],
                 onUpload : function() {
                     var prova = Ext.getCmp("upload_language_form");
                     var cmp = Ext.getCmp(this.parentId);

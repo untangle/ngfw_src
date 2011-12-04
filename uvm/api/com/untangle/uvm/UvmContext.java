@@ -226,6 +226,12 @@ public interface UvmContext
     void shutdownBox();
 
     /**
+     * Forces NTP to synchronize the time immediately
+     * @returns exit code from NTP (0 means success)
+     */
+    int forceTimeSync();
+    
+    /**
      * Force a Full Garbage Collection.
      */   
     void doFullGC();

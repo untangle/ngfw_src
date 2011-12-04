@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# stop the daemon first
+if [ -x /etc/init.d/ntp ] ; then
+   /etc/init.d/ntp stop	
+fi
+
+# force time sync now
+echo "Syncing time..."
+ntpd -q
+CODE=$?
+
+# stop the daemon first
+if [ -x /etc/init.d/ntp ] ; then
+   /etc/init.d/ntp start	
+fi
+
+exit $CODE

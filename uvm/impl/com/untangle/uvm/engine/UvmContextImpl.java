@@ -69,6 +69,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     private static final String REBOOT_SCRIPT = "/sbin/reboot";
     private static final String SHUTDOWN_SCRIPT = "/sbin/shutdown";
+    private static final String TIMESYNC_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-force-time-sync";
     private static final String UPGRADE_PID_FILE = "/var/run/uvm-upgrade.pid";
     private static final String UPGRADE_SPLASH_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-show-upgrade-splash";;
 
@@ -401,7 +402,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         t.start();
     }
 
-    public void rebootBox() {
+    public void rebootBox()
+    {
         try {
             Process p = exec(new String[] { REBOOT_SCRIPT });
             for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
@@ -418,7 +420,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
     }
 
-    public void shutdownBox() {
+    public void shutdownBox()
+    {
         try {
             Process p = exec(new String[] { SHUTDOWN_SCRIPT , "-h" , "now" });
             for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
@@ -435,6 +438,26 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
     }
 
+    public int forceTimeSync()
+    {
+        try {
+            Process p = exec(new String[] { TIMESYNC_SCRIPT });
+            for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
+            int exitValue = p.waitFor();
+            if (0 != exitValue) {
+                logger.error("Unable to synchronize time (" + exitValue + ")");
+            } else {
+                logger.info("Synchronized time");
+            }
+            return exitValue;
+        } catch (InterruptedException exn) {
+            logger.error("Interrupted during time synchronization");
+        } catch (IOException exn) {
+            logger.error("Exception during time synchronization");
+        }
+        return 1;
+    }
+    
     public UvmState state()
     {
         return state;
