@@ -1049,7 +1049,6 @@ if (!Ung.hasResource["Ung.System"]) {
                                                                    Ext.MessageBox.hide();
                                                                    Ext.MessageBox.alert(this.i18n._("Warning"),this.i18n._("Time synchronization failed. Return code: ") + result); 
                                                                } else {
-                                                                   this.panelRegionalSettings.find("name","currentTime")[0].body.update(rpc.adminManager.getDate());
                                                                    Ext.MessageBox.hide();
                                                                }
                                                            }.createDelegate(this));
@@ -1108,6 +1107,18 @@ if (!Ung.hasResource["Ung.System"]) {
                 }
             });
 
+            this.timeUpdateFunction = function(){
+                if(!this.isVisible())
+                    return;
+                else {
+                    var currentTimeObj = this.panelRegionalSettings.find("name","currentTime")[0];
+                    if (currentTimeObj != null && currentTimeObj.body != null)
+                        currentTimeObj.body.update(rpc.adminManager.getDate());
+                    window.setTimeout(this.timeUpdateFunction, 1000);
+                }
+            }.createDelegate(this);
+
+            window.setTimeout(this.timeUpdateFunction, 1000);
         },
         // validation function
         validateClient : function() {
