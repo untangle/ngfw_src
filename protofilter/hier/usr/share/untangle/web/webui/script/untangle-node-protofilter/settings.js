@@ -36,7 +36,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 items : [{
                     title : this.i18n._('Status'),
                     cls: 'description',
-                    html : String.format(this.i18n._("Protocol Control uses signatures to detect the protocols of network traffic. It is useful for detecting unwanted or interesting protocols in use on the network."))
+                    html : String.format(this.i18n._("Application Control Lite uses signatures to detect the protocols of network traffic. It is useful for detecting unwanted or interesting protocols in use on the network."))
                 }, {
                     title : this.i18n._(' '),
                     layout:'form',

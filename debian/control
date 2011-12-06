@@ -403,7 +403,7 @@ Description: Virus Blocker Lite
 Package: untangle-node-protofilter
 Architecture: all
 Depends: untangle-vm
-XB-Display-Name: Protocol Control
+XB-Display-Name: Application Control Lite
 XB-View-Position: 100
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -482,8 +482,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  9r+JrLqHcb1/5G+RYmXTPJWlGb3b6BYmf2bKnUk5+TGE7vzZn3kmWHTz5s1//icarfhpzE82
  2tifbwr1VLtn9G935xN+znHG/arjXPYPRVt53HzZvynJzzTaKFBpwLTxwIsWGlcGHRei85f/
  /qR+EPs/AQYALpz0b9lClG4AAAAASUVORK5CYII=
-Description: Protocol Control
- The Protocol Control application.
+Description: Application Control Lite
+ The Application Control Lite application.
 
 Package: untangle-node-router
 Architecture: all
