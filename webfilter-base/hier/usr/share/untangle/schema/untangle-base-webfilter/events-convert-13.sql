@@ -1,3 +1,4 @@
+-- duplicate of 12 (to fix an earlier problem with 12 we must call it 13 so existing servers will run)
 
 -- rename table, this table stores all events not just blocks, rename to appropriate
 ALTER TABLE events.n_webfilter_evt_blk RENAME TO n_webfilter_evt;
