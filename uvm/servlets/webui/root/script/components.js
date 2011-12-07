@@ -1436,13 +1436,18 @@ Ung.Node = Ext.extend(Ext.Component, {
     getNodeContext: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
         if (this.nodeContext === undefined) {
-            rpc.nodeManager.nodeContext(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                this.nodeContext = result;
-            }.createSequence(handler).createDelegate(this), this.Tid);
+            // This asynchronous call was removed because it causes firebug to freak out
+            // XXX
+            //            rpc.nodeManager.nodeContext(function(result, exception) {
+            //                if(Ung.Util.handleException(exception)) return;
+            //                this.nodeContext = result;
+            //            }.createSequence(handler).createDelegate(this), this.Tid);
+            this.nodeContext = rpc.nodeManager.nodeContext(this.Tid);
+            handler.call(this);
         } else {
             handler.call(this);
         }
+
     },
     getRpcNode: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
@@ -1450,13 +1455,18 @@ Ung.Node = Ext.extend(Ext.Component, {
             return;
         }
         if (this.nodeContext.rpcNode === undefined) {
-            this.nodeContext.node(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                this.nodeContext.rpcNode = result;
-            }.createSequence(handler).createDelegate(this));
-        } else {
+            // This asynchronous call was removed because it causes firebug to freak out
+            // XXX
+            //            this.nodeContext.node(function(result, exception) {
+            //                if(Ung.Util.handleException(exception)) return;
+            //                this.nodeContext.rpcNode = result;
+            //            }.createSequence(handler).createDelegate(this));
+            //        } else {
+            //            handler.call(this);
+            //        }
+            this.nodeContext.rpcNode = this.nodeContext.node();
             handler.call(this);
-        }
+        } 
     },
     getNodeDesc: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
