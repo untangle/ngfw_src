@@ -34,6 +34,8 @@ import com.untangle.uvm.toolbox.PackageDesc;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.vnet.NodeListener;
+import com.untangle.uvm.vnet.NodeStateChangeEvent;
 
 /**
  * Implements <code>NodeContext</code>. Contains code to load and set
@@ -143,6 +145,30 @@ class NodeContextImpl implements NodeContext
             for (NodeContext parentCtx : parentCtxs) {
                 node.addParent((NodeBase)parentCtx.node());
             }
+
+            node.addNodeListener(new NodeListener()
+                {
+                    public void stateChange(NodeStateChangeEvent te) {
+                        {
+                            final NodeState ts = te.getNodeState();
+
+                            TransactionWork<Object> tw = new TransactionWork<Object>()
+                                {
+                                    public boolean doWork(Session s)
+                                    {
+                                        persistentState.setTargetState(ts);
+                                        s.merge(persistentState);
+                                        return true;
+                                    }
+
+                                    public Object getResult() { return null; }
+                                };
+                            mctx.runTransaction(tw);
+
+                            mctx.eventLogger().log(new NodeStateChange(nodeId, ts));
+                        }
+                    }
+                });
 
             if (isNew) {
                 node.initializeSettings();

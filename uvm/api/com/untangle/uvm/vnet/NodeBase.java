@@ -42,6 +42,7 @@ public abstract class NodeBase implements Node
     private final Set<NodeBase> parents = new HashSet<NodeBase>();
     private final Set<Node> children = new HashSet<Node>();
     private final NodeManager nodeManager;
+    private final List<NodeListener> nodeListeners = new LinkedList<NodeListener>();
 
     private final Object stateChangeLock = new Object();
 
@@ -115,6 +116,20 @@ public abstract class NodeBase implements Node
     }
 
     // NodeBase methods ---------------------------------------------------
+
+    public void addNodeListener(NodeListener tl)
+    {
+        synchronized (nodeListeners) {
+            nodeListeners.add(tl);
+        }
+    }
+
+    public void removeNodeListener(NodeListener tl)
+    {
+        synchronized (nodeListeners) {
+            nodeListeners.remove(tl);
+        }
+    }
 
     public void addParent(NodeBase parent)
     {
@@ -330,6 +345,11 @@ public abstract class NodeBase implements Node
             mm.submitMessage(nsc);
 
             NodeStateChangeEvent te = new NodeStateChangeEvent(this, ts, args);
+            synchronized (nodeListeners) {
+                for (NodeListener tl : nodeListeners) {
+                    tl.stateChange(te);
+                }
+            }
             
             UvmContextFactory.context().nodeManager().flushNodeStateCache();
             UvmContextFactory.context().pipelineFoundry().clearChains();
