@@ -476,6 +476,7 @@ public abstract class DecisionEngine
         boolean isFlagged = false;
         GenericRule bestCategory = null;
         String blockedName = null;
+        String blockedDesc = null;
 
         for(String cat : categories) {
             GenericRule catSettings = node.getSettings().getCategory(cat);
@@ -490,7 +491,10 @@ public abstract class DecisionEngine
             }
             if ( catSettings.getBlocked() != null && catSettings.getBlocked()) {
                 isBlocked = true;
-                blockedName = catSettings.getName();
+                if (blockedName == null) {
+                    blockedName = catSettings.getName();
+                    blockedDesc = catSettings.getDescription();
+                }
             }
             if ( catSettings.getFlagged() != null && catSettings.getFlagged()) {
                 isFlagged = true;
@@ -519,7 +523,7 @@ public abstract class DecisionEngine
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), isBlocked, isFlagged, Reason.BLOCK_CATEGORY, blockedName, node.getVendor());
             node.log(hbe, host, port, event);
 
-            String reason = bestCategory.getName() + " - " + bestCategory.getDescription();
+            String reason = blockedName + " - " + blockedDesc;
             WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri, reason, clientIp, node.getNodeTitle(), username);
             return node.generateNonce(bd);
         } else if (isFlagged || (bestCategory != null)) {
