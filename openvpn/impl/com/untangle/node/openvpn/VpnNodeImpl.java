@@ -476,12 +476,6 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         return true;
     }
 
-    public void addClientDistributionEvent( IPAddress clientAddress, String clientName )
-    {
-        this.openVpnMonitor.
-            addClientDistributionEvent( new ClientDistributionEvent( clientAddress, clientName ));
-    }
-
     private boolean lookupClientDistributionKey( String key, IPAddress clientAddress, final VpnClientBase client )
     {
         String clientKey = client.getDistributionKey();
@@ -846,16 +840,6 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     public EventManager<ClientConnectEvent> getClientClosedEventManager()
     {
         return this.openVpnMonitor.getClientClosedLogger();
-    }
-
-    public EventManager<VpnStatisticEvent> getVpnStatisticEventManager()
-    {
-        return this.openVpnMonitor.getVpnStatsDistLogger();
-    }
-
-    public EventManager<ClientDistributionEvent> getClientDistributionEventManager()
-    {
-        return this.openVpnMonitor.getClientDistLogger();
     }
 
     public void incrementBlockCount()

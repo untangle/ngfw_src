@@ -79,12 +79,6 @@ public class Downloader extends HttpServlet
             }
             util.rejectFile( request, response );
         } else {
-            try {
-                IPAddress address = IPAddress.parse( request.getRemoteAddr());
-                util.getNode().addClientDistributionEvent( address, commonName );
-            } catch ( Exception e ) {
-                logger.warn( "Unable to log distribution event." );
-            } 
             util.streamFile( request, response, fileName, download, type );
         }
     }

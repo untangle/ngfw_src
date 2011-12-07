@@ -36,9 +36,6 @@ public interface VpnNode extends Node
      * downloading keys as the administrator */
     public boolean isAdminKey( String key );
 
-    /** Log a distribution event */
-    public void addClientDistributionEvent( IPAddress clientAddress, String clientName );
-
     /* Send out the client distribution */
     public void distributeClientConfig( VpnClientBase client ) throws Exception;
 
@@ -73,13 +70,6 @@ public interface VpnNode extends Node
      * Access the EventManager for ClientConnectEvents
      */
     public EventManager<ClientConnectEvent> getClientClosedEventManager();
-    /**
-     * Access the EventManager for VpnStatisticEvents
-     */    
-    public EventManager<VpnStatisticEvent> getVpnStatisticEventManager();
-    /**
-     * Access the EventManager for ClientDistributionEvents
-     */    
-    public EventManager<ClientDistributionEvent> getClientDistributionEventManager();
+
     public Validator getValidator();
 }

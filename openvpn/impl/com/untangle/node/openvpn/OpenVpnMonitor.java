@@ -65,18 +65,13 @@ class OpenVpnMonitor implements Runnable
 
     private final EventLogger<ClientConnectEvent> clientActiveLogger;
     private final EventLogger<ClientConnectEvent> clientClosedLogger;
-    private final EventLogger<VpnStatisticEvent> vpnStatsDistLogger;
-    private final EventLogger<ClientDistributionEvent> clientDistLogger;
     private final Logger logger = Logger.getLogger( this.getClass());
 
     private Map<Key,Stats> statusMap    = new HashMap<Key,Stats>();
     private Map<String,Stats> activeMap = new HashMap<String,Stats>();
-    private VpnStatisticEvent statistics = new VpnStatisticEvent();
 
     /* This is a list that contains the contents of the command "status 2" from openvpn */
     private final List<String> clientStatus = new LinkedList<String>();
-
-    private List<ClientDistributionEvent> clientDistributionList = new LinkedList<ClientDistributionEvent>();
 
     private final VpnNodeImpl node;
 
@@ -93,10 +88,8 @@ class OpenVpnMonitor implements Runnable
 
     OpenVpnMonitor( VpnNodeImpl node )
     {
-        this.vpnStatsDistLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
         this.clientActiveLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
         this.clientClosedLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
-        this.clientDistLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
         clientActiveLogger.addEventRepository(new ActiveEventCache());//For "open" events
         clientClosedLogger.addSimpleEventFilter(new ClientConnectEventClosedFilter());//For "closed" events
 
@@ -121,24 +114,6 @@ class OpenVpnMonitor implements Runnable
     }
 
 
-    /**
-     * Accessor for the ClientConnectLogger, for the impl
-     * to pass to the UI
-     */
-    EventLogger<VpnStatisticEvent> getVpnStatsDistLogger() {
-        return vpnStatsDistLogger;
-    }
-
-
-    /**
-     * Accessor for the ClientConnectLogger, for the impl
-     * to pass to the UI
-     */
-    EventLogger<ClientDistributionEvent> getClientDistLogger() {
-        return clientDistLogger;
-    }
-
-
     public void run()
     {
         logger.debug( "Starting" );
@@ -148,10 +123,6 @@ class OpenVpnMonitor implements Runnable
         activeMap = new HashMap<String,Stats>();
 
         Date nextUpdate = new Date(( new Date()).getTime() + LOG_TIME_MSEC );
-
-        /* Flush the statistics */
-        this.statistics = new VpnStatisticEvent();
-        this.statistics.setStart( new Date());
 
         if ( !isAlive ) {
             logger.error( "died before starting" );
@@ -169,8 +140,6 @@ class OpenVpnMonitor implements Runnable
 
             /* Check if the node is still running */
             if ( !isAlive ) break;
-
-            logClientDistributionEvents();
 
             /* Only log when enabled */
             if ( !isEnabled ) {
@@ -191,11 +160,6 @@ class OpenVpnMonitor implements Runnable
                 } catch ( Exception e ) {
                     logger.info( "Error updating status", e );
                 }
-
-                if ( now.after( nextUpdate )) {
-                    logStatistics( now );
-                    nextUpdate.setTime( now.getTime() + LOG_TIME_MSEC );
-                }
             }
 
             /* Check if the node is still running */
@@ -212,7 +176,8 @@ class OpenVpnMonitor implements Runnable
      * Method returns a list of open clients as ClientConnectEvents w/o
      * an end date.
      */
-    private synchronized List<ClientConnectEvent> getOpenConnectionsAsEvents() {
+    private synchronized List<ClientConnectEvent> getOpenConnectionsAsEvents()
+    {
         Date now = new Date();
         List<ClientConnectEvent> ret = new ArrayList<ClientConnectEvent>();
         for(Stats s : activeMap.values()) {
@@ -332,9 +297,6 @@ class OpenVpnMonitor implements Runnable
      * all of the active sessions have completed */
     private void flushLogEvents()
     {
-        /* Log disconnect events for all active clients */
-        logClientDistributionEvents();
-
         Date now = new Date();
 
         for ( Stats stats : activeMap.values()) {
@@ -343,37 +305,7 @@ class OpenVpnMonitor implements Runnable
         }
 
         activeMap.clear();
-
-        logStatistics( now );
     }
-
-    /* XXX Passing in now is very hockey */
-    private void logStatistics( Date now )
-    {
-        VpnStatisticEvent currentStatistics = this.statistics;
-
-        if ( !currentStatistics.hasStatistics() && activeMap.size() == 0 ) {
-            logger.debug( "No stats to log" );
-            return;
-        }
-
-        this.statistics = new VpnStatisticEvent();
-        Date temp = new Date( now.getTime());
-        this.statistics.setStart( temp );
-        currentStatistics.setEnd( temp );
-
-        /* Add any values that haven't been added yet */
-        for ( Stats stats : activeMap.values()) {
-            currentStatistics.incrBytesTx( stats.bytesTxTotal - stats.bytesTxLast );
-            currentStatistics.incrBytesRx( stats.bytesRxTotal - stats.bytesRxLast );
-            stats.bytesRxLast = stats.bytesRxTotal;
-            stats.bytesTxLast = stats.bytesTxTotal;
-            stats.lastUpdate = now;
-        }
-
-        vpnStatsDistLogger.log( currentStatistics );
-    }
-
 
     private void logEvents()
     {
@@ -388,8 +320,6 @@ class OpenVpnMonitor implements Runnable
             /* Anything that is inactive or didn't get updated, is dead (or going to be dead) */
 
             if ( !stats.updated || !stats.isActive ) {
-                this.statistics.incrBytesTx( stats.bytesTxTotal - stats.bytesTxLast );
-                this.statistics.incrBytesRx( stats.bytesRxTotal - stats.bytesRxLast );
                 stats.fillEvent( now );
                 if ( logger.isDebugEnabled()) logger.debug( "Logging " + stats.key );
                 logClientConnectEvent(stats);
@@ -537,25 +467,8 @@ class OpenVpnMonitor implements Runnable
         in.readLine();
     }
 
-    private void logClientDistributionEvents()
+    private void logClientConnectEvent(Stats stats)
     {
-        if ( logger.isDebugEnabled()) {
-            logger.debug( "Logging " + this.clientDistributionList.size() + " distribution events" );
-        }
-
-        /* Log all of the client distribution events events */
-        List<ClientDistributionEvent> clientDistributionList = this.clientDistributionList;
-        this.clientDistributionList = new LinkedList<ClientDistributionEvent>();
-
-        for ( ClientDistributionEvent event : clientDistributionList ) clientDistLogger.log( event );
-    }
-
-    void addClientDistributionEvent( ClientDistributionEvent event )
-    {
-        this.clientDistributionList.add( event );
-    }
-
-    private void logClientConnectEvent(Stats stats) {
         if( stats.logged ) return;
         // FIXME ?
         clientActiveLogger.log( stats.sessionEvent );
@@ -568,7 +481,8 @@ class OpenVpnMonitor implements Runnable
     //are never sent to persistent store, this class simulates
     //the behavior of "normal" EventCaches by examining only
     //the actie records and returning them to the client.
-    class ActiveEventCache implements EventRepository<ClientConnectEvent> {
+    class ActiveEventCache implements EventRepository<ClientConnectEvent>
+    {
         private RepositoryDesc rd = new RepositoryDesc(ACTIVE_SESSIONS_REPO_NAME);
 
         ActiveEventCache()
@@ -596,8 +510,8 @@ class OpenVpnMonitor implements Runnable
     }
 
     //Provides a view of all ClientConnectEvent - both active and closed
-    class AllEventsCache implements EventRepository<ClientConnectEvent> {
-
+    class AllEventsCache implements EventRepository<ClientConnectEvent>
+    {
         private final EventLogger<ClientConnectEvent> eventLogger;
         private RepositoryDesc rd = new RepositoryDesc(ALL_SESSIONS_REPO_NAME);
 
@@ -718,7 +632,8 @@ class Stats
 
     boolean logged = false;
 
-    Stats( Key key, long bytesRx, long bytesTx ) {
+    Stats( Key key, long bytesRx, long bytesTx )
+    {
         this.key          = key;
         this.bytesRxTotal = bytesRx;
         this.bytesRxLast  = bytesRx;
@@ -732,18 +647,21 @@ class Stats
                                     this.key.port, this.key.name );
     }
 
-    void fillEvent( Date now ) {
+    void fillEvent( Date now )
+    {
         fillEventImpl(this.sessionEvent, now );
     }
-    void fillEventImpl(ClientConnectEvent event, Date now ) {
+
+    void fillEventImpl(ClientConnectEvent event, Date now )
+    {
         event.setEnd( now );
         event.setBytesTx( this.bytesTxTotal );
         event.setBytesRx( this.bytesRxTotal );
     }
 
-    ClientConnectEvent copyCurrentEvent(Date now) {
-        ClientConnectEvent cce = new ClientConnectEvent(
-                                                        sessionEvent.getStart(),
+    ClientConnectEvent copyCurrentEvent(Date now)
+    {
+        ClientConnectEvent cce = new ClientConnectEvent(sessionEvent.getStart(),
                                                         sessionEvent.getAddress(),
                                                         sessionEvent.getPort(),
                                                         sessionEvent.getClientName());
