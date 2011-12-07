@@ -55,6 +55,7 @@ public class FirewallRuleMatcher implements JSONString, Serializable
 
     private FirewallRuleMatcher.MatcherType matcherType = null;
     private String value = null;
+    private Boolean invert = Boolean.FALSE;
 
     /**
      * These internal are used in various matchers
@@ -104,17 +105,41 @@ public class FirewallRuleMatcher implements JSONString, Serializable
         if (this.matcherType != null && this.value != null) _computeMatchers();
     }
 
+    public Boolean getInvert()
+    {
+        return this.invert;
+    }
+
+    public void setInvert( Boolean value )
+    {
+        this.invert = value;
+        /* If the object is sufficiently initialized compute the cached computers */
+        if ( this.matcherType != null && this.value != null ) _computeMatchers();
+    }
+
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
-    
+
     public boolean matches( short protocol,
                             int srcIntf, int dstIntf,
                             InetAddress srcAddress, InetAddress dstAddress,
                             int srcPort, int dstPort,
                             String username)
+    {
+        if (this.getInvert()) 
+            return !_matches( protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort, username );
+        else
+            return _matches( protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort, username );
+    }
+    
+    private boolean _matches( short protocol,
+                              int srcIntf, int dstIntf,
+                              InetAddress srcAddress, InetAddress dstAddress,
+                              int srcPort, int dstPort,
+                              String username)
     {
         String attachment = null;
         
@@ -216,7 +241,6 @@ public class FirewallRuleMatcher implements JSONString, Serializable
 
         return false;
     }
-
     
     private void _computeMatchers()
     {

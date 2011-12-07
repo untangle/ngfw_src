@@ -43,6 +43,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
             this.store = new Ext.data.SimpleStore({
                 fields: [
                     {name: 'name'},
+                    {name: 'invert'},
                     {name: 'value'}
                 ]
             });
@@ -57,7 +58,8 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 width:45,
                 fixed: true,
                 dataIndex: null,
-                renderer: function(value, metadata, record) {
+                renderer: function(value, metadata, record, rowIndex) {
+                    if (rowIndex == 0) return "";
                     return this.settingsCmp.i18n._("and");
                 }.createDelegate(this)
             },{
@@ -77,6 +79,19 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                             continue;
                         out.push('<option value="' + this.rules[i].name + '" ' + seleStr + '>' + this.rules[i].displayName + '</option>');
                     }
+                    out.push("</select>");
+                    return out.join("");
+                }.createDelegate(this)
+            },{
+                header : "",
+                width: 100,
+                fixed: true,
+                dataIndex : "invert",
+                renderer: function(value, metadata, record, rowIndex, colIndex, store) {
+                    var out=[];
+                    out.push('<select class="rule_builder_invert" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowInvert(\''+record.id+'\',this)">');
+                    out.push('<option value="false" ' + ((value==false)?"selected":"") + '>' + 'is'     + '</option>');
+                    out.push('<option value="true"  ' + ((value==true) ?"selected":"") + '>' + 'is NOT' + '</option>');
                     out.push("</select>");
                     return out.join("");
                 }.createDelegate(this)
@@ -153,6 +168,11 @@ if (!Ung.hasResource["Ung.Firewall"]) {
             record.set("name",newName);
             this.fireEvent("afteredit");
         },
+        changeRowInvert: function(recordId,selObj) {
+            var record=this.store.getById(recordId);
+            var newValue=selObj.options[selObj.selectedIndex].value;
+            record.data.invert = newValue;
+        },
         changeRowValue: function(recordId,valObj) {
             var record=this.store.getById(recordId);
             switch(valObj.type) {
@@ -195,7 +215,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
             var entries=[];
             if (value != null && value.list != null) {
                 for(var i=0; i<value.list.length; i++) {
-                    entries.push([value.list[i].matcherType,value.list[i].value]);
+                    entries.push( [value.list[i].matcherType, value.list[i].invert, value.list[i].value] );
                 }
             }
             this.store.loadData(entries);
@@ -207,6 +227,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 list.push({
                     javaClass: "com.untangle.node.firewall.FirewallRuleMatcher",
                     matcherType: records[i].get("name"),
+                    invert: records[i].get("invert"),
                     value: records[i].get("value")});
             }
             return {
