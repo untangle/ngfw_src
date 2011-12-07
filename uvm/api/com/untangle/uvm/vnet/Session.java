@@ -106,7 +106,7 @@ public interface Session
     //public final String KEY_WEBFILTER_CATEGORIES = "untangle-categories"; /* List<String> */
 
     public final String KEY_CLASSD_APPLICATION = "classd-application"; /* String */
-    public final String KEY_CLASSD_PROTOCOL = "classd-protocol"; /* String */
+    public final String KEY_CLASSD_PROTOCHAIN = "classd-protochain"; /* String */
     public final String KEY_CLASSD_DETAIL = "classd-detail"; /* String */
     public final String KEY_CLASSD_CONFIDENCE = "classd-confidence"; /* Integer */
 
