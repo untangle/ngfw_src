@@ -88,13 +88,11 @@ public class SpywareHttpHandler extends HttpStateMachine
         node.incrementHttpScan();
         if (node.isDomainPasslisted(host, session.clientAddr())) {
             node.incrementHttpWhitelisted();
-            node.statisticManager.incrPass(); // pass URL
             getSession().release();
             releaseRequest();
             return requestHeader;
         } else if (isUrlBlocked(host, uri)) {
             node.incrementHttpBlockedDomain();
-            node.statisticManager.incrURL();
             node.log(new SpywareBlacklistEvent(requestLine.getRequestLine()));
             // XXX we could send a page back instead, this isn't really right
             logger.debug("detected spyware, shutting down");
@@ -189,7 +187,6 @@ public class SpywareHttpHandler extends HttpStateMachine
                     logger.debug("blocking cookie: " + domain);
                 }
                 node.incrementHttpClientCookieBlock();
-                node.statisticManager.incrCookie();
                 node.log(new SpywareCookieEvent(requestLine.getRequestLine(), domain, true));
                 i.remove();
                 if (logger.isDebugEnabled()) {
@@ -198,7 +195,6 @@ public class SpywareHttpHandler extends HttpStateMachine
                 cookieKillers.addAll(makeCookieKillers(cookie, host));
             } else {
                 node.incrementHttpClientCookiePass();
-                node.statisticManager.incrPass(); // pass cookie
             }
         }
 
@@ -256,7 +252,6 @@ public class SpywareHttpHandler extends HttpStateMachine
                     logger.debug("cookie deleted: " + domain);
                 }
                 node.incrementHttpServerCookieBlock();
-                node.statisticManager.incrCookie();
                 node.log(new SpywareCookieEvent(rl.getRequestLine(), domain, false));
                 i.remove();
             } else {
@@ -264,7 +259,6 @@ public class SpywareHttpHandler extends HttpStateMachine
                     logger.debug("cookie not deleted: " + domain);
                 }
                 node.incrementHttpServerCookiePass();
-                node.statisticManager.incrPass(); // pass cookie
             }
         }
 

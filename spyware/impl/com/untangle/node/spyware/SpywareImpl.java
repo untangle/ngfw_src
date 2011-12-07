@@ -97,8 +97,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     private final SpywareReplacementGenerator replacementGenerator;
 
-    final SpywareStatisticManager statisticManager;
-
     // constructors ------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
@@ -110,7 +108,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
         eventCookieLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
         eventBlacklistLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
         eventSuspiciousLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
-        statisticManager = new SpywareStatisticManager(nodeContext);
 
         SimpleEventFilter ef = new SpywareSuspiciousFilter();
         eventSuspiciousLogger.addSimpleEventFilter(ef);
@@ -374,15 +371,11 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     @Override
     protected void preStart()
-    {
-        statisticManager.start();
-    }
+    {}
 
     @Override
     protected void postStop()
-    {
-        statisticManager.stop();
-    }
+    {}
 
     @Override
     protected void postDestroy()

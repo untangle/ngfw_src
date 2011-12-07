@@ -54,17 +54,6 @@ CREATE TABLE events.n_spyware_evt_blacklist (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.untangle.tran.spyware.SpywareStatisticEvent
-CREATE TABLE events.n_spyware_statistic_evt (
-    event_id int8 NOT NULL,
-    pass int4,
-    cookie int4,
-    activeX int4,
-    url int4,
-    subnet_access int4,
-    time_stamp timestamp,
-    PRIMARY KEY (event_id));
-
 -- indeces for reporting
 
 CREATE INDEX n_spyware_cookie_rid_idx ON events.n_spyware_evt_cookie (request_id);

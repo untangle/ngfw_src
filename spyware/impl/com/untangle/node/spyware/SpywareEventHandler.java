@@ -83,10 +83,7 @@ public class SpywareEventHandler extends AbstractEventHandler
         Session s = event.session();
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
         if (null != spe) {
-            node.statisticManager.incrSubnetAccess(); // logged subnet access
             node.log(spe);
-        } else {
-            node.statisticManager.incrPass(); // pass subnet access
         }
     }
 
@@ -96,10 +93,7 @@ public class SpywareEventHandler extends AbstractEventHandler
         Session s = event.session();
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
         if (null != spe) {
-            node.statisticManager.incrSubnetAccess(); // logged subnet access
             node.log(spe);
-        } else {
-            node.statisticManager.incrPass(); // pass subnet access
         }
     }
 
@@ -110,7 +104,6 @@ public class SpywareEventHandler extends AbstractEventHandler
         GenericRule ir = (GenericRule)this.subnetSet.getMostSpecific(ipm);
 
         if (ir == null) {
-            node.statisticManager.incrPass(); // pass subnet access
             if (logger.isDebugEnabled()) {
                 logger.debug("Subnet scan: " + ipm.toString() + " -> clean.");
             }
