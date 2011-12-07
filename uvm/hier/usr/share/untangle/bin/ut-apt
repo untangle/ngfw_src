@@ -36,6 +36,7 @@ REMO_OPTS = " --yes --force-yes --fix-broken --purge "
 PREFIX = "@PREFIX@"
 $ERROR = ""
 
+Signal.trap('HUP', 'IGNORE')
 Syslog.open('ut-apt', Syslog::LOG_PID | Syslog::LOG_NDELAY, Syslog::LOG_LOCAL2)
 
 def printusage()
