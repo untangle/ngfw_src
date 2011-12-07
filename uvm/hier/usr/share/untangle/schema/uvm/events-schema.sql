@@ -31,14 +31,6 @@ CREATE TABLE events.u_login_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.untangle.mvvm.engine.TransformStateChange
-CREATE TABLE events.u_node_state_change (
-    event_id int8 NOT NULL,
-    time_stamp timestamp,
-    tid int8 NOT NULL,
-    state text NOT NULL,
-    PRIMARY KEY (event_id));
-
 -- com.untangle.mvvm.tran.PipelineEndpoints
 CREATE TABLE events.pl_endp (
     event_id int8 NOT NULL,
