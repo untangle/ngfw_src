@@ -156,9 +156,24 @@ def drop_column(tablename, column):
     run_sql(sql)
 
 def drop_partitioned_table(tablename, cutoff_date):
-    for t, date in find_partitioned_tables(tablename):
-        if date < cutoff_date:
-            drop_table(t, schema=SCHEMA)
+  for t, date in find_partitioned_tables(tablename):
+    if date < cutoff_date:
+      drop_table(t, schema=SCHEMA)
+
+  tablename = re.sub(r'(\-[a-z]+|reports\.|\[.+\])', '', tablename)
+  try:
+    run_sql("DELETE FROM reports.%s WHERE time_stamp < %%s" % tablename,
+            (cutoff_date,),
+            force_propagate=True)
+  except:
+    try:
+      run_sql("DELETE FROM reports.%s WHERE trunc_time < %%s" % tablename,
+              (cutoff_date,),
+              force_propagate=True)
+    except:
+      run_sql("DELETE FROM reports.%s WHERE date < %%s" % tablename,
+              (cutoff_date,),
+              force_propagate=True)
 
 def clear_partitioned_tables(start_date, end_date, tablename=None):
     logger.debug('Forcing removal of existing partitioned...')
