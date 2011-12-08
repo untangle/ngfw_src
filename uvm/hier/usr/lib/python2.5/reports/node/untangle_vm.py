@@ -42,7 +42,7 @@ class UvmNode(Node):
 
     @print_timing
     def setup(self, start_date, end_date):
-        self.__generate_address_map(start_date, end_date)
+        self.__generate_address_map(start_date, mx.DateTime.now())
 
         self.__create_n_admin_logins(start_date, end_date)
 
@@ -123,13 +123,13 @@ DELETE FROM events.pl_endp WHERE time_stamp < %s""", (cutoff,))
 DELETE FROM events.pl_stats WHERE time_stamp < %s""", (cutoff,))
 
         sql_helper.run_sql("""\
-DELETE FROM events.n_router_evt_dhcp_abs WHERE time_stamp < %s""", (cutoff,))
+DELETE FROM events.n_router_evt_dhcp_abs WHERE time_stamp < %s - interval '1 day'""", (cutoff,))
 
         sql_helper.run_sql("""\
-DELETE FROM events.n_router_evt_dhcp WHERE time_stamp < %s""", (cutoff,))
+DELETE FROM events.n_router_evt_dhcp WHERE time_stamp < %s - interval '1 day'""", (cutoff,))
 
         sql_helper.run_sql("""\
-DELETE FROM events.n_router_dhcp_abs_lease WHERE end_of_lease < %s""", (cutoff,))
+DELETE FROM events.n_router_dhcp_abs_lease WHERE end_of_lease < %s - interval '1 day'""", (cutoff,))
 
         sql_helper.run_sql("""\
 DELETE FROM events.n_router_evt_dhcp_abs_leases glue
@@ -336,8 +336,7 @@ GROUP BY time, uid, hname, client_intf, server_intf
             self.__generate_abs_leases(m, start_date, end_date)
             self.__generate_relative_leases(m, start_date, end_date)
 
-        self.__generate_manual_map(m, start_date, 
-                                   mx.DateTime.now())
+        self.__generate_manual_map(m, start_date, end_date)
 
         self.__write_leases(m)
 
@@ -401,10 +400,11 @@ SELECT evt.time_stamp, lease.end_of_lease, lease.ip, lease.hostname,
 FROM events.n_router_evt_dhcp_abs_leases AS glue,
      events.n_router_evt_dhcp_abs AS evt,
      events.n_router_dhcp_abs_lease AS lease
-WHERE lease.hostname != '' AND glue.event_id = evt.event_id
-      AND glue.lease_id = lease.event_id
-      AND ((%s <= evt.time_stamp and evt.time_stamp <= %s)
-      OR ((%s <= lease.end_of_lease and lease.end_of_lease <= %s)))
+WHERE lease.hostname != ''
+AND glue.event_id = evt.event_id
+AND glue.lease_id = lease.event_id
+AND (%s <= evt.time_stamp
+     OR %s <= lease.end_of_lease)
 ORDER BY evt.time_stamp""", start_date, end_date)
 
     @print_timing
@@ -412,8 +412,9 @@ ORDER BY evt.time_stamp""", start_date, end_date)
         self.__generate_leases(m, """\
 SELECT evt.time_stamp, evt.end_of_lease, evt.ip, evt.hostname, evt.event_type
 FROM events.n_router_evt_dhcp AS evt
-WHERE hostname != '' AND ((%s <= evt.time_stamp AND evt.time_stamp <= %s)
-    OR (%s <= evt.end_of_lease AND evt.end_of_lease <= %s))
+WHERE hostname != ''
+AND (%s <= evt.time_stamp
+     OR %s <= evt.end_of_lease)
 ORDER BY evt.time_stamp""", start_date, end_date)
 
     @print_timing
@@ -455,13 +456,13 @@ ON min_idx = position""" % (2*(reports.engine.get_wan_clause(),)))
 
     def __generate_leases(self, m, q, start_date, end_date):
         st = DateFromMx(start_date)
-        et = DateFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
         try:
             curs = conn.cursor()
 
-            curs.execute(q, (st, et, st, et))
+            print q % (st, end_date)
+            curs.execute(q, (st, end_date))
 
             while 1:
                 r = curs.fetchone()
