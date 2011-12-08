@@ -469,8 +469,14 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     name : 'client',
                     mapping : 'CClientAddr'
                 }, {
+                    name : 'clientPort',
+                    mapping : 'CClientPort'
+                }, {
                     name : 'server',
                     mapping : 'CServerAddr'
+                }, {
+                    name : 'serverPort',
+                    mapping : 'CServerPort'
                 }],
                 autoExpandColumn: 'ruleIndex',
                 columns : [{
@@ -487,6 +493,11 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     sortable : true,
                     dataIndex : 'client'
                 }, {
+                    header : this.i18n._("client port"),
+                    width : Ung.Util.portFieldWidth,
+                    sortable : true,
+                    dataIndex : 'clientPort'
+                }, {
                     header : this.i18n._("username"),
                     width : Ung.Util.usernameFieldWidth,
                     sortable : true,
@@ -498,15 +509,20 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     dataIndex : 'blocked'
                 }, {
                     id: 'ruleIndex',
-                    header : this.i18n._('rule'),
-                    width : 150,
+                    header : this.i18n._('rule Id'),
+                    width : 60,
                     sortable : true,
                     dataIndex : 'firewallRuleIndex'
                 }, {
-                    header : this.i18n._("server"),
-                    width : Ung.Util.ipFieldWidth,
+                    header : this.i18n._("server") + " " + this.i18n._("(pre-NAT)"),
+                    width : Ung.Util.ipFieldWidth + 40, // +40 for column header
                     sortable : true,
                     dataIndex : 'server'
+                }, {
+                    header : this.i18n._("server port") + " " + this.i18n._("(pre-NAT)"),
+                    width : Ung.Util.portFieldWidth + 40, // +40 for column header
+                    sortable : true,
+                    dataIndex : 'serverPort'
                 }]
             });
         },
