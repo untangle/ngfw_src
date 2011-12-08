@@ -461,7 +461,6 @@ ON min_idx = position""" % (2*(reports.engine.get_wan_clause(),)))
         try:
             curs = conn.cursor()
 
-            print q % (st, end_date)
             curs.execute(q, (st, end_date))
 
             while 1:
