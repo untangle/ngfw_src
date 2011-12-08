@@ -644,6 +644,7 @@ Ung.Util= {
     maxRowCount : 2147483647,
     timestampFieldWidth : 130,
     ipFieldWidth : 100,
+    portFieldWidth : 100,
     hostnameFieldWidth : 120,
     uriFieldWidth : 200,
     usernameFieldWidth : 120,
