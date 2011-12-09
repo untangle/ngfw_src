@@ -56,28 +56,50 @@ class WebFilterDecisionEngine extends DecisionEngine
 
         logger.debug("Web Filter Category Lookup: " + url); 
 
+        /**
+         * First, lookup the specific URL
+         */
         Integer category = urlDatabase.get(url);
         if (category != null)
             categories.add(category);
 
         /**
-         * Lookup just the domain (no URI)
-         * For example example.com is categorized as a whole
-         * So example.com/foo won't be in the database specifically
+         * If no categorization has already been found
+         * Next, lookup the domain and subdomains with URI
+         * If the URL is "www.example.com/foo" lookup "www.example.com/foo" and "example.com/foo"
          */
         if (categories.size() == 0) {
             String dom;
             for ( dom = domain ; null != dom ; dom = nextHost(dom) ) {
                 category = urlDatabase.get(dom + uri);
-                if (category != null)
-                    categories.add(category);
-
                 if (category != null) {
+                    categories.add(category);
                     break;
                 }
             }
         }
 
+        /**
+         * If no categorization has already been found
+         * Next, lookup the domain and subdomains without URI
+         * If the URL is "www.example.com/foo" lookup "www.example.com" and "example.com"
+         */
+        if (categories.size() == 0) {
+            String dom;
+            for ( dom = domain ; null != dom ; dom = nextHost(dom) ) {
+                category = urlDatabase.get(dom + "/");
+                if (category != null) {
+                    categories.add(category);
+                    break;
+                }
+                category = urlDatabase.get(dom);
+                if (category != null) {
+                    categories.add(category);
+                    break;
+                }
+            }
+        }
+        
         if (categories.size() == 0) {
             results = Collections.singletonList("uncategorized");
         } else {

@@ -35,9 +35,13 @@ public class UrlHashSet
 
     public boolean contains( String domain, String uri )
     {
-
-        if (urlHashSet.contains(domain + uri))
-            return true;
+        /**
+         * Check to see if this specific URL is blocked (with all possible subdomains)
+         */
+        for ( String dom = domain ; dom != null ; dom = nextHost(dom) ) {
+            if (urlHashSet.contains(dom + uri))
+                return true;
+        }
 
         /**
          * Also check to see if the entire domain (or subdomain) is blocked
