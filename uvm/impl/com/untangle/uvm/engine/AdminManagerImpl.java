@@ -14,6 +14,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TimeZone;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.TransactionRolledbackException;
@@ -28,7 +30,6 @@ import com.untangle.uvm.MailSender;
 import com.untangle.uvm.MailSettings;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.AdminSettings;
-import com.untangle.uvm.SystemInfo;
 import com.untangle.uvm.User;
 import com.untangle.uvm.security.UvmPrincipal;
 import com.untangle.uvm.snmp.SnmpManager;
@@ -284,7 +285,7 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
             SimpleExec.SimpleExecResult result = SimpleExec.exec("/usr/share/untangle/bin/ut-uvm-version.sh",null,null,null,true,true,1000*20);
 	    
             if(result.exitCode==0) {
-                return new String(result.stdOut);
+                return new String(result.stdOut).replaceAll("(\\r|\\n)", "");
             }
         } catch (Exception e) {
             logger.warn("Unable to fetch version",e);
@@ -297,13 +298,41 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
         return uvmContext.getFullVersion();
     }
 
-    public SystemInfo getSystemInfo()
+    public String getModificationState()
     {
-        String UID = uvmContext.getServerUID();
-        String fullVersion = getFullVersionAndRevision().replaceAll("(\\r|\\n)", "");
-        Boolean terminalActivated = new File(System.getProperty("uvm.conf.dir") + "terminalActivated-flag").exists();
-        
-        return new SystemInfo(UID, fullVersion, terminalActivated);
-    }
+        File zshHistoryFile = new File("/root/.zsh_history");
+        File blessedFile = new File(System.getProperty("uvm.conf.dir") + "/mods-blessed-flag");
 
+        /* if there is no zsh_history file it obviously hasn't been modified */
+        if (!zshHistoryFile.exists())
+            return "none";
+
+        /* if there is a zsh_history, but the blessed flag is newer these changes have been approved */
+        if (blessedFile.exists() && blessedFile.lastModified() > zshHistoryFile.lastModified())
+            return "blessed";
+
+        /* otherwise say no and include the length of the history file */
+        Process process = null;
+        try {
+            String cmdArray[] = new String[] { "/bin/sh", "-c", "cat /root/.zsh_history | /usr/bin/wc -l" };
+            process = UvmContextImpl.context().exec(cmdArray);
+            int exitCode = process.waitFor();
+
+            BufferedReader tmp = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String output = tmp.readLine();
+            output = output.replaceAll("(\\r|\\n)", "");
+            logger.warn(output);
+            
+            if( exitCode == 0 ) {
+                return new String("yes (" + output + ")");
+            }
+        } catch (Exception e) {
+            logger.warn("Unable to parse zsh_history",e);
+        } finally {
+            if (process != null)
+                process.destroy();
+        }
+
+        return "UNKNOWN";
+    }
 }

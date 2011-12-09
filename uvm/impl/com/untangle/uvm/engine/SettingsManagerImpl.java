@@ -277,7 +277,7 @@ public class SettingsManagerImpl implements SettingsManager
                     System.out.println("out: " + line);
                 }
 
-                tmp = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                tmp = new BufferedReader(new InputStreamReader(process.getErrorStream()));
                 
                 while ((line = tmp.readLine()) != null) {
                     System.out.println("err: " + line);

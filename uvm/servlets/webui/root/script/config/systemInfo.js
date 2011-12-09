@@ -25,17 +25,6 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
             this.tabs.activate(this.panelVersion);
             Ung.SystemInfo.superclass.initComponent.call(this);
         },
-        getSystemInfo : function(forceReload) {
-            if (forceReload || this.rpc.systemInfo === undefined) {
-                try {
-                    this.rpc.systemInfo = rpc.adminManager.getSystemInfo();
-                } catch (e) {
-                    Ung.Util.rpcExHandler(e);
-                }
-                
-            }
-            return this.rpc.systemInfo;
-        },
         buildVersion : function() {
             this.panelVersion = new Ext.Panel({
                 name : 'Version',
@@ -59,9 +48,9 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         width : 600,
                         height : 400,
                         value : this.i18n._('Summary')+":\n"+
-                            this.i18n._('UID')+": "+ this.getSystemInfo().serverUID + "\n" + 
-                            this.i18n._('Build') + ": " + this.getSystemInfo().fullVersion + "\n" + 
-                            this.i18n._('Mod') + ": " + this.getSystemInfo().terminalActivated
+                            this.i18n._('UID')+": " + rpc.jsonrpc.UvmContext.getServerUID()  + "\n" + 
+                            this.i18n._('Build') + ": " + rpc.adminManager.getFullVersionAndRevision() + "\n" + 
+                            this.i18n._('Mod') + ": " + rpc.adminManager.getModificationState()
                     })]
                 }]
             });
