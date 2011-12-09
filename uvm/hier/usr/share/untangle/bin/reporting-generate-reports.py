@@ -1,6 +1,6 @@
 #! /usr/bin/env python 
 
-import getopt, logging, mx, os, os.path, re, sys, tempfile, shutil
+import getopt, logging, mx, os, os.path, re, sys, tempfile, time, shutil
 from subprocess import Popen, PIPE
 from psycopg2.extensions import DateFromMx, TimestampFromMx
 
@@ -36,22 +36,6 @@ if (PREFIX != ''):
 
 from reports.log import *
 logger = getLogger(__name__)
-
-# lock 1st
-if os.path.isfile(LOCKFILE):
-     pid = open(LOCKFILE).readline().strip()
-     cmdFile = "/proc/%s/cmdline" % pid
-     if os.path.isfile(cmdFile) and open(cmdFile).readline().find(sys.argv[0]) > 0:
-          logger.error("Reports are already running (pid %s), aborting..." % pid)
-          sys.exit(1)
-     else:
-          logger.info("Removing leftover pidfile (pid %s)" % pid)
-          os.remove(LOCKFILE)
-
-f = open(LOCKFILE, "w")
-f.write("%s\n" % os.getpid())
-f.close()
-logger.info("Wrote pidfile (pid: %s)" % os.getpid())
 
 try:
      opts, args = getopt.getopt(sys.argv[1:], "hncgpmiaver:d:l:t:s:b:",
@@ -122,6 +106,28 @@ for opt in opts:
           simulate = v
      elif k == '-l' or k == '--locale':
           locale = v
+
+# lock 1st
+if os.path.isfile(LOCKFILE):
+     pid = open(LOCKFILE).readline().strip()
+     cmdFile = "/proc/%s/cmdline" % pid
+     if os.path.isfile(cmdFile) and open(cmdFile).readline().find(sys.argv[0]) > 0:
+          logger.warning("Reports are already running (pid %s)..." % pid)
+          if incremental:
+            logger.error("... we were trying an incremental run, aborting")
+            sys.exit(1)
+          else:
+            while os.path.isfile(LOCKFILE):
+              logger.warning("... we are trying a nightly run, waiting")
+              time.sleep(1)
+     else:
+          logger.info("Removing leftover pidfile (pid %s)" % pid)
+          os.remove(LOCKFILE)
+
+f = open(LOCKFILE, "w")
+f.write("%s\n" % os.getpid())
+f.close()
+logger.info("Wrote pidfile (pid: %s)" % os.getpid())
 
 import reports.i18n_helper
 import reports.engine
@@ -414,3 +420,6 @@ if not no_cleanup and not simulate:
 #    try:
 #          shutil.rmtree(reports_output_base)
 
+if os.path.isfile(LOCKFILE):
+  logger.info("Removing pidfile (pid: %s)" % os.getpid())
+  os.remove(LOCKFILE)
