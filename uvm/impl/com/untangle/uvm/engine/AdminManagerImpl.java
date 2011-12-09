@@ -300,10 +300,10 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
     public SystemInfo getSystemInfo()
     {
         String UID = uvmContext.getServerUID();
-        String fullVersion = getFullVersionAndRevision();
-        String javaVersion = System.getProperty("java.version");
-
-        return new SystemInfo(UID, fullVersion, javaVersion);
+        String fullVersion = getFullVersionAndRevision().replaceAll("(\\r|\\n)", "");
+        Boolean terminalActivated = new File(System.getProperty("uvm.conf.dir") + "terminalActivated-flag").exists();
+        
+        return new SystemInfo(UID, fullVersion, terminalActivated);
     }
 
 }

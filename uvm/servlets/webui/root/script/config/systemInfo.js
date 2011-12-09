@@ -61,7 +61,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         value : this.i18n._('Summary')+":\n"+
                             this.i18n._('UID')+": "+ this.getSystemInfo().serverUID + "\n" + 
                             this.i18n._('Build') + ": " + this.getSystemInfo().fullVersion + "\n" + 
-                            this.i18n._('Java') + ": " + this.getSystemInfo().javaVersion 
+                            this.i18n._('Mod') + ": " + this.getSystemInfo().terminalActivated
                     })]
                 }]
             });
