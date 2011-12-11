@@ -70,17 +70,15 @@ def flushEvents():
     if (reports != None):
         reports.flushEvents(True)
 
-
-#
-# TESTS TO ADD:
-# eventlog (events are logged properly)
-# passed client IP (overrides other blocks)
-#
 class WebFilterLiteTests(unittest.TestCase):
 
     @staticmethod
     def nodeName():
         return "untangle-node-webfilter"
+
+    @staticmethod
+    def vendorName():
+        return "Untangle"
 
     def setUp(self):
         global nodeDesc, node
@@ -334,7 +332,7 @@ class WebFilterLiteTests(unittest.TestCase):
         assert(events['list'] != None)
         assert(events['list'][0]['host'] == "metaloft.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
-        assert(events['list'][0]['wfUntangleBlocked'] == True)
+        assert(events['list'][0]['wf' + self.vendorName() + 'Blocked'] == True)
 
     def test_101_eventlog_flaggedUrl(self):
         global node
@@ -351,8 +349,8 @@ class WebFilterLiteTests(unittest.TestCase):
         assert(events['list'] != None)
         assert(events['list'][0]['host'] == "metaloft.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
-        assert(events['list'][0]['wfUntangleBlocked'] == False)
-        assert(events['list'][0]['wfUntangleFlagged'] == True)
+        assert(events['list'][0]['wf' + self.vendorName() + 'Blocked'] == False)
+        assert(events['list'][0]['wf' + self.vendorName() + 'Flagged'] == True)
 
     def test_102_eventlog_allUrls(self):
         global node
@@ -368,12 +366,15 @@ class WebFilterLiteTests(unittest.TestCase):
         assert(events['list'] != None)
         assert(events['list'][0]['host'] == "metaloft.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
-        assert(events['list'][0]['wfUntangleBlocked'] == False)
-        assert(events['list'][0]['wfUntangleFlagged'] == False)
+        assert(events['list'][0]['wf' + self.vendorName() + 'Blocked'] == False)
+        assert(events['list'][0]['wf' + self.vendorName() + 'Flagged'] == False)
 
     def test_999_finalTearDown(self):
         global nodeDesc
+        global node
         uvmContext.nodeManager().destroy(nodeDesc['nodeId']);
+        node = None
+        nodeDesc = None
         
 
 

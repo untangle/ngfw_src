@@ -8,6 +8,7 @@ import uvm
 import untangle_tests
 from   untangle_tests import *
 from   untangle_tests.webfilter_tests import WebFilterLiteTests
+from   untangle_tests.sitefilter_tests import WebFilterTests
 
 class ArgumentParser(object):
     def __init__(self):
@@ -126,6 +127,7 @@ ClientControl.logfile = logfile;
 
 runTestEnvironmentTests()
 runTestSuite(WebFilterLiteTests)
+runTestSuite(WebFilterTests)
 
 
 
