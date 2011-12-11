@@ -48,7 +48,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 ]
             });
             
-            this.recordDefaults={name:this.rules[0].name, value:""};
+            this.recordDefaults={name:null, value:""};
             var deleteColumn = new Ext.grid.DeleteColumn({});
             this.autoExpandColumn = 'displayName',
             this.plugins=[deleteColumn];
@@ -70,14 +70,16 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 renderer: function(value, metadata, record, rowIndex, colIndex, store) {
                     var out=[];
                     out.push('<select class="rule_builder_type" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowType(\''+record.id+'\',this)">');
-                    for (var i = 0; i < this.rules.length; i++) {
-                        var selected = this.rules[i].name == value;
+                    out.push('<option value=""></option>');
+
+                    for (var i = 0; i < this.matchers.length; i++) {
+                        var selected = this.matchers[i].name == value;
                         var seleStr=(selected)?"selected":"";
                         // if this select is invisible and not already selected (dont show it)
                         // if it is selected and invisible, show it (we dont have a choice)
-                        if (!this.rules[i].visible && !selected)
+                        if (!this.matchers[i].visible && !selected)
                             continue;
-                        out.push('<option value="' + this.rules[i].name + '" ' + seleStr + '>' + this.rules[i].displayName + '</option>');
+                        out.push('<option value="' + this.matchers[i].name + '" ' + seleStr + '>' + this.matchers[i].displayName + '</option>');
                     }
                     out.push("</select>");
                     return out.join("");
@@ -105,9 +107,9 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     var name=record.get("name");
                     value=record.data.value;
                     var rule=null;
-                    for (var i = 0; i < this.rules.length; i++) {
-                        if (this.rules[i].name == name) {
-                            rule=this.rules[i];
+                    for (var i = 0; i < this.matchers.length; i++) {
+                        if (this.matchers[i].name == name) {
+                            rule=this.matchers[i];
                             break;
                         }
                     }
@@ -154,9 +156,25 @@ if (!Ung.hasResource["Ung.Firewall"]) {
             var record=this.store.getById(recordId);
             var newName=selObj.options[selObj.selectedIndex].value;
             var rule=null;
-            for (var i = 0; i < this.rules.length; i++) {
-                if (this.rules[i].name == newName) {
-                    rule=this.rules[i];
+            if (newName == "") {
+                    Ext.MessageBox.alert(i18n._("Warning"),i18n._("A valid type must be selected."));
+                    return;
+            }
+            // iterate through and make sure there are no other matchers of this type
+            for (var i = 0; i < this.store.data.length ; i++) {
+                if (this.store.data.items[i].id == recordId)
+                    continue;
+                if (this.store.data.items[i].data.name == newName) {
+                    Ext.MessageBox.alert(i18n._("Warning"),i18n._("A matcher of this type already exists in this rule."));
+                    record.set("name","");
+                    selObj.value = "";
+                    return;
+                }
+            }
+            // find the selected matcher
+            for (var i = 0; i < this.matchers.length; i++) {
+                if (this.matchers[i].name == newName) {
+                    rule=this.matchers[i];
                     break;
                 }
             }
@@ -448,7 +466,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                                                             anchor:"98%",
                                                             width: 900,
                                                             dataIndex: "matchers",
-                                                            rules : Ung.FirewallUtil.getMatchers(this)
+                                                            matchers : Ung.FirewallUtil.getMatchers(this)
                                                         }]
                                                     }), {
                                                         xtype : 'fieldset',
