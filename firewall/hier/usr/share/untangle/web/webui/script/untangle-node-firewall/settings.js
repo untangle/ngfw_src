@@ -261,7 +261,17 @@ if (!Ung.hasResource["Ung.Firewall"]) {
             return "firewallrulebuilder";
         },
         isValid: function() {
-            //TODO: implement is valid
+            // check that all the matchers have a selected type and value
+            for (var i = 0; i < this.store.data.length ; i++) {
+                if (this.store.data.items[i].data.name == null || this.store.data.items[i].data.name == "") {
+                    Ext.MessageBox.alert(i18n._("Warning"),i18n._("A valid type must be selected for all matchers."));
+                    return false;
+                }
+                if (this.store.data.items[i].data.value == null || this.store.data.items[i].data.value == "") {
+                    Ext.MessageBox.alert(i18n._("Warning"),i18n._("A valid value must be specified for all matchers."));
+                    return false;
+                }
+            }
             return true;
         }
     });
