@@ -45,6 +45,8 @@ class LocalDirectoryImpl implements LocalDirectory
             
         for (LocalDirectoryUser user : this.currentList) {
             if (username.equals(user.getUsername())) {
+                if (password.equals(user.getPassword()))
+                    return true;
                 String base64 = calculateBase64Hash(password);
                 if (base64 != null && base64.equals(user.getPasswordBase64Hash()))
                     return true;
