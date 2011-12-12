@@ -3530,10 +3530,19 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
                 }
             }
             if(this.addMode) {
-                this.grid.getStore().insert(0, [this.record]);
-                if(this.grid.hasReorder) {
-                    this.grid.startEditing(0,0);
-                    this.grid.stopEditing();
+                if (this.grid.addAtTop) {
+                    this.grid.getStore().insert(0, [this.record]);
+                    if(this.grid.hasReorder) {
+                        this.grid.startEditing(0,0);
+                        this.grid.stopEditing();
+                    }
+                } else {
+                    this.grid.getStore().add([this.record]);
+                    if(this.grid.hasReorder) {
+                        var len = this.grid.getStore().data.length;
+                        this.grid.startEditing(len-1,0);
+                        this.grid.stopEditing();
+                    }
                 }
                 this.grid.updateChangedData(this.record, "added");
             }
@@ -3550,10 +3559,19 @@ Ung.RowEditorWindow = Ext.extend(Ung.UpdateWindow, {
             this.updateActionChild(this, this.record);
 
             if(this.addMode) {
-                this.grid.getStore().insert(0, [this.record]);
-                if(this.grid.hasReorder) {
-                    this.grid.startEditing(0,0);
-                    this.grid.stopEditing();
+                if (this.grid.addAtTop) {
+                    this.grid.getStore().insert(0, [this.record]);
+                    if(this.grid.hasReorder) {
+                        this.grid.startEditing(0,0);
+                        this.grid.stopEditing();
+                    }
+                } else {
+                    this.grid.getStore().add([this.record]);
+                    if(this.grid.hasReorder) {
+                        var len = this.grid.getStore().data.length;
+                        this.grid.startEditing(len-1,0);
+                        this.grid.stopEditing();
+                    }
                 }
                 this.grid.updateChangedData(this.record, "added");
             }
@@ -3912,6 +3930,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
     fields : null,
     // has Add button
     hasAdd : true,
+    // should add add rows at top or bottom
+    addAtTop : true,
     // has Import Export buttons
     hasImportExport: null,    
     // has Edit buton on each record
@@ -4150,7 +4170,10 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
             this.rowEditor.populate(record, true);
             this.rowEditor.show();
         } else {
-            this.getStore().insert(0, [record]);
+            if (this.addAtTop)
+                this.getStore().insert(0, [record]);
+            else
+                this.getStore().add([record]);
             this.updateChangedData(record, "added");
             this.startEditing(0, 0);
         }

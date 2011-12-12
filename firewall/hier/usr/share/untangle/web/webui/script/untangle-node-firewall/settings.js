@@ -340,6 +340,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                              height : 500,
                              paginated : false,
                              hasReorder : true,
+                             addAtTop : false,
                              emptyRow : {
                                  "id" : 0,
                                  "enabled" : true,
