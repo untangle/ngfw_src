@@ -88,7 +88,7 @@ CREATE TABLE reports.n_mail_addrs (
     msg_bytes bigint,
     msg_attachments integer,
     hname text,
-    event_id serial,
+    event_id bigserial,
     sender text,
     virus_clam_clean boolean,
     virus_clam_name text,
@@ -107,7 +107,7 @@ CREATE TABLE reports.n_mail_addrs (
     virus_commtouch_clean boolean,
     virus_commtouch_name text)""", 'time_stamp', start_date, end_date)
 
-        sql_helper.add_column('reports.n_mail_addrs', 'event_id', 'serial')
+        sql_helper.add_column('reports.n_mail_addrs', 'event_id', 'bigserial')
         sql_helper.add_column('reports.n_mail_addrs', 'sender', 'text')
         sql_helper.add_column('reports.n_mail_addrs', 'virus_clam_clean', 'boolean')
         sql_helper.add_column('reports.n_mail_addrs', 'virus_clam_name', 'text')
@@ -125,6 +125,9 @@ CREATE TABLE reports.n_mail_addrs (
         sql_helper.add_column('reports.n_mail_addrs', 'vendor', 'text')
         sql_helper.add_column('reports.n_mail_addrs', 'virus_commtouch_clean', 'boolean')
         sql_helper.add_column('reports.n_mail_addrs', 'virus_commtouch_name', 'text')
+
+        # we used to create event_id as serial instead of bigserial - convert if necessary
+        sql_helper.run_sql('ALTER TABLE reports.n_mail_addrs ALTER COLUMN event_id TYPE bigint;')
 
         sql_helper.run_sql('CREATE INDEX n_mail_addrs_msg_id_idx ON reports.n_mail_addrs(msg_id)')
         sql_helper.run_sql('CREATE INDEX n_mail_addrs_event_id_idx ON reports.n_mail_addrs(event_id)')
@@ -223,7 +226,7 @@ CREATE TABLE reports.n_mail_msgs (
     msg_bytes bigint,
     msg_attachments integer,
     hname text,
-    event_id serial,
+    event_id bigserial,
     sender text,
     virus_clam_clean boolean,
     virus_clam_name text,
@@ -242,7 +245,7 @@ CREATE TABLE reports.n_mail_msgs (
     virus_commtouch_clean boolean,
     virus_commtouch_name text)""", 'time_stamp', start_date, end_date)
 
-        sql_helper.add_column('reports.n_mail_msgs', 'event_id', 'serial')
+        sql_helper.add_column('reports.n_mail_msgs', 'event_id', 'bigserial')
         sql_helper.add_column('reports.n_mail_msgs', 'sender', 'text')
         sql_helper.add_column('reports.n_mail_msgs', 'virus_clam_clean', 'boolean')
         sql_helper.add_column('reports.n_mail_msgs', 'virus_clam_name', 'text')
@@ -260,6 +263,9 @@ CREATE TABLE reports.n_mail_msgs (
         sql_helper.add_column('reports.n_mail_msgs', 'vendor', 'text')
         sql_helper.add_column('reports.n_mail_msgs', 'virus_commtouch_clean', 'boolean')
         sql_helper.add_column('reports.n_mail_msgs', 'virus_commtouch_name', 'text')
+
+        # we used to create event_id as serial instead of bigserial - convert if necessary
+        sql_helper.run_sql('ALTER TABLE reports.n_mail_msgs ALTER COLUMN event_id TYPE bigint;')
 
         sql_helper.run_sql('CREATE INDEX n_mail_msgs_msg_id_idx ON reports.n_mail_msgs(msg_id)')
         sql_helper.run_sql('CREATE INDEX n_mail_msgs_event_id_idx ON reports.n_mail_msgs(event_id)')

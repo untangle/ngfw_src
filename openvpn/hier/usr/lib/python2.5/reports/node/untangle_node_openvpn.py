@@ -90,15 +90,17 @@ CREATE TABLE reports.n_openvpn_stats (
     remote_address inet,
     remote_port integer,
     client_name text,
-    event_id serial
+    event_id bigserial
 )""", 'time_stamp', start_date, end_date)
 
-        sql_helper.add_column('reports.n_openvpn_stats', 'event_id', 'serial')
+        sql_helper.add_column('reports.n_openvpn_stats', 'event_id', 'bigserial')
         sql_helper.add_column('reports.n_openvpn_stats', 'start_time', 'timestamp without time zone')
         sql_helper.add_column('reports.n_openvpn_stats', 'end_time', 'timestamp without time zone')
         sql_helper.add_column('reports.n_openvpn_stats', 'remote_address', 'inet')
         sql_helper.add_column('reports.n_openvpn_stats', 'remote_port', 'integer')
         sql_helper.add_column('reports.n_openvpn_stats', 'client_name', 'text')
+
+        sql_helper.run_sql('ALTER TABLE reports.n_openvpn_stats ALTER COLUMN event_id TYPE bigint;')
 
         conn = sql_helper.get_connection()
         try:

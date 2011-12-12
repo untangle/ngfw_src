@@ -65,7 +65,7 @@ CREATE TABLE reports.n_http_events (
     virus_kaspersky_name text,
     wf_untangle_reason character,
     wf_untangle_category text,
-    event_id serial,
+    event_id bigserial,
     ab_action character,
     wf_untangle_blocked boolean,
     wf_untangle_flagged boolean,
@@ -74,11 +74,14 @@ CREATE TABLE reports.n_http_events (
     virus_commtouch_clean boolean,
     virus_commtouch_name text)""", 'time_stamp', start_date, end_date)
 
-        sql_helper.add_column('reports.n_http_events', 'event_id', 'serial')
+        sql_helper.add_column('reports.n_http_events', 'event_id', 'bigserial')
         sql_helper.add_column('reports.n_http_events', 'ab_action', 'character(1)')
         sql_helper.add_column('reports.n_http_events', 'sw_cookie_ident', 'text')
         sql_helper.add_column('reports.n_http_events', 'sw_blacklisted', 'boolean')
         sql_helper.add_column('reports.n_http_events', 'start_time', 'timestamp')
+
+        # we used to create event_id as serial instead of bigserial - convert if necessary
+        sql_helper.run_sql('ALTER TABLE reports.n_http_events ALTER COLUMN event_id TYPE bigint;')
 
         for vendor in ("untangle", "esoft"):
             sql_helper.drop_column('reports.n_http_events', 'wf_%s_action' % vendor)
