@@ -222,7 +222,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
         },
         addHandler: function() {
             var record=new Ext.data.Record(Ext.decode(Ext.encode(this.recordDefaults)));
-            this.getStore().insert(0, [record]);
+            this.getStore().add([record]);
             this.fireEvent("afteredit");
         },
         deleteHandler: function (record) {
