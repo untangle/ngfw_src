@@ -132,9 +132,13 @@ CREATE TABLE reports.n_cpd_login_events (
     event text,
     auth_type text,
     client_addr inet,
-    event_id SERIAL)""",  'time_stamp', start_date, end_date)
+    event_id bigserial)""",  'time_stamp', start_date, end_date)
 
-        sql_helper.add_column('reports.n_cpd_login_events', 'event_id', 'serial')
+        sql_helper.add_column('reports.n_cpd_login_events', 'event_id', 'bigserial')
+
+        # we used to create event_id as serial instead of bigserial - convert if necessary
+        sql_helper.run_sql('ALTER TABLE reports.n_cpd_login_events ALTER COLUMN event_id TYPE bigint;')
+
         sql_helper.run_sql('CREATE INDEX n_cpd_login_events_event_id_idx ON reports.n_cpd_login_events(event_id)')
 
         conn = sql_helper.get_connection()
@@ -161,10 +165,15 @@ CREATE TABLE reports.n_cpd_block_events (
     client_port INT4,
     server_address INET,
     server_port INT4,
-    event_id SERIAL)""",  'time_stamp', start_date, end_date)
+    event_id bigserial)""",  'time_stamp', start_date, end_date)
 
-        sql_helper.add_column('reports.n_cpd_block_events', 'event_id', 'serial')
+        sql_helper.add_column('reports.n_cpd_block_events', 'event_id', 'bigserial')
+
+        # we used to create event_id as serial instead of bigserial - convert if necessary
+        sql_helper.run_sql('ALTER TABLE reports.n_cpd_block_events ALTER COLUMN event_id TYPE bigint;')
+
         sql_helper.run_sql('CREATE INDEX n_cpd_block_events_event_id_idx ON reports.n_cpd_block_events(event_id)')
+
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\

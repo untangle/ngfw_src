@@ -221,7 +221,7 @@ INSERT INTO reports.hnames (date, hname)
         sql_helper.create_partitioned_table("""\
 CREATE TABLE reports.sessions (
         pl_endp_id int8 NOT NULL,
-        event_id serial,
+        event_id bigserial,
         time_stamp timestamp NOT NULL,
         end_time timestamp NOT NULL,
         hname text,
@@ -238,7 +238,7 @@ CREATE TABLE reports.sessions (
         s2p_bytes int8,
         p2s_bytes int8)""", 'time_stamp', start_date, end_date)
 
-        sql_helper.add_column('reports.sessions', 'event_id', 'serial')
+        sql_helper.add_column('reports.sessions', 'event_id', 'bigserial')
         sql_helper.add_column('reports.sessions', 'policy_id', 'bigint')
         sql_helper.add_column('reports.sessions', 'server_intf', 'int2')
         sql_helper.add_column('reports.sessions', 'bandwidth_priority', 'bigint')
@@ -252,6 +252,9 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports.sessions', 'ips_name', 'text')
         sql_helper.add_column('reports.sessions', 'ips_description', 'text')
         sql_helper.add_column('reports.sessions', 'sw_access_ident', 'text')
+
+        # we used to create event_id as serial instead of bigserial - convert if necessary
+        sql_helper.run_sql('ALTER TABLE reports.sessions ALTER COLUMN event_id TYPE bigint;')
 
         sql_helper.run_sql('CREATE INDEX sessions_pl_endp_id_idx ON reports.sessions(pl_endp_id)')
         sql_helper.run_sql('CREATE INDEX sessions_event_id_idx ON reports.sessions(event_id)')
