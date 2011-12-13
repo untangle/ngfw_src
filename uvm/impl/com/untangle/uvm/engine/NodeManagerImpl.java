@@ -216,6 +216,17 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         return nodeIds.get(nodeId);
     }
 
+    public NodeContextImpl nodeContext(long nodeIdInt)
+    {
+        List<NodeId> nodeIdList = new ArrayList<NodeId>(nodeIds.keySet());
+        for (NodeId nodeId : nodeIdList) {
+            if (nodeId.getId() == nodeIdInt)
+                return nodeIds.get(nodeId);
+        }
+
+        return null;
+    }
+    
     public Node node(String name)
     {
         Node node = null;

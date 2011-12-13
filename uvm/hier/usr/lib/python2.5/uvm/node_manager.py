@@ -15,11 +15,11 @@ class NodeManager(Manager):
 
     def api_start( self, tidString ):
         tid = self.buildTid( tidString )
-        self.__nodeManager.nodeContext( tid ).node().start()
+        self.__nodeManager.nodeContext( tid["id"] ).node().start()
 
     def api_stop( self, tidString ):
         tid = self.buildTid( tidString )
-        self.__nodeManager.nodeContext( tid ).node().stop()
+        self.__nodeManager.nodeContext( tid["id"] ).node().stop()
 
     def api_destroy( self, tidString ):
         tid = self.buildTid( tidString )
@@ -73,7 +73,7 @@ class NodeManager(Manager):
         print "\t%s\t%s" % ( self.formatTime( stats["creationDate"] ), self.formatTime( stats["lastActivityDate"] )),
 
     def __get_node( self, tid, raiseException = False ):
-        nodeContext = self.__nodeManager.nodeContext( tid )
+        nodeContext = self.__nodeManager.nodeContext( tid["id"] )
         if ( nodeContext == None ):
             print "NULL Node Context (tid:%s)" % (tid["id"])
             if ( raiseException ): raise Exception("NULL Node Context (tid:%s)" % (tid["id"]))
