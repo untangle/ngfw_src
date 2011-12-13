@@ -144,6 +144,15 @@ public interface NodeManager
     NodeContext nodeContext(NodeId tid);
 
     /**
+     * Get the <code>NodeContext</code> for a node instance.
+     * This will replace the nodeContext(NodeId) function above eventually when NodeId goes away
+     *
+     * @param the node id (long) of the instance.
+     * @return the instance's <code>NodeContext</code>.
+     */
+    NodeContext nodeContext(long nodeIdInt);
+    
+    /**
      * Get the <code>Node</code> for a node instance;
      * if the are more than a node instance for the provided name,
      * the first node instance is returned.
@@ -151,7 +160,7 @@ public interface NodeManager
      * @param name of the node.
      * @return the instance's <code>Node</code>.
      */
-    public Node node(String name);
+    Node node(String name);
 
     /**
      * Get the runtime state for all nodes in one call.
