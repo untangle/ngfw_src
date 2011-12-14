@@ -178,14 +178,17 @@ public abstract class DecisionEngine
         // Check Block lists
         GenericRule urlRule = checkUrlList(host, uri.toString(), port, requestLine, event);
         if (urlRule != null) {
-            WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, node.getNodeTitle(), username);
-            return node.generateNonce(bd);
-        }
+            if (urlRule.getBlocked()) {
+                WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, node.getNodeTitle(), username);
+                return node.generateNonce(bd);
+            }
+            return null; /* a URL rule matched, don't evaluate further */
+        } 
         
         // Check Extensions
         // If this extension is blocked, block the request
         GenericRule extRule = checkExtensionList(host, uri.toString(), port, requestLine, event);
-        if (extRule != null) {
+        if (extRule != null && extRule.getBlocked()) {
             WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), extRule.getDescription(), clientIp, node.getNodeTitle(), username);
             return node.generateNonce(bd);
         }
@@ -386,6 +389,7 @@ public abstract class DecisionEngine
 
     /**
      * Checks the given URL against sites in the block list
+     * Returns the given rule if a rule matches, otherwise null
      */
     private GenericRule checkUrlList( String host, String uri, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event )
     {
@@ -404,6 +408,9 @@ public abstract class DecisionEngine
 
         if (rule == null)
             return null;
+
+        logger.warn("Rule FOUND: " + rule.getString() + "  " + rule.getDescription() + " flagged:"  + rule.getFlagged());
+        
         
         if (rule.getBlocked()) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE,  Boolean.TRUE, Reason.BLOCK_URL, rule.getDescription(), node.getVendor());
@@ -412,7 +419,7 @@ public abstract class DecisionEngine
         } else if (rule.getFlagged()) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.TRUE, Reason.PASS_URL, rule.getDescription(), node.getVendor());
             node.log(hbe, host, port, event);
-            return null;
+            return rule;
         } 
 
         return null;
@@ -420,6 +427,7 @@ public abstract class DecisionEngine
 
     /**
      * Checks the given URL against the file extension rules
+     * Returns the given rule if a rule matches, otherwise null
      */
     private GenericRule checkExtensionList( String host, String uri, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event )
     {
@@ -438,7 +446,7 @@ public abstract class DecisionEngine
                 } else if (rule.getFlagged()) {
                     WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.TRUE, Reason.BLOCK_EXTENSION, rule.getDescription(), node.getVendor());
                     node.log(hbe, host, port, event);
-                    return null;
+                    return rule;
                 } 
             }
         }
