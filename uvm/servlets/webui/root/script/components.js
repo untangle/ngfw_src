@@ -2127,10 +2127,11 @@ Ung.SystemStats = Ext.extend(Ext.Component, {
         
         this.getEl().child("div[class=cpu]").dom.innerHTML=stats.map.oneMinuteLoadAvg;
         var oneMinuteLoadAvg = stats.map.oneMinuteLoadAvg;
+        var oneMinuteLoadAvgAdjusted = oneMinuteLoadAvg - stats.map.numCpus;
         var loadText = '<font color="#55BA47">' + i18n._('low') + '</font>';
-        if (oneMinuteLoadAvg > 3.5)
+        if (oneMinuteLoadAvgAdjusted > 1.0)
             loadText = '<font color="orange">' + i18n._('medium') + '</font>';
-        if (oneMinuteLoadAvg > 7.0)
+        if (oneMinuteLoadAvgAdjusted > 4.0)
             loadText = '<font color="red">' + i18n._('high') + '</font>';
         this.getEl().child("div[class=cpu]").dom.innerHTML=loadText;
             
