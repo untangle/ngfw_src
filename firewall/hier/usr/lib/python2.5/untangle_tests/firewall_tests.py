@@ -12,11 +12,43 @@ clientControl = ClientControl()
 nodeDesc = None
 node = None
 
+ruleBlockPort80 = {
+    "javaClass": "com.untangle.node.firewall.FirewallRule", 
+    "id": 1, 
+    "enabled": True, 
+    "description": "Block Port 80", 
+    "log": True, 
+    "block": True, 
+    "matchers": {
+        "javaClass": "java.util.LinkedList", 
+        "list": [
+            {
+                "invert": False, 
+                "javaClass": "com.untangle.node.firewall.FirewallRuleMatcher", 
+                "matcherType": "DST_PORT", 
+                "value": "80"
+                }
+            ]
+        }
+    };
+
 def flushEvents():
     global uvmContext
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
     if (reports != None):
         reports.flushEvents(True)
+
+def nukeRules():
+    global node
+    rules = node.getRules()
+    rules["list"] = [];
+    node.setRules(rules);
+
+def appendRule(newRule):
+    global node
+    rules = node.getRules()
+    rules["list"].append(newRule);
+    node.setRules(rules);
 
 class FirewallTests(unittest.TestCase):
 
@@ -43,8 +75,17 @@ class FirewallTests(unittest.TestCase):
 
     # verify client is online
     def test_011_defaultIsPass(self):
-        result = clientControl.runCommand("wget -o /dev/null http://google.com/")
+        result = clientControl.runCommand("wget -o /dev/null http://metaloft.com/")
         assert (result == 0)
+
+    # verify a block port 80 rule works
+    def test_020_blockPort80(self):
+        global ruleBlockPort80;
+        nukeRules();
+        appendRule(ruleBlockPort80);
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
+        assert (result != 0)
+
 
     def test_999_finalTearDown(self):
         global nodeDesc

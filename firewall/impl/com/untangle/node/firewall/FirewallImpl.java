@@ -137,6 +137,27 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
         this.reconfigure();
     }
+
+    public List<FirewallRule> getRules()
+    {
+        if (getSettings() == null)
+            return null;
+        
+        return getSettings().getRules();
+    }
+
+    public void setRules( List<FirewallRule> rules )
+    {
+        FirewallSettings set = getSettings();
+
+        if (set == null) {
+            logger.warn("NULL settings");
+            return;
+        }
+
+        set.setRules(rules);
+        setSettings(set);
+    }
     
     public void initializeSettings()
     {
