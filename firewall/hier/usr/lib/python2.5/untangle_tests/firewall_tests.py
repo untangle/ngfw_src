@@ -12,6 +12,8 @@ clientControl = ClientControl()
 nodeDesc = None
 node = None
 metaloftIP = "74.123.29.145"
+metaloftIPRange = "74.123.29.140-74.123.29.150"
+metaloftIPRange2 = "74.123.27.140-74.123.30.150"
 
 def createSingleMatcherRule( matcherType, value, blocked=True ):
     matcherTypeStr = str(matcherType)
@@ -213,6 +215,22 @@ class FirewallTests(unittest.TestCase):
         global metaloftIP;
         nukeRules();
         appendRule( createSingleMatcherRule("DST_ADDR","1.2.3.4/31," + metaloftIP+",5.6.7.8", blocked=True) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
+        assert (result != 0)
+
+    # verify dst addr rule with commas works
+    def test_044_blockDstAddrRange(self):
+        global metaloftIPRange;
+        nukeRules();
+        appendRule( createSingleMatcherRule("DST_ADDR",metaloftIPRange, blocked=True) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
+        assert (result != 0)
+
+    # verify dst addr rule with commas works
+    def test_045_blockDstAddrRange2(self):
+        global metaloftIPRange2;
+        nukeRules();
+        appendRule( createSingleMatcherRule("DST_ADDR",metaloftIPRange2, blocked=True) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
         assert (result != 0)
 
