@@ -109,7 +109,7 @@ DELETE FROM events.n_ips_statistic_evt
         try:
             sql_helper.run_sql("""\
 UPDATE reports.sessions
-SET ips_blocked = blocked, ips_name = name, ips_description = description
+SET ips_blocked = blocked, ips_name = sid, ips_description = description
 FROM events.n_ips_evt join settings.n_ips_rule on rule_sid = sid
 WHERE reports.sessions.pl_endp_id = events.n_ips_evt.pl_endp_id""",
                                (), connection=conn, auto_commit=False)

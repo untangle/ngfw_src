@@ -309,7 +309,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     name : 'blocked',
                     mapping : 'ipsBlocked'
                 }, {
-                    name : 'reason',
+                    name : 'name',
                     mapping : 'ipsName',
                     type : 'string'
                 }, {
@@ -352,6 +352,12 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     width : Ung.Util.booleanFieldWidth,
                     sortable : true,
                     dataIndex : 'blocked'
+                }, {
+                    id: 'ruleName',
+                    header : this.i18n._('rule id'),
+                    width : 60,
+                    sortable : true,
+                    dataIndex : 'name'
                 }, {
                     id: 'ruleDescription',
                     header : this.i18n._('rule description'),
