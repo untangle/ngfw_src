@@ -19,6 +19,8 @@ class ArgumentParser(object):
         self.verbosity = 0
         self.logfile = '/tmp/unittest.log'
         self.fastfail = False
+        self.externalIntfId = 1
+        self.internalIntfId = 2
 
     def set_hostIP( self, arg ):
         self.hostIP = arg
@@ -38,6 +40,12 @@ class ArgumentParser(object):
     def increase_verbosity( self, arg ):
         self.verbosity += 1
 
+    def set_externalIntfId( self, arg ):
+        self.externalIntfId = arg
+
+    def set_internalIntfId( self, arg ):
+        self.internalIntfId = arg
+
     def parse_args( self ):
         handlers = {
             '-h' : self.set_hostIP,
@@ -45,11 +53,13 @@ class ArgumentParser(object):
             '-i' : self.set_keyfile,
             '-l' : self.set_logfile,
             '-v' : self.increase_verbosity,
-            '-q' : self.set_fastfail
+            '-q' : self.set_fastfail,
+            '-d' : self.set_externalIntfId,
+            '-s' : self.set_internalIntfId
         }
 
         try:
-            (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:vq')
+            (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:d:s:vq')
             for opt in optlist:
                 handlers[opt[0]](opt[1])
             return args
@@ -62,12 +72,14 @@ def printUsage():
     sys.stderr.write( """\
 %s Usage:
   optional args:
-    -h client host IP (behind Untangle)
-    -u client host SSH login
-    -i client host SSH identity (key) file
-    -l log file
-    -v verbose (can be specified more than one time)
-    -q quit on first failure
+    -h <host> : client host IP (behind Untangle)
+    -u <user> : client host SSH login
+    -i <file> : client host SSH identity (key) file
+    -l <file> : log file
+    -d <int>  : interface ID of the external interface (outside) default: 1
+    -s <int>  : interface ID of the internal interface (client) default: 2
+    -v        : verbose (can be specified more than one time)
+    -q        : quit on first failure
 """ % sys.argv[0] )
 
 def exit(code):
@@ -124,13 +136,14 @@ if (parser.hostKeyFile != None):
     ClientControl.hostKeyFile  = parser.hostKeyFile
 ClientControl.verbosity   = parser.verbosity;
 ClientControl.logfile = logfile;
+ClientControl.interface = parser.internalIntfId;
+ClientControl.interfaceExternal = parser.externalIntfId;
 
 
 runTestEnvironmentTests()
 runTestSuite(WebFilterTests)
 runTestSuite(SiteFilterTests)
 runTestSuite(FirewallTests)
-
 
 
 print ""
