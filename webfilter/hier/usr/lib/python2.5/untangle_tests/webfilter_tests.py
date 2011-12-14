@@ -70,7 +70,7 @@ def flushEvents():
     if (reports != None):
         reports.flushEvents(True)
 
-class WebFilterLiteTests(unittest.TestCase):
+class WebFilterTests(unittest.TestCase):
 
     @staticmethod
     def nodeName():
