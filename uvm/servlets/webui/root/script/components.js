@@ -1466,8 +1466,8 @@ Ung.Node = Ext.extend(Ext.Component, {
             //            handler.call(this);
             //        }
             this.nodeContext.rpcNode = this.nodeContext.node();
-            handler.call(this);
         } 
+        handler.call(this);
     },
     getNodeDesc: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
