@@ -107,19 +107,34 @@ for opt in opts:
      elif k == '-l' or k == '--locale':
           locale = v
 
-# lock 1st
-if os.path.isfile(LOCKFILE):
+def verifyPidFile():
+     if not os.path.isfile(LOCKFILE):
+          return False
+
      pid = open(LOCKFILE).readline().strip()
      cmdFile = "/proc/%s/cmdline" % pid
+
      if os.path.isfile(cmdFile) and open(cmdFile).readline().find(sys.argv[0]) > 0:
+          return pid
+     else:
+          return False
+
+# lock 1st
+if os.path.isfile(LOCKFILE):
+     pid = verifyPidFile()
+     if pid:
           logger.warning("Reports are already running (pid %s)..." % pid)
           if incremental:
-            logger.error("... we were trying an incremental run, aborting")
-            sys.exit(1)
+               logger.error("... we were trying an incremental run, aborting")
+               sys.exit(1)
           else:
-            while os.path.isfile(LOCKFILE):
-              logger.warning("... we are trying a nightly run, waiting")
-              time.sleep(1)
+               slept = 0
+               while pid:
+                    if (slept % 60) == 0:
+                         logger.warning("... we are trying a nightly run, waiting on pid %s" % pid)
+                    time.sleep(1)
+                    pid = verifyPidFile()
+                    slept += 1
      else:
           logger.info("Removing leftover pidfile (pid %s)" % pid)
           os.remove(LOCKFILE)

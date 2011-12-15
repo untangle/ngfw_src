@@ -4,8 +4,8 @@ from logging.handlers import SysLogHandler
 MODULE_NAME = 'reports'
 
 # line format
-format = '%(asctime)s [%(name)s] %(levelname)s: %(message)s'
-syslogFormat = '[%(name)s] %(levelname)s: %(message)s'
+format = '%(asctime)s %(name)s[%(process)s] %(levelname)s: %(message)s'
+syslogFormat = '%(name)s[%(process)s] %(levelname)s: %(message)s'
 dateFmt = '%Y-%m-%d %H:%M:%S'
 formatter = logging.Formatter(format, dateFmt)
 syslogFormatter = logging.Formatter(syslogFormat)
