@@ -274,7 +274,7 @@ def get_settings(tid, debug=False):
     str += '\t"categories": %s,\n' % get_category_settings(tid, settings_id, debug=debug)
     str += '\t"blockedUrls": %s,\n' % get_blocked_urls_settings(tid, settings_id, debug=debug)
     str += '\t"blockedExtensions": %s,\n' % get_extensions_settings(tid, settings_id, debug=debug)
-    str += '\t"blockedMimetypes": %s,\n' % get_mimetypes_settings(tid, settings_id, debug=debug)
+    str += '\t"blockedMimeTypes": %s,\n' % get_mimetypes_settings(tid, settings_id, debug=debug)
     str += '\t"passedUrls": %s,\n' % get_passed_urls_settings(tid, settings_id, debug=debug)
     str += '\t"passedClients": %s\n' % get_passed_clients_settings(tid, settings_id, debug=debug)
     str += '}\n'
