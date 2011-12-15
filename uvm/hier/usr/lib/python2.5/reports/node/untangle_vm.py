@@ -309,6 +309,9 @@ CREATE TABLE reports.session_counts (
 
         sql_helper.run_sql('CREATE INDEX session_counts_trunc_time_idx ON reports.session_counts(trunc_time)')
 
+        sd = TimestampFromMx(sql_helper.get_update_info('reports.session_counts',
+                                                        start_date))
+
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
@@ -319,8 +322,14 @@ SELECT (date_trunc('minute', time_stamp)
         / 60)::int) || ' minutes')::interval) AS time, uid, hname,
         client_intf, server_intf, count(*)
 FROM reports.sessions
+WHERE time_stamp >= %s
 GROUP BY time, uid, hname, client_intf, server_intf
-""", (), connection=conn, auto_commit=False)
+""", (sd,), connection=conn, auto_commit=False)
+
+            sql_helper.set_update_info('reports.session_counts', 
+                                       TimestampFromMx(mx.DateTime.now()),
+                                       connection=conn, auto_commit=False,
+                                       origin_table='reports.sessions')
             conn.commit()
         except Exception, e:
             conn.rollback()

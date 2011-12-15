@@ -241,7 +241,7 @@ def get_max_timestamp_with_interval(table, time_column='date', interval='1 day')
     return sd
 
 def set_update_info(tablename, last_update, connection=None,
-                    auto_commit=True):
+                    auto_commit=True, origin_table=None):
     # FIXME: last_update is now ignored and re-calculated from the
     # info in the corresponding table; change all the calls to this
     # new signature at some point
@@ -256,17 +256,20 @@ def set_update_info(tablename, last_update, connection=None,
     try:
         curs = connection.cursor()
 
-        origin_tablename = re.sub(r'(\-[a-z]+|reports\.|\[.+\])', '', tablename)
+        if not origin_table:
+            origin_tablename = re.sub(r'(\-[a-z]+|\[.+\])', '', tablename)
+        else:
+            origin_tablename = re.sub(r'(\-[a-z]+|\[.+\])', '', origin_table)
 
         last_update_origin = last_update
         try:
-            curs.execute("SELECT max(time_stamp) FROM reports.%s" % (origin_tablename,))
+            curs.execute("SELECT max(time_stamp) FROM %s" % (origin_tablename,))
         except psycopg2.ProgrammingError, e:
             connection.rollback()
             if e.pgerror.find('column "time_stamp" does not exist') > 0:
                 try:
                     curs = connection.cursor()
-                    curs.execute("SELECT max(trunc_time) FROM reports.%s" % (origin_tablename,))
+                    curs.execute("SELECT max(trunc_time) FROM %s" % (origin_tablename,))
                 except:
                     connection.rollback()
 
