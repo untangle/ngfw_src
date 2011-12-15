@@ -63,23 +63,12 @@ public abstract class DecisionEngine
     {
         this.node = node;
     }
-
     
     /**
      * This must be overridden by the specific implementation of the Decision Engine
      * It must return a list of categories (strings) for a given URL
      */
     protected abstract List<String> categorizeSite( String dom, int port, String uri );
-
-    /**
-     * This must be overridden by a specific implementation
-     * Return true if subdomains should be done as seperate lookups.
-     * For example if the user visits "foo.example.com"
-     * If false, only one lookup takes place of "foo.example.com"
-     * If true, two lookups take place of "foo.example.com" and "example.com"
-     */
-    protected abstract boolean getLookupSubdomains();
-
     
     /**
      * Checks if the request should be blocked, giving an appropriate response if it should.
@@ -175,6 +164,9 @@ public abstract class DecisionEngine
             }
         }
 
+        Boolean isFlagged = false; /* this stores whether this visit should be flagged for any reason */
+        Reason reason = Reason.DEFAULT; /* this stores the corresponding reason for the flag/block */
+            
         // Check Block lists
         GenericRule urlRule = checkUrlList(host, uri.toString(), port, requestLine, event);
         if (urlRule != null) {
@@ -182,24 +174,71 @@ public abstract class DecisionEngine
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, node.getNodeTitle(), username);
                 return node.generateNonce(bd);
             }
-            return null; /* a URL rule matched, don't evaluate further */
+            else if (!isFlagged && urlRule.getFlagged()) {
+                isFlagged = true;
+                reason = Reason.BLOCK_URL;
+            }
+            
         } 
         
         // Check Extensions
         // If this extension is blocked, block the request
         GenericRule extRule = checkExtensionList(host, uri.toString(), port, requestLine, event);
-        if (extRule != null && extRule.getBlocked()) {
-            WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), extRule.getDescription(), clientIp, node.getNodeTitle(), username);
-            return node.generateNonce(bd);
+        if (extRule != null) {
+            if ( extRule.getBlocked() ) {
+                WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), extRule.getDescription(), clientIp, node.getNodeTitle(), username);
+                return node.generateNonce(bd);
+            } else if ( !isFlagged && extRule.getFlagged() ) {
+                isFlagged = true;
+                reason = Reason.BLOCK_EXTENSION;
+            }
         }
 
         // Check Categories
-        String nonce = checkCategory(sess, clientIp, host, port, requestLine, event, username);
-        if (nonce != null) {
-            return nonce;
-        }
+        GenericRule bestCategory = checkCategory(sess, clientIp, host, port, requestLine, event, username);
+        if (bestCategory != null) {
+            if (!isFlagged && bestCategory.getFlagged()) {
+                isFlagged = true;
+                reason = Reason.BLOCK_CATEGORY;
+            }
+            if (bestCategory.getBlocked())
+                reason = Reason.BLOCK_CATEGORY;
+            
+            if (sess != null) {
+                /**
+                 * Tag the session with metadata
+                 */
+                sess.globalAttach(node.getVendor()+"-best-category-id",bestCategory.getId());
+                sess.globalAttach(node.getVendor()+"-best-category-name",bestCategory.getName());
+                sess.globalAttach(node.getVendor()+"-best-category-description",bestCategory.getDescription());
+                sess.globalAttach(node.getVendor()+"-best-category-flagged",bestCategory.getFlagged());
+                sess.globalAttach(node.getVendor()+"-best-category-blocked",bestCategory.getBlocked());
+                sess.globalAttach(node.getVendor()+"-flagged",isFlagged);
+            }
+        
+            /**
+             * Always log an event if the site was categorized
+             */
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), bestCategory.getBlocked(), isFlagged, reason, bestCategory.getName(), node.getVendor());
+            node.log(hbe, host, port, event);
 
-        // Nothing matched, just return null and allow the visit
+            /**
+             * If the site was blocked return the nonce
+             */
+            if (bestCategory.getBlocked()) {
+                String blockReason = bestCategory.getName() + " - " + bestCategory.getDescription();
+                WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), blockReason, clientIp, node.getNodeTitle(), username);
+                return node.generateNonce(bd);
+            } else {
+                return null;
+            }
+        } 
+
+        // No category was found (this should happen rarely as most will return an "Uncategorized" category)
+        // Since nothing matched, just log it and return null to allow the visit
+
+        WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, isFlagged, reason, "None", node.getVendor());
+        node.log(hbe, host, port, event);
         return null;
     }
 
@@ -457,7 +496,7 @@ public abstract class DecisionEngine
     /**
      * Check the given URL against the categories (and their settings)
      */
-    private String      checkCategory( TCPSession sess, InetAddress clientIp, String host, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event, String username )
+    private GenericRule checkCategory( TCPSession sess, InetAddress clientIp, String host, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event, String username )
     {
         URI reqUri = requestLine.getRequestUri();
 
@@ -483,8 +522,6 @@ public abstract class DecisionEngine
         boolean isBlocked = false;
         boolean isFlagged = false;
         GenericRule bestCategory = null;
-        String blockedName = null;
-        String blockedDesc = null;
 
         for(String cat : categories) {
             GenericRule catSettings = node.getSettings().getCategory(cat);
@@ -495,52 +532,27 @@ public abstract class DecisionEngine
 
             if ( bestCategory ==  null ) {
                 bestCategory = catSettings;
-                logger.debug("checkCategory: " + host + uri + " bestCategory: " + bestCategory.getName());
             }
-            if ( catSettings.getBlocked() != null && catSettings.getBlocked()) {
-                isBlocked = true;
-                if (blockedName == null) {
-                    blockedName = catSettings.getName();
-                    blockedDesc = catSettings.getDescription();
-                }
-            }
-            if ( catSettings.getFlagged() != null && catSettings.getFlagged()) {
+            /**
+             * If this category has more aggressive blocking/flagging than previous category
+             * set it to the best category and update flags
+             */
+            if ( !isFlagged && catSettings.getFlagged() ) {
+                bestCategory = catSettings;
                 isFlagged = true;
             }
-        }
-        
-        if (bestCategory != null && sess != null) {
             /**
-             * Tag the session with metadata
+             * If this category has more aggressive blocking/flagging than previous category
+             * set it to the best category and update flags
              */
-            sess.globalAttach(node.getVendor()+"-best-category-id",bestCategory.getId());
-            sess.globalAttach(node.getVendor()+"-best-category-name",bestCategory.getName());
-            sess.globalAttach(node.getVendor()+"-best-category-description",bestCategory.getDescription());
-            sess.globalAttach(node.getVendor()+"-best-category-flagged",bestCategory.getFlagged());
-            sess.globalAttach(node.getVendor()+"-best-category-blocked",bestCategory.getBlocked());
-            sess.globalAttach(node.getVendor()+"-category-flagged",isFlagged);
-            sess.globalAttach(node.getVendor()+"-category-blocked",isBlocked);
+            if ( !isBlocked && catSettings.getBlocked() ) {
+                bestCategory = catSettings;
+                isBlocked = true;
+                isFlagged = true; /* if isBlocked is always Flagged */
+            }
         }
-        
-        /**
-         * Always log an event if the site was blocked
-         * Always log an event if the site was flagged
-         * Always log an event if the site had some valid categorization
-         */
-        if (isBlocked) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), isBlocked, isFlagged, Reason.BLOCK_CATEGORY, blockedName, node.getVendor());
-            node.log(hbe, host, port, event);
 
-            String reason = blockedName + " - " + blockedDesc;
-            WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri, reason, clientIp, node.getNodeTitle(), username);
-            return node.generateNonce(bd);
-        } else if (isFlagged || (bestCategory != null)) {
-            //no "reason" for this event
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), isBlocked, isFlagged, Reason.DEFAULT, bestCategory.getName(), node.getVendor());
-            node.log(hbe, host, port, event);
-        } 
-
-        return null;
+        return bestCategory;
     }
 
     /**

@@ -41,11 +41,6 @@ class WebFilterDecisionEngine extends DecisionEngine
         initializeDB();
     }
 
-    protected boolean getLookupSubdomains()
-    {
-        return true;
-    }
-
     // protected methods ------------------------------------------------------
 
     protected List<String> categorizeSite(String domain, int port, String uri)
