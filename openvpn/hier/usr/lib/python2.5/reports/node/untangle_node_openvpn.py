@@ -100,6 +100,7 @@ CREATE TABLE reports.n_openvpn_stats (
         sql_helper.add_column('reports.n_openvpn_stats', 'remote_port', 'integer')
         sql_helper.add_column('reports.n_openvpn_stats', 'client_name', 'text')
 
+        
         sql_helper.run_sql('ALTER TABLE reports.n_openvpn_stats ALTER COLUMN event_id TYPE bigint;')
 
         conn = sql_helper.get_connection()

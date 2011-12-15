@@ -701,7 +701,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
          * Change current settings
          */
         this.settings = newSettings;
-        try {logger.info("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
     }
 
 }

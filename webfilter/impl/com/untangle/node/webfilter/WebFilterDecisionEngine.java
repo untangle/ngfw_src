@@ -128,7 +128,6 @@ class WebFilterDecisionEngine extends DecisionEngine
         this.idToCategoryName = new HashMap<Integer,String>();
         
         List<String>  fileNames = new ArrayList<String>();
-        List<String>  categoryNames = new ArrayList<String>();
         List<Integer> categoryIDs = new ArrayList<Integer>();
         
         fileNames.add("/usr/share/untangle-webfilter-init/aggressive-url");

@@ -311,7 +311,6 @@ public class FirewallImpl extends AbstractNode implements Firewall
 
         FirewallSettings settings = new FirewallSettings(ruleList);
         settings.setVersion(1);
-        logger.info("New Settings: " + settings.toJSONString());
         
         return settings;
     }
@@ -364,6 +363,6 @@ public class FirewallImpl extends AbstractNode implements Firewall
          * Change current settings
          */
         this.settings = newSettings;
-        try {logger.info("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
     }
 }

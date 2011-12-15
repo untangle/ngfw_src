@@ -228,7 +228,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
          * Change current settings
          */
         this.settings = newSettings;
-        try {logger.info("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
         this.reconfigure();
     }

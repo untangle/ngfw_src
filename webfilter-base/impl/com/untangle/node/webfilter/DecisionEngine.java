@@ -448,9 +448,6 @@ public abstract class DecisionEngine
         if (rule == null)
             return null;
 
-        logger.warn("Rule FOUND: " + rule.getString() + "  " + rule.getDescription() + " flagged:"  + rule.getFlagged());
-        
-        
         if (rule.getBlocked()) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE,  Boolean.TRUE, Reason.BLOCK_URL, rule.getDescription(), node.getVendor());
             node.log(hbe, host, port, event);
