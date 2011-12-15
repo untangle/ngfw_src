@@ -146,26 +146,6 @@ class WebFilterDecisionEngine extends DecisionEngine
         fileNames.add("/usr/share/untangle-webfilter-init/vacation-url");
         fileNames.add("/usr/share/untangle-webfilter-init/violence-url");
 
-        /**
-         * These are put in this order because we only store one categorization per URL
-         * and we use the first categorization found
-         * As such, we should put the more "dominate" categories at the top
-         */
-        categoryNames.add("Pornography");
-        categoryNames.add("Proxy Sites");
-        categoryNames.add("Hate and Aggression");
-        categoryNames.add("Violence");
-        categoryNames.add("Illegal Drugs");
-        categoryNames.add("Social Networking");
-        categoryNames.add("Dating");
-        categoryNames.add("Gambling");
-        categoryNames.add("Shopping");
-        categoryNames.add("Hacking");
-        categoryNames.add("Job Search");
-        categoryNames.add("Web Mail");
-        categoryNames.add("Sports");
-        categoryNames.add("Vacation");
-
         categoryIDs.add(1);
         categoryIDs.add(2);
         categoryIDs.add(3);
@@ -198,12 +178,12 @@ class WebFilterDecisionEngine extends DecisionEngine
         
         Integer categoryId;
         String fileName;
-        int i = 0;
 
-        for ( String categoryName : categoryNames ) {
+        for ( int i = 0 ; i < categoryIDs.size() ; i++ ) {
             categoryId = categoryIDs.get(i);
             fileName = fileNames.get(i);
-
+            String categoryName = idToCategoryName.get(categoryId);
+            
             int urlCount = 0;
             int stringLength = 0;
             logger.info("Loading Category \"" + categoryName + "\" from \"" + fileName + "\"");
@@ -229,8 +209,6 @@ class WebFilterDecisionEngine extends DecisionEngine
             catch (IOException e) {
                 logger.error("Error loading category from file: " + fileName, e);
             }
-
-            i++;
         }
 
         logger.info("Initializing urlDatabase... done.");
