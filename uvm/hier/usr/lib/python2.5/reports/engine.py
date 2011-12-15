@@ -141,15 +141,15 @@ class FactTable:
             sql_helper.add_column(self.__name, c.name, c.type)
 
         sd = TimestampFromMx(sql_helper.get_update_info(self.__name, start_date))
-        ed = TimestampFromMx(mx.DateTime.now())
 
         conn = sql_helper.get_connection()
 
         try:
-            sql_helper.run_sql(self.__insert_stmt(), (sd, ed), connection=conn,
+            sql_helper.run_sql(self.__insert_stmt(), (sd, end_date), connection=conn,
                                auto_commit=False)
-            sql_helper.set_update_info(self.__name, ed, connection=conn,
-                                       auto_commit=False)
+            sql_helper.set_update_info(self.__name, end_date, connection=conn,
+                                       auto_commit=False,
+                                       origin_table=self.__detail_table)
             conn.commit()
         except Exception, e:
             conn.rollback()
