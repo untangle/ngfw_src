@@ -39,7 +39,7 @@ class OpenVpn(Node):
         self.__create_n_openvpn_stats(start_date, end_date)
 
         ft = FactTable('reports.n_openvpn_connect_totals',
-                       'events.n_openvpn_connect_evt',
+                       'reports.n_openvpn_stats',
                        'time_stamp',
                        [Column('client_name', 'text'),
                         Column('remote_address', 'inet'),
