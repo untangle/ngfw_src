@@ -4,16 +4,9 @@
 oldVersion=$2
 
 if [ -n "$oldVersion" ]; then
-    # Kill any already-running reports (Bug 1249)
-    killall update-reports rollup-logs 2>/dev/null
-
-    # This will be true for versions up to and including 5.4.1, since our 5.4.1
-    # has a tilde, which sorts before even the null version.
-    if dpkg --compare-versions "$oldVersion" le 5.4.1 ; then
-	# Bug 5554 -- hotfix the init.d script so it doesn't kill the upgrade
-	sed -i -e "s/ grep java | grep uvm/ fgrep java | fgrep com.untangle.uvm.engine.Main/" /etc/init.d/untangle-vm
-    fi
-
+    # To avoid massive auto-vacuuming (that creates extra load) with the new 
+    # database layout, dump the entire events schema on upgrade.
+    # The schema will be re-created new a shiny when the UVM starts
     if dpkg --compare-versions "$oldVersion" le 9.1.0 ; then
       psql -U postgres -c 'DROP SCHEMA events CASCADE' uvm
     fi

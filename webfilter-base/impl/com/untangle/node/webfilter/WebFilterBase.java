@@ -341,20 +341,6 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         
         try {
             readSettings = settingsManager.load( WebFilterSettings.class, settingsFileName );
-
-            /**
-             * Fix for #9561, the mimetypes disappeared on 9.1.0 upgrade.
-             * This will reload the defaults if they are blank
-             * This can be removed in 9.2
-             */
-            if (readSettings != null) {
-                if (readSettings.getBlockedMimeTypes() == null || (readSettings.getBlockedMimeTypes().size() == 0)) {
-                    logger.warn("Empty Mime-Type list found. Reinstalling default Ruleset");
-                    readSettings.setBlockedMimeTypes(_buildDefaultMimeTypeList());
-                    _setSettings(readSettings);
-                }
-            }
-
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
         }
