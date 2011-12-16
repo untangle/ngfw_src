@@ -414,12 +414,19 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 if (fieldValue.indexOf("https://") == 0) {
                     return this.i18n._("\"URL\" specified cannot be blocked because it uses secure http (https)");
                 }
+                // strip "http://" from beginning of rule
                 if (fieldValue.indexOf("http://") == 0) {
                     fieldValue = fieldValue.substr(7);
                 }
+                // strip "www." from beginning of rule
                 if (fieldValue.indexOf("www.") == 0) {
                     fieldValue = fieldValue.substr(4);
                 }
+                // strip "*." from beginning of rule
+                if (fieldValue.indexOf("*.") == 0) {
+                    fieldValue = fieldValue.substr(2);
+                }
+                // strip "/" from the end
                 if (fieldValue.indexOf("/") == fieldValue.length - 1) {
                     fieldValue = fieldValue.substring(0, fieldValue.length - 1);
                 }
@@ -825,11 +832,18 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 if (fieldValue.indexOf("https://") == 0) {
                     return this.i18n._("\"URL\" specified cannot be passed because it uses secure http (https)");
                 }
+                // strip "http://" from beginning of rule
+                // strip "www." from beginning of rule
+                // strip "*." from beginning of rule
+                // strip "/" from the end
                 if (fieldValue.indexOf("http://") == 0) {
                     fieldValue = fieldValue.substr(7);
                 }
                 if (fieldValue.indexOf("www.") == 0) {
                     fieldValue = fieldValue.substr(4);
+                }
+                if (fieldValue.indexOf("*.") == 0) {
+                    fieldValue = fieldValue.substr(2);
                 }
                 if (fieldValue.indexOf("/") == fieldValue.length - 1) {
                     fieldValue = fieldValue.substring(0, fieldValue.length - 1);
@@ -1143,11 +1157,18 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         },
         // private method
         alterUrl : function(value) {
+            // strip "http://" from beginning of rule
+            // strip "www." from beginning of rule
+            // strip "*." from beginning of rule
+            // strip "/" from the end
             if (value.indexOf("http://") == 0) {
                 value = value.substr(7);
             }
             if (value.indexOf("www.") == 0) {
                 value = value.substr(4);
+            }
+            if (value.indexOf("*.") == 0) {
+                value = value.substr(2);
             }
             if (value.indexOf("/") == value.length - 1) {
                 value = value.substring(0, value.length - 1);
