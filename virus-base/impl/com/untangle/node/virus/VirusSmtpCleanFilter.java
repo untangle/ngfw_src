@@ -31,7 +31,8 @@ public class VirusSmtpCleanFilter implements ListEventFilter<MailLogEventFromRep
         this.vendor = vendor;
 
         logQuery = "FROM MailLogEventFromReports evt" + 
-            " WHERE evt.virus" + this.vendor + "Clean IS TRUE" + 
+            " WHERE evt.addrKind = 'T'" +
+            " AND evt.virus" + this.vendor + "Clean IS TRUE" + 
             " AND evt.policyId = :policyId" + 
             " ORDER BY evt.timeStamp DESC";
     }
