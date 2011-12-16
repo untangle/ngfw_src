@@ -15,6 +15,9 @@ if [ -n "$oldVersion" ]; then
     fi
 fi
 
+echo "Removing events schema from DB"
+psql -U postgres -c 'DROP SCHEMA events CASCADE' uvm
+
 if [ -x /usr/bin/uvm-restart ]; then
     uvm-restart restart
 fi
