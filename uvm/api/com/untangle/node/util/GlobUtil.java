@@ -48,10 +48,11 @@ public class GlobUtil
         String re = glob;
 
         /**
-         * remove potential '\*\.?' at the beginning
+         * remove potential '\*\.?' or 'www.' at the beginning
          * for examlpe "*.foo.com" becomes just "foo.com" because "foo.com" matches "*.foo.com" AND "foo.com"
          */
         re = re.replaceAll("^"+Pattern.quote("*."), "");
+        re = re.replaceAll("^"+Pattern.quote("www."), "");
 
         /**
          * transform globbing operators into regex ones
