@@ -64,8 +64,6 @@ import com.untangle.uvm.util.TransactionWork;
  */
 class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 {
-    private static final String DESC_PATH = "META-INF/uvm-node.xml";
-
     private final Logger logger = Logger.getLogger(getClass());
 
     private final NodeManagerState nodeManagerState;

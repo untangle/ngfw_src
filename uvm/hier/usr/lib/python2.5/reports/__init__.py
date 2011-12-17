@@ -234,8 +234,7 @@ class Report:
             report_file = "%s/%s/report.xml" % (report_base, node_base)
 
             logger.info('writing %s' % (report_file,))
-            tree.write(report_file, encoding='utf-8', pretty_print=True,
-                       xml_declaration=True)
+            tree.write(report_file, encoding='utf-8', pretty_print=True, xml_declaration=True)
 
     def get_flowables(self, report_base, date_base, end_date, report_days=1):
         node_base = get_node_base(self.__name, date_base,

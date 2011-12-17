@@ -1,21 +1,6 @@
 /*
- * $HeadURL: svn://chef/work/src/uvm/impl/com/untangle/uvm/engine/ReportingManagerImpl.java $
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id: CsvServlet.java,v 1.00 2011/12/17 10:13:49 dmorris Exp $
  */
-
 package com.untangle.uvm.reports.servlet;
 
 import java.io.BufferedWriter;
@@ -49,8 +34,6 @@ import org.apache.log4j.Logger;
 
 /**
  * Gets CSV for a detail report.
- *
- * @author Aaron Read <amread@untangle.com>
  */
 @SuppressWarnings("serial")
 public class CsvServlet extends HttpServlet
@@ -69,14 +52,15 @@ public class CsvServlet extends HttpServlet
         String type = req.getParameter("type");
         String value = req.getParameter("value");
 
-	logger.info("Got a CSV request: date='" + dateStr +
-		    "', numDays='" + numDaysStr + "', app='" +
-		    app + "', detail='" + detail +
-		    "', type='" + type + "', value='" +
-		    value + "'");
+        logger.info("Got a CSV request: " +
+                    "date='" + dateStr + "', " +
+                    "numDays='" + numDaysStr + "', " + 
+                    "app='" + app + "', " +
+                    "detail='" + detail + "', " +
+                    "type='" + type + "', " +
+                    "value='" + value + "'");
 
-        if (null == dateStr || null == numDaysStr || null == app
-            || null == detail) {
+        if (null == dateStr || null == numDaysStr || null == app || null == detail) {
             return;
         }
 
@@ -86,8 +70,7 @@ public class CsvServlet extends HttpServlet
         BufferedWriter bw = null;
         try {
             resp.setHeader("Content-Type", "text/csv");
-            resp.setHeader("Content-Disposition", "attachment; filename=\""
-                           + dateStr + "-" + app + "-" + detail + ".csv\"");
+            resp.setHeader("Content-Disposition", "attachment; filename=\"" + dateStr + "-" + app + "-" + detail + ".csv\"");
 
             ServletOutputStream out = resp.getOutputStream();
             bw = new BufferedWriter(new OutputStreamWriter(out));
@@ -100,10 +83,10 @@ public class CsvServlet extends HttpServlet
             ApplicationData ad = null;
             ad = rm.getApplicationData(date, numDays, app, type, value);
             if (null != ad) {
-                for (Section s : ad.getSections()) {
-                    if (s.getName().equals(detail)) {
+                for (Section section : ad.getSections()) {
+                    if (section.getName().equals(detail)) {
                         try {
-                            DetailSection ds = (DetailSection)s;
+                            DetailSection ds = (DetailSection) section;
                             List<Object> header = new ArrayList<Object>();
                             for (ColumnDesc cd : ds.getColumns()) {
                                 header.add(cd.getTitle());
@@ -143,7 +126,7 @@ public class CsvServlet extends HttpServlet
     private void doQuery(BufferedWriter bw, String sql)
         throws IOException
     {
-	logger.info("About to do query: '" + sql + "'");
+        logger.info("About to do query: '" + sql + "'");
 
         Connection conn = null;
         try {
@@ -151,7 +134,7 @@ public class CsvServlet extends HttpServlet
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             int columnCount = rs.getMetaData().getColumnCount();
-	    logger.info("** got " + columnCount + " columns");
+            logger.info("** got " + columnCount + " columns");
             while (rs.next()) {
                 List<Object> l = new ArrayList<Object>(columnCount);
                 for (int i = 1; i <= columnCount; i++) {

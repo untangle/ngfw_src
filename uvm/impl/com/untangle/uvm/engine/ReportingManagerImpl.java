@@ -1,21 +1,6 @@
 /*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ * $Id$
  */
-
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
@@ -72,16 +57,14 @@ import com.untangle.uvm.toolbox.PackageDesc;
 
 class ReportingManagerImpl implements ReportingManager
 {
-    private static final String UVM_REPORTS_DATA
-        = System.getProperty("uvm.web.dir") + "/reports/data";
+    private static final String UVM_REPORTS_DATA = System.getProperty("uvm.web.dir") + "/reports/data";
 
     private static final File REPORTS_DIR = new File(UVM_REPORTS_DATA);
     private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static ReportingManagerImpl REPORTING_MANAGER
-        = new ReportingManagerImpl();
+    private static ReportingManagerImpl REPORTING_MANAGER = new ReportingManagerImpl();
 
     private ReportingManagerImpl()
     {
@@ -157,10 +140,10 @@ class ReportingManagerImpl implements ReportingManager
 
     public List<Highlight> getHighlights(Date d, int numDays)
     {
-	List<Highlight> list = new ArrayList<Highlight>();
+        List<Highlight> list = new ArrayList<Highlight>();
 
         List<Application> l = getApplications(getDateDir(d, numDays),
-                                               "top-level");
+                                              "top-level");
 
         // add untangle-vm's highlights
         File f = new File(getDateDir(d, numDays) + "/untangle-vm/report.xml");
@@ -170,15 +153,15 @@ class ReportingManagerImpl implements ReportingManager
         }
 
         for (Application app : l) {
-	    for (Section s : getApplicationData(d, numDays, app.getName()).
-		     getSections()) {
-		if (s instanceof SummarySection) {
-		    list.addAll(((SummarySection)s).getHighlights());
-		}
-	    }
-	}
+            for (Section s : getApplicationData(d, numDays, app.getName()).
+                     getSections()) {
+                if (s instanceof SummarySection) {
+                    list.addAll(((SummarySection)s).getHighlights());
+                }
+            }
+        }
 
-	return list;
+        return list;
     }
 
     public TableOfContents getTableOfContents(Date d, int numDays)
@@ -191,12 +174,10 @@ class ReportingManagerImpl implements ReportingManager
         List<Host> hosts = getHosts(d, numDays);
         List<Email> emails = getEmails(d, numDays);
 
-        return new TableOfContents(d, null, null, null, platform, apps, users,
-                                   hosts, emails);
+        return new TableOfContents(d, null, null, null, platform, apps, users, hosts, emails);
     }
 
-    public TableOfContents getTableOfContentsForHost(Date d, int numDays,
-                                                     String hostname)
+    public TableOfContents getTableOfContentsForHost(Date d, int numDays, String hostname)
     {
         Application platform = new Application("untangle-vm", "System");
 
@@ -211,98 +192,79 @@ class ReportingManagerImpl implements ReportingManager
                                    platform, apps, users, hosts, emails);
     }
 
-    public TableOfContents getTableOfContentsForUser(Date d, int numDays,
-                                                     String username)
+    public TableOfContents getTableOfContentsForUser(Date d, int numDays, String username)
     {
         Application platform = new Application("untangle-vm", "System");
 
-        List<Application> apps = getApplications(getDateDir(d, numDays),
-                                                 "user-drilldown");
+        List<Application> apps = getApplications(getDateDir(d, numDays), "user-drilldown");
 
         List<User> users = new ArrayList<User>();
         List<Host> hosts = new ArrayList<Host>();
         List<Email> emails = new ArrayList<Email>();
 
-        return new TableOfContents(d, username, null, null, platform, apps,
-                                   users, hosts, emails);
+        return new TableOfContents(d, username, null, null, platform, apps, users, hosts, emails);
     }
 
-    public TableOfContents getTableOfContentsForEmail(Date d, int numDays,
-                                                      String email)
+    public TableOfContents getTableOfContentsForEmail(Date d, int numDays, String email)
     {
         Application platform = new Application("untangle-vm", "System");
 
-        List<Application> apps = getApplications(getDateDir(d, numDays),
-                                                 "email-drilldown");
+        List<Application> apps = getApplications(getDateDir(d, numDays), "email-drilldown");
 
         List<User> users = new ArrayList<User>();
         List<Host> hosts = new ArrayList<Host>();
         List<Email> emails = new ArrayList<Email>();
 
-        return new TableOfContents(d, null, null, email, platform, apps, users,
-                                   hosts, emails);
+        return new TableOfContents(d, null, null, email, platform, apps, users, hosts, emails);
     }
 
-    public ApplicationData getApplicationData(Date d, int numDays,
-                                              String appName, String type,
-                                              String value)
+    public ApplicationData getApplicationData(Date d, int numDays, String appName, String type, String value)
     {
         return readXml(d, numDays, appName, type, value);
     }
 
-    public ApplicationData getApplicationData(Date d, int numDays,
-                                              String appName)
+    public ApplicationData getApplicationData(Date d, int numDays, String appName)
     {
         return readXml(d, numDays, appName, null, null);
     }
 
-    public ApplicationData getApplicationDataForUser(Date d, int numDays,
-                                                     String appName,
-                                                     String username)
+    public ApplicationData getApplicationDataForUser(Date d, int numDays, String appName, String username)
     {
         return readXml(d, numDays, appName, "user", username);
     }
 
-    public ApplicationData getApplicationDataForHost(Date d, int numDays,
-                                                     String appName,
-                                                     String hostname)
+    public ApplicationData getApplicationDataForHost(Date d, int numDays, String appName, String hostname)
     {
         return readXml(d, numDays, appName, "host", hostname);
     }
 
-    public ApplicationData getApplicationDataForEmail(Date d, int numDays,
-                                                      String appName,
-                                                      String emailAddr)
+    public ApplicationData getApplicationDataForEmail(Date d, int numDays, String appName, String emailAddr)
     {
         return readXml(d, numDays, appName, "email", emailAddr);
     }
 
-    public List<List<Object>> getDetailData(Date d, int numDays, String appName,
-                                    String detailName, String type,
-                                    String value)
+    public List<List<Object>> getDetailData(Date d, int numDays, String appName, String detailName, String type, String value)
     {
         return doGetDetailData(d, numDays, appName, detailName, type, value, true);
     }
 
-    public List<List<Object>> getAllDetailData(Date d, int numDays, String appName,
-                                       String detailName, String type,
-                                       String value)
+    public List<List<Object>> getAllDetailData(Date d, int numDays, String appName, String detailName, String type, String value)
     {
         return doGetDetailData(d, numDays, appName, detailName, type, value, false);
     }
 
     // private methods ---------------------------------------------------------
 
-    private List<List<Object>> doGetDetailData(Date d, int numDays, String appName,
-                                       String detailName, String type,
-                                       String value, boolean limitResultSet)
+    private List<List<Object>> doGetDetailData(Date d, int numDays, String appName, String detailName, String type, String value, boolean limitResultSet)
     {
-	logger.info("doGetDetailData for '" + appName + "' (detail='" +
-		    detailName + "', type='" + type + "', value='" + 
-                    value + "', limitResultSet='" + limitResultSet + "')");
+        logger.info("doGetDetailData for '" + appName +
+                    "' (detail='" + detailName + "', " +
+                    "type='" + type + "', " +
+                    "value='" + value + "', " +
+                    "limitResultSet='" + limitResultSet + "')");
 
-	if (isDateBefore(getDaysBefore(d, numDays), getReportsCutoff()))
-	    return null;
+        if (isDateBefore(getDaysBefore(d, numDays), getReportsCutoff()))
+            return null;
 
         List<List<Object>> rv = new ArrayList<List<Object>>();
 
@@ -356,15 +318,15 @@ class ReportingManagerImpl implements ReportingManager
     {
         File f = new File(getAppDir(d, numDays, appName, type, value) + "/report.xml");
 
-        logger.debug("Trying to XML file '" + f + "'");
+        logger.debug("Trying to find XML file '" + f + "'");
 
         if (!f.exists() && type != null) {
-            logger.debug("** ... does not exist, trying to generate");
+            logger.debug("XML file " + f + " does not exist: generating.");
             generateReport(d, numDays, appName, type, value);
         }
 
         if (!f.exists()) {
-            logger.debug("** ... still does not exist, giving up (generation must have failed)");
+            logger.warn("XML file " + f + " still does not exist: generation failed.");
             return null;
         }
 
@@ -499,8 +461,7 @@ class ReportingManagerImpl implements ReportingManager
         return sb.toString();
     }
 
-    private String getAppDir(Date d, int numDays, String appName, String type,
-                             String val)
+    private String getAppDir(Date d, int numDays, String appName, String type, String val)
     {
         StringBuffer sb = new StringBuffer(UVM_REPORTS_DATA);
         sb.append("/");
@@ -615,8 +576,7 @@ class ReportingManagerImpl implements ReportingManager
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
-        String cmdStr = "generate_sub_report," + appName + "," + df.format(d)
-            + "," + numDays + "," + host + "," + user + "," + email + "\n";
+        String cmdStr = "generate_sub_report," + appName + "," + df.format(d) + "," + numDays + "," + host + "," + user + "," + email + "\n";
 
         Socket s = null;
         Writer w = null;
@@ -682,12 +642,12 @@ class ReportingManagerImpl implements ReportingManager
 
     private boolean isDateBefore(Date d1, Date d2) 
     {
-	Calendar c1 = Calendar.getInstance();
-	c1.setTime(d1);
-	Calendar c2 = Calendar.getInstance();
-	c2.setTime(d2);
+        Calendar c1 = Calendar.getInstance();
+        c1.setTime(d1);
+        Calendar c2 = Calendar.getInstance();
+        c2.setTime(d2);
 
-	return c1.before(c2);
+        return c1.before(c2);
     }
 
     public boolean isReportingEnabled()
