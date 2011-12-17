@@ -3,6 +3,7 @@
 #
 # A simple utility to check the validity of a license
 # Example: ut-checkLicense untangle-node-sitefilter
+# This checks by contacting the UVM and asking directly
 #
 # If a valid license is found, it exits with a return code of 0
 # Otherwise 1
