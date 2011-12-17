@@ -103,6 +103,11 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
     {
         logger.debug("postStart()");
 
+        /* save the current license state on every start */
+        /* We do this just in case local changes have been made to the file */
+        /* Some applications read settings from the file directly */
+        this._saveSettings(this.settings);
+        
         /* Reload the licenses */
         try {
             UvmContextFactory.context().licenseManager().reloadLicenses();
@@ -233,6 +238,15 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
         if (this.settings == null)
             _initializeSettings();
 
+        /**
+         * Re-compute metadata - we don't want to use value in file (could have been changed)
+         */
+        if (this.settings.getLicenses() != null) {
+            for (License lic : this.settings.getLicenses()) {
+                _setValidAndStatus(lic);
+            }
+        }
+
         return;
     }
 
@@ -245,7 +259,8 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         LinkedList<LicenseRevocation> revocations;
-
+        boolean changed = false;
+        
         logger.info("REFRESH: Checking Revocations...");
         
         try {
@@ -263,28 +278,30 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
         }
             
         for (LicenseRevocation revoke : revocations) {
-            _revokeLicense(revoke);
+            changed |= _revokeLicense(revoke);
         }
 
-        _saveSettings(settings);
+        if (changed)
+            _saveSettings(settings);
 
-        logger.info("REFRESH: Checking Revocations... done");
+        logger.info("REFRESH: Checking Revocations... done (modified: " + changed + ")");
 
         return;
     }
 
     /** 
      * This remove a license from the list of current licenses
+     * Returns true if a license was removed, false otherwise
      */
-    private synchronized void _revokeLicense(LicenseRevocation revoke)
+    private synchronized boolean _revokeLicense(LicenseRevocation revoke)
     {
         if (this.settings == null || this.settings.getLicenses() == null) {
             logger.error("Invalid settings:" + this.settings);
-            return;
+            return false;
         }
         if (revoke == null) {
             logger.error("Invalid argument:" + revoke);
-            return;
+            return false;
         }
 
         /**
@@ -297,9 +314,11 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
             if (existingLicense.getName().equals(revoke.getName())) {
                 logger.warn("Revoking License: " + revoke.getName());
                 itr.remove();
-                return;
+                return true;
             }
         }
+
+        return false;
     }
 
     /**
@@ -311,6 +330,7 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         LinkedList<License> licenses;
+        boolean changed = false;
 
         int numDevices = _getEstimatedNumDevices();
         String uvmVersion = UvmContextFactory.context().version();
@@ -332,12 +352,13 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
         }
         
         for (License lic : licenses) {
-            _insertOrUpdate(lic);
+            changed |= _insertOrUpdate(lic);
         }
 
-        _saveSettings(settings);
+        if (changed)
+            _saveSettings(settings);
 
-        logger.info("REFRESH: Downloading new Licenses... done");
+        logger.info("REFRESH: Downloading new Licenses... done (changed: " + changed + ")");
 
         return;
     }
@@ -345,18 +366,19 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
     /**
      * This takes the passed argument and inserts it into the current licenses
      * If there is currently an existing license for that product it will be removed
+     * Returns true if a license was added or modified, false otherwise
      */
-    private synchronized void _insertOrUpdate(License license)
+    private synchronized boolean _insertOrUpdate(License license)
     {
         boolean insertNewLicense = true;
         
         if (this.settings == null || this.settings.getLicenses() == null) {
             logger.error("Invalid settings:" + this.settings);
-            return;
+            return false;
         }
         if (license == null) {
             logger.error("Invalid argument:" + license);
-            return;
+            return false;
         }
 
         /**
@@ -417,7 +439,10 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
             logger.info("REFRESH: Inserting new license   : " + license);
             List<License> licenses = this.settings.getLicenses();
             licenses.add(license);
+            return true;
         }
+
+        return false;
     }
     
     /**
@@ -440,12 +465,7 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
                 /**
                  * Complete Meta-data
                  */
-                if (_isLicenseValid(license)) {
-                    license.setValid(Boolean.TRUE);
-                    license.setStatus("Valid"); /* XXX i18n */
-                } else {
-                    license.setValid(Boolean.FALSE);
-                }
+                _setValidAndStatus(license);
             
                 String identifier = license.getName();
                 License current = newMap.get(identifier);
@@ -552,6 +572,13 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
      */
     private void _saveSettings(LicenseSettings newSettings)
     {
+        /**
+         * Compute metadata before saving
+         */
+        for (License lic : newSettings.getLicenses()) {
+            _setValidAndStatus(lic);
+        }
+
         /**
          * Save the settings
          */
@@ -662,4 +689,13 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
         return false;
     }
 
+    private void _setValidAndStatus(License license)
+    {
+        if (_isLicenseValid(license)) {
+            license.setValid(Boolean.TRUE);
+            license.setStatus("Valid");
+        } else {
+            license.setValid(Boolean.FALSE);
+        }
+    }
 }
