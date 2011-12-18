@@ -30,15 +30,13 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
-import com.untangle.uvm.logging.EventManager;
-import com.untangle.uvm.logging.ListEventFilter;
-import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.TCPSession;
+import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.node.util.SimpleExec;
 
@@ -90,13 +88,6 @@ public class PhishNode extends SpamNodeImpl implements Phish
         }
 
         phishHttpEventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
-
-        SimpleEventFilter<PhishHttpEvent> sef = new PhishHttpBlockedFilter();
-        phishHttpEventLogger.addSimpleEventFilter(sef);
-        ListEventFilter<PhishHttpEvent> lef = new PhishHttpAllFilter();
-        phishHttpEventLogger.addListEventFilter(lef);
-        lef = new PhishHttpPassedFilter();
-        phishHttpEventLogger.addListEventFilter(lef);
     }
 
     // private methods --------------------------------------------------------
@@ -178,9 +169,9 @@ public class PhishNode extends SpamNodeImpl implements Phish
     
     // public methods ---------------------------------------------------------
 
-    public EventManager<PhishHttpEvent> getPhishHttpEventManager()
+    public EventLogQuery[] getHttpEventQueries()
     {
-        return phishHttpEventLogger;
+        return new EventLogQuery[] { new EventLogQuery(" "," ") };
     }
 
     public PhishSettings getSettings()

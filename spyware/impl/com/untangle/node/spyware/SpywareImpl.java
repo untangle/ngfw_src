@@ -33,8 +33,6 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
-import com.untangle.uvm.logging.EventManager;
-import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -43,6 +41,7 @@ import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.GenericRule;
+import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
@@ -77,6 +76,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
     private final EventLogger<SpywareEvent> eventCookieLogger;
     private final EventLogger<SpywareEvent> eventBlacklistLogger;
     private final EventLogger<SpywareEvent> eventSuspiciousLogger;
+    private EventLogQuery cookieQuery;
+    private EventLogQuery blacklistQuery;
+    private EventLogQuery suspiciousQuery;
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[] {
         new SoloPipeSpec("spyware-http", this, tokenAdaptor,
@@ -109,12 +111,23 @@ public class SpywareImpl extends AbstractNode implements Spyware
         eventBlacklistLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
         eventSuspiciousLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
 
-        SimpleEventFilter ef = new SpywareSuspiciousFilter();
-        eventSuspiciousLogger.addSimpleEventFilter(ef);
-        ef = new SpywareBlacklistFilter();
-        eventBlacklistLogger.addSimpleEventFilter(ef);
-        ef = new SpywareCookieFilter();
-        eventCookieLogger.addSimpleEventFilter(ef);
+        this.suspiciousQuery = new EventLogQuery(I18nUtil.marktr("Suspicious Events"),
+                                                 "FROM SessionLogEventFromReports evt " +
+                                                 "WHERE evt.policyId = :policyId " +
+                                                 "AND swAccessIdent != '' " +
+                                                 "ORDER BY evt.timeStamp DESC");
+        
+        this.blacklistQuery = new EventLogQuery(I18nUtil.marktr("Blacklisted Events"),
+                                                "FROM HttpLogEventFromReports evt" + 
+                                                " WHERE evt.swBlacklisted IS TRUE" + 
+                                                " AND evt.policyId = :policyId" + 
+                                                " ORDER BY evt.timeStamp DESC");
+
+        this.cookieQuery = new EventLogQuery(I18nUtil.marktr("Cookie Events"),
+                                             "FROM HttpLogEventFromReports evt" + 
+                                             " WHERE evt.swCookieIdent IS NOT NULL" + 
+                                             " AND evt.policyId = :policyId" + 
+                                             " ORDER BY evt.timeStamp DESC");
 
         MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
@@ -239,17 +252,19 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
     }
 
-    public EventManager<SpywareEvent> getEventCookieManager()
+    public EventLogQuery[] getCookieEventQueries()
     {
-        return eventCookieLogger;
+        return new EventLogQuery[] {  cookieQuery };
     }
-    public EventManager<SpywareEvent> getEventBlacklistManager()
+
+    public EventLogQuery[] getBlacklistEventQueries()
     {
-        return eventBlacklistLogger;
+        return new EventLogQuery[] {  blacklistQuery };
     }
-    public EventManager<SpywareEvent> getEventSuspiciousManager()
+
+    public EventLogQuery[] getSuspiciousEventQueries()
     {
-        return eventSuspiciousLogger;
+        return new EventLogQuery[] { suspiciousQuery };
     }
 
     public Date getLastSignatureUpdate()

@@ -19,6 +19,11 @@ class TestEnvironmentTests(unittest.TestCase):
         except JSONRPCException, e:
             raise AssertionError("Failed to connect to untangle-vm")
 
+    # verify reports is installed (needed for event log tests)
+    def test_02_reportsIsInstalled(self):
+        global uvmContext
+        assert (uvmContext.nodeManager().isInstantiated('untangle-node-reporting'))
+
     # verify connectivity to client
     def test_10_clientConnectivity(self):
         result = clientControl.runCommand("/bin/true")
@@ -44,11 +49,6 @@ class TestEnvironmentTests(unittest.TestCase):
     def test_13_clientIsOnline(self):
         result = clientControl.runCommand("wget -o /dev/null http://google.com/")
         assert (result == 0)
-
-
-
-
-
 
 
 

@@ -24,8 +24,6 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
-import com.untangle.uvm.logging.EventRepository;
-import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.util.I18nUtil;
 
@@ -63,8 +61,7 @@ class OpenVpnMonitor implements Runnable
     private static final String ACTIVE_SESSIONS_REPO_NAME = I18nUtil.marktr("Active Clients");
     private static final String ALL_SESSIONS_REPO_NAME = I18nUtil.marktr("All Clients");
 
-    private final EventLogger<ClientConnectEvent> clientActiveLogger;
-    private final EventLogger<ClientConnectEvent> clientClosedLogger;
+    private final EventLogger<ClientConnectEvent> connectEventLogger;
     private final Logger logger = Logger.getLogger( this.getClass());
 
     private Map<Key,Stats> statusMap    = new HashMap<Key,Stats>();
@@ -86,33 +83,12 @@ class OpenVpnMonitor implements Runnable
 
     private final UvmContext localContext;
 
-    OpenVpnMonitor( VpnNodeImpl node )
+    protected OpenVpnMonitor( VpnNodeImpl node )
     {
-        this.clientActiveLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
-        this.clientClosedLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
-        clientActiveLogger.addEventRepository(new ActiveEventCache());//For "open" events
-        clientClosedLogger.addSimpleEventFilter(new ClientConnectEventClosedFilter());//For "closed" events
-
+        this.connectEventLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
         this.localContext = UvmContextFactory.context();
         this.node = node;
     }
-
-    /**
-     * Accessor for the ClientConnectLogger, for the impl
-     * to pass to the UI
-     */
-    EventLogger<ClientConnectEvent> getClientActiveLogger() {
-        return clientActiveLogger;
-    }
-
-    /**
-     * Accessor for the ClientConnectLogger, for the impl
-     * to pass to the UI
-     */
-    EventLogger<ClientConnectEvent> getClientClosedLogger() {
-        return clientClosedLogger;
-    }
-
 
     public void run()
     {
@@ -470,82 +446,8 @@ class OpenVpnMonitor implements Runnable
     private void logClientConnectEvent(Stats stats)
     {
         if( stats.logged ) return;
-        // FIXME ?
-        clientActiveLogger.log( stats.sessionEvent );
+        connectEventLogger.log( stats.sessionEvent );
         stats.logged = true;
-    }
-
-
-    //Little class that participates in the whole EventManager
-    //API to satisfy requests for "active" sessions.  Since these
-    //are never sent to persistent store, this class simulates
-    //the behavior of "normal" EventCaches by examining only
-    //the actie records and returning them to the client.
-    class ActiveEventCache implements EventRepository<ClientConnectEvent>
-    {
-        private RepositoryDesc rd = new RepositoryDesc(ACTIVE_SESSIONS_REPO_NAME);
-
-        ActiveEventCache()
-        {
-        }
-
-        public RepositoryDesc getRepositoryDesc() {
-            return rd;
-        }
-
-        public List<ClientConnectEvent> getEvents(int limit) {
-            List<ClientConnectEvent> list = getOpenConnectionsAsEvents();
-            Collections.sort(list,
-                             ClientConnectEventComparator.getComparator(ClientConnectEventComparator.SortBy.END_DATE, false));
-            int maxLen = Math.min(limit, EventRepository.MAX_SIZE);
-            if(list.size() > maxLen) {
-                list = list.subList(0, maxLen);
-            }
-            return new ArrayList<ClientConnectEvent>(list);
-        }
-        
-        public List<ClientConnectEvent> getEvents() {
-            return getEvents(EventRepository.MAX_SIZE);
-        }        
-    }
-
-    //Provides a view of all ClientConnectEvent - both active and closed
-    class AllEventsCache implements EventRepository<ClientConnectEvent>
-    {
-        private final EventLogger<ClientConnectEvent> eventLogger;
-        private RepositoryDesc rd = new RepositoryDesc(ALL_SESSIONS_REPO_NAME);
-
-        AllEventsCache(EventLogger<ClientConnectEvent> eventLogger)
-        {
-            this.eventLogger = eventLogger;
-        }
-
-        public RepositoryDesc getRepositoryDesc() {
-            return rd;
-        }
-
-        public List<ClientConnectEvent> getEvents(int limit) {
-
-            List<ClientConnectEvent> openList =
-                eventLogger.getRepository(ACTIVE_SESSIONS_REPO_NAME).getEvents();
-            List<ClientConnectEvent> closedList =
-                eventLogger.getRepository(ClientConnectEventAllFilter.REPOSITORY_NAME).getEvents();
-
-            openList.addAll(closedList);
-
-            Collections.sort(openList,
-                             ClientConnectEventComparator.getComparator(ClientConnectEventComparator.SortBy.END_DATE, false));
-
-            int maxLen = Math.min(limit, EventRepository.MAX_SIZE);
-            if(openList.size() > maxLen) {
-                openList = openList.subList(0, maxLen);
-            }
-            return new ArrayList<ClientConnectEvent>(openList);
-        }
-        
-        public List<ClientConnectEvent> getEvents() {
-            return getEvents(EventRepository.MAX_SIZE);
-        }
     }
 }
 

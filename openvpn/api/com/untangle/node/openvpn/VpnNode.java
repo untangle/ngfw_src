@@ -1,11 +1,13 @@
 package com.untangle.node.openvpn;
 
-import com.untangle.uvm.logging.EventManager;
+import java.util.LinkedList;
+
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.Validator;
+import com.untangle.uvm.node.EventLogQuery;
 
 public interface VpnNode extends Node
 {
@@ -63,13 +65,11 @@ public interface VpnNode extends Node
     public void setSites( SiteList parameters ) throws Exception;
 
     /**
-     * Access the EventManager for ClientConnectEvents
+     * FIXME
      */
-    public EventManager<ClientConnectEvent> getClientActiveEventManager();
-    /**
-     * Access the EventManager for ClientConnectEvents
-     */
-    public EventManager<ClientConnectEvent> getClientClosedEventManager();
+    public LinkedList getActiveClients();
+
+    public EventLogQuery[] getConnectEventsQueries();
 
     public Validator getValidator();
 }

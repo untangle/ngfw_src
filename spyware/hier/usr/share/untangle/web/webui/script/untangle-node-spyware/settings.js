@@ -470,7 +470,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         buildCookieEventLog : function() {
             this.gridCookieEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                eventManagerFn : this.getRpcNode().getEventCookieManager(),
+                eventQueriesFn : this.getRpcNode().getCookieEventQueries,
                 name : "Cookie Event Log",
                 title : i18n._('Cookie Event Log'),
                 fields : [{
@@ -540,7 +540,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         buildUrlEventLog : function() {
             this.gridUrlEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                eventManagerFn : this.getRpcNode().getEventBlacklistManager(),
+                eventQueriesFn : this.getRpcNode().getBlacklistEventQueries,
                 name : "Web Event Log",
                 title : i18n._('Web Event Log'),
                 fields : [{
@@ -607,7 +607,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         buildSuspiciousEventLog : function() {
             this.gridSuspiciousEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                eventManagerFn : this.getRpcNode().getEventSuspiciousManager(),
+                eventQueriesFn : this.getRpcNode().getSuspiciousEventQueries,
                 name : "Traffic Event Log",
                 title : i18n._('Traffic Event Log'),
                 fields : [{

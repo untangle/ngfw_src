@@ -8,6 +8,7 @@ from uvm import Uvm
 from untangle_tests import ClientControl
 
 uvmContext = Uvm().getUvmContext()
+defaultRack = uvmContext.policyManager().getDefaultPolicy()
 clientControl = ClientControl()
 nodeDesc = None
 node = None
@@ -84,6 +85,7 @@ class WebFilterTests(unittest.TestCase):
         global nodeDesc, node
         if nodeDesc == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+                print "ERROR: Node %s already installed" % self.nodeName();
                 raise Exception('node %s already instantiated' % self.nodeName())
             nodeDesc = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), uvmContext.policyManager().getDefaultPolicy())
             node = uvmContext.nodeManager().nodeContext(nodeDesc['nodeId']).node()
@@ -319,6 +321,7 @@ class WebFilterTests(unittest.TestCase):
         
     def test_100_eventlog_blockedUrl(self):
         global node
+        global defaultRack
         fname = sys._getframe().f_code.co_name
         nukeBlockedUrls();
         addBlockedUrl("metaloft.com/test/testPage1.html", blocked=True, flagged=True)
@@ -326,10 +329,14 @@ class WebFilterTests(unittest.TestCase):
         result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1)
         flushEvents()
-        eventMan = node.getEventManager()
-        events = eventMan.getRepository('Blocked Web Traffic').getEvents(1)
+        query = None;
+        for q in node.getEventQueries():
+            if q['name'] == 'Blocked Web Traffic': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRack,1)
         assert(events != None)
         assert(events['list'] != None)
+        assert(len(events['list']) > 0)
         assert(events['list'][0]['host'] == "metaloft.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
         assert(events['list'][0]['wf' + self.vendorName() + 'Blocked'] == True)
@@ -343,10 +350,14 @@ class WebFilterTests(unittest.TestCase):
         result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1)
         flushEvents()
-        eventMan = node.getEventManager()
-        events = eventMan.getRepository('Flagged Web Traffic').getEvents(1)
+        query = None;
+        for q in node.getEventQueries():
+            if q['name'] == 'Flagged Web Traffic': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRack,1)
         assert(events != None)
         assert(events['list'] != None)
+        assert(len(events['list']) > 0)
         assert(events['list'][0]['host'] == "metaloft.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
         assert(events['list'][0]['wf' + self.vendorName() + 'Blocked'] == False)
@@ -360,10 +371,13 @@ class WebFilterTests(unittest.TestCase):
         result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1)
         flushEvents()
-        eventMan = node.getEventManager()
-        events = eventMan.getRepository('All Web Traffic').getEvents(1)
+        for q in node.getEventQueries():
+            if q['name'] == 'All Web Traffic': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRack,1)
         assert(events != None)
         assert(events['list'] != None)
+        assert(len(events['list']) > 0)
         assert(events['list'][0]['host'] == "metaloft.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
         assert(events['list'][0]['wf' + self.vendorName() + 'Blocked'] == False)

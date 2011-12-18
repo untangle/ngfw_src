@@ -9,7 +9,6 @@ import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SessionMatcherFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
-import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.networking.NetworkConfigurationListener;
@@ -64,11 +63,6 @@ public class RouterImpl extends AbstractNode implements Router
 
         NodeContext tctx = getNodeContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
-    }
-
-    public EventManager<LogEvent> getEventManager()
-    {
-        return eventLogger;
     }
 
     // package protected methods ----------------------------------------------

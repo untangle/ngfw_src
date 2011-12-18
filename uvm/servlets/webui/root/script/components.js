@@ -2505,13 +2505,11 @@ Ext.ComponentMgr.registerType('ungSystemBlinger', Ung.SystemBlinger);
 Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     // the settings component
     settingsCmp : null,
-    // if the event log has more than one repositories that can be selected
-    hasRepositories : true,
     // refresh on activate Tab (each time the tab is clicked)
     refreshOnActivate : true,
     // Event manager rpc function to call
-    // default is getEventManager() from settingsCmp
-    eventManagerFn : null,
+    // default is getEventQueries() from settingsCmp
+    eventQueriesFn : null,
     // Records per page
     recordsPerPage : 25,
     // fields for the Store
@@ -2541,8 +2539,8 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         if ( this.name == null ) {
             this.name = "Event Log";
         }
-        if ( this.eventManagerFn == null && this.hasRepositories == true ) {
-            this.eventManagerFn = this.settingsCmp.getEventManager();
+        if ( this.eventQueriesFn == null ) {
+            this.eventQueriesFn = this.settingsCmp.node.nodeContext.rpcNode.getEventQueries;
         }
         this.rpc.repository = {};
         this.store = new Ext.data.Store({
@@ -2571,7 +2569,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 
         this.bbar = [{
             xtype : 'tbtext',
-            text : '<span id="boxRepository_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '"></span>'
+            text : '<span id="boxQuery_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '"></span>'
         }, {
             xtype : 'tbbutton',
             id: "refresh_"+this.getId(),
@@ -2680,19 +2678,9 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         }
     },
     autorefreshList : function() {
-        if (this.hasRepositories) {
-            var selRepository = this.getSelectedRepository();
-            if (selRepository !== null) {
-                if (this.rpc.repository[selRepository] === undefined) {
-                    this.eventManagerFn.getRepository(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        this.rpc.repository[selRepository] = result;
-                        this.rpc.repository[selRepository].getEvents(this.autorefreshCallback.createDelegate(this),this.recordsPerPage);
-                    }.createDelegate(this),selRepository);
-                } else {
-                    this.rpc.repository[selRepository].getEvents(this.autorefreshCallback.createDelegate(this),this.recordsPerPage);
-                }
-            }
+        var selQuery = this.getSelectedQuery();
+        if (selQuery !== null) {
+            rpc.jsonrpc.UvmContext.getEvents(this.autoRefreshCallback.createDelegate(this), selQuery, rpc.currentPolicy, 1000 );
         }
     },
 
@@ -2701,28 +2689,28 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         Ung.GridEventLog.superclass.onRender.call(this, container, position);
         this.getGridEl().child("div[class*=x-grid3-viewport]").set({'name' : "Table"});
         this.pagingToolbar.loading.hide();
-        if (this.hasRepositories) {
-            this.rpc.repositoryDescs=this.eventManagerFn.getRepositoryDescs();
-            var repList = this.rpc.repositoryDescs.list;
+
+        if (this.eventQueriesFn != null) {
+            this.rpc.eventLogQueries=this.eventQueriesFn();
+            var queryList = this.rpc.eventLogQueries;
             var displayStyle="";
-            if(repList.length==1) {
-                displayStyle="display:none;";
-            }
+            // commented out - always show selector
+            // if(repList.length==0) { displayStyle="display:none;"; }
             var out = [];
-            out.push('<select name="Event Type" id="selectRepository_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '" style="'+displayStyle+'">');
-            for (var i = 0; i < repList.length; i++) {
-                var repDesc = repList[i];
+            out.push('<select name="Event Type" id="selectQuery_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '" style="'+displayStyle+'">');
+            for (var i = 0; i < queryList.length; i++) {
+                var queryDesc = queryList[i];
                 var selOpt = (i === 0) ? "selected" : "";
-                out.push('<option value="' + repDesc.name + '" ' + selOpt + '>' + this.settingsCmp.i18n._(repDesc.name) + '</option>');
+                out.push('<option value="' + queryDesc.query + '" ' + selOpt + '>' + this.settingsCmp.i18n._(queryDesc.name) + '</option>');
             }
             out.push('</select>');
-            var boxRepositoryDescEventLog = document.getElementById('boxRepository_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
-            boxRepositoryDescEventLog.innerHTML = out.join("");
-        } 
+            var boxQueryEventLog = document.getElementById('boxQuery_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
+            boxQueryEventLog.innerHTML = out.join("");
+        }
     },
     // get selected repository
-    getSelectedRepository : function() {
-        var selObj = document.getElementById('selectRepository_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
+    getSelectedQuery : function() {
+        var selObj = document.getElementById('selectQuery_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
         var result = null;
         if (selObj !== null && selObj.selectedIndex >= 0) {
             result = selObj.options[selObj.selectedIndex].value;
@@ -2793,22 +2781,12 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         this.makeSelectable();
     },
     refreshList : function() {
-        if (this.hasRepositories) {
-            var selRepository = this.getSelectedRepository();
-            if (selRepository !== null) {
-                if (this.rpc.repository[selRepository] === undefined) {
-                    this.eventManagerFn.getRepository(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        this.rpc.repository[selRepository] = result;
-                        this.rpc.repository[selRepository].getEvents(this.refreshCallback.createDelegate(this));
-                    }.createDelegate(this),selRepository);
-                } else {
-                    this.rpc.repository[selRepository].getEvents(this.refreshCallback.createDelegate(this));
-                }
-            } else {
-                this.loadMask.disabled = true;
-                this.loadMask.hide();
-            }
+        var selQuery = this.getSelectedQuery();
+        if (selQuery !== null) {
+            rpc.jsonrpc.UvmContext.getEvents(this.refreshCallback.createDelegate(this), selQuery, rpc.currentPolicy, 1000);
+        } else {
+            this.loadMask.disabled = true;
+            this.loadMask.hide();
         }
     },
     // is reports node installed
@@ -3161,17 +3139,6 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
             }
         }
         return this.node.nodeContext.rpcNode.validator;
-    },
-    // get eventManager object
-    getEventManager : function() {
-        if (this.node.nodeContext.rpcNode.eventManager === undefined) {
-            try {
-                this.node.nodeContext.rpcNode.eventManager = this.node.nodeContext.rpcNode.getEventManager();
-            } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
-        }
-        return this.node.nodeContext.rpcNode.eventManager;
     }
 });
 Ung.NodeWin._nodeScripts = {};

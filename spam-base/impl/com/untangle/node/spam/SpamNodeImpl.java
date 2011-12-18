@@ -11,9 +11,6 @@ import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
-import com.untangle.uvm.logging.EventManager;
-import com.untangle.uvm.logging.ListEventFilter;
-import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -25,6 +22,7 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.node.EventLogQuery;
 
 public class SpamNodeImpl extends AbstractNode implements SpamNode
 {
@@ -38,7 +36,8 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     // server for pop/imap).
     // Would want the RBL to get evaluated before the casing, this way if it blocks a session
     // the casing doesn't have to be initialized.
-    private final PipeSpec[] pipeSpecs = new PipeSpec[] {
+    private final PipeSpec[] pipeSpecs = new PipeSpec[]
+        {
         new SoloPipeSpec("spam-smtp", this, new TokenAdaptor(this, new SpamSmtpFactory(this)), Fitting.SMTP_TOKENS, Affinity.CLIENT, 10),
         new SoloPipeSpec("spam-smtp-rbl", this, this.rblHandler, Fitting.SMTP_STREAM, Affinity.CLIENT, 11),
         new SoloPipeSpec("spam-pop", this, new TokenAdaptor(this, new SpamPopFactory(this)), Fitting.POP_TOKENS, Affinity.SERVER, 10),
@@ -60,13 +59,17 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     private final BlingBlinger blockBlinger;
     private final BlingBlinger markBlinger;
     private final BlingBlinger quarantineBlinger;
+
+    private EventLogQuery allEventQuery;
+    private EventLogQuery spamEventQuery;
+    private EventLogQuery quarantinedEventQuery;
+    private EventLogQuery rblEventQuery;
+    private EventLogQuery rblSkippedEventQuery;
     
     private String signatureVersion;
     private Date lastUpdate = new Date();
     private Date lastUpdateCheck = new Date();
     private int rblListLength;
-
-    // constructors -----------------------------------------------------------
 
     @SuppressWarnings("unchecked")
 	public SpamNodeImpl(SpamScanner scanner)
@@ -80,24 +83,50 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
         rblEventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
 
         String vendor = scanner.getVendorName();
+        String vendorTag = vendor;
+        String badEmailName = "Spam";
+        
+        if (vendor.equals("SpamAssassin")) 
+            vendorTag = "sa";
+        else if (vendor.equals("CommtouchAs"))
+            vendorTag = "ct";
+        else if (vendor.equals("Clam")) {
+            vendorTag = "phish";
+            badEmailName = "Phish";
+        }
+        
+        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Email Events"),
+                                               "FROM MailLogEventFromReports AS evt" +
+                                               " WHERE evt.addrKind = 'T'" +
+                                               " AND evt." + vendorTag + "Action IS NOT NULL" +
+                                               " AND evt.policyId = :policyId" + 
+                                               " ORDER BY evt.timeStamp DESC");
 
-        ListEventFilter lef = new SpamAllFilter(vendor);
-        eventLogger.addListEventFilter(lef);
+        this.spamEventQuery = new EventLogQuery(I18nUtil.marktr("All") + " " + I18nUtil.marktr(badEmailName) + " " + I18nUtil.marktr("Events"),
+                                                "FROM MailLogEventFromReports evt" +
+                                                " WHERE evt." + vendorTag + "IsSpam IS TRUE" + 
+                                                " AND evt.addrKind = 'T'" +
+                                                " AND evt.policyId = :policyId" + 
+                                                " ORDER BY evt.timeStamp DESC");
 
-        lef = new SpamSpamFilter(vendor);
-        eventLogger.addListEventFilter(lef);
+        this.quarantinedEventQuery = new EventLogQuery(I18nUtil.marktr("Quarantined Events"),
+                                                       "FROM MailLogEventFromReports evt" +
+                                                       " WHERE evt." + vendorTag + "Action = 'Q'" + 
+                                                       " AND evt.addrKind = 'T'" +
+                                                       " AND evt.policyId = :policyId" + 
+                                                       " ORDER BY evt.timeStamp DESC");
+                                                       
+        
+        /* FIXME */
+        /* This query comes from events schema not reports as it should! */
+        this.rblEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
+                                               "FROM SpamSmtpRblEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC");
 
-        lef = new SpamLogFilter(vendor);
-        eventLogger.addListEventFilter(lef);
-
-        // filters for RBL events
-        // FIXME: no equivalent info in reports tables
-        SimpleEventFilter ef = new RBLAllFilter();
-        rblEventLogger.addSimpleEventFilter(ef);
-
-        ef = new RBLSkippedFilter();
-        rblEventLogger.addSimpleEventFilter(ef);
-
+        /* FIXME */
+        /* This query comes from events schema not reports as it should! */
+        this.rblSkippedEventQuery = new EventLogQuery(I18nUtil.marktr("Skipped Events"),
+                                                      "FROM SpamSmtpRblEvent evt WHERE evt.skipped = true AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC");
+        
         MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Messages passed"), null, I18nUtil.marktr("PASS"));
@@ -109,19 +138,15 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
         lmm.setActiveMetricsIfNotSet(getNodeId(), passBlinger, blockBlinger, markBlinger, quarantineBlinger);
     }
 
-    // Spam methods -----------------------------------------------------------
-
-    public EventManager<SpamEvent> getEventManager()
+    public EventLogQuery[] getEventQueries()
     {
-        return eventLogger;
+        return new EventLogQuery[] { this.allEventQuery, this.spamEventQuery, this.quarantinedEventQuery };
     }
-
-    public EventManager<SpamSmtpRblEvent> getRBLEventManager()
+    
+    public EventLogQuery[] getRBLEventQueries()
     {
-        return rblEventLogger;
+        return new EventLogQuery[] { this.rblEventQuery, this.rblSkippedEventQuery };
     }
-
-    // Node methods ------------------------------------------------------
 
     /**
      * Increment the counter for blocked (SMTP only).

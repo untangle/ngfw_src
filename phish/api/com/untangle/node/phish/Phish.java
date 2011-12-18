@@ -3,12 +3,12 @@
  */
 package com.untangle.node.phish;
 
-import com.untangle.uvm.logging.EventManager;
+import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.node.spam.SpamNode;
 
 public interface Phish extends SpamNode
 {
-    EventManager<PhishHttpEvent> getPhishHttpEventManager();
+    public EventLogQuery[] getHttpEventQueries();
 
     PhishSettings getSettings();
     void setSettings(PhishSettings phishSettings);

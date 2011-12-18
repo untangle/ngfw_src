@@ -1,27 +1,12 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.cpd;
 
 import java.util.List;
 
-import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.EventLogQuery;
 
 public interface CPD extends Node
 {
@@ -30,25 +15,25 @@ public interface CPD extends Node
 	 * @param settings
 	 * @throws Exception 
 	 */
-    public void setCPDSettings(CPDSettings settings) throws Exception;
-    public CPDSettings getCPDSettings();
+    void setCPDSettings(CPDSettings settings) throws Exception;
+    CPDSettings getCPDSettings();
     
-    public CPDBaseSettings getBaseSettings();
-    public void setBaseSettings(CPDBaseSettings baseSettings) throws Exception;
+    CPDBaseSettings getBaseSettings();
+    void setBaseSettings(CPDBaseSettings baseSettings) throws Exception;
     
-    public List<HostDatabaseEntry> getCaptiveStatus();
+    List<HostDatabaseEntry> getCaptiveStatus();
 
-    public List<CaptureRule> getCaptureRules();
-    public void setCaptureRules( List<CaptureRule> captureRules ) throws Exception;
+    List<CaptureRule> getCaptureRules();
+    void setCaptureRules( List<CaptureRule> captureRules ) throws Exception;
     
-    public List<PassedClient> getPassedClients();
-    public void setPassedClients( List<PassedClient> newValue ) throws Exception; 
+    List<PassedClient> getPassedClients();
+    void setPassedClients( List<PassedClient> newValue ) throws Exception; 
        
-    public List<PassedServer> getPassedServers();
-    public void setPassedServers( List<PassedServer> newValue ) throws Exception;
+    List<PassedServer> getPassedServers();
+    void setPassedServers( List<PassedServer> newValue ) throws Exception;
     
-    public void setAll( CPDBaseSettings baseSettings, List<CaptureRule> captureRules,
-            List<PassedClient> passedClients, List<PassedServer> passedServers ) throws Exception;
+    void setAll( CPDBaseSettings baseSettings, List<CaptureRule> captureRules,
+                 List<PassedClient> passedClients, List<PassedServer> passedServers ) throws Exception;
     
     
     /**
@@ -58,25 +43,25 @@ public interface CPD extends Node
      * @param credentials  unused.  Could be used for alternative schemes in the future.
      * @return True if the user is authenticated.
      */
-    public boolean authenticate( String address, String username, String password, String credentials );
+    boolean authenticate( String address, String username, String password, String credentials );
     
     /**
      * Return truee iff the user was logged out.
      * @param address Address to remove from the cache.
      * @return
      */
-    public boolean logout( String address );
+    boolean logout( String address );
     
-    public EventManager<CPDLoginEvent> getLoginEventManager();
-    public EventManager<BlockEvent> getBlockEventManager();
-    
-    public enum BlingerType { BLOCK, AUTHORIZE };
+    EventLogQuery[] getLoginEventQueries();
+    EventLogQuery[] getBlockEventQueries();
+
+    enum BlingerType { BLOCK, AUTHORIZE };
 
     /** 
      * Increment a blinger.
      * @param blingerType The type of blinger.
      * @param delta Amount to increment it by.  Agreggate events and then send this periodically.
      */
-    public void incrementCount(BlingerType blingerType, long delta);
+    void incrementCount(BlingerType blingerType, long delta);
 
 }

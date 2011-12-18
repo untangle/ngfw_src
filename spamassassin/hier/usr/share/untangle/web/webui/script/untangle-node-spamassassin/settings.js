@@ -927,7 +927,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 settingsCmp : this,
                 name : 'Tarpit Event Log',
                 helpSource : 'tarpit_event_log',
-                eventManagerFn : this.getRpcNode().getRBLEventManager(),
+                eventQueriesFn : this.getRpcNode().getRBLEventQueries,
                 title : this.i18n._("Tarpit Event Log"),
                 // the list of fields
                 fields : [{

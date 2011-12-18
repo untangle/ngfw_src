@@ -6,6 +6,7 @@ package com.untangle.node.openvpn;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -20,7 +21,6 @@ import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.MailSender;
-import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -29,6 +29,7 @@ import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.Validator;
+import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.JsonClient;
@@ -58,8 +59,6 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
     /* Expire these links after an hour */
     private static final long ADMIN_DOWNLOAD_CLIENT_TIMEOUT = TimeUnit.SECONDS.toMillis( 60 * 60 );
-
-    
 
     private final Logger logger = Logger.getLogger( VpnNodeImpl.class );
 
@@ -91,8 +90,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
     private final Map <String,DistributionCache> distributionMap = new HashMap<String,DistributionCache>();
 
-    // constructor ------------------------------------------------------------
-
+    private EventLogQuery connectEventsQuery;
 
     public VpnNodeImpl()
     {
@@ -106,13 +104,15 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
               SoloPipeSpec.MAX_STRENGTH - 2);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
 
-
         MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Clients blocked"), null, I18nUtil.marktr("BLOCK"));
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Clients passed"), null, I18nUtil.marktr("PASS"));
         connectBlinger = c.addActivity("connect", I18nUtil.marktr("Clients connected"), null, I18nUtil.marktr("CONNECT"));
         lmm.setActiveMetricsIfNotSet(getNodeId(), blockBlinger, passBlinger, connectBlinger);
+
+        this.connectEventsQuery = new EventLogQuery(I18nUtil.marktr("Closed Sessions"),
+                                                   "FROM OpenvpnLogEventFromReports evt ORDER BY evt.timeStamp DESC");
     }
 
     @Override public void initializeSettings()
@@ -832,16 +832,17 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         this.sandbox.setSiteList( parameters );
     }
 
-    public EventManager<ClientConnectEvent> getClientActiveEventManager()
+    /* FIXME */
+    public LinkedList getActiveClients()
     {
-        return this.openVpnMonitor.getClientActiveLogger();
+        return null; /* FIXME */
     }
 
-    public EventManager<ClientConnectEvent> getClientClosedEventManager()
+    public EventLogQuery[] getConnectEventsQueries()
     {
-        return this.openVpnMonitor.getClientClosedLogger();
+        return new EventLogQuery[] { this.connectEventsQuery };
     }
-
+    
     public void incrementBlockCount()
     {
         blockBlinger.increment();

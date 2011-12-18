@@ -17,8 +17,6 @@ import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SessionMatcherFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
-import com.untangle.uvm.logging.EventManager;
-import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -28,6 +26,7 @@ import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.node.PortMatcher;
 import com.untangle.uvm.node.ProtocolMatcher;
 import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
@@ -41,6 +40,8 @@ import com.untangle.node.util.SimpleExec;
 
 public class FirewallImpl extends AbstractNode implements Firewall
 {
+    private final Logger logger = Logger.getLogger(FirewallImpl.class);
+
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/firewall-convert-settings.py";
 
     private final EventHandler handler;
@@ -48,11 +49,10 @@ public class FirewallImpl extends AbstractNode implements Firewall
     private final SoloPipeSpec[] pipeSpecs;
 
     private final EventLogger<FirewallEvent> eventLogger;
-
-    private final Logger logger = Logger.getLogger(FirewallImpl.class);
-
+    private EventLogQuery allEventsQuery;
+    private EventLogQuery blockedEventsQuery;
+    
     private FirewallSettings settings = null;
-    final FirewallStatisticManager statisticManager;
 
     private final BlingBlinger passBlinger;
     private final BlingBlinger blockBlinger;
@@ -93,6 +93,8 @@ public class FirewallImpl extends AbstractNode implements Firewall
                 return matchedRule.getBlock();
             }
         };
+
+    protected final FirewallStatisticManager statisticManager;
     
     public FirewallImpl()
     {
@@ -105,10 +107,17 @@ public class FirewallImpl extends AbstractNode implements Firewall
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
         eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
-        SimpleEventFilter<FirewallEvent> ef = new FirewallAllFilter();
-        eventLogger.addSimpleEventFilter(ef);
-        ef = new FirewallBlockedFilter();
-        eventLogger.addSimpleEventFilter(ef);
+        this.allEventsQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
+                                                "FROM SessionLogEventFromReports evt " +
+                                                "WHERE evt.policyId = :policyId " +
+                                                "AND firewallRuleIndex IS NOT NULL " +
+                                                "ORDER BY evt.timeStamp DESC");   
+
+        this.blockedEventsQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
+                                                    "FROM SessionLogEventFromReports evt " +
+                                                    "WHERE evt.policyId = :policyId " +
+                                                    "AND firewallWasBlocked IS TRUE " +
+                                                    "ORDER BY evt.timeStamp DESC");
 
         MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
@@ -118,9 +127,9 @@ public class FirewallImpl extends AbstractNode implements Firewall
         lmm.setActiveMetricsIfNotSet(getNodeId(), passBlinger, loggedBlinger, blockBlinger);
     }
 
-    public EventManager<FirewallEvent> getEventManager()
+    public EventLogQuery[] getEventQueries()
     {
-        return eventLogger;
+        return new EventLogQuery[] { this.allEventsQuery, this.blockedEventsQuery };
     }
 
     public FirewallSettings getSettings()

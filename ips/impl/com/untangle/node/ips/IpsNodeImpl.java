@@ -17,8 +17,6 @@ import com.untangle.node.util.PartialListUtil.Handler;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
-import com.untangle.uvm.logging.EventManager;
-import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -29,6 +27,7 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
+import com.untangle.uvm.node.EventLogQuery;
 
 
 public class IpsNodeImpl extends AbstractNode implements IpsNode
@@ -55,7 +54,11 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
     private final BlingBlinger detectBlinger;
     private final BlingBlinger blockBlinger;
 
-    public IpsNodeImpl() {
+    private EventLogQuery allEventQuery;
+    private EventLogQuery blockedEventQuery;
+    
+    public IpsNodeImpl()
+    {
         engine = new IpsDetectionEngine(this);
         handler = new EventHandler(this);
         statisticManager = new IpsStatisticManager(getNodeContext());
@@ -66,10 +69,17 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
 
         eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
-        SimpleEventFilter<IpsLogEvent> ef = new IpsLogFilter();
-        eventLogger.addSimpleEventFilter(ef);
-        ef = new IpsBlockedFilter();
-        eventLogger.addSimpleEventFilter(ef);
+        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
+                                               "FROM SessionLogEventFromReports evt " +
+                                               "WHERE evt.policyId = :policyId " +
+                                               "AND ipsName IS NOT NULL " +
+                                               "ORDER BY evt.timeStamp DESC");
+
+        this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
+                                                   "FROM SessionLogEventFromReports evt " +
+                                                   "WHERE evt.policyId = :policyId " +
+                                                   "AND ipsBlocked IS TRUE " +
+                                                   "ORDER BY evt.timeStamp DESC");
 
         List<RuleClassification> classifications = FileLoader.loadClassifications();
         engine.setClassifications(classifications);
@@ -110,10 +120,9 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
         getNodeContext().runTransaction(tw);
     }
 
-    public EventManager<IpsLogEvent> getEventManager()
+    public EventLogQuery[] getEventQueries()
     {
-//	eventLogger.log(new IpsLogEvent(null, 0, "test", "test", true));
-        return eventLogger;
+        return new EventLogQuery[] { this.allEventQuery, this.blockedEventQuery };
     }
 
     public void initializeSettings()

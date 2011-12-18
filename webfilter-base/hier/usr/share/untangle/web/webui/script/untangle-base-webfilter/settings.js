@@ -1094,7 +1094,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         buildUnblockEventLog : function() {
             this.gridUnblockEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                eventManagerFn : this.getRpcNode().getUnblockEventManager(),
+                eventQueriesFn : this.getRpcNode().getUnblockEventQueries,
                 name : "Unblock Event Log",
                 title : i18n._('Unblock Event Log'),
                 fields : [{

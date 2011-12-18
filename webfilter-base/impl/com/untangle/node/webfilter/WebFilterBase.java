@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.node.webfilter;
 
 import java.net.InetAddress;
@@ -17,9 +20,6 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
-import com.untangle.uvm.logging.EventManager;
-import com.untangle.uvm.logging.ListEventFilter;
-import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -31,6 +31,7 @@ import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.Validator;
+import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
@@ -75,20 +76,43 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     protected final UnblockedSitesMonitor unblockedSitesMonitor;
 
-    // constructors -----------------------------------------------------------
+    protected final EventLogQuery blockedEventQuery;
+    protected final EventLogQuery flaggedEventQuery;
+    protected final EventLogQuery allEventQuery;
+    protected final EventLogQuery unblockEventQuery;
 
     public WebFilterBase()
     {
         this.replacementGenerator = buildReplacementGenerator();
-        NodeContext tctx = getNodeContext();
-        eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
-        eventLogger.addSimpleEventFilter(new WebFilterBlockedFilter(this));
-        eventLogger.addSimpleEventFilter(new WebFilterFlaggedFilter(this));
-        eventLogger.addSimpleEventFilter(new WebFilterAllFilter(this));
 
-        unblockEventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
-        WebFilterUnblockedFilter ueaf = new WebFilterUnblockedFilter(this);
-        unblockEventLogger.addSimpleEventFilter(ueaf);
+        eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
+        unblockEventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
+
+        String vendorName = this.getVendor();
+        String capitalizedVendorName = vendorName.substring(0, 1).toUpperCase() + vendorName.substring(1);
+        
+        this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Web Traffic"),
+                                                   "FROM HttpLogEventFromReports evt " + 
+                                                   "WHERE evt.wf" + capitalizedVendorName + "Blocked IS TRUE " + 
+                                                   "AND evt.policyId = :policyId " +
+                                                   "ORDER BY evt.timeStamp DESC");
+        this.flaggedEventQuery = new EventLogQuery(I18nUtil.marktr("Flagged Web Traffic"),
+                                                   "FROM HttpLogEventFromReports evt " + 
+                                                   "WHERE evt.wf" + capitalizedVendorName + "Flagged IS TRUE " + 
+                                                   "AND evt.policyId = :policyId " +
+                                                   "ORDER BY evt.timeStamp DESC");
+        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Web Traffic"),
+                                               "FROM HttpLogEventFromReports evt " + 
+                                               "WHERE evt.wf" + capitalizedVendorName + "Blocked IS NOT NULL " + 
+                                               "AND evt.policyId = :policyId " +
+                                               "ORDER BY evt.timeStamp DESC");
+        this.unblockEventQuery = new EventLogQuery(I18nUtil.marktr("Passlisted Web Events"),
+                                                   "FROM HttpLogEventFromReports evt " + 
+                                                   "WHERE evt.wf" + capitalizedVendorName + "Category = 'unblocked' " + 
+                                                   "AND evt.policyId = :policyId " + 
+                                                   "ORDER BY evt.timeStamp DESC");
+                                                   
+
 
         MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
@@ -101,18 +125,15 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         unblockedSitesMonitor = new UnblockedSitesMonitor(this);
     }
 
-    // WebFilter methods ------------------------------------------------------
-
-    public EventManager<WebFilterEvent> getEventManager()
+    public EventLogQuery[] getEventQueries()
     {
-        return eventLogger;
+        return new EventLogQuery[] { this.blockedEventQuery, this.flaggedEventQuery, this.allEventQuery };
     }
 
-    public EventManager<UnblockEvent> getUnblockEventManager()
+    public EventLogQuery[] getUnblockEventQueries()
     {
-        return unblockEventLogger;
+        return new EventLogQuery[] { this.unblockEventQuery };
     }
-
 
     public String getUnblockMode()
     {

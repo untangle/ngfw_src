@@ -7,16 +7,23 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
+import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
@@ -48,6 +55,7 @@ import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.servlet.UploadHandler;
@@ -910,6 +918,56 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.oemManager;
     }
 
+    @SuppressWarnings("unchecked")
+    public ArrayList getEvents( final String query, final Policy policy, final int limit )
+    {
+        final LinkedList list = new LinkedList();
+
+        logger.warn("doGetEvents: " + query + " policy: " + policy + " limit: " + limit);
+
+        TransactionWork<Void> tw = new TransactionWork<Void>()
+            {
+                public boolean doWork(Session s) throws SQLException
+                {
+                    Map<String,Object> params;
+                    if (policy != null) {
+                        params = new HashMap<String,Object>();
+                        params.put("policy", (Object)policy);
+                        params.put("policyId", (Object)policy.getId());
+                    } else {
+                        params = Collections.emptyMap();
+                    }
+
+                    runQuery(query, s, list, limit, params);
+
+                    return true;
+                }
+            };
+
+        this.runTransaction(tw);
+
+        Collections.sort(list);
+        String last = null;
+        // XXX what is this?
+        // it looks like code to remove dupes?
+        // why would we have dupes here?
+        for (Iterator i = list.iterator(); i.hasNext(); ) {
+            LogEvent e = (LogEvent)i.next();
+            String id = e.getId();
+            if (id == null) {
+                id = Integer.toString(System.identityHashCode(e));
+            }
+
+            if (last == null ? last == id : last.equals(id)) {
+                i.remove();
+            } else {
+                last = id;
+            }
+        }
+
+        return new ArrayList(list);
+    }
+
     // private methods --------------------------------------------------------
 
     private boolean testHibernateConnection()
@@ -1086,6 +1144,30 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             catch (Exception e) {
                 logger.warn("Upgrade complete. Removing upgrade splash screen... failed", e);
             }
+        }
+    }
+
+    @SuppressWarnings("unchecked") //Query
+    private void runQuery(String query, Session s, List l, int limit, Map<String, Object> params)
+    {
+        logger.debug("runQuery: " + query);
+        Query q = s.createQuery(query);
+        for (String param : q.getNamedParameters()) {
+            Object o = params.get(param);
+            if (null != o) {
+                q.setParameter(param, o);
+            }
+        }
+
+        q.setMaxResults(limit);
+
+        int c = 0;
+        for (Iterator i = q.iterate(); i.hasNext() && c < limit; c++) {
+            Object sb = i.next();
+            if (sb == null)
+                logger.warn("Query (" + query + ") returned null item");
+            Hibernate.initialize(sb);
+            l.add(sb);
         }
     }
     

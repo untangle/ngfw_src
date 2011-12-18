@@ -184,9 +184,9 @@ if (!Ung.hasResource["Ung.Shield"]) {
         buildEventLog : function() {
             this.gridEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                hasRepositories : false,
                 eventDepth : 1000,
-
+                eventQueriesFn : null,
+                
                 // the list of fields
                 fields : [{
                     name : 'createDate',

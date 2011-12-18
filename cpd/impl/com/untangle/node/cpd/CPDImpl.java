@@ -30,7 +30,6 @@ import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
-import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -39,6 +38,7 @@ import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.IPMatcher;
+import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
@@ -58,8 +58,8 @@ public class CPDImpl extends AbstractNode implements CPD
 
     private final PipeSpec[] pipeSpecs;
     
-    private final EventLogger<CPDLoginEvent> loginEventLogger;
-    private final EventLogger<BlockEvent> blockEventLogger;
+    protected final EventLogger<CPDLoginEvent> loginEventLogger;
+    protected final EventLogger<BlockEvent> blockEventLogger;
     
     private final CPDManager manager = new CPDManager(this);
     
@@ -70,15 +70,23 @@ public class CPDImpl extends AbstractNode implements CPD
     
     private CPDSettings settings;
 
-    // constructor ------------------------------------------------------------
+    private EventLogQuery loginEventQuery;
+    private EventLogQuery blockEventQuery;
+    
 
     public CPDImpl()
     {
         NodeContext nodeContext = getNodeContext();
+
+        
         this.loginEventLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
-        this.loginEventLogger.addSimpleEventFilter(new LoginEventFilter());
         this.blockEventLogger = EventLoggerFactory.factory().getEventLogger();
-        this.blockEventLogger.addSimpleEventFilter(new BlockEventFilter(this));
+
+        this.loginEventQuery = new EventLogQuery(I18nUtil.marktr("Login Events"),
+                                                 "FROM CpdLoginEventsFromReports evt ORDER BY evt.timeStamp DESC");                                                 
+                                                 
+        this.blockEventQuery = new EventLogQuery(I18nUtil.marktr("Block Events"),
+                                                 "FROM CpdBlockEventsFromReports evt ORDER BY evt.timeStamp DESC");
         
         this.settings = new CPDSettings();
         this.pipeSpecs = new PipeSpec[0];
@@ -319,15 +327,15 @@ public class CPDImpl extends AbstractNode implements CPD
     }
 
     @Override
-    public EventManager<CPDLoginEvent> getLoginEventManager()
+    public EventLogQuery[] getLoginEventQueries()
     {
-        return this.loginEventLogger;
+        return new EventLogQuery[] { this.loginEventQuery };
     }
     
     @Override
-    public EventManager<BlockEvent> getBlockEventManager()
+    public EventLogQuery[] getBlockEventQueries()
     {
-        return this.blockEventLogger;
+        return new EventLogQuery[] { this.blockEventQuery };
     }
     
     @Override

@@ -3,8 +3,8 @@ package com.untangle.node.spam;
 import java.util.Date;
 import java.util.List;
 
-import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.EventLogQuery;
 
 public interface SpamNode extends Node
 {
@@ -19,8 +19,8 @@ public interface SpamNode extends Node
 
     void updateScannerInfo();
 
-    EventManager<SpamEvent> getEventManager();
-    EventManager<SpamSmtpRblEvent> getRBLEventManager();
+    EventLogQuery[] getEventQueries();
+    EventLogQuery[] getRBLEventQueries();
 
     public int getSpamRBLListLength();
     public void setSpamRBLListLength(int newValue);

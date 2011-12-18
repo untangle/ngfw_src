@@ -25,15 +25,13 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
-import com.untangle.uvm.logging.EventManager;
-import com.untangle.uvm.logging.ListEventFilter;
-import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
@@ -65,16 +63,11 @@ public abstract class VirusNodeImpl extends AbstractNode
     private static final String MOD_SUB_TEMPLATE =
         "[VIRUS] $MIMEMessage:SUBJECT$";
 
-    // OLD
-    // private static final String OUT_MOD_BODY_TEMPLATE =
-    // "The attached message from $MIMEMessage:FROM$ was found to contain\r\n" +
-    // "the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the attached email was removed\r\n" +
-    // "by Untangle Virus Blocker.\r\n";
-
     private static final String MOD_BODY_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$\r\n" +
         "was found to contain the virus \"$VirusReport:VIRUS_NAME$\".\r\n"+
         "The infected portion of the message was removed by Untangle Virus Blocker.\r\n";
+
     private static final String MOD_BODY_SMTP_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
         "was found to contain the virus \"$VirusReport:VIRUS_NAME$\".\r\n"+
@@ -117,6 +110,11 @@ public abstract class VirusNodeImpl extends AbstractNode
     private final BlingBlinger removeBlinger;
     private final BlingBlinger passedInfectedMessageBlinger;
 
+    private EventLogQuery httpInfectedEventQuery;
+    private EventLogQuery httpCleanEventQuery;
+    private EventLogQuery mailInfectedEventQuery;
+    private EventLogQuery mailCleanEventQuery;
+    
     /* This can't be static because it uses policy which is per node */
     private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
             /* Kill all sessions on ports 20, 21 and 80 */
@@ -174,10 +172,29 @@ public abstract class VirusNodeImpl extends AbstractNode
 
         String vendor = scanner.getVendorName();
 
-        this.webEventLogger.addSimpleEventFilter(((SimpleEventFilter) new VirusHttpInfectedFilter(vendor)));
-        this.webEventLogger.addSimpleEventFilter(((SimpleEventFilter) new VirusHttpCleanFilter(vendor)));
-        this.mailEventLogger.addListEventFilter(((ListEventFilter) new VirusSmtpInfectedFilter(vendor)));
-        this.mailEventLogger.addListEventFilter(((ListEventFilter) new VirusSmtpCleanFilter(vendor)));
+        this.httpInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Web Events"),
+                                                        "FROM HttpLogEventFromReports evt" + 
+                                                        " WHERE evt.virus" + vendor + "Clean IS FALSE" + 
+                                                        " AND evt.policyId = :policyId" + 
+                                                        " ORDER BY evt.timeStamp DESC");
+        this.httpCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Web Events"),
+                                                     "FROM HttpLogEventFromReports evt" + 
+                                                     " WHERE evt.virus" + vendor + "Clean IS TRUE" + 
+                                                     " AND evt.policyId = :policyId" + 
+                                                     " ORDER BY evt.timeStamp DESC");
+
+        this.mailInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Email Events"),
+                                                        "FROM MailLogEventFromReports evt" + 
+                                                        " WHERE evt.addrKind = 'T'" +
+                                                        " AND evt.virus" + vendor + "Clean IS FALSE" + 
+                                                        " AND evt.policyId = :policyId" + 
+                                                        " ORDER BY evt.timeStamp DESC");
+        this.mailCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Email Events"),
+                                                     "FROM MailLogEventFromReports evt" + 
+                                                     " WHERE evt.addrKind = 'T'" +
+                                                     " AND evt.virus" + vendor + "Clean IS TRUE" + 
+                                                     " AND evt.policyId = :policyId" + 
+                                                     " ORDER BY evt.timeStamp DESC");
 
         MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
@@ -307,14 +324,14 @@ public abstract class VirusNodeImpl extends AbstractNode
         reconfigure();
     }
 
-    public EventManager<VirusEvent> getWebEventManager()
+    public EventLogQuery[] getWebEventQueries()
     {
-        return webEventLogger;
+        return new EventLogQuery[] { this.httpInfectedEventQuery, this.httpCleanEventQuery };
     }
-
-    public EventManager<VirusEvent> getMailEventManager()
+    
+    public EventLogQuery[] getMailEventQueries()
     {
-        return mailEventLogger;
+        return new EventLogQuery[] { this.mailInfectedEventQuery, this.mailCleanEventQuery };
     }
 
     public VirusBlockDetails getDetails(String nonce)

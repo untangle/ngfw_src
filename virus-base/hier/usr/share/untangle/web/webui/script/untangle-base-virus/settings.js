@@ -625,7 +625,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 helpSource : 'Web_Event_Log',
                 settingsCmp : this,
                 title : this.i18n._("Web Event Log"),
-                eventManagerFn : this.getRpcNode().getWebEventManager(),
+                eventQueriesFn : this.getRpcNode().getWebEventQueries,
 
                 // the list of fields
                 fields : [{
@@ -705,7 +705,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 helpSource : 'Email_Event_Log',
                 settingsCmp : this,
                 title : this.i18n._("Email Event Log"),
-                eventManagerFn : this.getRpcNode().getMailEventManager(),
+                eventQueriesFn : this.getRpcNode().getMailEventQueries,
 
                 // the list of fields
                 fields : [{

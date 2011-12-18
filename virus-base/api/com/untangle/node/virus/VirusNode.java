@@ -35,10 +35,10 @@ package com.untangle.node.virus;
 
 import java.util.List;
 
-import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.node.EventLogQuery;
 
 /**
  * Interface to the Virus Node.
@@ -73,6 +73,6 @@ public interface VirusNode extends Node
 
     String getVendor();
     
-    EventManager<VirusEvent> getWebEventManager();
-    EventManager<VirusEvent> getMailEventManager();
+    EventLogQuery[] getWebEventQueries();
+    EventLogQuery[] getMailEventQueries();
 }

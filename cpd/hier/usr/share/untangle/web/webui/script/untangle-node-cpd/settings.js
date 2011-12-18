@@ -1072,7 +1072,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             this.gridLoginEventLog = new Ung.GridEventLog({
                 title : this.i18n._( "Login Event Log" ),
                 helpSource : "login_event_log",
-                eventManagerFn : this.getRpcNode().getLoginEventManager(),
+                eventQueriesFn : this.getRpcNode().getLoginEventQueries,
                 settingsCmp : this,
                 autoExpandColumn: "username",
                 fields : [{
@@ -1153,7 +1153,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             this.gridBlockEventLog = new Ung.GridEventLog({
                 title : this.i18n._( "Block Event Log" ),
                 helpSource : "block_event_log",
-                eventManagerFn : this.getRpcNode().getBlockEventManager(),
+                eventQueriesFn : this.getRpcNode().getBlockEventQueries,
                 settingsCmp : this,
                 autoExpandColumn: "reason",
                 fields : [{

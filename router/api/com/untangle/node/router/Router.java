@@ -17,12 +17,10 @@
  */
 package com.untangle.node.router;
 
-
-import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.Node;
 
 public interface Router extends Node
 {
-    public EventManager<LogEvent> getEventManager();
+
 }

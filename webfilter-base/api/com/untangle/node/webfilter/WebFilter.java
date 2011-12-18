@@ -5,11 +5,11 @@ package com.untangle.node.webfilter;
 
 import java.util.List;
 
-import com.untangle.uvm.logging.EventManager;
 import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.Validator;
+import com.untangle.uvm.node.EventLogQuery;
 
 /**
  * Interface the the WebFilter Node.
@@ -50,8 +50,7 @@ public interface WebFilter extends Node
 
     String getVendor();
 
-    EventManager<WebFilterEvent> getEventManager();
+    EventLogQuery[] getEventQueries();
 
-    EventManager<UnblockEvent> getUnblockEventManager();
-
+    EventLogQuery[] getUnblockEventQueries();
 }

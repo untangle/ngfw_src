@@ -14,9 +14,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.EventLoggerFactory;
-import com.untangle.uvm.logging.EventManager;
-import com.untangle.uvm.logging.SimpleEventFilter;
 import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
@@ -46,6 +45,9 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
     private ProtoFilterSettings nodeSettings = null;
 
+    private EventLogQuery allEventQuery;
+    private EventLogQuery blockedEventQuery;
+    
     private final BlingBlinger scanBlinger;
     private final BlingBlinger detectBlinger;
     private final BlingBlinger blockBlinger;
@@ -56,10 +58,17 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     {
         eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
-        SimpleEventFilter<ProtoFilterLogEvent> ef = new ProtoFilterAllFilter();
-        eventLogger.addSimpleEventFilter(ef);
-        ef = new ProtoFilterBlockedFilter();
-        eventLogger.addSimpleEventFilter(ef);
+        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
+                                               "FROM SessionLogEventFromReports evt " +
+                                               "WHERE evt.policyId = :policyId " +
+                                               "AND pfProtocol IS NOT NULL " +
+                                               "ORDER BY evt.timeStamp DESC");
+
+        this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Events"),
+                                                   "FROM SessionLogEventFromReports evt " +
+                                                   "WHERE evt.policyId = :policyId " +
+                                                   "AND pfBlocked IS TRUE " +
+                                                   "ORDER BY evt.timeStamp DESC");
 
         MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
@@ -129,10 +138,10 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         return(count);
     }
 
-    public EventManager<ProtoFilterLogEvent> getEventManager()
+    public EventLogQuery[] getEventQueries()
     {
-        return eventLogger;
-    }
+        return new EventLogQuery[] { this.allEventQuery, this.blockedEventQuery };
+    }        
 
     // AbstractNode methods ----------------------------------------------
 
