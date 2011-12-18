@@ -15,8 +15,6 @@ import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.PartialListUtil;
 import com.untangle.node.util.PartialListUtil.Handler;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -33,8 +31,6 @@ import com.untangle.uvm.node.EventLogQuery;
 public class IpsNodeImpl extends AbstractNode implements IpsNode
 {
     private final Logger logger = Logger.getLogger(getClass());
-
-    private final EventLogger<IpsLogEvent> eventLogger;
 
     private IpsSettings settings = null;
     final IpsStatisticManager statisticManager;
@@ -61,13 +57,12 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
     {
         engine = new IpsDetectionEngine(this);
         handler = new EventHandler(this);
-        statisticManager = new IpsStatisticManager(getNodeContext());
+        statisticManager = new IpsStatisticManager();
+
         // Put the octet stream close to the server so that it is after the http processing.
         octetPipeSpec = new SoloPipeSpec("ips-octet", this, handler,Fitting.OCTET_STREAM, Affinity.SERVER,10);
         httpPipeSpec = new SoloPipeSpec("ips-http", this, new TokenAdaptor(this, new IpsHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
         pipeSpecs = new PipeSpec[] { httpPipeSpec, octetPipeSpec };
-
-        eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
                                                "FROM SessionLogEventFromReports evt " +
@@ -256,11 +251,6 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
     }
 
     // package protected methods -----------------------------------------------
-
-    void log(IpsLogEvent ile)
-    {
-        eventLogger.log(ile);
-    }
 
     // private methods ---------------------------------------------------------
 

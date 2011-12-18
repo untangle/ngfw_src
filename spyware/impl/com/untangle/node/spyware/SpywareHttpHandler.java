@@ -93,7 +93,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             return requestHeader;
         } else if (isUrlBlocked(host, uri)) {
             node.incrementHttpBlockedDomain();
-            node.log(new SpywareBlacklistEvent(requestLine.getRequestLine()));
+            node.logEvent(new SpywareBlacklistEvent(requestLine.getRequestLine()));
             // XXX we could send a page back instead, this isn't really right
             logger.debug("detected spyware, shutting down");
 
@@ -187,7 +187,7 @@ public class SpywareHttpHandler extends HttpStateMachine
                     logger.debug("blocking cookie: " + domain);
                 }
                 node.incrementHttpClientCookieBlock();
-                node.log(new SpywareCookieEvent(requestLine.getRequestLine(), domain, true));
+                node.logEvent(new SpywareCookieEvent(requestLine.getRequestLine(), domain, true));
                 i.remove();
                 if (logger.isDebugEnabled()) {
                     logger.debug("making cookieKiller: " + domain);
@@ -252,7 +252,7 @@ public class SpywareHttpHandler extends HttpStateMachine
                     logger.debug("cookie deleted: " + domain);
                 }
                 node.incrementHttpServerCookieBlock();
-                node.log(new SpywareCookieEvent(rl.getRequestLine(), domain, false));
+                node.logEvent(new SpywareCookieEvent(rl.getRequestLine(), domain, false));
                 i.remove();
             } else {
                 if (logger.isDebugEnabled()) {

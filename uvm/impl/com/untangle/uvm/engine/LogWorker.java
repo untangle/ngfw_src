@@ -76,7 +76,7 @@ class LogWorker implements Runnable
     /**
      * This is a queue of incoming events
      */
-    private final BlockingQueue<LogEventDesc> inputQueue = new LinkedBlockingQueue<LogEventDesc>();
+    private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
 
     private final SyslogManager syslogManager = UvmContextFactory.context().syslogManager();
 
@@ -111,7 +111,7 @@ class LogWorker implements Runnable
             long t = System.currentTimeMillis();
 
             if (t < nextSync) {
-                LogEventDesc event = null;
+                LogEvent event = null;
 
                 synchronized (this) {
                     interruptable = true;
@@ -220,23 +220,21 @@ class LogWorker implements Runnable
         return syncTime;
     }
 
-    private boolean accept(LogEventDesc event)
+    private boolean accept(LogEvent event)
     {
         if (null == event) { return false; }
 
-        LogEvent e = event.getLogEvent();
-
-        if (e.isPersistent()) {
+        if (event.isPersistent()) {
             /**
              * Add it to the queue to be written to database
              */
-            logQueue.add(e);
+            logQueue.add(event);
 
             /**
              * Send it to syslog (make best attempt - ignore errors)
              */
             try {
-                syslogManager.sendSyslog(e, event.getTag());
+                syslogManager.sendSyslog(event, event.getTag());
             } catch (Exception exn) { 
                 logger.warn("failed to send syslog", exn);
             }
@@ -312,7 +310,7 @@ class LogWorker implements Runnable
         }
     }
 
-    BlockingQueue<LogEventDesc> getInputQueue()
+    BlockingQueue<LogEvent> getInputQueue()
     {
         return inputQueue;
     }

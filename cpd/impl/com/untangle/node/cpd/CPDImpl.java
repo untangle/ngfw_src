@@ -28,8 +28,6 @@ import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.node.License;
-import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -58,9 +56,6 @@ public class CPDImpl extends AbstractNode implements CPD
 
     private final PipeSpec[] pipeSpecs;
     
-    protected final EventLogger<CPDLoginEvent> loginEventLogger;
-    protected final EventLogger<BlockEvent> blockEventLogger;
-    
     private final CPDManager manager = new CPDManager(this);
     
     private final BlingBlinger blockBlinger;
@@ -77,10 +72,6 @@ public class CPDImpl extends AbstractNode implements CPD
     public CPDImpl()
     {
         NodeContext nodeContext = getNodeContext();
-
-        
-        this.loginEventLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
-        this.blockEventLogger = EventLoggerFactory.factory().getEventLogger();
 
         this.loginEventQuery = new EventLogQuery(I18nUtil.marktr("Login Events"),
                                                  "FROM CpdLoginEventsFromReports evt ORDER BY evt.timeStamp DESC");                                                 

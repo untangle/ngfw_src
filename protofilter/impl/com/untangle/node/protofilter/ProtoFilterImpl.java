@@ -12,8 +12,6 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.util.I18nUtil;
@@ -39,8 +37,6 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
     private final SoloPipeSpec pipeSpec = new SoloPipeSpec("protofilter", this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, 0);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
 
-    private final EventLogger<ProtoFilterLogEvent> eventLogger;
-
     private final Logger logger = Logger.getLogger(ProtoFilterImpl.class);
 
     private ProtoFilterSettings nodeSettings = null;
@@ -56,8 +52,6 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
     public ProtoFilterImpl()
     {
-        eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
-
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
                                                "FROM SessionLogEventFromReports evt " +
                                                "WHERE evt.policyId = :policyId " +
@@ -263,11 +257,6 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         handler.byteLimit(nodeSettings.getByteLimit());
         handler.chunkLimit(nodeSettings.getChunkLimit());
         handler.stripZeros(nodeSettings.isStripZeros());
-    }
-
-    void log(ProtoFilterLogEvent se)
-    {
-        eventLogger.log(se);
     }
 
     void incrementScanCount()

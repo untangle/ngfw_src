@@ -85,7 +85,7 @@ public class PhishHttpHandler extends HttpStateMachine
         if (isBlocked) {
             node.incrementBlockCount();
                 
-            node.logHttp(new PhishHttpEvent(rlToken.getRequestLine(), Action.BLOCK, "Google Safe Browsing"));
+            node.logEvent(new PhishHttpEvent(rlToken.getRequestLine(), Action.BLOCK, "Google Safe Browsing"));
 
             InetAddress clientIp = getSession().clientAddr();
 

@@ -40,7 +40,7 @@ public class SettingsManagerImpl implements SettingsManager
     /**
      * Valid characters for settings file names
      */
-    public static final Pattern VALID_CHARACTERS = Pattern.compile("^[a-zA-Z0-9_-]+$");
+    public static final Pattern VALID_CHARACTERS = Pattern.compile("^[a-zA-Z0-9_\\-\\.]+$");
 
     /**
      * Formatting for the version string (yyyy-mm-dd-hhmm)

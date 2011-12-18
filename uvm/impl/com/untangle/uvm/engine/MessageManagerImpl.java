@@ -24,8 +24,6 @@ import org.hibernate.Session;
 
 import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.SystemStatEvent;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.message.ActiveStat;
@@ -86,8 +84,6 @@ class MessageManagerImpl implements MessageManager
     private long lastDiskUpdate = System.currentTimeMillis();
 
     private volatile Map<String, Object> systemStats = Collections.emptyMap();
-
-    private EventLogger<LogEvent> eventLogger = EventLoggerFactory.factory().getEventLogger();
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -464,7 +460,7 @@ class MessageManagerImpl implements MessageManager
                 sse.setSwapFree(Long.parseLong(m.get("SwapFree").toString()));
                 sse.setSwapTotal(Long.parseLong(m.get("SwapTotal").toString()));
                 logger.debug("Logging SystemStatEvent");
-                eventLogger.log(sse);
+                UvmContextFactory.context().logEvent(sse);
                 timeStamp = time;
             }
 

@@ -15,8 +15,6 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SessionMatcherFactory;
-import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -48,7 +46,6 @@ public class FirewallImpl extends AbstractNode implements Firewall
     private final SoloPipeSpec pipeSpec;
     private final SoloPipeSpec[] pipeSpecs;
 
-    private final EventLogger<FirewallEvent> eventLogger;
     private EventLogQuery allEventsQuery;
     private EventLogQuery blockedEventsQuery;
     
@@ -99,13 +96,12 @@ public class FirewallImpl extends AbstractNode implements Firewall
     public FirewallImpl()
     {
         this.handler = new EventHandler(this);
-        this.statisticManager = new FirewallStatisticManager(getNodeContext());
+        this.statisticManager = new FirewallStatisticManager();
 
         /* Have to figure out pipeline ordering, this should always
          * next to towards the outside, then there is OpenVpn and then Nat */
         this.pipeSpec = new SoloPipeSpec("firewall", this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, SoloPipeSpec.MAX_STRENGTH - 3);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
-        eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
         this.allEventsQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
                                                 "FROM SessionLogEventFromReports evt " +
@@ -284,11 +280,6 @@ public class FirewallImpl extends AbstractNode implements Firewall
     }
 
     // package protected methods -----------------------------------------------
-
-    void log(FirewallEvent logEvent)
-    {
-        eventLogger.log(logEvent);
-    }
 
     FirewallSettings getDefaultSettings()
     {

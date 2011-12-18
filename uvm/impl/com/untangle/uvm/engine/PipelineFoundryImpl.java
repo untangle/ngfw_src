@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $Id$
+ */
 package com.untangle.uvm.engine;
 
 import java.net.InetAddress;
@@ -20,7 +22,6 @@ import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.argon.ArgonIPSessionDesc;
 import com.untangle.uvm.argon.PipelineDesc;
 import com.untangle.uvm.argon.SessionEndpoints;
-import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.NodeManager;
@@ -48,8 +49,6 @@ import com.untangle.uvm.vnet.event.SessionEventListener;
 public class PipelineFoundryImpl implements PipelineFoundry
 {
     private static final PipelineFoundryImpl PIPELINE_FOUNDRY_IMPL = new PipelineFoundryImpl();
-
-    private static final EventLogger<LogEvent> eventLogger = UvmContextImpl.context().eventLogger();
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -183,7 +182,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     public void registerEndpoints(PipelineEndpoints pe)
     {
-        eventLogger.log(pe);
+        UvmContextFactory.context().logEvent(pe);
     }
 
     public void destroy(ArgonIPSessionDesc start, ArgonIPSessionDesc end, PipelineEndpoints pe, String uid)
@@ -197,7 +196,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         // Endpoints can be null, if the session was never properly
         // set up at all (unknown server interface for example)
         if (pe != null)
-            eventLogger.log(new PipelineStats(start, end, pe, uid));
+            UvmContextFactory.context().logEvent(new PipelineStats(start, end, pe, uid));
 
         pipeline.destroy();
     }

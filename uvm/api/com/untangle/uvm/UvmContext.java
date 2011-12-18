@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.io.IOException;
 
 import com.untangle.uvm.UvmContext;
-import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.logging.LogEvent;
@@ -366,12 +365,6 @@ public interface UvmContext
     boolean runTransaction(TransactionWork<?> tw);
 
     /**
-     * Get the Event Logger
-     * Used by the apps
-     */
-    EventLogger<LogEvent> eventLogger();
-
-    /**
      * blocks until startup is complete
      */
     void waitForStartup();
@@ -384,4 +377,7 @@ public interface UvmContext
     void loadLibrary(String libname);
 
     ArrayList getEvents( final String query, final Policy policy, final int limit );
+
+    void logEvent(LogEvent evt);
+
 }

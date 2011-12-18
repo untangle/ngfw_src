@@ -170,7 +170,7 @@ class RouterEventHandler extends AbstractEventHandler
         if (na != null) {
             LogEvent eventToLog = na.eventToLog();
             if (eventToLog != null) {
-                node.log(eventToLog);
+                node.logEvent(eventToLog);
                 na.eventToLog(null);
             }
         }
@@ -185,7 +185,7 @@ class RouterEventHandler extends AbstractEventHandler
         if (na != null) {
             LogEvent eventToLog = na.eventToLog();
             if (eventToLog != null) {
-                node.log(eventToLog);
+                node.logEvent(eventToLog);
                 na.eventToLog(null);
             }
         }

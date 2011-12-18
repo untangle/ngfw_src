@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -28,6 +29,7 @@ import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
+import com.untangle.uvm.logging.LogEvent;
 
 /**
  * A base class for node instances, both normal and casing.
@@ -43,6 +45,7 @@ public abstract class NodeBase implements Node
     private final Set<Node> children = new HashSet<Node>();
     private final NodeManager nodeManager;
     private final List<NodeListener> nodeListeners = new LinkedList<NodeListener>();
+    private final BlockingQueue<LogEvent> eventInputQueue;
 
     private final Object stateChangeLock = new Object();
 
@@ -55,7 +58,8 @@ public abstract class NodeBase implements Node
         nodeManager = uvm.nodeManager();
         nodeContext = nodeManager.threadContext();
         tid = nodeContext.getNodeId();
-
+        this.eventInputQueue =uvm.loggingManager().getInputQueue();
+            
         Counters c = uvm.messageManager().getCounters(tid);
         c.addMetric("s2nChunks", I18nUtil.marktr("Server to node chunks"), null, false);
         c.addMetric("c2nChunks", I18nUtil.marktr("Client to node chunks"), null, false);
@@ -244,6 +248,16 @@ public abstract class NodeBase implements Node
         }
     }
 
+    public void logEvent(LogEvent evt)
+    {
+        String tag = nodeContext.getNodeDesc().getSyslogName() + "[" + nodeContext.getNodeId().getId() + "]: ";
+        evt.setTag(tag);
+        
+        if (!eventInputQueue.offer(evt)) {
+            logger.warn("dropping logevent: " + evt);
+        }
+    }
+    
     // protected no-op methods -------------------------------------------------
 
     /**

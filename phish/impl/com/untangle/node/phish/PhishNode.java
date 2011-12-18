@@ -28,8 +28,6 @@ import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -73,8 +71,6 @@ public class PhishNode extends SpamNodeImpl implements Phish
     private final Map<InetAddress, Set<String>> unblockedSites = new HashMap<InetAddress, Set<String>>();
     private final PhishReplacementGenerator replacementGenerator;
 
-    private final EventLogger<PhishHttpEvent> phishHttpEventLogger;
-
     // constructors -----------------------------------------------------------
 
     public PhishNode()
@@ -86,8 +82,6 @@ public class PhishNode extends SpamNodeImpl implements Phish
         synchronized (PhishNode.class) {
             updateMalwareList();
         }
-
-        phishHttpEventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
     }
 
     // private methods --------------------------------------------------------
@@ -280,11 +274,6 @@ public class PhishNode extends SpamNodeImpl implements Phish
     }
 
     // package private methods ------------------------------------------------
-
-    void logHttp(PhishHttpEvent phishHttpEvent)
-    {
-        phishHttpEventLogger.log(phishHttpEvent);
-    }
 
     Token[] generateResponse(PhishBlockDetails bd, TCPSession session, boolean persistent)
     {

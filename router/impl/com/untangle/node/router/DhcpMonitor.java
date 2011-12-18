@@ -119,7 +119,7 @@ class DhcpMonitor implements Runnable
         logger.debug( "Finished" );
 
         /* Write an absolute lease map that is empty */
-        node.log( new DhcpAbsoluteEvent());
+        node.logEvent( new DhcpAbsoluteEvent() );
     }
     
     /* ----------------- Package ----------------- */
@@ -202,7 +202,7 @@ class DhcpMonitor implements Runnable
             }
 
             /* Log the absolute event */
-            if ( isAbsolute ) node.log( absoluteEvent );
+            if ( isAbsolute ) node.logEvent( absoluteEvent );
         } catch ( FileNotFoundException ex ) {
             logger.info( "The file: " + DHCP_LEASES_FILE + " does not exist yet" );
         } catch ( Exception ex ) {
@@ -223,7 +223,7 @@ class DhcpMonitor implements Runnable
             }
 
             /* Log that an entry was deleted */
-            node.log( new DhcpLeaseEvent( lease, DhcpLeaseEvent.RELEASE ));
+            node.logEvent( new DhcpLeaseEvent( lease, DhcpLeaseEvent.RELEASE ));
         }
 
         /* Update the last time the file was modified */
@@ -310,7 +310,7 @@ class DhcpMonitor implements Runnable
                 logger.debug( "Logging new lease: " + ip.toString());
             }
 
-            node.log( new DhcpLeaseEvent( lease, eventType ));
+            node.logEvent( new DhcpLeaseEvent( lease, eventType ) );
         } else {
             if ( lease.hasChanged( eol, mac, ip, host, now )) {
                 int eventType;
@@ -328,7 +328,7 @@ class DhcpMonitor implements Runnable
                 lease.set( eol, mac, ip, host, now );
 
                 logger.debug( "Logging updated lease: " + ip.toString());
-                node.log( new DhcpLeaseEvent( lease, eventType ));
+                node.logEvent( new DhcpLeaseEvent( lease, eventType ) );
             } else {
                 logger.debug( "Lease hasn't changed: " + ip.toString());
             }

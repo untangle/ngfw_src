@@ -7,8 +7,6 @@ import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SessionMatcherFactory;
-import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.networking.NetworkConfigurationListener;
@@ -39,15 +37,13 @@ public class RouterImpl extends AbstractNode implements Router
 
     private final PipeSpec[] pipeSpecs;
 
-    private final EventLogger<LogEvent> eventLogger;
-
     private final Logger logger = Logger.getLogger( RouterImpl.class );
 
     public RouterImpl()
     {
         this.handler          = new RouterEventHandler(this);
         this.sessionManager   = new RouterSessionManager(this);
-        this.statisticManager = new RouterStatisticManager(getNodeContext());
+        this.statisticManager = new RouterStatisticManager();
         this.dhcpMonitor      = new DhcpMonitor( this, UvmContextFactory.context());
         this.listener         = new SettingsListener();
 
@@ -60,9 +56,6 @@ public class RouterImpl extends AbstractNode implements Router
         natFtpPipeSpec = new SoloPipeSpec("nat-ftp", this, new TokenAdaptor(this, new RouterFtpFactory(this)), Fitting.FTP_TOKENS, Affinity.SERVER, 0);
 
         pipeSpecs = new SoloPipeSpec[] { natPipeSpec, natFtpPipeSpec };
-
-        NodeContext tctx = getNodeContext();
-        eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
     }
 
     // package protected methods ----------------------------------------------
@@ -172,11 +165,6 @@ public class RouterImpl extends AbstractNode implements Router
     RouterSessionManager getSessionManager()
     {
         return sessionManager;
-    }
-
-    void log(LogEvent le)
-    {
-        eventLogger.log(le);
     }
 
     class SettingsListener implements NetworkConfigurationListener

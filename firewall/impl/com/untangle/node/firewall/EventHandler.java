@@ -133,7 +133,7 @@ class EventHandler extends AbstractEventHandler
         Session s = event.session();
         FirewallEvent fe = (FirewallEvent)s.attachment();
         if (null != fe) {
-            node.log(fe);
+            node.logEvent(fe);
         }
     }
 
@@ -143,7 +143,7 @@ class EventHandler extends AbstractEventHandler
         Session s = event.session();
         FirewallEvent fe = (FirewallEvent)s.attachment();
         if (null != fe) {
-            node.log(fe);
+            node.logEvent(fe);
         }
     }
 

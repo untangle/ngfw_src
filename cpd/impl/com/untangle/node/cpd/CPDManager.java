@@ -209,7 +209,7 @@ public class CPDManager
                 CPDLoginEvent.EventType.LOGIN : CPDLoginEvent.EventType.FAILED; 
         CPDLoginEvent event = new CPDLoginEvent( address, username, method, eventType );
 
-        this.cpd.loginEventLogger.log(event);        
+        this.cpd.logEvent(event);        
         
         if ( isAuthenticated ) {
             this.cpd.incrementCount(BlingerType.AUTHORIZE, 1);
@@ -252,7 +252,7 @@ public class CPDManager
         AuthenticationType method = baseSettings.getAuthenticationType(); 
 
         CPDLoginEvent event = new CPDLoginEvent( address, "", method, CPDLoginEvent.EventType.LOGOUT );
-        this.cpd.loginEventLogger.log(event);
+        this.cpd.logEvent(event);
         
         return true;
     }

@@ -384,7 +384,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
                                                     report.isSpam(),
                                                     action,
                                                     spamImpl.getScanner().getVendorName());
-        spamImpl.log(spamEvent);
+        spamImpl.logEvent(spamEvent);
     }
 
     /**

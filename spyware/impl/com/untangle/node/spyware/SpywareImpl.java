@@ -31,8 +31,6 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -73,9 +71,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
     private final TokenAdaptor tokenAdaptor = new TokenAdaptor(this, factory);
     private final SpywareEventHandler streamHandler = new SpywareEventHandler(this);
 
-    private final EventLogger<SpywareEvent> eventCookieLogger;
-    private final EventLogger<SpywareEvent> eventBlacklistLogger;
-    private final EventLogger<SpywareEvent> eventSuspiciousLogger;
     private EventLogQuery cookieQuery;
     private EventLogQuery blacklistQuery;
     private EventLogQuery suspiciousQuery;
@@ -107,9 +102,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
         replacementGenerator = new SpywareReplacementGenerator(getNodeId());
 
         NodeContext nodeContext = getNodeContext();
-        eventCookieLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
-        eventBlacklistLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
-        eventSuspiciousLogger = EventLoggerFactory.factory().getEventLogger(nodeContext);
 
         this.suspiciousQuery = new EventLogQuery(I18nUtil.marktr("Suspicious Events"),
                                                  "FROM SessionLogEventFromReports evt " +
@@ -514,20 +506,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
         }
 
         return match;
-    }
-
-    void log(SpywareEvent se)
-    {
-        String type = se.getType();
-
-        if (type == "Access")
-            eventSuspiciousLogger.log(se);
-        else if (type == "Blacklist")
-            eventBlacklistLogger.log(se);
-        else if (type == "Cookie")
-            eventCookieLogger.log(se);
-        else
-            logger.error("Type of spyware event not handled: " + type);
     }
 
     // private methods ---------------------------------------------------------

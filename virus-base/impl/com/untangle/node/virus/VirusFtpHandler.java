@@ -221,7 +221,7 @@ class VirusFtpHandler extends FtpStateMachine
 
         /* XXX handle the case where result is null */
 
-        node.log(new VirusLogEvent(getSession().pipelineEndpoints(), result, node.getScanner().getVendorName()));
+        node.logEvent(new VirusLogEvent(getSession().pipelineEndpoints(), result, node.getScanner().getVendorName()));
 
         if (result.isClean()) {
             node.incrementPassCount();

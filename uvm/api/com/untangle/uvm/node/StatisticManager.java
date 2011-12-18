@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.logging.StatisticEvent;
 import com.untangle.uvm.logging.LogEvent;
 
@@ -25,21 +24,9 @@ public abstract class StatisticManager implements Runnable
     /* Status of the monitor */
     private volatile boolean isAlive = true;
 
-    protected final EventLogger<LogEvent> eventLogger;
     private final Logger logger = Logger.getLogger( this.getClass());
-    private final UvmContext localContext;
 
-    protected StatisticManager(EventLogger<LogEvent> eventLogger)
-    {
-        this.localContext = UvmContextFactory.context();
-        this.eventLogger = eventLogger;
-    }
-
-    protected StatisticManager(UvmContext localContext, EventLogger<LogEvent> eventLogger)
-    {
-        this.localContext = localContext;
-        this.eventLogger = eventLogger;
-    }
+    protected StatisticManager() { }
 
     public void run()
     {
@@ -64,7 +51,7 @@ public abstract class StatisticManager implements Runnable
                 /* Pre-cache the statistics to insure that no stats are lost */
                 StatisticEvent currentStatistics = statisticEvent;
                 statisticEvent = getNewStatisticEvent();
-                eventLogger.log( currentStatistics );
+                UvmContextFactory.context().logEvent( currentStatistics );
             } else {
                 logger.debug( "No statistics available" );
             }
@@ -88,7 +75,7 @@ public abstract class StatisticManager implements Runnable
             return;
         }
 
-        thread = this.localContext.newThread( this );
+        thread = UvmContextFactory.context().newThread( this );
         thread.start();
     }
 

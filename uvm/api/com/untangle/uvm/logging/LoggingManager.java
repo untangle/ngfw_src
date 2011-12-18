@@ -3,6 +3,9 @@
  */
 package com.untangle.uvm.logging;
 
+import java.util.concurrent.BlockingQueue;
+
+import com.untangle.uvm.logging.LogEvent;
 
 /**
  * Manager for Logging.
@@ -29,5 +32,6 @@ public interface LoggingManager
      * Force currently queued hibernate events to be flushed to the DB
      */
     void forceFlush();
-    
+
+    BlockingQueue<LogEvent> getInputQueue();
 }

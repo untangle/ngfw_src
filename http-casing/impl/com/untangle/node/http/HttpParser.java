@@ -418,7 +418,7 @@ public class HttpParser extends AbstractParser
                             HttpResponseEvent evt = new HttpResponseEvent
                                 (rl, mimeType, lengthCounter);
 
-                            casing.getNode().log(evt);
+                            casing.getNode().logEvent(evt);
                         }
                     } else {
                         HttpRequestEvent evt = requestLineToken
@@ -431,7 +431,7 @@ public class HttpParser extends AbstractParser
                                         + getSession().pipelineEndpoints());
                         }
 
-                        casing.getNode().log(evt);
+                        casing.getNode().logEvent(evt);
                     }
 
                     // Free up header storage

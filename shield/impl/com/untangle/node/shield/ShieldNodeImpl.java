@@ -18,8 +18,6 @@ import org.hibernate.Session;
 
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.util.TransactionWork;
@@ -56,11 +54,8 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
     public ShieldNodeImpl()
     {
         NodeContext tctx = getNodeContext();
-        EventLogger<ShieldStatisticEvent> sse = EventLoggerFactory.factory().getEventLogger(tctx);
-        EventLogger<ShieldRejectionEvent> sre = EventLoggerFactory.factory().getEventLogger(tctx);
 
-
-        this.shieldManager = new ShieldManager( sse, sre );
+        this.shieldManager = new ShieldManager( this );
     }
 
     public void setSettings(final ShieldSettings settings)

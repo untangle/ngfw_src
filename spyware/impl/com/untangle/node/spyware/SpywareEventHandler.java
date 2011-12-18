@@ -83,7 +83,7 @@ public class SpywareEventHandler extends AbstractEventHandler
         Session s = event.session();
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
         if (null != spe) {
-            node.log(spe);
+            node.logEvent(spe);
         }
     }
 
@@ -93,7 +93,7 @@ public class SpywareEventHandler extends AbstractEventHandler
         Session s = event.session();
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
         if (null != spe) {
-            node.log(spe);
+            node.logEvent(spe);
         }
     }
 

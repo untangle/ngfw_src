@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.spam;
 
 import java.io.File;
@@ -44,9 +29,9 @@ public class SpamPopHandler extends PopStateMachine
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final SpamNodeImpl zNode;
-    private final SpamScanner zScanner;
-    private final String zVendorName;
+    private final SpamNodeImpl node;
+    private final SpamScanner scanner;
+    private final String vendorName;
 
     private static final String MOD_SUB_TEMPLATE =
         "[SPAM] $MIMEMessage:SUBJECT$";
@@ -65,14 +50,13 @@ public class SpamPopHandler extends PopStateMachine
     private final int strength;
     private final int giveUpSize;
 
-    protected SpamPopHandler(TCPSession session, SpamNodeImpl node,
-                             MailExport zMExport)
+    protected SpamPopHandler(TCPSession session, SpamNodeImpl node, MailExport zMExport)
     {
         super(session);
 
-        zNode = node;
-        zScanner = node.getScanner();
-        zVendorName = zScanner.getVendorName();
+        this.node = node;
+        this.scanner = node.getScanner();
+        this.vendorName = scanner.getVendorName();
 
         zSLNodeView = zMExport.getSafelistNodeView();
 
@@ -94,16 +78,16 @@ public class SpamPopHandler extends PopStateMachine
         logger.debug("SCAN MESSAGE!");
         if (giveUpSize < zMsgFile.length()) {
             postSpamEvent(zMsgInfo, cleanReport(), SpamMessageAction.OVERSIZE);
-            zNode.incrementPassCount();
+            node.incrementPassCount();
         } else if (true == zSLNodeView.isSafelisted(null, zMMessage.getMMHeaders().getFrom(), null)) {
             postSpamEvent(zMsgInfo, cleanReport(), SpamMessageAction.SAFELIST);
-            zNode.incrementPassCount();
+            node.incrementPassCount();
         } else if (true == bScan) {
             SpamReport zReport;
 
             if (null != (zReport = scanFile(zMsgFile)) &&
                 SpamMessageAction.MARK == zMsgAction) {
-                zNode.incrementMarkCount();
+                node.incrementMarkCount();
 
                 /* wrap spam message and rebuild message token */
                 MIMEMessage zWMMessage = this.getMsgGenerator().wrap(zMMessage, zReport);
@@ -122,7 +106,7 @@ public class SpamPopHandler extends PopStateMachine
                     throw new TokenException("cannot create wrapped message file after marking message as spam: " + exn);
                 }
             } else {
-                zNode.incrementPassCount();
+                node.incrementPassCount();
             }
         } else {
             if (logger.isDebugEnabled()) {
@@ -136,7 +120,7 @@ public class SpamPopHandler extends PopStateMachine
     private SpamReport scanFile(File zFile) throws TokenException
     {
         try {
-            SpamReport zReport = zScanner.scanFile(zFile, strength / 10.0f);
+            SpamReport zReport = scanner.scanFile(zFile, strength / 10.0f);
             postSpamEvent(zMsgInfo, zReport, zMsgAction);
 
             if (zConfig.getAddSpamHeaders()) {
@@ -171,8 +155,8 @@ public class SpamPopHandler extends PopStateMachine
                                               report.getScore(),
                                               report.isSpam(),
                                               report.isSpam() ? action : SpamMessageAction.PASS,
-                                              zVendorName);
-        zNode.log(event);
+                                              vendorName);
+        node.logEvent(event);
     }
 
     /**

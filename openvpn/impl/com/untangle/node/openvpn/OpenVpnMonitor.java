@@ -22,8 +22,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.util.I18nUtil;
 
@@ -61,7 +59,6 @@ class OpenVpnMonitor implements Runnable
     private static final String ACTIVE_SESSIONS_REPO_NAME = I18nUtil.marktr("Active Clients");
     private static final String ALL_SESSIONS_REPO_NAME = I18nUtil.marktr("All Clients");
 
-    private final EventLogger<ClientConnectEvent> connectEventLogger;
     private final Logger logger = Logger.getLogger( this.getClass());
 
     private Map<Key,Stats> statusMap    = new HashMap<Key,Stats>();
@@ -85,7 +82,6 @@ class OpenVpnMonitor implements Runnable
 
     protected OpenVpnMonitor( VpnNodeImpl node )
     {
-        this.connectEventLogger = EventLoggerFactory.factory().getEventLogger(node.getNodeContext());
         this.localContext = UvmContextFactory.context();
         this.node = node;
     }
@@ -446,7 +442,7 @@ class OpenVpnMonitor implements Runnable
     private void logClientConnectEvent(Stats stats)
     {
         if( stats.logged ) return;
-        connectEventLogger.log( stats.sessionEvent );
+        node.logEvent( stats.sessionEvent );
         stats.logged = true;
     }
 }

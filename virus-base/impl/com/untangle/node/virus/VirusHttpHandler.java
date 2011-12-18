@@ -208,7 +208,7 @@ class VirusHttpHandler extends HttpStateMachine
         }
 
         RequestLine requestLine = getResponseRequest().getRequestLine();
-        node.log(new VirusHttpEvent(requestLine, result,  vendor));
+        node.logEvent(new VirusHttpEvent(requestLine, result,  vendor));
 
         if (result.isClean()) {
             node.incrementPassCount();

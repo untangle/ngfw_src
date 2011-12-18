@@ -18,8 +18,6 @@ import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -62,9 +60,6 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     protected final WebFilterReplacementGenerator replacementGenerator;
 
-    protected final EventLogger<WebFilterEvent> eventLogger;
-    protected final EventLogger<UnblockEvent> unblockEventLogger;
-
     protected volatile WebFilterSettings settings;
 
     protected final PartialListUtil listUtil = new PartialListUtil();
@@ -84,9 +79,6 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     public WebFilterBase()
     {
         this.replacementGenerator = buildReplacementGenerator();
-
-        eventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
-        unblockEventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
         String vendorName = this.getVendor();
         String capitalizedVendorName = vendorName.substring(0, 1).toUpperCase() + vendorName.substring(1);
@@ -184,7 +176,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 _setSettings(settings);
 
                 UnblockEvent ue = new UnblockEvent(bd.getClientAddress(), true, bd.getFormattedUrl(), getVendor(), getNodeId().getPolicy(), bd.getUid());
-                unblockEventLogger.log(ue);
+                this.logEvent(ue);
                 return true;
             }
         } else {
@@ -200,7 +192,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 getDecisionEngine().addUnblockedSite(addr, site);
 
                 UnblockEvent ue = new UnblockEvent(addr, false, bd.getFormattedUrl(), getVendor(), getNodeId().getPolicy(), bd.getUid());
-                unblockEventLogger.log(ue);
+                this.logEvent(ue);
                 return true;
             }
         }
@@ -436,16 +428,11 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         getDecisionEngine().removeAllUnblockedSites();
     }
 
-    protected void log( WebFilterEvent se )
-    {
-        eventLogger.log(se);
-    }
-
-    protected void log( WebFilterEvent se, String host, int port, TCPNewSessionRequestEvent event )
+    protected void logEvent( WebFilterEvent se, String host, int port, TCPNewSessionRequestEvent event )
     {
         /* only pass in the event if you don't want to log immediately. */
         if (event == null) {
-            eventLogger.log(se);
+            this.logEvent(se);
         } else {
             event.sessionRequest().attach(se);
         }

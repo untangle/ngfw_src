@@ -23,8 +23,6 @@ import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -88,8 +86,6 @@ public abstract class VirusNodeImpl extends AbstractNode
     private static final int POP = 3;
 
     private final VirusScanner scanner;
-    private final EventLogger<VirusEvent> webEventLogger;
-    private final EventLogger<VirusEvent> mailEventLogger;
     private final PipeSpec[] pipeSpecs;
     private final VirusReplacementGenerator replacementGenerator;
 
@@ -166,9 +162,6 @@ public abstract class VirusNodeImpl extends AbstractNode
         this.scanner = scanner;
         this.pipeSpecs = initialPipeSpecs();
         this.replacementGenerator = new VirusReplacementGenerator(getNodeId());
-
-        this.webEventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
-        this.mailEventLogger = EventLoggerFactory.factory().getEventLogger(getNodeContext());
 
         String vendor = scanner.getVendorName();
 
@@ -626,11 +619,6 @@ public abstract class VirusNodeImpl extends AbstractNode
     boolean getHttpDisableResume()
     {
         return settings.getBaseSettings().getHttpDisableResume();
-    }
-
-    void log(VirusEvent evt)
-    {
-        mailEventLogger.log(evt);
     }
 
     /**

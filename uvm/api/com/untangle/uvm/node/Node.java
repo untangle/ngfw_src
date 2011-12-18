@@ -8,6 +8,7 @@ import java.util.List;
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.logging.LogEvent;
 
 /**
  * Interface for a node instance, provides public runtime control
@@ -18,19 +19,8 @@ import com.untangle.uvm.policy.Policy;
  */
 public interface Node
 {
-    // accessors --------------------------------------------------------------
-
     public NodeId getNodeId();
 
-    // lifecycle methods ------------------------------------------------------
-
-    /**
-     * Get the runtime state of this node instance.
-     *
-     * @return a <code>NodeState</code> reflecting the runtime
-     * state of this node.
-     * @see NodeState
-     */
     NodeState getRunState();
 
     /**
@@ -63,6 +53,7 @@ public interface Node
 
     List<VnetSessionDesc> liveSessionDescs();
 
-    public Policy getPolicy();
+    Policy getPolicy();
     
+    void logEvent(LogEvent evt);
 }

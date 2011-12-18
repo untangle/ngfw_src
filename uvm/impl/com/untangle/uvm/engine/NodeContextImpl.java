@@ -165,7 +165,7 @@ class NodeContextImpl implements NodeContext
                                 };
                             mctx.runTransaction(tw);
 
-                            mctx.eventLogger().log(new NodeStateChange(nodeId, ts));
+                            node.logEvent(new NodeStateChange(nodeId, ts));
                         }
                     }
                 });

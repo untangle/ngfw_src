@@ -11,7 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.EventLogger;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.Worker;
@@ -36,16 +35,13 @@ public class ShieldManager
 
     private final Logger logger = Logger.getLogger( this.getClass());
 
-    EventLogger<ShieldStatisticEvent> statisticLogger;
-    EventLogger<ShieldRejectionEvent> rejectionLogger;
-
+    private final ShieldNodeImpl node;
+    
     private final WorkerRunner monitor = new WorkerRunner( new Monitor(), UvmContextFactory.context());
 
-    ShieldManager( EventLogger<ShieldStatisticEvent> statisticLogger,
-                   EventLogger<ShieldRejectionEvent> rejectionLogger )
+    public ShieldManager(ShieldNodeImpl node)
     {
-        this.statisticLogger = statisticLogger;
-        this.rejectionLogger = rejectionLogger;
+        this.node = node;
     }
 
     void start()
@@ -138,13 +134,13 @@ public class ShieldManager
                         }
 
                         if ( nextStatisticEvent < now ) {
-                            statisticLogger.log( this.statisticEvent );
+                            node.logEvent( this.statisticEvent );
                             statisticEvent = new ShieldStatisticEvent();
                             nextStatisticEvent = now + STATISTIC_DELAY_MS;
                         }
 
                         for ( ShieldRejectionEvent r : iteration.getRejectionEvents()) {
-                            rejectionLogger.log( r );
+                            node.logEvent( r );
                         }
 
                         if ( last.before( iteration.getStartTime())) {

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
+import java.util.concurrent.BlockingQueue;
 import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,8 +47,6 @@ import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
 import com.untangle.uvm.node.LicenseManager;
-import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.message.MessageManager;
@@ -94,6 +93,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     private final Logger logger = Logger.getLogger(UvmContextImpl.class);
 
+    private BlockingQueue<LogEvent> eventInputQueue;
+
     private static String uid;
     
     private UvmState state;
@@ -101,7 +102,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private ArgonManagerImpl argonManager;
     private LoggingManagerImpl loggingManager;
     private SyslogManagerImpl syslogManager;
-    private EventLogger<LogEvent> eventLogger;
     private DefaultPolicyManager defaultPolicyManager;
     private MailSenderImpl mailSender;
     private NetworkManagerImpl networkManager;
@@ -566,11 +566,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         System.gc();
     }
 
-    public EventLogger<LogEvent> eventLogger()
-    {
-        return eventLogger;
-    }
-
     public CronJob makeCronJob(Period p, Runnable r)
     {
         return cronManager.makeCronJob(p, r);
@@ -612,6 +607,16 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return true;
     }
     
+    public void logEvent(LogEvent evt)
+    {
+        String tag = "uvm[0]: ";
+        evt.setTag(tag);
+        
+        if (!eventInputQueue.offer(evt)) {
+            logger.warn("dropping logevent: " + evt);
+        }
+    }
+
     // UvmContextBase methods --------------------------------------------------
 
     @Override
@@ -653,8 +658,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.loggingManager = new LoggingManagerImpl(repositorySelector);
         loggingManager.initSchema("uvm");
         loggingManager.start();
-
-        this.eventLogger = EventLoggerFactory.factory().getEventLogger();
+        this.eventInputQueue = loggingManager().getInputQueue();
 
         InheritableThreadLocal<HttpServletRequest> threadRequest = new InheritableThreadLocal<HttpServletRequest>();
 
@@ -799,8 +803,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         } catch (Exception exn) {
             logger.warn("could not stop tomcat", exn);
         }
-
-        eventLogger = null;
 
         try {
             if (loggingManager != null)

@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.node.spam;
 
 import java.util.Date;
@@ -9,8 +12,6 @@ import org.apache.log4j.Logger;
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.EventLogger;
-import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -46,8 +47,6 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
 
     private final SpamScanner scanner;
     private final SpamAssassinDaemon saDaemon;
-    private final EventLogger<SpamEvent> eventLogger;
-    private final EventLogger<SpamSmtpRblEvent> rblEventLogger;
 
     private final PartialListUtil listUtil = new PartialListUtil();
 
@@ -78,9 +77,6 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
         saDaemon = new SpamAssassinDaemon();
 
         NodeContext tctx = getNodeContext();
-
-        eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
-        rblEventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
 
         String vendor = scanner.getVendorName();
         String vendorTag = vendor;
@@ -339,14 +335,6 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
         return scanner;
     }
 
-    void log(SpamEvent se)
-    {
-        eventLogger.log(se);
-    }
-
-    void logRBL(SpamSmtpRblEvent spamSmtpRBLEvent) {
-        rblEventLogger.log(spamSmtpRBLEvent);
-    }
 
     private static class SpamRBLHandler implements PartialListUtil.Handler<SpamRBL>
     {

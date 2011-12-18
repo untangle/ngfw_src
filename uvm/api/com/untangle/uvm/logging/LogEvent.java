@@ -1,7 +1,6 @@
 /*
  * $Id$
  */
-
 package com.untangle.uvm.logging;
 
 import java.io.Serializable;
@@ -33,12 +32,9 @@ public abstract class LogEvent implements Comparable<LogEvent>, Serializable
 
     private String id;
     private Date timeStamp = new Date();
-
-    // constructors -----------------------------------------------------------
+    private String tag;
 
     protected LogEvent() { }
-
-    // accessors --------------------------------------------------------------
 
     @Id
     @Column(name="event_id")
@@ -79,8 +75,6 @@ public abstract class LogEvent implements Comparable<LogEvent>, Serializable
         }
     }
 
-    // public methods ---------------------------------------------------------
-
     /**
      * LogEvents inserted into the database and syslog when this method
      * returns true.
@@ -92,8 +86,6 @@ public abstract class LogEvent implements Comparable<LogEvent>, Serializable
     {
         return true;
     }
-
-    // Syslog methods ---------------------------------------------------------
 
     public abstract void appendSyslog(SyslogBuilder a);
 
@@ -111,8 +103,18 @@ public abstract class LogEvent implements Comparable<LogEvent>, Serializable
         return SyslogPriority.INFORMATIONAL; // statistics or normal operation
     }
 
-    // Comparable methods -----------------------------------------------------
+    @Transient
+    public String getTag()
+    {
+        return this.tag;
+    }
 
+    @Transient
+    public void setTag(String tag)
+    {
+        this.tag = tag;
+    }
+    
     public int compareTo(LogEvent le)
     {
         int i = -timeStamp.compareTo(le.getTimeStamp());

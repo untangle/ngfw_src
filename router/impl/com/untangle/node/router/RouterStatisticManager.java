@@ -3,7 +3,6 @@ package com.untangle.node.router;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.StatisticEvent;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.StatisticManager;
@@ -18,9 +17,9 @@ class RouterStatisticManager extends StatisticManager
 
     private RouterStatisticEvent statisticEvent = new RouterStatisticEvent();
 
-    RouterStatisticManager(NodeContext tctx)
+    public RouterStatisticManager()
     {
-        super(EventLoggerFactory.factory().getEventLogger(tctx));
+        super();
     }
 
     protected StatisticEvent getInitialStatisticEvent()
