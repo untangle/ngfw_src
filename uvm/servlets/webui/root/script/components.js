@@ -2569,7 +2569,10 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
 
         this.bbar = [{
             xtype : 'tbtext',
-            text : '<span id="boxQuery_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '"></span>'
+            text : '<span id="querySelector_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '"></span>'
+        }, {
+            xtype : 'tbtext',
+            text : '<span id="rackSelector_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '"></span>'
         }, {
             xtype : 'tbbutton',
             id: "refresh_"+this.getId(),
@@ -2679,8 +2682,9 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     },
     autorefreshList : function() {
         var selQuery = this.getSelectedQuery();
+        var selPolicy = this.getSelectedPolicy();
         if (selQuery !== null) {
-            rpc.jsonrpc.UvmContext.getEvents(this.autoRefreshCallback.createDelegate(this), selQuery, rpc.currentPolicy, 1000 );
+            rpc.jsonrpc.UvmContext.getEvents(this.autoRefreshCallback.createDelegate(this), selQuery, selPolicy, 1000 );
         }
     },
 
@@ -2693,22 +2697,38 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         if (this.eventQueriesFn != null) {
             this.rpc.eventLogQueries=this.eventQueriesFn();
             var queryList = this.rpc.eventLogQueries;
-            var displayStyle="";
-            // commented out - always show selector
-            // if(repList.length==0) { displayStyle="display:none;"; }
-            var out = [];
+            var displayStyle;
+            var i;
+            var out;
+            
+            displayStyle="";
+            // if(repList.length==0) { displayStyle="display:none;"; } // commented out - always show selector
+            out = [];
             out.push('<select name="Event Type" id="selectQuery_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '" style="'+displayStyle+'">');
-            for (var i = 0; i < queryList.length; i++) {
+            for (i = 0; i < queryList.length; i++) {
                 var queryDesc = queryList[i];
                 var selOpt = (i === 0) ? "selected" : "";
                 out.push('<option value="' + queryDesc.query + '" ' + selOpt + '>' + this.settingsCmp.i18n._(queryDesc.name) + '</option>');
             }
             out.push('</select>');
-            var boxQueryEventLog = document.getElementById('boxQuery_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
-            boxQueryEventLog.innerHTML = out.join("");
+            var querySelector = document.getElementById('querySelector_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
+            querySelector.innerHTML = out.join("");
+
+            displayStyle="";
+            if (this.settingsCmp.node.nodeContext.nodeDesc.type == "SERVICE") displayStyle = "display:none;"; //hide rack selector for services
+            out = [];
+            out.push('<select name="Rack" id="selectPolicy_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '" style="'+displayStyle+'">');
+            for (i = 0; i < rpc.policies.length; i++) {
+                var policyDesc = rpc.policies[i];
+                var selOpt = ( policyDesc == rpc.currentPolicy ) ? "selected" : "";
+                out.push('<option value="' + policyDesc.id + '" ' + selOpt + '>' + policyDesc.name + '</option>');
+            }
+            var rackSelector = document.getElementById('rackSelector_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
+            rackSelector.innerHTML = out.join("");
+            
         }
     },
-    // get selected repository
+    // get selected query
     getSelectedQuery : function() {
         var selObj = document.getElementById('selectQuery_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
         var result = null;
@@ -2716,6 +2736,21 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             result = selObj.options[selObj.selectedIndex].value;
         }
         return result;
+    },
+    // get selected policy
+    getSelectedPolicy : function() {
+        var selObj = document.getElementById('selectPolicy_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
+        var result = null;
+        var id = -1;
+        if (selObj !== null && selObj.selectedIndex >= 0) {
+            id = selObj.options[selObj.selectedIndex].value;
+        }
+        for (var i = 0; i < rpc.policies.length ; i++) {
+            if (rpc.policies[i].id == id)
+                return rpc.policies[i];
+        }
+        Ext.MessageBox.alert(i18n._('Warning'), i18n._("Unable to find policy ") + id);
+        return null;
     },
     makeSelectable : function() {
         var elems=Ext.DomQuery.select("div[unselectable=on]", this.dom);
@@ -2782,8 +2817,9 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     },
     refreshList : function() {
         var selQuery = this.getSelectedQuery();
+        var selPolicy = this.getSelectedPolicy();
         if (selQuery !== null) {
-            rpc.jsonrpc.UvmContext.getEvents(this.refreshCallback.createDelegate(this), selQuery, rpc.currentPolicy, 1000);
+            rpc.jsonrpc.UvmContext.getEvents(this.refreshCallback.createDelegate(this), selQuery, selPolicy, 1000);
         } else {
             this.loadMask.disabled = true;
             this.loadMask.hide();
