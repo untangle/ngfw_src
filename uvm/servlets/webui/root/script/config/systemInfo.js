@@ -41,15 +41,22 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     autoHeight : true,
                     buttonAlign : 'left',
                     items: [ new Ext.form.TextArea({
+                        name : 'UID',
+                        hideLabel : true,
+                        readOnly : true,
+                        style : 'font-weight: bold;',
+                        width : 600,
+                        height : 40,
+                        value : this.i18n._('Do not publicly post or share the UID.') + "\n" +
+                            this.i18n._('UID')+": " + rpc.jsonrpc.UvmContext.getServerUID()
+                    }), new Ext.form.TextArea({
                         name : 'System Info',
                         hideLabel : true,
                         readOnly : true,
                         style : 'font-weight: bold;',
                         width : 600,
                         height : 400,
-                        value : this.i18n._('Summary')+":\n"+
-                            this.i18n._('UID')+": " + rpc.jsonrpc.UvmContext.getServerUID()  + "\n" + 
-                            this.i18n._('Build') + ": " + rpc.adminManager.getFullVersionAndRevision() + "\n" + 
+                        value : this.i18n._('Build') + ": " + rpc.adminManager.getFullVersionAndRevision() + "\n" + 
                             this.i18n._('Mod') + ": " + rpc.adminManager.getModificationState()
                     })]
                 }]
