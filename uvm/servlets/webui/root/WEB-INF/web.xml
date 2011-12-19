@@ -96,6 +96,16 @@
     <url-pattern>/gridSettings</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>EventLogExportServlet</servlet-name>
+    <servlet-class>com.untangle.uvm.webui.servlet.EventLogExportServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>EventLogExportServlet</servlet-name>
+    <url-pattern>/eventLogExport</url-pattern>
+  </servlet-mapping>
+
   <welcome-file-list>
     <welcome-file>
       index.jsp

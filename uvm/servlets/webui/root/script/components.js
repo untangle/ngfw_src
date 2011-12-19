@@ -2600,6 +2600,14 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                 }
             }.createDelegate(this)
         }, {
+            xtype : 'tbbutton',
+            id: "export_"+this.getId(),
+            text : i18n._('Export'),
+            name : "Export",
+            tooltip : i18n._('Export Events'),
+            iconCls : 'icon-export',
+            handler : this.exportHandler.createDelegate(this)
+        }, {
             xtype : 'tbtext',
             text : '<div style="width:30px;"></div>'
         }, this.pagingToolbar, {
@@ -2683,8 +2691,24 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     autorefreshList : function() {
         var selQuery = this.getSelectedQuery();
         var selPolicy = this.getSelectedPolicy();
-        if (selQuery !== null) {
+        if (selQuery != null && selPolicy != null) {
             rpc.jsonrpc.UvmContext.getEvents(this.autoRefreshCallback.createDelegate(this), selQuery, selPolicy, 1000 );
+        }
+    },
+    exportHandler : function() {
+        var selQuery = this.getSelectedQuery();
+        var selQueryName = this.getSelectedQueryName();
+        var selPolicy = this.getSelectedPolicy();
+        if (selQuery != null && selPolicy != null) {
+            Ext.MessageBox.wait(i18n._("Exporting Events..."), i18n._("Please wait"));
+    	    var gridName = ( (this.name!=null) ? this.name : i18n._("Event Log") ) + " " +selQueryName;
+            gridName=gridName.trim().replace(/ /g,"_");
+            var exportForm = document.getElementById('exportEventLogEvents');
+            exportForm["name"].value=gridName;
+            exportForm["data"].value="";
+            exportForm["data"].value=Ext.encode(rpc.jsonrpc.UvmContext.getEvents( selQuery, selPolicy, 1000000 ));
+            exportForm.submit();
+            Ext.MessageBox.hide();
         }
     },
 
@@ -2728,12 +2752,21 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             
         }
     },
-    // get selected query
+    // get selected query value
     getSelectedQuery : function() {
         var selObj = document.getElementById('selectQuery_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
         var result = null;
         if (selObj !== null && selObj.selectedIndex >= 0) {
             result = selObj.options[selObj.selectedIndex].value;
+        }
+        return result;
+    },
+    // get selected query name
+    getSelectedQueryName : function() {
+        var selObj = document.getElementById('selectQuery_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
+        var result = "";
+        if (selObj !== null && selObj.selectedIndex >= 0) {
+            result = selObj.options[selObj.selectedIndex].label;
         }
         return result;
     },
@@ -2818,7 +2851,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     refreshList : function() {
         var selQuery = this.getSelectedQuery();
         var selPolicy = this.getSelectedPolicy();
-        if (selQuery !== null) {
+        if (selQuery != null && selPolicy != null) {
             rpc.jsonrpc.UvmContext.getEvents(this.refreshCallback.createDelegate(this), selQuery, selPolicy, 1000);
         } else {
             this.loadMask.disabled = true;
