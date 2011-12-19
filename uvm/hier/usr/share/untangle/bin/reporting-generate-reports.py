@@ -392,6 +392,9 @@ if not incremental:
 
      try:
          for report_days in report_lengths:
+              reports.engine.export_static_data(reports_output_base,
+                                                end_date, report_days)
+
               if not no_data_gen:
                    logger.info("Generating reports for %s days" % (report_days,))
                    mail_reports = reports.engine.generate_reports(reports_output_base,
