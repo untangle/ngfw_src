@@ -226,7 +226,8 @@ public abstract class DecisionEngine
              * If the site was blocked return the nonce
              */
             if (bestCategory.getBlocked()) {
-                String blockReason = I18nUtil.tr(bestCategory.getName()) + " - " + I18nUtil.tr(bestCategory.getDescription());
+                Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
+                String blockReason = I18nUtil.tr(bestCategory.getName(), i18nMap) + " - " + I18nUtil.tr(bestCategory.getDescription(), i18nMap);
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), blockReason, clientIp, node.getNodeTitle(), username);
                 return node.generateNonce(bd);
             } else {
@@ -287,7 +288,6 @@ public abstract class DecisionEngine
                 }
 
                 Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
-
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(),
                                                                      I18nUtil.tr("Mime-Type ({0})", contentType, i18nMap),
                                                                      clientIp, node.getNodeTitle(), null);
