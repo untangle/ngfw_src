@@ -57,7 +57,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         width : 600,
                         height : 400,
                         value : this.i18n._('Build') + ": " + rpc.adminManager.getFullVersionAndRevision() + "\n" + 
-                            this.i18n._('Mod') + ": " + rpc.adminManager.getModificationState()
+                            this.i18n._('History') + ": " + rpc.adminManager.getModificationState()
                     })]
                 }]
             });
