@@ -10,6 +10,7 @@ from   untangle_tests import *
 from   untangle_tests.webfilter_tests import WebFilterTests
 from   untangle_tests.sitefilter_tests import SiteFilterTests
 from   untangle_tests.firewall_tests import FirewallTests
+from   untangle_tests.classd_tests import ClassdTests
 
 class ArgumentParser(object):
     def __init__(self):
@@ -144,7 +145,7 @@ runTestEnvironmentTests()
 runTestSuite(WebFilterTests)
 runTestSuite(SiteFilterTests)
 runTestSuite(FirewallTests)
-runTestSuite(AppControlTests)
+runTestSuite(ClassdTests)
 
 
 print ""
