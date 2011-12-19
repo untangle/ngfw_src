@@ -126,7 +126,7 @@ public abstract class DecisionEngine
         String description = checkClientPassList(clientIp);
         if (null != description) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_CLIENT, description, node.getVendor());
-            logger.info(hbe);
+            node.logEvent(hbe);
             return null;
         }
 
