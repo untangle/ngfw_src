@@ -356,7 +356,7 @@ class ReportingManagerImpl implements ReportingManager
     {
         File f = new File(getAppDir(d, numDays, appName, type, value) + "/report.xml");
 
-        logger.debug("Trying to XML file '" + f + "'");
+        logger.debug("Trying to read XML file '" + f + "'");
 
         if (!f.exists() && type != null) {
             logger.debug("** ... does not exist, trying to generate");
@@ -390,93 +390,32 @@ class ReportingManagerImpl implements ReportingManager
         return h.getReport();
     }
 
-    private List<Host> getHosts(Date d, int numDays)
-    {
+    private List<String> readPlainFile(Date d, int numDays, String category) {
+        List<String> values = getAppNames(getDateDir(d, numDays), "/" + category + ".txt");
+        return values;
+    }
+
+    private List<Host> getHosts(Date d, int numDays) {
         List<Host> l = new ArrayList<Host>();
-
-        Connection conn = null;
-        try {
-            conn = DataSourceFactory.factory().getConnection();
-
-            PreparedStatement ps = conn.prepareStatement("SELECT DISTINCT hname FROM reports.hnames WHERE date >= ? AND date < ?");
-            ps.setDate(1, new java.sql.Date(getDaysBefore(d, numDays).getTime()));
-            ps.setDate(2, new java.sql.Date(d.getTime()));
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                String s = rs.getString(1);
-                l.add(new Host(s));
-            }
-        } catch (SQLException exn) {
-            logger.warn("could not get hosts", exn);
-        } finally {
-            if (conn != null) {
-                try {
-                    DataSourceFactory.factory().closeConnection(conn);
-                } catch (Exception x) { }
-                conn = null;
-            }
+        for (String e : readPlainFile(d, numDays, "hosts")) {
+            l.add(new Host(e));
         }
-
         return l;
     }
 
-    private List<User> getUsers(Date d, int numDays)
-    {
+    private List<User> getUsers(Date d, int numDays) {
         List<User> l = new ArrayList<User>();
-
-        Connection conn = null;
-        try {
-            conn = DataSourceFactory.factory().getConnection();
-
-            PreparedStatement ps = conn.prepareStatement("SELECT DISTINCT username FROM reports.users WHERE date >= ? AND date < ?");
-            ps.setDate(1, new java.sql.Date(getDaysBefore(d, numDays).getTime()));
-            ps.setDate(2, new java.sql.Date(d.getTime()));
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                String s = rs.getString(1);
-                l.add(new User(s));
-            }
-        } catch (SQLException exn) {
-            logger.warn("could not get users", exn);
-        } finally {
-            if (conn != null) {
-                try {
-                    DataSourceFactory.factory().closeConnection(conn);
-                } catch (Exception x) { }
-                conn = null;
-            }
+        for (String e : readPlainFile(d, numDays, "users")) {
+            l.add(new User(e));
         }
-
         return l;
     }
 
-    private List<Email> getEmails(Date d, int numDays)
-    {
+    private List<Email> getEmails(Date d, int numDays) {
         List<Email> l = new ArrayList<Email>();
-
-        Connection conn = null;
-        try {
-            conn = DataSourceFactory.factory().getConnection();
-
-            PreparedStatement ps = conn.prepareStatement("SELECT DISTINCT email FROM reports.email WHERE date >= ? AND date < ?");
-            ps.setDate(1, new java.sql.Date(getDaysBefore(d, numDays).getTime()));
-            ps.setDate(2, new java.sql.Date(d.getTime()));
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                String s = rs.getString(1);
-                l.add(new Email(s));
-            }
-        } catch (SQLException exn) {
-            logger.warn("could not get email", exn);
-        } finally {
-            if (conn != null) {
-                try {
-                    DataSourceFactory.factory().closeConnection(conn);
-                } catch (Exception x) { }
-                conn = null;
-            }
+        for (String e : readPlainFile(d, numDays, "emails")) {
+            l.add(new Email(e));
         }
-
         return l;
     }
 
@@ -531,7 +470,7 @@ class ReportingManagerImpl implements ReportingManager
 
     private List<Application> getApplications(String dirName, String type)
     {
-        List<String> appNames = getAppNames(dirName, type);
+        List<String> appNames = getAppNames(dirName + "/../", type);
 
         ToolboxManagerImpl tm = ToolboxManagerImpl.toolboxManager();
 
@@ -570,7 +509,7 @@ class ReportingManagerImpl implements ReportingManager
     {
         List<String> l = new ArrayList<String>();
 
-        String f = dirName + "/../" + type;
+        String f = dirName + type;
 
         BufferedReader br = null;
 

@@ -495,55 +495,71 @@ def __generate_plots(report_base, dir):
 
     os.system(command)
 
-def __get_users(date):
-    conn = sql_helper.get_connection()
+def export_static_data(reports_output_base, end_date, report_days):
+    directory = '%s/data/%d-%02d-%02d/%s' % (reports_output_base,
+                                             end_date.year,
+                                             end_date.month,
+                                             end_date.day,
+                                             report_days_dir(report_days))
+    if not os.path.isdir(directory):
+        os.makedirs(directory)
 
-    d = DateFromMx(date)
+    start_date = DateFromMx(end_date - mx.DateTime.DateTimeDelta(report_days))
+
+    for category in ('hosts', 'users', 'emails'):
+        methodName = "__get_%s" % category
+        result = globals()[methodName](start_date, end_date)
+        result = [ e for e in result if e ]
+        fp = os.path.join(directory, '%s.txt' % category)
+        open(fp, 'w').write('\n'.join(result))
+
+def __get_users(start_date, end_date):
+    conn = sql_helper.get_connection()
 
     try:
         curs = conn.cursor()
-        curs.execute("SELECT username from reports.users WHERE date = %s", (d,))
+        curs.execute("SELECT DISTINCT uid from reports.session_totals WHERE trunc_time >= %s and trunc_time < %s",
+                     (start_date, end_date))
         rows = curs.fetchall()
         rv = [rows[i][0] for i in range(len(rows))]
     finally:
         conn.commit()
+
+    logger.debug("Users between %s and %s: %s" % (start_date, end_date, rv))
 
     return rv
 
-def __get_hosts(date):
+def __get_hosts(start_date, end_date):
     conn = sql_helper.get_connection()
-
-    d = DateFromMx(date)
 
     try:
         curs = conn.cursor()
-        curs.execute("SELECT hname from reports.hnames WHERE date = %s", (d,))
+        curs.execute("SELECT DISTINCT hname from reports.session_totals WHERE trunc_time >= %s and trunc_time < %s",
+                     (start_date, end_date))
         rows = curs.fetchall()
         rv = [rows[i][0] for i in range(len(rows))]
     finally:
         conn.commit()
+
+    logger.debug("Hosts between %s and %s: %s" % (start_date, end_date, rv))
 
     return rv
 
-def __get_emails(date):
+def __get_emails(start_date, end_date):
     conn = sql_helper.get_connection()
-
-    d = DateFromMx(date)
 
     try:
         curs = conn.cursor()
-        curs.execute("""\
-SELECT addr, sum(msgs)
-FROM reports.n_mail_addr_totals
-WHERE addr_kind = 'T' AND date_trunc('day', trunc_time) = %s
-GROUP BY addr
-ORDER BY sum DESC
-LIMIT 100
-""", (d,))
+        curs.execute("""SELECT DISTINCT addr FROM reports.n_mail_addr_totals
+                      WHERE trunc_time >=%s AND trunc_time < %s
+                      AND addr_kind = 'T' AND client_intf NOT IN """ + get_wan_clause(),
+                     (start_date, end_date))
         rows = curs.fetchall()
         rv = [rows[i][0] for i in range(len(rows))]
     finally:
         conn.commit()
+
+    logger.debug("Emails between %s and %s: %s" % (start_date, end_date, rv))
 
     return rv
 
