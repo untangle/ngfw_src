@@ -226,7 +226,7 @@ public abstract class DecisionEngine
              * If the site was blocked return the nonce
              */
             if (bestCategory.getBlocked()) {
-                String blockReason = bestCategory.getName() + " - " + bestCategory.getDescription();
+                String blockReason = I18nUtil.tr(bestCategory.getName()) + " - " + I18nUtil.tr(bestCategory.getDescription());
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), blockReason, clientIp, node.getNodeTitle(), username);
                 return node.generateNonce(bd);
             } else {
