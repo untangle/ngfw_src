@@ -90,9 +90,10 @@ if [ -x "/etc/init.d/untangle-hardware-config" ]; then
     ourInit untangle-hardware-config restart
 fi
 
-# 9.1 upgrade
+# 9.2 upgrade
 # remove obsolete stuff
 rm -rf /usr/share/untangle/autodump
 rm -rf /usr/share/untangle/db
+rm -rf /usr/share/untangle/pycli/uvm
 
 exit 0
