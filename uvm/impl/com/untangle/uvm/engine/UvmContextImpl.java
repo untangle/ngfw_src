@@ -77,6 +77,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String SHUTDOWN_SCRIPT = "/sbin/shutdown";
     private static final String TIMESYNC_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-force-time-sync";
     private static final String UPGRADE_PID_FILE = "/var/run/uvm-upgrade.pid";
+    private static final String UPGRADE_HTML_FILE = "/var/www/uvm-upgrade.html";
     private static final String UPGRADE_SPLASH_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-show-upgrade-splash";;
 
     private static final String CREATE_UID_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-createUID";
@@ -1118,9 +1119,14 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
      */
     private void hideUpgradeSplash()
     {
-        File upgradePid = new File(UPGRADE_PID_FILE);
+        /**
+         * The PID file seems to sometimes mysteriously disappear so also check for the HTML file
+         */
+        File upgradePidFile  = new File(UPGRADE_PID_FILE);
+        File upgradeHtmlFile = new File(UPGRADE_HTML_FILE);
+
         /* If the upgrade is in progress */
-        if (upgradePid.exists()) {
+        if (upgradePidFile.exists() || upgradeHtmlFile.exists()) {
             logger.info("Upgrade complete. Removing upgrade splash screen...");
 
             try {
