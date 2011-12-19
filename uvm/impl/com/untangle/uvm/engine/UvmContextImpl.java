@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
-import java.util.concurrent.BlockingQueue;
 import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -92,8 +91,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final Object startupWaitLock = new Object();
 
     private final Logger logger = Logger.getLogger(UvmContextImpl.class);
-
-    private BlockingQueue<LogEvent> eventInputQueue;
 
     private static String uid;
     
@@ -609,12 +606,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     
     public void logEvent(LogEvent evt)
     {
-        String tag = "uvm[0]: ";
-        evt.setTag(tag);
-        
-        if (!eventInputQueue.offer(evt)) {
-            logger.warn("dropping logevent: " + evt);
-        }
+        this.loggingManager.logEvent(evt);
     }
 
     // UvmContextBase methods --------------------------------------------------
@@ -657,8 +649,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.loggingManager = new LoggingManagerImpl(repositorySelector);
         loggingManager.initSchema("uvm");
-        loggingManager.start();
-        this.eventInputQueue = loggingManager().getInputQueue();
 
         InheritableThreadLocal<HttpServletRequest> threadRequest = new InheritableThreadLocal<HttpServletRequest>();
 
@@ -806,7 +796,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         try {
             if (loggingManager != null)
-                loggingManager.stop();
+                loggingManager = null;
         } catch (Exception exn) {
             logger.error("could not stop LoggingManager", exn);
         }

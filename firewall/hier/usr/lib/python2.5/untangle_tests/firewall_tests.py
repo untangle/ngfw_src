@@ -102,6 +102,7 @@ class FirewallTests(unittest.TestCase):
         global nodeDesc, node
         if nodeDesc == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+                print "ERROR: Node %s already installed" % self.nodeName();
                 raise Exception('node %s already instantiated' % self.nodeName())
             nodeDesc = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), uvmContext.policyManager().getDefaultPolicy())
             node = uvmContext.nodeManager().nodeContext(nodeDesc['nodeId']).node()

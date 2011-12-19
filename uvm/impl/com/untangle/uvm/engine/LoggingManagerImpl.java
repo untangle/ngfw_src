@@ -13,6 +13,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.logging.LogWorker;
+import com.untangle.uvm.logging.LogWorkerFacility;
 import com.untangle.uvm.logging.LoggingSettings;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.logging.UvmRepositorySelector;
@@ -27,13 +29,14 @@ class LoggingManagerImpl implements LoggingManager
     private static final boolean LOGGING_DISABLED = Boolean.parseBoolean(System.getProperty("uvm.logging.disabled"));
 
     private final List<String> initQueue = new LinkedList<String>();
-    private final LogWorker logWorker = new LogWorker(this);
     private final UvmRepositorySelector repositorySelector;
 
     private final Logger logger = Logger.getLogger(getClass());
 
     private LoggingSettings loggingSettings;
 
+    private LogWorker logWorker = null;
+    
     private volatile boolean conversionComplete = true;
 
     LoggingManagerImpl(UvmRepositorySelector repositorySelector)
@@ -106,25 +109,30 @@ class LoggingManagerImpl implements LoggingManager
 
     public void forceFlush()
     {
+        if (this.logWorker == null)
+            getLogWorker();
+        if (this.logWorker == null)
+            return;
+
         this.logWorker.forceFlush();
     }
-    
-    public BlockingQueue<LogEvent> getInputQueue()
+
+    public void logEvent(LogEvent evt)
     {
-        return logWorker.getInputQueue();
+        if (this.logWorker == null)
+            getLogWorker();
+        if (this.logWorker == null)
+            return;
+
+        this.logWorker.logEvent(evt);
+    }
+    
+    public boolean isConversionComplete()
+    {
+        return conversionComplete;
     }
 
     // package protected methods ----------------------------------------------
-
-    void start()
-    {
-        logWorker.start();
-    }
-
-    void stop()
-    {
-        logWorker.stop();
-    }
 
     void initSchema(final String name)
     {
@@ -156,8 +164,26 @@ class LoggingManagerImpl implements LoggingManager
             }).start();
     }
 
-    boolean isConversionComplete()
+    private void getLogWorker()
     {
-        return conversionComplete;
+        synchronized(this) {
+            if (this.logWorker == null) {
+                try {
+                    LogWorkerFacility reports = (LogWorkerFacility) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+                    if (reports == null) {
+                        logger.warn("Reporting node not found, discarding event");
+                        return;
+                    }
+                    this.logWorker = reports.getLogWorker();
+                    if (this.logWorker == null) {
+                        logger.warn("LogWorker node not found, discarding event");
+                        return;
+                    }
+                } catch (Exception e) {
+                    logger.warn("Unable to initialize logWorker", e);
+                    return;
+                }
+            }
+        }
     }
 }

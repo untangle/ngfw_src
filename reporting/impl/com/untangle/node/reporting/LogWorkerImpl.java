@@ -1,22 +1,7 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Freeoftware Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id: LogWorker.java,v 1.00 2011/12/18 19:09:03 dmorris Exp $
  */
-
-package com.untangle.uvm.engine;
+package com.untangle.node.reporting;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -32,17 +17,15 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.logging.LogWorker;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.util.TransactionWork;
 
 /**
  * Worker that batches and flushes events to the database.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
-class LogWorker implements Runnable
+public class LogWorkerImpl implements Runnable, LogWorker
 {
     private static final int MAX_LOAD = 2;
 
@@ -52,6 +35,7 @@ class LogWorker implements Runnable
     private static final int SHORT_SYNC_TIME = (int)Integer.getInteger("uvm.events.short_sync");
     private static int RUNTIME_SYNC_TIME;
     private static boolean forceFlush = false;
+    private static boolean running = false;
     
     static { // initialize RUNTIME_SYNC_TIME
         String p = System.getProperty("uvm.logging.synctime");
@@ -65,8 +49,6 @@ class LogWorker implements Runnable
         }
         RUNTIME_SYNC_TIME = i < 0 ? 0 : i;
     }
-
-    private final LoggingManagerImpl loggingManager;
 
     /**
      * The queue of events waiting to be written to the database
@@ -82,6 +64,8 @@ class LogWorker implements Runnable
 
     private final Logger logger = Logger.getLogger(getClass());
 
+    private final ReportingNode node;
+    
     private volatile Thread thread;
     private boolean interruptable;
 
@@ -91,11 +75,11 @@ class LogWorker implements Runnable
 
     // constructors -------------------------------------------------------
 
-    LogWorker(LoggingManagerImpl loggingManager)
+    public LogWorkerImpl(ReportingNode node)
     {
-        this.loggingManager = loggingManager;
         this.lastLoadGet = 0;
         this.syncTime = 0;
+        this.node = node;
     }
 
     // Runnable methods ---------------------------------------------------
@@ -138,7 +122,7 @@ class LogWorker implements Runnable
             }
 
             if (logQueue.size() >= BATCH_SIZE || t >= nextSync || forceFlush) {
-                if (loggingManager.isConversionComplete()) {
+                if (UvmContextFactory.context().loggingManager().isConversionComplete()) {
                     try {
                         persist();
                     } catch (Exception exn) { // never say die
@@ -169,6 +153,20 @@ class LogWorker implements Runnable
         thread.interrupt();
     }
     
+    public void logEvent(LogEvent evt)
+    {
+        if (!running) {
+            logger.warn("Reports not running, discarding event");
+        }
+        
+        String tag = "uvm[0]: ";
+        evt.setTag(tag);
+        
+        if (!inputQueue.offer(evt)) {
+            logger.warn("dropping logevent: " + evt);
+        }
+    }
+
     /*
      * Only calculate the load every LONG_SYNC_TIME
      */
@@ -292,15 +290,15 @@ class LogWorker implements Runnable
 
     // package protected methods ------------------------------------------
 
-    void start()
+    protected void start()
     {
-        if (!LoggingManagerImpl.isLoggingDisabled()) {
-            UvmContextFactory.context().newThread(this).start();
-        }
+        this.running = true;
+        UvmContextFactory.context().newThread(this).start();
     }
 
-    void stop()
+    protected void stop()
     {
+        this.running = false;
         Thread t = thread;
         thread = null;
         synchronized (this) {
@@ -308,10 +306,5 @@ class LogWorker implements Runnable
                 t.interrupt();
             }
         }
-    }
-
-    BlockingQueue<LogEvent> getInputQueue()
-    {
-        return inputQueue;
     }
 }

@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -45,7 +44,6 @@ public abstract class NodeBase implements Node
     private final Set<Node> children = new HashSet<Node>();
     private final NodeManager nodeManager;
     private final List<NodeListener> nodeListeners = new LinkedList<NodeListener>();
-    private final BlockingQueue<LogEvent> eventInputQueue;
 
     private final Object stateChangeLock = new Object();
 
@@ -58,7 +56,6 @@ public abstract class NodeBase implements Node
         nodeManager = uvm.nodeManager();
         nodeContext = nodeManager.threadContext();
         tid = nodeContext.getNodeId();
-        this.eventInputQueue =uvm.loggingManager().getInputQueue();
             
         Counters c = uvm.messageManager().getCounters(tid);
         c.addMetric("s2nChunks", I18nUtil.marktr("Server to node chunks"), null, false);
@@ -253,9 +250,7 @@ public abstract class NodeBase implements Node
         String tag = nodeContext.getNodeDesc().getSyslogName() + "[" + nodeContext.getNodeId().getId() + "]: ";
         evt.setTag(tag);
         
-        if (!eventInputQueue.offer(evt)) {
-            logger.warn("dropping logevent: " + evt);
-        }
+        UvmContextFactory.context().loggingManager().logEvent(evt);
     }
     
     // protected no-op methods -------------------------------------------------

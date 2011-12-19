@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.node.reporting;
 
 import java.io.BufferedReader;
@@ -26,11 +29,13 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.User;
+import com.untangle.uvm.logging.LogWorker;
+import com.untangle.uvm.logging.LogWorkerFacility;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
 
-public class ReportingNodeImpl extends AbstractNode implements ReportingNode
+public class ReportingNodeImpl extends AbstractNode implements ReportingNode, LogWorkerFacility
 {
     private static final Logger logger = Logger.getLogger(ReportingNodeImpl.class);
 
@@ -39,6 +44,8 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
     private static final long    REPORTER_LOG_FILE_READ_TIMEOUT = 180 * 1000; /* 180 seconds */
     private static final Pattern REPORTER_LOG_PROGRESS_PATTERN = Pattern.compile(".*PROGRESS\\s*\\[(.*)\\]");
     private static int MAX_FLUSH_FREQUENCY;
+
+    private static LogWorkerImpl logWorker = null;
 
     static {
         String syncStr = System.getProperty("uvm.event.long_sync");
@@ -61,7 +68,11 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
 
     private long lastFlushTime = 0;
     
-    public ReportingNodeImpl() {}
+    public ReportingNodeImpl()
+    {
+        if (logWorker == null)
+            logWorker = new LogWorkerImpl(this);
+    }
 
     public void setReportingSettings(final ReportingSettings settings)
     {
@@ -192,6 +203,10 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
         setReportingSettings((ReportingSettings)settings);
     }
 
+    public LogWorker getLogWorker()
+    {
+        return this.logWorker;
+    }
     
     @Override
     protected PipeSpec[] getPipeSpecs()
@@ -238,9 +253,16 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode
             String[] args = {""};
             postInit(args);
         }
+
+        this.logWorker.start();
     }
 
+    protected void postStop()
+    {
+        this.logWorker.stop();
+    }
 
+    
     private ReportingSettings initSettings()
     {
         ReportingSettings settings = new ReportingSettings();
