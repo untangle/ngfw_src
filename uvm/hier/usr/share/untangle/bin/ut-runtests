@@ -144,6 +144,7 @@ runTestEnvironmentTests()
 runTestSuite(WebFilterTests)
 runTestSuite(SiteFilterTests)
 runTestSuite(FirewallTests)
+runTestSuite(AppControlTests)
 
 
 print ""
