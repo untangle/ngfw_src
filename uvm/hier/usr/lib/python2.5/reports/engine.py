@@ -339,7 +339,11 @@ def generate_plots(report_base, end_date, report_days=1):
 def events_cleanup(cutoff):
     logger.info("Cleaning-up events data for all dates < %s" % (cutoff,))
 
-    for name in __get_node_partial_order():
+    # clean in reverse order
+    nodeList = __get_node_partial_order()
+    nodeList.reverse()
+
+    for name in nodeList:
         try:
             node = __nodes.get(name, None)
             logger.debug("** about to clean events for %s" % (name,))            
