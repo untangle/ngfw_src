@@ -8,65 +8,56 @@ from uvm import Uvm
 from untangle_tests import ClientControl
 
 uvmContext = Uvm().getUvmContext()
-defaultRack = uvmContext.policyManager().getDefaultPolicy()
+defaultRackId = uvmContext.policyManager().getDefaultPolicy()['id']
 clientControl = ClientControl()
 nodeDesc = None
 node = None
 
 def addBlockedUrl(url, blocked=True, flagged=True, description="description"):
-    global node
     newRule = { "blocked": blocked, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
     rules = node.getBlockedUrls()
     rules["list"].append(newRule)
     node.setBlockedUrls(rules)
 
 def nukeBlockedUrls():
-    global node
     rules = node.getBlockedUrls()
     rules["list"] = []
     node.setBlockedUrls(rules)
 
 def addPassedUrl(url, enabled=True, description="description"):
-    global node
     newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
     rules = node.getPassedUrls()
     rules["list"].append(newRule)
     node.setPassedUrls(rules)
 
 def nukePassedUrls():
-    global node
     rules = node.getPassedUrls()
     rules["list"] = []
     node.setPassedUrls(rules)
 
 def addBlockedMimeType(mimetype, blocked=True, flagged=True, category="category", description="description"):
-    global node
     newRule =  { "blocked": blocked, "category": category, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": mimetype, "name": mimetype }
     rules = node.getBlockedMimeTypes()
     rules["list"].append(newRule)
     node.setBlockedMimeTypes(rules)
 
 def nukeBlockedMimeTypes():
-    global node
     rules = node.getBlockedMimeTypes()
     rules["list"] = []
     node.setBlockedMimeTypes(rules)
 
 def addBlockedExtension(mimetype, blocked=True, flagged=True, category="category", description="description"):
-    global node
     newRule =  { "blocked": blocked, "category": category, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": mimetype, "name": mimetype }
     rules = node.getBlockedExtensions()
     rules["list"].append(newRule)
     node.setBlockedExtensions(rules)
 
 def nukeBlockedExtensions():
-    global node
     rules = node.getBlockedExtensions()
     rules["list"] = []
     node.setBlockedExtensions(rules)
 
 def flushEvents():
-    global uvmContext
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
     if (reports != None):
         reports.flushEvents(True)
@@ -320,8 +311,6 @@ class WebFilterTests(unittest.TestCase):
         assert (result == 0)
         
     def test_100_eventlog_blockedUrl(self):
-        global node
-        global defaultRack
         fname = sys._getframe().f_code.co_name
         nukeBlockedUrls();
         addBlockedUrl("metaloft.com/test/testPage1.html", blocked=True, flagged=True)
@@ -333,7 +322,7 @@ class WebFilterTests(unittest.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'Blocked Web Traffic': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRack,1)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
@@ -342,7 +331,6 @@ class WebFilterTests(unittest.TestCase):
         assert(events['list'][0]['wf' + self.vendorName() + 'Blocked'] == True)
 
     def test_101_eventlog_flaggedUrl(self):
-        global node
         fname = sys._getframe().f_code.co_name
         nukeBlockedUrls();
         addBlockedUrl("metaloft.com/test/testPage1.html", blocked=False, flagged=True)
@@ -354,7 +342,7 @@ class WebFilterTests(unittest.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'Flagged Web Traffic': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRack,1)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
@@ -364,7 +352,6 @@ class WebFilterTests(unittest.TestCase):
         assert(events['list'][0]['wf' + self.vendorName() + 'Flagged'] == True)
 
     def test_102_eventlog_allUrls(self):
-        global node
         fname = sys._getframe().f_code.co_name
         nukeBlockedUrls();
         # specify an argument so it isn't confused with other events
@@ -374,7 +361,7 @@ class WebFilterTests(unittest.TestCase):
         for q in node.getEventQueries():
             if q['name'] == 'All Web Traffic': query = q;
         assert(query != None)
-        events = uvmContext.getEvents(query['query'],defaultRack,1)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         assert(events['list'] != None)
         assert(len(events['list']) > 0)

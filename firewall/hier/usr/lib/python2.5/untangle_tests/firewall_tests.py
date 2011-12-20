@@ -71,19 +71,16 @@ def createDualMatcherRule( matcherType, value, matcherType2, value2, blocked=Tru
         };
 
 def flushEvents():
-    global uvmContext
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
     if (reports != None):
         reports.flushEvents(True)
 
 def nukeRules():
-    global node
     rules = node.getRules()
     rules["list"] = [];
     node.setRules(rules);
 
 def appendRule(newRule):
-    global node
     rules = node.getRules()
     rules["list"].append(newRule);
     node.setRules(rules);
@@ -189,7 +186,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify dst addr rule with any works
     def test_040_blockDstAddrAny(self):
-        global metaloftIP;
         nukeRules();
         appendRule( createSingleMatcherRule("DST_ADDR","Any", blocked=True) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
@@ -197,7 +193,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify dst addr rule with IP works
     def test_041_blockDstAddr(self):
-        global metaloftIP;
         nukeRules();
         appendRule( createSingleMatcherRule("DST_ADDR",metaloftIP, blocked=True) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
@@ -205,7 +200,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify dst addr rule with CIDR works
     def test_042_blockDstAddrCIDR(self):
-        global metaloftIP;
         nukeRules();
         appendRule( createSingleMatcherRule("DST_ADDR",metaloftIP+"/31", blocked=True) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
@@ -213,7 +207,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify dst addr rule with commas works
     def test_043_blockDstAddrComma(self):
-        global metaloftIP;
         nukeRules();
         appendRule( createSingleMatcherRule("DST_ADDR","1.2.3.4/31," + metaloftIP+",5.6.7.8", blocked=True) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
@@ -221,7 +214,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify dst addr rule with commas works
     def test_044_blockDstAddrRange(self):
-        global metaloftIPRange;
         nukeRules();
         appendRule( createSingleMatcherRule("DST_ADDR",metaloftIPRange, blocked=True) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
@@ -229,7 +221,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify dst addr rule with commas works
     def test_045_blockDstAddrRange2(self):
-        global metaloftIPRange2;
         nukeRules();
         appendRule( createSingleMatcherRule("DST_ADDR",metaloftIPRange2, blocked=True) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
@@ -237,7 +228,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify src intf any rule works
     def test_050_blockDstIntfAny(self):
-        global metaloftIP;
         nukeRules();
         appendRule( createSingleMatcherRule( "DST_INTF", "any" ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
@@ -245,7 +235,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify dst intf number rule works
     def test_051_blockDstIntf(self):
-        global metaloftIP;
         nukeRules();
         appendRule( createSingleMatcherRule( "DST_INTF", ClientControl.interfaceExternal ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
@@ -253,7 +242,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify dst intf number rule doesnt match everythin
     def test_052_blockDstIntfWrongIntf(self):
-        global metaloftIP;
         nukeRules();
         appendRule( createSingleMatcherRule( "DST_INTF", ClientControl.interfaceExternal + 1 ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
@@ -261,7 +249,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify dst intf with commas blocks
     def test_053_blockDstIntfCommas(self):
-        global metaloftIP;
         nukeRules();
         appendRule( createSingleMatcherRule( "DST_INTF", "99," + str(ClientControl.interfaceExternal) +  ", 100" ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
@@ -269,7 +256,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify dst intf wan is blockde
     def test_054_blockDstIntfWan(self):
-        global metaloftIP;
         nukeRules();
         appendRule( createSingleMatcherRule( "DST_INTF", "wan" ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
@@ -277,7 +263,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify dst intf non_wan not blocked
     def test_055_blockDstIntfNonWan(self):
-        global metaloftIP;
         nukeRules();
         appendRule( createSingleMatcherRule( "DST_INTF", "non_wan" ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
@@ -285,7 +270,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify src intf any rule works
     def test_060_blockSrcIntfAny(self):
-        global metaloftIP;
         nukeRules();
         appendRule( createSingleMatcherRule( "SRC_INTF", "any" ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
@@ -293,7 +277,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify src intf number rule works
     def test_061_blockSrcIntf(self):
-        global metaloftIP;
         nukeRules();
         appendRule( createSingleMatcherRule( "SRC_INTF", ClientControl.interface ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
@@ -301,7 +284,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify src intf number rule doesnt match everythin
     def test_062_blockSrcIntfWrongIntf(self):
-        global metaloftIP;
         nukeRules();
         appendRule( createSingleMatcherRule( "SRC_INTF", ClientControl.interface + 1 ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
@@ -309,7 +291,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify src intf with commas blocks
     def test_063_blockSrcIntfCommas(self):
-        global metaloftIP;
         nukeRules();
         appendRule( createSingleMatcherRule( "SRC_INTF", "99," + str(ClientControl.interface) +  ", 100" ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
@@ -317,7 +298,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify src intf non_wan is blocked
     def test_064_blockSrcIntfWan(self):
-        global metaloftIP;
         nukeRules();
         appendRule( createSingleMatcherRule( "SRC_INTF", "non_wan" ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
@@ -325,7 +305,6 @@ class FirewallTests(unittest.TestCase):
 
     # verify src intf wan not blocked
     def test_065_blockSrcIntfNonWan(self):
-        global metaloftIP;
         nukeRules();
         appendRule( createSingleMatcherRule( "SRC_INTF", "wan" ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
