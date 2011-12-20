@@ -179,7 +179,7 @@ Ung.Util= {
         window.location.href="/webui";
     },
     rpcExHandler: function(exception) {
-        if(exception instanceof JSONRpcClient.Exception)
+        if(exception instanceof JSONRpcClientException)
         {
             if(exception.code == 550 || exception.code == 12029 || exception.code == 12019 )
             {
@@ -221,6 +221,15 @@ Ung.Util= {
             }
             /* handle connection lost */
             if(exception.code==550 || exception.code == 12029 || exception.code == 12019) {
+                message  = i18n._("The connection to the server has been lost.") + "<br/>";
+                message += i18n._("Press OK to return to the login page.") + "<br/>";
+                message += i18n._("<br/>");
+                message += i18n._("An error has occured") + ": " + exception.name + ": " + exception.message + "<br/>";
+                if (type !== "noAlert")
+                    handler = Ung.Util.goToStartPage; //override handler
+            }
+            /* handle connection lost (this happens on windows only for some reason) */
+            if(exception.name == "JSONRpcClientException" && exception.fileName.indexOf("jsonrpc") >= 0) {
                 message  = i18n._("The connection to the server has been lost.") + "<br/>";
                 message += i18n._("Press OK to return to the login page.") + "<br/>";
                 message += i18n._("<br/>");
