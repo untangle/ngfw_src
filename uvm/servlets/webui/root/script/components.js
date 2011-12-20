@@ -2701,12 +2701,13 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         var selPolicy = this.getSelectedPolicy();
         if (selQuery != null && selPolicy != null) {
             Ext.MessageBox.wait(i18n._("Exporting Events..."), i18n._("Please wait"));
-    	    var gridName = ( (this.name!=null) ? this.name : i18n._("Event Log") ) + " " +selQueryName;
-            gridName=gridName.trim().replace(/ /g,"_");
+    	    var name = ( (this.name!=null) ? this.name : i18n._("Event Log") ) + " " +selQueryName;
+            name=name.trim().replace(/ /g,"_");
             var exportForm = document.getElementById('exportEventLogEvents');
-            exportForm["name"].value=gridName;
-            exportForm["data"].value="";
-            exportForm["data"].value=Ext.encode(rpc.jsonrpc.UvmContext.getEvents( selQuery, selPolicy, 1000000 ));
+            exportForm["name"].value=name;
+            exportForm["query"].value=selQuery;
+            exportForm["policyId"].value=selPolicy;
+            //exportForm["data"].value=Ext.encode(rpc.jsonrpc.UvmContext.getEvents( selQuery, selPolicy, 1000000 ));
             exportForm.submit();
             Ext.MessageBox.hide();
         }
@@ -2773,17 +2774,11 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     // get selected policy
     getSelectedPolicy : function() {
         var selObj = document.getElementById('selectPolicy_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
-        var result = null;
-        var id = -1;
+        var result = "";
         if (selObj !== null && selObj.selectedIndex >= 0) {
-            id = selObj.options[selObj.selectedIndex].value;
+            result = selObj.options[selObj.selectedIndex].value;
         }
-        for (var i = 0; i < rpc.policies.length ; i++) {
-            if (rpc.policies[i].id == id)
-                return rpc.policies[i];
-        }
-        Ext.MessageBox.alert(i18n._('Warning'), i18n._("Unable to find policy ") + id);
-        return null;
+        return result;
     },
     makeSelectable : function() {
         var elems=Ext.DomQuery.select("div[unselectable=on]", this.dom);

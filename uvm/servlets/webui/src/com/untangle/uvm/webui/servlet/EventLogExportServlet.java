@@ -9,6 +9,7 @@ import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -30,7 +31,7 @@ import com.untangle.uvm.util.I18nUtil;
 @SuppressWarnings({ "serial", "unchecked" })
 public class EventLogExportServlet extends HttpServlet
 {
-
+    private final int MAX_RESULTS = 10;
 	private final Logger logger = Logger.getLogger(getClass());
 	
     /** character encoding */
@@ -45,16 +46,33 @@ public class EventLogExportServlet extends HttpServlet
 	private void processExport(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException
     {
-		String gridData = req.getParameter("data");
-        String gridName = req.getParameter("name");
+        String name = req.getParameter("name");
+		String query = req.getParameter("query");
+		String policyIdStr = req.getParameter("policyId");
 
+        if (name == null || query == null || policyIdStr == null) {
+            logger.warn("Invalid parameters: " + name + " , " + query + " , " + policyIdStr);
+            return;
+        }
+
+        Long policyId = Long.parseLong(policyIdStr);
+        
+        logger.warn("Export CSV( name:" + name + " query: " + query + " policyId: " + policyId + " policyIdStr" + policyIdStr + " )");
+
+        ArrayList results = UvmContextFactory.context().getEvents( query, policyId, MAX_RESULTS );
+
+        logger.warn(results);
+        
         // Write content type and also length (determined via byte array).
         resp.setCharacterEncoding(CHARACTER_ENCODING);
-        resp.setHeader("Content-Disposition","attachment; filename="+gridName+".json");
+        resp.setHeader("Content-Disposition","attachment; filename="+name+".csv");
 
         logger.warn("Writer: " + resp.getWriter());
         logger.warn("data: " + resp.getWriter());
-        
-        resp.getWriter().write(gridData);
+
+        /**
+         * FIXME XXX
+         */
+        resp.getWriter().write(results.toString());
 	}
 }

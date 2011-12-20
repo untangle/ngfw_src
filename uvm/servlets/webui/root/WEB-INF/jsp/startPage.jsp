@@ -102,7 +102,8 @@
 </form>
 <form name="exportEventLogEvents" id="exportEventLogEvents" method="post" action="eventLogExport" style="display:none;">
 <input type="hidden" name="name" value=""/>
-<input type="hidden" name="data" value=""/>
+<input type="hidden" name="query" value=""/>
+<input type="hidden" name="policyId" value=""/>
 </form>
 </div>
 <div id="extra-div-1" style="display:none;"><span></span></div>

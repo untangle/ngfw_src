@@ -376,8 +376,14 @@ public interface UvmContext
      */
     void loadLibrary(String libname);
 
-    ArrayList getEvents( final String query, final Policy policy, final int limit );
+    /**
+     * Query events in the database
+     */
+    ArrayList getEvents( final String query, final Long policyId, final int limit );
 
+    /**
+     * Convenience method, log an event to the database
+     */
     void logEvent(LogEvent evt);
 
 }

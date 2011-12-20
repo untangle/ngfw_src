@@ -912,26 +912,30 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList getEvents( final String query, final Policy policy, final int limit )
+    public ArrayList getEvents( final String query, final Long policyId, final int limit )
     {
         final LinkedList list = new LinkedList();
 
-        logger.warn("doGetEvents: " + query + " policy: " + policy + " limit: " + limit);
+        logger.warn("getEvents( query: " + query + " policyId: " + policyId + " limit: " + limit + " )");
 
         TransactionWork<Void> tw = new TransactionWork<Void>()
             {
                 public boolean doWork(Session s) throws SQLException
                 {
+                    String queryStr = query;
                     Map<String,Object> params;
-                    if (policy != null) {
-                        params = new HashMap<String,Object>();
-                        params.put("policy", (Object)policy);
-                        params.put("policyId", (Object)policy.getId());
-                    } else {
+                    // if no policyId is specified (or -1), just change all "= :policyID" to "is not null" so it matches all racks
+                    // if policyId is specified, set the variable
+                    if (policyId == null || policyId == -1) {
                         params = Collections.emptyMap();
-                    }
+                        queryStr = queryStr.replace("= :policyId","is not null");
+                        queryStr = queryStr.replace("=:policyId","is not null");
+                    } else {
+                        params = new HashMap<String,Object>();
+                        params.put("policyId", (Object)policyId);
+                    } 
 
-                    runQuery(query, s, list, limit, params);
+                    runQuery(queryStr, s, list, limit, params);
 
                     return true;
                 }
