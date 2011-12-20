@@ -111,7 +111,7 @@ INSERT INTO reports.n_http_events
        c2s_content_length, s2c_content_length, s2c_content_type, hname)
     SELECT
         -- timestamp from request
-        ps.time_stamp,
+        req.time_stamp,
         -- pipeline endpoints
         ps.session_id, ps.client_intf, ps.server_intf,
         ps.c_client_addr, ps.s_client_addr, ps.c_server_addr, ps.s_server_addr,
@@ -141,12 +141,17 @@ INSERT INTO reports.n_http_events
             raise e
 
     def events_cleanup(self, cutoff):
+        # safety margin (events older than this will be dropped no matter what)
+        safety_margin = ' 7 days ';
+        # first clean up all rows n_http_req_line that join with pl_stats (they have been harvested)
         sql_helper.run_sql("""\
-DELETE FROM events.n_http_evt_req WHERE time_stamp < %s""", (cutoff,))
+DELETE FROM events.n_http_req_line WHERE pl_endp_id IN (SELECT pl_endp_id FROM events.pl_stats) OR (time_stamp < %s - interval %s);""", (cutoff,safety_margin))
+        # now clean up all rows in n_http_evt_req  that do NOT join with n_http_req_line (they have been harvested)
         sql_helper.run_sql("""\
-DELETE FROM events.n_http_req_line WHERE time_stamp < %s""", (cutoff,))
+DELETE FROM events.n_http_evt_req WHERE request_id NOT IN (select request_id FROM events.n_http_req_line) OR (time_stamp < %s - interval %s);""", (cutoff,safety_margin))
+        # now clean up all rows in n_http_evt_resp that do NOT join with n_http_req_line (they have been harvested)
         sql_helper.run_sql("""\
-DELETE FROM events.n_http_evt_resp WHERE time_stamp < %s""", (cutoff,))
+DELETE FROM events.n_http_evt_resp WHERE request_id NOT IN (select request_id FROM events.n_http_req_line) OR (time_stamp < %s - interval %s);""", (cutoff,safety_margin))
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_partitioned_table("n_http_events", cutoff)
