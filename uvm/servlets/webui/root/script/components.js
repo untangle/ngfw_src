@@ -2752,6 +2752,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             if (this.settingsCmp.node.nodeContext.nodeDesc.type == "SERVICE") displayStyle = "display:none;"; //hide rack selector for services
             out = [];
             out.push('<select name="Rack" id="selectPolicy_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '" style="'+displayStyle+'">');
+            out.push('<option value="-1" ' + selOpt + '>' + i18n._('All Racks') + '</option>');
             for (i = 0; i < rpc.policies.length; i++) {
                 var policyDesc = rpc.policies[i];
                 var selOpt = ( policyDesc == rpc.currentPolicy ) ? "selected" : "";
