@@ -76,7 +76,7 @@ class SpywareTests(unittest.TestCase):
 
     def test_999_finalTearDown(self):
         global nodeDesc
-        # uvmContext.nodeManager().destroy(nodeDesc['nodeId']);
+        uvmContext.nodeManager().destroy(nodeDesc['nodeId']);
         
 
 
