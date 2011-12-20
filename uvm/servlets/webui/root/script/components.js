@@ -2716,12 +2716,12 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             exportForm["name"].value=name;
             exportForm["query"].value=selQuery;
             exportForm["policyId"].value=selPolicy;
+            exportForm["columnList"].value=this.getColumnList();
             //exportForm["data"].value=Ext.encode(rpc.jsonrpc.UvmContext.getEvents( selQuery, selPolicy, 1000000 ));
             exportForm.submit();
             Ext.MessageBox.hide();
         }
     },
-
     // called when the component is rendered
     onRender : function(container, position) {
         Ung.GridEventLog.superclass.onRender.call(this, container, position);
@@ -2788,6 +2788,20 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             result = selObj.options[selObj.selectedIndex].value;
         }
         return result;
+    },
+    // return the list of columns in the event long as a comma separated list
+    getColumnList : function() {
+        var columnList = "";
+        for (var i=0; i<this.fields.length ; i++) {
+            if (i != 0)
+                columnList += ",";
+            if (this.fields[i].mapping != null)
+                columnList += this.fields[i].mapping;
+            else if (this.fields[i].name != null)
+                columnList += this.fields[i].name;
+        
+        }
+        return columnList;
     },
     makeSelectable : function() {
         var elems=Ext.DomQuery.select("div[unselectable=on]", this.dom);

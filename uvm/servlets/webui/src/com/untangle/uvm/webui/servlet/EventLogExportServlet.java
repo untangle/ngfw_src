@@ -10,6 +10,8 @@ import java.text.StringCharacterIterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
+import java.lang.Class;
+import java.lang.reflect.Method;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -31,9 +33,9 @@ import com.untangle.uvm.util.I18nUtil;
 @SuppressWarnings({ "serial", "unchecked" })
 public class EventLogExportServlet extends HttpServlet
 {
-    private final int MAX_RESULTS = 10;
+    private final int MAX_RESULTS = 10000000;
 	private final Logger logger = Logger.getLogger(getClass());
-	
+
     /** character encoding */
     private static final String CHARACTER_ENCODING = "utf-8";
 
@@ -49,30 +51,58 @@ public class EventLogExportServlet extends HttpServlet
         String name = req.getParameter("name");
 		String query = req.getParameter("query");
 		String policyIdStr = req.getParameter("policyId");
+		String columnListStr = req.getParameter("columnList");
 
-        if (name == null || query == null || policyIdStr == null) {
-            logger.warn("Invalid parameters: " + name + " , " + query + " , " + policyIdStr);
+        if (name == null || query == null || policyIdStr == null || columnListStr == null) {
+            logger.warn("Invalid parameters: " + name + " , " + query + " , " + policyIdStr + " , " + columnListStr);
             return;
         }
 
+        String[] columnList = columnListStr.split(",");
         Long policyId = Long.parseLong(policyIdStr);
         
-        logger.warn("Export CSV( name:" + name + " query: " + query + " policyId: " + policyId + " policyIdStr" + policyIdStr + " )");
+        logger.info("Export CSV( name:" + name + " query: " + query + " policyId: " + policyId + " columnList: " + columnList + ")");
 
+        for ( int i = 0 ; i < columnList.length ; i++ ) {
+            String currentColumnName = columnList[i];
+            columnList[i] = "get" + Character.toUpperCase(currentColumnName.charAt(0)) + currentColumnName.substring(1);
+        }
+        
         ArrayList results = UvmContextFactory.context().getEvents( query, policyId, MAX_RESULTS );
-
-        logger.warn(results);
         
         // Write content type and also length (determined via byte array).
         resp.setCharacterEncoding(CHARACTER_ENCODING);
         resp.setHeader("Content-Disposition","attachment; filename="+name+".csv");
 
-        logger.warn("Writer: " + resp.getWriter());
-        logger.warn("data: " + resp.getWriter());
+        try {
+            // Write the header
+            resp.getWriter().write(columnListStr + "\n");
 
-        /**
-         * FIXME XXX
-         */
-        resp.getWriter().write(results.toString());
-	}
+            // Write each row
+            for (Object result : results) {
+                Class resultClz = result.getClass();
+                int i = 0;
+
+                // Write each cell of each row
+                for (String column : columnList) {
+                    if (i != 0)
+                        resp.getWriter().write(",");
+
+                    Method getMethod = resultClz.getMethod(column);
+                    Object o = getMethod.invoke(result);
+                    String oStr = "";
+                    if (o != null)
+                        oStr = o.toString().replaceAll(",","");
+                    
+                    resp.getWriter().write(oStr);
+                    i++;
+                }
+                
+                resp.getWriter().write("\n");
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to export CSV.",e);
+        }
+        
+    }
 }

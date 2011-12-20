@@ -104,6 +104,7 @@
 <input type="hidden" name="name" value=""/>
 <input type="hidden" name="query" value=""/>
 <input type="hidden" name="policyId" value=""/>
+<input type="hidden" name="columnList" value=""/>
 </form>
 </div>
 <div id="extra-div-1" style="display:none;"><span></span></div>

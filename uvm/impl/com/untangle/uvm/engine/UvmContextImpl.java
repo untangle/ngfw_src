@@ -916,7 +916,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     {
         final LinkedList list = new LinkedList();
 
-        logger.warn("getEvents( query: " + query + " policyId: " + policyId + " limit: " + limit + " )");
+        logger.info("getEvents( query: " + query + " policyId: " + policyId + " limit: " + limit + " )");
 
         TransactionWork<Void> tw = new TransactionWork<Void>()
             {
