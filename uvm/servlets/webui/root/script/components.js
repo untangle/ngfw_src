@@ -179,7 +179,7 @@ Ung.Util= {
         window.location.href="/webui";
     },
     rpcExHandler: function(exception) {
-        if(exception instanceof JSONRpcClientException)
+        if(exception instanceof JSONRpcClient.Exception)
         {
             if(exception.code == 550 || exception.code == 12029 || exception.code == 12019 )
             {
@@ -653,7 +653,7 @@ Ung.Util= {
     maxRowCount : 2147483647,
     timestampFieldWidth : 130,
     ipFieldWidth : 100,
-    portFieldWidth : 100,
+    portFieldWidth : 50,
     hostnameFieldWidth : 120,
     uriFieldWidth : 200,
     usernameFieldWidth : 120,
