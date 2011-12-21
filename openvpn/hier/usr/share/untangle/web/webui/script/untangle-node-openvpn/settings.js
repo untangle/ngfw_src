@@ -381,6 +381,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         gridConnectionEventLog : null,
         initComponent : function(container, position) {
             this.configState=this.getRpcNode().getConfigState();
+            this.buildActiveClientsGrid();
             this.buildStatus();
             var tabs = [this.panelStatus];
 
@@ -454,24 +455,107 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             return this.groupsStore;
         },
 
-        // Block lists panel
+        // active connections/sessions grip
+        buildActiveClientsGrid : function()
+        {
+            this.gridActiveClients = new Ung.EditorGrid({
+                name : "gridActiveClients",
+                settingsCmp : this,
+                emptyRow : {
+                    "address" : "",
+                    "clientName" : "",
+                    "start" : "",
+                    "bytesRx" : "",
+                    "bytesTx" : ""
+                },
+                height : 400,
+                hasAdd : false,
+                configAdd : null,
+                hasEdit : false,
+                configEdit : null,
+                hasDelete : false,
+                configDelete : null,
+                columnsDefaultSortable : true,
+                title : this.i18n._("Active Clients"),
+                qtip : this.i18n._("The Active Clients list shows connected clients."),
+                paginated : false,
+                bbar : new Ext.Toolbar({
+                    items : [
+                        '-',
+                        {
+                            xtype : 'tbbutton',
+                            id: "refresh_"+this.getId(),
+                            text : i18n._('Refresh'),
+                            name : "Refresh",
+                            tooltip : i18n._('Refresh'),
+                            iconCls : 'icon-refresh',
+                            handler : function() {
+                                this.gridActiveClients.store.reload();
+                            }.createDelegate(this)
+                        }
+                    ]
+                }),
+                recordJavaClass : "com.untangle.node.openvpn.ClientConnectEvent",
+                proxyRpcFn : this.getRpcNode().getActiveClients,
+                fields : [{
+                    name : "address"
+                },{
+                    name : "clientName"
+                },{
+                    name : "start"
+                },{
+                    name : "bytesRx"
+                },{
+                    name : "bytesTx"
+                }],
+                columns : [{
+                    id : "address",
+                    header : this.i18n._("Address"),
+                    width : 150
+                },{
+                    id : "clientName",
+                    header : this.i18n._("Client"),
+                    width : 200
+                },{
+                    id : "start",
+                    header : this.i18n._("Start Time"),
+                    width : 180,
+                    renderer : function(value) { return i18n.timestampFormat(value); }
+                },{
+                    id : "bytesRx",
+                    header : this.i18n._("Rx Bytes"),
+                    width : 180
+                },{
+                    id : "bytesTx",
+                    header : this.i18n._("Tx Bytes"),
+                    width : 180
+                }]
+            });
+        },
+
+        // Status panel
         buildStatus : function() {
             var statusLabel = "";
             var serverButtonDisabled = false;
             var clientButtonDisabled = false;
+            var wizardVisible = true;
             if (this.configState == "UNCONFIGURED") {
                 statusLabel = this.i18n._("Unconfigured: Use buttons below.");
+                wizardVisible = true;
             } else if (this.configState == "CLIENT") {
                 statusLabel = String.format(this.i18n._("VPN Client: Connected to {0}"), this.getVpnServerAddress());
                 clientButtonDisabled = true;
                 serverButtonDisabled = true;
+                wizardVisible = false;
             } else if (this.configState == "SERVER_ROUTE") {
                 statusLabel = this.i18n._("VPN Server");
                 clientButtonDisabled = true;
                 serverButtonDisabled = true;
+                wizardVisible = false;
             } else {
                 clientButtonDisabled = true;
                 serverButtonDisabled = true;
+                wizardVisible = false;
             }
             this.panelStatus = new Ext.Panel({
                 name : 'Status',
@@ -484,22 +568,29 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
-                    autoHeight : true,
                     buttonAlign : 'left'
                 },
                 items : [{
                     title : this.i18n._('Current Mode'),
+                    autoHeight : true,
                     items : [{
                         xtype : "textfield",
-                        name : "Status",
+                        name : "Mode",
                         readOnly : true,
-                        fieldLabel : this.i18n._("Status"),
+                        fieldLabel : this.i18n._("Mode"),
                         width : 250,
                         value : statusLabel
+                    }, {
+                        html : "<i>" + this.i18n._("To reconfigure the current OpenVPN mode remove the application from the rack and reinstall.") + "</i>",
+                        cls: 'description',
+                        border : false,
+                        hidden : wizardVisible
                     }]
                 }, {
                     title : this.i18n._('Wizard'),
                     layout : 'table',
+                    hidden : !wizardVisible,
+                    autoHeight : true,
                     layoutConfig : {
                         columns : 2
                     },
@@ -543,6 +634,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }]
                 }]
             });
+
+            if (this.configState == "SERVER_ROUTE")
+                this.panelStatus.add( this.gridActiveClients );
         },
 
         // Connections Event Log

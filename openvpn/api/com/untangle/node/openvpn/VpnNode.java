@@ -1,6 +1,6 @@
 package com.untangle.node.openvpn;
 
-import java.util.LinkedList;
+import java.util.List;
 
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPAddress;
@@ -64,10 +64,7 @@ public interface VpnNode extends Node
     public void setClients( ClientList parameters ) throws Exception;
     public void setSites( SiteList parameters ) throws Exception;
 
-    /**
-     * FIXME
-     */
-    public LinkedList getActiveClients();
+    public List<ClientConnectEvent> getActiveClients();
 
     public EventLogQuery[] getConnectEventsQueries();
 

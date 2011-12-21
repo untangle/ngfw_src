@@ -34,9 +34,6 @@ class OpenVpnMonitor implements Runnable
     /* Log every 5 minutes ? */
     private static final long   LOG_TIME_MSEC = 5 * 60 * 1000;
 
-    /* Just for debugging */
-    // private static final long   LOG_TIME_MSEC = 1 * 30 * 1000;
-
     /* Delay a second while the thread is joining */
     private static final long   THREAD_JOIN_TIME_MSEC = 1000;
 
@@ -55,9 +52,6 @@ class OpenVpnMonitor implements Runnable
     private static final int TX_INDEX      = 5;
     private static final int START_INDEX   = 7;
     private static final int TOTAL_INDEX   = 8;
-
-    private static final String ACTIVE_SESSIONS_REPO_NAME = I18nUtil.marktr("Active Clients");
-    private static final String ALL_SESSIONS_REPO_NAME = I18nUtil.marktr("All Clients");
 
     private final Logger logger = Logger.getLogger( this.getClass());
 
@@ -148,7 +142,7 @@ class OpenVpnMonitor implements Runnable
      * Method returns a list of open clients as ClientConnectEvents w/o
      * an end date.
      */
-    private synchronized List<ClientConnectEvent> getOpenConnectionsAsEvents()
+    public synchronized List<ClientConnectEvent> getOpenConnectionsAsEvents()
     {
         Date now = new Date();
         List<ClientConnectEvent> ret = new ArrayList<ClientConnectEvent>();

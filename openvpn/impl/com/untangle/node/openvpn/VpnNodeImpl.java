@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -832,10 +833,9 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         this.sandbox.setSiteList( parameters );
     }
 
-    /* FIXME */
-    public LinkedList getActiveClients()
+    public List<ClientConnectEvent> getActiveClients()
     {
-        return null; /* FIXME */
+        return this.openVpnMonitor.getOpenConnectionsAsEvents();
     }
 
     public EventLogQuery[] getConnectEventsQueries()
