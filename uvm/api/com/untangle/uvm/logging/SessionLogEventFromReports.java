@@ -54,6 +54,12 @@ import com.untangle.uvm.node.PipelineEndpoints;
         private String firewallRuleDescription;
         private String pfProtocol;
         private Boolean pfBlocked;
+        private String classdApplication;
+        private String classdProtoChain;
+        private String classdDetail;
+        private Boolean classdBlocked;
+        private Boolean classdFlagged;
+        private Integer classdConfidence;
         private Boolean ipsBlocked;
         private String ipsName;
         private String ipsDescription;
@@ -154,6 +160,30 @@ import com.untangle.uvm.node.PipelineEndpoints;
         @Column(name="pf_blocked")
         public Boolean getPfBlocked() { return pfBlocked; }
         public void setPfBlocked(Boolean pfBlocked) { this.pfBlocked = pfBlocked; }
+
+        @Column(name="classd_application")
+        public String getClassdApplication() { return classdApplication; }
+        public void setClassdApplication(String classdApplication) { this.classdApplication = classdApplication; }
+
+        @Column(name="classd_protochain")
+        public String getClassdProtoChain() { return classdProtoChain; }
+        public void setClassdProtoChain(String classdProtoChain) { this.classdProtoChain = classdProtoChain; }
+
+        @Column(name="classd_detail")
+        public String getClassdDetail() { return classdDetail; }
+        public void setClassdDetail(String classdDetail) { this.classdDetail = classdDetail; }
+        
+        @Column(name="classd_blocked")
+        public Boolean getClassdBlocked() { return classdBlocked; }
+        public void setClassdBlocked(Boolean classdBlocked) { this.classdBlocked = classdBlocked; }
+
+        @Column(name="classd_flagged")
+        public Boolean getClassdFlagged() { return classdFlagged; }
+        public void setClassdFlagged(Boolean classdFlagged) { this.classdFlagged = classdFlagged; }
+
+        @Column(name="classd_confidence")
+        public Integer getClassdConfidence() { return classdConfidence; }
+        public void setClassdConfidence(Integer classdConfidence) { this.classdConfidence = classdConfidence; }
 
         @Column(name="ips_blocked")
         public Boolean getIpsBlocked() { return ipsBlocked; }
