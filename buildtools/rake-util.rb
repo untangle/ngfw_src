@@ -210,8 +210,7 @@ class JavaCompiler
     debug "javac classpath: #{cp}"
     info "[javac -d] #{dstdir}"
 
-    javac = [JavacCommand, "-g", "-classpath", cp, "-d", dstdir, "@" + files.path]
-    javac << "-Xlint" unless ENV["UNTANGLE_NO_WARNINGS"]
+    javac = [JavacCommand, "-g", "-classpath", cp, "-Xlint", "-d", dstdir, "@" + files.path]
     raise "javac failed" unless Kernel.system(*javac)
   end
 
