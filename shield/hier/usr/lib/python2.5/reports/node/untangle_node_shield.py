@@ -58,17 +58,16 @@ class Shield(Node):
         reports.engine.register_fact_table(ft)
 
     def events_cleanup(self, cutoff, safety_margin):
-        pass
-#         try:
-#             sql_helper.run_sql("""\
-# DELETE FROM events.n_shield_rejection_evt
-#  WHERE time_stamp < %s""", (cutoff,))
-#         except: pass
-#         try:
-#             sql_helper.run_sql("""\
-# DELETE FROM events.n_shield_statistic_evt
-#  WHERE time_stamp < %s""", (cutoff,))
-#         except: pass
+        try:
+            sql_helper.run_sql("""\
+DELETE FROM events.n_shield_rejection_evt
+WHERE (time_stamp < %s - interval %s)""", (cutoff,safety_margin))
+        except: pass
+        try:
+            sql_helper.run_sql("""\
+DELETE FROM events.n_shield_statistic_evt
+WHERE (time_stamp < %s - interval %s)""", (cutoff,safety_margin))
+        except: pass
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_partitioned_table("n_shield_rejection_totals", cutoff)

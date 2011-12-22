@@ -72,8 +72,11 @@ class Firewall(Node):
     def events_cleanup(self, cutoff, safety_margin):
         sql_helper.run_sql("""\
 DELETE FROM events.n_firewall_evt
-WHERE pl_endp_id IN (SELECT pl_endp_id FROM reports.sessions)
-OR (time_stamp < %s - interval %s)""", (cutoff, safety_margin))
+WHERE pl_endp_id IN (SELECT pl_endp_id FROM reports.sessions)""")
+
+        sql_helper.run_sql("""\
+DELETE FROM events.n_firewall_evt
+WHERE (time_stamp < %s - interval %s)""", (cutoff, safety_margin))
 
         sql_helper.run_sql("""\
 DELETE FROM events.n_firewall_statistic_evt WHERE time_stamp < %s""", (cutoff,))
