@@ -80,6 +80,7 @@ class SimpleEvent<E extends LogEvent> implements EventRepository<E>
     private void doGetEvents()
     {
         synchronized (list) {
+            list.clear();
             final NodeContext tctx = eventLogger.getNodeContext();
 
             logger.warn("doGetEvents for " + tctx);
