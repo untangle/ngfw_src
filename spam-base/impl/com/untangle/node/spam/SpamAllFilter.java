@@ -37,7 +37,7 @@ public class SpamAllFilter implements ListEventFilter<MailLogEventFromReports>
             this.vendor = vendor;
          
         logQuery = "FROM MailLogEventFromReports AS evt" +
-            " WHERE evt.addrKind = 'T'" +
+            " WHERE evt.addrKind IN ('T', 'C')" +
             " AND evt." + this.vendor + "Action IS NOT NULL" +
             " AND evt.policyId = :policyId" + 
             " ORDER BY evt.timeStamp DESC";
