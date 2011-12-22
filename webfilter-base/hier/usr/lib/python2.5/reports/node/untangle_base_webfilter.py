@@ -1,6 +1,3 @@
-# Aaron Read <amread@untangle.com>
-# Sebastien Delafond <seb@untangle.com>
-
 import gettext
 import logging
 import mx
@@ -104,7 +101,9 @@ class WebFilterBaseNode(Node):
 
     def events_cleanup(self, cutoff, safety_margin):
         sql_helper.run_sql("""\
-DELETE FROM events.n_webfilter_evt WHERE time_stamp < %s""", (cutoff,))
+DELETE FROM events.n_webfilter_evt 
+WHERE request_id IN (SELECT request_id FROM reports.n_http_events)
+OR (time_stamp < %s- interval %s)""", (cutoff, safety_margin))
 
     def reports_cleanup(self, cutoff):
         pass
