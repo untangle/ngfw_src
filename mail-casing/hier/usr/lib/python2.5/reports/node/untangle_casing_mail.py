@@ -53,7 +53,16 @@ class MailCasing(Node):
         self.__make_email_table(start_date, end_date)
 
     def events_cleanup(self, cutoff, safety_margin):
-        pass
+        # all rows in n_mail_message_info_addr that join with n_mail_message_info (they have been harvested)
+        sql_helper.run_sql("""\
+DELETE FROM events.n_mail_message_info_addr
+WHERE msg_id IN (select msg_id FROM events.n_mail_message_info)
+OR (time_stamp < %s - interval %s);""", (cutoff,safety_margin))
+        # all rows in n_mail_message_info that join with pl_stats (they have been harvested)
+        sql_helper.run_sql("""\
+DELETE FROM events.n_mail_message_info
+WHERE pl_endp_id IN (SELECT pl_endp_id FROM events.pl_stats)
+OR (time_stamp < %s - interval %s);""", (cutoff,safety_margin))
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_partitioned_table("n_mail_addrs", cutoff)
