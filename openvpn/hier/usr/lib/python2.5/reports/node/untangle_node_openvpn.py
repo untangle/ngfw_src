@@ -99,8 +99,10 @@ CREATE TABLE reports.n_openvpn_stats (
         sql_helper.add_column('reports.n_openvpn_stats', 'remote_address', 'inet')
         sql_helper.add_column('reports.n_openvpn_stats', 'remote_port', 'integer')
         sql_helper.add_column('reports.n_openvpn_stats', 'client_name', 'text')
-
         sql_helper.run_sql('ALTER TABLE reports.n_openvpn_stats ALTER COLUMN event_id TYPE bigint;')
+
+        sql_helper.run_sql('CREATE INDEX n_openvpn_stats_event_id_idx ON reports.n_openvpn_stats(event_id)')
+        sql_helper.run_sql('CREATE INDEX n_openvpn_stats_time_stamp_idx ON reports.n_openvpn_stats(time_stamp)')
 
         conn = sql_helper.get_connection()
         try:

@@ -140,6 +140,7 @@ CREATE TABLE reports.n_cpd_login_events (
         sql_helper.run_sql('ALTER TABLE reports.n_cpd_login_events ALTER COLUMN event_id TYPE bigint;')
 
         sql_helper.run_sql('CREATE INDEX n_cpd_login_events_event_id_idx ON reports.n_cpd_login_events(event_id)')
+        sql_helper.run_sql('CREATE INDEX n_cpd_login_events_time_stamp_idx ON reports.n_cpd_login_events(time_stamp)')
 
         conn = sql_helper.get_connection()
         try:
@@ -173,6 +174,7 @@ CREATE TABLE reports.n_cpd_block_events (
         sql_helper.run_sql('ALTER TABLE reports.n_cpd_block_events ALTER COLUMN event_id TYPE bigint;')
 
         sql_helper.run_sql('CREATE INDEX n_cpd_block_events_event_id_idx ON reports.n_cpd_block_events(event_id)')
+        sql_helper.run_sql('CREATE INDEX n_cpd_block_events_time_stamp_idx ON reports.n_cpd_block_events(time_stamp)')
 
         conn = sql_helper.get_connection()
         try:

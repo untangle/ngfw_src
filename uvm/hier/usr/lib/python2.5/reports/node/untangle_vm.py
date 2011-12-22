@@ -65,6 +65,25 @@ class UvmNode(Node):
 
         sql_helper.run_sql('CREATE INDEX session_totals_trunc_time_idx ON reports.session_totals(trunc_time)')
 
+        # firewall event log query indexes
+        # sql_helper.run_sql('CREATE INDEX sessions_firewall_rule_index_idx ON reports.sessions(firewall_rule_index)')
+        # sql_helper.run_sql('CREATE INDEX sessions_firewall_was_blocked_idx ON reports.sessions(firewall_was_blocked)')
+
+        # spyware event log query indexes
+        # sql_helper.run_sql('CREATE INDEX sessions_sw_access_ident_idx ON reports.sessions(sw_access_ident)')
+
+        # ips event log query indexes
+        # sql_helper.run_sql('CREATE INDEX sessions_ips_name_idx ON reports.sessions(ips_name)')
+        # sql_helper.run_sql('CREATE INDEX sessions_ips_blocked_idx ON reports.sessions(ips_blocked)')
+
+        # protofilter event log query indexes
+        # sql_helper.run_sql('CREATE INDEX sessions_pf_protocol_idx ON reports.sessions(pf_protocol)')
+        # sql_helper.run_sql('CREATE INDEX sessions_pf_blocked_idx ON reports.sessions(pf_blocked)')
+
+        # bandwidth event log query indexes
+        # sql_helper.run_sql('CREATE INDEX sessions_bandwidth_priority_idx ON reports.sessions(bandwidth_priority)')
+
+
         self.branded_name = self.__get_branded_name() or self.name
 
     @print_timing
