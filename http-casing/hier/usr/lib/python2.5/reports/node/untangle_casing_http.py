@@ -166,13 +166,22 @@ INSERT INTO reports.n_http_events
     def events_cleanup(self, cutoff, safety_margin):
         # first clean up all rows n_http_req_line that join with pl_stats (they have been harvested)
         sql_helper.run_sql("""\
-DELETE FROM events.n_http_req_line WHERE pl_endp_id IN (SELECT pl_endp_id FROM events.pl_stats) OR (time_stamp < %s - interval %s);""", (cutoff,safety_margin))
+DELETE FROM events.n_http_req_line WHERE pl_endp_id IN (SELECT pl_endp_id FROM events.pl_stats)""")
         # now clean up all rows in n_http_evt_req  that do NOT join with n_http_req_line (they have been harvested)
         sql_helper.run_sql("""\
-DELETE FROM events.n_http_evt_req WHERE request_id NOT IN (select request_id FROM events.n_http_req_line) OR (time_stamp < %s - interval %s);""", (cutoff,safety_margin))
+DELETE FROM events.n_http_evt_req WHERE request_id NOT IN (select request_id FROM events.n_http_req_line)""")
         # now clean up all rows in n_http_evt_resp that do NOT join with n_http_req_line (they have been harvested)
+        sql_helper.run_sql("""\t
+DELETE FROM events.n_http_evt_resp WHERE request_id NOT IN (select request_id FROM events.n_http_req_line)""")
+
+        # clean up all events older than safety margin
         sql_helper.run_sql("""\
-DELETE FROM events.n_http_evt_resp WHERE request_id NOT IN (select request_id FROM events.n_http_req_line) OR (time_stamp < %s - interval %s);""", (cutoff,safety_margin))
+DELETE FROM events.n_http_req_line WHERE (time_stamp < %s - interval %s);""", (cutoff,safety_margin))
+        sql_helper.run_sql("""\
+DELETE FROM events.n_http_evt_req WHERE (time_stamp < %s - interval %s);""", (cutoff,safety_margin))
+        sql_helper.run_sql("""\
+DELETE FROM events.n_http_evt_resp WHERE (time_stamp < %s - interval %s);""", (cutoff,safety_margin))
+
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_partitioned_table("n_http_events", cutoff)
