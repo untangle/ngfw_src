@@ -52,7 +52,7 @@ class MailCasing(Node):
     def post_facttable_setup(self, start_date, end_date):
         self.__make_email_table(start_date, end_date)
 
-    def events_cleanup(self, cutoff):
+    def events_cleanup(self, cutoff, safety_margin):
         pass
 
     def reports_cleanup(self, cutoff):
