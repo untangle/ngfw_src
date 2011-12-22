@@ -68,14 +68,15 @@ class Firewall(Node):
 
         return reports.Report(self, sections)
 
-
+    @sql_helper.print_timing
     def events_cleanup(self, cutoff, safety_margin):
-        try:
-            sql_helper.run_sql("""\
-DELETE FROM events.n_firewall_evt WHERE time_stamp < %s""", (cutoff,))
-            sql_helper.run_sql("""\
+        sql_helper.run_sql("""\
+DELETE FROM events.n_firewall_evt
+WHERE pl_endp_id IN (SELECT pl_endp_id FROM reports.sessions)
+OR (time_stamp < %s - interval %s)""", (cutoff, safety_margin))
+
+        sql_helper.run_sql("""\
 DELETE FROM events.n_firewall_statistic_evt WHERE time_stamp < %s""", (cutoff,))
-        except: pass
 
     def reports_cleanup(self, cutoff):
         pass

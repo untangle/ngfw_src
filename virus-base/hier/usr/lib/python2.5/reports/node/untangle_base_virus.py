@@ -119,13 +119,19 @@ count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
 
     def events_cleanup(self, cutoff, safety_margin):
         sql_helper.run_sql("""\
-DELETE FROM events.n_virus_evt_http WHERE time_stamp < %s""", (cutoff,))
+DELETE FROM events.n_virus_evt_http
+WHERE request_line IN (SELECT request_id FROM reports.n_http_events)
+OR (time_stamp < %s - interval %s)""", (cutoff, safety_margin))
 
         sql_helper.run_sql("""\
-DELETE FROM events.n_virus_evt_mail WHERE time_stamp < %s""", (cutoff,))
+DELETE FROM events.n_virus_evt_mail 
+WHERE msg_id IN (SELECT msg_id FROM reports.n_mail_msgs)
+OR (time_stamp < %s - interval %s)""", (cutoff, safety_margin))
 
         sql_helper.run_sql("""\
-DELETE FROM events.n_virus_evt_smtp WHERE time_stamp < %s""", (cutoff,))
+DELETE FROM events.n_virus_evt_smtp
+WHERE msg_id IN (SELECT msg_id FROM reports.n_mail_addrs)
+OR (time_stamp < %s - interval %s)""", (cutoff, safety_margin))
 
         sql_helper.run_sql("""\
 DELETE FROM events.n_virus_evt WHERE time_stamp < %s""", (cutoff,))

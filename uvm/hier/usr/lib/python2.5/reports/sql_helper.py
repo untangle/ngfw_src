@@ -135,7 +135,7 @@ def run_sql(sql, args=None, connection=None,
             raise e
         
         show_error = True
-        if re.search(r'^\s*(DELETE|DROP) ', sql, re.I):
+        if re.search(r'^\s*(DROP) ', sql, re.I):
             show_error = False
         if re.search(r'^\s*(CREATE|ALTER) ', sql, re.I):
             show_error = False

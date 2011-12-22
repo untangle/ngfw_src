@@ -48,29 +48,28 @@ class Spyware(Node):
         return ['untangle-vm', 'untangle-casing-http']
 
     def events_cleanup(self, cutoff, safety_margin):
-        try:
-            sql_helper.run_sql("""\
+        sql_helper.run_sql("""\
 DELETE FROM events.n_spyware_evt_access
- WHERE time_stamp < %s""", (cutoff,))
-        except: pass
+WHERE pl_endp_id IN (SELECT pl_endp_id FROM reports.sessions)
+OR (time_stamp < %s - interval %s)""",
+                           (cutoff,safety_margin))
 
-        try:
-            sql_helper.run_sql("""\
+        sql_helper.run_sql("""\
 DELETE FROM events.n_spyware_evt_activex
- WHERE time_stamp < %s""", (cutoff,))
-        except: pass
+WHERE time_stamp < %s""",
+                           (cutoff,))
 
-        try:
-            sql_helper.run_sql("""\
+        sql_helper.run_sql("""\
 DELETE FROM events.n_spyware_evt_blacklist
- WHERE time_stamp < %s""", (cutoff,))
-        except: pass
+WHERE request_id IN (SELECT request_id FROM reports.n_http_events)
+OR (time_stamp < %s - interval %s)""",
+                               (cutoff,safety_margin))
 
-        try:
-            sql_helper.run_sql("""\
+        sql_helper.run_sql("""\
 DELETE FROM events.n_spyware_evt_cookie
- WHERE time_stamp < %s""", (cutoff,))
-        except: pass
+WHERE request_id IN (SELECT request_id FROM reports.n_http_events)
+OR (time_stamp < %s - interval %s)""",
+                           (cutoff,safety_margin))
 
     def reports_cleanup(self, cutoff):
         pass
