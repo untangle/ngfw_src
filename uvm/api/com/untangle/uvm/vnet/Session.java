@@ -104,10 +104,11 @@ public interface Session
     //public final String KEY_WEBFILTER_CATEGORIES = "untangle-categories"; /* List<String> */
 
     public final String KEY_CLASSD_APPLICATION = "classd-application"; /* String */
-    public final String KEY_CLASSD_APPLICATION_CATEGORY = "classd-application-category"; /* String */
+    public final String KEY_CLASSD_CATEGORY = "classd-category"; /* String */
     public final String KEY_CLASSD_PROTOCHAIN = "classd-protochain"; /* String */
     public final String KEY_CLASSD_DETAIL = "classd-detail"; /* String */
     public final String KEY_CLASSD_CONFIDENCE = "classd-confidence"; /* Integer */
-
+    public final String KEY_CLASSD_PRODUCTIVITY = "classd-productivity"; /* Integer */
+    public final String KEY_CLASSD_RISK = "classd-risk"; /* Integer */
 }
 
