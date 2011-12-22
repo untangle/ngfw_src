@@ -151,9 +151,32 @@ def run_sql(sql, args=None, connection=None,
 def add_column(tablename, column, type):
     sql = "ALTER TABLE %s ADD COLUMN %s %s" % (tablename, column, type)
     run_sql(sql)
+
 def drop_column(tablename, column):
     sql = "ALTER TABLE %s DROP COLUMN %s" % (tablename, column)
     run_sql(sql)
+
+def convert_column(schema, tablename, columnname, oldtype, newtype):
+    # first verify that the column is currently of type oldtype
+    sql = "select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s' and data_type = '%s'" % (schema, tablename, columnname, oldtype)
+    conn = get_connection()
+    try:
+        curs = conn.cursor()
+        curs.execute(sql)
+        row = curs.fetchone()
+        if row:
+            result = row[0]
+            if result != 1:
+                return
+        else:
+            return
+
+    finally:
+        conn.commit()
+    # If this part is reached we have verified that the column exists and is of type oldtype
+    sql = "ALTER TABLE %s.%s ALTER COLUMN %s TYPE %s" % (schema, tablename, columnname, newtype)
+    run_sql(sql);
+    return;
 
 def drop_partitioned_table(tablename, cutoff_date):
   for t, date in find_partitioned_tables(tablename):

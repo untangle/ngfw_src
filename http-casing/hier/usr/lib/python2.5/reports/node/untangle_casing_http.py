@@ -81,7 +81,7 @@ CREATE TABLE reports.n_http_events (
         sql_helper.add_column('reports.n_http_events', 'start_time', 'timestamp')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
-        sql_helper.run_sql('ALTER TABLE reports.n_http_events ALTER COLUMN event_id TYPE bigint;')
+        sql_helper.convert_column("reports","n_http_events","event_id","integer","bigint");
 
         for vendor in ("untangle", "esoft"):
             sql_helper.drop_column('reports.n_http_events', 'wf_%s_action' % vendor)
