@@ -163,9 +163,7 @@ INSERT INTO reports.n_http_events
             conn.rollback()
             raise e
 
-    def events_cleanup(self, cutoff):
-        # safety margin (events older than this will be dropped no matter what)
-        safety_margin = ' 7 days ';
+    def events_cleanup(self, cutoff, safety_margin):
         # first clean up all rows n_http_req_line that join with pl_stats (they have been harvested)
         sql_helper.run_sql("""\
 DELETE FROM events.n_http_req_line WHERE pl_endp_id IN (SELECT pl_endp_id FROM events.pl_stats) OR (time_stamp < %s - interval %s);""", (cutoff,safety_margin))

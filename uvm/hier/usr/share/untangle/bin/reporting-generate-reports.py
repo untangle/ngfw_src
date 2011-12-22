@@ -60,6 +60,7 @@ no_mail = False
 incremental = False
 attach_csv = False
 attachment_size_limit = 10
+safety_margin = 7 # in days
 events_retention = 0
 end_date = mx.DateTime.today()
 start_time = mx.DateTime.now()
@@ -422,7 +423,7 @@ else:
 
 if not no_cleanup and not simulate:
     events_cutoff = start_time - mx.DateTime.DateTimeDeltaFromSeconds(60 * events_retention)
-    reports.engine.events_cleanup(events_cutoff)
+    reports.engine.events_cleanup(events_cutoff, safety_margin)
 
     if not incremental:
       reports_cutoff = end_date - mx.DateTime.DateTimeDelta(db_retention)
