@@ -178,13 +178,13 @@ public abstract class VirusNodeImpl extends AbstractNode
 
         this.mailInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Email Events"),
                                                         "FROM MailLogEventFromReports evt" + 
-                                                        " WHERE evt.addrKind = 'T'" +
+                                                        " WHERE evt.addrKind IN ('T', 'C')" +
                                                         " AND evt.virus" + vendor + "Clean IS FALSE" + 
                                                         " AND evt.policyId = :policyId" + 
                                                         " ORDER BY evt.timeStamp DESC");
         this.mailCleanEventQuery = new EventLogQuery(I18nUtil.marktr("Clean Email Events"),
                                                      "FROM MailLogEventFromReports evt" + 
-                                                     " WHERE evt.addrKind = 'T'" +
+                                                     " WHERE evt.addrKind IN ('T', 'C')" +
                                                      " AND evt.virus" + vendor + "Clean IS TRUE" + 
                                                      " AND evt.policyId = :policyId" + 
                                                      " ORDER BY evt.timeStamp DESC");

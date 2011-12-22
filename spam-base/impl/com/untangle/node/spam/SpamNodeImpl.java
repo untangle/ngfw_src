@@ -93,7 +93,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
         
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Email Events"),
                                                "FROM MailLogEventFromReports AS evt" +
-                                               " WHERE evt.addrKind = 'T'" +
+                                               " WHERE evt.addrKind IN ('T', 'C')" +
                                                " AND evt." + vendorTag + "Action IS NOT NULL" +
                                                " AND evt.policyId = :policyId" + 
                                                " ORDER BY evt.timeStamp DESC");
@@ -101,14 +101,14 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
         this.spamEventQuery = new EventLogQuery(I18nUtil.marktr("All") + " " + I18nUtil.marktr(badEmailName) + " " + I18nUtil.marktr("Events"),
                                                 "FROM MailLogEventFromReports evt" +
                                                 " WHERE evt." + vendorTag + "IsSpam IS TRUE" + 
-                                                " AND evt.addrKind = 'T'" +
+                                                " AND evt.addrKind IN ('T', 'C')" +
                                                 " AND evt.policyId = :policyId" + 
                                                 " ORDER BY evt.timeStamp DESC");
 
         this.quarantinedEventQuery = new EventLogQuery(I18nUtil.marktr("Quarantined Events"),
                                                        "FROM MailLogEventFromReports evt" +
                                                        " WHERE evt." + vendorTag + "Action = 'Q'" + 
-                                                       " AND evt.addrKind = 'T'" +
+                                                       " AND evt.addrKind IN ('T', 'C')" +
                                                        " AND evt.policyId = :policyId" + 
                                                        " ORDER BY evt.timeStamp DESC");
                                                        
