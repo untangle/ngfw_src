@@ -117,7 +117,7 @@ count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
 
         return Report(self, sections)
 
-    def events_cleanup(self, cutoff):
+    def events_cleanup(self, cutoff, safety_margin):
         sql_helper.run_sql("""\
 DELETE FROM events.n_virus_evt_http WHERE time_stamp < %s""", (cutoff,))
 

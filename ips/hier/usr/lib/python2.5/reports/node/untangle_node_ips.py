@@ -87,7 +87,7 @@ class Ips(Node):
     def parents(self):
         return ['untangle-vm']
 
-    def events_cleanup(self, cutoff):
+    def events_cleanup(self, cutoff, safety_margin):
         try:
             sql_helper.run_sql("""\
 DELETE FROM events.n_ips_evt

@@ -131,7 +131,7 @@ INSERT INTO reports.n_admin_logins
         self.__make_hnames_table(start_date, end_date)
         self.__make_users_table(start_date, end_date)
 
-    def events_cleanup(self, cutoff):
+    def events_cleanup(self, cutoff, safety_margin):
         sql_helper.run_sql("""\
 DELETE FROM events.u_lookup_evt WHERE time_stamp < %s""", (cutoff,))
 

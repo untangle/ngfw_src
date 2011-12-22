@@ -57,7 +57,7 @@ class Template(Node):
         
         return Report(self, sections)
 
-    def events_cleanup(self, cutoff):
+    def events_cleanup(self, cutoff, safety_margin):
         pass
 
     def reports_cleanup(self, cutoff):

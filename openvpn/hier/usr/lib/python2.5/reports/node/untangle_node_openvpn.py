@@ -71,7 +71,7 @@ class OpenVpn(Node):
         sql_helper.drop_partitioned_table("n_openvpn_stats", cutoff)
         sql_helper.drop_partitioned_table("n_openvpn_connect_totals", cutoff)
 
-    def events_cleanup(self, cutoff):
+    def events_cleanup(self, cutoff, safety_margin):
         try:
             sql_helper.run_sql("""\
 DELETE FROM events.n_openvpn_connect_evt WHERE time_stamp < %s""", (cutoff,))

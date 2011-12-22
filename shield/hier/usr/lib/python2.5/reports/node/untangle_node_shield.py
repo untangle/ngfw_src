@@ -57,7 +57,7 @@ class Shield(Node):
                         Column('rejected', 'integer', 'sum(rejected)')])
         reports.engine.register_fact_table(ft)
 
-    def events_cleanup(self, cutoff):
+    def events_cleanup(self, cutoff, safety_margin):
         pass
 #         try:
 #             sql_helper.run_sql("""\
