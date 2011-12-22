@@ -351,7 +351,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                              },
                              title : this.i18n._("Rules"),
                              recordJavaClass : "com.untangle.node.firewall.FirewallRule",
-                             data:this.getSettings().rules.list,
+                             data:this.getRpcNode().getSettings().rules.list,
                              fields : [{
                                  name : 'id'
                              }, {

@@ -38,7 +38,7 @@ import com.untangle.node.util.SimpleExec;
 
 public class FirewallImpl extends AbstractNode implements Firewall
 {
-    private final Logger logger = Logger.getLogger(FirewallImpl.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/firewall-convert-settings.py";
 
@@ -92,9 +92,19 @@ public class FirewallImpl extends AbstractNode implements Firewall
         };
 
     protected final FirewallStatisticManager statisticManager;
+
+    /**
+     * nodeInstanceCount stores the number of this node type initialized thus far
+     * nodeInstanceNum stores the number of this given node type
+     * This is done so each node of this type has a unique sequential identifier
+     */
+    private static int nodeInstanceCount = 0;
+    private final int  nodeInstanceNum;
     
     public FirewallImpl()
     {
+        synchronized(getClass()) { this.nodeInstanceNum = nodeInstanceCount++; };
+
         this.handler = new EventHandler(this);
         this.statisticManager = new FirewallStatisticManager();
 
@@ -342,8 +352,9 @@ public class FirewallImpl extends AbstractNode implements Firewall
     {
         /**
          * set the new ID of each rule
+         * We use 1000*nodeInstanceNum as a starting point so rule IDs don't overlap with other firewall
          */
-        int idx = 0;
+        int idx = (this.nodeInstanceNum * 1000);
         for (FirewallRule rule : newSettings.getRules()) {
             rule.setId(++idx);
         }
