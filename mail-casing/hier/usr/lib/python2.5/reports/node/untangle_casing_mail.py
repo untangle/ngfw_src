@@ -131,7 +131,19 @@ CREATE TABLE reports.n_mail_addrs (
         sql_helper.run_sql('CREATE INDEX n_mail_addrs_msg_id_idx ON reports.n_mail_addrs(msg_id)')
         sql_helper.run_sql('CREATE INDEX n_mail_addrs_event_id_idx ON reports.n_mail_addrs(event_id)')
         sql_helper.run_sql('CREATE INDEX n_mail_addrs_policy_id_idx ON reports.n_mail_addrs(policy_id)')
-        #sql_helper.run_sql('CREATE INDEX n_mail_addrs_time_stamp_idx ON reports.n_mail_addrs(time_stamp)')
+        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_time_stamp_idx ON reports.n_mail_addrs(time_stamp)')
+        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_addr_kind_idx ON reports.n_mail_addrs(addr_kind)')
+
+        # virus blocker event log query indexes
+        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_virus_commtouch_clean_idx ON reports.n_mail_addrs(virus_commtouch_clean)')
+        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_virus_clam_clean_idx ON reports.n_mail_addrs(virus_clam_clean)')
+        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_virus_kaspersky_clean_idx ON reports.n_mail_addrs(virus_kaspersky_clean)')
+
+        # spam blocker event log query indexes
+        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_addr_kind_idx ON reports.n_mail_addrs(addr_kind)')
+        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_sa_action_idx ON reports.n_mail_addrs(sa_action)')
+        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_ct_action_idx ON reports.n_mail_addrs(ct_action)')
+        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_phish_action_idx ON reports.n_mail_addrs(phish_action)')
 
         conn = sql_helper.get_connection()
         try:

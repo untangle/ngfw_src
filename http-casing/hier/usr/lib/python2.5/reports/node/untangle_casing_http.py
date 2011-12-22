@@ -97,7 +97,30 @@ CREATE TABLE reports.n_http_events (
         sql_helper.run_sql('CREATE INDEX n_http_events_request_id_idx ON reports.n_http_events(request_id)')
         sql_helper.run_sql('CREATE INDEX n_http_events_event_id_idx ON reports.n_http_events(event_id)')
         sql_helper.run_sql('CREATE INDEX n_http_events_policy_id_idx ON reports.n_http_events(policy_id)')
-        #sql_helper.run_sql('CREATE INDEX n_http_events_time_stamp_idx ON reports.n_http_events(time_stamp)')
+        sql_helper.run_sql('CREATE INDEX n_http_events_time_stamp_idx ON reports.n_http_events(time_stamp)')
+
+        # web filter event log indexes
+        sql_helper.run_sql('CREATE INDEX n_http_events_wf_esoft_blocked_idx ON reports.n_http_events(wf_esoft_blocked)')
+        sql_helper.run_sql('CREATE INDEX n_http_events_wf_esoft_flagged_idx ON reports.n_http_events(wf_esoft_flagged)')
+        sql_helper.run_sql('CREATE INDEX n_http_events_wf_esoft_category_idx ON reports.n_http_events(wf_esoft_category)')
+
+        # web filter lite event log indexs
+        # sql_helper.run_sql('CREATE INDEX n_http_events_wf_untangle_blocked_idx ON reports.n_http_events(wf_untangle_blocked)')
+        # sql_helper.run_sql('CREATE INDEX n_http_events_wf_untangle_flagged_idx ON reports.n_http_events(wf_untangle_flagged)')
+        # sql_helper.run_sql('CREATE INDEX n_http_events_wf_untangle_category_idx ON reports.n_http_events(wf_untangle_category)')
+
+        # virus blockers(s)
+        # sql_helper.run_sql('CREATE INDEX n_http_events_virus_commtouch_clean_idx ON reports.n_http_events(virus_commtouch_clean)')
+        # sql_helper.run_sql('CREATE INDEX n_http_events_virus_clam_clean_idx ON reports.n_http_events(virus_clam_clean)')
+        # sql_helper.run_sql('CREATE INDEX n_http_events_virus_kaspersky_clean_idx ON reports.n_http_events(virus_kaspersky_clean)')
+
+        # ad blocker
+        # sql_helper.run_sql('CREATE INDEX n_http_events_ab_action_idx ON reports.n_http_events(ab_action)')
+
+        # spyware blocker
+        # sql_helper.run_sql('CREATE INDEX n_http_events_sw_blacklisted_idx ON reports.n_http_events(sw_blacklisted)')
+        # sql_helper.run_sql('CREATE INDEX n_http_events_sw_cookie_ident_idx ON reports.n_http_events(sw_cookie_ident)')
+
 
         conn = sql_helper.get_connection()
         try:
