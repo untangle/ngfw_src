@@ -273,7 +273,7 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports.sessions', 'sw_access_ident', 'text')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
-        sql_helper.run_sql('ALTER TABLE reports.sessions ALTER COLUMN event_id TYPE bigint;')
+        sql_helper.convert_column("reports","sessions","event_id","integer","bigint");
 
         sql_helper.run_sql('CREATE INDEX sessions_pl_endp_id_idx ON reports.sessions(pl_endp_id)')
         sql_helper.run_sql('CREATE INDEX sessions_event_id_idx ON reports.sessions(event_id)')
