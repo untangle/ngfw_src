@@ -17,12 +17,7 @@ import javax.persistence.Transient;
 
 /**
  * A log event and message.
- *
- * Hibernate mappings for this class are in the UVM resource
- * directory.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
+ * This is the base log event for most all events that untangle apps log to the database
  */
 @SuppressWarnings("serial")
 @MappedSuperclass
@@ -44,7 +39,7 @@ public abstract class LogEvent implements Comparable<LogEvent>, Serializable
         return id;
     }
 
-    protected void setId(String id)
+    public void setId(String id)
     {
         this.id = id;
     }

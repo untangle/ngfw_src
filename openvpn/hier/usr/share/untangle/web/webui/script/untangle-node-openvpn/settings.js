@@ -507,6 +507,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name : "bytesRx"
                 },{
                     name : "bytesTx"
+                },{
+                    name : "id"
                 }],
                 columns : [{
                     id : "address",

@@ -154,6 +154,12 @@ class OpenVpnMonitor implements Runnable
                 ret.add(copy);
             }
         }
+
+        int i = 0;
+        for (ClientConnectEvent evt : ret) {
+            evt.setId((new Integer(++i)).toString());
+        }
+        
         return ret;
     }
 
