@@ -74,52 +74,52 @@ CREATE TABLE reports.n_http_events (
     virus_commtouch_clean boolean,
     virus_commtouch_name text)""", 'time_stamp', start_date, end_date)
 
-        sql_helper.add_column('reports.n_http_events', 'event_id', 'bigserial')
-        sql_helper.add_column('reports.n_http_events', 'ab_action', 'character(1)')
-        sql_helper.add_column('reports.n_http_events', 'sw_cookie_ident', 'text')
-        sql_helper.add_column('reports.n_http_events', 'sw_blacklisted', 'boolean')
-        sql_helper.add_column('reports.n_http_events', 'start_time', 'timestamp')
+        sql_helper.add_column('reports', 'n_http_events', 'event_id', 'bigserial')
+        sql_helper.add_column('reports', 'n_http_events', 'ab_action', 'character(1)')
+        sql_helper.add_column('reports', 'n_http_events', 'sw_cookie_ident', 'text')
+        sql_helper.add_column('reports', 'n_http_events', 'sw_blacklisted', 'boolean')
+        sql_helper.add_column('reports', 'n_http_events', 'start_time', 'timestamp')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","n_http_events","event_id","integer","bigint");
 
         for vendor in ("untangle", "esoft"):
-            sql_helper.drop_column('reports.n_http_events', 'wf_%s_action' % vendor)
-            sql_helper.add_column('reports.n_http_events', 'wf_%s_reason' % vendor, 'character(1)')
-            sql_helper.add_column('reports.n_http_events', 'wf_%s_category' % vendor, 'text')
-            sql_helper.add_column('reports.n_http_events', 'wf_%s_blocked' % vendor, 'boolean')
-            sql_helper.add_column('reports.n_http_events', 'wf_%s_flagged' % vendor, 'boolean')
+            sql_helper.drop_column('reports', 'n_http_events', 'wf_%s_action' % vendor)
+            sql_helper.add_column('reports', 'n_http_events', 'wf_%s_reason' % vendor, 'character(1)')
+            sql_helper.add_column('reports', 'n_http_events', 'wf_%s_category' % vendor, 'text')
+            sql_helper.add_column('reports', 'n_http_events', 'wf_%s_blocked' % vendor, 'boolean')
+            sql_helper.add_column('reports', 'n_http_events', 'wf_%s_flagged' % vendor, 'boolean')
 
         for vendor in ("clam", "kaspersky", "commtouch"):
-            sql_helper.add_column('reports.n_http_events', 'virus_%s_clean' % vendor, 'boolean')
-            sql_helper.add_column('reports.n_http_events', 'virus_%s_name' % vendor, 'text')
+            sql_helper.add_column('reports', 'n_http_events', 'virus_%s_clean' % vendor, 'boolean')
+            sql_helper.add_column('reports', 'n_http_events', 'virus_%s_name' % vendor, 'text')
 
-        sql_helper.run_sql('CREATE INDEX n_http_events_request_id_idx ON reports.n_http_events(request_id)')
-        sql_helper.run_sql('CREATE INDEX n_http_events_event_id_idx ON reports.n_http_events(event_id)')
-        sql_helper.run_sql('CREATE INDEX n_http_events_policy_id_idx ON reports.n_http_events(policy_id)')
-        sql_helper.run_sql('CREATE INDEX n_http_events_time_stamp_idx ON reports.n_http_events(time_stamp)')
+        sql_helper.create_index("reports","n_http_events","request_id");
+        sql_helper.create_index("reports","n_http_events","event_id");
+        sql_helper.create_index("reports","n_http_events","policy_id");
+        sql_helper.create_index("reports","n_http_events","time_stamp");
 
         # web filter event log indexes
-        sql_helper.run_sql('CREATE INDEX n_http_events_wf_esoft_blocked_idx ON reports.n_http_events(wf_esoft_blocked)')
-        sql_helper.run_sql('CREATE INDEX n_http_events_wf_esoft_flagged_idx ON reports.n_http_events(wf_esoft_flagged)')
-        sql_helper.run_sql('CREATE INDEX n_http_events_wf_esoft_category_idx ON reports.n_http_events(wf_esoft_category)')
+        sql_helper.create_index("reports","n_http_events","wf_esoft_blocked");
+        sql_helper.create_index("reports","n_http_events","wf_esoft_flagged");
+        sql_helper.create_index("reports","n_http_events","wf_esoft_category");
 
         # web filter lite event log indexs
-        # sql_helper.run_sql('CREATE INDEX n_http_events_wf_untangle_blocked_idx ON reports.n_http_events(wf_untangle_blocked)')
-        # sql_helper.run_sql('CREATE INDEX n_http_events_wf_untangle_flagged_idx ON reports.n_http_events(wf_untangle_flagged)')
-        # sql_helper.run_sql('CREATE INDEX n_http_events_wf_untangle_category_idx ON reports.n_http_events(wf_untangle_category)')
+        # sql_helper.create_index("reports","n_http_events","wf_untangle_blocked");
+        # sql_helper.create_index("reports","n_http_events","wf_untangle_flagged");
+        # sql_helper.create_index("reports","n_http_events","wf_untangle_category");
 
         # virus blockers(s)
-        # sql_helper.run_sql('CREATE INDEX n_http_events_virus_commtouch_clean_idx ON reports.n_http_events(virus_commtouch_clean)')
-        # sql_helper.run_sql('CREATE INDEX n_http_events_virus_clam_clean_idx ON reports.n_http_events(virus_clam_clean)')
-        # sql_helper.run_sql('CREATE INDEX n_http_events_virus_kaspersky_clean_idx ON reports.n_http_events(virus_kaspersky_clean)')
+        # sql_helper.create_index("reports","n_http_events","virus_commtouch_clean");
+        # sql_helper.create_index("reports","n_http_events","virus_clam_clean");
+        # sql_helper.create_index("reports","n_http_events","virus_kaspersky_clean");
 
         # ad blocker
-        # sql_helper.run_sql('CREATE INDEX n_http_events_ab_action_idx ON reports.n_http_events(ab_action)')
+        # sql_helper.create_index("reports","n_http_events","ab_action");
 
         # spyware blocker
-        # sql_helper.run_sql('CREATE INDEX n_http_events_sw_blacklisted_idx ON reports.n_http_events(sw_blacklisted)')
-        # sql_helper.run_sql('CREATE INDEX n_http_events_sw_cookie_ident_idx ON reports.n_http_events(sw_cookie_ident)')
+        # sql_helper.create_index("reports","n_http_events","sw_blacklisted");
+        # sql_helper.create_index("reports","n_http_events","sw_cookie_ident");
 
 
         conn = sql_helper.get_connection()

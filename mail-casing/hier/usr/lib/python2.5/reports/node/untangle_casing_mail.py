@@ -122,44 +122,44 @@ CREATE TABLE reports.n_mail_addrs (
     virus_commtouch_clean boolean,
     virus_commtouch_name text)""", 'time_stamp', start_date, end_date)
 
-        sql_helper.add_column('reports.n_mail_addrs', 'event_id', 'bigserial')
-        sql_helper.add_column('reports.n_mail_addrs', 'sender', 'text')
-        sql_helper.add_column('reports.n_mail_addrs', 'virus_clam_clean', 'boolean')
-        sql_helper.add_column('reports.n_mail_addrs', 'virus_clam_name', 'text')
-        sql_helper.add_column('reports.n_mail_addrs', 'sa_score', 'real')
-        sql_helper.add_column('reports.n_mail_addrs', 'sa_is_spam', 'boolean')
-        sql_helper.add_column('reports.n_mail_addrs', 'sa_action', 'character')
-        sql_helper.add_column('reports.n_mail_addrs', 'ct_score', 'real')
-        sql_helper.add_column('reports.n_mail_addrs', 'ct_is_spam', 'boolean')
-        sql_helper.add_column('reports.n_mail_addrs', 'ct_action', 'character')
-        sql_helper.add_column('reports.n_mail_addrs', 'virus_kaspersky_clean', 'boolean')
-        sql_helper.add_column('reports.n_mail_addrs', 'virus_kaspersky_name', 'text')
-        sql_helper.add_column('reports.n_mail_addrs', 'phish_score', 'real')
-        sql_helper.add_column('reports.n_mail_addrs', 'phish_is_spam', 'boolean')
-        sql_helper.add_column('reports.n_mail_addrs', 'phish_action', 'character')
-        sql_helper.add_column('reports.n_mail_addrs', 'vendor', 'text')
-        sql_helper.add_column('reports.n_mail_addrs', 'virus_commtouch_clean', 'boolean')
-        sql_helper.add_column('reports.n_mail_addrs', 'virus_commtouch_name', 'text')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'event_id', 'bigserial')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'sender', 'text')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'virus_clam_clean', 'boolean')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'virus_clam_name', 'text')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'sa_score', 'real')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'sa_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'sa_action', 'character')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'ct_score', 'real')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'ct_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'ct_action', 'character')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'virus_kaspersky_clean', 'boolean')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'virus_kaspersky_name', 'text')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'phish_score', 'real')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'phish_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'phish_action', 'character')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'vendor', 'text')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'virus_commtouch_clean', 'boolean')
+        sql_helper.add_column('reports', 'n_mail_addrs', 'virus_commtouch_name', 'text')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","n_mail_addrs","event_id","integer","bigint");
 
-        sql_helper.run_sql('CREATE INDEX n_mail_addrs_msg_id_idx ON reports.n_mail_addrs(msg_id)')
-        sql_helper.run_sql('CREATE INDEX n_mail_addrs_event_id_idx ON reports.n_mail_addrs(event_id)')
-        sql_helper.run_sql('CREATE INDEX n_mail_addrs_policy_id_idx ON reports.n_mail_addrs(policy_id)')
-        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_time_stamp_idx ON reports.n_mail_addrs(time_stamp)')
-        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_addr_kind_idx ON reports.n_mail_addrs(addr_kind)')
+        sql_helper.create_index("reports","n_mail_addrs","msg_id");
+        sql_helper.create_index("reports","n_mail_addrs","event_id");
+        sql_helper.create_index("reports","n_mail_addrs","policy_id");
+        sql_helper.create_index("reports","n_mail_addrs","time_stamp");
+        sql_helper.create_index("reports","n_mail_addrs","addr_kind");
 
         # virus blocker event log query indexes
-        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_virus_commtouch_clean_idx ON reports.n_mail_addrs(virus_commtouch_clean)')
-        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_virus_clam_clean_idx ON reports.n_mail_addrs(virus_clam_clean)')
-        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_virus_kaspersky_clean_idx ON reports.n_mail_addrs(virus_kaspersky_clean)')
+        # sql_helper.create_index("reports","n_mail_addrs","virus_commtouch_clean");
+        # sql_helper.create_index("reports","n_mail_addrs","virus_clam_clean");
+        # sql_helper.create_index("reports","n_mail_addrs","virus_kaspersky_clean");
 
         # spam blocker event log query indexes
-        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_addr_kind_idx ON reports.n_mail_addrs(addr_kind)')
-        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_sa_action_idx ON reports.n_mail_addrs(sa_action)')
-        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_ct_action_idx ON reports.n_mail_addrs(ct_action)')
-        # sql_helper.run_sql('CREATE INDEX n_mail_addrs_phish_action_idx ON reports.n_mail_addrs(phish_action)')
+        # sql_helper.create_index("reports","n_mail_addrs","addr_kind");
+        # sql_helper.create_index("reports","n_mail_addrs","sa_action");
+        # sql_helper.create_index("reports","n_mail_addrs","ct_action");
+        # sql_helper.create_index("reports","n_mail_addrs","phish_action");
 
         conn = sql_helper.get_connection()
         try:
@@ -271,32 +271,32 @@ CREATE TABLE reports.n_mail_msgs (
     virus_commtouch_clean boolean,
     virus_commtouch_name text)""", 'time_stamp', start_date, end_date)
 
-        sql_helper.add_column('reports.n_mail_msgs', 'event_id', 'bigserial')
-        sql_helper.add_column('reports.n_mail_msgs', 'sender', 'text')
-        sql_helper.add_column('reports.n_mail_msgs', 'virus_clam_clean', 'boolean')
-        sql_helper.add_column('reports.n_mail_msgs', 'virus_clam_name', 'text')
-        sql_helper.add_column('reports.n_mail_msgs', 'sa_score', 'real')
-        sql_helper.add_column('reports.n_mail_msgs', 'sa_is_spam', 'boolean')
-        sql_helper.add_column('reports.n_mail_msgs', 'sa_action', 'character')
-        sql_helper.add_column('reports.n_mail_msgs', 'ct_score', 'real')
-        sql_helper.add_column('reports.n_mail_msgs', 'ct_is_spam', 'boolean')
-        sql_helper.add_column('reports.n_mail_msgs', 'ct_action', 'character')
-        sql_helper.add_column('reports.n_mail_msgs', 'virus_kaspersky_clean', 'boolean')
-        sql_helper.add_column('reports.n_mail_msgs', 'virus_kaspersky_name', 'text')
-        sql_helper.add_column('reports.n_mail_msgs', 'phish_score', 'real')
-        sql_helper.add_column('reports.n_mail_msgs', 'phish_is_spam', 'boolean')
-        sql_helper.add_column('reports.n_mail_msgs', 'phish_action', 'character')
-        sql_helper.add_column('reports.n_mail_msgs', 'vendor', 'text')
-        sql_helper.add_column('reports.n_mail_msgs', 'virus_commtouch_clean', 'boolean')
-        sql_helper.add_column('reports.n_mail_msgs', 'virus_commtouch_name', 'text')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'event_id', 'bigserial')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'sender', 'text')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'virus_clam_clean', 'boolean')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'virus_clam_name', 'text')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'sa_score', 'real')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'sa_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'sa_action', 'character')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'ct_score', 'real')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'ct_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'ct_action', 'character')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'virus_kaspersky_clean', 'boolean')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'virus_kaspersky_name', 'text')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'phish_score', 'real')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'phish_is_spam', 'boolean')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'phish_action', 'character')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'vendor', 'text')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'virus_commtouch_clean', 'boolean')
+        sql_helper.add_column('reports', 'n_mail_msgs', 'virus_commtouch_name', 'text')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","n_mail_msgs","event_id","integer","bigint");
 
-        sql_helper.run_sql('CREATE INDEX n_mail_msgs_msg_id_idx ON reports.n_mail_msgs(msg_id)')
-        sql_helper.run_sql('CREATE INDEX n_mail_msgs_event_id_idx ON reports.n_mail_msgs(event_id)')
-        sql_helper.run_sql('CREATE INDEX n_mail_msgs_policy_id_idx ON reports.n_mail_msgs(policy_id)')
-        #sql_helper.run_sql('CREATE INDEX n_mail_msgs_time_stamp_idx ON reports.n_mail_msgs(time_stamp)')
+        sql_helper.create_index("reports","n_mail_msgs","msg_id");
+        sql_helper.create_index("reports","n_mail_msgs","event_id");
+        sql_helper.create_index("reports","n_mail_msgs","policy_id");
+        sql_helper.create_index("reports","n_mail_msgs","time_stamp");
 
         conn = sql_helper.get_connection()
         try:

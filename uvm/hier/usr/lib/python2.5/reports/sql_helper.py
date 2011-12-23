@@ -98,12 +98,12 @@ def create_table_from_query(tablename, query, args=None):
     drop_table(tablename)
     create_table_as_sql(tablename, query, args)
 
-def create_index(table, columns):
-    col_str = string.join(columns, ',')
-
-    index = md5.new(table + columns).hexdigest()
-
-    run_sql("CREATE INDEX %s ON %s (%s)" % (index, table, col_str))
+#def create_index(table, columns):
+#    col_str = string.join(columns, ',')
+#
+#    index = md5.new(table + columns).hexdigest()
+#
+#    run_sql("CREATE INDEX %s ON %s (%s)" % (index, table, col_str))
 
 def create_table_as_sql(tablename, query, args):
     run_sql("CREATE TABLE %s AS %s" % (tablename, query), args)
@@ -148,12 +148,34 @@ def run_sql(sql, args=None, connection=None,
         except:
             pass
 
-def add_column(tablename, column, type):
-    sql = "ALTER TABLE %s ADD COLUMN %s %s" % (tablename, column, type)
+def add_column(schema, tablename, columnname, type):
+    # first verify that the column doesn't already exist
+    sql = "select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s'" % (schema, tablename, columnname)
+    conn = get_connection()
+    try:
+        curs = conn.cursor()
+        curs.execute(sql)
+        row = curs.fetchone()
+        if row and row[0] == 1:
+            return # column already exists
+    finally:
+        conn.commit()
+    sql = "ALTER TABLE %s.%s ADD COLUMN %s %s" % (schema, tablename, columnname, type)
     run_sql(sql)
 
-def drop_column(tablename, column):
-    sql = "ALTER TABLE %s DROP COLUMN %s" % (tablename, column)
+def drop_column(schema, tablename, columnname):
+    # first verify that the column exist
+    sql = "select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s'" % (schema, tablename, columnname)
+    conn = get_connection()
+    try:
+        curs = conn.cursor()
+        curs.execute(sql)
+        row = curs.fetchone()
+        if not (row and row[0] == 1):
+            return # column doesn exist
+    finally:
+        conn.commit()
+    sql = "ALTER TABLE %s.%s DROP COLUMN %s" % (schema, tablename, column)
     run_sql(sql)
 
 def convert_column(schema, tablename, columnname, oldtype, newtype):
@@ -164,19 +186,30 @@ def convert_column(schema, tablename, columnname, oldtype, newtype):
         curs = conn.cursor()
         curs.execute(sql)
         row = curs.fetchone()
-        if row:
-            result = row[0]
-            if result != 1:
-                return
-        else:
-            return
-
+        if not (row and row[0] == 1):
+            return # column of that type doesnt exist
     finally:
         conn.commit()
     # If this part is reached we have verified that the column exists and is of type oldtype
     sql = "ALTER TABLE %s.%s ALTER COLUMN %s TYPE %s" % (schema, tablename, columnname, newtype)
     run_sql(sql);
     return;
+
+def create_index(schema, tablename, columnname):
+    # first check to see if the index already exists
+    sql = "select 1 from pg_class where relname = '%s_%s_idx'" % (tablename, columnname)
+    conn = get_connection()
+    try:
+        curs = conn.cursor()
+        curs.execute(sql)
+        row = curs.fetchone()
+        if row and row[0] == 1:
+            return # index already doesn exist
+    finally:
+        conn.commit()
+    # If this part is reached we have verified that the column exists and is of type oldtype
+    sql = 'CREATE INDEX %s_%s_idx ON %s.%s(%s)' % (tablename, columnname, schema, tablename, columnname)
+    run_sql(sql)
 
 def drop_partitioned_table(tablename, cutoff_date):
   for t, date in find_partitioned_tables(tablename):

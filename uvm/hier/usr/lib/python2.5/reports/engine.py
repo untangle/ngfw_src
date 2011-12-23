@@ -138,7 +138,8 @@ class FactTable:
                                                      start_date, end_date)
 
         for c in (self.measures + self.dimensions):
-            sql_helper.add_column(self.__name, c.name, c.type)
+            schema, tablename = self.__name.split(".")
+            sql_helper.add_column(schema, tablename, c.name, c.type)
 
         sd = TimestampFromMx(sql_helper.get_update_info(self.__name, start_date))
 

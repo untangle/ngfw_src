@@ -63,26 +63,6 @@ class UvmNode(Node):
                         Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')])
         reports.engine.register_fact_table(ft)
 
-        sql_helper.run_sql('CREATE INDEX session_totals_trunc_time_idx ON reports.session_totals(trunc_time)')
-
-        # firewall event log query indexes
-        # sql_helper.run_sql('CREATE INDEX sessions_firewall_rule_index_idx ON reports.sessions(firewall_rule_index)')
-        # sql_helper.run_sql('CREATE INDEX sessions_firewall_was_blocked_idx ON reports.sessions(firewall_was_blocked)')
-
-        # spyware event log query indexes
-        # sql_helper.run_sql('CREATE INDEX sessions_sw_access_ident_idx ON reports.sessions(sw_access_ident)')
-
-        # ips event log query indexes
-        # sql_helper.run_sql('CREATE INDEX sessions_ips_name_idx ON reports.sessions(ips_name)')
-        # sql_helper.run_sql('CREATE INDEX sessions_ips_blocked_idx ON reports.sessions(ips_blocked)')
-
-        # protofilter event log query indexes
-        # sql_helper.run_sql('CREATE INDEX sessions_pf_protocol_idx ON reports.sessions(pf_protocol)')
-        # sql_helper.run_sql('CREATE INDEX sessions_pf_blocked_idx ON reports.sessions(pf_blocked)')
-
-        # bandwidth event log query indexes
-        # sql_helper.run_sql('CREATE INDEX sessions_bandwidth_priority_idx ON reports.sessions(bandwidth_priority)')
-
 
         self.branded_name = self.__get_branded_name() or self.name
 
@@ -257,34 +237,52 @@ CREATE TABLE reports.sessions (
         s2p_bytes int8,
         p2s_bytes int8)""", 'time_stamp', start_date, end_date)
 
-        sql_helper.add_column('reports.sessions', 'event_id', 'bigserial')
-        sql_helper.add_column('reports.sessions', 'policy_id', 'bigint')
-        sql_helper.add_column('reports.sessions', 'server_intf', 'int2')
-        sql_helper.add_column('reports.sessions', 'bandwidth_priority', 'bigint')
-        sql_helper.add_column('reports.sessions', 'bandwidth_rule', 'bigint')
-        sql_helper.add_column('reports.sessions', 'firewall_was_blocked', 'boolean')
-        sql_helper.add_column('reports.sessions', 'firewall_rule_index', 'integer')
-        sql_helper.add_column('reports.sessions', 'firewall_rule_description', 'text')
-        sql_helper.add_column('reports.sessions', 'pf_protocol', 'text')
-        sql_helper.add_column('reports.sessions', 'pf_blocked', 'boolean')
-        sql_helper.add_column('reports.sessions', 'classd_application', 'text')
-        sql_helper.add_column('reports.sessions', 'classd_protochain', 'text')
-        sql_helper.add_column('reports.sessions', 'classd_blocked', 'boolean')
-        sql_helper.add_column('reports.sessions', 'classd_flagged', 'boolean')
-        sql_helper.add_column('reports.sessions', 'classd_confidence', 'integer')
-        sql_helper.add_column('reports.sessions', 'classd_detail', 'text')
-        sql_helper.add_column('reports.sessions', 'ips_blocked', 'boolean')
-        sql_helper.add_column('reports.sessions', 'ips_name', 'text')
-        sql_helper.add_column('reports.sessions', 'ips_description', 'text')
-        sql_helper.add_column('reports.sessions', 'sw_access_ident', 'text')
+        sql_helper.add_column('reports', 'sessions', 'event_id', 'bigserial')
+        sql_helper.add_column('reports', 'sessions', 'policy_id', 'bigint')
+        sql_helper.add_column('reports', 'sessions', 'server_intf', 'int2')
+        sql_helper.add_column('reports', 'sessions', 'bandwidth_priority', 'bigint')
+        sql_helper.add_column('reports', 'sessions', 'bandwidth_rule', 'bigint')
+        sql_helper.add_column('reports', 'sessions', 'firewall_was_blocked', 'boolean')
+        sql_helper.add_column('reports', 'sessions', 'firewall_rule_index', 'integer')
+        sql_helper.add_column('reports', 'sessions', 'firewall_rule_description', 'text')
+        sql_helper.add_column('reports', 'sessions', 'pf_protocol', 'text')
+        sql_helper.add_column('reports', 'sessions', 'pf_blocked', 'boolean')
+        sql_helper.add_column('reports', 'sessions', 'classd_application', 'text')
+        sql_helper.add_column('reports', 'sessions', 'classd_protochain', 'text')
+        sql_helper.add_column('reports', 'sessions', 'classd_blocked', 'boolean')
+        sql_helper.add_column('reports', 'sessions', 'classd_flagged', 'boolean')
+        sql_helper.add_column('reports', 'sessions', 'classd_confidence', 'integer')
+        sql_helper.add_column('reports', 'sessions', 'classd_detail', 'text')
+        sql_helper.add_column('reports', 'sessions', 'ips_blocked', 'boolean')
+        sql_helper.add_column('reports', 'sessions', 'ips_name', 'text')
+        sql_helper.add_column('reports', 'sessions', 'ips_description', 'text')
+        sql_helper.add_column('reports', 'sessions', 'sw_access_ident', 'text')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","sessions","event_id","integer","bigint");
 
-        sql_helper.run_sql('CREATE INDEX sessions_pl_endp_id_idx ON reports.sessions(pl_endp_id)')
-        sql_helper.run_sql('CREATE INDEX sessions_event_id_idx ON reports.sessions(event_id)')
-        sql_helper.run_sql('CREATE INDEX sessions_policy_id_idx ON reports.sessions(policy_id)')
-        #sql_helper.run_sql('CREATE INDEX sessions_time_stamp_idx ON reports.sessions(time_stamp)')
+        sql_helper.create_index("reports","sessions","pl_endp_id");
+        sql_helper.create_index("reports","sessions","event_id");
+        sql_helper.create_index("reports","sessions","policy_id");
+        sql_helper.create_index("reports","sessions","time_stamp");
+
+        # firewall event log query indexes
+        # sql_helper.create_index("reports","sessions","firewall_rule_index");
+        # sql_helper.create_index("reports","sessions","firewall_was_blocked");
+
+        # spyware event log query indexes
+        # sql_helper.create_index("reports","sessions","sw_access_ident");
+
+        # ips event log query indexes
+        # sql_helper.create_index("reports","sessions","ips_name");
+        # sql_helper.create_index("reports","sessions","ips_blocked");
+
+        # protofilter event log query indexes
+        # sql_helper.create_index("reports","sessions","pf_protocol");
+        # sql_helper.create_index("reports","sessions","pf_blocked");
+
+        # bandwidth event log query indexes
+        # sql_helper.create_index("reports","sessions","bandwidth_priority");
 
         conn = sql_helper.get_connection()
         try:
@@ -327,12 +325,10 @@ CREATE TABLE reports.session_counts (
         server_intf smallint,
         num_sessions int8)""", 'trunc_time', start_date, end_date)
 
-        sql_helper.add_column('reports.session_counts', 'client_intf',
-                              'smallint')
-        sql_helper.add_column('reports.session_counts', 'server_intf',
-                              'smallint')
+        sql_helper.add_column('reports', 'session_counts', 'client_intf', 'smallint')
+        sql_helper.add_column('reports', 'session_counts', 'server_intf', 'smallint')
 
-        sql_helper.run_sql('CREATE INDEX session_counts_trunc_time_idx ON reports.session_counts(trunc_time)')
+        sql_helper.create_index("reports","session_counts","trunc_time");
 
         sd = TimestampFromMx(sql_helper.get_update_info('reports.session_counts',
                                                         start_date))

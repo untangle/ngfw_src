@@ -130,13 +130,13 @@ CREATE TABLE reports.n_cpd_login_events (
     client_addr inet,
     event_id bigserial)""",  'time_stamp', start_date, end_date)
 
-        sql_helper.add_column('reports.n_cpd_login_events', 'event_id', 'bigserial')
+        sql_helper.add_column('reports', 'n_cpd_login_events', 'event_id', 'bigserial')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","n_cpd_login_events","event_id","integer","bigint");
 
-        sql_helper.run_sql('CREATE INDEX n_cpd_login_events_event_id_idx ON reports.n_cpd_login_events(event_id)')
-        sql_helper.run_sql('CREATE INDEX n_cpd_login_events_time_stamp_idx ON reports.n_cpd_login_events(time_stamp)')
+        sql_helper.create_index("reports","n_cpd_login_events","event_id");
+        sql_helper.create_index("reports","n_cpd_login_events","time_stamp");
 
         conn = sql_helper.get_connection()
         try:
@@ -164,13 +164,13 @@ CREATE TABLE reports.n_cpd_block_events (
     server_port INT4,
     event_id bigserial)""",  'time_stamp', start_date, end_date)
 
-        sql_helper.add_column('reports.n_cpd_block_events', 'event_id', 'bigserial')
+        sql_helper.add_column('reports', 'n_cpd_block_events', 'event_id', 'bigserial')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","n_cpd_block_events","event_id","integer","bigint");
 
-        sql_helper.run_sql('CREATE INDEX n_cpd_block_events_event_id_idx ON reports.n_cpd_block_events(event_id)')
-        sql_helper.run_sql('CREATE INDEX n_cpd_block_events_time_stamp_idx ON reports.n_cpd_block_events(time_stamp)')
+        sql_helper.create_index("reports","n_cpd_block_events","event_id");
+        sql_helper.create_index("reports","n_cpd_block_events","time_stamp");
 
         conn = sql_helper.get_connection()
         try:
