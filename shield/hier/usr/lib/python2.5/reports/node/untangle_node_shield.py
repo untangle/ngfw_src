@@ -70,8 +70,8 @@ WHERE (time_stamp < %s - interval %s)""", (cutoff,safety_margin))
         except: pass
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_partitioned_table("n_shield_rejection_totals", cutoff)
-        sql_helper.drop_partitioned_table("n_shield_totals", cutoff)        
+        sql_helper.drop_fact_table("n_shield_rejection_totals", cutoff)
+        sql_helper.drop_fact_table("n_shield_totals", cutoff)        
 
     def get_toc_membership(self):
         return [TOP_LEVEL]

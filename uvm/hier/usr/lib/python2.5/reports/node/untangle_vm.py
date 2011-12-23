@@ -84,7 +84,7 @@ class UvmNode(Node):
         
     @print_timing
     def __create_n_admin_logins(self, start_date, end_date):
-        sql_helper.create_partitioned_table("""\
+        sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_admin_logins (
     time_stamp timestamp without time zone,
     login text,
@@ -141,12 +141,12 @@ WHERE NOT EXISTS
 DELETE FROM events.u_login_evt WHERE time_stamp < %s""", (cutoff,))
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_partitioned_table("n_admin_logins", cutoff)
-        sql_helper.drop_partitioned_table("users", cutoff)
-        sql_helper.drop_partitioned_table("hnames", cutoff)
-        sql_helper.drop_partitioned_table("sessions", cutoff)
-        sql_helper.drop_partitioned_table("session_totals", cutoff)        
-        sql_helper.drop_partitioned_table("session_counts", cutoff)
+        sql_helper.drop_fact_table("n_admin_logins", cutoff)
+        sql_helper.drop_fact_table("users", cutoff)
+        sql_helper.drop_fact_table("hnames", cutoff)
+        sql_helper.drop_fact_table("sessions", cutoff)
+        sql_helper.drop_fact_table("session_totals", cutoff)        
+        sql_helper.drop_fact_table("session_counts", cutoff)
 
     def get_report(self):
         sections = []
@@ -164,7 +164,7 @@ DELETE FROM events.u_login_evt WHERE time_stamp < %s""", (cutoff,))
 
     @print_timing
     def __make_users_table(self, start_date, end_date):
-        sql_helper.create_partitioned_table("""\
+        sql_helper.create_fact_table("""\
 CREATE TABLE reports.users (
         date date NOT NULL,
         username text NOT NULL,
@@ -189,7 +189,7 @@ INSERT INTO reports.users (date, username)
 
     @print_timing
     def __make_hnames_table(self, start_date, end_date):
-        sql_helper.create_partitioned_table("""\
+        sql_helper.create_fact_table("""\
 CREATE TABLE reports.hnames (
         date date NOT NULL,
         hname text NOT NULL,
@@ -217,7 +217,7 @@ INSERT INTO reports.hnames (date, hname)
 
     @print_timing
     def __make_sessions_table(self, start_date, end_date):
-        sql_helper.create_partitioned_table("""\
+        sql_helper.create_fact_table("""\
 CREATE TABLE reports.sessions (
         pl_endp_id int8 NOT NULL,
         event_id bigserial,
@@ -316,7 +316,7 @@ INSERT INTO reports.sessions
 
     @print_timing
     def __make_session_counts_table(self, start_date, end_date):
-        sql_helper.create_partitioned_table("""\
+        sql_helper.create_fact_table("""\
 CREATE TABLE reports.session_counts (
         trunc_time timestamp,
         uid text,

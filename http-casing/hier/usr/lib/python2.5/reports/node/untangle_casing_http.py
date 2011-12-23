@@ -38,7 +38,7 @@ class HttpCasing(Node):
 
     @print_timing
     def __create_n_http_events(self, start_date, end_date):
-        sql_helper.create_partitioned_table("""\
+        sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_http_events (
     time_stamp timestamp without time zone,
     session_id integer, client_intf smallint,
@@ -184,7 +184,7 @@ DELETE FROM events.n_http_evt_resp WHERE (time_stamp < %s - interval %s);""", (c
 
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_partitioned_table("n_http_events", cutoff)
-        sql_helper.drop_partitioned_table("n_http_totals", cutoff)        
+        sql_helper.drop_fact_table("n_http_events", cutoff)
+        sql_helper.drop_fact_table("n_http_totals", cutoff)        
 
 reports.engine.register_node(HttpCasing())

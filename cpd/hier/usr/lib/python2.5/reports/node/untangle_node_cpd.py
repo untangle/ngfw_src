@@ -114,14 +114,14 @@ DELETE FROM events.n_cpd_block_evt
 WHERE time_stamp < %s""", (cutoff,))
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_partitioned_table("n_cpd_login_events", cutoff)
-        sql_helper.drop_partitioned_table("n_cpd_login_totals", cutoff)        
-        sql_helper.drop_partitioned_table("n_cpd_block_events", cutoff)
-        sql_helper.drop_partitioned_table("n_cpd_block_totals", cutoff)
+        sql_helper.drop_fact_table("n_cpd_login_events", cutoff)
+        sql_helper.drop_fact_table("n_cpd_login_totals", cutoff)        
+        sql_helper.drop_fact_table("n_cpd_block_events", cutoff)
+        sql_helper.drop_fact_table("n_cpd_block_totals", cutoff)
         
     @print_timing
     def __create_n_cpd_login_events(self, start_date, end_date):
-        sql_helper.create_partitioned_table("""\
+        sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_cpd_login_events (
     time_stamp timestamp without time zone,
     login_name text,
@@ -153,7 +153,7 @@ FROM events.n_cpd_login_evt""",
 
     @print_timing
     def __create_n_cpd_block_events(self, start_date, end_date):
-        sql_helper.create_partitioned_table("""\
+        sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_cpd_block_events (
     time_stamp timestamp without time zone,
     proto INT2,

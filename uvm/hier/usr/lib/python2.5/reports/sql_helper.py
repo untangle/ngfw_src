@@ -103,8 +103,8 @@ def create_table_as_sql(tablename, query, args):
 
 #
 # Runs the sql command and returns true if the sql command returns a "1" and false otherwise
+#
 def run_sql_one(sql):
-    # first check to see if the index already exists
     conn = get_connection()
     try:
         curs = conn.cursor()
@@ -171,11 +171,9 @@ def drop_column(schema, tablename, columnname):
     run_sql(sql)
 
 def convert_column(schema, tablename, columnname, oldtype, newtype):
-    # first verify that the column is currently of type oldtype
     column_type_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s' and data_type = '%s'" % (schema, tablename, columnname, oldtype))
     if not column_type_exists:
         return
-    # If this part is reached we have verified that the column exists and is of type oldtype
     sql = "ALTER TABLE %s.%s ALTER COLUMN %s TYPE %s" % (schema, tablename, columnname, newtype)
     run_sql(sql);
     return;
@@ -187,8 +185,20 @@ def create_index(schema, tablename, columnname):
     sql = 'CREATE INDEX %s_%s_idx ON %s.%s(%s)' % (tablename, columnname, schema, tablename, columnname)
     run_sql(sql)
 
-def drop_partitioned_table(tablename, cutoff_date):
-  for t, date in find_partitioned_tables(tablename):
+def create_schema(schema):
+    already_exists = run_sql_one("select 1 from pg_namespace where nspname = '%s'" % (schema))
+    if already_exists:
+        return
+    sql = "CREATE SCHEMA %s" % (schema)
+    run_sql(sql)
+
+def create_table(schema, tablename, sql):
+    if table_exists(schema, tablename):
+        return
+    run_sql(sql)
+    
+def drop_fact_table(tablename, cutoff_date):
+  for t, date in find_fact_tables(tablename):
     if date < cutoff_date:
       drop_table(t, schema=SCHEMA)
 
@@ -207,16 +217,7 @@ def drop_partitioned_table(tablename, cutoff_date):
               (cutoff_date,),
               force_propagate=True)
 
-def clear_partitioned_tables(start_date, end_date, tablename=None):
-    logger.debug('Forcing removal of existing partitioned...')
-
-    for table, date in find_partitioned_tables(tablename):
-        if date >= start_date and date < end_date:
-            drop_table(table, 'reports')
-    run_sql("UPDATE reports.table_updates SET last_update = %s",
-            (DateFromMx(date_convert(start_date)),))
-
-def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date):
+def create_fact_table(table_ddl, timestamp_column, start_date, end_date):
     (schema, tablename) = __get_tablename(table_ddl)
     
     if schema:
@@ -228,7 +229,7 @@ def create_partitioned_table(table_ddl, timestamp_column, start_date, end_date):
     if not table_exists(schema, tablename):
         run_sql(table_ddl)
 
-    for t, date in find_partitioned_tables(tablename):
+    for t, date in find_fact_tables(tablename):
         drop_table(t, schema=SCHEMA)
 
     __drop_trigger(schema, tablename, timestamp_column)
@@ -356,20 +357,7 @@ def drop_table(table, schema=SCHEMA):
         conn.commit()
 
 def table_exists(schemaname, tablename):
-    conn = get_connection()
-
-    try:
-        curs = conn.cursor()
-
-        curs.execute("""\
-SELECT tablename FROM pg_catalog.pg_tables
-WHERE schemaname = %s AND tablename = %s""", (schemaname, tablename))
-
-        rv = curs.rowcount
-    finally:
-        conn.commit()
-
-    return rv
+    return run_sql_one("SELECT 1 FROM pg_catalog.pg_tables WHERE schemaname = '%s' AND tablename = '%s'" % (schemaname, tablename))
 
 def get_tables(schema=None, prefix=''):
     conn = get_connection()
@@ -393,7 +381,7 @@ WHERE tablename LIKE %s""", '%s%%' % prefix)
 
     return rv
 
-def find_partitioned_tables(tablename=None):
+def find_fact_tables(tablename=None):
     if not tablename:
         prefix = ''
     else:

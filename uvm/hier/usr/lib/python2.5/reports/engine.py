@@ -134,7 +134,7 @@ class FactTable:
         return self.__dimensions
 
     def process(self, start_date, end_date):
-        tables = sql_helper.create_partitioned_table(self.__ddl(), 'trunc_time',
+        tables = sql_helper.create_fact_table(self.__ddl(), 'trunc_time',
                                                      start_date, end_date)
 
         for c in (self.measures + self.dimensions):

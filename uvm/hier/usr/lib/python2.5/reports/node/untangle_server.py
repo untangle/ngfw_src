@@ -85,8 +85,8 @@ class ServerNode(Node):
 DELETE FROM events.n_server_evt WHERE time_stamp < %s""", (cutoff,))
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_partitioned_table("n_server_events", cutoff)
-        sql_helper.drop_partitioned_table("n_server_totals", cutoff)        
+        sql_helper.drop_fact_table("n_server_events", cutoff)
+        sql_helper.drop_fact_table("n_server_totals", cutoff)        
 
     def get_report(self):
         sections = []
@@ -99,7 +99,7 @@ DELETE FROM events.n_server_evt WHERE time_stamp < %s""", (cutoff,))
 
     @print_timing
     def __create_n_server_events(self, start_date, end_date):
-        sql_helper.create_partitioned_table("""\
+        sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_server_events (
     time_stamp  TIMESTAMP,
     mem_free 	INT8,

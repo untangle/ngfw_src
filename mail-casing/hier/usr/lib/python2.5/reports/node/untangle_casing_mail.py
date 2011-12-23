@@ -72,15 +72,15 @@ DELETE FROM events.n_mail_message_info
 WHERE (time_stamp < %s - interval %s);""", (cutoff,safety_margin))
 
     def reports_cleanup(self, cutoff):
-        sql_helper.drop_partitioned_table("n_mail_addrs", cutoff)
-        sql_helper.drop_partitioned_table("n_mail_addr_totals", cutoff)        
-        sql_helper.drop_partitioned_table("n_mail_msgs", cutoff)
-        sql_helper.drop_partitioned_table("n_mail_msg_totals", cutoff)        
-        sql_helper.drop_partitioned_table("email", cutoff)        
+        sql_helper.drop_fact_table("n_mail_addrs", cutoff)
+        sql_helper.drop_fact_table("n_mail_addr_totals", cutoff)        
+        sql_helper.drop_fact_table("n_mail_msgs", cutoff)
+        sql_helper.drop_fact_table("n_mail_msg_totals", cutoff)        
+        sql_helper.drop_fact_table("email", cutoff)        
 
     @print_timing
     def __create_n_mail_addrs(self, start_date, end_date):
-        sql_helper.create_partitioned_table("""\
+        sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_mail_addrs (
     time_stamp timestamp without time zone,
     session_id integer, client_intf smallint,
@@ -206,7 +206,7 @@ INSERT INTO reports.n_mail_addrs
 
     @print_timing
     def __make_email_table(self, start_date, end_date):
-        sql_helper.create_partitioned_table("""\
+        sql_helper.create_fact_table("""\
 CREATE TABLE reports.email (
         date date NOT NULL,
         email text NOT NULL,
@@ -233,7 +233,7 @@ INSERT INTO reports.email (date, email)
     @print_timing
     def __create_n_mail_msgs(self, start_date, end_date):
 
-        sql_helper.create_partitioned_table("""\
+        sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_mail_msgs (
     time_stamp timestamp without time zone,
     session_id integer, client_intf smallint,
