@@ -98,15 +98,23 @@ def create_table_from_query(tablename, query, args=None):
     drop_table(tablename)
     create_table_as_sql(tablename, query, args)
 
-#def create_index(table, columns):
-#    col_str = string.join(columns, ',')
-#
-#    index = md5.new(table + columns).hexdigest()
-#
-#    run_sql("CREATE INDEX %s ON %s (%s)" % (index, table, col_str))
-
 def create_table_as_sql(tablename, query, args):
     run_sql("CREATE TABLE %s AS %s" % (tablename, query), args)
+
+#
+# Runs the sql command and returns true if the sql command returns a "1" and false otherwise
+def run_sql_one(sql):
+    # first check to see if the index already exists
+    conn = get_connection()
+    try:
+        curs = conn.cursor()
+        curs.execute(sql)
+        row = curs.fetchone()
+        if row and row[0] == 1:
+            return True
+    finally:
+        conn.commit()
+    return False
 
 def run_sql(sql, args=None, connection=None,
             auto_commit=True, force_propagate=False,
@@ -149,65 +157,33 @@ def run_sql(sql, args=None, connection=None,
             pass
 
 def add_column(schema, tablename, columnname, type):
-    # first verify that the column doesn't already exist
-    sql = "select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s'" % (schema, tablename, columnname)
-    conn = get_connection()
-    try:
-        curs = conn.cursor()
-        curs.execute(sql)
-        row = curs.fetchone()
-        if row and row[0] == 1:
-            return # column already exists
-    finally:
-        conn.commit()
+    column_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s'" % (schema, tablename, columnname))
+    if column_exists:
+        return
     sql = "ALTER TABLE %s.%s ADD COLUMN %s %s" % (schema, tablename, columnname, type)
     run_sql(sql)
 
 def drop_column(schema, tablename, columnname):
-    # first verify that the column exist
-    sql = "select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s'" % (schema, tablename, columnname)
-    conn = get_connection()
-    try:
-        curs = conn.cursor()
-        curs.execute(sql)
-        row = curs.fetchone()
-        if not (row and row[0] == 1):
-            return # column doesn exist
-    finally:
-        conn.commit()
+    column_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s'" % (schema, tablename, columnname))
+    if not column_exists:
+        return
     sql = "ALTER TABLE %s.%s DROP COLUMN %s" % (schema, tablename, column)
     run_sql(sql)
 
 def convert_column(schema, tablename, columnname, oldtype, newtype):
     # first verify that the column is currently of type oldtype
-    sql = "select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s' and data_type = '%s'" % (schema, tablename, columnname, oldtype)
-    conn = get_connection()
-    try:
-        curs = conn.cursor()
-        curs.execute(sql)
-        row = curs.fetchone()
-        if not (row and row[0] == 1):
-            return # column of that type doesnt exist
-    finally:
-        conn.commit()
+    column_type_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s' and data_type = '%s'" % (schema, tablename, columnname, oldtype))
+    if not column_type_exists:
+        return
     # If this part is reached we have verified that the column exists and is of type oldtype
     sql = "ALTER TABLE %s.%s ALTER COLUMN %s TYPE %s" % (schema, tablename, columnname, newtype)
     run_sql(sql);
     return;
 
 def create_index(schema, tablename, columnname):
-    # first check to see if the index already exists
-    sql = "select 1 from pg_class where relname = '%s_%s_idx'" % (tablename, columnname)
-    conn = get_connection()
-    try:
-        curs = conn.cursor()
-        curs.execute(sql)
-        row = curs.fetchone()
-        if row and row[0] == 1:
-            return # index already doesn exist
-    finally:
-        conn.commit()
-    # If this part is reached we have verified that the column exists and is of type oldtype
+    already_exists = run_sql_one("select 1 from pg_class where relname = '%s_%s_idx'" % (tablename, columnname))
+    if already_exists:
+        return
     sql = 'CREATE INDEX %s_%s_idx ON %s.%s(%s)' % (tablename, columnname, schema, tablename, columnname)
     run_sql(sql)
 
@@ -507,8 +483,10 @@ def __drop_trigger(schema, tablename, timestamp_column):
     full_tablename = '%s.%s' % (schema, tablename)
     for trigger in ('%s_insert_trigger', 'insert_%s_trigger'):
         trigger = trigger % tablename
-        run_sql("DROP TRIGGER IF EXISTS %s ON %s.%s CASCADE" % (trigger, schema, tablename),
-                force_propagate=True)
+        trigger_exists = run_sql_one("select 1 from pg_trigger where tgname = '%s'" % trigger);
+        if not trigger_exists:
+            continue;
+        run_sql("DROP TRIGGER IF EXISTS %s ON %s.%s CASCADE" % (trigger, schema, tablename), force_propagate=True)
         run_sql("DROP FUNCTION IF EXISTS %s() CASCADE" % trigger, force_propagate=True)
 
 def __make_trigger(schema, tablename, timestamp_column, all_dates):
