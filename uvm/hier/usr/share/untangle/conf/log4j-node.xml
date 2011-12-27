@@ -98,6 +98,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.node.faild">
+    <priority value="INFO"/>
+  </category>
+
   <category name="com.untangle.node.firewall">
     <priority value="INFO"/>
   </category>
@@ -163,6 +167,10 @@
   </category>
 
   <category name="com.untangle.node.spamassassin">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.splitd">
     <priority value="INFO"/>
   </category>
 
