@@ -60,6 +60,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
         private Boolean classdBlocked;
         private Boolean classdFlagged;
         private Integer classdConfidence;
+        private Integer classdRuleId;
         private Boolean ipsBlocked;
         private String ipsName;
         private String ipsDescription;
@@ -185,6 +186,10 @@ import com.untangle.uvm.node.PipelineEndpoints;
         public Integer getClassdConfidence() { return classdConfidence; }
         public void setClassdConfidence(Integer classdConfidence) { this.classdConfidence = classdConfidence; }
 
+        @Column(name="classd_ruleid")
+        public Integer getClassdRuleId() { return classdRuleId; }
+        public void setClassdRuleId(Integer classdRuleId) { this.classdRuleId = classdRuleId; }
+        
         @Column(name="ips_blocked")
         public Boolean getIpsBlocked() { return ipsBlocked; }
         public void setIpsBlocked(Boolean ipsBlocked) { this.ipsBlocked = ipsBlocked; }

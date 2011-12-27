@@ -252,6 +252,7 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports', 'sessions', 'classd_blocked', 'boolean')
         sql_helper.add_column('reports', 'sessions', 'classd_flagged', 'boolean')
         sql_helper.add_column('reports', 'sessions', 'classd_confidence', 'integer')
+        sql_helper.add_column('reports', 'sessions', 'classd_ruleid', 'integer')
         sql_helper.add_column('reports', 'sessions', 'classd_detail', 'text')
         sql_helper.add_column('reports', 'sessions', 'ips_blocked', 'boolean')
         sql_helper.add_column('reports', 'sessions', 'ips_name', 'text')

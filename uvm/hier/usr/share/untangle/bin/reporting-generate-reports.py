@@ -334,7 +334,7 @@ if not simulate:
                logger.warn(e, exc_info=True)
 
 try:
-     create_schema(sql_helper.SCHEMA);
+     sql_helper.create_schema(sql_helper.SCHEMA);
 except Exception:
      pass
 
