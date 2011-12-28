@@ -11,7 +11,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         spamData : null,
         emailPanel : null,
         gridEventLog : null,
-        gridRBLEventLog : null,
+        gridDnsblEventLog : null,
         // override get node settings object to reload the signature information.
         getNodeSettings : function(forceReload) {
             if (forceReload || this.rpc.nodeSettings === undefined) {
@@ -32,9 +32,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
 
             this.buildEmail();
             this.buildEventLog();
-            this.buildRBLEventLog();
+            this.buildDnsblEventLog();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.emailPanel, this.gridEventLog, this.gridRBLEventLog]);
+            this.buildTabPanel([this.emailPanel, this.gridEventLog, this.gridDnsblEventLog]);
             this.tabs.activate(this.emailPanel);
             Ung.SpamAssassin.superclass.initComponent.call(this);
         },
@@ -921,13 +921,13 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 }]
             });
         },
-        // RBL Event Log
-        buildRBLEventLog : function() {
-            this.gridRBLEventLog = new Ung.GridEventLog({
+        // Dnsbl Event Log
+        buildDnsblEventLog : function() {
+            this.gridDnsblEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
                 name : 'Tarpit Event Log',
                 helpSource : 'tarpit_event_log',
-                eventQueriesFn : this.getRpcNode().getRBLEventQueries,
+                eventQueriesFn : this.getRpcNode().getTarpitEventQueries,
                 title : this.i18n._("Tarpit Event Log"),
                 // the list of fields
                 fields : [{

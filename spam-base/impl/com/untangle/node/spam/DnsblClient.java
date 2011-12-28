@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.spam;
 
 import java.net.InetAddress;
@@ -23,35 +8,41 @@ import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
-public final class RBLClient implements Runnable {
+public final class DnsblClient implements Runnable
+{
     private final Logger logger = Logger.getLogger(getClass());
 
-    private RBLClientContext cContext;
+    private DnsblClientContext cContext;
 
     private Thread cThread;
     private String dbgName; // thread name and socket host
 
-    public RBLClient(RBLClientContext cContext) {
+    public DnsblClient(DnsblClientContext cContext)
+    {
         this.cContext = cContext;
     }
 
-    public void setThread(Thread cThread) {
+    public void setThread(Thread cThread)
+    {
         this.cThread = cThread;
         dbgName = new StringBuilder("<").append(cThread.getName()).append(">").append(cContext.getHostname()).append("/").append(cContext.getIPAddr()).toString();
         return;
     }
 
-    public RBLClientContext getClientContext() {
+    public DnsblClientContext getClientContext()
+    {
         return cContext;
     }
 
-    public void startScan() {
+    public void startScan()
+    {
         //logger.debug("start, thread: " + cThread + ", this: " + this);
         cThread.start(); // execute run() now
         return;
     }
 
-    public void checkProgress(long timeout) {
+    public void checkProgress(long timeout)
+    {
         //logger.debug("check, thread: " + cThread + ", this: " + this);
         if (false == cThread.isAlive()) {
             logger.debug(dbgName + ", is not alive; not waiting");
@@ -84,7 +75,8 @@ public final class RBLClient implements Runnable {
         return;
     }
 
-    public void stopScan() {
+    public void stopScan()
+    {
         //logger.debug("stop, thread: " + cThread + ", this: " + this);
         if (false == cThread.isAlive()) {
             logger.debug(dbgName + ", is not alive; no need to stop");
@@ -95,13 +87,15 @@ public final class RBLClient implements Runnable {
         return;
     }
 
-    public String toString() {
+    public String toString()
+    {
         return dbgName;
     }
 
     // run() performs minimal work so if interrupted, it exits "immediately"
     // -> e.g., no need to implement stop flag
-    public void run() {
+    public void run()
+    {
         Boolean isBlacklisted = Boolean.FALSE;
 
         try {

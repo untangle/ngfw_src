@@ -226,7 +226,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
         tmpSpamSettings.getSmtpConfig().setBlockSuperSpam(false);
 
         setSettings(tmpSpamSettings);
-        initSpamRBLList(tmpSpamSettings);
+        initSpamDnsblList(tmpSpamSettings);
     }
 
     // protected methods ------------------------------------------------------
@@ -243,7 +243,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
         readNodeSettings();
         SpamSettings ps = getSettings();
         ps.getSmtpConfig().setBlockSuperSpam(false);
-        initSpamRBLList(ps);
+        initSpamDnsblList(ps);
     }
 
     @Override

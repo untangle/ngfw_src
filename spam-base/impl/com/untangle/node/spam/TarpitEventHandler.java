@@ -11,13 +11,14 @@ import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
 import com.untangle.uvm.vnet.event.TCPSessionEvent;
 
-class RBLEventHandler extends AbstractEventHandler
+class TarpitEventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(RBLEventHandler.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private SpamNodeImpl spamImpl;
-
-    RBLEventHandler(SpamNodeImpl spamImpl)
+    private DnsblChecker dnsblChecker;
+    
+    TarpitEventHandler(SpamNodeImpl spamImpl)
     {
         super(spamImpl);
 
@@ -28,9 +29,9 @@ class RBLEventHandler extends AbstractEventHandler
     public void handleTCPComplete(TCPSessionEvent event)
     {
         Session s = event.session();
-        SpamSmtpRblEvent rblEvent = (SpamSmtpRblEvent)s.attachment();
-        if (null != rblEvent) {
-            spamImpl.logEvent(rblEvent);
+        SpamSmtpTarpitEvent tarpitEvent = (SpamSmtpTarpitEvent)s.attachment();
+        if (null != tarpitEvent) {
+            spamImpl.logEvent(tarpitEvent);
         }
     }
 
@@ -44,9 +45,18 @@ class RBLEventHandler extends AbstractEventHandler
         boolean releaseSession = true;
 
         if (spamConfig.getTarpit()) {
-            //logger.debug("Check DNSBL(s) for connection from: " + tsr.clientAddr());
-            RBLChecker rblChecker = new RBLChecker(spamSettings.getSpamRBLList(),spamImpl);
-            if (true == rblChecker.check(tsr, spamConfig.getTarpitTimeout())) {
+
+            if (this.dnsblChecker == null) {
+                synchronized(this) {
+                    if (this.dnsblChecker == null) {
+                        this.dnsblChecker  = new DnsblChecker( spamImpl.getSettings().getSpamDnsblList(), spamImpl );
+                    }
+                }
+            }
+            
+            logger.debug("Check DNSBL(s) for connection from: " + tsr.clientAddr());
+
+            if ( dnsblChecker.check(tsr, spamConfig.getTarpitTimeout()) == true ) {
                 logger.debug("DNSBL hit confirmed, rejecting connection from: " + tsr.clientAddr());
                 /* get finalization in order to log rejection */
                 tsr.rejectReturnRst(true);

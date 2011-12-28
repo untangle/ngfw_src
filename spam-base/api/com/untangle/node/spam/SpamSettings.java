@@ -18,7 +18,7 @@ public class SpamSettings implements Serializable
 {
     private Long id;
 
-    private List<SpamRBL> spamRBLList;
+    private List<SpamDnsbl> spamDnsblList;
     private SpamSmtpConfig smtpConfig;
     private SpamPopConfig popConfig;
     private SpamImapConfig imapConfig;
@@ -27,7 +27,7 @@ public class SpamSettings implements Serializable
 
     public SpamSettings()
     {
-        spamRBLList = new LinkedList<SpamRBL>();
+        spamDnsblList = new LinkedList<SpamDnsbl>();
     }
 
     // accessors --------------------------------------------------------------
@@ -42,14 +42,14 @@ public class SpamSettings implements Serializable
         this.id = id;
     }
 
-    public List<SpamRBL> getSpamRBLList()
+    public List<SpamDnsbl> getSpamDnsblList()
     {
-        return spamRBLList;
+        return spamDnsblList;
     }
 
-    public void setSpamRBLList(List<SpamRBL> spamRBLList)
+    public void setSpamDnsblList(List<SpamDnsbl> spamDnsblList)
     {
-        this.spamRBLList = spamRBLList;
+        this.spamDnsblList = spamDnsblList;
     }
 
     public SpamSmtpConfig getSmtpConfig()
@@ -84,7 +84,7 @@ public class SpamSettings implements Serializable
 
     public void copy(SpamSettings argSettings)
     {
-        argSettings.setSpamRBLList(this.spamRBLList);
+        argSettings.setSpamDnsblList(this.spamDnsblList);
         argSettings.setSmtpConfig(this.smtpConfig);
         argSettings.setPopConfig(this.popConfig);
         argSettings.setImapConfig(this.imapConfig);

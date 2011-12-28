@@ -29,7 +29,8 @@
                 "com.untangle.node.spam.SpamRBL",
                 "com.untangle.node.spam.SpamLogEvent",
                 "com.untangle.node.spam.SpamSmtpEvent",
-                "com.untangle.node.spam.SpamSmtpRblEvent"
+                "com.untangle.node.spam.SpamSmtpRblEvent",
+                "com.untangle.uvm.logging.TarpitEventsFromReports"
             ]
         }
 }

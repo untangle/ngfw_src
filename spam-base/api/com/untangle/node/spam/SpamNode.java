@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.node.spam;
 
 import java.util.Date;
@@ -8,8 +11,8 @@ import com.untangle.uvm.node.EventLogQuery;
 
 public interface SpamNode extends Node
 {
-    public SpamSettings getSettings();
-    public void setSettings(final SpamSettings newSpamSettings);
+    SpamSettings getSettings();
+    void setSettings(final SpamSettings newSpamSettings);
 
     void enableSmtpSpamHeaders(boolean enableHeaders);
     void enablePopSpamHeaders(boolean enableHeaders);
@@ -20,19 +23,16 @@ public interface SpamNode extends Node
     void updateScannerInfo();
 
     EventLogQuery[] getEventQueries();
-    EventLogQuery[] getRBLEventQueries();
+    EventLogQuery[] getTarpitEventQueries();
 
-    public int getSpamRBLListLength();
-    public void setSpamRBLListLength(int newValue);
+    Date getLastUpdate();
+    void setLastUpdate(Date newValue);
     
-    public Date getLastUpdate();
-    public void setLastUpdate(Date newValue);
+    Date getLastUpdateCheck();
+    void setLastUpdateCheck(Date newValue);
     
-    public Date getLastUpdateCheck();
-    public void setLastUpdateCheck(Date newValue);
-    
-    public String getSignatureVersion();
-    public void setSignatureVersion(String newValue);
+    String getSignatureVersion();
+    void setSignatureVersion(String newValue);
 
-    public String getVendor();
+    String getVendor();
 }

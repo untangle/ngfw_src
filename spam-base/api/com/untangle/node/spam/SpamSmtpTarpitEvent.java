@@ -1,7 +1,6 @@
 /**
- * $Id$g
+ * $Id$
  */
-
 package com.untangle.node.spam;
 
 import java.net.InetAddress;
@@ -21,47 +20,44 @@ import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.PipelineEndpoints;
 
 /**
- * Log for Spam SMTP RBL events.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
+ * Log for Spam SMTP Tarpit events.
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-@Table(name="n_spam_smtp_rbl_evt", schema="events")
+@Table(name="n_spam_smtp_tarpit_evt", schema="events")
 @SuppressWarnings("serial")
-public class SpamSmtpRblEvent extends PipelineEvent
+public class SpamSmtpTarpitEvent extends PipelineEvent
 {
     private String hostname;
     private IPAddress ipAddr;
-    private boolean skipped;
+    private String vendorName;
 
     // constructors -----------------------------------------------------------
 
-    public SpamSmtpRblEvent() {}
+    public SpamSmtpTarpitEvent() {}
 
-    public SpamSmtpRblEvent(PipelineEndpoints plEndp, String hostname, IPAddress ipAddr, boolean skipped)
+    public SpamSmtpTarpitEvent(PipelineEndpoints plEndp, String hostname, IPAddress ipAddr, String vendorName)
     {
         super(plEndp);
         this.hostname = hostname;
         this.ipAddr = ipAddr;
-        this.skipped = skipped;
+        this.vendorName = vendorName;
     }
 
-    public SpamSmtpRblEvent(PipelineEndpoints plEndp, String hostname, InetAddress ipAddrIN, boolean skipped)
+    public SpamSmtpTarpitEvent(PipelineEndpoints plEndp, String hostname, InetAddress ipAddrIN, String vendorName)
     {
         super(plEndp);
         this.hostname = hostname;
         this.ipAddr = new IPAddress(ipAddrIN);
-        this.skipped = skipped;
+        this.vendorName = vendorName;
     }
 
     // accessors --------------------------------------------------------------
 
     /**
-     * Hostname of RBL service.
+     * Hostname of DNSBL service.
      *
-     * @return hostname of RBL service.
+     * @return hostname of DNSBL service.
      */
     @Column(nullable=false)
     public String getHostname()
@@ -76,9 +72,9 @@ public class SpamSmtpRblEvent extends PipelineEvent
     }
 
     /**
-     * IP address of mail server listed on RBL service.
+     * IP address of mail server listed on DNSBL service.
      *
-     * @return IP address of mail server listed on RBL service.
+     * @return IP address of mail server listed on DNSBL service.
      */
     @Column(nullable=false)
     @Type(type="com.untangle.uvm.type.IPAddressUserType")
@@ -94,20 +90,19 @@ public class SpamSmtpRblEvent extends PipelineEvent
     }
 
     /**
-     * Confirmed RBL hit but skipping rejection indicator.
+     * Spam scanner vendor.
      *
-     * @return confirmed RBL hit but skipping rejection indicator.
+     * @return the vendor
      */
-    @Column(nullable=false)
-    public boolean getSkipped()
+    @Column(name="vendor_name")
+    public String getVendorName()
     {
-        return skipped;
+        return vendorName;
     }
 
-    public void setSkipped(boolean skipped)
+    public void setVendorName(String vendorName)
     {
-        this.skipped = skipped;
-        return;
+        this.vendorName = vendorName;
     }
 
     // Syslog methods ---------------------------------------------------------
@@ -123,13 +118,13 @@ public class SpamSmtpRblEvent extends PipelineEvent
         sb.startSection("info");
         sb.addField("hostname", getHostname().toString());
         sb.addField("ipaddr", getIPAddr().toString());
-        sb.addField("skipped", getSkipped());
+        sb.addField("vendorName", getVendorName().toString());
     }
 
     @Transient
     public String getSyslogId()
     {
-        return "SMTP_RBL";
+        return "SMTP_TARPIT";
     }
 
     @Transient
@@ -137,6 +132,6 @@ public class SpamSmtpRblEvent extends PipelineEvent
     {
         // INFORMATIONAL = statistics or normal operation
         // WARNING = traffic altered
-        return false == getSkipped() ? SyslogPriority.INFORMATIONAL : SyslogPriority.WARNING; // traffic altered
+        return SyslogPriority.WARNING; // traffic altered
     }
 }

@@ -29,18 +29,17 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final RBLEventHandler rblHandler = new RBLEventHandler(this);
+    private final TarpitEventHandler tarpitHandler = new TarpitEventHandler(this);
 
-    private final SpamRBLHandler spamRblHandler = new SpamRBLHandler();
+    private final SpamTarpitHandler spamTarpitHandler = new SpamTarpitHandler();
 
     // We want to make sure that spam is before virus in the pipeline (towards the client for smtp,
     // server for pop/imap).
-    // Would want the RBL to get evaluated before the casing, this way if it blocks a session
+    // Would want the DNSBL to get evaluated before the casing, this way if it blocks a session
     // the casing doesn't have to be initialized.
-    private final PipeSpec[] pipeSpecs = new PipeSpec[]
-        {
+    private final PipeSpec[] pipeSpecs = new PipeSpec[] {
         new SoloPipeSpec("spam-smtp", this, new TokenAdaptor(this, new SpamSmtpFactory(this)), Fitting.SMTP_TOKENS, Affinity.CLIENT, 10),
-        new SoloPipeSpec("spam-smtp-rbl", this, this.rblHandler, Fitting.SMTP_STREAM, Affinity.CLIENT, 11),
+        new SoloPipeSpec("spam-smtp-tarpit", this, this.tarpitHandler, Fitting.SMTP_STREAM, Affinity.CLIENT, 11),
         new SoloPipeSpec("spam-pop", this, new TokenAdaptor(this, new SpamPopFactory(this)), Fitting.POP_TOKENS, Affinity.SERVER, 10),
         new SoloPipeSpec("spam-imap", this, new TokenAdaptor(this, new SpamImapFactory(this)), Fitting.IMAP_TOKENS, Affinity.SERVER, 10)
     };
@@ -62,13 +61,11 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     private EventLogQuery allEventQuery;
     private EventLogQuery spamEventQuery;
     private EventLogQuery quarantinedEventQuery;
-    private EventLogQuery rblEventQuery;
-    private EventLogQuery rblSkippedEventQuery;
+    private EventLogQuery tarpitEventQuery;
     
     private String signatureVersion;
     private Date lastUpdate = new Date();
     private Date lastUpdateCheck = new Date();
-    private int rblListLength;
 
     @SuppressWarnings("unchecked")
 	public SpamNodeImpl(SpamScanner scanner)
@@ -112,16 +109,11 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
                                                        " AND evt.policyId = :policyId" + 
                                                        " ORDER BY evt.timeStamp DESC");
                                                        
-        
-        /* FIXME */
-        /* This query comes from events schema not reports as it should! */
-        this.rblEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
-                                               "FROM SpamSmtpRblEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC");
-
-        /* FIXME */
-        /* This query comes from events schema not reports as it should! */
-        this.rblSkippedEventQuery = new EventLogQuery(I18nUtil.marktr("Skipped Events"),
-                                                      "FROM SpamSmtpRblEvent evt WHERE evt.skipped = true AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC");
+        this.tarpitEventQuery = new EventLogQuery(I18nUtil.marktr("Tarpit Events"),
+                                                  "FROM TarpitEventsFromReports evt " +
+                                                  "WHERE evt.vendorName = '" + vendor + "' " +
+                                                  "AND evt.policyId = :policyId " +
+                                                  "ORDER BY evt.timeStamp DESC");
         
         MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
@@ -139,9 +131,9 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
         return new EventLogQuery[] { this.allEventQuery, this.spamEventQuery, this.quarantinedEventQuery };
     }
     
-    public EventLogQuery[] getRBLEventQueries()
+    public EventLogQuery[] getTarpitEventQueries()
     {
-        return new EventLogQuery[] { this.rblEventQuery, this.rblSkippedEventQuery };
+        return new EventLogQuery[] { this.tarpitEventQuery };
     }
 
     /**
@@ -179,14 +171,14 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
         emailReceivedBlinger.increment();
     }
 
-    protected void initSpamRBLList(SpamSettings tmpSpamSettings)
+    protected void initSpamDnsblList(SpamSettings tmpSpamSettings)
     {
-        initSpamRBLList(tmpSpamSettings.getSpamRBLList());
+        initSpamDnsblList(tmpSpamSettings.getSpamDnsblList());
     }
 
-    protected void initSpamRBLList(List<SpamRBL> spamRBLList) {
+    protected void initSpamDnsblList(List<SpamDnsbl> spamDnsblList) {
 
-        if (( null == spamRBLList) || ( false == spamRBLList.isEmpty())) {
+        if (( null == spamDnsblList) || ( false == spamDnsblList.isEmpty())) {
             // if already initialized,
             // use list as-is (e.g., database contains final word)
             //
@@ -196,10 +188,10 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
             return;
         } // else initialize list now (e.g., upgrade has just occurred)
 
-        spamRBLList.add(new SpamRBL("zen.spamhaus.org", "Spamhaus SBL, XBL and PBL lists.", true));
-        // spamRBLList.add(new SpamRBL("list.dsbl.org", "Distributed Sender Blackhole List", true));
-        // spamRBLList.add(new SpamRBL("sbl-xbl.spamhaus.org", "Spamhaus Block and Exploits Block Lists", true));
-        // spamRBLList.add(new SpamRBL("bl.spamcop.net", "SpamCop Blocking List", true));
+        spamDnsblList.add(new SpamDnsbl("zen.spamhaus.org", "Spamhaus SBL, XBL and PBL lists.", true));
+        // spamDnsblList.add(new SpamDnsbl("list.dsbl.org", "Distributed Sender Blackhole List", true));
+        // spamDnsblList.add(new SpamDnsbl("sbl-xbl.spamhaus.org", "Spamhaus Block and Exploits Block Lists", true));
+        // spamDnsblList.add(new SpamDnsbl("bl.spamcop.net", "SpamCop Blocking List", true));
 
         return;
     }
@@ -244,7 +236,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     public void setSettings(final SpamSettings newSpamSettings)
     {
         // set lists if not already set
-        initSpamRBLList(newSpamSettings);
+        initSpamDnsblList(newSpamSettings);
         SpamNodeImpl.this.spamSettings = newSpamSettings;
     }
 
@@ -327,7 +319,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     protected void preInit(String args[])
     {
         initializeSettings();
-        initSpamRBLList(spamSettings);
+        initSpamDnsblList(spamSettings);
     }
 
     public SpamScanner getScanner()
@@ -336,30 +328,18 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     }
 
 
-    private static class SpamRBLHandler implements PartialListUtil.Handler<SpamRBL>
+    private static class SpamTarpitHandler implements PartialListUtil.Handler<SpamDnsbl>
     {
-        public Long getId( SpamRBL rule )
+        public Long getId( SpamDnsbl rule )
         {
             return rule.getId();
         }
 
-        public void update( SpamRBL current, SpamRBL newRule )
+        public void update( SpamDnsbl current, SpamDnsbl newRule )
         {
             current.update( newRule );
         }
 
-    }
-
-    // XXX soon to be deprecated ----------------------------------------------
-
-    public int getSpamRBLListLength()
-    {
-        return rblListLength;
-    }
-
-    public void setSpamRBLListLength(int newValue)
-    {
-        rblListLength = newValue;
     }
 
     public Date getLastUpdate()
