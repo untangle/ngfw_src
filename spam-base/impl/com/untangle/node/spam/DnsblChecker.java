@@ -28,8 +28,8 @@ public class DnsblChecker
     private static final int MSECS_PER_SEC = 1000;
     private static final int SKIP_COUNT = 20;
 
-    private static Object rblCntMonitor = new Object();
-    private static int rblCnt = 0;
+    private static Object dnsblCntMonitor = new Object();
+    private static int dnsblCnt = 0;
 
     private Map<DnsblClient, DnsblClientContext> clientMap;
     private List<SpamDnsbl> spamDnsblList;
@@ -131,15 +131,15 @@ public class DnsblChecker
         // we have a confirmed hit
         // but we may decide not to reject the connection from this hit
         // - if we do not reject, then do not log
-        synchronized(rblCntMonitor) {
-            if (SKIP_COUNT == rblCnt) {
+        synchronized(dnsblCntMonitor) {
+            if (SKIP_COUNT == dnsblCnt) {
                 // accept every '1 out of SKIP_COUNT' connections
                 // from a blacklisted SMTP server
                 // to test the emails that this server will try to send
                 // -> functionality requested by dmorris
                 logger.debug(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist but ignoring this time");
                 
-                rblCnt = 0;
+                dnsblCnt = 0;
                 isBlacklisted = false;
             } else {
                 logger.debug(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist");
@@ -148,7 +148,7 @@ public class DnsblChecker
                 /* Indicate that there was a block event */
                 this.m_spamImpl.incrementBlockCount();
 
-                rblCnt++;
+                dnsblCnt++;
             }
         }
 

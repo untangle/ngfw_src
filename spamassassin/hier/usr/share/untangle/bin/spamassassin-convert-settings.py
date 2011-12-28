@@ -172,7 +172,7 @@ def get_rbl_list(sid, debug=False):
         aa = description.replace('\\', '\\\\')
         bb = aa.replace('"', '\\"')
         str += '\t\t\t"description": "%s",\n' % bb
-        str += '\t\t\t"javaClass": "com.untangle.node.spam.SpamRBL"\n'
+        str += '\t\t\t"javaClass": "com.untangle.node.spam.SpamDnsbl"\n'
         str += '\t\t}'
 
         first = False
@@ -218,7 +218,7 @@ def get_settings(tid, debug=False):
     str += '\t"smtpConfig": %s\n' % get_smtp_config(smtp_config, debug=debug)
     str += '\t"imapConfig": %s\n' % get_imap_config(imap_config, debug=debug)
     str += '\t"popConfig": %s\n' % get_pop_config(pop_config, debug=debug)
-    str += '\t"spamRBLList": %s\n' % get_rbl_list(rule_id, debug=debug)
+    str += '\t"spamDnsblList": %s\n' % get_rbl_list(rule_id, debug=debug)
     str += '}\n'
 
     return str
