@@ -522,6 +522,7 @@ def __get_users(start_date, end_date):
 
     try:
         curs = conn.cursor()
+        # select all distinct UIDs from that time period
         curs.execute("SELECT DISTINCT uid from reports.session_totals WHERE trunc_time >= %s and trunc_time < %s",
                      (start_date, end_date))
         rows = curs.fetchall()
@@ -541,7 +542,10 @@ def __get_hosts(start_date, end_date):
 
     try:
         curs = conn.cursor()
-        curs.execute("SELECT DISTINCT hname from reports.session_totals WHERE trunc_time >= %s and trunc_time < %s",
+        # select all distinct hname where the client was on a non-WAN interface from that time period
+        curs.execute("""SELECT DISTINCT hname from reports.session_totals 
+                        WHERE trunc_time >= %s and trunc_time < %s
+                        AND client_intf NOT IN """ + get_wan_clause(),
                      (start_date, end_date))
         rows = curs.fetchall()
         rv = [rows[i][0] for i in range(len(rows))]
@@ -562,9 +566,10 @@ def __get_emails(start_date, end_date):
         if not sql_helper.table_exists('reports', 'n_mail_addrs_totals'):
             return [];
         curs = conn.cursor()
+        # select all distinct email addresses from that time period
         curs.execute("""SELECT DISTINCT addr FROM reports.n_mail_addr_totals
                       WHERE trunc_time >=%s AND trunc_time < %s
-                      AND addr_kind = 'T' AND client_intf NOT IN """ + get_wan_clause(),
+                      AND addr_kind = 'T'""",
                      (start_date, end_date))
         rows = curs.fetchall()
         rv = [rows[i][0] for i in range(len(rows))]
