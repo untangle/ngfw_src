@@ -422,6 +422,41 @@ Ung.Util= {
 
         return data;
     },
+    getWanList : function() {
+        var data = [];
+        var datacount = 0;
+
+        if( this.wanInterfaces==null ) {
+            var netManager = main.getNetworkManager();
+            this.wanInterfaces = netManager.getWanInterfaces();
+        }
+
+        for ( var c = 0 ; c < this.wanInterfaces.length ; c++ ) {
+            var key =this.wanInterfaces[c];
+            var name = key;
+            switch ( key ) {
+            case "1": name = i18n._("External") ; break;
+            case "2": name = i18n._("Internal") ; break;
+            case "3": name = i18n._("DMZ") ; break;
+            case "250": name = i18n._("OpenVPN") ; break;
+            case "4": 
+            case "5": 
+                /* ... */
+            case "254":
+            default :
+                name = String.format( i18n._("Interface {0}"), key );
+                break;
+
+            }
+            
+            if ( key != null ) {
+                data[datacount] = [ key,name ];
+                datacount++;
+            }
+        }
+
+        return data;
+    },
     getInterfaceStore : function(simpleMatchers) {
 
         var data = [];

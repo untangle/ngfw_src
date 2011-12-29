@@ -145,4 +145,7 @@ public interface NetworkManager
     void refreshIptablesRules();
 
     String[] getPossibleInterfaces();
+
+    String[] getWanInterfaces();
+
 }

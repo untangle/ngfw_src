@@ -615,6 +615,20 @@ public class NetworkManagerImpl implements NetworkManager
 
         return possibleInterfaces.toArray(new String[0]);
     }
+
+    public String[] getWanInterfaces()
+    {
+        LinkedList<String> wanInterfaces = new LinkedList<String>();
+
+        if (this.networkConfiguration != null) {   
+            for ( InterfaceConfiguration intfConf : this.networkConfiguration.getInterfaceList() ) {
+                if (intfConf.isWAN())
+                    wanInterfaces.add(intfConf.getInterfaceId().toString());
+            }
+        }
+
+        return wanInterfaces.toArray(new String[0]);
+    }
     
     /*
      * This returns an address where the host should be able to access
