@@ -51,8 +51,9 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
     private static final String INITIAL_USER_PASSWORD = "passwd";
 
     private static final String SET_TIMEZONE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-timezone";
+    private static final String UVM_VERSION_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-uvm-version.sh";
+    private static final String REBOOT_COUNT_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-reboot-count.sh";
     private static final String TIMEZONE_FILE = "/etc/timezone";
-    private static final String BRAND_INFO_FILE = "/usr/share/untangle/tmp/brand";
     
     private static final String ALPACA_NONCE_FILE = "/etc/untangle-net-alpaca/nonce";
 
@@ -249,40 +250,10 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
         }
     }
 
-    private String getBrandNonce()
-    {
-        BufferedReader stream = null;
-        String brand = "xxxxxx";
-        try {
-            stream = new BufferedReader(new FileReader(BRAND_INFO_FILE));
-
-            brand = stream.readLine();
-            if (brand.length() < 6) {
-                logger.warn("Invalid brand in the file ["
-                            + BRAND_INFO_FILE + "]: ', " +
-                            brand + "'");
-                return "xxxxxx";
-            }
-            brand = brand.substring(0,6).replaceAll("[^a-zA-Z0-9]", ".");
- 
-            return brand;
-        } catch (Exception exn) {
-            logger.warn("could not get brand", exn);
-            return "xxxxxx";
-        } finally {
-            try {
-                if (stream != null) stream.close();
-            } catch (IOException e) {
-                logger.warn("Unable to close brand file: "
-                            + BRAND_INFO_FILE, e);
-            }
-        }
-    }
-    
     public String getFullVersionAndRevision()
     {
         try {
-            SimpleExec.SimpleExecResult result = SimpleExec.exec("/usr/share/untangle/bin/ut-uvm-version.sh",null,null,null,true,true,1000*20);
+            SimpleExec.SimpleExecResult result = SimpleExec.exec(UVM_VERSION_SCRIPT,null,null,null,true,true,1000*20);
 	    
             if(result.exitCode==0) {
                 return new String(result.stdOut).replaceAll("(\\r|\\n)", "");
@@ -321,7 +292,6 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
             BufferedReader tmp = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String output = tmp.readLine();
             output = output.replaceAll("(\\r|\\n)", "");
-            logger.warn(output);
             
             if( exitCode == 0 ) {
                 return new String("yes (" + output + ")");
@@ -335,4 +305,20 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
 
         return "UNKNOWN";
     }
+
+    public String getRebootCount()
+    {
+        try {
+            SimpleExec.SimpleExecResult result = SimpleExec.exec(REBOOT_COUNT_SCRIPT,null,null,null,true,true,1000*20);
+	    
+            if(result.exitCode==0) {
+                return new String(result.stdOut).replaceAll("(\\r|\\n)", "");
+            }
+        } catch (Exception e) {
+            logger.warn("Unable to fetch version",e);
+        }
+
+        return "Unknown";
+    }
+    
 }

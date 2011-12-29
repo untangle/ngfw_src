@@ -68,6 +68,8 @@ public interface AdminManager
 
     String getModificationState();
 
+    String getRebootCount();
+
     String getFullVersionAndRevision();
     
 }
