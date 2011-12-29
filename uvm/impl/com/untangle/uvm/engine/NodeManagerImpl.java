@@ -1101,13 +1101,13 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
     private static class ExpiredPolicyMatcher implements SessionMatcher
     {
-        private final PipelineFoundryImpl foundry
-            = PipelineFoundryImpl.foundry();
+        private static final Logger logger = Logger.getLogger(ExpiredPolicyMatcher.class);
 
-        public boolean isMatch(Policy policy, IPSessionDesc clientSide,
-                               IPSessionDesc serverSide)
+        private final PipelineFoundryImpl foundry = PipelineFoundryImpl.foundry();
+
+        public boolean isMatch(Policy policy, IPSessionDesc clientSide, IPSessionDesc serverSide)
         {
-            PolicyRule pr = foundry.selectPolicy(clientSide); // XXX?
+            PolicyRule pr = foundry.selectPolicy(clientSide); 
             Policy sp = pr.getPolicy();
 
             /** If either policy is null, just check if they are equal */
@@ -1118,6 +1118,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             } else if (policy.equals(sp)) {
                 return false;
             } else {
+                logger.warn("Resetting session for policy-switch. " + clientSide + " -> " + serverSide);
                 return true;
             }
         }
