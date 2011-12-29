@@ -526,6 +526,9 @@ def __get_users(start_date, end_date):
                      (start_date, end_date))
         rows = curs.fetchall()
         rv = [rows[i][0] for i in range(len(rows))]
+    except:
+        logger.warn('could not generate users list', exc_info=True)
+        rv = []
     finally:
         conn.commit()
 
@@ -542,6 +545,9 @@ def __get_hosts(start_date, end_date):
                      (start_date, end_date))
         rows = curs.fetchall()
         rv = [rows[i][0] for i in range(len(rows))]
+    except:
+        logger.warn('could not generate hosts list', exc_info=True)
+        rv = []
     finally:
         conn.commit()
 
@@ -553,6 +559,8 @@ def __get_emails(start_date, end_date):
     conn = sql_helper.get_connection()
 
     try:
+        if not sql_helper.table_exists('reports', 'n_mail_addrs_totals'):
+            return [];
         curs = conn.cursor()
         curs.execute("""SELECT DISTINCT addr FROM reports.n_mail_addr_totals
                       WHERE trunc_time >=%s AND trunc_time < %s
@@ -560,6 +568,9 @@ def __get_emails(start_date, end_date):
                      (start_date, end_date))
         rows = curs.fetchall()
         rv = [rows[i][0] for i in range(len(rows))]
+    except:
+        logger.warn('could not generate email list', exc_info=True)
+        rv = []
     finally:
         conn.commit()
 
