@@ -339,7 +339,7 @@ except Exception:
      pass
 
 try:
-     create_table.create_table("reports","report_data_days","""\
+     sql_helper.create_table("reports","report_data_days","""\
 CREATE TABLE reports.report_data_days (
         day_name text NOT NULL,
         day_begin date NOT NULL)""")
@@ -347,7 +347,7 @@ except Exception:
      pass
 
 try:
-     create_table.create_table("reports","table_updates","""\
+     sql_helper.create_table("reports","table_updates","""\
 CREATE TABLE reports.table_updates (
     tablename text NOT NULL,
     last_update timestamp NOT NULL,

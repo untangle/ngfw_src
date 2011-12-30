@@ -97,7 +97,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
         return settings;
     }
 
-    public synchronized void runDailyReport() throws Exception
+    public void runDailyReport() throws Exception
     {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date()); // now
@@ -110,28 +110,29 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
         boolean tryAgain = false;
         int tries = 0;
 
-        do {
-            tries++;
-            tryAgain = false;
+        synchronized (this) {
+            do {
+                tries++;
+                tryAgain = false;
             
-            try {
-                String args[] = { REPORTS_SCRIPT, "-r", "1", "-m", "-d", ts };
-                Process proc = UvmContextFactory.context().exec(args);
-                tailLog(REPORTER_LOG_FILE, REPORTER_LOG_FILE_READ_TIMEOUT, proc);
-                exitCode = proc.waitFor();
-                proc.destroy();
-            } catch (Exception e) {
-                logger.error("Unable to run daily reports", e );
+                try {
+                    String args[] = { REPORTS_SCRIPT, "-r", "1", "-m", "-d", ts };
+                    Process proc = UvmContextFactory.context().exec(args);
+                    tailLog(REPORTER_LOG_FILE, REPORTER_LOG_FILE_READ_TIMEOUT, proc);
+                    exitCode = proc.waitFor();
+                    proc.destroy();
+                } catch (Exception e) {
+                    logger.error("Unable to run daily reports", e );
+                }
+                /* exitCode == 1 means another reports process is running, just wait and try again. */
+                if (exitCode == 1)  {
+                    logger.warn("Report process already running. Waiting and then trying again...");
+                    tryAgain = true;
+                    Thread.sleep(10000); // sleep 10 seconds
+                }
             }
-            /* exitCode == 1 means another reports process is running, just wait and try again. */
-            if (exitCode == 1)  {
-                logger.warn("Report process already running. Waiting and then trying again...");
-                tryAgain = true;
-                Thread.sleep(10000); // sleep 10 seconds
-            }
-        }
-        while (tryAgain && tries < 20); // try max 20 times (20 * 10 seconds = 200 seconds)
-        
+            while (tryAgain && tries < 20); // try max 20 times (20 * 10 seconds = 200 seconds)
+        }        
         if (exitCode != 0) {
             if (exitCode == 1) 
                 throw new Exception("A reports process is already running. Please try again later.");
@@ -150,7 +151,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
         return this.currentStatus;
     }
 
-    public synchronized void flushEvents(boolean force)
+    public void flushEvents(boolean force)
     {
         long currentTime  = System.currentTimeMillis();
         
@@ -166,14 +167,16 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
         UvmContextFactory.context().loggingManager().forceFlush();
 
         logger.info("Running incremental report...");
-        try {
-            String args[] = { REPORTS_SCRIPT, "-m", "-i", "-r", "1" };
-            Process proc = UvmContextFactory.context().exec(args);
-            tailLog(REPORTER_LOG_FILE, REPORTER_LOG_FILE_READ_TIMEOUT, proc);
-            exitCode = proc.waitFor();
-            proc.destroy();
-        } catch (Exception e) {
-            logger.error("Unable to run incremental reports", e );
+        synchronized (this) {
+            try {
+                String args[] = { REPORTS_SCRIPT, "-m", "-i", "-r", "1" };
+                Process proc = UvmContextFactory.context().exec(args);
+                tailLog(REPORTER_LOG_FILE, REPORTER_LOG_FILE_READ_TIMEOUT, proc);
+                exitCode = proc.waitFor();
+                proc.destroy();
+            } catch (Exception e) {
+                logger.error("Unable to run incremental reports", e );
+            }
         }
 
         this.currentStatus = "";
