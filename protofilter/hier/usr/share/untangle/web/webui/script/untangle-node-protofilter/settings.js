@@ -159,7 +159,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })
-                }, logColumn, blockedColumn, {
+                }, blockedColumn, logColumn, {
                     id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
@@ -170,7 +170,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 }],
                 sortField : 'category',
                 columnsDefaultSortable : true,
-                plugins : [blockedColumn, logColumn],
+                plugins : [logColumn, blockedColumn],
                 // the row input lines used by the row editor window
                 rowEditorInputLines : [ new Ext.form.TextField({
                     name : "Protocol",
@@ -185,13 +185,13 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     allowBlank : false,
                     width : 200
                 }), new Ext.form.Checkbox({
-                    name : "Log",
-                    dataIndex : "log",
-                    fieldLabel : this.i18n._("Log")
-                }), new Ext.form.Checkbox({
                     name : "Block",
                     dataIndex : "blocked",
                     fieldLabel : this.i18n._("Block")
+                }), new Ext.form.Checkbox({
+                    name : "Log",
+                    dataIndex : "log",
+                    fieldLabel : this.i18n._("Log")
                 }), new Ext.form.TextArea({
                     name : "Description",
                     dataIndex : "description",

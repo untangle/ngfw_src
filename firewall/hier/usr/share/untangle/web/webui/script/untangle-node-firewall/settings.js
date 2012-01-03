@@ -377,10 +377,10 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                                  header : this.i18n._("Description"),
                                  width : 200,
                                  dataIndex : 'description'
-                             }, logColumn, blockedColumn],
+                             }, blockedColumn, logColumn],
                              columnsDefaultSortable : false,
                              autoExpandColumn : 'description',
-                             plugins : [enabledColumn, logColumn, blockedColumn],
+                             plugins : [enabledColumn, blockedColumn, logColumn],
 
                              initComponent : function() {
                                  this.rowEditor = new Ung.RowEditorWindow({
@@ -486,15 +486,15 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                                                         title : i18n._('Perform the following action(s):'),
                                                         border: false
                                                     }, new Ext.form.Checkbox({
-                                                        name : "Log",
-                                                        dataIndex: "log",
-                                                        itemCls:'firewall-spacing-1',
-                                                        fieldLabel : this.i18n._("Log")
-                                                    }), new Ext.form.Checkbox({
                                                         name : "Block",
                                                         dataIndex: "block",
                                                         itemCls:'firewall-spacing-1',
                                                         fieldLabel : this.i18n._("Block")
+                                                    }), new Ext.form.Checkbox({
+                                                        name : "Log",
+                                                        dataIndex: "log",
+                                                        itemCls:'firewall-spacing-1',
+                                                        fieldLabel : this.i18n._("Log")
                                                     })]
                          })]
             });
