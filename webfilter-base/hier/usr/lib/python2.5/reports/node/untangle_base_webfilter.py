@@ -117,14 +117,14 @@ WHERE (time_stamp < %s- interval %s)""", (cutoff, safety_margin))
         try:
             sql_helper.run_sql("""\
 UPDATE reports.n_http_events
-SET wf_%s_blocked = blocked,
-    wf_%s_flagged = flagged,
+SET wf_%s_blocked = blocked OR wf_%s_blocked,
+    wf_%s_flagged = flagged OR wf_%s_flagged,
     wf_%s_reason = reason,
     wf_%s_category = category
 FROM events.n_webfilter_evt
 WHERE events.n_webfilter_evt.vendor_name = %%s
 AND reports.n_http_events.request_id = events.n_webfilter_evt.request_id"""
-                               % (4 * (self.__vendor_name,)),
+                               % (6 * (self.__vendor_name,)),
                                (self.__vendor_name,), connection=conn,
                                auto_commit=False)
             conn.commit()

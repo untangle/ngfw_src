@@ -273,26 +273,22 @@ public abstract class DecisionEngine
         logger.debug("checkResponse: " + host + uri + " content: " + contentType);
 
         // check mime-type list
-        for (GenericRule rule : node.getSettings().getBlockedMimeTypes()) {
-            MimeType mt = new MimeType(rule.getString());
-            if ((rule.getBlocked() || rule.getFlagged()) && mt.matches(contentType)) {
 
-                if (rule.getBlocked()) {
-                    WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_MIME, contentType, node.getVendor());
-                    logger.debug("LOG: in mimetype list: " + requestLine.getRequestLine());
-                    node.logEvent(hbe);
-                } else if (rule.getFlagged()) {
-                    WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.TRUE, Reason.BLOCK_MIME, contentType, node.getVendor());
-                    logger.debug("LOG: in mimetype list: " + requestLine.getRequestLine());
-                    node.logEvent(hbe);
-                }
+        GenericRule rule = checkMimetypeList(contentType);
+        if (rule != null && rule.getBlocked()) {
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_MIME, contentType, node.getVendor());
+            logger.debug("LOG: in mimetype list: " + requestLine.getRequestLine());
+            node.logEvent(hbe);
 
-                Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
-                WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(),
-                                                                     I18nUtil.tr("Mime-Type ({0})", contentType, i18nMap),
-                                                                     clientIp, node.getNodeTitle(), null);
-                return node.generateNonce(bd);
-            }
+            Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-webfilter");
+            WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(),
+                                                                 I18nUtil.tr("Mime-Type ({0})", contentType, i18nMap),
+                                                                 clientIp, node.getNodeTitle(), null);
+            return node.generateNonce(bd);
+        } else if (rule != null && rule.getFlagged()) {
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.TRUE, Reason.BLOCK_MIME, contentType, node.getVendor());
+            logger.debug("LOG: in mimetype list: " + requestLine.getRequestLine());
+            node.logEvent(hbe);
         }
 
         return null;
@@ -362,7 +358,7 @@ public abstract class DecisionEngine
         unblockedDomains.clear();
     }
 
-
+    
     /**
      * checkSitePassList checks the host+uri against the pass list
      *
@@ -461,6 +457,23 @@ public abstract class DecisionEngine
         return null;
     }
 
+    /**
+     * Checks the given content type against mime type rules
+     * Returns the given rule if a rule matches (that is either blocking or flagging), otherwise null
+     */
+    private GenericRule checkMimetypeList( String contentType )
+    {
+        // check mime-type list
+        for (GenericRule rule : node.getSettings().getBlockedMimeTypes()) {
+            MimeType mt = new MimeType(rule.getString());
+            if ((rule.getBlocked() || rule.getFlagged()) && mt.matches(contentType)) {
+                return rule;
+            }
+        }
+
+        return null;
+    }
+    
     /**
      * Checks the given URL against the file extension rules
      * Returns the given rule if a rule matches, otherwise null
