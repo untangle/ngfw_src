@@ -31,11 +31,12 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 width:600,
                 anchor:"98%"
             });
+            this.i18n = this.settingsCmp.i18n;
             this.xtype="firewallrulebuilder";
             this.selModel= new Ext.grid.RowSelectionModel();
             this.tbar = [{
                 iconCls : 'icon-add-row',
-                text : this.settingsCmp.i18n._("Add"),
+                text : this.i18n._("Add"),
                 handler : this.addHandler,
                 scope : this
             }];
@@ -47,7 +48,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     {name: 'value'}
                 ]
             });
-            
+
             this.recordDefaults={name:null, value:""};
             var deleteColumn = new Ext.grid.DeleteColumn({});
             this.autoExpandColumn = 'displayName',
@@ -60,10 +61,10 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 dataIndex: null,
                 renderer: function(value, metadata, record, rowIndex) {
                     if (rowIndex == 0) return "";
-                    return this.settingsCmp.i18n._("and");
+                    return this.i18n._("and");
                 }.createDelegate(this)
             },{
-                header : this.settingsCmp.i18n._("Type"),
+                header : this.i18n._("Type"),
                 width: 300,
                 fixed: true,
                 dataIndex : "name",
@@ -99,7 +100,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                 }.createDelegate(this)
             },{
                 id:'displayName',
-                header : this.settingsCmp.i18n._("Value"),
+                header : this.i18n._("Value"),
                 width: 315,
                 fixed: true,
                 dataIndex : "value",
@@ -157,8 +158,8 @@ if (!Ung.hasResource["Ung.Firewall"]) {
             var newName=selObj.options[selObj.selectedIndex].value;
             var rule=null;
             if (newName == "") {
-                    Ext.MessageBox.alert(i18n._("Warning"),i18n._("A valid type must be selected."));
-                    return;
+                Ext.MessageBox.alert(i18n._("Warning"),i18n._("A valid type must be selected."));
+                return;
             }
             // iterate through and make sure there are no other matchers of this type
             for (var i = 0; i < this.store.data.length ; i++) {
@@ -333,170 +334,180 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     cls: 'description',
                     bodyStyle : 'padding:5px 5px 5px; 5px;',
                     html : String.format(this.i18n._(" <b>Firewall</b> is a simple application designed to block and log network traffic based on a set of rules. To learn more click on the <b>Help</b> button below.<br/> Routing and Port Forwarding functionality can be found elsewhere in Config->Networking."),main.getBrandingManager().getCompanyName())
-                },
-                         this.gridRules= new Ung.EditorGrid({
-                             name : 'Rules',
-                             settingsCmp : this,
-                             height : 500,
-                             paginated : false,
-                             hasReorder : true,
-                             addAtTop : false,
-                             emptyRow : {
-                                 "id" : 0,
-                                 "enabled" : true,
-                                 "block" : false,
-                                 "log" : true,
-                                 "description" : this.i18n._("[no description]"),
-                                 "javaClass" : "com.untangle.node.firewall.FirewallRule"
-                             },
-                             title : this.i18n._("Rules"),
-                             recordJavaClass : "com.untangle.node.firewall.FirewallRule",
-                             data:this.getRpcNode().getSettings().rules.list,
-                             fields : [{
-                                 name : 'id'
-                             }, {
-                                 name : 'enabled'
-                             }, {
-                                 name : 'block'
-                             }, {
-                                 name : 'log'
-                             }, {
-                                 name : 'matchers'
-                             },{
-                                 name : 'description'
-                             }, {
-                                 name : 'javaClass'
-                             }],
-                             columns : [{
-                                 id : 'id',
-                                 header : this.i18n._("Rule Id"),
-                                 width : 50,
-                                 dataIndex : 'id'
-                             }, enabledColumn, {
-                                 id : 'description',
-                                 header : this.i18n._("Description"),
-                                 width : 200,
-                                 dataIndex : 'description'
-                             }, blockedColumn, logColumn],
-                             columnsDefaultSortable : false,
-                             autoExpandColumn : 'description',
-                             plugins : [enabledColumn, blockedColumn, logColumn],
+                },  this.gridRules= new Ung.EditorGrid({
+                    name : 'Rules',
+                    settingsCmp : this,
+                    height : 500,
+                    paginated : false,
+                    hasReorder : true,
+                    addAtTop : false,
+                    emptyRow : {
+                        "id" : 0,
+                        "enabled" : true,
+                        "block" : false,
+                        "log" : true,
+                        "description" : this.i18n._("[no description]"),
+                        "javaClass" : "com.untangle.node.firewall.FirewallRule"
+                    },
+                    title : this.i18n._("Rules"),
+                    recordJavaClass : "com.untangle.node.firewall.FirewallRule",
+                    data:this.getRpcNode().getSettings().rules.list,
+                    fields : [{
+                        name : 'id'
+                    }, {
+                        name : 'enabled'
+                    }, {
+                        name : 'block'
+                    }, {
+                        name : 'log'
+                    }, {
+                        name : 'matchers'
+                    },{
+                        name : 'description'
+                    }, {
+                        name : 'javaClass'
+                    }],
+                    columns : [{
+                        id : 'id',
+                        header : this.i18n._("Rule Id"),
+                        width : 50,
+                        dataIndex : 'id'
+                    }, enabledColumn, {
+                        id : 'description',
+                        header : this.i18n._("Description"),
+                        width : 200,
+                        dataIndex : 'description'
+                    }, blockedColumn, logColumn],
+                    columnsDefaultSortable : false,
+                    autoExpandColumn : 'description',
+                    plugins : [enabledColumn, blockedColumn, logColumn],
 
-                             initComponent : function() {
-                                 this.rowEditor = new Ung.RowEditorWindow({
-                                     grid : this,
-                                     sizeToComponent : this.settingsCmp,
-                                     inputLines : this.rowEditorInputLines,
-                                     rowEditorLabelWidth : 100,
-                                     populate : function(record, addMode) {
-                                         return this.populateTree(record, addMode);
-                                     },
-                                     // updateAction is called to update the record after the edit
-                                     updateAction : function() {
-                                         return this.updateActionTree();
-                                     },
-                                     isDirty : function() {
-                                         if (this.record !== null) {
-                                             if (this.inputLines) {
-                                                 for (var i = 0; i < this.inputLines.length; i++) {
-                                                     var inputLine = this.inputLines[i];
-                                                     if(inputLine.dataIndex!=null) {
-                                                         if (this.record.get(inputLine.dataIndex) != inputLine.getValue()) {
-                                                             return true;
-                                                         }
-                                                     }
-                                                     /* for fieldsets */
-                                                     if(inputLine.items !=null && inputLine.items.dataIndex != null) {
-                                                         if (this.record.get(inputLine.items.dataIndex) != inputLine.items.getValue()) {
-                                                             return true;
-                                                         }
-                                                     }
-                                                 }
-                                             }
-                                         }
-                                         return false;
-                                     },
-                                     isFormValid : function() {
-                                         for (var i = 0; i < this.inputLines.length; i++) {
-                                             var item = null;
-                                             if ( this.inputLines.get != null ) {
-                                                 item = this.inputLines.get(i);
-                                             } else {
-                                                 item = this.inputLines[i];
-                                             }
-                                             if ( item == null ) {
-                                                 continue;
-                                             }
+                    initComponent : function() {
+                        this.rowEditor = new Ung.RowEditorWindow({
+                            grid : this,
+                            sizeToComponent : this.settingsCmp,
+                            inputLines : this.rowEditorInputLines,
+                            rowEditorLabelWidth : 100,
+                            populate : function(record, addMode) {
+                                return this.populateTree(record, addMode);
+                            },
+                            // updateAction is called to update the record after the edit
+                            updateAction : function() {
+                                return this.updateActionTree();
+                            },
+                            isDirty : function() {
+                                if (this.record !== null) {
+                                    if (this.inputLines) {
+                                        for (var i = 0; i < this.inputLines.length; i++) {
+                                            var inputLine = this.inputLines[i];
+                                            if(inputLine.dataIndex!=null) {
+                                                if (this.record.get(inputLine.dataIndex) != inputLine.getValue()) {
+                                                    return true;
+                                                }
+                                            }
+                                            /* for fieldsets */
+                                            if(inputLine.items !=null && inputLine.items.dataIndex != null) {
+                                                if (this.record.get(inputLine.items.dataIndex) != inputLine.items.getValue()) {
+                                                    return true;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                return false;
+                            },
+                            isFormValid : function() {
+                                for (var i = 0; i < this.inputLines.length; i++) {
+                                    var item = null;
+                                    if ( this.inputLines.get != null ) {
+                                        item = this.inputLines.get(i);
+                                    } else {
+                                        item = this.inputLines[i];
+                                    }
+                                    if ( item == null ) {
+                                        continue;
+                                    }
 
-                                             if ( item.isValid != null) {
-                                                 if(!item.isValid()) {
-                                                     return false;
-                                                 }
-                                             } else if(item.items !=null && item.items.getCount()>0) {
-                                                 /* for fieldsets */
-                                                 for (var j = 0; j < item.items.getCount(); j++) {
-                                                     var subitem=item.items.get(j);
-                                                     if ( subitem == null ) {
-                                                         continue;
-                                                     }
+                                    if ( item.isValid != null) {
+                                        if(!item.isValid()) {
+                                            return false;
+                                        }
+                                    } else if(item.items !=null && item.items.getCount()>0) {
+                                        /* for fieldsets */
+                                        for (var j = 0; j < item.items.getCount(); j++) {
+                                            var subitem=item.items.get(j);
+                                            if ( subitem == null ) {
+                                                continue;
+                                            }
 
-                                                     if ( subitem.isValid != null && !subitem.isValid()) {
-                                                         return false;
-                                                     }
-                                                 }                                    
-                                             }
-                                             
-                                         }
-                                         return true;
-                                     }
-                                 });
-                                 Ung.EditorGrid.prototype.initComponent.call(this);
-                             },
+                                            if ( subitem.isValid != null && !subitem.isValid()) {
+                                                return false;
+                                            }
+                                        }                                    
+                                    }
+                                    
+                                }
+                                return true;
+                            }
+                        });
+                        Ung.EditorGrid.prototype.initComponent.call(this);
+                    },
 
-                             rowEditorInputLines : [new Ext.form.Checkbox({
-                                 name : "Enable Rule",
-                                 dataIndex: "enabled",
-                                 fieldLabel : this.i18n._("Enable Rule"),
-                                 itemCls:'firewall-spacing-1'
-                             }),
-                                                    new Ext.form.TextField({
-                                                        name : "Description",
-                                                        dataIndex: "description",
-                                                        fieldLabel : this.i18n._("Description"),
-                                                        itemCls:'firewall-spacing-1',
-                                                        width : 400
-                                                    }),
-                                                    new Ext.form.FieldSet({
-                                                        title : this.i18n._("Rule") ,
-                                                        cls:'firewall-spacing-2',
-                                                        autoHeight : true,
-                                                        title: "If all of the following conditions are met:",
-                                                        items:[{
-                                                            xtype:"firewallrulebuilder",
-                                                            settingsCmp: this,
-                                                            anchor:"98%",
-                                                            width: 900,
-                                                            dataIndex: "matchers",
-                                                            matchers : Ung.FirewallUtil.getMatchers(this)
-                                                        }]
-                                                    }), {
-                                                        xtype : 'fieldset',
-                                                        autoHeight: true,
-                                                        cls:'description',
-                                                        title : i18n._('Perform the following action(s):'),
-                                                        border: false
-                                                    }, new Ext.form.Checkbox({
-                                                        name : "Block",
-                                                        dataIndex: "block",
-                                                        itemCls:'firewall-spacing-1',
-                                                        fieldLabel : this.i18n._("Block")
-                                                    }), new Ext.form.Checkbox({
-                                                        name : "Log",
-                                                        dataIndex: "log",
-                                                        itemCls:'firewall-spacing-1',
-                                                        fieldLabel : this.i18n._("Log")
-                                                    })]
-                         })]
+                    rowEditorInputLines : [
+                        new Ext.form.Checkbox({
+                            name : "Enable Rule",
+                            dataIndex: "enabled",
+                            fieldLabel : this.i18n._("Enable Rule"),
+                            itemCls:'firewall-spacing-1'
+                        }), new Ext.form.TextField({
+                            name : "Description",
+                            dataIndex: "description",
+                            fieldLabel : this.i18n._("Description"),
+                            itemCls:'firewall-spacing-1',
+                            width : 400
+                        }), new Ext.form.FieldSet({
+                            title : this.i18n._("Rule") ,
+                            cls:'firewall-spacing-2',
+                            autoHeight : true,
+                            title: "If all of the following conditions are met:",
+                            items:[{
+                                xtype:"firewallrulebuilder",
+                                settingsCmp: this,
+                                anchor:"98%",
+                                width: 900,
+                                dataIndex: "matchers",
+                                matchers : Ung.FirewallUtil.getMatchers(this)
+                            }]
+                        }), {
+                            xtype : 'fieldset',
+                            autoHeight: true,
+                            cls:'description',
+                            title : i18n._('Perform the following action(s):'),
+                            border: false
+                        }, {
+                            xtype: "combo",
+                            name: "actionType",
+                            allowBlank: false,
+                            dataIndex: "block",
+                            fieldLabel: this.i18n._("Action Type"),
+                            editable : false,
+                            store: new Ext.data.SimpleStore({
+                                id: 0,
+                                fields: ['displayName', 'value'],
+                                data : [[i18n._('Block'),true], [i18n._('Pass'),false]]
+                            }),
+                            valueField: "value",
+                            displayField: "displayName",
+                            mode: "local",
+                            triggerAction : 'all',
+                            listClass : 'x-combo-list-small'
+                        }, new Ext.form.Checkbox({
+                            name : "Log",
+                            dataIndex: "log",
+                            itemCls:'firewall-spacing-1',
+                            fieldLabel : this.i18n._("Log")
+                        })]
+                })]
             });
         },
         // Event Log
