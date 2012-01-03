@@ -67,9 +67,6 @@ public class NetworkManagerImpl implements NetworkManager
     /* Manager for AddressSettings */
     private final AddressManagerImpl addressManager;
 
-    /* Manager for MiscSettings */
-    private final MiscManagerImpl miscManager;
-
     /* networkListeners stores parties interested in being notified of network changes */
     private Set<NetworkConfigurationListener> networkListeners = new HashSet<NetworkConfigurationListener>();
 
@@ -85,7 +82,6 @@ public class NetworkManagerImpl implements NetworkManager
         this.ruleManager = RuleManager.getInstance();
         this.accessManager = new AccessManagerImpl();
         this.addressManager = new AddressManagerImpl();
-        this.miscManager = new MiscManagerImpl();
     }
 
     /**
@@ -188,27 +184,6 @@ public class NetworkManagerImpl implements NetworkManager
         }
     }
 
-    /**
-     * Retrieve the miscellaneous settings that don't really belong anywhere else.
-     */
-    public MiscSettings getMiscSettings()
-    {
-        return this.miscManager.getSettings();
-    }
-
-    public void setMiscSettings( MiscSettings misc )
-    {
-        this.miscManager.setSettings( misc );
-
-        refreshNetworkConfig();
-
-        try {
-            generateRules();
-        } catch ( Exception e ) {
-            logger.warn( "Unable to generate rules.", e );
-        }
-    }
-
     /* Register a service that needs outside access to HTTPs, the name should be unique */
     public synchronized void registerService( String name )
     {
@@ -270,11 +245,10 @@ public class NetworkManagerImpl implements NetworkManager
 
     /* Set the Access, Misc and Network settings at once.  Used by the
      * support panel */
-    public void setSettings( AccessSettings access, MiscSettings misc )
+    public void setSettings( AccessSettings access )
         throws Exception, ValidateException
     {
         this.accessManager.setSettings( access );
-        this.miscManager.setSettings( misc );
 
         refreshNetworkConfig();
 
@@ -772,9 +746,6 @@ public class NetworkManagerImpl implements NetworkManager
     /* Methods for saving and loading the settings files from the database at startup */
     private void loadAllSettings()
     {
-        /* Load the miscellaneous settings */
-        this.miscManager.init();
-
         /* Load the access settings. */
         this.accessManager.init();
 

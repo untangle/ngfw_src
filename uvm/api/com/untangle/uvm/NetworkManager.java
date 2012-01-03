@@ -12,7 +12,6 @@ import com.untangle.uvm.networking.AddressSettings;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.networking.IPNetwork;
-import com.untangle.uvm.networking.MiscSettings;
 import com.untangle.uvm.networking.NetworkConfigurationListener;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ValidateException;
@@ -55,14 +54,6 @@ public interface NetworkManager
     void setAddressSettings( AddressSettings address );
 
     /**
-     * Retrieve the miscellaneous settings that don't really belong
-     * anywhere else.
-     */
-    MiscSettings getMiscSettings();
-
-    void setMiscSettings( MiscSettings misc );
-
-    /**
      * Remap the interfaces
      * @param osArray Array of os names (eth0, eth1, etc)
      * @param userArray Array of system names (External, Internal, etc);
@@ -75,7 +66,7 @@ public interface NetworkManager
 
     /* Set the Access, Misc and Network settings at once.  Used by the
      * support panel */
-    void setSettings( AccessSettings access, MiscSettings misc )
+    void setSettings( AccessSettings access )
         throws Exception, ValidateException;
 
     /** Update the internal representation of the address */

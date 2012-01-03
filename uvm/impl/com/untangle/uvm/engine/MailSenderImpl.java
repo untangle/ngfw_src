@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
@@ -32,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -75,20 +59,12 @@ import com.untangle.uvm.util.TransactionWork;
  * Note that this class is designed to be used <b>BOTH</b> inside the UVM and
  * as a stand-alone application. The stand-alone mode is used for mailing out
  * Untangle Reports.
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
  */
 class MailSenderImpl implements MailSender, HasConfigFiles
 {
-    // All error log emails go here.
-    public static final String ERROR_LOG_RECIPIENT = "exceptions@untangle.com";
-
     public static final String UNTANGLE_SMTP_RELAY = "mail.untangle.com";
 
     public static final String Mailer = "UVM MailSender";
-
-    // --
 
     // JavaMail constants
     private static final String MAIL_HOST_PROP = "mail.host";
@@ -527,26 +503,6 @@ class MailSenderImpl implements MailSender, HasConfigFiles
         }
 
         sendMixed(reportSession, recipients, subject, bodyHTML, parts);
-    }
-
-    public void sendErrorLogs(String subject, String bodyText, List<MimeBodyPart> parts)
-    {
-        String[] recipients = new String[1];
-        recipients[0] = ERROR_LOG_RECIPIENT;
-
-        // New behavior 8/15/05: First try our own mail server, if that doesn't work
-        // (they have a firewall rule preventing it, for instance), try their email
-        // server.  If that doesn't work, go ahead and drop it.  jdi
-        Session[] trySessions = new Session[] { utSession, alertSession };
-        boolean success = false;
-        for (Session session : trySessions) {
-            success = sendMixedErrorLog(session, recipients, subject, bodyText, parts);
-            if (success)
-                break;
-        }
-        if (!success) {
-            logger.error("Unable to send exception email, dropping");
-        }
     }
 
     public void sendMessage(String[] recipients, String subject, String bodyText)

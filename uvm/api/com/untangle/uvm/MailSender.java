@@ -58,18 +58,6 @@ public interface MailSender
     void sendReports(String subject, String bodyHTML, List<String> extraLocations, List<File> extras);
 
     /**
-     * Sends an error log email to Untangle to the reportEmail address
-     * (from the mail settings).  Each attachment contains the last
-     * events a node.
-     *
-     * @param subject the subject.
-     * @param bodyText the plain text for the "main page" that will
-     * become the first extra.
-     * @param parts the additional parts.
-     */
-    void sendErrorLogs(String subject, String bodyText, List<MimeBodyPart> parts);
-
-    /**
      * Sends an email message to the given recipients.
      *
      * @param recipients recipient email addresses.

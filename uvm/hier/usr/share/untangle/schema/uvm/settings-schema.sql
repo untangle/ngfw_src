@@ -284,15 +284,6 @@ CREATE TABLE settings.u_access_settings (
     block_page_port      INT4 NOT NULL,
     PRIMARY KEY          (settings_id));
 
--- com.untangle.uvm.networking.MiscSettings -- 4.2
-CREATE TABLE settings.u_misc_settings (
-    settings_id          INT8 NOT NULL,
-    report_exceptions    BOOL,
-    tcp_window_scaling   BOOL,
-    post_configuration   TEXT,
-    custom_rules         TEXT,
-    PRIMARY KEY          (settings_id));
-
 -- com.untangle.uvm.networking.AddressSettings -- 4.2
 CREATE TABLE settings.u_address_settings (
     settings_id          INT8 NOT NULL,

@@ -1093,7 +1093,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.addAnnotatedClass("com.untangle.uvm.logging.CpdLoginEventsFromReports");
         this.addAnnotatedClass("com.untangle.uvm.networking.AccessSettings");
         this.addAnnotatedClass("com.untangle.uvm.networking.AddressSettings");
-        this.addAnnotatedClass("com.untangle.uvm.networking.MiscSettings");
         this.addAnnotatedClass("com.untangle.uvm.node.IPMaskedAddressDirectory");
         this.addAnnotatedClass("com.untangle.uvm.node.IPMaskedAddressRule");
         this.addAnnotatedClass("com.untangle.uvm.node.MimeTypeRule");

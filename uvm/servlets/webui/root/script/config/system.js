@@ -60,17 +60,6 @@ if (!Ung.hasResource["Ung.System"]) {
             }
             return this.rpc.accessSettings;
         },
-        getMiscSettings : function(forceReload) {
-            if (forceReload || this.rpc.miscSettings === undefined) {
-                try {
-                    this.rpc.miscSettings = rpc.networkManager.getMiscSettings();
-                } catch (e) {
-                    Ung.Util.rpcExHandler(e);
-                }
-                
-            }
-            return this.rpc.miscSettings;
-        },
         getHttpNode : function(forceReload) {
             if (forceReload || this.rpc.httpNode === undefined) {
                 try {
@@ -166,7 +155,6 @@ if (!Ung.hasResource["Ung.System"]) {
         buildSupport : function() {
             // keep initial settings
             this.initialAccessSettings = Ung.Util.clone(this.getAccessSettings());
-            this.initialMiscSettings = Ung.Util.clone(this.getMiscSettings());
             
             this.panelSupport = new Ext.Panel({
                 // private fields
@@ -191,21 +179,6 @@ if (!Ung.hasResource["Ung.System"]) {
                             "check" : {
                                 fn : function(elem, newValue) {
                                     this.getAccessSettings().isSupportEnabled = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
-                    }, {
-                        xtype : "checkbox",
-                        name : "Send data about your server for support purposes",
-                        boxLabel : String.format(this.i18n
-                                ._("{0}Send{1} data about your server. This will send status updates and alerts if any unexpected problems occur, but will not allow support access to your server."),
-                                "<b>", "</b>"),
-                        hideLabel : true,
-                        checked : this.getMiscSettings().isExceptionReportingEnabled,
-                        listeners : {
-                            "check" : {
-                                fn : function(elem, newValue) {
-                                    this.getMiscSettings().isExceptionReportingEnabled = newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -1209,7 +1182,6 @@ if (!Ung.hasResource["Ung.System"]) {
         reloadSettings : function()
         {
             this.initialAccessSettings = Ung.Util.clone(this.getAccessSettings(true));
-            this.initialMiscSettings = Ung.Util.clone(this.getMiscSettings(true));
             this.initialLanguageSettings = Ung.Util.clone(this.getLanguageSettings());
             this.initialTimeZone = Ung.Util.clone(this.getTimeZone());
 
@@ -1251,7 +1223,7 @@ if (!Ung.hasResource["Ung.System"]) {
                 // save network settings
                 rpc.networkManager.setSettings(function(result, exception) {
                     this.afterSave(exception,callback);
-                }.createDelegate(this), this.getAccessSettings(), this.getMiscSettings());
+                }.createDelegate(this), this.getAccessSettings());
                 
                 // save http settings
                 if (this.isHttpLoaded()) {
@@ -1309,7 +1281,6 @@ if (!Ung.hasResource["Ung.System"]) {
             return !Ung.Util.equals(this.getLanguageSettings(), this.initialLanguageSettings)
                 || !Ung.Util.equals(this.getTimeZone(), this.initialTimeZone)
                 || !Ung.Util.equals(this.getAccessSettings(), this.initialAccessSettings)
-                || !Ung.Util.equals(this.getMiscSettings(), this.initialMiscSettings)
                 || this.isHttpLoaded() && !Ung.Util.equals(this.getHttpSettings(), this.initialHttpSettings)
                 || this.isFtpLoaded() && !Ung.Util.equals(this.getFtpSettings(), this.initialFtpSettings)
                 || this.isMailLoaded() && !Ung.Util.equals(this.getMailNodeSettings(), this.initialMailSettings);
