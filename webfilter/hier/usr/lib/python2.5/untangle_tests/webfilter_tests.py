@@ -329,6 +329,7 @@ class WebFilterTests(unittest.TestCase):
         assert(events['list'][0]['host'] == "metaloft.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
         assert(events['list'][0]['wf' + self.vendorName() + 'Blocked'] == True)
+        assert(events['list'][0]['wf' + self.vendorName() + 'Flagged'] == True)
 
     def test_101_eventlog_flaggedUrl(self):
         fname = sys._getframe().f_code.co_name
