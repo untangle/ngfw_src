@@ -4918,7 +4918,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
             this.sizeToGrid = true;
         }
         if (this.title == null) {
-            this.title = i18n._('Portal Question');
+            this.title = i18n._('Select Users');
         }
         if(this.bbar == null){
             this.bbar =  [
@@ -4951,7 +4951,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         this.usersGrid=new Ext.grid.GridPanel({
            // title: i18n._('Users'),
            height: 210,
-           width: 500,
+           width: 400,
            enableHdMenu : false,
            enableColumnMove: false,
            store: new Ext.data.Store({
@@ -5006,28 +5006,13 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         type : "string",
                         mapping: "UID",
                         convert : function(val, rec) {
-                            var name=val;
-
-                            var repository=null;
-                            if(rec.storedIn) {
-                                if(rec.storedIn=="MS_ACTIVE_DIRECTORY") {
-                                    repository=i18n._("Active Directory");
-                                } else {
-                                    repository=i18n._("UNKNOWN");
-                                }
-
-                                if ( rec.javaClass == "com.untangle.node.adconnector.UserEntry" ) {
-                                    repository = repository + i18n._( " User" );
-                                } else if ( rec.javaClass == "com.untangle.node.adconnector.GroupEntry" ) {
-                                    repository = repository + i18n._( " Group" );
-                                    name = rec.CN;
-                                }
+                            if ( rec.javaClass == "com.untangle.node.adconnector.UserEntry" ) {
+                                return i18n._("User");
+                            } else if ( rec.javaClass == "com.untangle.node.adconnector.GroupEntry" ) {
+                                return i18n._("Group");
                             }
                             
-                            if(repository) {
-                                name+=" ("+repository+")";
-                            }
-                            return name;
+                            return val;
                         }
                     },{
                         name : "displayName",
@@ -5041,15 +5026,18 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                             } else if ( rec.javaClass == "com.untangle.node.adconnector.GroupEntry" ) {
                                 return rec.CN;
                             } else {
-                                return "";
+                                if (rec.displayName != null)
+                                    return rec.displayName;
+                                else
+                                    return "";
                             }
                         }
                     }]
                 })
             }),
             columns: [selModel,{
-                header : this.singleSelectUser ? i18n._( "user" ) :  i18n._( "users and groups" ),
-                width : 250,
+                header : this.singleSelectUser ? i18n._( "User" ) :  i18n._( "Type" ),
+                width : 150,
                 sortable : true,
                 dataIndex : "name"
             },{
@@ -5162,9 +5150,12 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         this.populateSemaphore=2;
         this.userEntries = [];
         if ( !this.singleSelectUser ) {
-            this.userEntries.push({ firstName : "", lastName : null, UID: "[any]"});
-            this.userEntries.push({ firstName : "", lastName : null, UID: "[authenticated]"});
-            this.userEntries.push({ firstName : "", lastName : null, UID: "[unauthenticated]"});
+            this.userEntries.push({ firstName : "", lastName : null, UID: "[any]", displayName: "Any User"});
+            this.userEntries.push({ firstName : "", lastName : null, UID: "[authenticated]", displayName: "Any Authenticated User"});
+            this.userEntries.push({ firstName : "", lastName : null, UID: "[unauthenticated]", displayName: "Any Unauthenticated/Unidentified User"});
+//             this.userEntries.push({ firstName : "", lastName : null, UID: "[any]"});
+//             this.userEntries.push({ firstName : "", lastName : null, UID: "[authenticated]"});
+//             this.userEntries.push({ firstName : "", lastName : null, UID: "[unauthenticated]"});
         }
 
         var loadActiveDirectory = this.loadActiveDirectoryUsers && main.isNodeRunning("untangle-node-adconnector");
