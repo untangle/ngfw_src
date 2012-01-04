@@ -4951,7 +4951,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         this.usersGrid=new Ext.grid.GridPanel({
            // title: i18n._('Users'),
            height: 210,
-           width: 400,
+           width: 500,
            enableHdMenu : false,
            enableColumnMove: false,
            store: new Ext.data.Store({
@@ -5037,12 +5037,12 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
             }),
             columns: [selModel,{
                 header : this.singleSelectUser ? i18n._( "User" ) :  i18n._( "Type" ),
-                width : 150,
+                width : 100,
                 sortable : true,
                 dataIndex : "name"
             },{
                 header : i18n._("Name"),
-                width: 250,
+                width: 350,
                 sortable : false,
                 dataIndex: "displayName"
             }],
