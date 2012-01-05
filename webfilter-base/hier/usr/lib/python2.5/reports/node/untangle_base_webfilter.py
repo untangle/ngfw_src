@@ -921,7 +921,7 @@ AND wf_%s_violations > 0
 
             for r in curs.fetchall():
                 host = r[0]
-                if len(host) > 25:
+                if host and len(host) > 25:
                     host = host[:25] + "..."
                 ks = KeyStatistic(host, r[1], _('Hits'))
                 lks.append(ks)
