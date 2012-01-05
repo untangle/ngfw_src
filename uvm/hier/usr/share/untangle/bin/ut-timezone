@@ -15,7 +15,6 @@ rm -f /etc/localtime
 ln -s "/usr/share/zoneinfo/$ZONE" /etc/localtime
 
 # Restart system daemons that depend on timezone
-[ -x /etc/init.d/ntpdate ] && /etc/init.d/ntpdate restart > /dev/null 2>&1 &
 [ -x /etc/init.d/rsyslog ] && /etc/init.d/rsyslog restart
 [ -x /etc/init.d/sysklogd ] && /etc/init.d/sysklogd restart
 
