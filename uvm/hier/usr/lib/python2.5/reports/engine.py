@@ -527,7 +527,7 @@ def __get_users(start_date, end_date):
         curs.execute("SELECT DISTINCT uid from reports.session_totals WHERE trunc_time >= %s and trunc_time < %s",
                      (start_date, end_date))
         rows = curs.fetchall()
-        rv = [rows[i][0] for i in range(len(rows))]
+        rv = [row[0] for row in rows if row[0]]
     except:
         logger.warn('could not generate users list', exc_info=True)
         rv = []
@@ -549,7 +549,7 @@ def __get_hosts(start_date, end_date):
                         AND client_intf NOT IN """ + get_wan_clause(),
                      (start_date, end_date))
         rows = curs.fetchall()
-        rv = [rows[i][0] for i in range(len(rows))]
+        rv = [row[0] for row in rows if row[0]]
     except:
         logger.warn('could not generate hosts list', exc_info=True)
         rv = []
@@ -570,10 +570,10 @@ def __get_emails(start_date, end_date):
         # select all distinct email addresses from that time period
         curs.execute("""SELECT DISTINCT addr FROM reports.n_mail_addr_totals
                       WHERE trunc_time >=%s AND trunc_time < %s
-                      AND addr_kind = 'T'""",
+                      AND addr_kind IN ('T','C')""",
                      (start_date, end_date))
         rows = curs.fetchall()
-        rv = [rows[i][0] for i in range(len(rows))]
+        rv = [row[0] for row in rows if row[0]]
     except:
         logger.warn('could not generate email list', exc_info=True)
         rv = []
