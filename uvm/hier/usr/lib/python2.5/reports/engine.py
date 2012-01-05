@@ -228,8 +228,7 @@ def limit_nodes(trial_report_node):
 def register_fact_table(fact_table):
     global __fact_tables
 
-    logger.debug("registering fact table: '%s': '%s'" % (fact_table.name,
-                                                          fact_table))
+    logger.debug("registering fact table: '%s'" % (fact_table.name))
     __fact_tables[fact_table.name] = fact_table
 
 def get_fact_table(name):

@@ -81,6 +81,7 @@ class UvmNode(Node):
             return self.name
         finally:
             conn.commit()
+        return None
         
     @print_timing
     def __create_n_admin_logins(self, start_date, end_date):

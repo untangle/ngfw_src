@@ -276,10 +276,8 @@ class DailyWebUsage(Graph):
                      required_points=rp)
 
         plot.add_dataset(dates, hits, label=_('Clean Hits'), color=colors.goodness)
-        plot.add_dataset(dates, violations, label=_('Violations'),
-                         color=colors.detected)
-        plot.add_dataset(dates, blocks, label=_('Blocks'),
-                         color=colors.badness)
+        plot.add_dataset(dates, violations, label=_('Violations'), color=colors.detected)
+        plot.add_dataset(dates, blocks, label=_('Blocks'), color=colors.badness)
 
         return (lks, plot)
 

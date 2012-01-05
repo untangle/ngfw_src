@@ -209,17 +209,13 @@ class DailyRules(reports.Graph):
             rp = sql_helper.get_required_points(start_date, end_date,
                                                 mx.DateTime.DateTimeDeltaFromSeconds(time_interval))
 
-            ks = reports.KeyStatistic(_('Avg Blocked'), sum(blocks)/len(rp),
-                                      _('Blocks')+'/'+_(unit))
+            ks = reports.KeyStatistic(_('Avg Logged'), sum(logs + blocks)/len(rp),_('Logs')+'/'+_(unit))
             lks.append(ks)
-            ks = reports.KeyStatistic(_('Max Blocked'), max(blocks),
-                                      _('Blocks')+'/'+_(unit))
+            ks = reports.KeyStatistic(_('Max Logged'), max(logs + blocks),_('Logs')+'/'+_(unit))
             lks.append(ks)
-            ks = reports.KeyStatistic(_('Avg Logged'), sum(logs)/len(rp),
-                                      _('Logs')+'/'+_(unit))
+            ks = reports.KeyStatistic(_('Avg Blocked'), sum(blocks)/len(rp),_('Blocks')+'/'+_(unit))
             lks.append(ks)
-            ks = reports.KeyStatistic(_('Max Logged'), max(logs),
-                                      _('Logs')+'/'+_(unit))
+            ks = reports.KeyStatistic(_('Max Blocked'), max(blocks),_('Blocks')+'/'+_(unit))
             lks.append(ks)
 
             plot = reports.Chart(type=reports.STACKED_BAR_CHART,
