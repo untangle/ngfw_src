@@ -264,7 +264,7 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 helpSource : 'web_event_log',
                 settingsCmp : this,
                 title : this.i18n._("Web Event Log"),
-                eventQueriesFn : this.getRpcNode().getPhishHttpEventManager,
+                eventQueriesFn : this.getRpcNode().getHttpEventQueries,
                 // the list of fields
                 fields : [{
                     name : 'timeStamp',
