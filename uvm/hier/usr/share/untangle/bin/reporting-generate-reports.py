@@ -102,7 +102,7 @@ for opt in opts:
      elif k == '-v' or k == '--verbose':
           setConsoleLogLevel(logging.DEBUG)
      elif k == '-d' or k == '--date':
-          end_date = mx.DateTime.DateFrom(v)
+          end_date = mx.DateTime.strptime(v, "%Y-%m-%d")
      elif k == '-s' or k == '--simulate':
           simulate = v
      elif k == '-l' or k == '--locale':

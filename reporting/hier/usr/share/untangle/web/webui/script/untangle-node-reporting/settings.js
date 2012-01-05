@@ -524,7 +524,52 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             }
                         }
                     }]
-            },
+                },
+{
+                    title: this.i18n._("Scheduling"),
+                    labelWidth: 150,
+                    items: [{
+                        border: false,
+                        cls: 'description',
+                        html: this.i18n._("Time at which to run nightly reports.")
+                    },{
+                        xtype : 'numberfield',
+                        fieldLabel : this.i18n._('Hour'),
+                        name : 'Hour',
+                        id: 'reporting_nightlyHour',
+                        value : this.getReportingSettings().nightlyHour,
+                        width: 25,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        minValue: 0,
+                        maxValue: 23,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getReportingSettings().nightlyHour = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+        },{
+                        xtype : 'numberfield',
+                        fieldLabel : this.i18n._('Minute'),
+                        name : 'Minute',
+                        id: 'reporting_nightlyMinute',
+                        value : this.getReportingSettings().nightlyMinute,
+                        width: 25,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        minValue: 0,
+                        maxValue: 59,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getReportingSettings().nightlyMinute = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }]
+                },
 {
                     title: this.i18n._("Reports Retention"),
                     labelWidth: 150,

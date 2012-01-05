@@ -4,10 +4,12 @@
 package com.untangle.node.reporting;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -27,6 +29,8 @@ import org.hibernate.Session;
 import com.untangle.node.util.SimpleExec;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Validator;
+import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.node.script.ScriptRunner.ScriptException;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.User;
 import com.untangle.uvm.logging.LogWorker;
@@ -44,6 +48,9 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
     private static final long    REPORTER_LOG_FILE_READ_TIMEOUT = 180 * 1000; /* 180 seconds */
     private static final Pattern REPORTER_LOG_PROGRESS_PATTERN = Pattern.compile(".*PROGRESS\\s*\\[(.*)\\]");
     private static int MAX_FLUSH_FREQUENCY;
+
+    private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/reporting-generate-reports.py -d $(date \"+%Y-%m-%d\") > /dev/null 2>&1";
+    private static final File CRON_FILE = new File("/etc/cron.d/untangle-reports-nightly");
 
     private static LogWorkerImpl logWorker = null;
 
@@ -90,6 +97,23 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
             };
         };
         getNodeContext().runTransaction(tw);
+
+        // write the cron file for nightly runs
+        String conf = settings.getNightlyMinute() + " " + settings.getNightlyHour() + " " + CRON_STRING;
+        BufferedWriter out = null;
+        try {
+            out = new BufferedWriter(new FileWriter(CRON_FILE));
+            out.write(conf, 0, conf.length());
+        } catch (IOException ex) {
+            logger.error("Unable to write file", ex);
+            return;
+        }
+        try {
+            out.close();
+        } catch (IOException ex) {
+            logger.error("Unable to close file", ex);
+            return;
+        }
     }
 
     public ReportingSettings getReportingSettings()
