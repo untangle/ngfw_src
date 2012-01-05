@@ -21,7 +21,7 @@ RequestExecutionLevel admin
 !define BIN "${HOME}\bin"
 
 !define PRODUCT_NAME "OpenVPN"
-!define OPENVPN_VERSION "2.2.1"
+!define OPENVPN_VERSION "2.2.2"
 !define GUI_VERSION "1.0.3"
 !define VERSION "${OPENVPN_VERSION}-gui-${GUI_VERSION}"
 
@@ -317,6 +317,7 @@ Section "OpenSSL DLLs" SecOpenSSLDLLs
   File "${BIN}\libpkcs11-helper-1.dll"
   File "${BIN}\lzo2.dll"
   File "${BIN}\msvcr90.dll"
+  File "${BIN}\Microsoft.VC90.CRT.manifest"
 
 SectionEnd
 
@@ -763,6 +764,7 @@ SetShellVarContext all
   Delete "$INSTDIR\bin\ssleay32.dll"
   Delete "$INSTDIR\bin\libpkcs11-helper-1.dll"
   Delete "$INSTDIR\bin\lzo2.dll"
+  Delete "$INSTDIR\bin\Microsoft.VC90.CRT.manifest"
   Delete "$INSTDIR\bin\msvcr90.dll"
   Delete "$INSTDIR\bin\tapinstall.exe"
   Delete "$INSTDIR\bin\addtap.bat"
