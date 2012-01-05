@@ -38,7 +38,11 @@
     <script type="text/javascript" src="/script/timezone.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/country.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/wizardNew.js?s=${buildStamp}"></script>
-
+    
+    <script type="text/javascript" src="script/config/administrationNew.js?s=${buildStamp}"></script>    
+    <script type="text/javascript" src="script/config/systemNew.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/config/systemInfoNew.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/config/upgradeNew.js?s=${buildStamp}"></script>
 </c:if>
 
 <c:if test="${param['console']==1}">

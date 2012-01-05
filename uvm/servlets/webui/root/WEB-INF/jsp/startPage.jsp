@@ -2,7 +2,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<c:set var="isDebug" value="false"/>
+<c:set var="isDebug" value="true"/>
 <head>
 
     <title>${companyName}</title>
@@ -41,6 +41,7 @@
     <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
 
     <!-- Just for Test, normaly this resources are Dynamically loaded -->
+    <script type="text/javascript" src="script/untangle-base-webfilter/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-adblocker/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-adconnector/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-bandwidth/settings.js?s=${buildStamp}"></script>
