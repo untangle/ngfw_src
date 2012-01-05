@@ -3,7 +3,7 @@ Ext.namespace('Ung');
 // the main object instance
 var main=null;
 // Main object class
-Ung.Main=Ext.extend(Object, {
+Ext.define("Ung.Main", {
     debugMode: false,
     disableThreads: false, // in development environment is useful to disable
                             // threads.
@@ -73,6 +73,7 @@ Ung.Main=Ext.extend(Object, {
         rpc.skinManager=rpc.jsonrpc.UvmContext.skinManager();
         // load the current skin
         var skinSettings=rpc.skinManager.getSkinSettings();
+        //TODO: find gray theme for extjs4
         //Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/ext-skin.css");
         Ung.Util.loadCss("/skins/"+skinSettings.administrationClientSkin+"/css/adminNew.css");
         if (skinSettings.outOfDate) {
@@ -295,7 +296,7 @@ Ung.Main=Ext.extend(Object, {
                             window.location.href = '/auth/logout?url=/webui&realm=Administrator';
                         }
                     }]})
-                 }, {
+                 },{
                     region:'center',
                     id: 'center',
                     html: contentRightArr.join(""),
@@ -805,7 +806,7 @@ Ung.Main=Ext.extend(Object, {
     },
     getIframeWin: function() {
         if(this.iframeWin==null) {
-            this.iframeWin=new Ung.Window({
+            this.iframeWin=Ext.create("Ung.Window",{
                 id: 'iframeWin',
                 title:'',
                 layout: 'fit',
@@ -823,7 +824,6 @@ Ung.Main=Ext.extend(Object, {
                 }
 
             });
-            this.iframeWin.render();
         }
         return this.iframeWin;
     },
@@ -849,12 +849,12 @@ Ung.Main=Ext.extend(Object, {
     loadConfig: function() {
         this.config =
             [{"name":"networking","displayName":i18n._("Networking"),"iconClass":"icon-config-network","helpSource":"networking_config",handler : main.openNetworking},
-            {"name":"administration","displayName":i18n._("Administration"),"iconClass":"icon-config-admin","helpSource":"administration_config", className:"Ung.Administration", scriptFile:"administration.js", handler : main.openConfig},
-            {"name":"email","displayName":i18n._("Email"),"iconClass":"icon-config-email","helpSource":"email_config", className:"Ung.Email", scriptFile:"email.js", handler : main.openConfig},
-            {"name":"localDirectory","displayName":i18n._("Local Directory"),"iconClass":"icon-config-directory","helpSource":"local_directory_config", className:"Ung.LocalDirectory", scriptFile:"localDirectory.js", handler : main.openConfig},
-            {"name":"upgrade","displayName":i18n._("Upgrade"),"iconClass":"icon-config-upgrade","helpSource":"upgrade_config", className:"Ung.Upgrade", scriptFile:"upgrade.js", handler : main.openConfig},
-            {"name":"system","displayName":i18n._("System"),"iconClass":"icon-config-setup","helpSource":"system_config", className:"Ung.System", scriptFile:"system.js", handler : main.openConfig},
-            {"name":"systemInfo","displayName":i18n._("System Info"),"iconClass":"icon-config-support","helpSource":"system_info_config", className:"Ung.SystemInfo", scriptFile:"systemInfo.js", handler : main.openConfig}];
+            {"name":"administration","displayName":i18n._("Administration"),"iconClass":"icon-config-admin","helpSource":"administration_config", className:"Ung.Administration", scriptFile:"administrationNew.js", handler : main.openConfig},
+            {"name":"email","displayName":i18n._("Email"),"iconClass":"icon-config-email","helpSource":"email_config", className:"Ung.Email", scriptFile:"emailNew.js", handler : main.openConfig},
+            {"name":"localDirectory","displayName":i18n._("Local Directory"),"iconClass":"icon-config-directory","helpSource":"local_directory_config", className:"Ung.LocalDirectory", scriptFile:"localDirectoryNew.js", handler : main.openConfig},
+            {"name":"upgrade","displayName":i18n._("Upgrade"),"iconClass":"icon-config-upgrade","helpSource":"upgrade_config", className:"Ung.Upgrade", scriptFile:"upgradeNew.js", handler : main.openConfig},
+            {"name":"system","displayName":i18n._("System"),"iconClass":"icon-config-setup","helpSource":"system_config", className:"Ung.System", scriptFile:"systemNew.js", handler : main.openConfig},
+            {"name":"systemInfo","displayName":i18n._("System Info"),"iconClass":"icon-config-support","helpSource":"system_info_config", className:"Ung.SystemInfo", scriptFile:"systemInfoNew.js", handler : main.openConfig}];
         this.buildConfig();
     },
     // build config buttons
@@ -900,7 +900,7 @@ Ung.Main=Ext.extend(Object, {
     openConfig: function(configItem) {
         Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
         Ext.Function.defer(Ung.Util.loadResourceAndExecute,1, this, [configItem.className,Ung.Util.getScriptSrc("script/config/"+configItem.scriptFile), Ext.bind(function() {
-            eval('main.configWin = new ' + this.className + '(this);');
+            main.configWin = Ext.create(this.className, this);
             main.configWin.show();
             Ext.MessageBox.hide();
         },configItem)]);
@@ -972,27 +972,6 @@ Ung.Main=Ext.extend(Object, {
         }
         return false;
     }, 
-/*
-    getNode : function(nodeName,nodePolicy) {
-        var cp = rpc.currentPolicy.id ,np = null;
-        if(main.nodes) {
-            for (var i = 0; i < main.nodes.length; i++) {
-                if(nodePolicy==null){
-                    cp = null;
-                }else{
-                    np = nodePolicy.parentId;
-                    cp = main.nodes[i].Tid.policy == null ? null : main.nodes[i].Tid.policy.parentId;
-                }
-            
-                if ((nodeName == main.nodes[i].name)&& (np==cp)) {
-                    return main.nodes[i];
-                    break;
-                }
-            }
-        }
-        return null;
-    },
-*/
     getNode : function(nodeName,nodePolicy) {
         var cp = rpc.currentPolicy.id ,np = null;
         if(main.nodes) {
