@@ -290,6 +290,7 @@ INSERT INTO reports.reports_state (last_cutoff) VALUES (%s)""", (date,))
           logger.warn("could not set reports' last_cutoff", exc_info=True)
 
 ## main
+total_start_time = time.time()
 
 currentLoad = getLoad()
 if maxLoad is not None:
@@ -438,6 +439,10 @@ if not no_cleanup and not simulate:
 #    try:
 #          shutil.rmtree(reports_output_base)
 
+total_end_time = time.time()
+logger.debug('%s took %0.3f sec' % (sys.argv[0], (total_end_time-total_start_time)))
+
 if os.path.isfile(LOCKFILE):
   logger.info("Removing pidfile (pid: %s)" % os.getpid())
   os.remove(LOCKFILE)
+
