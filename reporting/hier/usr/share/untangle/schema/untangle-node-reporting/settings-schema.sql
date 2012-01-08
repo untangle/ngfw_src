@@ -1,21 +1,3 @@
--- settings schema for release-5.0
--- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc.
---
--- This program is free software; you can redistribute it and/or modify
--- it under the terms of the GNU General Public License, version 2,
--- as published by the Free Software Foundation.
---
--- This program is distributed in the hope that it will be useful, but
--- AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
--- NONINFRINGEMENT.  See the GNU General Public License for more details.
---
--- You should have received a copy of the GNU General Public License
--- along with this program; if not, write to the Free Software
--- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
---
-
 -------------
 -- settings |
 -------------
@@ -28,6 +10,8 @@ CREATE TABLE settings.n_reporting_settings (
     attachment_size_limit int8 NOT NULL,
     network_directory int8 NOT NULL,
     schedule int8,
+    nightly_hour int4 NOT NULL,
+    nightly_minute int4 NOT NULL,
     db_retention int4 NOT NULL,
     file_retention int4 NOT NULL,
     reporting_users TEXT,
@@ -62,8 +46,6 @@ CREATE TABLE settings.n_reporting_wk_sched (
 ----------------
 -- constraints |
 ----------------
-
--- foreign key constraints
 
 ALTER TABLE settings.n_reporting_settings
     ADD CONSTRAINT fk_tr_reporting_settings

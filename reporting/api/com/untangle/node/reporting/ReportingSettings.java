@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.node.reporting;
 
 import java.io.Serializable;
@@ -26,19 +29,17 @@ import com.untangle.uvm.security.NodeId;
 @SuppressWarnings("serial")
 public class ReportingSettings implements Serializable
 {
-
     private Long id;
     private NodeId tid;
 
     private IPMaskedAddressDirectory networkDirectory = new IPMaskedAddressDirectory();
-    private int dbRetention = 7; // days
-    private int fileRetention = 30; // days
-    private boolean emailDetail = false;
+    private Integer dbRetention = 7; // days
+    private Integer fileRetention = 30; // days
+    private Boolean emailDetail = false;
 
-    private int nightlyHour = 2;
-    private int nightlyMinute = 0;
-
-    private int attachmentSizeLimit = 10; // MB
+    private Integer nightlyHour = 2;
+    private Integer nightlyMinute = 0;
+    private Integer attachmentSizeLimit = 10; // MB
 
     private String reportingUsers;
 
