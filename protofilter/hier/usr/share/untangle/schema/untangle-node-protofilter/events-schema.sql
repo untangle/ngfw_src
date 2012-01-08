@@ -1,39 +1,11 @@
--- events schema for release-5.0
--- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc. 
---
--- This program is free software; you can redistribute it and/or modify
--- it under the terms of the GNU General Public License, version 2,
--- as published by the Free Software Foundation.
---
--- This program is distributed in the hope that it will be useful, but
--- AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
--- NONINFRINGEMENT.  See the GNU General Public License for more details.
---
--- You should have received a copy of the GNU General Public License
--- along with this program; if not, write to the Free Software
--- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
---
-
------------
--- events |
------------
-
--- com.untangle.tran.protofilter.ProtoFilterLogEvent
+-- ProtoFilterLogEvent
 CREATE TABLE events.n_protofilter_evt (
     event_id int8 NOT NULL,
-    pl_endp_id int8,
+    session_id int8,
     protocol text,
     blocked bool,
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
-----------------
--- constraints |
-----------------
-
--- indeces for reporting
-
-CREATE INDEX n_protofilter_evt_plepid_idx ON events.n_protofilter_evt (pl_endp_id);
+CREATE INDEX n_protofilter_evt_session_id_idx ON events.n_protofilter_evt (session_id);
 CREATE INDEX n_protofilter_evt_ts_idx ON events.n_protofilter_evt (time_stamp);

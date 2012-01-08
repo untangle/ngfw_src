@@ -20,7 +20,7 @@
                 "com.untangle.node.http.RequestLine",
                 "com.untangle.node.http.HttpResponseEvent",
                 "com.untangle.node.spyware.SpywareAccessEvent",
-                "com.untangle.node.spyware.SpywareBlacklistEvent",
+                "com.untangle.node.spyware.SpywareUrlEvent",
                 "com.untangle.node.spyware.SpywareCookieEvent"
             ]
         }

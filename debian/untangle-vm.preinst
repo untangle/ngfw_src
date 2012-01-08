@@ -8,7 +8,7 @@ if [ -n "$oldVersion" ]; then
     # database layout, dump the entire events schema on upgrade.
     # The schema will be re-created new a shiny when the UVM starts
     # Adjust split_schema_ver to assure that the schemas are created fresh
-    if dpkg --compare-versions "$oldVersion" le 9.1.0 ; then
+    if dpkg --compare-versions "$oldVersion" le 9.2.0 ; then
       psql -U postgres -c 'DROP SCHEMA events CASCADE' uvm
       psql -U postgres -c 'UPDATE split_schema_ver SET events_version = NULL' uvm
     fi

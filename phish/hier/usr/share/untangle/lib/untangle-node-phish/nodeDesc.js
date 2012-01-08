@@ -30,7 +30,6 @@
                 "com.untangle.node.mail.papi.safelist.SafelistRecipient",
                 "com.untangle.node.mail.papi.safelist.SafelistSender",
                 "com.untangle.node.mail.papi.safelist.SafelistSettings",
-                "com.untangle.node.mail.papi.MessageStats",
                 "com.untangle.node.phish.PhishHttpEvent",
                 "com.untangle.node.spam.SpamLogEvent",
                 "com.untangle.node.spam.SpamSmtpEvent",

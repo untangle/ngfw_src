@@ -48,6 +48,8 @@ class UvmNode(Node):
 
         self.__make_sessions_table(start_date, end_date)
 
+        self.__update_session_stats(start_date, end_date)
+
         ft = FactTable('reports.session_totals',
                        'reports.sessions',
                        'time_stamp',
@@ -112,24 +114,23 @@ INSERT INTO reports.n_admin_logins
         self.__make_hnames_table(start_date, end_date)
         self.__make_users_table(start_date, end_date)
 
-    def events_cleanup(self, cutoff, safety_margin):
-        sql_helper.run_sql("""\
-DELETE FROM events.u_lookup_evt WHERE time_stamp < %s""", (cutoff,))
+    def events_cleanup(self, cutoff):
+        sql_helper.clean_table("events", "u_login_evt", cutoff);
+        sql_helper.clean_table("events", "u_lookup_evt", cutoff);
+        sql_helper.clean_table("events", "pl_endp", cutoff); 
+        sql_helper.clean_table("events", "pl_stats", cutoff);
 
         sql_helper.run_sql("""\
-DELETE FROM events.pl_endp WHERE time_stamp < %s""", (cutoff,))
+DELETE FROM events.n_router_evt_dhcp_abs 
+WHERE time_stamp < %s - interval '1 day'""", (cutoff,))
 
         sql_helper.run_sql("""\
-DELETE FROM events.pl_stats WHERE time_stamp < %s""", (cutoff,))
+DELETE FROM events.n_router_evt_dhcp 
+WHERE time_stamp < %s - interval '1 day'""", (cutoff,))
 
         sql_helper.run_sql("""\
-DELETE FROM events.n_router_evt_dhcp_abs WHERE time_stamp < %s - interval '1 day'""", (cutoff,))
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_router_evt_dhcp WHERE time_stamp < %s - interval '1 day'""", (cutoff,))
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_router_dhcp_abs_lease WHERE end_of_lease < %s - interval '1 day'""", (cutoff,))
+DELETE FROM events.n_router_dhcp_abs_lease 
+WHERE end_of_lease < %s - interval '1 day'""", (cutoff,))
 
         sql_helper.run_sql("""\
 DELETE FROM events.n_router_evt_dhcp_abs_leases glue
@@ -138,8 +139,6 @@ WHERE NOT EXISTS
    FROM events.n_router_evt_dhcp_abs evt
    WHERE evt.event_id = glue.event_id)""")
 
-        sql_helper.run_sql("""\
-DELETE FROM events.u_login_evt WHERE time_stamp < %s""", (cutoff,))
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_admin_logins", cutoff)
@@ -220,7 +219,7 @@ INSERT INTO reports.hnames (date, hname)
     def __make_sessions_table(self, start_date, end_date):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.sessions (
-        pl_endp_id int8 NOT NULL,
+        session_id int8 NOT NULL,
         event_id bigserial,
         time_stamp timestamp NOT NULL,
         end_time timestamp NOT NULL,
@@ -231,6 +230,10 @@ CREATE TABLE reports.sessions (
         c_server_addr inet,
         c_server_port int4,
         c_client_port int4,
+        s_client_addr inet,
+        s_server_addr inet,
+        s_server_port int4,
+        s_client_port int4,
         client_intf int2,
         server_intf int2,
         c2p_bytes int8,
@@ -259,11 +262,19 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('reports', 'sessions', 'ips_name', 'text')
         sql_helper.add_column('reports', 'sessions', 'ips_description', 'text')
         sql_helper.add_column('reports', 'sessions', 'sw_access_ident', 'text')
+        sql_helper.add_column('reports', 'sessions', 's_client_addr', 'inet')
+        sql_helper.add_column('reports', 'sessions', 's_server_addr', 'inet')
+        sql_helper.add_column('reports', 'sessions', 's_server_port', 'int4')
+        sql_helper.add_column('reports', 'sessions', 's_client_port', 'int4')
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","sessions","event_id","integer","bigint");
 
-        sql_helper.create_index("reports","sessions","pl_endp_id");
+        # rename pl_endp_id to session_id
+        sql_helper.rename_column("reports","sessions","pl_endp_id","session_id");
+        sql_helper.rename_index("reports","sessions_pl_endp_id_idx","sessions_session_id_idx");
+
+        sql_helper.create_index("reports","sessions","session_id");
         sql_helper.create_index("reports","sessions","event_id");
         sql_helper.create_index("reports","sessions","policy_id");
         sql_helper.create_index("reports","sessions","time_stamp");
@@ -288,29 +299,67 @@ CREATE TABLE reports.sessions (
 
         conn = sql_helper.get_connection()
         try:
-            sql_helper.run_sql("""
-CREATE TEMPORARY TABLE newsessions AS
-    SELECT stats.pl_endp_id, stats.time_stamp, stats.policy_id, uid, mam.name,
-           stats.c_client_addr, stats.c_server_addr, stats.c_server_port,
-           stats.c_client_port, stats.client_intf, stats.server_intf,
-           stats.c2p_bytes, stats.p2c_bytes, stats.s2p_bytes, stats.p2s_bytes
-    FROM events.pl_stats stats
-    LEFT OUTER JOIN reports.merged_address_map mam
-      ON (stats.c_client_addr = mam.addr AND stats.time_stamp >= mam.start_time
-         AND stats.time_stamp < mam.end_time)""", (), connection=conn, auto_commit=False)
-
-            sql_helper.run_sql("""
+            sql_helper.run_sql("""\
 INSERT INTO reports.sessions
-    (pl_endp_id, event_id, time_stamp, end_time, hname, uid, policy_id, c_client_addr,
-     c_server_addr, c_server_port, c_client_port, client_intf, server_intf,
-     c2p_bytes, p2c_bytes, s2p_bytes, p2s_bytes)
-    SELECT ses.pl_endp_id, ses.pl_endp_id, ses.time_stamp, ses.time_stamp,
-         COALESCE(NULLIF(ses.name, ''), HOST(ses.c_client_addr)) AS hname,
-         ses.uid, policy_id, c_client_addr, c_server_addr, c_server_port,
-         c_client_port, client_intf, server_intf, ses.c2p_bytes,
-         ses.p2c_bytes, ses.s2p_bytes, ses.p2s_bytes
-    FROM newsessions ses""",
-                               connection=conn, auto_commit=False)
+    (event_id,
+     session_id, 
+     time_stamp,
+     end_time,
+     hname,
+     uid,
+     policy_id,
+     c_client_addr,
+     c_server_addr,
+     c_server_port,
+     c_client_port,
+     s_client_addr,
+     s_server_addr,
+     s_server_port,
+     s_client_port,
+     client_intf,
+     server_intf)
+    SELECT pl.session_id,
+           pl.session_id,
+           pl.time_stamp,
+           pl.time_stamp + interval '1 days',
+           COALESCE(NULLIF(mam.name, ''), HOST(pl.c_client_addr)) AS hname,
+           pl.username,
+           pl.policy_id,
+           pl.c_client_addr,
+           pl.c_server_addr,
+           pl.c_server_port,
+           pl.c_client_port,
+           pl.s_client_addr,
+           pl.s_server_addr,
+           pl.s_server_port,
+           pl.s_client_port,
+           pl.client_intf,
+           pl.server_intf
+    FROM events.pl_endp pl
+    LEFT OUTER JOIN reports.merged_address_map mam
+      ON (pl.c_client_addr = mam.addr AND pl.time_stamp >= mam.start_time AND pl.time_stamp < mam.end_time)""",
+                               connection=conn, 
+                               auto_commit=False)
+            conn.commit()
+        except Exception, e:
+            conn.rollback()
+            raise e
+
+    @print_timing
+    def __update_session_stats(self, start_date, end_date):
+        conn = sql_helper.get_connection()
+        try:
+            sql_helper.run_sql("""\
+UPDATE reports.sessions
+SET end_time = events.pl_stats.time_stamp,
+    c2p_bytes = events.pl_stats.c2p_bytes,
+    s2p_bytes = events.pl_stats.s2p_bytes,
+    p2c_bytes = events.pl_stats.p2c_bytes,
+    p2s_bytes = events.pl_stats.p2s_bytes
+FROM events.pl_stats
+WHERE events.pl_stats.session_id = reports.sessions.session_id""",
+                               connection=conn,
+                               auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()
@@ -462,10 +511,10 @@ ORDER BY evt.time_stamp""", start_date, end_date)
 SELECT addr, name
 FROM (SELECT addr, min(position) AS min_idx
       FROM (SELECT c_client_addr AS addr
-            FROM events.pl_stats WHERE pl_stats.client_intf NOT IN %s
+            FROM events.pl_endp WHERE pl_endp.client_intf NOT IN %s
             UNION
             SELECT c_server_addr AS addr
-            FROM events.pl_stats WHERE pl_stats.server_intf NOT IN %s
+            FROM events.pl_endp WHERE pl_endp.server_intf NOT IN %s
             UNION
             SELECT client_addr AS addr
             FROM events.u_login_evt) AS addrs

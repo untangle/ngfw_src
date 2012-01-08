@@ -144,8 +144,9 @@ public abstract class ArgonHook implements Runnable
 
             /* lookup the user information */
             DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
+            String username = null;
             if (adconnector != null) {
-                String username = adconnector.getIpUsernameMap().tryLookupUser( clientSide.clientAddr() );
+                username = adconnector.getIpUsernameMap().tryLookupUser( clientSide.clientAddr() );
                 if (username != null && username.length() > 0 ) { 
                     logger.debug( "user information: " + username );
                     sessionGlobalState.setUser( username );
@@ -158,7 +159,7 @@ public abstract class ArgonHook implements Runnable
 
             /* Create the (fake) endpoints early so they can be
              * available at request time. */
-            endpoints = pipelineFoundry.createInitialEndpoints(clientSide);
+            endpoints = pipelineFoundry.createInitialEndpoints(clientSide, username);
 
             /* Initialize all of the nodes, sending the request events
              * to each in turn */
@@ -264,7 +265,7 @@ public abstract class ArgonHook implements Runnable
                 if (( endpoints != null ) && ( endpoints.getCClientAddr() == null ))
                     endpoints = null;
                 /* log and destroy the session */
-                pipelineFoundry.destroy(clientSide, serverSide, endpoints, sessionGlobalState.user());
+                pipelineFoundry.destroy(clientSide, serverSide, endpoints);
             }
 
             /* Remove the vector from the vectron table */

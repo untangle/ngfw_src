@@ -117,33 +117,11 @@ count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
 
         return Report(self, sections)
 
-    def events_cleanup(self, cutoff, safety_margin):
-        sql_helper.run_sql("""\
-DELETE FROM events.n_virus_evt_http
-WHERE request_line IN (SELECT request_id FROM reports.n_http_events)""")
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_virus_evt_http
-WHERE (time_stamp < %s - interval %s)""", (cutoff, safety_margin))
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_virus_evt_mail 
-WHERE msg_id IN (SELECT msg_id FROM reports.n_mail_msgs)""")
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_virus_evt_mail 
-WHERE (time_stamp < %s - interval %s)""", (cutoff, safety_margin))
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_virus_evt_smtp
-WHERE msg_id IN (SELECT msg_id FROM reports.n_mail_addrs)""")
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_virus_evt_smtp
-WHERE (time_stamp < %s - interval %s)""", (cutoff, safety_margin))
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_virus_evt WHERE time_stamp < %s""", (cutoff,))
+    def events_cleanup(self, cutoff):
+        sql_helper.clean_table("events", "n_virus_evt_http", cutoff);
+        sql_helper.clean_table("events", "n_virus_evt_mail ", cutoff);
+        sql_helper.clean_table("events", "n_virus_evt_smtp", cutoff);
+        sql_helper.clean_table("events", "n_virus_evt ", cutoff);
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table('n_virus_http_totals', cutoff)

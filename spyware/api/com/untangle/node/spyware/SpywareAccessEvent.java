@@ -72,8 +72,23 @@ public class SpywareAccessEvent extends SpywareEvent
      *
      * @return the PipelineEndpoints.
      */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="pl_endp_id", nullable=false)
+    /**
+     * Get the PipelineEndpoints.
+     *
+     * @return the PipelineEndpoints.
+     */
+    @Column(name="session_id", nullable=false)
+    public Integer getSessionId()
+    {
+        return pipelineEndpoints.getSessionId();
+    }
+
+    public void setSessionId( Integer sessionId )
+    {
+        this.pipelineEndpoints.setSessionId(sessionId);
+    }
+
+    @Transient
     public PipelineEndpoints getPipelineEndpoints()
     {
         return pipelineEndpoints;

@@ -540,7 +540,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         buildUrlEventLog : function() {
             this.gridUrlEventLog = new Ung.GridEventLog({
                 settingsCmp : this,
-                eventQueriesFn : this.getRpcNode().getBlacklistEventQueries,
+                eventQueriesFn : this.getRpcNode().getUrlEventQueries,
                 name : "Web Event Log",
                 title : i18n._('Web Event Log'),
                 fields : [{

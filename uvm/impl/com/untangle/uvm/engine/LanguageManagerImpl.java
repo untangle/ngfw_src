@@ -385,15 +385,18 @@ public class LanguageManagerImpl implements LanguageManager
         // get translation for base node, if any
         UvmContext uvm = UvmContextFactory.context();
         NodeManager nm = uvm.nodeManager();
-        Node node = nm.node(module);
-        if (node != null) {
-            NodeDesc nodeDesc = node.getNodeDesc();
-            if (nodeDesc != null) {
-                String nodeBase = nodeDesc.getNodeBase();
-                if (nodeBase != null) {
-                    Map<String, String> mapBase = getTranslations(nodeBase);
-                    if (mapBase != null) {
-                        map.putAll(mapBase);
+        // nodeManager can be null on shutdown
+        if (nm != null) {
+            Node node = nm.node(module);
+            if (node != null) {
+                NodeDesc nodeDesc = node.getNodeDesc();
+                if (nodeDesc != null) {
+                    String nodeBase = nodeDesc.getNodeBase();
+                    if (nodeBase != null) {
+                        Map<String, String> mapBase = getTranslations(nodeBase);
+                        if (mapBase != null) {
+                            map.putAll(mapBase);
+                        }
                     }
                 }
             }

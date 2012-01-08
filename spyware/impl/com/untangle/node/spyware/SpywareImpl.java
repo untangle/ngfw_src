@@ -249,7 +249,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
         return new EventLogQuery[] {  cookieQuery };
     }
 
-    public EventLogQuery[] getBlacklistEventQueries()
+    public EventLogQuery[] getUrlEventQueries()
     {
         return new EventLogQuery[] {  blacklistQuery };
     }

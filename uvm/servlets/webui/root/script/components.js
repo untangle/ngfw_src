@@ -2624,7 +2624,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             name : "Refresh",
             tooltip : i18n._('Refresh'),
             iconCls : 'icon-refresh',
-            handler : this.refreshHandler.createDelegate(this, [true])
+            handler : this.refreshHandler.createDelegate(this, [false])
         }, {
             xtype : 'tbbutton',
             hidden : !this.hasAutoRefresh,
@@ -2633,7 +2633,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             enableToggle: true,
             pressed: false,
             name : "Auto Refresh",
-            tooltip : i18n._('Auto Refresh'),
+            tooltip : i18n._('Auto Refresh every 5 seconds (does not flush)'),
             iconCls : 'icon-autorefresh',
             handler : function() {
                 var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
@@ -2645,10 +2645,18 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             }.createDelegate(this)
         }, {
             xtype : 'tbbutton',
+            id: "flush_"+this.getId(),
+            text : i18n._('Flush Events'),
+            name : "Flush",
+            tooltip : i18n._('Force Flush Events to Database'),
+            iconCls : 'icon-refresh',
+            handler : this.flushHandler.createDelegate(this, [true])
+        }, {
+            xtype : 'tbbutton',
             id: "export_"+this.getId(),
             text : i18n._('Export'),
             name : "Export",
-            tooltip : i18n._('Export Events'),
+            tooltip : i18n._('Export Events to File'),
             iconCls : 'icon-export',
             handler : this.exportHandler.createDelegate(this)
         }, {
@@ -2724,9 +2732,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         if(this!=null && this.rendered && this.autoRefreshEnabled) {
             if(this==this.settingsCmp.tabs.getActiveTab()) {
                 this.autorefreshList.defer(5000,this);
-                if (this.isReportsAppInstalled()) {
-                    this.getUntangleNodeReporting().flushEvents(); 
-                }
+                //if (this.isReportsAppInstalled()) {this.getUntangleNodeReporting().flushEvents();}
             } else {
                 this.stopAutoRefresh(true);
             }
@@ -2850,6 +2856,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install the Reports application."));
         } else {
             if (!forceFlush) {
+                this.loadMask.disabled = false;
                 this.loadMask.msg = i18n._('Refreshing Events...');
                 this.loadMask.show();
                 this.refreshList();
@@ -2901,6 +2908,36 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         this.loadMask.disabled = true;
         this.loadMask.hide();
         this.makeSelectable();
+    },
+    flushHandler: function (forceFlush) {
+        if (!this.isReportsAppInstalled()) {
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install the Reports application."));
+        } else {
+            this.loadMask.disabled = false;
+            this.loadMask.msg = i18n._('Compiling Database Tables...');
+            this.loadMask.show();
+            this.getUntangleNodeReporting().flushEvents(function(result, exception) {
+                this.loadMask.disabled = true;
+                this.loadMask.hide();
+            }.createDelegate(this));
+
+            this.updateFunction = function(){
+                var statusStr = this.getUntangleNodeReporting().getCurrentStatus();
+                //if the loadMask is no longer shown, stop this task
+                if(this.loadMask.disabled) 
+                    return;
+                //if the loadMask has moved on to a different phase, stop this task
+                if(this.loadMask.msg.indexOf("Compiling") == -1)
+                    return;
+                
+                this.loadMask.msg = i18n._('Compiling Database Tables... ') + statusStr;
+                this.loadMask.show();
+                window.setTimeout(this.updateFunction, 1000);
+
+            }.createDelegate(this);
+
+            window.setTimeout(this.updateFunction, 2000);
+        }
     },
     refreshList : function() {
         var selQuery = this.getSelectedQuery();

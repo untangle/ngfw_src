@@ -23,17 +23,17 @@ import com.untangle.node.http.RequestLine;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-@Table(name="n_spyware_evt_blacklist", schema="events")
+@Table(name="n_spyware_evt_url", schema="events")
 @SuppressWarnings("serial")
-public class SpywareBlacklistEvent extends SpywareEvent
+public class SpywareUrlEvent extends SpywareEvent
 {
     private RequestLine requestLine; // pipeline endpoints & location
 
     // constructors -----------------------------------------------------------
 
-    public SpywareBlacklistEvent() { }
+    public SpywareUrlEvent() { }
 
-    public SpywareBlacklistEvent(RequestLine requestLine)
+    public SpywareUrlEvent(RequestLine requestLine)
     {
         this.requestLine = requestLine;
     }

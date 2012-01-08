@@ -21,6 +21,7 @@ class HttpCasing(Node):
     @print_timing
     def setup(self, start_date, end_date):
         self.__create_n_http_events(start_date, end_date)
+        self.__update_n_http_events(start_date, end_date)
 
         ft = FactTable('reports.n_http_totals', 'reports.n_http_events',
                        'time_stamp',
@@ -43,13 +44,10 @@ CREATE TABLE reports.n_http_events (
     time_stamp timestamp without time zone,
     session_id integer, client_intf smallint,
     server_intf smallint,
-    c_client_addr inet, s_client_addr inet, c_server_addr inet,
-    s_server_addr inet,
-    c_client_port integer, s_client_port integer, c_server_port integer,
-    s_server_port integer,
+    c_client_addr inet, s_client_addr inet, c_server_addr inet, s_server_addr inet,
+    c_client_port integer, s_client_port integer, c_server_port integer, s_server_port integer,
     policy_id bigint, policy_inbound boolean,
     c2p_bytes bigint, s2p_bytes bigint, p2c_bytes bigint, p2s_bytes bigint,
-    c2p_chunks bigint, s2p_chunks bigint, p2c_chunks bigint, p2s_chunks bigint,
     uid text,
     request_id bigint, method character(1), uri text,
     host text, c2s_content_length integer,
@@ -82,6 +80,13 @@ CREATE TABLE reports.n_http_events (
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","n_http_events","event_id","integer","bigint");
+        
+        # remove obsolete columns
+        sql_helper.drop_column('reports', 'n_http_events', 'policy_inbound')
+        sql_helper.drop_column('reports', 'n_http_events', 'c2p_chunks')
+        sql_helper.drop_column('reports', 'n_http_events', 's2p_chunks')
+        sql_helper.drop_column('reports', 'n_http_events', 'p2c_chunks')
+        sql_helper.drop_column('reports', 'n_http_events', 'p2s_chunks')
 
         for vendor in ("untangle", "esoft"):
             sql_helper.drop_column('reports', 'n_http_events', 'wf_%s_action' % vendor)
@@ -94,6 +99,7 @@ CREATE TABLE reports.n_http_events (
             sql_helper.add_column('reports', 'n_http_events', 'virus_%s_clean' % vendor, 'boolean')
             sql_helper.add_column('reports', 'n_http_events', 'virus_%s_name' % vendor, 'text')
 
+        sql_helper.create_index("reports","n_http_events","session_id");
         sql_helper.create_index("reports","n_http_events","request_id");
         sql_helper.create_index("reports","n_http_events","event_id");
         sql_helper.create_index("reports","n_http_events","policy_id");
@@ -126,23 +132,23 @@ CREATE TABLE reports.n_http_events (
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.n_http_events
-      (time_stamp, session_id, client_intf, server_intf, c_client_addr,
-       s_client_addr, c_server_addr, s_server_addr, c_client_port,
-       s_client_port, c_server_port, s_server_port, policy_id, policy_inbound,
-       c2p_bytes, s2p_bytes, p2c_bytes, p2s_bytes, c2p_chunks, s2p_chunks,
-       p2c_chunks, p2s_chunks, uid, request_id, method, uri, host,
-       c2s_content_length, s2c_content_length, s2c_content_type, hname)
+      (time_stamp, 
+       session_id, client_intf, server_intf, 
+       c_client_addr, s_client_addr, c_server_addr, s_server_addr, 
+       c_client_port, s_client_port, c_server_port, s_server_port, 
+       policy_id, uid,
+       request_id, method, uri, 
+       host, c2s_content_length, 
+       s2c_content_length, s2c_content_type, 
+       hname)
     SELECT
         -- timestamp from request
         req.time_stamp,
         -- pipeline endpoints
-        ps.session_id, ps.client_intf, ps.server_intf,
-        ps.c_client_addr, ps.s_client_addr, ps.c_server_addr, ps.s_server_addr,
-        ps.c_client_port, ps.s_client_port, ps.c_server_port, ps.s_server_port,
-        ps.policy_id, ps.policy_inbound,
-        -- pipeline stats
-        ps.c2p_bytes, ps.s2p_bytes, ps.p2c_bytes, ps.p2s_bytes, ps.c2p_chunks,
-        ps.s2p_chunks, ps.p2c_chunks, ps.p2s_chunks, ps.uid,
+        pe.session_id, pe.client_intf, pe.server_intf,
+        pe.c_client_addr, pe.s_client_addr, pe.c_server_addr, pe.s_server_addr,
+        pe.c_client_port, pe.s_client_port, pe.c_server_port, pe.s_server_port,
+        pe.policy_id, pe.username,
         -- n_http_req_line
         req.request_id, req.method, req.uri,
         -- n_http_evt_req
@@ -151,37 +157,41 @@ INSERT INTO reports.n_http_events
         resp.content_length, resp.content_type,
         -- from webpages
         COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname
-    FROM events.pl_stats ps
-    JOIN events.n_http_req_line req ON ps.pl_endp_id = req.pl_endp_id
+    FROM events.pl_endp pe
+    JOIN events.n_http_req_line req ON pe.session_id = req.session_id
     JOIN events.n_http_evt_req er ON er.request_id = req.request_id
     LEFT OUTER JOIN events.n_http_evt_resp resp on req.request_id = resp.request_id
     LEFT OUTER JOIN reports.merged_address_map mam
-        ON ps.c_client_addr = mam.addr AND ps.time_stamp >= mam.start_time AND ps.time_stamp < mam.end_time""",
+        ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time""",
                                (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()
             raise e
 
-    def events_cleanup(self, cutoff, safety_margin):
-        # first clean up all rows n_http_req_line that join with pl_stats (they have been harvested)
-        sql_helper.run_sql("""\
-DELETE FROM events.n_http_req_line WHERE pl_endp_id IN (SELECT pl_endp_id FROM events.pl_stats)""")
-        # now clean up all rows in n_http_evt_req  that do NOT join with n_http_req_line (they have been harvested)
-        sql_helper.run_sql("""\
-DELETE FROM events.n_http_evt_req WHERE request_id NOT IN (select request_id FROM events.n_http_req_line)""")
-        # now clean up all rows in n_http_evt_resp that do NOT join with n_http_req_line (they have been harvested)
-        sql_helper.run_sql("""\t
-DELETE FROM events.n_http_evt_resp WHERE request_id NOT IN (select request_id FROM events.n_http_req_line)""")
+    @print_timing
+    def __update_n_http_events(self, start_date, end_date):
+        conn = sql_helper.get_connection()
+        try:
+            sql_helper.run_sql("""\
+UPDATE reports.n_http_events
+SET c2p_bytes = ps.c2p_bytes, 
+    s2p_bytes = ps.s2p_bytes,
+    p2c_bytes = ps.p2c_bytes,
+    p2s_bytes = ps.p2s_bytes
+FROM events.pl_stats as ps
+WHERE reports.n_http_events.session_id = ps.session_id""",
+                               (), connection=conn, auto_commit=False)
+            conn.commit()
+        except Exception, e:
+            conn.rollback()
+            raise e
 
-        # clean up all events older than safety margin
-        sql_helper.run_sql("""\
-DELETE FROM events.n_http_req_line WHERE (time_stamp < %s - interval %s);""", (cutoff,safety_margin))
-        sql_helper.run_sql("""\
-DELETE FROM events.n_http_evt_req WHERE (time_stamp < %s - interval %s);""", (cutoff,safety_margin))
-        sql_helper.run_sql("""\
-DELETE FROM events.n_http_evt_resp WHERE (time_stamp < %s - interval %s);""", (cutoff,safety_margin))
 
+    def events_cleanup(self, cutoff):
+        sql_helper.clean_table("events", "n_http_req_line ", cutoff);
+        sql_helper.clean_table("events", "n_http_evt_req ", cutoff);
+        sql_helper.clean_table("events", "n_http_evt_resp ", cutoff);
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_http_events", cutoff)

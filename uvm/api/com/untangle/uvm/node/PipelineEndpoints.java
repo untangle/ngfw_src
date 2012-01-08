@@ -1,7 +1,11 @@
+/**
+ * $Id$
+ */
 package com.untangle.uvm.node;
 
 import java.net.InetAddress;
 
+import javax.persistence.Id;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.GeneratedValue;
 
 import org.hibernate.annotations.Type;
 
@@ -20,10 +25,6 @@ import com.untangle.uvm.policy.Policy;
  * Used to record the Session endpoints at session end time.
  * PipelineStats and PipelineEndpoints used to be the PiplineInfo
  * object.
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
@@ -31,12 +32,12 @@ import com.untangle.uvm.policy.Policy;
 @SuppressWarnings("serial")
 public class PipelineEndpoints extends LogEvent
 {
-    private int sessionId;
+    private Integer sessionId = -1;
 
-    private short protocol;
+    private Short protocol;
 
-    private int clientIntf;
-    private int serverIntf;
+    private Integer clientIntf;
+    private Integer serverIntf;
 
     private InetAddress cClientAddr;
     private InetAddress sClientAddr;
@@ -44,64 +45,71 @@ public class PipelineEndpoints extends LogEvent
     private InetAddress cServerAddr;
     private InetAddress sServerAddr;
 
-    private int cClientPort;
-    private int sClientPort;
+    private Integer cClientPort;
+    private Integer sClientPort;
 
-    private int cServerPort;
-    private int sServerPort;
+    private Integer cServerPort;
+    private Integer sServerPort;
 
     private Policy policy;
 
+    private String username;
+    
     // constructors -----------------------------------------------------------
 
     public PipelineEndpoints() { }
 
-    public PipelineEndpoints(IPSessionDesc begin, IPSessionDesc end, Policy policy)
+    public PipelineEndpoints( IPSessionDesc clientSide, IPSessionDesc serverSide, Policy policy, String username )
     {
-        // Begin & end and all in between have the same ID
-        sessionId = begin.id();
+        super();
+        
+        this.sessionId = clientSide.id();
+        protocol  = clientSide.protocol();
 
-        protocol = begin.protocol();
+        cClientAddr = clientSide.clientAddr();
+        cClientPort = clientSide.clientPort();
+        cServerAddr = clientSide.serverAddr();
+        cServerPort = clientSide.serverPort();
 
-        cClientAddr = begin.clientAddr();
-        cClientPort = begin.clientPort();
-        cServerAddr = begin.serverAddr();
-        cServerPort = begin.serverPort();
+        sClientAddr = serverSide.clientAddr();
+        sClientPort = serverSide.clientPort();
+        sServerAddr = serverSide.serverAddr();
+        sServerPort = serverSide.serverPort();
 
-        sClientAddr = end.clientAddr();
-        sClientPort = end.clientPort();
-        sServerAddr = end.serverAddr();
-        sServerPort = end.serverPort();
+        clientIntf = clientSide.clientIntf();
+        serverIntf = serverSide.serverIntf();
 
-        clientIntf = begin.clientIntf();
-        serverIntf = end.serverIntf();
-
+        this.username = username;
         this.policy = policy;
     }
 
     // This one is called by ArgonHook, just to get an object which is
     // filled in later.
-    public PipelineEndpoints(IPSessionDesc begin)
+    public PipelineEndpoints( IPSessionDesc clientSide, String username )
     {
-        sessionId = begin.id();
-        protocol = begin.protocol();
-        clientIntf = begin.clientIntf();
+        super();
+
+        this.sessionId = clientSide.id();
+        protocol = clientSide.protocol();
+        clientIntf = clientSide.clientIntf();
+        this.username = username;
+
         // Don't fill in anything that can change later.
     }
 
     // business methods -------------------------------------------------------
 
-    public void completeEndpoints(IPSessionDesc begin, IPSessionDesc end, Policy policy)
+    public void completeEndpoints( IPSessionDesc clientSide, IPSessionDesc serverSide, Policy policy )
     {
-        cClientAddr = begin.clientAddr();
-        cClientPort = begin.clientPort();
-        cServerAddr = begin.serverAddr();
-        cServerPort = begin.serverPort();
-        sClientAddr = end.clientAddr();
-        sClientPort = end.clientPort();
-        sServerAddr = end.serverAddr();
-        sServerPort = end.serverPort();
-        serverIntf = end.serverIntf();
+        cClientAddr = clientSide.clientAddr();
+        cClientPort = clientSide.clientPort();
+        cServerAddr = clientSide.serverAddr();
+        cServerPort = clientSide.serverPort();
+        sClientAddr = serverSide.clientAddr();
+        sClientPort = serverSide.clientPort();
+        sServerAddr = serverSide.serverAddr();
+        sServerPort = serverSide.serverPort();
+        serverIntf = serverSide.serverIntf();
         this.policy = policy;
     }
 
@@ -124,12 +132,12 @@ public class PipelineEndpoints extends LogEvent
      * @return the id of the session
      */
     @Column(name="session_id", nullable=false)
-    public int getSessionId()
+    public Integer getSessionId()
     {
         return sessionId;
     }
 
-    public void setSessionId(int sessionId)
+    public void setSessionId(Integer sessionId)
     {
         this.sessionId = sessionId;
     }
@@ -140,12 +148,12 @@ public class PipelineEndpoints extends LogEvent
      * @return the id of the session
      */
     @Column(name="proto", nullable=false)
-    public short getProtocol()
+    public Short getProtocol()
     {
         return protocol;
     }
 
-    public void setProtocol(short protocol)
+    public void setProtocol(Short protocol)
     {
         this.protocol = protocol;
     }
@@ -156,20 +164,14 @@ public class PipelineEndpoints extends LogEvent
      * @return the number of the interface of the client
      */
     @Column(name="client_intf", nullable=false)
-    public int getClientIntf()
+    public Integer getClientIntf()
     {
         return clientIntf;
     }
 
-    public void setClientIntf(int clientIntf)
+    public void setClientIntf(Integer clientIntf)
     {
         this.clientIntf = clientIntf;
-    }
-
-    @Transient
-    public String getClientIntf(int clientInf)
-    {
-        return 0 == clientIntf ? "outside" : "inside";
     }
 
     /**
@@ -178,20 +180,14 @@ public class PipelineEndpoints extends LogEvent
      * @return the number of the interface of the server
      */
     @Column(name="server_intf", nullable=false)
-    public int getServerIntf()
+    public Integer getServerIntf()
     {
         return serverIntf;
     }
 
-    public void setServerIntf(int serverIntf)
+    public void setServerIntf(Integer serverIntf)
     {
         this.serverIntf = serverIntf;
-    }
-
-    @Transient
-    public String getServerIntf(int serverIntf)
-    {
-        return 0 == serverIntf ? "outside" : "inside";
     }
 
     /**
@@ -268,12 +264,12 @@ public class PipelineEndpoints extends LogEvent
      * @return the port of the client (as seen at client side of pipeline)
      */
     @Column(name="c_client_port", nullable=false)
-    public int getCClientPort()
+    public Integer getCClientPort()
     {
         return cClientPort;
     }
 
-    public void setCClientPort(int cClientPort)
+    public void setCClientPort(Integer cClientPort)
     {
         this.cClientPort = cClientPort;
     }
@@ -284,12 +280,12 @@ public class PipelineEndpoints extends LogEvent
      * @return the port of the client (as seen at server side of pipeline)
      */
     @Column(name="s_client_port", nullable=false)
-    public int getSClientPort()
+    public Integer getSClientPort()
     {
         return sClientPort;
     }
 
-    public void setSClientPort(int sClientPort)
+    public void setSClientPort(Integer sClientPort)
     {
         this.sClientPort = sClientPort;
     }
@@ -300,12 +296,12 @@ public class PipelineEndpoints extends LogEvent
      * @return the port of the server (as seen at client side of pipeline)
      */
     @Column(name="c_server_port", nullable=false)
-    public int getCServerPort()
+    public Integer getCServerPort()
     {
         return cServerPort;
     }
 
-    public void setCServerPort(int cServerPort)
+    public void setCServerPort(Integer cServerPort)
     {
         this.cServerPort = cServerPort;
     }
@@ -316,12 +312,12 @@ public class PipelineEndpoints extends LogEvent
      * @return the port of the server (as seen at server side of pipeline)
      */
     @Column(name="s_server_port", nullable=false)
-    public int getSServerPort()
+    public Integer getSServerPort()
     {
         return sServerPort;
     }
 
-    public void setSServerPort(int sServerPort)
+    public void setSServerPort(Integer sServerPort)
     {
         this.sServerPort = sServerPort;
     }
@@ -343,18 +339,33 @@ public class PipelineEndpoints extends LogEvent
         this.policy = policy;
     }
 
+    /**
+     * The username associated with this session
+     *
+     * @return Username string for this session
+     */
+    @Column(name="username")
+    public String getUsername()
+    {
+        return username;
+    }
+
+    public void setUsername(String username)
+    {
+        this.username = username;
+    }
+    
     // Syslog methods ---------------------------------------------------------
 
     public void appendSyslog(SyslogBuilder sb)
     {
         sb.startSection("endpoints");
         sb.addField("create-date", getTimeStamp());
-        sb.addField("session-id", sessionId);
+        sb.addField("session-id", getSessionId());
         sb.addField("protocol", getProtocolName());
 
         sb.addField("policy", (( policy == null ) ? "<none>" : policy.getName()));
 
-        sb.addField("client-iface", getClientIntf(clientIntf));
         //Client address, at the client side.
         sb.addField("client-addr", cClientAddr);
         //Client port, at the client side.
@@ -364,7 +375,6 @@ public class PipelineEndpoints extends LogEvent
         //Server port, at the client side.
         sb.addField("server-port", cServerPort);
 
-        sb.addField("server-iface", getServerIntf(serverIntf));
         //Client address, at the server side.
         sb.addField("client-addr", sClientAddr);
         //Client port, at the server side.
@@ -384,7 +394,7 @@ public class PipelineEndpoints extends LogEvent
     {
         if (o instanceof PipelineEndpoints) {
             PipelineEndpoints pe = (PipelineEndpoints)o;
-            return sessionId == pe.sessionId;
+            return getSessionId().equals(pe.getSessionId());
         } else {
             return false;
         }
@@ -392,6 +402,6 @@ public class PipelineEndpoints extends LogEvent
 
     public int hashCode()
     {
-        return sessionId;
+        return getSessionId().hashCode();
     }
 }

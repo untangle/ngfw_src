@@ -93,7 +93,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             return requestHeader;
         } else if (isUrlBlocked(host, uri)) {
             node.incrementHttpBlockedDomain();
-            node.logEvent(new SpywareBlacklistEvent(requestLine.getRequestLine()));
+            node.logEvent(new SpywareUrlEvent(requestLine.getRequestLine()));
             // XXX we could send a page back instead, this isn't really right
             logger.debug("detected spyware, shutting down");
 

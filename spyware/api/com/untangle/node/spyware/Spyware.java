@@ -39,7 +39,7 @@ public interface Spyware extends Node
     
     EventLogQuery[] getCookieEventQueries();
 
-    EventLogQuery[] getBlacklistEventQueries();
+    EventLogQuery[] getUrlEventQueries();
 
     EventLogQuery[] getSuspiciousEventQueries();
 

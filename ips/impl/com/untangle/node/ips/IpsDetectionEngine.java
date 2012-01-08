@@ -184,15 +184,18 @@ public class IpsDetectionEngine
 
         //Check matches
         PipelineEndpoints pe = request.pipelineEndpoints();
-        int intfID = pe.getServerIntf()+1; // XXX add one because its argon->id ??
-        InterfaceConfiguration sourceIntf = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(intfID);
+        
+        Integer clientIntf = pe.getClientIntf();
+        InterfaceConfiguration sourceIntf = null;
+        if (clientIntf != null)
+            sourceIntf = UvmContextFactory.context().networkManager().getNetworkConfiguration().findById(clientIntf);
+
         boolean incoming = true;
         if (sourceIntf == null) {
-            logger.warn("Unable to find source interface: " + intfID);
+            logger.warn("Unable to find source interface: " + clientIntf);
         } else {
             incoming = sourceIntf.isWAN();
         }
-            
         
         Set<IpsRuleSignature> c2sSignatures = manager.matchesHeader(request, incoming, IpsRuleManager.TO_SERVER, c2sList);
         Set<IpsRuleSignature> s2cSignatures = manager.matchesHeader(request, incoming, IpsRuleManager.TO_CLIENT, s2cList);

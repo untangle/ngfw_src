@@ -71,18 +71,9 @@ class Ips(Node):
     def parents(self):
         return ['untangle-vm']
 
-    def events_cleanup(self, cutoff, safety_margin):
-        sql_helper.run_sql("""\
-DELETE FROM events.n_ips_evt
-WHERE pl_endp_id IN (SELECT pl_endp_id FROM reports.sessions)""")
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_ips_evt
-WHERE (time_stamp < %s - interval %s)""", (cutoff,safety_margin))
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_ips_statistic_evt
-WHERE time_stamp < %s""", (cutoff,))
+    def events_cleanup(self, cutoff):
+        sql_helper.clean_table("events", "n_ips_evt", cutoff);
+        sql_helper.clean_table("events", "n_ips_statistic_evt", cutoff);
 
     def reports_cleanup(self, cutoff):
         pass
@@ -95,7 +86,7 @@ WHERE time_stamp < %s""", (cutoff,))
 UPDATE reports.sessions
 SET ips_blocked = blocked, ips_name = sid, ips_description = description
 FROM events.n_ips_evt join settings.n_ips_rule on rule_sid = sid
-WHERE reports.sessions.pl_endp_id = events.n_ips_evt.pl_endp_id""",
+WHERE reports.sessions.session_id = events.n_ips_evt.session_id""",
                                (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:

@@ -175,9 +175,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return new PipelineDesc(pr, argonAgentList);
     }
 
-    public PipelineEndpoints createInitialEndpoints(IPSessionDesc start)
+    public PipelineEndpoints createInitialEndpoints(IPSessionDesc start, String username)
     {
-        return new PipelineEndpoints(start);
+        return new PipelineEndpoints(start, username);
     }
 
     public void registerEndpoints(PipelineEndpoints pe)
@@ -185,7 +185,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         UvmContextFactory.context().logEvent(pe);
     }
 
-    public void destroy(ArgonIPSessionDesc start, ArgonIPSessionDesc end, PipelineEndpoints pe, String uid)
+    public void destroy(ArgonIPSessionDesc start, ArgonIPSessionDesc end, PipelineEndpoints pe)
     {
         PipelineImpl pipeline = pipelines.remove(start.id());
 
@@ -196,7 +196,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         // Endpoints can be null, if the session was never properly
         // set up at all (unknown server interface for example)
         if (pe != null)
-            UvmContextFactory.context().logEvent(new PipelineStats(start, end, pe, uid));
+            UvmContextFactory.context().logEvent(new PipelineStats(start, end, pe));
 
         pipeline.destroy();
     }

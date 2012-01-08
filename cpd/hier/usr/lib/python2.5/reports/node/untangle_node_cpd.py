@@ -104,14 +104,9 @@ class Cpd(Node):
         
         return Report(self, sections)
 
-    def events_cleanup(self, cutoff, safety_margin):
-        sql_helper.run_sql("""\
-DELETE FROM events.n_cpd_login_evt
-WHERE time_stamp < %s""", (cutoff,))
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_cpd_block_evt
-WHERE time_stamp < %s""", (cutoff,))
+    def events_cleanup(self, cutoff):
+        sql_helper.clean_table("events", "n_cpd_login_evt", cutoff);
+        sql_helper.clean_table("events", "n_cpd_block_evt", cutoff);
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_cpd_login_events", cutoff)

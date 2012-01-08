@@ -23,7 +23,7 @@
 -- com.untangle.tran.firewall.FirewallEvent
 CREATE TABLE events.n_firewall_evt (
     event_id int8 NOT NULL,
-    pl_endp_id int8,
+    session_id int8,
     was_blocked bool,
     rule_index int4,
     rule_id int8,
@@ -54,6 +54,6 @@ CREATE TABLE events.n_firewall_statistic_evt (
 
 -- indices for reporting
 
-CREATE INDEX n_firewall_evt_plepid_idx ON events.n_firewall_evt (pl_endp_id);
+CREATE INDEX n_firewall_evt_session_id_idx ON events.n_firewall_evt (session_id);
 CREATE INDEX n_firewall_evt_ts_idx ON events.n_firewall_evt (time_stamp);
 

@@ -69,17 +69,9 @@ class Firewall(Node):
         return reports.Report(self, sections)
 
     @sql_helper.print_timing
-    def events_cleanup(self, cutoff, safety_margin):
-        sql_helper.run_sql("""\
-DELETE FROM events.n_firewall_evt
-WHERE pl_endp_id IN (SELECT pl_endp_id FROM reports.sessions)""")
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_firewall_evt
-WHERE (time_stamp < %s - interval %s)""", (cutoff, safety_margin))
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_firewall_statistic_evt WHERE time_stamp < %s""", (cutoff,))
+    def events_cleanup(self, cutoff):
+        sql_helper.clean_table("events", "n_firewall_evt", cutoff);
+        sql_helper.clean_table("events", "n_firewall_statistic_evt ", cutoff);
 
     def reports_cleanup(self, cutoff):
         pass
@@ -93,7 +85,7 @@ UPDATE reports.sessions
 SET firewall_was_blocked = was_blocked,
     firewall_rule_index = rule_index
 FROM events.n_firewall_evt
-WHERE reports.sessions.pl_endp_id = events.n_firewall_evt.pl_endp_id""",
+WHERE reports.sessions.session_id = events.n_firewall_evt.session_id""",
                                (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:

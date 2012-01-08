@@ -31,7 +31,6 @@
                 "com.untangle.node.mail.papi.safelist.SafelistRecipient",
                 "com.untangle.node.mail.papi.safelist.SafelistSender",
                 "com.untangle.node.mail.papi.safelist.SafelistSettings",
-                "com.untangle.node.mail.papi.MessageStats",
                 "com.untangle.node.ftp.FtpSettings",
                 "com.untangle.node.virus.VirusConfig",
                 "com.untangle.node.virus.VirusIMAPConfig",

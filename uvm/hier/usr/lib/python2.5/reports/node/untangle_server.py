@@ -80,9 +80,8 @@ class ServerNode(Node):
         reports.engine.register_fact_table(ft)
 
     @print_timing
-    def events_cleanup(self, cutoff, safety_margin):
-        sql_helper.run_sql("""\
-DELETE FROM events.n_server_evt WHERE time_stamp < %s""", (cutoff,))
+    def events_cleanup(self, cutoff):
+        sql_helper.clean_table("events", "n_server_evt ", cutoff);
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_server_events", cutoff)

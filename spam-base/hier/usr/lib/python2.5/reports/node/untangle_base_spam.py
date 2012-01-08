@@ -101,13 +101,10 @@ class SpamBaseNode(Node):
 
         return Report(self, sections)
 
-    def events_cleanup(self, cutoff, safety_margin):
-        sql_helper.run_sql("""
-DELETE FROM events.n_spam_evt WHERE time_stamp < %s""", (cutoff,))
-        sql_helper.run_sql("""
-DELETE FROM events.n_spam_evt_smtp WHERE time_stamp < %s""", (cutoff,))
-        sql_helper.run_sql("""
-DELETE FROM events.n_spam_smtp_tarpit_evt WHERE time_stamp < %s""", (cutoff,))
+    def events_cleanup(self, cutoff):
+        sql_helper.clean_table("events", "n_spam_evt ", cutoff);
+        sql_helper.clean_table("events", "n_spam_evt_smtp ", cutoff);
+        sql_helper.clean_table("events", "n_spam_smtp_tarpit_evt ", cutoff);
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table('n_spam_smtp_tarpit_events', cutoff)
@@ -157,7 +154,7 @@ CREATE TABLE reports.n_spam_smtp_tarpit_events (
 INSERT INTO reports.n_spam_smtp_tarpit_events
       (time_stamp, ipaddr, hostname, vendor_name, policy_id)
 SELECT evts.time_stamp, ipaddr, hostname, vendor_name, policy_id
-FROM events.n_spam_smtp_tarpit_evt as evts join reports.sessions using (pl_endp_id)""", 
+FROM events.n_spam_smtp_tarpit_evt as evts join reports.sessions using (session_id)""", 
                                (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:

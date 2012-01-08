@@ -70,7 +70,7 @@ class Node:
     def post_facttable_setup(self, start_date, end_date):
         pass
 
-    def events_cleanup(self, cutoff, safety_margin):
+    def events_cleanup(self, cutoff):
         pass
 
     def reports_cleanup(self, cutoff):
@@ -336,7 +336,7 @@ def generate_plots(report_base, end_date, report_days=1):
     __generate_plots(report_base, date_base)
 
 @print_timing
-def events_cleanup(cutoff, safety_margin):
+def events_cleanup(cutoff):
     logger.info("Cleaning-up events data for all dates < %s" % (cutoff,))
 
     # clean in reverse order
@@ -347,7 +347,7 @@ def events_cleanup(cutoff, safety_margin):
         try:
             node = __nodes.get(name, None)
             logger.debug("** about to clean events for %s" % (name,))            
-            node.events_cleanup(cutoff, safety_margin)
+            node.events_cleanup(cutoff)
         except:
             logger.warn('could not cleanup events for: %s' % name,
                          exc_info=True)

@@ -39,11 +39,11 @@ CREATE TABLE events.u_node_state_change (
     state text NOT NULL,
     PRIMARY KEY (event_id));
 
--- com.untangle.mvvm.tran.PipelineEndpoints
+-- PipelineEndpoints
 CREATE TABLE events.pl_endp (
     event_id int8 NOT NULL,
+    session_id int8 NOT NULL,
     time_stamp timestamp,
-    session_id int4,
     proto int2,
     client_intf int2,
     server_intf int2,
@@ -56,28 +56,14 @@ CREATE TABLE events.pl_endp (
     c_server_port int4,
     s_server_port int4,
     policy_id int8,
-    policy_inbound bool,
+    username   text,
     PRIMARY KEY (event_id));
 
--- com.untangle.mvvm.tran.PipelineStats
+-- PipelineStats
 CREATE TABLE events.pl_stats (
     event_id int8 NOT NULL,
     time_stamp timestamp,
-    pl_endp_id int8,
-    session_id int4,
-    proto int2,
-    client_intf int2,
-    server_intf int2,
-    c_client_addr inet,
-    s_client_addr inet,
-    c_server_addr inet,
-    s_server_addr inet,
-    c_client_port int4,
-    s_client_port int4,
-    c_server_port int4,
-    s_server_port int4,
-    policy_id int8,
-    policy_inbound bool,
+    session_id int8,
     c2p_bytes int8,
     s2p_bytes int8,
     p2c_bytes int8,
@@ -86,7 +72,6 @@ CREATE TABLE events.pl_stats (
     s2p_chunks int8,
     p2c_chunks int8,
     p2s_chunks int8,
-    uid        text,
     PRIMARY KEY (event_id));
 
 -- com.untangle.mvvm.shield.ShieldRejectionEvent
@@ -166,13 +151,14 @@ CREATE TABLE events.event_data_days (
 
 -- indices for reporting and event log viewing
 
-CREATE INDEX pl_endp_sid_idx ON events.pl_endp (session_id);
-CREATE INDEX pl_endp_ts_idx ON events.pl_endp (time_stamp);
-CREATE INDEX pl_stats_plepid_idx ON events.pl_stats (pl_endp_id);
+CREATE INDEX pl_endp_session_id_idx ON events.pl_endp (session_id);
+CREATE INDEX pl_endp_time_stamp_idx ON events.pl_endp (time_stamp);
 
-CREATE INDEX u_login_evt_ts_idx ON events.u_login_evt (time_stamp);
-CREATE INDEX u_lookup_evt_ts_idx ON events.u_lookup_evt (time_stamp);
-CREATE INDEX n_shield_rejection_evt_ts_idx ON n_shield_rejection_evt (time_stamp);
+CREATE INDEX pl_stats_session_id_idx ON events.pl_stats (session_id);
+
+CREATE INDEX u_login_evt_time_stamp_idx ON events.u_login_evt (time_stamp);
+CREATE INDEX u_lookup_evt_time_stamp_idx ON events.u_lookup_evt (time_stamp);
+CREATE INDEX n_shield_rejection_evt_time_stamp_idx ON n_shield_rejection_evt (time_stamp);
 
 
 

@@ -72,14 +72,8 @@ class Protofilter(Node):
 
         return reports.Report(self, sections)
 
-    def events_cleanup(self, cutoff, safety_margin):
-        sql_helper.run_sql("""\
-DELETE FROM events.n_protofilter_evt 
-WHERE pl_endp_id IN (SELECT pl_endp_id FROM reports.sessions)""")
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_protofilter_evt 
-WHERE (time_stamp < %s - interval %s)""", (cutoff,safety_margin))
+    def events_cleanup(self, cutoff):
+        sql_helper.clean_table("events", "n_protofilter_evt ", cutoff);
 
     def reports_cleanup(self, cutoff):
         pass
@@ -91,9 +85,9 @@ WHERE (time_stamp < %s - interval %s)""", (cutoff,safety_margin))
             sql_helper.run_sql("""\
 UPDATE reports.sessions
 SET pf_protocol = protocol,
-  pf_blocked = blocked
+    pf_blocked = blocked
 FROM events.n_protofilter_evt
-WHERE reports.sessions.pl_endp_id = events.n_protofilter_evt.pl_endp_id""",
+WHERE reports.sessions.session_id = events.n_protofilter_evt.session_id""",
                                (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:

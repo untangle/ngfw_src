@@ -52,6 +52,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import com.untangle.uvm.node.PipelineEndpoints;
 
@@ -177,8 +178,18 @@ public class MessageInfo implements Serializable
      *
      * @return the PipelineEndpoints.
      */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="pl_endp_id", nullable=false)
+    @Column(name="session_id", nullable=false)
+    public Integer getSessionId()
+    {
+        return pipelineEndpoints.getSessionId();
+    }
+
+    public void setSessionId( Integer sessionId )
+    {
+        this.pipelineEndpoints.setSessionId(sessionId);
+    }
+
+    @Transient
     public PipelineEndpoints getPipelineEndpoints()
     {
         return pipelineEndpoints;
@@ -187,7 +198,6 @@ public class MessageInfo implements Serializable
     public void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
     {
         this.pipelineEndpoints = pipelineEndpoints;
-        return;
     }
 
     /**

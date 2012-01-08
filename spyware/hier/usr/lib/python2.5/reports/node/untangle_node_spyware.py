@@ -38,7 +38,7 @@ class Spyware(Node):
 
     def setup(self, start_date, end_date):
         self.__update_access(start_date, end_date)
-        self.__update_blacklist(start_date, end_date)
+        self.__update_url(start_date, end_date)
         self.__update_cookie(start_date, end_date)
 
     def get_toc_membership(self):
@@ -47,28 +47,10 @@ class Spyware(Node):
     def parents(self):
         return ['untangle-vm', 'untangle-casing-http']
 
-    def events_cleanup(self, cutoff, safety_margin):
-        # clean up harvested events
-        sql_helper.run_sql("""\
-DELETE FROM events.n_spyware_evt_access
-WHERE pl_endp_id IN (SELECT pl_endp_id FROM reports.sessions)""")
-        sql_helper.run_sql("""\
-DELETE FROM events.n_spyware_evt_blacklist
-WHERE request_id IN (SELECT request_id FROM reports.n_http_events)""")
-        sql_helper.run_sql("""\
-DELETE FROM events.n_spyware_evt_cookie
-WHERE request_id IN (SELECT request_id FROM reports.n_http_events)""")
-
-        # clean up events older than safety_margin
-        sql_helper.run_sql("""\
-DELETE FROM events.n_spyware_evt_access
-WHERE (time_stamp < %s - interval %s)""", (cutoff,safety_margin))
-        sql_helper.run_sql("""\
-DELETE FROM events.n_spyware_evt_blacklist
-WHERE (time_stamp < %s - interval %s)""", (cutoff,safety_margin))
-        sql_helper.run_sql("""\
-DELETE FROM events.n_spyware_evt_cookie
-WHERE (time_stamp < %s - interval %s)""", (cutoff,safety_margin))
+    def events_cleanup(self, cutoff):
+        sql_helper.clean_table("events", "n_spyware_evt_access", cutoff);
+        sql_helper.clean_table("events", "n_spyware_evt_url", cutoff);
+        sql_helper.clean_table("events", "n_spyware_evt_cookie", cutoff);
 
     def reports_cleanup(self, cutoff):
         pass
@@ -103,7 +85,7 @@ WHERE (time_stamp < %s - interval %s)""", (cutoff,safety_margin))
 UPDATE reports.sessions
 SET sw_access_ident = ident
 FROM events.n_spyware_evt_access
-WHERE reports.sessions.pl_endp_id = events.n_spyware_evt_access.pl_endp_id""",
+WHERE reports.sessions.session_id = events.n_spyware_evt_access.session_id""",
                                (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
@@ -116,14 +98,14 @@ WHERE reports.sessions.pl_endp_id = events.n_spyware_evt_access.pl_endp_id""",
         ft.dimensions.append(Column('sw_access_ident', 'text'))
 
     @print_timing
-    def __update_blacklist(self, start_date, end_date):
+    def __update_url(self, start_date, end_date):
         conn = sql_helper.get_connection()
         try:
             sql_helper.run_sql("""\
 UPDATE reports.n_http_events
 SET sw_blacklisted = true
-FROM events.n_spyware_evt_blacklist
-WHERE reports.n_http_events.request_id = events.n_spyware_evt_blacklist.request_id""",
+FROM events.n_spyware_evt_url
+WHERE reports.n_http_events.request_id = events.n_spyware_evt_url.request_id""",
                                (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
@@ -131,8 +113,7 @@ WHERE reports.n_http_events.request_id = events.n_spyware_evt_blacklist.request_
             raise e
 
         ft = reports.engine.get_fact_table('reports.n_http_totals')
-        ft.measures.append(Column('sw_blacklisted', 'integer',
-                                  'count(sw_blacklisted)'))
+        ft.measures.append(Column('sw_blacklisted', 'integer', 'count(sw_blacklisted)'))
 
     @print_timing
     def __update_cookie(self, start_date, end_date):

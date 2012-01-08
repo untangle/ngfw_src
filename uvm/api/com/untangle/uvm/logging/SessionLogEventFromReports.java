@@ -32,7 +32,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
     @SuppressWarnings("serial")
     public class SessionLogEventFromReports extends LogEvent
     {
-        private Long plEndpId;
+        private Long sessionId;
         private Date endTime;
         private String hname;
         private String uid;
@@ -41,6 +41,10 @@ import com.untangle.uvm.node.PipelineEndpoints;
         private InetAddress cServerAddr;
         private Integer cServerPort;
         private Integer cClientPort;
+        private InetAddress sClientAddr;
+        private InetAddress sServerAddr;
+        private Integer sServerPort;
+        private Integer sClientPort;
         private Integer clientIntf;
         private Integer serverIntf;
         private Long c2pBytes;
@@ -71,9 +75,9 @@ import com.untangle.uvm.node.PipelineEndpoints;
         protected SessionLogEventFromReports() { }
 
         // accessors --------------------------------------------------------------
-        @Column(name="pl_endp_id")
-        public Long getPlEndpId() { return plEndpId; }
-        public void setPlEndpId(Long plEndpId) { this.plEndpId = plEndpId; }
+        @Column(name="session_id")
+        public Long getSessionId() { return sessionId; }
+        public void setSessionId(Long sessionId) { this.sessionId = sessionId; }
 
         @Temporal(TemporalType.TIMESTAMP)
         @Column(name="end_time")
@@ -110,6 +114,24 @@ import com.untangle.uvm.node.PipelineEndpoints;
         public Integer getCClientPort() { return cClientPort; }
         public void setCClientPort(Integer cClientPort) { this.cClientPort = cClientPort; }
 
+        @Column(name="s_client_addr")
+        @Type(type="com.untangle.uvm.type.InetAddressUserType")
+        public InetAddress getSClientAddr() { return sClientAddr; }
+        public void setSClientAddr(InetAddress sClientAddr) { this.sClientAddr = sClientAddr; }
+
+        @Column(name="s_server_addr")
+        @Type(type="com.untangle.uvm.type.InetAddressUserType")
+        public InetAddress getSServerAddr() { return sServerAddr; }
+        public void setSServerAddr(InetAddress sServerAddr) { this.sServerAddr = sServerAddr; }
+
+        @Column(name="s_server_port")
+        public Integer getSServerPort() { return sServerPort; }
+        public void setSServerPort(Integer sServerPort) { this.sServerPort = sServerPort; }
+
+        @Column(name="s_client_port")
+        public Integer getSClientPort() { return sClientPort; }
+        public void setSClientPort(Integer sClientPort) { this.sClientPort = sClientPort; }
+        
         @Column(name="client_intf")
         public Integer getClientIntf() { return clientIntf; }
         public void setClientIntf(Integer clientIntf) { this.clientIntf = clientIntf; }

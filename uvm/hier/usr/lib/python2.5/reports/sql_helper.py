@@ -167,7 +167,14 @@ def drop_column(schema, tablename, columnname):
     column_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s'" % (schema, tablename, columnname))
     if not column_exists:
         return
-    sql = "ALTER TABLE %s.%s DROP COLUMN %s" % (schema, tablename, column)
+    sql = "ALTER TABLE %s.%s DROP COLUMN %s" % (schema, tablename, columnname)
+    run_sql(sql)
+
+def rename_column(schema, tablename, oldname, newname):
+    column_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s'" % (schema, tablename, oldname))
+    if not column_exists:
+        return
+    sql = "ALTER TABLE %s.%s RENAME COLUMN %s to %s" % (schema, tablename, oldname, newname)
     run_sql(sql)
 
 def convert_column(schema, tablename, columnname, oldtype, newtype):
@@ -185,6 +192,13 @@ def create_index(schema, tablename, columnname):
     sql = 'CREATE INDEX %s_%s_idx ON %s.%s(%s)' % (tablename, columnname, schema, tablename, columnname)
     run_sql(sql)
 
+def rename_index(schema, oldname, newname):
+    already_exists = run_sql_one("select 1 from pg_class where relname = '%s'" % (oldname))
+    if not already_exists:
+        return
+    sql = 'ALTER INDEX %s.%s RENAME TO %s' % (schema, oldname, newname)
+    run_sql(sql)
+
 def create_schema(schema):
     already_exists = run_sql_one("select 1 from pg_namespace where nspname = '%s'" % (schema))
     if already_exists:
@@ -196,6 +210,10 @@ def create_table(schema, tablename, sql):
     if table_exists(schema, tablename):
         return
     run_sql(sql)
+
+def clean_table(schema, tablename, cutoff):
+    sql = "DELETE FROM %s.%s WHERE time_stamp < %%s;" % (schema, tablename)
+    run_sql(sql, (cutoff,))
     
 def drop_fact_table(tablename, cutoff_date):
   for t, date in find_fact_tables(tablename):

@@ -26,7 +26,7 @@ CREATE TABLE events.n_spam_evt (
 
 CREATE TABLE events.n_spam_smtp_tarpit_evt (
     event_id int8 NOT NULL,
-    pl_endp_id int8 NOT NULL,
+    session_id int8 NOT NULL,
     ipaddr inet NOT NULL,
     hostname varchar(255) NOT NULL,
     vendor_name varchar(255),
