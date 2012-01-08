@@ -47,6 +47,7 @@ class Spyware(Node):
     def parents(self):
         return ['untangle-vm', 'untangle-casing-http']
 
+    @sql_helper.print_timing
     def events_cleanup(self, cutoff):
         sql_helper.clean_table("events", "n_spyware_evt_access", cutoff);
         sql_helper.clean_table("events", "n_spyware_evt_url", cutoff);

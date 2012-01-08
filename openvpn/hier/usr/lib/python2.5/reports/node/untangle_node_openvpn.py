@@ -71,6 +71,7 @@ class OpenVpn(Node):
         sql_helper.drop_fact_table("n_openvpn_stats", cutoff)
         sql_helper.drop_fact_table("n_openvpn_connect_totals", cutoff)
 
+    @sql_helper.print_timing
     def events_cleanup(self, cutoff):
         sql_helper.clean_table("events", "n_openvpn_connect_evt ", cutoff);
 

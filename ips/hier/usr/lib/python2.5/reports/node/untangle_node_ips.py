@@ -71,6 +71,7 @@ class Ips(Node):
     def parents(self):
         return ['untangle-vm']
 
+    @sql_helper.print_timing
     def events_cleanup(self, cutoff):
         sql_helper.clean_table("events", "n_ips_evt", cutoff);
         sql_helper.clean_table("events", "n_ips_statistic_evt", cutoff);

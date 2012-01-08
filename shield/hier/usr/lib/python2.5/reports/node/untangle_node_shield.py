@@ -57,6 +57,7 @@ class Shield(Node):
                         Column('rejected', 'integer', 'sum(rejected)')])
         reports.engine.register_fact_table(ft)
 
+    @sql_helper.print_timing
     def events_cleanup(self, cutoff):
         sql_helper.clean_table("events", "n_shield_rejection_evt", cutoff);
         sql_helper.clean_table("events", "n_shield_statistic_evt", cutoff);

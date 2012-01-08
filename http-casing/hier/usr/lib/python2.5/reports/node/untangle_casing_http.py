@@ -187,7 +187,7 @@ WHERE reports.n_http_events.session_id = ps.session_id""",
             conn.rollback()
             raise e
 
-
+    @sql_helper.print_timing
     def events_cleanup(self, cutoff):
         sql_helper.clean_table("events", "n_http_req_line ", cutoff);
         sql_helper.clean_table("events", "n_http_evt_req ", cutoff);

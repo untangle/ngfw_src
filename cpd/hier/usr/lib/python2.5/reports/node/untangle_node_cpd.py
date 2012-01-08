@@ -104,6 +104,7 @@ class Cpd(Node):
         
         return Report(self, sections)
 
+    @sql_helper.print_timing
     def events_cleanup(self, cutoff):
         sql_helper.clean_table("events", "n_cpd_login_evt", cutoff);
         sql_helper.clean_table("events", "n_cpd_block_evt", cutoff);

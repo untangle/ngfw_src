@@ -114,6 +114,7 @@ INSERT INTO reports.n_admin_logins
         self.__make_hnames_table(start_date, end_date)
         self.__make_users_table(start_date, end_date)
 
+    @sql_helper.print_timing
     def events_cleanup(self, cutoff):
         sql_helper.clean_table("events", "u_login_evt", cutoff);
         sql_helper.clean_table("events", "u_lookup_evt", cutoff);

@@ -72,6 +72,7 @@ class Protofilter(Node):
 
         return reports.Report(self, sections)
 
+    @sql_helper.print_timing
     def events_cleanup(self, cutoff):
         sql_helper.clean_table("events", "n_protofilter_evt ", cutoff);
 
