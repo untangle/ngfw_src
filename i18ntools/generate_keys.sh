@@ -6,10 +6,11 @@ ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-net-al
     untangle-node-protofilter untangle-node-ips untangle-node-firewall untangle-node-reporting 
     untangle-node-openvpn untangle-node-adblocker untangle-node-cpd
     untangle-node-adconnector untangle-node-bandwidth untangle-node-boxbackup 
-    untangle-node-branding untangle-node-commtouch untangle-node-faild 
-    untangle-node-kav untangle-node-license untangle-node-policy 
+    untangle-node-branding untangle-node-faild 
+    untangle-node-kav untangle-node-policy 
     untangle-node-sitefilter untangle-node-faild untangle-node-splitd 
-    untangle-node-webcache untangle-node-ipsec'
+    untangle-node-webcache untangle-node-ipsec untangle-node-commtouchas 
+    untangle-node-commtouchav'
 OFFICIAL_LANGUAGES='de es fr ja pt_BR zh_CN'
 
 function update_keys()
@@ -59,6 +60,8 @@ case "$1" in
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/faild/impl/com/untangle/node/faild/FailDImpl.java
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/splitd/impl/com/untangle/node/splitd/SplitDImpl.java 
     xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/ipsec/impl/com/untangle/node/ipsec/IPsecNodeImpl.java 
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/commtouchas/impl/com/untangle/node/commtouchas/CommtouchAsNode.java 
+    xgettext -j --copyright-holder='Untangle, Inc.' -L Java -kmarktr -o tmp_keys.pot ../../../../hades/src/commtouchav/impl/com/untangle/node/commtouchav/CommtouchAvNode.java 
     find ../../uvm/hier -name '*.py' | xargs xgettext -j --copyright-holder='Untangle, Inc.' -L Python -k_ -o tmp_keys.pot
 
     msgcat tmp_keys.pot fmt_keys.pot -o tmp_keys.pot
@@ -150,7 +153,7 @@ case "$1" in
     rm tmp_keys.pot
     update_po $1
     ;;
-"untangle-node-adconnector"|"untangle-node-bandwidth"|"untangle-node-boxbackup"|"untangle-node-branding"|"untangle-node-commtouch"|"untangle-node-faild"|"untangle-node-kav"|"untangle-node-license"|"untangle-node-policy"|"untangle-node-sitefilter"|"untangle-node-faild"|"untangle-node-splitd"|"untangle-node-webcache"|"untangle-node-ipsec")
+"untangle-node-adconnector"|"untangle-node-bandwidth"|"untangle-node-boxbackup"|"untangle-node-branding"|"untangle-node-faild"|"untangle-node-kav"|"untangle-node-policy"|"untangle-node-sitefilter"|"untangle-node-faild"|"untangle-node-splitd"|"untangle-node-webcache"|"untangle-node-ipsec"|"untangle-node-commtouchas"|"untangle-node-commtouchav")
     moduleName=`echo "$1"|cut -d"-" -f3`
     cd ../../../hades/src/${moduleName}/po/
     echo 'get new keys'
