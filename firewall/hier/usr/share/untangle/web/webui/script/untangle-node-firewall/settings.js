@@ -534,10 +534,10 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     mapping : 'CClientPort'
                 }, {
                     name : 'server',
-                    mapping : 'CServerAddr'
+                    mapping : 'SServerAddr'
                 }, {
                     name : 'serverPort',
-                    mapping : 'CServerPort'
+                    mapping : 'SServerPort'
                 }],
                 autoExpandColumn: 'ruleIndex',
                 columns : [{
@@ -575,12 +575,12 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     sortable : true,
                     dataIndex : 'firewallRuleIndex'
                 }, {
-                    header : this.i18n._("server") + " " + this.i18n._("(pre-NAT)"),
+                    header : this.i18n._("server") ,
                     width : Ung.Util.ipFieldWidth + 40, // +40 for column header
                     sortable : true,
                     dataIndex : 'server'
                 }, {
-                    header : this.i18n._("server port") + " " + this.i18n._("(pre-NAT)"),
+                    header : this.i18n._("server port"),
                     width : Ung.Util.portFieldWidth + 40, // +40 for column header
                     sortable : true,
                     dataIndex : 'serverPort'
