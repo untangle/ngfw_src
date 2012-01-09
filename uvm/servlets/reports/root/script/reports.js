@@ -1228,10 +1228,10 @@ Ung.ReportDetails = Ext.extend(Object, {
                 }.createDelegate(this)
             });
             items.push(new Ext.grid.GridPanel({
-                style : 'margin-top:45px;',
+                style : 'margin-top:25px;',
                 autoScroll : true,
                 width: 330,
-                height: 203,
+                height: 243,
                 store: new Ext.data.SimpleStore({
                     fields: [
                         {name: 'label'},
@@ -1245,6 +1245,10 @@ Ung.ReportDetails = Ext.extend(Object, {
                 columns: columns,
                 // inline toolbars
                 tbar:[{
+                    xtype : 'tbtext',
+                    text : '<b>' + this.i18n._('Key Statistics') + '</b>',
+                    width: 150
+                }, {
                     tooltip:this.i18n._('Export Excel'),
                     iconCls:'export-excel',
                     handler : new Function("window.open('" + summaryItem.csvUrl + "');")
@@ -1256,6 +1260,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                       //  }
                      ],
                 title:this.i18n._('Key Statistics'),
+                header: false,
                 stripeRows: true,
                 hideHeaders: true,
                 enableHdMenu : false,
