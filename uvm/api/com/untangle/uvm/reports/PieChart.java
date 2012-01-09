@@ -23,9 +23,6 @@ import org.jfree.util.SortOrder;
 
 public class PieChart extends Plot
 {
-	//unused// private final String xLabel;
-	//unused// private final String yLabel;
-    //unused// private final String majorFormatter;
     private final int displayLimit;
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -34,9 +31,6 @@ public class PieChart extends Plot
     {
         super(title);
 
-        //unused// this.xLabel = xLabel;
-        //unused// this.yLabel = yLabel;
-        //unused// this.majorFormatter = majorFormatter;
         this.displayLimit = displayLimit;
     }
 
@@ -78,8 +72,7 @@ public class PieChart extends Plot
         }
 
         String title = getTitle();
-        JFreeChart jfChart
-            = ChartFactory.createPieChart(title, dpd, false, false, false);
+        JFreeChart jfChart = ChartFactory.createPieChart(title, dpd, false, false, false);
         jfChart.setTitle(new TextTitle(title, TITLE_FONT));
         PiePlot plot = (PiePlot)jfChart.getPlot();
         for (String key : colors.keySet()) {
@@ -87,7 +80,16 @@ public class PieChart extends Plot
             if (null != colorStr) {
                 try {
                     Color c = Color.decode("0x" + colorStr);
-                    plot.setSectionPaint(key, c);
+                    if (key.equals("others")) {
+                        //logger.warn("setColor( " + key + " , " + Color.lightGray + " )");
+                        //plot.setSectionPaint(key, Color.lightGray);
+                        plot.setSectionPaint(key, c);
+                        plot.setExplodePercent(key, .10);
+                    }
+                    else {
+                        //logger.warn("setColor( " + key + " , " + c + " )");
+                        plot.setSectionPaint(key, c);
+                    }
                 } catch (NumberFormatException exn) {
                     logger.warn("could not decode color: " + colorStr, exn);
                 }
@@ -95,8 +97,6 @@ public class PieChart extends Plot
         }
         plot.setLabelGenerator(null);
 
-        ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl),
-                                      jfChart, CHART_WIDTH, CHART_HEIGHT,
-                                      null, false, CHART_COMPRESSION_PNG);
+        ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl), jfChart, CHART_WIDTH, CHART_HEIGHT, null, false, CHART_COMPRESSION_PNG);
     }
 }
