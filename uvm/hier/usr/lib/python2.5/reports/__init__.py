@@ -62,6 +62,8 @@ USER_LINK = 'UserLink'
 EMAIL_LINK = 'EmailLink'
 URL_LINK = 'URLLink'
 
+OTHERS_STR = 'others'
+
 _ = reports.i18n_helper.get_translation('untangle-vm').lgettext
 
 def __time_of_day_formatter(x, pos):
@@ -526,12 +528,10 @@ class Graph:
     def title(self):
         return self.__title
 
-    def generate(self, report_base, section_base, end_date, report_days=1,
-                 host=None, user=None, email=None):
+    def generate(self, report_base, section_base, end_date, report_days=1, host=None, user=None, email=None):
 
         try:
-            graph_data = self.get_graph(end_date, report_days, host, user,
-                                        email)
+            graph_data = self.get_graph(end_date, report_days, host, user, email)
         except:
             logger.warn("could not generate graph: %s (%s)" \
                              % (self.name, self.title), exc_info=True)
@@ -553,15 +553,14 @@ class Graph:
 
             for k, v in self.__plot.datasets.iteritems():
                 items.append([k, v])
-            items.sort(cmp=lambda a,b: cmp(a[1], b[1]), reverse=True)
+            items.sort(cmp=lambda a,b: -1 if a[0] == OTHERS_STR else 1 if b[0] == OTHERS_STR else cmp(a[1], b[1]), reverse=True)
 
             key_statistics_2 = []
             for name, value in items:
                 if name in map:
                     key_statistics_2.append(map[name])
                 else:
-                    key_statistics_2.append(KeyStatistic(name, value,
-                                                         self.__key_statistics[0].unit))
+                    key_statistics_2.append(KeyStatistic(name, value, self.__key_statistics[0].unit))
 
             self.__key_statistics = key_statistics_2
             
@@ -665,13 +664,11 @@ class Graph:
         if self.__plot and self.__plot.type == PIE_CHART:
             colors = self.__plot.colors
             background_colors = [None]
-            data = [[Paragraph(_('Key Statistics'), STYLESHEET['TableTitle']),
-                     '', '']]
+            data = [[Paragraph(_('Key Statistics'), STYLESHEET['TableTitle']), '', '']]
         else:
             colors = None
             background_colors = zebra_colors
-            data = [[Paragraph(_('Key Statistics'), STYLESHEET['TableTitle']),
-                     '']]
+            data = [[Paragraph(_('Key Statistics'), STYLESHEET['TableTitle']), '']]
 
         for i, ks in enumerate(self.__key_statistics):
             n = ks.name
@@ -759,8 +756,7 @@ class Chart:
 
         label = str(label)
 
-        m = {'xdata': xdata, 'ydata': ydata, 'label': label,
-             'linestyle': linestyle, 'color': color}
+        m = {'xdata': xdata, 'ydata': ydata, 'label': label, 'linestyle': linestyle, 'color': color}
         self.__datasets.append(m)
 
         self.__header.append(label)
@@ -800,12 +796,12 @@ class Chart:
                     self.__color_num += 1
                     c += 1
             elif display_limit:
-                if not "others" in self.__datasets:
-                    self.__datasets["others"] = 0
-                self.__datasets["others"] += i[1]
+                if not OTHERS_STR in self.__datasets:
+                    self.__datasets[OTHERS_STR] = 0
+                self.__datasets[OTHERS_STR] += i[1]
 
                 self.__datasets2[str(i[0])] = i[1]
-                self.__colors["others"] = reports.colors.color_palette[self.__color_num]
+                self.__colors[OTHERS_STR] = reports.colors.color_palette[self.__color_num]
                 
     def generate_csv(self, filename, host=None, user=None, email=None):
         if self.__type == PIE_CHART:
@@ -926,6 +922,7 @@ class Chart:
             w.writerow([k, v])
 
     def __pie_sort(self, a, b):
+        #return -1 if a[0] == OTHERS_STR else 1 if b[0] == OTHERS_STR else cmp(a[1], b[1])
         return cmp(a[1], b[1])
 
 class KeyStatistic:
