@@ -16,6 +16,9 @@ public abstract class Plot
     public static final Font TITLE_FONT = new Font("Helvetica", Font.PLAIN, 14);
     public static final Font AXIS_FONT = new Font("Helvetica", Font.PLAIN, 10);
 
+    protected final java.awt.Color CHART_BACKGROUND_COLOR = new java.awt.Color(230,230,230);
+    protected final java.awt.Color CHART_BORDER_COLOR = new java.awt.Color(180,180,180);
+
     protected final Map<String, String> colors = new HashMap<String, String>();
 
     private final String title;

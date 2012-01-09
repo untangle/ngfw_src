@@ -1,36 +1,6 @@
-/*
- * $HeadURL: svn://chef/branch/prod/hellokitty/work/src/uvm/api/com/untangle/uvm/ReportingManager.java $
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
+/**
+ * $Id: TimeSeriesChart.java,v 1.00 2012/01/08 20:14:47 dmorris Exp $h
  */
-
 package com.untangle.uvm.reports;
 
 import java.awt.Color;
@@ -69,28 +39,25 @@ public class TimeSeriesChart extends Plot
 {
     private static final DateFormat DF = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-    // duplicated from com.uvm.engine.ReportingManagerImpl
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     private final String xLabel;
     private final String yLabel;
     private final String yAxisLowerBound;
-    //private final String majorFormatter;
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public TimeSeriesChart(String title, String xLabel, String yLabel,
-                           String majorFormatter, String yAxisLowerBound)
+    public TimeSeriesChart(String title, String xLabel, String yLabel, String majorFormatter, String yAxisLowerBound)
     {
         super(title);
 
         this.xLabel = xLabel;
         this.yLabel = yLabel;
         this.yAxisLowerBound = yAxisLowerBound;
-        //this.majorFormatter = majorFormatter;
     }
 
-    private Date parseTimeStamp(String timeStr) {
+    private Date parseTimeStamp(String timeStr)
+    {
         Date date = null;
         try {
             date = DF.parse(timeStr);
@@ -253,12 +220,15 @@ public class TimeSeriesChart extends Plot
         }
 
         String title = getTitle();
-        JFreeChart jfChart =
-            ChartFactory.createTimeSeriesChart(title, this.xLabel, this.yLabel,
-                                               tsc, true, true, false);
+        JFreeChart jfChart = ChartFactory.createTimeSeriesChart(title, this.xLabel, this.yLabel, tsc, true, true, false);
         jfChart.setTitle(new TextTitle(title, TITLE_FONT));
-        XYPlot p = (XYPlot)jfChart.getPlot();
-        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer)p.getRenderer();
+        jfChart.setBackgroundPaint(CHART_BACKGROUND_COLOR);
+        jfChart.setBorderPaint(CHART_BORDER_COLOR);
+        jfChart.setBorderVisible(true);
+
+        XYPlot plot = (XYPlot)jfChart.getPlot();
+        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer)plot.getRenderer();
+
         if (cd.getColumnCount() == 1) { 
             // no legend if there's only one serie
             logger.debug("Disabling legend");
@@ -270,21 +240,29 @@ public class TimeSeriesChart extends Plot
         for (int i = 0; i < seriesColors.size(); i++) {
             renderer.setSeriesPaint(i, seriesColors.get(i));
         }
-        ValueAxis va = p.getRangeAxis();
+        ValueAxis va = plot.getRangeAxis();
         va.setLabelFont(AXIS_FONT);
         if (this.yAxisLowerBound != null) {
             va.setLowerBound(Double.parseDouble(this.yAxisLowerBound));
             va.setUpperBound(va.getUpperBound() * 1.05);
         }
 
-        DateAxis da = (DateAxis)p.getDomainAxis();
+        DateAxis da = (DateAxis)plot.getDomainAxis();
         da.setLabelFont(AXIS_FONT);
 
         formatDateAxis(da, f);
-
-        ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl),
-                                      jfChart, CHART_WIDTH, CHART_HEIGHT,
-                                      null, false, CHART_COMPRESSION_PNG);
+        plot.setOutlinePaint(Color.gray);
+        plot.setOutlineVisible(true);
+        plot.setBackgroundPaint(java.awt.Color.white);
+        plot.setDomainGridlinePaint(CHART_BACKGROUND_COLOR);
+        plot.setDomainGridlineStroke(new java.awt.BasicStroke());
+        plot.setRangeGridlinePaint(CHART_BACKGROUND_COLOR);
+        plot.setRangeGridlineStroke(new java.awt.BasicStroke());
+        plot.setDomainGridlinesVisible(true);
+        plot.setRangeGridlinesVisible(true);
+        plot.setAxisOffset (new org.jfree.ui.RectangleInsets (0, 0, 0, 0));
+        
+        ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl), jfChart, CHART_WIDTH, CHART_HEIGHT, null, false, CHART_COMPRESSION_PNG);
 
     }
 }

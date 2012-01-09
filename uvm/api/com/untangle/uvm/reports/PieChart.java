@@ -74,6 +74,10 @@ public class PieChart extends Plot
         String title = getTitle();
         JFreeChart jfChart = ChartFactory.createPieChart(title, dpd, false, false, false);
         jfChart.setTitle(new TextTitle(title, TITLE_FONT));
+        jfChart.setBackgroundPaint(CHART_BACKGROUND_COLOR);
+        jfChart.setBorderPaint(CHART_BORDER_COLOR);
+        jfChart.setBorderVisible(true);
+
         PiePlot plot = (PiePlot)jfChart.getPlot();
         for (String key : colors.keySet()) {
             String colorStr = colors.get(key);
@@ -96,7 +100,9 @@ public class PieChart extends Plot
             }
         }
         plot.setLabelGenerator(null);
-
+        plot.setOutlineVisible(false);
+        plot.setBackgroundPaint(CHART_BACKGROUND_COLOR);
+        
         ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl), jfChart, CHART_WIDTH, CHART_HEIGHT, null, false, CHART_COMPRESSION_PNG);
     }
 }

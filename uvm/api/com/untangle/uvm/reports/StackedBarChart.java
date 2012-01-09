@@ -1,36 +1,6 @@
-/*
- * $HeadURL: svn://chef/branch/prod/hellokitty/work/src/uvm/api/com/untangle/uvm/ReportingManager.java $
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
+/**
+ * $Id: StackedBarChart.java,v 1.00 2012/01/08 19:39:45 dmorris Exp $
  */
-
 package com.untangle.uvm.reports;
 
 import java.awt.Color;
@@ -70,39 +40,37 @@ public class StackedBarChart extends Plot
 {
     private static DateFormat DF = new SimpleDateFormat("yyyy-MM-dd");
     private static DateFormat HF = new SimpleDateFormat("yyyy-MM-dd HH");
+
     static {
         DF.setLenient(false);
         HF.setLenient(false);
     }
 
-    // duplicated from com.uvm.engine.ReportingManagerImpl
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     private final String xLabel;
     private final String yLabel;
     private final String yAxisLowerBound;
-    //unused// private final String majorFormatter;
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public StackedBarChart(String title, String xLabel, String yLabel,
-                           String majorFormatter, String yAxisLowerBound)
+    public StackedBarChart(String title, String xLabel, String yLabel, String majorFormatter, String yAxisLowerBound)
     {
         super(title);
 
         this.xLabel = xLabel;
         this.yLabel = yLabel;
         this.yAxisLowerBound = yAxisLowerBound;
-        //this.majorFormatter = majorFormatter;
     }
 
-    private int getInterval(String timeStr) {
+    private int getInterval(String timeStr)
+    {
     	try {
             HF.parse(timeStr);
             return 1;
     	} catch (java.text.ParseException exn) {
             try{
-    		DF.parse(timeStr);
+                DF.parse(timeStr);
                 return 8;
             } catch (java.text.ParseException exn2) {
                 logger.warn("Couldn't get time interval for row key: " + timeStr, exn2);
@@ -111,15 +79,16 @@ public class StackedBarChart extends Plot
     	return 1;
     }
 
-    private void formatDateAxis(DateAxis da, File csvPath) {
+    private void formatDateAxis(DateAxis da, File csvPath)
+    {
         logger.debug("About to format date axis for: " + csvPath);
         File dir = csvPath.getParentFile().getParentFile();
 
         String maxString = dir.getParentFile().getName();
-	Date max = null;
-	try { // 1st, assume this is a generic report
-	    max = DATE_FORMAT.parse(maxString);
-	} catch (java.text.ParseException exn) {
+        Date max = null;
+        try { // 1st, assume this is a generic report
+            max = DATE_FORMAT.parse(maxString);
+        } catch (java.text.ParseException exn) {
             try { // try to see if it's a per-{user,host,email} report
                 dir = dir.getParentFile().getParentFile();
                 maxString = dir.getParentFile().getName();
@@ -128,7 +97,7 @@ public class StackedBarChart extends Plot
                 logger.warn("Couldn't parse time for: " + maxString, e);
                 return;
             }
-	}
+        }
 
         String length = dir.getName();
         String[] split = length.split("-");
@@ -139,42 +108,42 @@ public class StackedBarChart extends Plot
         c.add(Calendar.DATE, -numDays);
         Date min = c.getTime();
 
-	// range in seconds
-	long range = (max.getTime() - min.getTime()) / 1000;
+        // range in seconds
+        long range = (max.getTime() - min.getTime()) / 1000;
 
-	int trunc; // where to truncate the boundaries
-	String dateFormatStr; // the format for X-axis ticks
-	DateTickUnitType tickUnit = null;
+        int trunc; // where to truncate the boundaries
+        String dateFormatStr; // the format for X-axis ticks
+        DateTickUnitType tickUnit = null;
         int tickFrequency = -1;
-	logger.debug(min + " -> " + max + " (" + range + " seconds)");
-	if (range < 45 * 60) { // less than 45min
-	    trunc = Calendar.MINUTE;
-	    dateFormatStr = "mm:ss";
-	} else if (range < 18 * 60 * 60) { // less than 18h
-	    trunc = Calendar.HOUR;
-	    dateFormatStr = "HH:mm";
-	} else if (range <= 24 * 60 * 60) { // less than 24h
-	    trunc = Calendar.DATE;
-	    dateFormatStr = "HH:mm";
+        logger.debug(min + " -> " + max + " (" + range + " seconds)");
+        if (range < 45 * 60) { // less than 45min
+            trunc = Calendar.MINUTE;
+            dateFormatStr = "mm:ss";
+        } else if (range < 18 * 60 * 60) { // less than 18h
+            trunc = Calendar.HOUR;
+            dateFormatStr = "HH:mm";
+        } else if (range <= 24 * 60 * 60) { // less than 24h
+            trunc = Calendar.DATE;
+            dateFormatStr = "HH:mm";
             tickUnit = DateTickUnitType.HOUR;
             tickFrequency = 4;
         } else if (range <= 7 * 24 * 60 * 60 ) { // less than 7 days
-	    trunc = Calendar.DATE;
-	    dateFormatStr = "MMM-d";
+            trunc = Calendar.DATE;
+            dateFormatStr = "MMM-d";
             tickUnit = DateTickUnitType.DAY;
             tickFrequency = 2;
-	} else {
-	    trunc = Calendar.DATE;
-	    dateFormatStr = "MMM-d";
+        } else {
+            trunc = Calendar.DATE;
+            dateFormatStr = "MMM-d";
             tickUnit = DateTickUnitType.DAY;
             tickFrequency = 7;
         }
 
-	min = DateTruncator.truncateDate(min, trunc, true);
-	max = DateTruncator.truncateDate(max, trunc, true);
-	logger.debug("... adapted to: " + min + " -> " + max + " (tickUnit=" + tickUnit + ", tickFrequency=" + tickFrequency + ")");
- 	da.setMinimumDate(min);
- 	da.setMaximumDate(max);
+        min = DateTruncator.truncateDate(min, trunc, true);
+        max = DateTruncator.truncateDate(max, trunc, true);
+        logger.debug("... adapted to: " + min + " -> " + max + " (tickUnit=" + tickUnit + ", tickFrequency=" + tickFrequency + ")");
+        da.setMinimumDate(min);
+        da.setMaximumDate(max);
 
         da.setDateFormatOverride(new SimpleDateFormat(dateFormatStr));
         if (tickUnit != null)
@@ -188,7 +157,7 @@ public class StackedBarChart extends Plot
             date = HF.parse(timeStr);
     	} catch (java.text.ParseException exn) {
             try{
-    		date = DF.parse(timeStr);
+                date = DF.parse(timeStr);
             } catch (java.text.ParseException exn2) {
                 logger.warn("Couldn't parse time for row key: " + timeStr, exn2);
             }
@@ -260,15 +229,15 @@ public class StackedBarChart extends Plot
             renderer.setBaseItemLabelsVisible(false);
         }
 
-        XYPlot plot = new XYPlot(dataset,
-                                 new DateAxis(this.xLabel),
-                                 new NumberAxis(this.yLabel),
-                                 renderer);
+        XYPlot plot = new XYPlot(dataset, new DateAxis(this.xLabel), new NumberAxis(this.yLabel), renderer);
 
         JFreeChart jfChart = new JFreeChart(plot);      
 
         jfChart.setTitle(new TextTitle(title, TITLE_FONT));
-
+        jfChart.setBackgroundPaint(CHART_BACKGROUND_COLOR);
+        jfChart.setBorderPaint(CHART_BORDER_COLOR);
+        jfChart.setBorderVisible(true);
+        
         for (int i = 0; i < seriesColors.size(); i++) {
             renderer.setSeriesPaint(i, seriesColors.get(i));
         }
@@ -283,10 +252,18 @@ public class StackedBarChart extends Plot
         DateAxis da = (DateAxis)plot.getDomainAxis();
         da.setLabelFont(AXIS_FONT);
 
-	formatDateAxis(da, f);
+        formatDateAxis(da, f);
+        plot.setOutlinePaint(Color.gray);
+        plot.setOutlineVisible(true);
+        plot.setBackgroundPaint(java.awt.Color.white);
+        plot.setDomainGridlinePaint(CHART_BACKGROUND_COLOR);
+        plot.setDomainGridlineStroke(new java.awt.BasicStroke());
+        plot.setRangeGridlinePaint(CHART_BACKGROUND_COLOR);
+        plot.setRangeGridlineStroke(new java.awt.BasicStroke());
+        plot.setDomainGridlinesVisible(true);
+        plot.setRangeGridlinesVisible(true);
+        plot.setAxisOffset (new org.jfree.ui.RectangleInsets (0, 0, 0, 0));
 
-        ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl),
-                                      jfChart, CHART_WIDTH, CHART_HEIGHT,
-                                      null, false, CHART_COMPRESSION_PNG);
+        ChartUtilities.saveChartAsPNG(new File(reportBase + "/" + imageUrl), jfChart, CHART_WIDTH, CHART_HEIGHT, null, false, CHART_COMPRESSION_PNG);
     }
 }

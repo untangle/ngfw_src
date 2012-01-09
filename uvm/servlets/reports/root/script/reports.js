@@ -1140,7 +1140,7 @@ Ung.ReportDetails = Ext.extend(Object, {
         if (summaryItem.stringTemplate) {
             str = this.getHighlightHTML(summaryItem,false);
             columns = [];
-            items.push({html:str,colspan:2});
+            items.push({html:str,colspan:2,bodyStyle:'padding:10px'});
         } else {
         
             // graph
@@ -1228,7 +1228,7 @@ Ung.ReportDetails = Ext.extend(Object, {
                 }.createDelegate(this)
             });
             items.push(new Ext.grid.GridPanel({
-                style : 'margin-top:25px;',
+                style : 'margin-top:20px;',
                 autoScroll : true,
                 width: 330,
                 height: 243,
@@ -1250,7 +1250,9 @@ Ung.ReportDetails = Ext.extend(Object, {
                     width: 150
                 }, {
                     tooltip:this.i18n._('Export Excel'),
+                    style : 'padding: 0px 0px 0px 100px;',
                     iconCls:'export-excel',
+                    text : i18n._('Export Data'),
                     handler : new Function("window.open('" + summaryItem.csvUrl + "');")
                 }
                       //  '-',

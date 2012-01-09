@@ -388,7 +388,7 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC
 
             for r in curs.fetchall():
                 cat = r[0]
-                if not cat or cat == '':
+                if not cat or cat == '' or cat is None:
                     cat = _('Uncategorized')
                 ks = KeyStatistic(cat, r[1], _('Hits'))
                 lks.append(ks)
@@ -450,7 +450,10 @@ GROUP BY wf_%s_category ORDER BY blocks_sum DESC""" \
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('Hits'))
+                name = r[0]
+                if name is None:
+                    name = "None"
+                ks = KeyStatistic(name, r[1], _('Hits'))
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -797,7 +800,8 @@ WHERE trunc_time >= %s AND trunc_time < %s"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], _('Hits'), link_type=reports.URL_LINK)
+                name = r[0] if r[0] is not None else "none"
+                ks = KeyStatistic(name, r[1], _('Hits'), link_type=reports.URL_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
         finally:
@@ -854,7 +858,8 @@ GROUP BY host ORDER BY size_sum DESC"""
                 curs.execute(query, (one_week, ed))
 
             for r in curs.fetchall():
-                ks = KeyStatistic(r[0], r[1], N_('MB'), link_type=reports.URL_LINK)
+                name = r[0] if r[0] is not None else "none"
+                ks = KeyStatistic(name, r[1], N_('MB'), link_type=reports.URL_LINK)
                 lks.append(ks)
                 dataset[r[0]] = r[1]
 
