@@ -440,7 +440,7 @@ if not no_cleanup and not simulate:
 #          shutil.rmtree(reports_output_base)
 
 total_end_time = time.time()
-logger.debug('%s took %0.3f sec' % (sys.argv[0], (total_end_time-total_start_time)))
+logger.debug('%s took %0.1f sec' % (sys.argv[0], (total_end_time-total_start_time)))
 
 if os.path.isfile(LOCKFILE):
   logger.info("Removing pidfile (pid: %s)" % os.getpid())

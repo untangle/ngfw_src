@@ -47,10 +47,6 @@ class Connection(psycopg2.extensions.connection):
 
 def print_timing(func):
     def wrapper(*arg):
-        t1 = time.time()
-        res = func(*arg)
-        t2 = time.time()
-
         filename = 'unknown'
         line_number = '?'
 
@@ -62,8 +58,13 @@ def print_timing(func):
 
         fun_name = "%s (%s:%s)" % (func.func_name, filename, line_number)
 
+        #logger.debug('%s running...' % (fun_name))
 
-        logger.debug('%s took %0.3f ms' % (fun_name, (t2-t1)*1000.0))
+        t1 = time.time()
+        res = func(*arg)
+        t2 = time.time()
+
+        logger.debug('%s took %0.1f ms' % (fun_name, (t2-t1)*1000))
         return res
 
     return wrapper
