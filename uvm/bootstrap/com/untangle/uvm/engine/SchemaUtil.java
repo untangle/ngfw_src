@@ -41,7 +41,7 @@ public class SchemaUtil
         initDaemonAndSocket();
     }
 
-    public void close()
+    public synchronized void close()
     {
         try { in.close(); } catch (Exception ex) { }
         try { out.close(); } catch (Exception ex) { }
@@ -61,7 +61,7 @@ public class SchemaUtil
      * @param type the schema to initialize (typically "events" or "settings")
      * @param component name of the component to initialize.
      */
-    public void initSchema(String type, String component)
+    public synchronized void initSchema(String type, String component)
     {
         if (in == null | out == null || sock == null || proc == null) {
             initDaemonAndSocket();
