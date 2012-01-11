@@ -7,7 +7,7 @@ echo "  Customizing HW-related settings for untangle-vm"
 ARCH=`uname -m`
 MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
 if [ $MEM -gt 4900000 ] ; then
-    MAX_HEAP_SIZE=`echo $MEM | awk '{printf int($1 * .7 / 1000) "m"}'`
+    MAX_HEAP_SIZE=`echo $MEM | awk '{printf int($1 * .6 / 1000) "m"}'`
     MAX_VIRTUAL_SIZE=`echo $MEM | awk '{printf int($1 * 1.5  / 1000) "m"}'`
     GC_SAFETY_FACTOR=10
     GC_MIN_CYCLE=0
