@@ -110,6 +110,12 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-webcache)
             d=$hades/src/webcache
             ;;
+        untangle-node-ipsec)
+            d=$hades/src/ipsec
+            ;;
+        untangle-node-classd)
+            d=$hades/src/classd
+            ;;
         untangle-node-webfilter)
             d=$work/src/webfilter
             ;;
