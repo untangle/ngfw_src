@@ -217,10 +217,8 @@ class DailyRules(reports.Graph):
                                  major_formatter=formatter,
                                  required_points=rp)
 
-            plot.add_dataset(dates, blocks, label=_('Blocked'),
-                             color=colors.badness)
-            plot.add_dataset(dates, logs, label=_('Logged'),
-                             color=colors.detected)
+            plot.add_dataset(dates, blocks, label=_('Blocked'), color=colors.badness)
+            plot.add_dataset(dates, logs, label=_('Logged'), color=colors.detected)
 
         finally:
             conn.commit()
