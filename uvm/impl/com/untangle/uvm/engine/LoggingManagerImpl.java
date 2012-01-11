@@ -142,20 +142,20 @@ class LoggingManagerImpl implements LoggingManager
             initQueue.add(name);
         }
 
-        // XXX not using newThread, called from UvmContextImpl constructor
-        new Thread(new Runnable()
-            {
+        new Thread(new Runnable() {
                 public void run()
                 {
-                    UvmContextImpl mctx = UvmContextImpl.getInstance();
-                    mctx.waitForStartup();
+                    UvmContextImpl uvmContext = UvmContextImpl.getInstance();
+                    uvmContext.waitForStartup();
 
                     synchronized (initQueue) {
                         for (Iterator<String> i = initQueue.iterator(); i.hasNext(); ) {
                             String n = i.next();
                             i.remove();
-                            mctx.schemaUtil().initSchema("events", n);
+                            logger.info("Initializeing events schema: \"" + n + "\"");
+                            uvmContext.schemaUtil().initSchema("events", n);
                         }
+                        uvmContext.schemaUtil().close();
 
                         conversionComplete = true;
                         initQueue.notifyAll();

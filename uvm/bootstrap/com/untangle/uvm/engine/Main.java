@@ -32,9 +32,6 @@ import com.untangle.uvm.logging.UvmRepositorySelector;
  * <li>uvm.tmp.dir - temporary files.</li>
  * <li>uvm.skins.dir - skins files.</li>
  * <li>uvm.lang.dir - languages resources files.</li>
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class Main
 {
@@ -54,8 +51,11 @@ public class Main
     private Main()
     {
         schemaUtil.initSchema("settings", "uvm");
-        LogManager.setRepositorySelector(UvmRepositorySelector.selector(),
-                                         new Object());
+
+        // don't close here as we'll use it later to initialize events schema
+        //schemaUtil.close();
+
+        LogManager.setRepositorySelector(UvmRepositorySelector.selector(), new Object());
     }
 
     // public static methods ---------------------------------------------------

@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
@@ -19,9 +22,6 @@ import org.apache.log4j.Logger;
  * to initialize or update database schemas. In the future we may use
  * Ruby scripts to drive the schema upgrade process, but it will
  * retains backwards compatibility with the SQL scripts.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class SchemaUtil
 {
@@ -31,75 +31,42 @@ public class SchemaUtil
 
     private final Set<String> converts = new HashSet<String>();
 
-    private Process proc;
-    private Socket sock;
-    private PrintWriter out;
-    private BufferedReader in;
+    private Process proc = null;
+    private Socket sock = null;
+    private PrintWriter out = null;
+    private BufferedReader in = null;
 
-    // constructors -----------------------------------------------------------
-
-    /**
-     * Package protected.
-     */
-    SchemaUtil() { 
+    protected SchemaUtil()
+    { 
         initDaemonAndSocket();
     }
 
-    protected void finalize() {
-        try {
-            in.close();
-            out.close();
-            sock.close();
-            proc.destroy();
-        } catch (Exception ex) { //fine
-        }
+    public void close()
+    {
+        try { in.close(); } catch (Exception ex) { }
+        try { out.close(); } catch (Exception ex) { }
+        try { sock.close(); } catch (Exception ex) { }
+        try { proc.destroy(); } catch (Exception ex) { }
+        in = null;
+        out = null;
+        sock = null;
+        proc = null;
     }
-
-    // private methods --------------------------------------------------------
-
-    private void initDaemonAndSocket() {
-        finalize();
-
-        String bd = System.getProperty("uvm.home") + "/bin/";
-        String us = bd + "ut-update-schema";
-        ProcessBuilder pb = new ProcessBuilder(us);
-
-        try {
-            logger.info("About to start daemon " + us);
-            Process proc = pb.start();
-        } catch (IOException e) {
-            logger.error("Couldn't start ut-update-schema", e);
-        }
-
-        try {
-            Thread.sleep(1000);
-        } catch (Exception javaYouReReallyPissingMeOff) {
-        }
-
-        try {
-            sock = new Socket("localhost", PORT);
-            out = new PrintWriter(sock.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-        } catch (UnknownHostException ex) {
-            // localhost, ffs
-        } catch (IOException ex) {
-            logger.error("No I/O for ut-update-schema...", ex);
-        }
-    }
-
-    // public methods ---------------------------------------------------------
 
     /**
      * Initialize component schema.
      *
      * XXX we need timeout and barf behavior
      *
-     * @param type the schema to initialize, either "events" or
-     * "schema".
+     * @param type the schema to initialize (typically "events" or "settings")
      * @param component name of the component to initialize.
      */
     public void initSchema(String type, String component)
     {
+        if (in == null | out == null || sock == null || proc == null) {
+            initDaemonAndSocket();
+        }
+
         String key = type + "," + component;
         String output = "";
 
@@ -136,4 +103,33 @@ public class SchemaUtil
             }
         }
     }
+
+    private void initDaemonAndSocket()
+    {
+        close();
+
+        String bd = System.getProperty("uvm.home") + "/bin/";
+        String us = bd + "ut-update-schema";
+        ProcessBuilder pb = new ProcessBuilder(us);
+
+        try {
+            logger.info("About to start daemon " + us);
+            Process proc = pb.start();
+        } catch (IOException e) {
+            logger.error("Couldn't start ut-update-schema", e);
+        }
+
+        try { Thread.sleep(1000); } catch (Exception e) { }
+
+        try {
+            sock = new Socket("localhost", PORT);
+            out = new PrintWriter(sock.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+        } catch (UnknownHostException ex) {
+            // localhost, ffs
+        } catch (IOException ex) {
+            logger.error("No I/O for ut-update-schema...", ex);
+        }
+    }
+    
 }
