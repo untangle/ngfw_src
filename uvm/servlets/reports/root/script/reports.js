@@ -296,7 +296,6 @@ Ung.Reports = Ext.extend(Object,{
                     region : 'center'
                 },{
                     region : 'east',
-
                     width : 500,
                     height: 60,
                     style : 'height:60px;',
@@ -351,7 +350,7 @@ Ung.Reports = Ext.extend(Object,{
                     title : i18n._('Reports'),
                     enableDD: false,
                     enableDrag: false,
-                    width: "179",
+                    width: 179,
                     root : new Ext.tree.AsyncTreeNode({
                         draggable : false,
                         //id : 'source',
