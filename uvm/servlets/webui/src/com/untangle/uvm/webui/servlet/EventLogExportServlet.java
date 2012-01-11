@@ -72,6 +72,7 @@ public class EventLogExportServlet extends HttpServlet
         
         // Write content type and also length (determined via byte array).
         resp.setCharacterEncoding(CHARACTER_ENCODING);
+        resp.setHeader("Content-Type","text/csv");
         resp.setHeader("Content-Disposition","attachment; filename="+name+".csv");
 
         try {
