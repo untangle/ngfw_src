@@ -36,6 +36,7 @@ class LoggingManagerImpl implements LoggingManager
     private LoggingSettings loggingSettings;
 
     private LogWorker logWorker = null;
+    private long lastLoggedWarningTime = System.currentTimeMillis();
     
     private volatile boolean conversionComplete = true;
 
@@ -149,16 +150,18 @@ class LoggingManagerImpl implements LoggingManager
                     uvmContext.waitForStartup();
 
                     synchronized (initQueue) {
-                        for (Iterator<String> i = initQueue.iterator(); i.hasNext(); ) {
-                            String n = i.next();
-                            i.remove();
-                            logger.info("Initializeing events schema: \"" + n + "\"");
-                            uvmContext.schemaUtil().initSchema("events", n);
-                        }
-                        uvmContext.schemaUtil().close();
+                        if (initQueue.size() > 0) {
+                            for (Iterator<String> i = initQueue.iterator(); i.hasNext(); ) {
+                                String n = i.next();
+                                i.remove();
+                                logger.info("Initializeing events schema: \"" + n + "\"");
+                                uvmContext.schemaUtil().initSchema("events", n);
+                            }
+                            uvmContext.schemaUtil().close();
 
+                            initQueue.notifyAll();
+                        }
                         conversionComplete = true;
-                        initQueue.notifyAll();
                     }
                 }
             }).start();
@@ -171,12 +174,19 @@ class LoggingManagerImpl implements LoggingManager
                 try {
                     LogWorkerFacility reports = (LogWorkerFacility) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
                     if (reports == null) {
-                        logger.warn("Reporting node not found, discarding event");
+                        if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
+                            logger.warn("Reporting node not found, discarding event");
+                            this.lastLoggedWarningTime = System.currentTimeMillis();
+                        }
                         return;
                     }
+
                     this.logWorker = reports.getLogWorker();
                     if (this.logWorker == null) {
-                        logger.warn("LogWorker node not found, discarding event");
+                        if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
+                            logger.warn("LogWorker node not found, discarding event");
+                            this.lastLoggedWarningTime = System.currentTimeMillis();
+                        }
                         return;
                     }
                 } catch (Exception e) {
