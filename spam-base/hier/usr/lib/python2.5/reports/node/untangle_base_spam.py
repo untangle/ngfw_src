@@ -154,9 +154,8 @@ CREATE TABLE reports.n_spam_smtp_tarpit_events (
             sql_helper.run_sql("""\
 INSERT INTO reports.n_spam_smtp_tarpit_events
       (time_stamp, ipaddr, hostname, vendor_name, policy_id)
-SELECT evts.time_stamp, ipaddr, hostname, vendor_name, sess.policy_id
-FROM events.n_spam_smtp_tarpit_evt AS evts, reports.sessions AS sess
-WHERE sess.session_id = evts.pl_endp_id""", 
+SELECT evts.time_stamp, ipaddr, hostname, vendor_name, policy_id
+FROM events.n_spam_smtp_tarpit_evt as evts join reports.sessions using (session_id)""", 
                                (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
