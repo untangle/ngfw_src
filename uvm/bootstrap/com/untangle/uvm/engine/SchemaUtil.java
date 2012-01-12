@@ -86,6 +86,8 @@ public class SchemaUtil
             out.println(type + " " + component);
             output = in.readLine();
         } catch (IOException exn) { // retry...
+            logger.warn("Exception during ut-update-schema, retrying...", exn);
+            
             initDaemonAndSocket();
 
             try {
@@ -114,7 +116,7 @@ public class SchemaUtil
 
         try {
             logger.info("About to start daemon " + us);
-            Process proc = pb.start();
+            proc = pb.start();
         } catch (IOException e) {
             logger.error("Couldn't start ut-update-schema", e);
         }
