@@ -36,6 +36,7 @@ public class LogWorkerImpl implements Runnable, LogWorker
     private static int RUNTIME_SYNC_TIME;
     private static boolean forceFlush = false;
     private static boolean running = false;
+    private long lastLoggedWarningTime = System.currentTimeMillis();
     
     static { // initialize RUNTIME_SYNC_TIME
         String p = System.getProperty("uvm.logging.synctime");
@@ -156,7 +157,11 @@ public class LogWorkerImpl implements Runnable, LogWorker
     public void logEvent(LogEvent evt)
     {
         if (!running) {
-            logger.warn("Reports not running, discarding event");
+            if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
+                logger.warn("Reporting node not found, discarding event");
+                this.lastLoggedWarningTime = System.currentTimeMillis();
+            }
+            return;
         }
         
         String tag = "uvm[0]: ";
