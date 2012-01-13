@@ -1309,6 +1309,43 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
     }
 });
 
+Ung.SetupWizard.Complete = Ext.extend( Object, {
+    constructor : function( config )
+    {
+        var panel = new Ext.FormPanel({
+            items : [{
+                xtype : 'label',
+                html : '<h2 class="wizard-title">'+i18n._( "Congratulations!" )+'</h2>'
+            },{
+                xtype : 'label',
+                html : String.format(i18n._( '<b>The {0} Server is now configured.</b><br/><br/>You are now ready to download and configure applications.' ),oemName),
+                cls : 'noborder'
+            }]
+        });
+
+        this.card = {
+            title : i18n._( "Finished" ),
+            cardTitle : i18n._( "Congratulations!" ),
+            panel : panel,
+            onNext : this.openUserInterface.createDelegate( this )
+        };
+    },
+
+    openUserInterface : function( handler )
+    {
+        Ext.MessageBox.wait( i18n._( "Loading User Interface..." ), i18n._( "Please Wait" ));
+
+        //now that we are done, create the UID
+        rpc.jsonrpc.RemoteUvmContext.createUID();
+
+        //and set a flag so the wizard wont run again
+        rpc.jsonrpc.RemoteUvmContext.wizardComplete();
+
+        //now open the UI
+        window.location.href="/webui/startPage.do?firstTimeRun=true";
+    }
+});
+
 Ung.SetupWizard.TimeZoneStore = [];
 
 Ung.Setup = {
