@@ -178,17 +178,8 @@ public class TimeSeriesChart extends Plot
 	public void generate(String reportBase, String csvUrl, String imageUrl)
         throws IOException
     {
-        CSV csv = new CSV();
-
-        File f = new File(reportBase + "/" + csvUrl);
-        if (!f.exists()) {
-            logger.warn("file does not exist: " + f);
-            return;
-        }
-        FileInputStream fis = new FileInputStream(f);
-        Reader r = new InputStreamReader(fis);
-
-        CategoryDataset cd = csv.readCategoryDataset(r);
+        String path = reportBase + "/" + csvUrl;
+        CategoryDataset cd = Chart.readFromCsv(path);
 
         TimeSeriesCollection tsc = new TimeSeriesCollection();
 
@@ -250,7 +241,7 @@ public class TimeSeriesChart extends Plot
         DateAxis da = (DateAxis)plot.getDomainAxis();
         da.setLabelFont(AXIS_FONT);
 
-        formatDateAxis(da, f);
+        formatDateAxis(da, new File(path));
         plot.setOutlinePaint(Color.gray);
         plot.setOutlineVisible(true);
         plot.setBackgroundPaint(java.awt.Color.white);

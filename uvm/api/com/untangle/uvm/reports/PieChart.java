@@ -37,17 +37,7 @@ public class PieChart extends Plot
     public void generate(String reportBase, String csvUrl, String imageUrl)
         throws IOException
     {
-        CSV csv = new CSV();
-
-        File f = new File(reportBase + "/" + csvUrl);
-        if (!f.exists()) {
-            logger.warn("file does not exist: " + f);
-            return;
-        }
-        FileInputStream fis = new FileInputStream(f);
-        Reader r = new InputStreamReader(fis);
-
-        CategoryDataset cd = csv.readCategoryDataset(r);
+        CategoryDataset cd = Chart.readFromCsv(reportBase + "/" + csvUrl);
 
         DefaultPieDataset dpd = new DefaultPieDataset();
         int othersCount = 0;
