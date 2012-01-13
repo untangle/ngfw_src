@@ -1336,10 +1336,10 @@ Ung.SetupWizard.Complete = Ext.extend( Object, {
         Ext.MessageBox.wait( i18n._( "Loading User Interface..." ), i18n._( "Please Wait" ));
 
         //now that we are done, create the UID
-        rpc.jsonrpc.RemoteUvmContext.createUID();
+        rpc.jsonrpc.UvmContext.createUID();
 
         //and set a flag so the wizard wont run again
-        rpc.jsonrpc.RemoteUvmContext.wizardComplete();
+        rpc.jsonrpc.UvmContext.wizardComplete();
 
         //now open the UI
         window.location.href="/webui/startPage.do?firstTimeRun=true";
