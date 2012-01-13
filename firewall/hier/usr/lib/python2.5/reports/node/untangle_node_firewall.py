@@ -113,7 +113,7 @@ class FirewallHighlight(Highlight):
 SELECT COALESCE(SUM(new_sessions),0)::int AS sessions,
        COALESCE(sum(firewall_blocks), 0) AS blocks
 FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
 
         if host:
             query = query + " AND hname = %s"
@@ -241,7 +241,7 @@ class TopTenBlockedHostsByHits(Graph):
         query = """\
 SELECT hname, count(*) as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 AND firewall_blocks > 0
 AND firewall_rule_index IS NOT NULL"""
 
@@ -298,7 +298,7 @@ class TopTenBlockingRulesByHits(Graph):
 SELECT firewall_rule_index,
        count(*) as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 AND firewall_blocks > 0
 AND firewall_rule_index IS NOT NULL"""
 
@@ -355,7 +355,7 @@ class TopTenBlockedUsersByHits(Graph):
         query = """\
 SELECT uid, count(*) as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 AND uid != ''
 AND firewall_blocks > 0
 AND firewall_rule_index IS NOT NULL"""
@@ -434,7 +434,7 @@ class FirewallDetail(DetailSection):
 
         sql = sql + ("""firewall_rule_index, firewall_was_blocked::text, host(c_server_addr), c_server_port, host(c_client_addr), c_client_port
 FROM reports.sessions
-WHERE time_stamp >= %s AND time_stamp < %s
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND NOT firewall_rule_index IS NULL""" % (DateFromMx(start_date),
                                          DateFromMx(end_date)))
 

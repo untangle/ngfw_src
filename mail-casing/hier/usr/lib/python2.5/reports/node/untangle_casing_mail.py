@@ -229,7 +229,7 @@ CREATE TABLE reports.email (
 INSERT INTO reports.email (date, email)
     SELECT DISTINCT date_trunc('day', trunc_time)::date, addr
     FROM reports.n_mail_addr_totals
-    WHERE trunc_time >= %s
+    WHERE trunc_time >= %s::timestamp without time zone
     AND client_intf = 0 AND addr_kind = 'T'
     AND NOT addr ISNULL""", (sd,), connection=conn, auto_commit=False)
             conn.commit()

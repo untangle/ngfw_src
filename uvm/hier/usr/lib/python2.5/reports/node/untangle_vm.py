@@ -123,11 +123,11 @@ INSERT INTO reports.n_admin_logins
 
         sql_helper.run_sql("""\
 DELETE FROM events.n_router_evt_dhcp_abs 
-WHERE time_stamp < %s - interval '1 day'""", (cutoff,))
+WHERE time_stamp < %s::timestamp without time zone - interval '1 day'""", (cutoff,))
 
         sql_helper.run_sql("""\
 DELETE FROM events.n_router_evt_dhcp 
-WHERE time_stamp < %s - interval '1 day'""", (cutoff,))
+WHERE time_stamp < %s::timestamp without time zone - interval '1 day'""", (cutoff,))
 
         sql_helper.run_sql("""\
 DELETE FROM events.n_router_dhcp_abs_lease 
@@ -180,7 +180,7 @@ CREATE TABLE reports.users (
 INSERT INTO reports.users (date, username)
     SELECT DISTINCT date_trunc('day', trunc_time)::date AS day, uid
     FROM reports.session_totals
-    WHERE trunc_time >= %s
+    WHERE trunc_time >= %s::timestamp without time zone
     AND NOT uid ISNULL""", (sd,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
@@ -205,7 +205,7 @@ CREATE TABLE reports.hnames (
 INSERT INTO reports.hnames (date, hname)
     SELECT DISTINCT date_trunc('day', trunc_time)::date, hname
     FROM reports.session_totals
-    WHERE trunc_time >= %s
+    WHERE trunc_time >= %s::timestamp without time zone
     AND server_intf IN """ + get_wan_clause() + """
     AND client_intf NOT IN """ + get_wan_clause() + """
     AND NOT hname ISNULL""", (sd,),
@@ -395,7 +395,7 @@ SELECT (date_trunc('minute', time_stamp)
         / 60)::int) || ' minutes')::interval) AS time, uid, hname,
         client_intf, server_intf, count(*)
 FROM reports.sessions
-WHERE time_stamp >= %s
+WHERE time_stamp >= %s::timestamp without time zone
 GROUP BY time, uid, hname, client_intf, server_intf
 """, (sd,), connection=conn, auto_commit=False)
 
@@ -661,10 +661,10 @@ class VmHighlight(Highlight):
         query = """
 SELECT (SELECT round((COALESCE(sum(s2c_bytes + c2s_bytes), 0) / 1000000000)::numeric, 2)
         FROM reports.session_totals
-        WHERE trunc_time >= %s AND trunc_time < %s) AS traffic,
+        WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone) AS traffic,
        (SELECT COALESCE(sum(num_sessions), 0)::int
         FROM reports.session_counts
-        WHERE trunc_time >= %s AND trunc_time < %s) AS sessions"""
+        WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone) AS sessions"""
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
@@ -826,7 +826,7 @@ class DestinationPorts(Graph):
         query = """\
 SELECT c_server_port, sum(new_sessions)::int as sessions
 FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
 
         if host:
             query += " AND hname = %s"
@@ -928,7 +928,7 @@ class AdministrativeLoginsDetail(DetailSection):
         sql = """\
 SELECT time_stamp, host(client_addr), succeeded::text
 FROM reports.n_admin_logins
-WHERE time_stamp >= %s AND time_stamp < %s AND not local
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone AND not local
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 
         return sql + " ORDER BY time_stamp DESC"

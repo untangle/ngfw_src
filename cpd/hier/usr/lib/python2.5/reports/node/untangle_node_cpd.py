@@ -201,7 +201,7 @@ class CpdHighlight(Highlight):
         query = """\
 SELECT COALESCE(sum(logins), 0) as logins
 FROM reports.n_cpd_login_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
         
         conn = sql_helper.get_connection()
         curs = conn.cursor()
@@ -244,7 +244,7 @@ SELECT COALESCE(SUM(dt.logins_pd)/%s,0), COALESCE(MAX(dt.logins_pd),0),
                   SUM(failures) AS failures_pd,
                   DATE_TRUNC('day',trunc_time) AS day
            FROM reports.n_cpd_login_totals
-           WHERE trunc_time >= %s AND trunc_time < %s
+           WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
            GROUP BY day
        ) AS dt
 """
@@ -355,7 +355,7 @@ SELECT login_name,count(*)::int as logins
 FROM reports.n_cpd_login_events
 WHERE NOT login_name IS NULL
 AND event != 'FAILED'
-AND time_stamp >= %s AND time_stamp < %s
+AND time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 GROUP BY login_name"""
 
         conn = sql_helper.get_connection()
@@ -400,7 +400,7 @@ class TopBlockedClients(Graph):
         query = """
 SELECT client_address,sum(blocks)::int as blocks
 FROM reports.n_cpd_block_totals
-WHERE NOT client_address IS NULL AND trunc_time >= %s AND trunc_time < %s
+WHERE NOT client_address IS NULL AND trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 GROUP BY client_address"""
 
         conn = sql_helper.get_connection()
@@ -453,7 +453,7 @@ SELECT time_stamp, login_name,
 CASE WHEN event = 'LOGIN' THEN '%s'
      WHEN event = 'FAILED' THEN '%s' END
 FROM reports.n_cpd_login_events
-WHERE time_stamp >= %s AND time_stamp < %s
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 ORDER BY time_stamp DESC
 """ % (LOGIN, FAILED,
        DateFromMx(start_date),
@@ -485,7 +485,7 @@ class BlockDetail(DetailSection):
 SELECT time_stamp, host(client_address), client_port,
        host(server_address), server_port
 FROM reports.n_cpd_block_events
-WHERE time_stamp >= %s AND time_stamp < %s
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 ORDER BY time_stamp DESC
 """ % (DateFromMx(start_date),
        DateFromMx(end_date))

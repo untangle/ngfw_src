@@ -486,7 +486,7 @@ class TopTenWebBrowsingHostsByHits(Graph):
         query = """\
 SELECT hname, sum(hits)::int as hits_sum
 FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 GROUP BY hname ORDER BY hits_sum DESC"""
 
         conn = sql_helper.get_connection()
@@ -534,7 +534,7 @@ class TopTenWebBrowsingUsersByHits(Graph):
         query = """\
 SELECT uid, sum(hits)::int as hits_sum
 FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s AND NOT uid IS NULL AND uid != ''
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone AND NOT uid IS NULL AND uid != ''
 GROUP BY uid ORDER BY hits_sum DESC"""
 
         conn = sql_helper.get_connection()
@@ -582,7 +582,7 @@ class TopTenWebBrowsingUsersBySize(Graph):
         query = """\
 SELECT uid, COALESCE(sum(s2c_content_length)/1000000, 0)::bigint as size_sum
 FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s AND NOT uid IS NULL AND uid != ''
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone AND NOT uid IS NULL AND uid != ''
 GROUP BY uid ORDER BY size_sum DESC"""
 
         conn = sql_helper.get_connection()
@@ -730,7 +730,7 @@ class TopTenWebBrowsingHostsBySize(Graph):
         query = """\
 SELECT hname, COALESCE(sum(s2c_content_length)/1000000, 0)::bigint as size_sum
 FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
         query += " GROUP BY hname ORDER BY size_sum DESC"
 
         conn = sql_helper.get_connection()
@@ -778,7 +778,7 @@ class TopTenWebsitesByHits(Graph):
         query = """\
 SELECT host, sum(hits)::int as hits_sum
 FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
         if host:
             query += " AND hname = %s"
         elif user:
@@ -835,7 +835,7 @@ class TopTenWebsitesBySize(Graph):
         query = """\
 SELECT host, coalesce(sum(s2c_content_length)/1000000, 0)::bigint as size_sum
 FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
         if host:
             query += " AND hname = %s"
         elif user:
@@ -1035,7 +1035,7 @@ SELECT time_stamp, hname, uid, wf_%s_category,
        CASE s_server_port WHEN 443 THEN 'https://' ELSE 'http://' END || host || uri,
        host(s_server_addr), c_client_addr::text
 FROM reports.n_http_events
-WHERE time_stamp >= %s AND time_stamp < %s
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND (wf_%s_flagged OR wf_%s_blocked)
 """ % (self.__vendor_name, self.__vendor_name, self.__vendor_name,
        DateFromMx(start_date), DateFromMx(end_date),
@@ -1085,7 +1085,7 @@ SELECT time_stamp, hname, uid,
        CASE s_server_port WHEN 443 THEN 'https://' ELSE 'http://' END || host || uri,
        host(s_server_addr), c_client_addr::text
 FROM reports.n_http_events
-WHERE time_stamp >= %s AND time_stamp < %s
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND wf_%s_category = 'unblocked'
 """ % (DateFromMx(start_date), DateFromMx(end_date),
        self.__vendor_name)
@@ -1138,7 +1138,7 @@ SELECT time_stamp, hname, uid, wf_%s_category,
        CASE s_server_port WHEN 443 THEN 'https://' ELSE 'http://' END || host || uri,
        host(s_server_addr), c_client_addr::text
 FROM reports.n_http_events
-WHERE time_stamp >= %s AND time_stamp < %s""" % (self.__vendor_name,
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone""" % (self.__vendor_name,
                                                  self.__vendor_name,
                                                  self.__vendor_name,
                                                  DateFromMx(start_date),
@@ -1176,7 +1176,7 @@ SELECT regexp_replace(host, E'.*?([^.]+\.[^.]+)(:[0-9]+)?$', E'\\\\1') AS domain
        count(*) AS count, round(COALESCE(sum(s2c_content_length) / 10^6, 0)::numeric, 2)::float
 FROM reports.n_http_events
 WHERE regexp_replace(host, E'[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(:[0-9]+)?', '') != ''
-AND time_stamp >= %s AND time_stamp < %s
+AND time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 """  % (DateFromMx(start_date),
         DateFromMx(end_date))
 

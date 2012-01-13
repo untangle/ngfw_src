@@ -141,7 +141,7 @@ class OpenvpnHighlight(Highlight):
 SELECT (COALESCE(sum(rx_bytes + tx_bytes), 0) / 1000000)::int AS traffic,
        count(*) AS logins
 FROM reports.n_openvpn_connect_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
 
         conn = sql_helper.get_connection()
         curs = conn.cursor()
@@ -240,7 +240,7 @@ class TopUsers(Graph):
         query = """\
 SELECT client_name, (sum(rx_bytes + tx_bytes)/1000000)::int AS throughput
 FROM reports.n_openvpn_connect_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 GROUP BY client_name
 ORDER BY throughput desc"""
 
@@ -292,7 +292,7 @@ class OpenVpnDetail(DetailSection):
 
         sql = sql + ("""
 FROM reports.n_openvpn_connect_totals
-WHERE trunc_time >= %s AND trunc_time < %s""" % (DateFromMx(start_date),
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone""" % (DateFromMx(start_date),
                                                  DateFromMx(end_date)))
 
         return sql + " ORDER BY trunc_time DESC"

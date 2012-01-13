@@ -222,7 +222,7 @@ class BlockedHosts(Graph):
         query = """\
 SELECT client_addr, sum(dropped + rejected) AS blocked
 FROM reports.n_shield_rejection_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 AND ((dropped > 0) OR (rejected > 0))
 GROUP BY client_addr
 ORDER BY blocked desc"""
@@ -270,7 +270,7 @@ class LimitedHosts(Graph):
         query = """\
 SELECT client_addr, sum(limited) AS limited
 FROM reports.n_shield_rejection_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 AND limited > 0
 GROUP BY client_addr
 ORDER BY limited desc"""
@@ -326,7 +326,7 @@ class ShieldDetail(DetailSection):
 
         sql = sql + ("""host(client_addr), limited, dropped, rejected
 FROM reports.n_shield_rejection_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
       AND (limited + dropped + rejected) > 0""" % (DateFromMx(start_date),
                                                    DateFromMx(end_date)))
 

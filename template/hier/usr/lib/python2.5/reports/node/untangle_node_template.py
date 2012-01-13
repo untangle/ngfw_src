@@ -83,7 +83,7 @@ class TemplateHighlight(Highlight):
         query = """\
 SELECT COALESCE(sum(logins), 0) as logins
 FROM reports.n_template_login_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
         
         conn = sql_helper.get_connection()
         curs = conn.cursor()

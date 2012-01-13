@@ -157,7 +157,7 @@ class SpywareHighlight(Highlight):
 SELECT COALESCE(sum(hits), 0)::int AS hits,
        COALESCE(sum(sw_blacklisted+sw_cookies), 0) AS blocks
 FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
 
         if host:
             query = query + " AND hname = %s"
@@ -402,7 +402,7 @@ class TopTenBlockedSpywareSitesByHits(Graph):
         query = """\
 SELECT host, sum(sw_blacklisted + sw_cookies) as hits_sum
 FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 AND (sw_blacklisted + sw_cookies) > 0"""
 
         if host:
@@ -458,7 +458,7 @@ class TopTenBlockedHostsByHits(Graph):
         query = """\
 SELECT hname, sum(sw_blacklisted + sw_cookies) as hits_sum
 FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 AND (sw_blacklisted + sw_cookies) > 0"""
 
         if host:
@@ -515,7 +515,7 @@ class TopTenBlockedCookies(Graph):
         query = """\
 SELECT sw_cookie_ident, count(*) as hits_sum
 FROM reports.n_http_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 AND sw_cookie_ident != ''
 AND sw_cookies > 0"""
 
@@ -649,7 +649,7 @@ class TopTenSuspiciousTrafficSubnetsByHits(Graph):
         query = """\
 SELECT sw_access_ident, sum(sw_accesses) as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 AND sw_access_ident != ''
 AND sw_accesses > 0"""
 
@@ -708,7 +708,7 @@ class TopTenSuspiciousTrafficHostsByHits(Graph):
         query = """\
 SELECT hname, sum(sw_accesses) as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 AND sw_access_ident != ''
 AND sw_accesses > 0"""
 
@@ -862,7 +862,7 @@ class CookieDetail(DetailSection):
         sql = """\
 SELECT time_stamp, hname, uid, sw_cookie_ident, host(s_server_addr), s_server_port
 FROM reports.n_http_events
-WHERE time_stamp >= %s AND time_stamp < %s
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
       AND NOT sw_cookie_ident IS NULL AND sw_cookie_ident != ''
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 
@@ -908,7 +908,7 @@ class UrlBlockDetail(DetailSection):
 SELECT time_stamp, hname, uid, 'http://' || host as s_server, uri, host(s_server_addr),
        s_server_port
 FROM reports.n_http_events
-WHERE time_stamp >= %s AND time_stamp < %s AND sw_blacklisted
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone AND sw_blacklisted
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 
         if host:
@@ -951,7 +951,7 @@ class SubnetDetail(DetailSection):
         sql = """\
 SELECT time_stamp, hname, uid, sw_access_ident, host(c_server_addr), c_server_port
 FROM reports.sessions
-WHERE time_stamp >= %s AND time_stamp < %s AND NOT sw_access_ident IS NULL
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone AND NOT sw_access_ident IS NULL
       AND sw_access_ident != ''
 """ % (DateFromMx(start_date), DateFromMx(end_date))
 

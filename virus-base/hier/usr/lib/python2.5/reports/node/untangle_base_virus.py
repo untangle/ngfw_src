@@ -579,7 +579,7 @@ class VirusWebDetail(DetailSection):
 SELECT time_stamp, hname, uid, virus_%s_name as virus_ident, 'http://' || host || uri as url,
        host(s_server_addr), s_server_port
 FROM reports.n_http_events
-WHERE time_stamp >= %s AND time_stamp < %s
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND NOT virus_%s_clean
 """ % (self.__vendor_name, DateFromMx(start_date), DateFromMx(end_date),
        self.__vendor_name)
@@ -623,7 +623,7 @@ class VirusMailDetail(DetailSection):
 SELECT time_stamp, hname, uid, virus_%s_name, subject, addr,
        host(c_client_addr), c_client_port
 FROM reports.n_mail_addrs
-WHERE time_stamp >= %s AND time_stamp < %s AND addr_kind = 'T'
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone AND addr_kind = 'T'
 AND NOT virus_%s_clean
 """ % (self.__vendor_name, DateFromMx(start_date), DateFromMx(end_date),
        self.__vendor_name)

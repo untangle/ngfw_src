@@ -117,7 +117,7 @@ SELECT COALESCE(SUM(new_sessions),0)::int AS sessions,
        COALESCE(sum(CASE WHEN NULLIF(ips_description,'') IS NULL THEN 0 ELSE 1 END), 0) AS attacks,
        COALESCE(sum(ips_blocks), 0) AS blocks
 FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
 
         if host:
             query = query + " AND hname = %s"
@@ -161,7 +161,7 @@ class TopTenAttacksByHits(Graph):
         query = """\
 SELECT ips_description, count(*) as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 AND ips_description != ''"""
 
         if host:
@@ -309,7 +309,7 @@ class IpsDetail(DetailSection):
 
         sql = sql + ("""ips_description, ips_blocked::text, host(c_server_addr), c_server_port
 FROM reports.sessions
-WHERE time_stamp >= %s AND time_stamp < %s
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND NOT ips_description ISNULL
 AND ips_description != '' """ % (DateFromMx(start_date),
                           DateFromMx(end_date)))

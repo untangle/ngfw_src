@@ -118,7 +118,7 @@ SELECT COALESCE(SUM(new_sessions),0)::int AS sessions,
        COALESCE(sum(CASE WHEN NULLIF(pf_protocol,'') IS NULL THEN 0 ELSE 1 END), 0)::int AS protocols,
        COALESCE(sum(pf_blocks), 0)::int AS blocks
 FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
 
         if host:
             query = query + " AND hname = %s"
@@ -234,7 +234,7 @@ class TopTenBlockedProtocolsByHits(Graph):
         query = """\
 SELECT pf_protocol, COALESCE(sum(pf_blocks), 0)::int as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s"""
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone"""
 
         if host:
             query += " AND hname = %s"
@@ -291,7 +291,7 @@ class TopTenDetectedProtocolsByHits(Graph):
         query = """\
 SELECT pf_protocol, count(*) as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
       AND pf_protocol != ''
 """
 
@@ -350,7 +350,7 @@ class TopTenBlockedHostsByHits(Graph):
         query = """\
 SELECT hname, COALESCE(sum(pf_blocks), 0)::int as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 AND NOT pf_protocol IS NULL
 AND pf_protocol != ''
 """
@@ -411,7 +411,7 @@ class TopTenLoggedHostsByHits(Graph):
         query = """\
 SELECT hname, count(*) as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 AND pf_protocol != ''
 """
 
@@ -469,7 +469,7 @@ class TopTenBlockedUsersByHits(Graph):
         query = """\
 SELECT uid, sum(pf_blocks) as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 AND uid != ''
 AND NOT pf_protocol IS NULL
 AND pf_protocol != ''
@@ -529,7 +529,7 @@ class TopTenLoggedUsersByHits(Graph):
         query = """\
 SELECT uid, count(*) as hits_sum
 FROM reports.session_totals
-WHERE trunc_time >= %s AND trunc_time < %s
+WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
 AND uid != ''
 AND pf_protocol != ''
 """
@@ -607,7 +607,7 @@ class ProtofilterDetail(DetailSection):
 
         sql = sql + ("""pf_protocol, pf_blocked::text, host(c_server_addr), c_server_port
 FROM reports.sessions
-WHERE time_stamp >= %s AND time_stamp < %s
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND NOT pf_protocol ISNULL
 AND pf_protocol != ''""" % (DateFromMx(start_date),
                             DateFromMx(end_date)))
