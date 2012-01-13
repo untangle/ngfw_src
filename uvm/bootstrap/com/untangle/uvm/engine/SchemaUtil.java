@@ -43,6 +43,7 @@ public class SchemaUtil
 
     public synchronized void close()
     {
+        logger.info("Shutting down ut-update-schema...");
         try { in.close(); } catch (Exception ex) { }
         try { out.close(); } catch (Exception ex) { }
         try { sock.close(); } catch (Exception ex) { }
@@ -110,6 +111,7 @@ public class SchemaUtil
     {
         close();
 
+        logger.info("Launching ut-update-schema...");
         String bd = System.getProperty("uvm.home") + "/bin/";
         String us = bd + "ut-update-schema";
         ProcessBuilder pb = new ProcessBuilder(us);
