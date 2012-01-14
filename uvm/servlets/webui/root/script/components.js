@@ -2627,6 +2627,14 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             handler : this.refreshHandler.createDelegate(this, [false])
         }, {
             xtype : 'tbbutton',
+            id: "flush_"+this.getId(),
+            text : i18n._('Force Refresh'),
+            name : "Flush",
+            tooltip : i18n._('Force Flush Events from Memory to Database and then Refresh'),
+            iconCls : 'icon-refresh',
+            handler : this.flushHandler.createDelegate(this, [true])
+        }, {
+            xtype : 'tbbutton',
             hidden : !this.hasAutoRefresh,
             id: "auto_refresh_"+this.getId(),
             text : i18n._('Auto Refresh'),
@@ -2643,14 +2651,6 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
                     this.stopAutoRefresh();
                 }
             }.createDelegate(this)
-        }, {
-            xtype : 'tbbutton',
-            id: "flush_"+this.getId(),
-            text : i18n._('Force Sync'),
-            name : "Flush",
-            tooltip : i18n._('Force Flush Events from Memory to Database'),
-            iconCls : 'icon-refresh',
-            handler : this.flushHandler.createDelegate(this, [true])
         }, {
             xtype : 'tbbutton',
             id: "export_"+this.getId(),
