@@ -37,6 +37,8 @@ public class WebFilterSettings implements Serializable
     private String  unblockMode = UNBLOCK_MODE_NONE;
     private Integer unblockTimeout = 60*60; /* 1 hour */
     private Boolean enforceSafeSearch = true;
+    private Boolean enforceYoutubeForSchools = false;
+    private String  youtubeForSchoolsIdentifier = "";
     private Boolean blockAllIpHosts = false;
     
     private List<GenericRule> passedClients = new LinkedList<GenericRule>();
@@ -193,6 +195,36 @@ public class WebFilterSettings implements Serializable
     public void setEnforceSafeSearch(Boolean enforceSafeSearch)
     {
         this.enforceSafeSearch = enforceSafeSearch;
+    }
+
+    /**
+     * If true, enforces safe search on popular search engines.
+     *
+     * @return true to block.
+     */
+    public Boolean getEnforceYoutubeForSchools()
+    {
+        return enforceYoutubeForSchools;
+    }
+
+    public void setEnforceYoutubeForSchools(Boolean enforceYoutubeForSchools)
+    {
+        this.enforceYoutubeForSchools = enforceYoutubeForSchools;
+    }
+
+    /**
+     * If true, enforces safe search on popular search engines.
+     *
+     * @return true to block.
+     */
+    public String getYoutubeForSchoolsIdentifier()
+    {
+        return youtubeForSchoolsIdentifier;
+    }
+
+    public void setYoutubeForSchoolsIdentifier(String youtubeForSchoolsIdentifier)
+    {
+        this.youtubeForSchoolsIdentifier = youtubeForSchoolsIdentifier;
     }
 
     /**
