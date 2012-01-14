@@ -1,19 +1,5 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
 package com.untangle.node.router;
 
@@ -33,7 +19,7 @@ import org.json.JSONObject;
 
 class RouterSessionManager
 {
-    Map<Integer,RouterSessionData> map = new ConcurrentHashMap<Integer,RouterSessionData>();
+    Map<Long,RouterSessionData> map = new ConcurrentHashMap<Long,RouterSessionData>();
 
     Map<SessionRedirectKey,SessionRedirect> redirectMap = new ConcurrentHashMap<SessionRedirectKey,SessionRedirect>();
 
@@ -49,9 +35,9 @@ class RouterSessionManager
     {
         RouterSessionData data =
             new RouterSessionData( clientAddr, clientPort,
-                                request.clientAddr(), request.clientPort(),
-                                serverAddr, serverPort,
-                                request.serverAddr(), request.serverPort());
+                                   request.clientAddr(), request.clientPort(),
+                                   serverAddr, serverPort,
+                                   request.serverAddr(), request.serverPort());
 
         if (logger.isDebugEnabled()) {
             logger.debug( "Registering session: " + request.id());
@@ -79,9 +65,9 @@ class RouterSessionManager
         /* Have to release all of the SessionRedirect */
         for ( Iterator<SessionRedirect> iter = sessionData.redirectList().iterator() ; iter.hasNext() ; ) {
             SessionRedirect sessionRedirect = iter.next();
-	    if (logger.isDebugEnabled()) {
-		logger.debug( "Releasing sessionRedirect ");
-	    }
+            if (logger.isDebugEnabled()) {
+                logger.debug( "Releasing sessionRedirect ");
+            }
             /* Remove the item from the iterating list */
             iter.remove();
 
@@ -127,20 +113,20 @@ class RouterSessionManager
         SessionRedirectKey key = new SessionRedirectKey( request, protocol );
         SessionRedirect redirect;
 
-	if ( logger.isDebugEnabled()) {
-	    logger.debug( "Looking up session: " + key );
-	}
+        if ( logger.isDebugEnabled()) {
+            logger.debug( "Looking up session: " + key );
+        }
 
         if (( redirect = redirectMap.remove( key )) == null ) {
             return false;
         }
-	if ( logger.isDebugEnabled()) {
-	    logger.debug( "Session redirect match: " + redirect );
-	}
+        if ( logger.isDebugEnabled()) {
+            logger.debug( "Session redirect match: " + redirect );
+        }
 
         /* Remove the redirect rule once it is matched */
-	// free the reserved port!!!
-	redirect.cleanup(node);
+        // free the reserved port!!!
+        redirect.cleanup(node);
 
         return true;
     }

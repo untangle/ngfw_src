@@ -155,29 +155,27 @@ public class ArgonAgentImpl implements ArgonAgent
 
     private class ActiveSessionMatcher implements SessionMatcher
     {
-        private final Set<Integer> activeSessionIds;
-        private final Set<Integer> shtudownSessionIds;
+        private final Set<Long> activeSessionIds;
+        private final Set<Long> shutdownSessionIds;
 
         private ActiveSessionMatcher( Set<ArgonSession> sessionSet )
         {
-            this.activeSessionIds = new HashSet<Integer>( sessionSet.size());
-            this.shtudownSessionIds = new HashSet<Integer>( sessionSet.size());
+            this.activeSessionIds = new HashSet<Long>( sessionSet.size());
+            this.shutdownSessionIds = new HashSet<Long>( sessionSet.size());
 
             for ( ArgonSession session : sessionSet ) this.activeSessionIds.add( session.id());
         }
         /**
          * Tells if the session matches */
-        public boolean isMatch( Policy policy,
-                                com.untangle.uvm.node.IPSessionDesc clientSide,
-                                com.untangle.uvm.node.IPSessionDesc serverSide )
+        public boolean isMatch( Policy policy, com.untangle.uvm.node.IPSessionDesc clientSide, com.untangle.uvm.node.IPSessionDesc serverSide )
         {
-            Integer id = clientSide.id();
+            Long id = clientSide.id();
 
             /* Get the id from the client side (should match the client side one) */
             if ( this.activeSessionIds.remove( id )) {
-                this.shtudownSessionIds.add( id );
+                this.shutdownSessionIds.add( id );
                 return true;
-            } else if ( this.shtudownSessionIds.contains( id )) {
+            } else if ( this.shutdownSessionIds.contains( id )) {
                 logger.warn( "session id: [" + id + "] appears to have been shutdown twice." );
                 return true;
             }

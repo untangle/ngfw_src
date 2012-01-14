@@ -58,7 +58,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     private final Map<InetSocketAddress, Fitting> connectionFittings = new ConcurrentHashMap<InetSocketAddress, Fitting>();
 
-    private final Map<Integer, PipelineImpl> pipelines = new ConcurrentHashMap<Integer, PipelineImpl>();
+    private final Map<Long, PipelineImpl> pipelines = new ConcurrentHashMap<Long, PipelineImpl>();
 
     // These don't need to be concurrent and being able to use a null key
     // is currently useful for the null policy.
@@ -267,7 +267,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         connectionFittings.put(socketAddress, fitting);
     }
 
-    public Pipeline getPipeline(int sessionId)
+    public Pipeline getPipeline(long sessionId)
     {
         return pipelines.get(sessionId);
     }

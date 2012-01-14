@@ -281,7 +281,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     // Here's the callback that Argon calls to notify of a new TCP session:
     public ArgonTCPSession newSessionInternal(ArgonTCPNewSessionRequest request)
     {
-        int sessionId = -1;
+        long sessionId = -1L;
 
         try {
             long firstRequestHandleTime = 0, dispatchRequestTime = 0,
@@ -396,7 +396,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
     public ArgonUDPSession newSessionInternal(ArgonUDPNewSessionRequest request)
     {
-        int sessionId = -1;
+        long sessionId = -1;
 
         try {
             long firstRequestHandleTime = 0, dispatchRequestTime = 0,
@@ -598,11 +598,11 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         sessionEventListener = listener;
     }
 
-    public int[] liveSessionIds()
+    public long[] liveSessionIds()
     {
         int count = 0;
         int size = liveSessions.size();
-        int[] idlist = new int[size];
+        long[] idlist = new long[size];
         
         for (Iterator<IPSession> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
             if (count == size) /* just in case */
@@ -945,7 +945,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             sessionEventListener.handleTimer(event);
     }
 
-    private void elog(Level level, String eventName, int sessionId)
+    private void elog(Level level, String eventName, long sessionId)
     {
         if (sessionEventLogger.isEnabledFor(level)) {
             StringBuilder message = new StringBuilder("EV[");
@@ -959,7 +959,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         }
     }
 
-    private void elog(Level level, String eventName, int sessionId, long dataSize)
+    private void elog(Level level, String eventName, long sessionId, long dataSize)
     {
         if (sessionEventLogger.isEnabledFor(level)) {
             StringBuilder message = new StringBuilder("EV[");

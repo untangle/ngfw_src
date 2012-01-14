@@ -51,7 +51,7 @@ class PipelineImpl implements Pipeline
         
     // constructors -----------------------------------------------------------
 
-    PipelineImpl(int sessionId, List<ArgonConnectorFitting> argonConnectorFittings)
+    PipelineImpl(long sessionId, List<ArgonConnectorFitting> argonConnectorFittings)
     {
         this.argonConnectorFittings = argonConnectorFittings;
         this.sessionPrefix = "sess-" + sessionId + "-";

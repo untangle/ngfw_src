@@ -32,7 +32,7 @@ import com.untangle.uvm.policy.Policy;
 @SuppressWarnings("serial")
 public class PipelineEndpoints extends LogEvent
 {
-    private Integer sessionId = -1;
+    private Long sessionId = -1L;
 
     private Short protocol;
 
@@ -132,12 +132,12 @@ public class PipelineEndpoints extends LogEvent
      * @return the id of the session
      */
     @Column(name="session_id", nullable=false)
-    public Integer getSessionId()
+    public Long getSessionId()
     {
         return sessionId;
     }
 
-    public void setSessionId(Integer sessionId)
+    public void setSessionId(Long sessionId)
     {
         this.sessionId = sessionId;
     }

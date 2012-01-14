@@ -8,7 +8,6 @@ import string
 import md5
 import sys
 import time
-
 from sets import Set
 from psycopg2.extensions import DateFromMx
 
@@ -117,9 +116,7 @@ def run_sql_one(sql):
         conn.commit()
     return False
 
-def run_sql(sql, args=None, connection=None,
-            auto_commit=True, force_propagate=False,
-            debug=False):
+def run_sql(sql, args=None, connection=None, auto_commit=True, force_propagate=False, debug=False):
     if not connection:
         connection = get_connection()
 
@@ -131,7 +128,7 @@ def run_sql(sql, args=None, connection=None,
             curs.execute(sql, args)
         else:
             if debug:
-                logger.debug("Executing: %s" % re.sub(r'\n', ' ', sql))
+                logger.warn("Executing: %s" % re.sub(r'\n', ' ', sql))
             curs.execute(sql)
 
         if auto_commit:
@@ -150,6 +147,7 @@ def run_sql(sql, args=None, connection=None,
             show_error = False
             
         if show_error:
+            traceback.print_exc(e)
             raise e
 
         try:

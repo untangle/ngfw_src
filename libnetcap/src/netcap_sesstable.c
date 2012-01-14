@@ -80,8 +80,6 @@ void netcap_sesstable_unlock() {
     SESSTABLE_UNLOCK();
 }
 
-// XXX To make this generic, pass in hash function, equ function and 
-//     the actual session table.
 int        netcap_sesstable_init ()
 {
     if (ht_init(&_sess_id_table, _SESS_TABLE_SIZE, int_hash_func, int_equ_func, HASH_FLAG_KEEP_LIST)<0)
@@ -121,12 +119,12 @@ int        netcap_sesstable_cleanup ()
     return 0;
 }
 
-netcap_session_t* netcap_sesstable_get ( u_int id )
+netcap_session_t* netcap_sesstable_get ( u_int64_t id )
 {
     return netcap_nc_sesstable_get ( NC_SESSTABLE_LOCK, id );
 }
 
-netcap_session_t* netcap_nc_sesstable_get (int if_lock, u_int id)
+netcap_session_t* netcap_nc_sesstable_get (int if_lock, u_int64_t id)
 {
     netcap_session_t* session;
 
@@ -134,7 +132,7 @@ netcap_session_t* netcap_nc_sesstable_get (int if_lock, u_int id)
 
     if ( if_lock ) SESSTABLE_RDLOCK();
 
-    session = (netcap_session_t*)ht_lookup(&_sess_id_table,(void*)(long)id);
+    session = (netcap_session_t*)ht_lookup(&_sess_id_table,(void*)(u_int32_t)id); /* XXX loss of precision */
 
     if ( if_lock ) SESSTABLE_UNLOCK();
     
@@ -230,7 +228,8 @@ int        netcap_nc_sesstable_add (int if_lock, netcap_session_t* netcap_sess)
 
     if ( if_lock) SESSTABLE_WRLOCK();
 
-    if ( ht_add( &_sess_id_table, (void*)(long)netcap_sess->session_id, (void*)netcap_sess ) < 0 ) {
+     /* XXX loss of precision */
+    if ( ht_add( &_sess_id_table, (void*)(u_int32_t)netcap_sess->session_id, (void*)netcap_sess ) < 0 ) {
         if ( if_lock ) SESSTABLE_UNLOCK();
         return perrlog( "hash_add" );
     }
@@ -406,8 +405,9 @@ int netcap_sesstable_remove_session (int if_lock, netcap_session_t* netcap_sess)
 static int _netcap_sesstable_remove (netcap_session_t* netcap_sess)
 {
     /* Static/private function, no error checking necessary */
-    if (ht_remove(&_sess_id_table,(void*)(long)netcap_sess->session_id)<0) {
-        /* ???? Why are errors ignored ???? */
+    /* XXX loss of precision */
+    if (ht_remove(&_sess_id_table,(void*)(u_int32_t)netcap_sess->session_id)<0) {
+        /* XXX Why are errors ignored ???? */
         return -1;
     }
     

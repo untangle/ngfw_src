@@ -32,7 +32,7 @@ int        netcap_sesstable_init (void);
 int        netcap_sesstable_cleanup (void);
 
 
-netcap_session_t* netcap_nc_sesstable_get (int if_lock, u_int id);
+netcap_session_t* netcap_nc_sesstable_get (int if_lock, u_int64_t id);
 
 netcap_session_t* netcap_nc_sesstable_get_tuple (int if_lock, int proto, 
                                                  in_addr_t src, in_addr_t dst, 

@@ -41,7 +41,7 @@ public class IpsDetectionEngine
     // We can't just attach the session info to a session, we have to
     // attach it to the 'pipeline', since we have to access it from
     // multiple pipes (octet & http).  So we keep the registry here.
-    private Map<Integer, IpsSessionInfo> sessionInfoMap = new ConcurrentHashMap<Integer, IpsSessionInfo>();
+    private Map<Long, IpsSessionInfo> sessionInfoMap = new ConcurrentHashMap<Long, IpsSessionInfo>();
 
     Map<Integer,List<IpsRuleHeader>> portS2CMap = new ConcurrentHashMap<Integer,List<IpsRuleHeader>>();
     Map<Integer,List<IpsRuleHeader>> portC2SMap = new ConcurrentHashMap<Integer,List<IpsRuleHeader>>();
@@ -111,7 +111,7 @@ public class IpsDetectionEngine
         portC2SMap = new ConcurrentHashMap<Integer,List<IpsRuleHeader>>();
         portS2CMap = new ConcurrentHashMap<Integer,List<IpsRuleHeader>>();
         allPortMapLists = new ArrayList<List<IpsRuleHeader>>();
-        sessionInfoMap = new ConcurrentHashMap<Integer, IpsSessionInfo>();
+        sessionInfoMap = new ConcurrentHashMap<Long, IpsSessionInfo>();
     }
 
     public void clearRules()

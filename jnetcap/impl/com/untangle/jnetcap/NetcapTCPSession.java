@@ -38,7 +38,7 @@ public class NetcapTCPSession extends NetcapSession
     private static final int DEFAULT_SEND_ICMP_FLAGS       = 0;
     private static final int DEFAULT_FORWARD_REJECT_FLAGS  = 0;
     
-    public NetcapTCPSession( int id )
+    public NetcapTCPSession( long id )
     {
         super( id, Netcap.IPPROTO_TCP );
     }

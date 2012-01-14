@@ -139,10 +139,10 @@ class ArgonConnectorImpl implements ArgonConnector
         return argon.state();
     }
 
-    public int[] liveSessionIds()
+    public long[] liveSessionIds()
     {
         if (disp == null)
-            return new int[0];
+            return new long[0];
         return disp.liveSessionIds();
     }
 

@@ -13,7 +13,7 @@ public interface IPSessionDesc extends SessionEndpoints
      *
      * @return an <code>int</code> giving the unique ID of the session.
      */
-    int id();
+    long id();
 
     /**
      * User identified for the session.  May be null, which means

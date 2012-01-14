@@ -34,12 +34,12 @@ public abstract class PipelineEvent extends LogEvent
      * @return the the session Id
      */
     @Column(name="session_id", nullable=false)
-    public Integer getSessionId()
+    public Long getSessionId()
     {
         return pipelineEndpoints.getSessionId();
     }
 
-    public void setSessionId( Integer sessionId )
+    public void setSessionId( Long sessionId )
     {
         this.pipelineEndpoints.setSessionId(sessionId);
     }

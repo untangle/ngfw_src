@@ -38,7 +38,7 @@ import com.untangle.uvm.node.PipelineEndpoints;
 @SuppressWarnings("serial")
 public class MailLogEventFromReports extends LogEvent
 {
-    private Integer sessionId;
+    private Long sessionId;
     private Integer clientIntf;
     private Integer serverIntf;
     private InetAddress cClientAddr;
@@ -94,8 +94,8 @@ public class MailLogEventFromReports extends LogEvent
 
     // accessors --------------------------------------------------------------
     @Column(name="session_id")
-    public Integer getSessionId() { return sessionId; }
-    public void setSessionId(Integer sessionId) { this.sessionId = sessionId; }
+    public Long getSessionId() { return sessionId; }
+    public void setSessionId(Long sessionId) { this.sessionId = sessionId; }
 
     @Column(name="client_intf")
     public Integer getClientIntf() { return clientIntf; }

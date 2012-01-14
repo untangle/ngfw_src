@@ -28,5 +28,5 @@ public interface PipelineFoundry
     void clearChains();
 
     void registerConnection(InetSocketAddress socketAddress, Fitting fitting);
-    Pipeline getPipeline(int sessionId);
+    Pipeline getPipeline(long sessionId);
 }

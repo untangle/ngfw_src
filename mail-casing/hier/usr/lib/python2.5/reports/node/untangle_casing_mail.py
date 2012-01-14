@@ -69,7 +69,7 @@ class MailCasing(Node):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_mail_addrs (
     time_stamp timestamp without time zone,
-    session_id integer, client_intf smallint,
+    session_id bigint, client_intf smallint,
     server_intf smallint,
     c_client_addr inet, s_client_addr inet, c_server_addr inet,
     s_server_addr inet,
@@ -135,6 +135,7 @@ CREATE TABLE reports.n_mail_addrs (
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","n_mail_addrs","event_id","integer","bigint");
+        sql_helper.convert_column("reports","n_mail_addrs","session_id","integer","bigint");
 
         sql_helper.create_index("reports","n_mail_addrs","msg_id");
         sql_helper.create_index("reports","n_mail_addrs","event_id");
@@ -244,7 +245,7 @@ INSERT INTO reports.email (date, email)
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_mail_msgs (
     time_stamp timestamp without time zone,
-    session_id integer, client_intf smallint,
+    session_id bigint, client_intf smallint,
     server_intf smallint,
     c_client_addr inet, s_client_addr inet, c_server_addr inet,
     s_server_addr inet,
@@ -306,6 +307,7 @@ CREATE TABLE reports.n_mail_msgs (
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","n_mail_msgs","event_id","integer","bigint");
+        sql_helper.convert_column("reports","n_mail_msgs","session_id","integer","bigint");
 
         sql_helper.create_index("reports","n_mail_msgs","msg_id");
         sql_helper.create_index("reports","n_mail_msgs","event_id");

@@ -38,7 +38,7 @@ public class NetcapUDPSession extends NetcapSession
     private IPTraffic serverTraffic = null;
     private IPTraffic clientTraffic = null;
     
-    public NetcapUDPSession( int id ) 
+    public NetcapUDPSession( long id ) 
     {
         super( id, Netcap.IPPROTO_UDP );           
         

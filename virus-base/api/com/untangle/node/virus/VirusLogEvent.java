@@ -35,8 +35,7 @@ public class VirusLogEvent extends VirusEvent
 
     public VirusLogEvent() { }
 
-    public VirusLogEvent(PipelineEndpoints pe, VirusScannerResult result,
-                         String vendorName)
+    public VirusLogEvent(PipelineEndpoints pe, VirusScannerResult result, String vendorName)
     {
         this.pipelineEndpoints = pe;
         this.result = result;
@@ -102,12 +101,12 @@ public class VirusLogEvent extends VirusEvent
      * @return the the session Id
      */
     @Column(name="session_id", nullable=false)
-    public Integer getSessionId()
+    public Long getSessionId()
     {
         return pipelineEndpoints.getSessionId();
     }
 
-    public void setSessionId( Integer sessionId )
+    public void setSessionId( Long sessionId )
     {
         this.pipelineEndpoints.setSessionId(sessionId);
     }

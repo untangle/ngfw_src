@@ -21,15 +21,6 @@ public interface ReportingNode extends Node
     /**
      * Force flush all the pending databdase events to the database and run
      * an incremental reports process
-     *
-     * force controls whether or not a minimum time is required to wait between calls
-     * if true, it will flush events no matter what
-     * if false, it will only flush events every set amount of time
-     */
-    void flushEvents(boolean force);
-
-    /**
-     * same as flushEvents(false)
      */
     void flushEvents();
     

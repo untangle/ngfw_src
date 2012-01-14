@@ -39,7 +39,7 @@
 
 #define _HOOK_OBJ_STR     JP_BUILD_NAME( NetcapHook )
 #define _HOOK_METHOD_NAME "event"
-#define _HOOK_METHOD_DESC "(I)V"
+#define _HOOK_METHOD_DESC "(J)V"
 
 /* 10,000 sessions is the default session limit */
 #define _SESSION_LIMIT_DEFAULT 10000
@@ -203,8 +203,7 @@ JNIEXPORT jint JNICALL JF_Netcap( init )
             }
 
             /* Set the method identifier */
-            _jnetcap.java.hook_method_id = (*env)->GetMethodID( env, _jnetcap.java.hook_class,
-                                                                _HOOK_METHOD_NAME, _HOOK_METHOD_DESC );
+            _jnetcap.java.hook_method_id = (*env)->GetMethodID( env, _jnetcap.java.hook_class, _HOOK_METHOD_NAME, _HOOK_METHOD_DESC );
 
             if ( _jnetcap.java.hook_method_id == NULL ) {
                 ret = errlog( ERR_CRITICAL, "(*env)->GetMethodID" );
@@ -570,7 +569,7 @@ static void              _hook( int protocol, netcap_session_t* netcap_sess, voi
 
     int _critical_section( void ) {
         JNIEnv* env = jmvutil_get_java_env();
-        u_int session_id;
+        u_int64_t session_id;
 
         if ( NULL == env ) return errlog( ERR_CRITICAL, "jmvutil_get_java_env\n" );
 
@@ -613,12 +612,10 @@ static void              _hook( int protocol, netcap_session_t* netcap_sess, voi
                 if ( netcap_sess_cleanup == netcap_sess ) {
                     /* Since the thread was created in C, there is no way that another
                      * thread could possible raze this session */
-                    return errlog( ERR_CRITICAL, "Session (%10u) not razed in hook, razing in cleanup\n", 
-                                   session_id );
+                    return errlog( ERR_CRITICAL, "Session (%10u) not razed in hook, razing in cleanup\n", session_id );
                 } else {
                     netcap_sess = NULL;
-                    return errlog( ERR_CRITICAL, "Session (%10u) replaced, assuming previous was razed\n",
-                                   session_id );
+                    return errlog( ERR_CRITICAL, "Session (%10u) replaced, assuming previous was razed\n", session_id );
                 }
             }
         }

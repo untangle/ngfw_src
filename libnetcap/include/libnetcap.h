@@ -220,7 +220,7 @@ typedef struct netcap_session {
     /**
      * the session_id
      */
-    u_int session_id;
+    u_int64_t session_id;
     
     /* The mailbox for TCP sessions */
     mailbox_t tcp_mb;
@@ -380,7 +380,7 @@ int netcap_tcp_redirect_ports( int* port_low, int* port_high );
 /**
  * Get a session given its ID
  */
-netcap_session_t* netcap_sesstable_get ( u_int id );
+netcap_session_t* netcap_sesstable_get ( u_int64_t id );
 /**
  * Get the number of open sessions
  */

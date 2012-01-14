@@ -35,7 +35,7 @@ public class SessionGlobalState
 
     protected final NetcapSession netcapSession;
 
-    protected final int id;
+    protected final long id;
     protected final short protocol;
     protected String user; // Not final since we can set it later
 
@@ -62,7 +62,7 @@ public class SessionGlobalState
         this.attachments = new HashMap<String,Object>();
     }
 
-    public int id()
+    public long id()
     {
         return id;
     }

@@ -51,7 +51,7 @@
  * Signature: (II)J
  */
 JNIEXPORT jlong JNICALL JF_Session( getSession )
-    ( JNIEnv *env, jclass _class, jint session_id, jshort protocol )
+    ( JNIEnv *env, jclass _class, jlong session_id, jshort protocol )
 {
     netcap_session_t* session;
 
@@ -61,7 +61,7 @@ JNIEXPORT jlong JNICALL JF_Session( getSession )
         return 0;
     }
 
-    if (( session = netcap_sesstable_get( (u_int)session_id )) == NULL ) {
+    if (( session = netcap_sesstable_get( (u_int64_t)session_id )) == NULL ) {
         jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "netcap_sesstable_get(%10u)\n", session_id );
         return 0;
     }
@@ -102,6 +102,7 @@ JNIEXPORT jlong JNICALL JF_Session( getLongValue )
     case JN_Session( FLAG_NAT_FROM_HOST ):
       debug(10,"FLAG: FLAG_NAT_FROM_HOST = %s\n",unet_next_inet_ntoa(session->nat_info.reply.dst_address ));
       return session->nat_info.reply.dst_address;
+    case JN_Session( FLAG_ID ): return session->session_id;
     case JN_Session( FLAG_NAT_TO_HOST   ):
       debug(10,"FLAG: FLAG_NAT_TO_HOST = %s\n",unet_next_inet_ntoa(session->nat_info.reply.src_address ));
       return session->nat_info.reply.src_address;
@@ -132,7 +133,6 @@ JNIEXPORT jint JNICALL JF_Session( getIntValue )
       debug(10,"FLAG: FLAG_NAT_TO_PORT = %u\n",ntohs(session->nat_info.reply.src_protocol_id ));      
       return ntohs(session->nat_info.reply.src_protocol_id);
 
-    case JN_Session( FLAG_ID ): return session->session_id;
     case JN_Session( FLAG_PROTOCOL ): return session->protocol;
     case JN_TCPSession( FLAG_FD ):
         if ( session->protocol != IPPROTO_TCP ) return errlog( ERR_CRITICAL, "Expecting TCP\n" );

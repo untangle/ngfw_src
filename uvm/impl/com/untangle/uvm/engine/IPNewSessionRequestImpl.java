@@ -58,7 +58,7 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
         return argonConnector;
     }
 
-    public int id()
+    public long id()
     {
         return argonRequest.id();
     }

@@ -41,10 +41,10 @@
 #include "netcap_sesstable.h"
 #include "netcap_tcp.h"
 
-static u_int session_index = 1;
+static u_int64_t session_index = 1;
 static lock_t session_index_lock;
 
-static u_int netcap_session_next_id( void );
+static u_int64_t netcap_session_next_id( void );
 
 static session_tls_t* _tls_get( void );
 
@@ -60,16 +60,18 @@ int netcap_sessions_init ( void )
     session_index = 0;
 
     for ( c = 0 ; ( session_index == 0 ) && ( c < 7 ) ; c++ ) {
-        session_index  =   1 + (int) (( 0xFFFF + 0.0 ) * ( rand() / ( RAND_MAX + 1.0 )));
-        session_index |= ( 0 + (int) (( 0xFFFF + 0.0 ) * ( rand() / ( RAND_MAX + 1.0 )))) << 16;
+        session_index |= ( (u_int64_t)rand() & 0xFFFF );
+        session_index |= ( (u_int64_t)rand() & 0xFFFF ) << 16; 
+        session_index |= ( (u_int64_t)rand() & 0xFFFF ) << 32; 
+        session_index |= ( (u_int64_t)rand() & 0xFFFF ) << 48; 
     }
     
     if ( session_index == 0 ) {
         return errlog( ERR_CRITICAL, "Unable to generate a non-zero random number in %d attempts\n", c );
     }
 
-    /* Down to 31 bit */
-    session_index &= 0x7FFFFFFF;
+    /* Down to 63 bit - avoid signedness issues with java*/
+    session_index &= 0x7FFFFFFFFFFFFFFFULL;
 
     // Initialize the locks on the index
     if (lock_init(&session_index_lock,0)<0) {
@@ -182,23 +184,20 @@ char* netcap_session_fd_tuple_print ( netcap_session_t* sess )
     return tls->output_buf;
 }
 
-u_int netcap_session_next_id ( void )
+u_int64_t netcap_session_next_id ( void )
 {
-    u_int index;
-
     if (lock_wrlock(&session_index_lock)<0) {
         errlog(ERR_CRITICAL,"lock_wrlock\n");
         return 0;
     }
     
     session_index++;
-    /* 31 bit */
-    session_index &= 0x7FFFFFFF;
+
+    /* Down to 63 bit - avoid signedness issues with java*/
+    session_index &= 0x7FFFFFFFFFFFFFFFULL;
     
     if ( session_index == 0 ) session_index++; /* session id 0 not allowed */
     
-    index = session_index;
-
     if (lock_unlock(&session_index_lock)<0) {
         errlog(ERR_CRITICAL,"lock_unlock\n");
         return 0;
@@ -216,8 +215,7 @@ netcap_session_t* netcap_session_malloc(void)
     return netcap_sess;
  }
 
-int netcap_session_init( netcap_session_t* netcap_sess, netcap_endpoints_t *endpoints, 
-                         netcap_intf_t srv_intf, int if_mb )
+int netcap_session_init( netcap_session_t* netcap_sess, netcap_endpoints_t *endpoints, netcap_intf_t srv_intf, int if_mb )
 {
     if ( endpoints == NULL ) return errlog(ERR_CRITICAL, "Invalid arguments");
 
@@ -273,8 +271,7 @@ int netcap_session_init( netcap_session_t* netcap_sess, netcap_endpoints_t *endp
     return 0;
 }
 
-netcap_session_t* netcap_session_create( netcap_endpoints_t *endpoints, netcap_intf_t srv_intf, 
-                                         int if_mb )
+netcap_session_t* netcap_session_create( netcap_endpoints_t *endpoints, netcap_intf_t srv_intf, int if_mb )
 {
     netcap_session_t* netcap_sess = NULL;
 

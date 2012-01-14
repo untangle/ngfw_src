@@ -42,7 +42,7 @@ class HttpCasing(Node):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_http_events (
     time_stamp timestamp without time zone,
-    session_id integer, client_intf smallint,
+    session_id bigint, client_intf smallint,
     server_intf smallint,
     c_client_addr inet, s_client_addr inet, c_server_addr inet, s_server_addr inet,
     c_client_port integer, s_client_port integer, c_server_port integer, s_server_port integer,
@@ -80,6 +80,7 @@ CREATE TABLE reports.n_http_events (
 
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","n_http_events","event_id","integer","bigint");
+        sql_helper.convert_column("reports","n_http_events","session_id","integer","bigint");
         
         # remove obsolete columns
         sql_helper.drop_column('reports', 'n_http_events', 'policy_inbound')

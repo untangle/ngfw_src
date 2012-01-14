@@ -124,12 +124,12 @@ public class RequestLine implements Serializable
      * @return the PipelineEndpoints.
      */
     @Column(name="session_id", nullable=false)
-    public Integer getSessionId()
+    public Long getSessionId()
     {
         return pipelineEndpoints.getSessionId();
     }
 
-    public void setSessionId( Integer sessionId )
+    public void setSessionId( Long sessionId )
     {
         this.pipelineEndpoints.setSessionId(sessionId);
     }

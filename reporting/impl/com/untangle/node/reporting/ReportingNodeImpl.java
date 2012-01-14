@@ -47,27 +47,11 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
     private static final String  REPORTER_LOG_FILE = "/var/log/uvm/reporter.log";
     private static final long    REPORTER_LOG_FILE_READ_TIMEOUT = 180 * 1000; /* 180 seconds */
     private static final Pattern REPORTER_LOG_PROGRESS_PATTERN = Pattern.compile(".*PROGRESS\\s*\\[(.*)\\]");
-    private static int MAX_FLUSH_FREQUENCY;
 
     private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/reporting-generate-reports.py -d $(date \"+%Y-%m-%d\") > /dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-reports-nightly");
 
     private static LogWorkerImpl logWorker = null;
-
-    static {
-        String syncStr = System.getProperty("uvm.event.long_sync");
-        if (syncStr != null) {
-            try {
-                MAX_FLUSH_FREQUENCY = Integer.valueOf(syncStr); 
-            }
-            catch (Exception e) {
-                logger.warn("Invalid Flush Frequency: " + syncStr);
-                MAX_FLUSH_FREQUENCY = 30*1000; /* 30 seconds */
-            }
-        } else {
-            MAX_FLUSH_FREQUENCY = 30*1000; /* 30 seconds */
-        }
-    }
 
     private String currentStatus = "";
 
@@ -165,25 +149,15 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
         }
     }
 
-    public void flushEvents()
-    {
-        flushEvents(false);
-    }
-
     public String getCurrentStatus()
     {
         return this.currentStatus;
     }
 
-    public void flushEvents(boolean force)
+    public void flushEvents()
     {
         long currentTime  = System.currentTimeMillis();
         
-        if (!force && currentTime - lastFlushTime < MAX_FLUSH_FREQUENCY) {
-            logger.info("Ignoring flushEvents call (not enough time has elasped: " + MAX_FLUSH_FREQUENCY/1000 + " seconds)");
-            return;
-        } 
-
         int exitCode = -1;
         this.currentStatus = "";
             
