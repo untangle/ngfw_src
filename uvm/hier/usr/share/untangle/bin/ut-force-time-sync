@@ -15,4 +15,5 @@ if [ -x /etc/init.d/ntp ] ; then
    /etc/init.d/ntp start	
 fi
 
-exit $CODE
+#exit $CODE
+exit 0
