@@ -2628,9 +2628,9 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         }, {
             xtype : 'tbbutton',
             id: "flush_"+this.getId(),
-            text : i18n._('Force Refresh'),
+            text : i18n._('Full Refresh'),
             name : "Flush",
-            tooltip : i18n._('Force Flush Events from Memory to Database and then Refresh'),
+            tooltip : i18n._('Flush Events from Memory to Database and then Refresh'),
             iconCls : 'icon-refresh',
             handler : this.flushHandler.createDelegate(this, [true])
         }, {
