@@ -70,7 +70,7 @@ class NodeManager(Manager):
     def __print_session(self,session):
         stats = session["stats"]
         print "%s\t%-6s\t%-6s\t%15s:%-5d -> %15s:%-5d" % ( self.formatProtocol(session["protocol"])[1], self.formatState( session["clientState"] ), self.formatState( session["serverState"] ), session["clientAddr"],session["clientPort"], session["serverAddr"],session["serverPort"] ),
-        print "\t%s\t%s" % ( self.formatTime( stats["creationDate"] ), self.formatTime( stats["lastActivityDate"] )),
+        print "\t%s\t%s\n" % ( self.formatTime( stats["creationDate"] ), self.formatTime( stats["lastActivityDate"] )),
 
     def __get_node( self, nodeId, raiseException = False ):
         nodeContext = self.__nodeManager.nodeContext( nodeId["id"] )
