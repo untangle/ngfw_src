@@ -95,5 +95,6 @@ fi
 rm -rf /usr/share/untangle/autodump
 rm -rf /usr/share/untangle/db
 rm -rf /usr/share/untangle/pycli/uvm
+rm -f /var/log/uvm/report.log*
 
 exit 0
