@@ -17,7 +17,7 @@ class Manager(object):
         print "Operation started, please apt.log for more information"
 
     def buildNodeId(self,nodeId):
-        nodeid = int( nodeId )
+        nodeId = int( nodeIdStr )
         return {'javaClass': 'com.untangle.uvm.security.NodeId', 'id': nodeId, 'name': "%d" % ( nodeId ) }
 
     def buildDate(self,seconds):
