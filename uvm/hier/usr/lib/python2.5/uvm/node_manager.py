@@ -63,8 +63,7 @@ class NodeManager(Manager):
             return
 
         print "Live sessions for %s" % ( nodeContext.getNodeDesc()["name"])
-        print "Protocol\tClient_State\tServer_State\tClient_Addr:Client_Port -> Server_Addr:Server_Port\t",
-        print "Created\t\tLast Activity"
+        print "Protocol CState SState Client:Client_Port -> Server:Server_Port Created Last Activity"
         for session in sessions: self.__print_session(session)
 
     def __print_session(self,session):
