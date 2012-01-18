@@ -73,7 +73,7 @@ def createDualMatcherRule( matcherType, value, matcherType2, value2, blocked=Tru
 def flushEvents():
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
     if (reports != None):
-        reports.flushEvents(True)
+        reports.flushEvents()
 
 def nukeRules():
     rules = node.getRules()

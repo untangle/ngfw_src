@@ -60,7 +60,7 @@ def nukeBlockedExtensions():
 def flushEvents():
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
     if (reports != None):
-        reports.flushEvents(True)
+        reports.flushEvents()
 
 class WebFilterTests(unittest.TestCase):
 

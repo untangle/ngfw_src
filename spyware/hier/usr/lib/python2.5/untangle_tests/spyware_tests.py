@@ -33,7 +33,7 @@ def flushEvents():
     global uvmContext
     reports = uvmContext.nodeManager().node("untangle-node-reporting")
     if (reports != None):
-        reports.flushEvents(True)
+        reports.flushEvents()
 #
 # TESTS TO ADD:
 # eventlog (events are logged properly)
@@ -65,12 +65,14 @@ class SpywareTests(unittest.TestCase):
     
     # verify gator cookie is blocked in default config
     def test_012_addCookieBlocked(self):
-        addCookieBlocked("untangle.com")
+        addCookieBlocked("yahoo.com")
+        addCookieBlocked(".yahoo.com")
+        addCookieBlocked(".www.yahoo.com")
         # remove any previous instance of testcookie.txt
-        clientControl.runCommand("rm testcookie.txt")
+        clientControl.runCommand("/bin/rm -f testcookie.txt")
         # see if untangle cookie is downloaded.
-        result = clientControl.runCommand("wget -q --save-cookies file testcookie.txt -O - http://untange.com/ 2>&1 ; grep -q untangle testcookie.txt")
-        assert (result == 0)
+        result = clientControl.runCommand("wget -q --save-cookies testcookie.txt -O - http://yahoo.com/ 2>&1 >/dev/null; grep -q yahoo.com testcookie.txt")
+        assert (result == 1)
 
 
 
