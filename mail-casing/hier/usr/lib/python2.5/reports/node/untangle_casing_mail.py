@@ -347,12 +347,12 @@ INSERT INTO reports.n_mail_msgs
         -- n_message_info
         mi.id, mi.subject, mi.server_type,
         -- n_message_info_addr
-        mia.addr,
+        lower(mias.addr),
          -- from webpages
         COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname
     FROM events.pl_endp pe
     JOIN events.n_mail_message_info mi ON mi.session_id = pe.session_id
-    JOIN events.n_mail_message_info_addr mia ON ( mia.msg_id = mi.id AND mia.kind = 'F' )
+    JOIN events.n_mail_message_info_addr mias ON ( mias.msg_id = mi.id AND mias.kind = 'F' )
     LEFT OUTER JOIN reports.merged_address_map mam
         ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time""",
                                (), connection=conn, auto_commit=False)
