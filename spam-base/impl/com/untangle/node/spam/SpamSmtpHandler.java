@@ -150,7 +150,10 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         if (report == null) { // Handle error case
             if (config.getFailClosed()) {
                 logger.warn("Error scanning message. Failing closed");
-                postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.BLOCK);
+                /* FIXME  */
+                /* We don't actually DROP here, we close the connection so a retransmit will happen */
+                /* We should log a different event */
+                postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.DROP);
                 spamImpl.incrementBlockCount();
                 return TEMPORARILY_REJECT;
             } else {
@@ -169,7 +172,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
 
         if (config.getBlockSuperSpam()
             && config.getSuperSpamStrength() / 10.0f <= report.getScore()) {
-            action = SmtpSpamMessageAction.BLOCK;
+            action = SmtpSpamMessageAction.DROP;
         }
 
         if (report.isSpam()) {// BEGIN SPAM
@@ -204,7 +207,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
                 }
             } else {
                 logger.debug("Blocking SPAM message as-per policy");
-                postSpamEvent(msgInfo, report, SmtpSpamMessageAction.BLOCK);
+                postSpamEvent(msgInfo, report, SmtpSpamMessageAction.DROP);
                 spamImpl.incrementBlockCount();
                 return BLOCK_MESSAGE;
             }
@@ -280,7 +283,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
         if (report == null) { // Handle error case
             if (config.getFailClosed()) {
                 logger.warn("Error scanning message. Failing closed");
-                postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.BLOCK);
+                postSpamEvent(msgInfo, cleanReport(), SmtpSpamMessageAction.DROP);
                 spamImpl.incrementBlockCount();
                 return BlockOrPassResult.TEMPORARILY_REJECT;
             } else {
@@ -313,7 +316,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
 
         if (config.getBlockSuperSpam()
             && config.getSuperSpamStrength() / 10.0f <= report.getScore()) {
-            action = SmtpSpamMessageAction.BLOCK;
+            action = SmtpSpamMessageAction.DROP;
         }
 
         if (report.isSpam()) {
@@ -344,7 +347,7 @@ public class SpamSmtpHandler extends BufferingSessionHandler
                 }
             } else {
                 logger.debug("Blocking SPAM message as-per policy");
-                postSpamEvent(msgInfo, report, SmtpSpamMessageAction.BLOCK);
+                postSpamEvent(msgInfo, report, SmtpSpamMessageAction.DROP);
                 spamImpl.incrementBlockCount();
                 return BlockOrPassResult.BLOCK;
             }

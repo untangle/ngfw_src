@@ -7,7 +7,7 @@ public enum SmtpSpamMessageAction
 {
     PASS('P', "pass message"),
     MARK('M', "mark message"),
-    BLOCK('B', "block message"),
+    DROP('B', "drop message"),
     QUARANTINE('Q', "quarantine message"),
     SAFELIST('S', "safelist message"),
     OVERSIZE('Z', "oversize message"),

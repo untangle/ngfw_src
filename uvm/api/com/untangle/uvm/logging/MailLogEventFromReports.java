@@ -55,13 +55,10 @@ public class MailLogEventFromReports extends LogEvent
     private Long s2pBytes;
     private Long p2cBytes;
     private Long p2sBytes;
-    private Long c2pChunks;
-    private Long s2pChunks;
-    private Long p2cChunks;
-    private Long p2sChunks;
     private String uid;
     private Long msgId;
     private String subject;
+    private String sender;
     private String serverType;
     private Integer addrPos;
     private String addr;
@@ -85,7 +82,6 @@ public class MailLogEventFromReports extends LogEvent
     private Float phishScore;
     private Boolean phishIsSpam;
     private String phishAction;
-    private String sender;
     private String vendor;
 
     // constructors -----------------------------------------------------------
@@ -145,10 +141,6 @@ public class MailLogEventFromReports extends LogEvent
     public Long getPolicyId() { return policyId; }
     public void setPolicyId(Long policyId) { this.policyId = policyId; }
 
-    @Column(name="policy_inbound")
-    public Boolean getPolicyInbound() { return policyInbound; }
-    public void setPolicyInbound(Boolean policyInbound) { this.policyInbound = policyInbound; }
-
     @Column(name="c2p_bytes")
     public Long getC2pBytes() { return c2pBytes; }
     public void setC2pBytes(Long c2pBytes) { this.c2pBytes = c2pBytes; }
@@ -165,22 +157,6 @@ public class MailLogEventFromReports extends LogEvent
     public Long getP2sBytes() { return p2sBytes; }
     public void setP2sBytes(Long p2sBytes) { this.p2sBytes = p2sBytes; }
 
-    @Column(name="c2p_chunks")
-    public Long getC2pChunks() { return c2pChunks; }
-    public void setC2pChunks(Long c2pChunks) { this.c2pChunks = c2pChunks; }
-
-    @Column(name="s2p_chunks")
-    public Long getS2pChunks() { return s2pChunks; }
-    public void setS2pChunks(Long s2pChunks) { this.s2pChunks = s2pChunks; }
-
-    @Column(name="p2c_chunks")
-    public Long getP2cChunks() { return p2cChunks; }
-    public void setP2cChunks(Long p2cChunks) { this.p2cChunks = p2cChunks; }
-
-    @Column(name="p2s_chunks")
-    public Long getP2sChunks() { return p2sChunks; }
-    public void setP2sChunks(Long p2sChunks) { this.p2sChunks = p2sChunks; }
-
     @Column(name="uid")
     public String getUid() { return uid; }
     public void setUid(String uid) { this.uid = uid; }
@@ -193,6 +169,10 @@ public class MailLogEventFromReports extends LogEvent
     public String getSubject() { return subject; }
     public void setSubject(String subject) { this.subject = subject; }
 
+    @Column(name="sender")
+    public String getSender() { return sender; }
+    public void setSender(String sender) { this.sender = sender; }
+    
     @Column(name="server_type")
     public String getServerType() { return serverType; }
     public void setServerType(String serverType) { this.serverType = serverType; }
@@ -285,25 +265,9 @@ public class MailLogEventFromReports extends LogEvent
     public String getPhishAction() { return phishAction; }
     public void setPhishAction(String phishAction) { this.phishAction = phishAction; }
 
-    @Column(name="sender")
-    public String getSender() { return sender; }
-    public void setSender(String sender) { this.sender = sender; }
-
     @Column(name="vendor")
     public String getVendor() { return vendor; }
     public void setVendor(String vendor) { this.vendor = vendor; }
-
-    // Not sure this one should live here, but it'll do for now
-    public static String getSenderForMsg(Session s, Long msgId) {
-        String fromQuery = "FROM MailLogEventFromReports AS evt" +
-            " WHERE evt.addrKind = 'F'" +
-            " AND evt.msgId = :msgId";
-
-        Query fromQ = s.createQuery(fromQuery);
-        fromQ.setParameter("msgId", msgId);
-        MailLogEventFromReports fromEvt = (MailLogEventFromReports)fromQ.uniqueResult();
-        return fromEvt.getAddr();
-    }
 
     public void appendSyslog(SyslogBuilder sb) // FIXME: not called for now
     {

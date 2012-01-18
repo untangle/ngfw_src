@@ -158,11 +158,17 @@ CREATE TABLE reports.n_mail_addrs (
         try:
             sql_helper.run_sql("""\
 INSERT INTO reports.n_mail_addrs
-      (time_stamp, session_id, client_intf, server_intf, c_client_addr,
-       s_client_addr, c_server_addr, s_server_addr, c_client_port,
-       s_client_port, c_server_port, s_server_port, policy_id, 
-       uid, msg_id, subject, server_type, addr_pos,
-       addr, addr_name, addr_kind, msg_bytes, msg_attachments, hname, sender)
+      (time_stamp, 
+       session_id, client_intf, server_intf,
+       c_client_addr, s_client_addr, c_server_addr, s_server_addr, 
+       c_client_port, s_client_port, c_server_port, s_server_port,
+       policy_id, 
+       uid, 
+       msg_id, subject, server_type, 
+       addr_pos, addr, addr_name, addr_kind, 
+       sender, 
+       msg_bytes, msg_attachments, 
+       hname)
     SELECT
         -- timestamp from request
         mi.time_stamp,
@@ -177,14 +183,16 @@ INSERT INTO reports.n_mail_addrs
         mi.id, mi.subject, mi.server_type,
         -- events.n_mail_message_info_addr
         mia.position, lower(mia.addr), mia.personal, mia.kind,
+        -- events.n_mail_message_info_addr (sender)
+        lower(mias.addr),
         -- events.n_mail_message_stats
         mms.msg_bytes, mms.msg_attachments,
         -- from webpages
-        COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname,
-        ''
+        COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname
     FROM events.pl_endp pe
     JOIN events.n_mail_message_info mi ON mi.session_id = pe.session_id
     JOIN events.n_mail_message_info_addr mia ON mia.msg_id = mi.id
+    JOIN events.n_mail_message_info_addr mias ON ( mias.msg_id = mi.id AND mias.kind = 'F' )
     LEFT OUTER JOIN events.n_mail_message_stats mms ON mms.msg_id = mi.id
     LEFT OUTER JOIN reports.merged_address_map mam
         ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time
@@ -324,6 +332,7 @@ INSERT INTO reports.n_mail_msgs
        policy_id, 
        uid, 
        msg_id, subject, server_type, 
+       sender,
        hname)
     SELECT
         -- timestamp from request
@@ -337,10 +346,13 @@ INSERT INTO reports.n_mail_msgs
         pe.username,
         -- n_message_info
         mi.id, mi.subject, mi.server_type,
-        -- from webpages
+        -- n_message_info_addr
+        mia.addr,
+         -- from webpages
         COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname
     FROM events.pl_endp pe
     JOIN events.n_mail_message_info mi ON mi.session_id = pe.session_id
+    JOIN events.n_mail_message_info_addr mia ON ( mia.msg_id = mi.id AND mia.kind = 'F' )
     LEFT OUTER JOIN reports.merged_address_map mam
         ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time""",
                                (), connection=conn, auto_commit=False)

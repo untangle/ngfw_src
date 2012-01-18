@@ -20,6 +20,7 @@ package com.untangle.uvm.engine;
 
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.vnet.AbstractNode;
 
@@ -105,7 +106,10 @@ class BrandingManagerImpl implements BrandingManager
     
     private BrandingManager getBrandingManager()
     {
-        BrandingManager bnode = (BrandingManager)UvmContextFactory.context().nodeManager().node("untangle-node-branding");
+        NodeManager nm = UvmContextFactory.context().nodeManager();
+        if (nm == null) /* happens on shutdown */
+            return null;
+        BrandingManager bnode = (BrandingManager)nm.node("untangle-node-branding");
         if (bnode != null && (((AbstractNode)bnode).getRunState() == NodeState.RUNNING)) {
             return bnode;
         }

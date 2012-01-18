@@ -147,7 +147,6 @@ def run_sql(sql, args=None, connection=None, auto_commit=True, force_propagate=F
             show_error = False
             
         if show_error:
-            traceback.print_exc(e)
             raise e
 
         try:
