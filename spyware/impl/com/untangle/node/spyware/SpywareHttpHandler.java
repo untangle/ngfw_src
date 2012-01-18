@@ -246,7 +246,6 @@ public class SpywareHttpHandler extends HttpStateMachine
                 }
             }
 
-            logger.warn("CheckCookie: " + domain);
             boolean badDomain = node.isCookieBlocked(domain);
 
             if (badDomain) {
