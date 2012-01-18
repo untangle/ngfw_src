@@ -180,6 +180,7 @@ public class SpywareHttpHandler extends HttpStateMachine
                 domain = host;
             }
 
+            logger.warn("CheckCookie: " + domain);
             boolean badDomain = node.isCookieBlocked(domain);
 
             if (badDomain) {
@@ -245,6 +246,7 @@ public class SpywareHttpHandler extends HttpStateMachine
                 }
             }
 
+            logger.warn("CheckCookie: " + domain);
             boolean badDomain = node.isCookieBlocked(domain);
 
             if (badDomain) {

@@ -28,6 +28,10 @@ def addCookieBlocked(url, enabled=True, description="description"):
     rules["list"].append(newRule)
     node.setCookies(rules)
 
+def nukeCookies():
+    rules = node.getCookies()
+    rules["list"] = []
+    node.setCookies(rules)
 
 def flushEvents():
     global uvmContext
@@ -63,15 +67,21 @@ class SpywareTests(unittest.TestCase):
         result = clientControl.runCommand("wget -q -O - http://gator.com/ 2>&1 | grep -q blockpage")
         assert (result == 0)
     
-    # verify gator cookie is blocked in default config
-    def test_012_addCookieBlocked(self):
-        addCookieBlocked("yahoo.com")
-        addCookieBlocked(".yahoo.com")
-        addCookieBlocked(".www.yahoo.com")
+    # verify there is a youtube cookie
+    def test_012_youtubeCookie(self):
         # remove any previous instance of testcookie.txt
         clientControl.runCommand("/bin/rm -f testcookie.txt")
         # see if untangle cookie is downloaded.
-        result = clientControl.runCommand("wget -q --save-cookies testcookie.txt -O - http://yahoo.com/ 2>&1 >/dev/null; grep -q yahoo.com testcookie.txt")
+        result = clientControl.runCommand("wget -q --save-cookies testcookie.txt -O - http://youtube.com/ >/dev/null 2>&1 ; grep -q youtube.com testcookie.txt")
+        assert (result == 0)
+
+    # verify a youtube cookie can be blocked
+    def test_013_youtubeCookieBlocked(self):
+        addCookieBlocked("youtube.com")
+        # remove any previous instance of testcookie.txt
+        clientControl.runCommand("/bin/rm -f testcookie.txt")
+        # see if untangle cookie is downloaded.
+        result = clientControl.runCommand("wget -q --save-cookies testcookie.txt -O - http://youtube.com/ >/dev/null 2>&1 ; grep -q youtube.com testcookie.txt")
         assert (result == 1)
 
 

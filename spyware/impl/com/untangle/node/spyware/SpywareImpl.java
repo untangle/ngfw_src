@@ -89,7 +89,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     private volatile SpywareSettings settings;
 
-    private volatile Map<String, GenericRule> cookieRules;
+    private volatile Map<String, GenericRule> cookieDomainMap;
     private volatile Set<String> passedUrls;
 
     private final SpywareReplacementGenerator replacementGenerator;
@@ -140,8 +140,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
     public void setSettings(final SpywareSettings settings)
     {
         _setSettings(settings);
-
-        this.reconfigure();
     }
     
     public List<GenericRule> getCookies()
@@ -494,15 +492,21 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
         domain = domain.startsWith(".") && 1 < domain.length() ? domain.substring(1) : domain;
 
-        if (null == cookieRules || !settings.getScanCookies()) {
+        if (null == cookieDomainMap || !settings.getScanCookies()) {
             return false;
         }
 
         boolean match = false;
 
         for (String d = domain; !match && null != d; d = nextHost(d)) {
-            GenericRule sr = cookieRules.get(d);
-            match = (sr != null && sr.getBlocked());
+            GenericRule sr = cookieDomainMap.get(d);
+            if (sr != null) {
+                logger.warn("Matching rule found: " + sr );
+                if (sr.getBlocked() != null)
+                    match = sr.getBlocked();
+                else if (sr.getEnabled() != null) /* if Block is null, use enabled instead */
+                    match = sr.getEnabled();
+            }
         }
 
         return match;
@@ -613,9 +617,9 @@ public class SpywareImpl extends AbstractNode implements Spyware
             for (GenericRule sr : cookieList) {
                 s.put(sr.getString(), sr);
             }
-            cookieRules = s;
+            this.cookieDomainMap = s;
         } else {
-            cookieRules = null;
+            this.cookieDomainMap = null;
         }
 
         Set<String> urlList = new HashSet<String>();
@@ -671,6 +675,12 @@ public class SpywareImpl extends AbstractNode implements Spyware
          */
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+
+        /**
+         * Reconfigure
+         */
+        this.reconfigure();
     }
 
     private GenericRule makeGenericSubnetRule(String line) 

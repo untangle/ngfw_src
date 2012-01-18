@@ -158,10 +158,7 @@ if ("firewall" in parser.nodesToTest or "all" in parser.nodesToTest):
     runTestSuite(FirewallTests)
 if ("classd" in parser.nodesToTest or "all" in parser.nodesToTest):
     runTestSuite(ClassdTests)
-
-# spyware off by default for now
-#if ("spyware" in parser.nodesToTest or "all" in parser.nodesToTest):
-if ("spyware" in parser.nodesToTest): 
+if ("spyware" in parser.nodesToTest or "all" in parser.nodesToTest): 
     runTestSuite(SpywareTests)
 
 print ""
