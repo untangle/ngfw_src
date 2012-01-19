@@ -941,8 +941,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                 }
             };
 
+        long startTime = System.currentTimeMillis();
         this.runTransaction(tw);
+        long elapsed = System.currentTimeMillis() - startTime;
 
+        logger.info("getEvents( query: " + query + " policyId: " + policyId + " limit: " + limit + " ) took " + elapsed + " ms");
+        
         Collections.sort(list);
         String last = null;
         // XXX what is this?
