@@ -354,6 +354,18 @@ class MailSenderImpl implements MailSender, HasConfigFiles
             } catch ( Exception e ) {
                 logger.error( "Unable to reload Mail Daemon configuration", e );
             }
+
+            /* Force flush the queue */
+            try {
+                Process proc = UvmContextFactory.context().exec("/usr/sbin/exim -qff");
+                BufferedReader input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+                String line;
+                while ((line = input.readLine()) != null) {logger.warn(line);}
+                proc.destroy();
+            } catch ( Exception e ) {
+                logger.error( "Unable to flush mail queue", e );
+            }
+
         }
     }
 
