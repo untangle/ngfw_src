@@ -2626,6 +2626,14 @@ Ext.define("Ung.GridEventLog", {
             handler : Ext.bind(this.refreshHandler,this, [true])
         }, {
             xtype : 'button',
+            id: "flush_"+this.getId(),
+            text : i18n._('Full Refresh'),
+            name : "Flush",
+            tooltip : i18n._('Flush Events from Memory to Database and then Refresh'),
+            iconCls : 'icon-refresh',
+            handler : Ext.bind(this.flushHandler,this, [true])
+        }, {
+            xtype : 'button',
             hidden : !this.hasAutoRefresh,
             id: "auto_refresh_"+this.getId(),
             text : i18n._('Auto Refresh'),
@@ -2846,9 +2854,10 @@ Ext.define("Ung.GridEventLog", {
     },
     refreshHandler: function (forceFlush) {
         if (!this.isReportsAppInstalled()) {
-            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install the Reports application."));
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install and enable the Reports application."));
         } else {
             if (!forceFlush) {
+                this.loadMask.disabled = false;
                 this.loadMask.msg = i18n._('Refreshing Events...');
                 this.loadMask.show();
                 this.refreshList();
@@ -2901,6 +2910,36 @@ Ext.define("Ung.GridEventLog", {
         this.loadMask.hide();
         this.makeSelectable();
     },
+    flushHandler: function (forceFlush) {
+        if (!this.isReportsAppInstalled()) {
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install and enable the Reports application."));
+        } else {
+            this.loadMask.disabled = false;
+            this.loadMask.msg = i18n._('Syncing events to Database... ');
+            this.loadMask.show();
+            this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
+                // refresh after complete
+                this.refreshHandler();
+            }, this));
+
+            this.updateFunction = Ext.bind( function(){
+                var statusStr = this.getUntangleNodeReporting().getCurrentStatus();
+                //if the loadMask is no longer shown, stop this task
+                if(this.loadMask.disabled) 
+                    return;
+                //if the loadMask has moved on to a different phase, stop this task
+                if(this.loadMask.msg.indexOf("Syncing") == -1)
+                    return;
+                
+                this.loadMask.msg = i18n._('Syncing events to Database... ') + statusStr;
+                this.loadMask.show();
+                window.setTimeout(this.updateFunction, 1000);
+
+            }, this);
+
+            window.setTimeout(this.updateFunction, 2000);
+        }
+    },
     refreshList : function() {
         var selQuery = this.getSelectedQuery();
         var selPolicy = this.getSelectedPolicy();
@@ -2913,14 +2952,23 @@ Ext.define("Ung.GridEventLog", {
     },
     // is reports node installed
     isReportsAppInstalled : function(forceReload) {
-        if (forceReload || this.reportsAppInstalled === undefined) {
+        if (forceReload || this.reportsAppInstalledAndEnabled === undefined) {
             try {
-                this.reportsAppInstalled = rpc.nodeManager.isInstantiated("untangle-node-reporting");
+                var reportsNode = this.getUntangleNodeReporting();
+                if (this.untangleNodeReporting == null) {
+                    this.reportsAppInstalledAndEnabled = false;
+                }
+                else {
+                    if (reportsNode.getRunState() == "RUNNING") 
+                        this.reportsAppInstalledAndEnabled = true;
+                    else
+                        this.reportsAppInstalledAndEnabled = false;
+                }
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return this.reportsAppInstalled;
+        return this.reportsAppInstalledAndEnabled;
     },
     // get untangle node reporting
     getUntangleNodeReporting : function(forceReload) {

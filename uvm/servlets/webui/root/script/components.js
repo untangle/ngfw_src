@@ -2732,7 +2732,6 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
         if(this!=null && this.rendered && this.autoRefreshEnabled) {
             if(this==this.settingsCmp.tabs.getActiveTab()) {
                 this.autorefreshList.defer(5000,this);
-                //if (this.isReportsAppInstalled()) {this.getUntangleNodeReporting().flushEvents();}
             } else {
                 this.stopAutoRefresh(true);
             }
@@ -2853,7 +2852,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     },
     refreshHandler: function (forceFlush) {
         if (!this.isReportsAppInstalled()) {
-            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install the Reports application."));
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install and enable the Reports application."));
         } else {
             if (!forceFlush) {
                 this.loadMask.disabled = false;
@@ -2911,7 +2910,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     },
     flushHandler: function (forceFlush) {
         if (!this.isReportsAppInstalled()) {
-            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install the Reports application."));
+            Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install and enable the Reports application."));
         } else {
             this.loadMask.disabled = false;
             this.loadMask.msg = i18n._('Syncing events to Database... ');
@@ -2951,14 +2950,23 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
     },
     // is reports node installed
     isReportsAppInstalled : function(forceReload) {
-        if (forceReload || this.reportsAppInstalled === undefined) {
+        if (forceReload || this.reportsAppInstalledAndEnabled === undefined) {
             try {
-                this.reportsAppInstalled = rpc.nodeManager.isInstantiated("untangle-node-reporting");
+                var reportsNode = this.getUntangleNodeReporting();
+                if (this.untangleNodeReporting == null) {
+                    this.reportsAppInstalledAndEnabled = false;
+                }
+                else {
+                    if (reportsNode.getRunState() == "RUNNING") 
+                        this.reportsAppInstalledAndEnabled = true;
+                    else
+                        this.reportsAppInstalledAndEnabled = false;
+                }
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return this.reportsAppInstalled;
+        return this.reportsAppInstalledAndEnabled;
     },
     // get untangle node reporting
     getUntangleNodeReporting : function(forceReload) {
