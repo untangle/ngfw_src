@@ -344,6 +344,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
 
     public Date getLastUpdate()
     {
+        updateScannerInfo();
         return lastUpdate;
     }
 
@@ -354,6 +355,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
 
     public Date getLastUpdateCheck()
     {
+        updateScannerInfo();
         return lastUpdateCheck;
     }
 
@@ -364,6 +366,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
 
     public String getSignatureVersion()
     {
+        updateScannerInfo();
         return signatureVersion;
     }
 
