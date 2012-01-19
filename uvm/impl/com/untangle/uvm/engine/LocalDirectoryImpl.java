@@ -81,11 +81,13 @@ class LocalDirectoryImpl implements LocalDirectory
              * We must do this because the UI does not send the same hashes back
              */
             if (UNCHANGED_PASSWORD.equals(user.getPassword())) {
-                for (LocalDirectoryUser currentUser : this.currentList) {
-                    if (currentUser.equals(user)) {
-                        user.setPasswordShaHash( currentUser.getPasswordShaHash());
-                        user.setPasswordMd5Hash( currentUser.getPasswordMd5Hash());
-                        user.setPasswordBase64Hash( currentUser.getPasswordBase64Hash());
+                if (this.currentList != null) {
+                    for (LocalDirectoryUser currentUser : this.currentList) {
+                        if (currentUser.equals(user)) {
+                            user.setPasswordShaHash( currentUser.getPasswordShaHash());
+                            user.setPasswordMd5Hash( currentUser.getPasswordMd5Hash());
+                            user.setPasswordBase64Hash( currentUser.getPasswordBase64Hash());
+                        }
                     }
                 }
             }
