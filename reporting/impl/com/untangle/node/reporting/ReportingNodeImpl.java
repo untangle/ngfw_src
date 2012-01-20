@@ -82,22 +82,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
         };
         getNodeContext().runTransaction(tw);
 
-        // write the cron file for nightly runs
-        String conf = settings.getNightlyMinute() + " " + settings.getNightlyHour() + " " + CRON_STRING;
-        BufferedWriter out = null;
-        try {
-            out = new BufferedWriter(new FileWriter(CRON_FILE));
-            out.write(conf, 0, conf.length());
-        } catch (IOException ex) {
-            logger.error("Unable to write file", ex);
-            return;
-        }
-        try {
-            out.close();
-        } catch (IOException ex) {
-            logger.error("Unable to close file", ex);
-            return;
-        }
+        writeCronFile();
     }
 
     public ReportingSettings getReportingSettings()
@@ -246,6 +231,10 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
         };
 
         getNodeContext().runTransaction(tw);
+
+
+        if (!CRON_FILE.exists())
+            writeCronFile();
     }
 
     protected void preStart()
@@ -399,5 +388,25 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
         }
     }
 
+    private void writeCronFile()
+    {
+        // write the cron file for nightly runs
+        String conf = settings.getNightlyMinute() + " " + settings.getNightlyHour() + " " + CRON_STRING;
+        BufferedWriter out = null;
+        try {
+            out = new BufferedWriter(new FileWriter(CRON_FILE));
+            out.write(conf, 0, conf.length());
+            out.write("\n");
+        } catch (IOException ex) {
+            logger.error("Unable to write file", ex);
+            return;
+        }
+        try {
+            out.close();
+        } catch (IOException ex) {
+            logger.error("Unable to close file", ex);
+            return;
+        }
+    }
 
 }
