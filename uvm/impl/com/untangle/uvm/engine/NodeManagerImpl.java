@@ -895,7 +895,7 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         PackageDesc packageDesc = tbm.packageDesc(nodeName);
         if (packageDesc == null)
             throw new DeployException("Node named " + nodeName + " not found");
-        if (PackageDesc.Type.SERVICE != packageDesc.getType()) {
+        if (PackageDesc.Type.SERVICE == packageDesc.getType()) {
             return null;
         } else {
             return UvmContextFactory.context().policyManager().getDefaultPolicy();
