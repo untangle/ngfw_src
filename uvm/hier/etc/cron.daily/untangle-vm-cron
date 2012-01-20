@@ -3,19 +3,11 @@
 exec > /dev/null 2>&1
 
 if [ -f "@UVM_HOME@/conf/uid" ]; then
-
     # remove old temp files? XXX
     /usr/bin/find /tmp -mtime +31 -name "*.tmp" | /usr/bin/xargs -r /bin/rm
 
-    # remove old "velocity" files? XXX
+    # remove old "velocity" files? something to do with the mail quarantine XXX
     /usr/bin/find @UVM_HOME@/tmp -name velocity -prune -o -type f -mtime +15 -print | /usr/bin/xargs -r /bin/rm
-
-    # end-of-trial reports never worked properly 
-    # removing this section for now
-    # yesterday=$(date --date="1 day ago" "+%y-%m-%d")
-    # for trial in $(/usr/share/untangle/bin/ut-expiring_packages $yesterday) ; do
-    #   @UVM_HOME@/bin/reporting-generate-reports.py -t $trial
-    # done
 fi
 
 exit 0
