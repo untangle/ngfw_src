@@ -83,22 +83,22 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         String vendorName = this.getVendor();
         String capitalizedVendorName = vendorName.substring(0, 1).toUpperCase() + vendorName.substring(1);
         
-        this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Web Traffic"),
+        this.blockedEventQuery = new EventLogQuery(I18nUtil.marktr("Blocked Web Events"),
                                                    "FROM HttpLogEventFromReports evt " + 
                                                    "WHERE evt.wf" + capitalizedVendorName + "Blocked IS TRUE " + 
                                                    "AND evt.policyId = :policyId " +
                                                    "ORDER BY evt.timeStamp DESC");
-        this.flaggedEventQuery = new EventLogQuery(I18nUtil.marktr("Flagged Web Traffic"),
+        this.flaggedEventQuery = new EventLogQuery(I18nUtil.marktr("Flagged Web Events"),
                                                    "FROM HttpLogEventFromReports evt " + 
                                                    "WHERE evt.wf" + capitalizedVendorName + "Flagged IS TRUE " + 
                                                    "AND evt.policyId = :policyId " +
                                                    "ORDER BY evt.timeStamp DESC");
-        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Web Traffic"),
+        this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Web Events"),
                                                "FROM HttpLogEventFromReports evt " + 
                                                "WHERE evt.wf" + capitalizedVendorName + "Blocked IS NOT NULL " + 
                                                "AND evt.policyId = :policyId " +
                                                "ORDER BY evt.timeStamp DESC");
-        this.unblockEventQuery = new EventLogQuery(I18nUtil.marktr("Passlisted Web Events"),
+        this.unblockEventQuery = new EventLogQuery(I18nUtil.marktr("Unblocked Web Events"),
                                                    "FROM HttpLogEventFromReports evt " + 
                                                    "WHERE evt.wf" + capitalizedVendorName + "Category = 'unblocked' " + 
                                                    "AND evt.policyId = :policyId " + 
@@ -119,12 +119,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     public EventLogQuery[] getEventQueries()
     {
-        return new EventLogQuery[] { this.blockedEventQuery, this.flaggedEventQuery, this.allEventQuery };
-    }
-
-    public EventLogQuery[] getUnblockEventQueries()
-    {
-        return new EventLogQuery[] { this.unblockEventQuery };
+        return new EventLogQuery[] { this.blockedEventQuery, this.flaggedEventQuery, this.allEventQuery, this.unblockEventQuery };
     }
 
     public String getUnblockMode()

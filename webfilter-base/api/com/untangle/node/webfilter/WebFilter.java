@@ -51,6 +51,4 @@ public interface WebFilter extends Node
     String getVendor();
 
     EventLogQuery[] getEventQueries();
-
-    EventLogQuery[] getUnblockEventQueries();
 }

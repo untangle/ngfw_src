@@ -17,11 +17,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
             this.buildBlockLists();
             this.buildPassLists();
             this.buildEventLog();
-            this.buildUnblockEventLog();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.panelBlockLists, this.panelPassLists, 
-                this.gridEventLog, this.gridUnblockEventLog]);
- 
+            this.buildTabPanel([this.panelBlockLists, this.panelPassLists, this.gridEventLog]);
             // keep initial base settings
             this.initialSettings = Ung.Util.clone(this.getSettings());
             
@@ -104,7 +101,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         xtype : "combo",
                         editable : false,
                         mode : "local",
-                        fieldLabel : this.i18n._("Bypass"),
+                        fieldLabel : this.i18n._("Unblock"),
                         name : "user_bypass",
                         store : new Ext.data.SimpleStore({
                             fields : ['unblockModeValue', 'unblockModeName'],
@@ -1089,61 +1086,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     dataIndex : 'server'
                 }]
 
-            });
-        },
-        buildUnblockEventLog : function() {
-            this.gridUnblockEventLog = new Ung.GridEventLog({
-                settingsCmp : this,
-                eventQueriesFn : this.getRpcNode().getUnblockEventQueries,
-                name : "Unblock Event Log",
-                title : i18n._('Unblock Event Log'),
-                fields : [{
-                    name : 'timeStamp',
-                    mapping : 'timeStamp',
-                    sortType : Ung.SortTypes.asTimestamp
-                }, {
-                    name : 'client',
-                    mapping : 'CClientAddr'
-                }, {
-                    name : 'server',
-                    mapping : 'CServerAddr'
-                }, {
-                    name : 'host',
-                    mapping : 'host'
-                }, {
-                    name : 'uid'
-                }, {
-                    name : 'uri',
-                    mapping : 'uri'
-                }],
-                autoExpandColumn: 'uri',
-                columns : [{
-                    header : this.i18n._("timestamp"),
-                    width : Ung.Util.timestampFieldWidth,
-                    dataIndex : 'timeStamp',
-                    renderer : function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header : this.i18n._("client"),
-                    width : Ung.Util.ipFieldWidth
-                }, {
-                    header : this.i18n._("username"),
-                    dataIndex : 'uid',
-                    width : Ung.Util.usernameFieldWidth
-                }, {
-                    id : "host",
-                    header : this.i18n._("host"),
-                    width : Ung.Util.hostnameFieldWidth
-                }, {
-                    id : "uri",
-                    header : this.i18n._("uri"),
-                    width : Ung.Util.uriFieldWidth
-                }, {
-                    id : "server",
-                    header : this.i18n._("server"),
-                    width : Ung.Util.ipFieldWidth
-                }]
             });
         },
         // private method

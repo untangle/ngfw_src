@@ -143,7 +143,7 @@ public abstract class DecisionEngine
         // check unblocks
         // if a site/URL is unblocked already for this specific IP it is passed regardless of any other settings
         if (checkUnblockedSites(host, uri, clientIp)) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, "bypass", node.getVendor());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, "unblocked", node.getVendor());
             logger.debug("LOG: in unblock list: " + requestLine.getRequestLine());
             node.logEvent(hbe, host, port, event);
             return null;
