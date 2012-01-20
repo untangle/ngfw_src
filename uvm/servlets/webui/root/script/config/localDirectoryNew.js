@@ -35,8 +35,8 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 paginated : false,
                 emptyRow : {
                     "username" : this.i18n._('[no ID/login]'),
-                    "firstName" : this.i18n._('[no name]'),
-                    "lastName" : this.i18n._('[no name]'),
+                    "firstName" : this.i18n._('[firstName ]'),
+                    "lastName" : this.i18n._('[lastName]'),
                     "email" : this.i18n._('[no email]'),
                     "password" : "",
                     "javaClass" : "com.untangle.uvm.LocalDirectoryUser"
