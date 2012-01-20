@@ -330,17 +330,15 @@ public abstract class DecisionEngine
         synchronized(unblockedDomains) {
             for (Map.Entry<InetAddress, List<String>> entry : map.entrySet()) {
                 addr = entry.getKey();
-                logger.info(".. for address '" + addr + "'");
                 unblockedSites = entry.getValue();
 
                 hostSites = unblockedDomains.get(addr);
 
                 for (String site : unblockedSites) {
                     if (hostSites.contains(site)) {
-                        logger.info(".... removing unblocked site " + site);
+                        logger.info("Removing unblocked site " + site + " for " + addr);
                         hostSites.remove(site);
                         if (hostSites.isEmpty()) {
-                            logger.info(".... '" + addr + "' has no more unblocked sites");
                             unblockedDomains.remove(addr);
                             break;
                         }

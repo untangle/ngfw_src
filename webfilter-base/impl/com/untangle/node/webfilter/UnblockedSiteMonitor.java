@@ -27,7 +27,6 @@ import com.untangle.uvm.util.WorkerRunner;
  */
 class UnblockedSitesMonitor
 {
-    // static variables ---------------------------------------------------------
     private static long MONITOR_SLEEP_DELAY_MS = 5l * 60l * 1000l;
 
     // private members ---------------------------------------------------------
@@ -75,7 +74,7 @@ class UnblockedSitesMonitor
                 unblockedSites.remove(bs);  // to make sure creation time is the latest...
             unblockedSites.add(bs);
 
-            logger.warn("added " + bs);
+            logger.info("Adding unblock:" + bs);
         }
 
         public void start() {}
@@ -85,7 +84,7 @@ class UnblockedSitesMonitor
         public void work() throws InterruptedException
         {
             Thread.sleep(MONITOR_SLEEP_DELAY_MS);
-
+            
             if (unblockedSites.isEmpty())
                 return;
 
@@ -96,7 +95,7 @@ class UnblockedSitesMonitor
              * There is no need to traverse the whole list
              */
             if (unblockedSites.first().creationTimeMillis > expirationTime)
-                return;
+               return;
 
             try {
                 Map<InetAddress,List<String>> sitesToDelete = new HashMap<InetAddress,List<String>>();
@@ -107,14 +106,14 @@ class UnblockedSitesMonitor
 
                     while (iter.hasNext()) {
                         bs = iter.next();
-                        logger.warn("looking at " + bs);
+                        logger.info("Evaluating unblock \"" + bs + "\"");
 
                         if (bs.creationTimeMillis > expirationTime) {
-                            logger.warn(".. not expired yet");
+                            logger.info("Evaluating unblock \"" + bs + "\": still valid");
                             break; // ordered, so we can stop right here
                         }
 
-                        logger.warn(".. expired, scheduling for removal");
+                        logger.info("Evaluating unblock \"" + bs + "\": expired (" + bs.creationTimeMillis + " > " + expirationTime + ")");
                         iter.remove();
 
                         // add to sitesToDelete
@@ -150,7 +149,7 @@ class UnblockedSitesMonitor
         {
             site = mySite;
             addr = myAddr;
-            creationTimeMillis = System.nanoTime() / 1000000L;
+            creationTimeMillis = System.currentTimeMillis();
         }
 
         public int hashCode()
@@ -165,7 +164,7 @@ class UnblockedSitesMonitor
 	
         public String toString()
         {
-            return "Host-unblocked site {" + addr + ", " + site + "}";
+            return "Unblock {" + addr + ", " + site + "}";
         }
 
     }

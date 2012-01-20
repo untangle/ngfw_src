@@ -180,7 +180,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 logger.warn("cannot unblock null host");
                 return false;
             } else {
-                logger.warn("temporarily unblocking site: " + site);
+                logger.info("Temporarily unblocking site: " + site);
                 InetAddress addr = bd.getClientAddress();
 
                 unblockedSitesMonitor.addUnblockedSite(addr, site);
