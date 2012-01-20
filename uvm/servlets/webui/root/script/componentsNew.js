@@ -2602,12 +2602,13 @@ Ext.define("Ung.GridEventLog", {
             })
         });
 
-        this.pagingToolbar = new Ext.PagingToolbar({
-            y: -2,
-            height: 21,
-            pageSize : this.recordsPerPage,
+        this.pagingToolbar = Ext.create('Ext.toolbar.Paging',{
+            //y: -2,//TODO: no longer supported in extjs4
+            //height: 21,
+            //pageSize : this.recordsPerPage,//TODO: move this to store
+            width: 250,
             store : this.store,
-            style: "border-top:0px solid white;padding-top:1px;padding-bottom:0px;"
+            style: "border:0; top:1px;"
         });
 
         this.bbar = [{
@@ -2623,7 +2624,7 @@ Ext.define("Ung.GridEventLog", {
             name : "Refresh",
             tooltip : i18n._('Refresh'),
             iconCls : 'icon-refresh',
-            handler : Ext.bind(this.refreshHandler,this, [true])
+            handler : Ext.bind(this.refreshHandler,this, [false])
         }, {
             xtype : 'button',
             id: "flush_"+this.getId(),
@@ -2640,7 +2641,7 @@ Ext.define("Ung.GridEventLog", {
             enableToggle: true,
             pressed: false,
             name : "Auto Refresh",
-            tooltip : i18n._('Auto Refresh'),
+            tooltip : i18n._('Auto Refresh every 5 seconds (does not flush)'),
             iconCls : 'icon-autorefresh',
             handler : Ext.bind(function() {
                 var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
@@ -2655,7 +2656,7 @@ Ext.define("Ung.GridEventLog", {
             id: "export_"+this.getId(),
             text : i18n._('Export'),
             name : "Export",
-            tooltip : i18n._('Export Events'),
+            tooltip : i18n._('Export Events to File'),
             iconCls : 'icon-export',
             handler : Ext.bind(this.exportHandler,this)
         }, {
@@ -2666,6 +2667,8 @@ Ext.define("Ung.GridEventLog", {
             text : '<i><font color="red">' + i18n._('Warning') + ':</font></i> ' + i18n._('Event logs are delayed by a few minutes.')
         }];
         Ung.GridEventLog.superclass.initComponent.call(this);
+        //TODO: find extjs4 solution 
+        /*
         var columnModel=this.getColumnModel();
         columnModel.getRenderer = function(col){
             if(!this.config[col].renderer){
@@ -2682,6 +2685,7 @@ Ext.define("Ung.GridEventLog", {
                 cmConfig[i].initialSortable = false;
             }
         }
+        */
     },
     autoRefreshEnabled:true,
     startAutoRefresh: function(setButton) {
@@ -2731,9 +2735,6 @@ Ext.define("Ung.GridEventLog", {
         if(this!=null && this.rendered && this.autoRefreshEnabled) {
             if(this==this.settingsCmp.tabs.getActiveTab()) {
             	Ext.Function.defer(this.autorefreshList,5000,this);
-                if (this.isReportsAppInstalled()) {
-                    this.getUntangleNodeReporting().flushEvents(); 
-                }
             } else {
                 this.stopAutoRefresh(true);
             }
@@ -2767,8 +2768,9 @@ Ext.define("Ung.GridEventLog", {
     // called when the component is rendered
     onRender : function(container, position) {
         Ung.GridEventLog.superclass.onRender.call(this, container, position);
-        this.getGridEl().down("div[class*=x-grid3-viewport]").set({'name' : "Table"});
-        this.pagingToolbar.loading.hide();
+        //TODO: extjs4 migration find an alternative
+        //this.getGridEl().down("div[class*=x-grid3-viewport]").set({'name' : "Table"});
+        //this.pagingToolbar.loading.hide();
 
         if (this.eventQueriesFn != null) {
             this.rpc.eventLogQueries=this.eventQueriesFn();
@@ -2857,13 +2859,13 @@ Ext.define("Ung.GridEventLog", {
             Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install and enable the Reports application."));
         } else {
             if (!forceFlush) {
-                this.loadMask.disabled = false;
-                this.loadMask.msg = i18n._('Refreshing Events...');
+            	this.loadMask.disabled = false;
+            	this.loadMask.msg = i18n._('Refreshing Events...');
                 this.loadMask.show();
                 this.refreshList();
             } else {
                 this.loadMask.disabled = false;
-                this.loadMask.msg = i18n._('Compiling Database Tables...');
+                this.loadMask.msg = i18n._('Syncing events to Database... ');
                 this.loadMask.show();
                 this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
                     this.loadMask.msg = i18n._('Refreshing Events...');
@@ -2877,10 +2879,10 @@ Ext.define("Ung.GridEventLog", {
                     if(this.loadMask.disabled) 
                         return;
                     //if the loadMask has moved on to a different phase, stop this task
-                    if(this.loadMask.msg.indexOf("Compiling") == -1)
+                    if(this.loadMask.msg.indexOf("Syncing") == -1)
                         return;
                     
-                    this.loadMask.msg = i18n._('Compiling Database Tables... ') + statusStr;
+                    this.loadMask.msg = i18n._('Syncing events to Database... ') + statusStr;
                     this.loadMask.show();
                     window.setTimeout(this.updateFunction, 1000);
 
@@ -3318,7 +3320,7 @@ Ung.NodeWin._nodeScripts = {};
 
 // Dynamically loads javascript file for a node
 Ung.NodeWin.loadNodeScript = function(settingsCmp, handler) {
-    var scriptFile = Ung.Util.getScriptSrc('settings.js');
+    var scriptFile = Ung.Util.getScriptSrc('settingsNew.js');
     Ung.Util.loadScript('script/' + settingsCmp.name + '/' + scriptFile, Ext.bind(function() {
         this.settingsClassName = Ung.NodeWin.getClassName(this.name);
         if(!Ung.NodeWin.dependency[this.name]) {
@@ -4498,7 +4500,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.Panel, {
                 },this)
             });
         }
-        //TODO: migration find an alternative
+        //TODO: extjs4 migration find an alternative
         //this.getGridEl().down("div[class*=x-grid3-viewport]").set({'name' : "Table"});
 
         this.getView().getRowClass = function(record, index, rowParams, store) {
