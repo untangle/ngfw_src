@@ -16,7 +16,7 @@ class Manager(object):
     def doAptTailLog(self, key ):
         print "Operation started, please apt.log for more information"
 
-    def buildNodeId(self,nodeId):
+    def buildNodeId(self, nodeIdStr ):
         nodeId = int( nodeIdStr )
         return {'javaClass': 'com.untangle.uvm.security.NodeId', 'id': nodeId, 'name': "%d" % ( nodeId ) }
 
