@@ -1,0 +1,1 @@
+0 2 * * * root /usr/share/untangle/bin/reporting-generate-reports.py -d $(date "+%Y-%m-%d") > /dev/null 2>&1
