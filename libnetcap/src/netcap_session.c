@@ -63,7 +63,7 @@ int netcap_sessions_init ( void )
         session_index |= ( (u_int64_t)rand() & 0xFFFF );
         session_index |= ( (u_int64_t)rand() & 0xFFFF ) << 16; 
         session_index |= ( (u_int64_t)rand() & 0xFFFF ) << 32; 
-        session_index |= ( (u_int64_t)rand() & 0xFFFF ) << 48; 
+        session_index |= ( (u_int64_t)rand() & 0x00FF ) << 48; 
     }
     
     if ( session_index == 0 ) {
