@@ -50,27 +50,18 @@ static session_tls_t* _tls_get( void );
 
 int netcap_sessions_init ( void )
 {
-    int c;
+    u_int32_t epoch = (u_int32_t)time(NULL);
 
-    // Set the session index to a random value
-    /* XXX This isn't a particularly good seed */
-    srand(getpid() ^ time( NULL ));
-    
-    /* Calculate a 31-bit random value */
     session_index = 0;
 
-    for ( c = 0 ; ( session_index == 0 ) && ( c < 7 ) ; c++ ) {
-        session_index |= ( (u_int64_t)rand() & 0xFFFF );
-        session_index |= ( (u_int64_t)rand() & 0xFFFF ) << 16; 
-        session_index |= ( (u_int64_t)rand() & 0xFFFF ) << 32; 
-        session_index |= ( (u_int64_t)rand() & 0x00FF ) << 48; 
-    }
-    
-    if ( session_index == 0 ) {
-        return errlog( ERR_CRITICAL, "Unable to generate a non-zero random number in %d attempts\n", c );
-    }
+    // highest 16 bits are zero
+    // middle  32 bits should be epoch
+    // lowest  16 bits are zero
+    // this means that session_indexs should be ever increasing despite restarts
+    // (unless there are more than 16 bits or 65000 sessions per second on average)
+    session_index |= ( (u_int64_t)epoch & 0xFFFFFFFF ) << 16;
 
-    /* Down to 63 bit - avoid signedness issues with java*/
+    // double check that top bit is zero to avoid signedness issues with java
     session_index &= 0x7FFFFFFFFFFFFFFFULL;
 
     // Initialize the locks on the index
