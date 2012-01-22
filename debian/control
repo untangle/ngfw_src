@@ -10,6 +10,7 @@ Package: untangle-libuvmcore
 Architecture: i386 amd64
 Depends: ${misc:Depends}, libc6 (>= 2.3.2), untangle-libnetfilter-queue0 (>= 0.0.15), libsysfs1 | libsysfs2, libnetfilter-conntrack1 (>= 0.0.81) | untangle-libnetfilter-conntrack1 (>= 0.0.81), gawk
 XB-Display-Name: Untangle Core Library
+XB-Untangle-Type: library
 XB-Untangle-Pkg-Type: library
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
@@ -47,6 +48,7 @@ Package: untangle-casing-ftp
 Architecture: all
 Depends: untangle-libuvm
 XB-Display-Name: File Transfer Casing
+XB-Untangle-Type: casing
 XB-Untangle-Pkg-Type: casing
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
@@ -84,6 +86,7 @@ Package: untangle-casing-http
 Architecture: all
 Depends: untangle-libuvm
 XB-Display-Name: Web Casing
+XB-Untangle-Type: casing
 XB-Untangle-Pkg-Type: casing
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
@@ -121,6 +124,7 @@ Package: untangle-casing-mail
 Architecture: all
 Depends: untangle-libuvm
 XB-Display-Name: Email Casing
+XB-Untangle-Type: casing
 XB-Untangle-Pkg-Type: casing
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
@@ -158,6 +162,7 @@ Package: untangle-node-shield
 Architecture: all
 Depends: untangle-vm, untangle-shield, dash
 XB-Display-Name: Attack Blocker
+XB-Untangle-Type: service
 XB-Untangle-Pkg-Type: service
 XB-View-Position: 1110
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAJmklEQVRYhcWZWYwb
@@ -221,6 +226,7 @@ Architecture: all
 Depends: untangle-vm, untangle-casing-http, untangle-google-safebrowsing, untangle-webfilter-init
 XB-Display-Name: Spyware Blocker
 XB-View-Position: 50
+XB-Untangle-Type: node
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMgAAABl0RVh0
  U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAjsSURBVHjaxFlrTFXZFV5XQMEHTx0G0Qgj
@@ -272,6 +278,7 @@ Architecture: all
 Depends: untangle-vm, untangle-casing-http, untangle-base-webfilter, untangle-webfilter-init
 XB-Display-Name: Web Filter Lite
 XB-View-Position: 20
+XB-Untangle-Type: node
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA
  IGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAzKSURBVHjarJl/cBXX
@@ -341,6 +348,7 @@ Architecture: all
 Depends: untangle-vm, untangle-base-virus, untangle-clamav-config, untangle-casing-http, untangle-casing-ftp, untangle-casing-mail
 XB-Display-Name: Virus Blocker Lite
 XB-View-Position: 40
+XB-Untangle-Type: node
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz
  AAALEgAACxIB0t1+/AAAABZ0RVh0Q3JlYXRpb24gVGltZQAwOC8zMS8xMbwytWUAAAAYdEVYdFNv
@@ -405,6 +413,7 @@ Architecture: all
 Depends: untangle-vm
 XB-Display-Name: Application Control Lite
 XB-View-Position: 100
+XB-Untangle-Type: node
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz
  AAALEgAACxIB0t1+/AAAABh0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzT7MfTgAAABZ0RVh0
@@ -520,6 +529,7 @@ XB-Display-Name: Router
 XB-Auto-Start: true
 XB-View-Position: 2000
 XB-Invisible: true
+XB-Untangle-Type: service
 XB-Untangle-Pkg-Type: service
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAA
@@ -578,6 +588,7 @@ Architecture: all
 Depends: untangle-vm
 XB-Display-Name: Firewall
 XB-View-Position: 110
+XB-Untangle-Type: node
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAANjr9RwUqgAAACBjSFJNAABtmAAAc44AAPJxAACDbAAAg7sAANTIAAAx7AAA
@@ -629,6 +640,7 @@ Architecture: all
 Depends: untangle-vm, untangle-base-spam, untangle-casing-mail, untangle-spamassassin-update
 XB-Display-Name: Spam Blocker Lite
 XB-View-Position: 61
+XB-Untangle-Type: node
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz
  AAALEgAACxIB0t1+/AAAABZ0RVh0Q3JlYXRpb24gVGltZQAwOS8xNC8xMVdbHYMAAAAYdEVYdFNv
@@ -717,6 +729,7 @@ Architecture: all
 Depends: untangle-vm, untangle-base-spam, untangle-clamav-config, untangle-casing-mail, untangle-casing-http, untangle-google-safebrowsing
 XB-Display-Name: Phish Blocker
 XB-View-Position: 70
+XB-Untangle-Type: node
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAA
@@ -810,6 +823,7 @@ Architecture: all
 Depends: untangle-vm, untangle-nsis-addons, openssl, openvpn
 XB-Display-Name: OpenVPN
 XB-View-Position: 1080
+XB-Untangle-Type: service
 XB-Untangle-Pkg-Type: service
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAA
@@ -878,6 +892,7 @@ Architecture: all
 Depends: untangle-vm, untangle-casing-http, untangle-snort-rules
 XB-Display-Name: Intrusion Prevention
 XB-View-Position: 120
+XB-Untangle-Type: node
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAA
@@ -948,6 +963,7 @@ Architecture: all
 Depends: untangle-vm
 XB-Display-Name: Reports
 XB-View-Position: 1010
+XB-Untangle-Type: service
 XB-Untangle-Pkg-Type: service
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAgkSURBVHjazFlJb5vHGX5mvo2k
@@ -998,6 +1014,7 @@ Architecture: all
 Depends: untangle-vm, untangle-casing-http
 XB-Display-Name: Ad Blocker
 XB-View-Position: 130
+XB-Untangle-Type: node
 XB-Untangle-Pkg-Type: node
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAACXBIWXMAAAsTAAALEwEAmpwYAAAK
  T2lDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAHjanVNnVFPpFj333vRCS4iAlEtvUhUIIFJCi4AU
@@ -1089,6 +1106,7 @@ Architecture: all
 Depends: untangle-vm, untangle-cpd, php5-pgsql, php5-curl
 XB-Display-Name: Captive Portal
 XB-View-Position: 1060
+XB-Untangle-Type: service
 XB-Untangle-Pkg-Type: service
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAMAAADyHTlpAAAAGXRFWHRTb2Z0d2Fy
  ZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAwBQTFRFb4o2ztOop6qV7PTDmKOSbnJy
@@ -1151,6 +1169,7 @@ Package: untangle-base-virus
 Architecture: all
 Depends: untangle-libuvm, untangle-casing-http, untangle-casing-mail
 XB-Display-Name: Virus Blocker Base
+XB-Untangle-Type: base
 XB-Untangle-Pkg-Type: base
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
@@ -1188,6 +1207,7 @@ Package: untangle-base-spam
 Architecture: all
 Depends: untangle-libuvm, untangle-casing-mail
 XB-Display-Name: Spam Blocker Base
+XB-Untangle-Type: base
 XB-Untangle-Pkg-Type: base
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
@@ -1225,6 +1245,7 @@ Package: untangle-base-webfilter
 Architecture: all
 Depends: untangle-libuvm, untangle-casing-http
 XB-Display-Name: WebFilter Base
+XB-Untangle-Type: base
 XB-Untangle-Pkg-Type: base
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
@@ -1264,6 +1285,7 @@ Depends: sun-java6-jre
 Provides: libuvm-thirdparty
 Replaces: libuvm-thirdparty
 XB-Display-Name: Platform Thirdparty Libraries
+XB-Untangle-Type: library
 XB-Untangle-Pkg-Type: library
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
@@ -1305,6 +1327,7 @@ Provides: mvvm
 Conflicts: untangle-slapd, untangle-libldap-2.2-7, untangle-ldap-utils, untangle-client, untangle-arp-eater, untangle-cli-client, untangle-cli-server, untangle-vm-shell, atop
 Replaces: mvvm
 XB-Display-Name: Platform
+XB-Untangle-Type: library
 XB-Untangle-Pkg-Type: library
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
@@ -1342,6 +1365,7 @@ Package: untangle-libuvm
 Architecture: all
 Depends: sun-java6-jre
 XB-Display-Name: Platform Libraries
+XB-Untangle-Type: library
 XB-Untangle-Pkg-Type: library
 XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9Y
  MgAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja
