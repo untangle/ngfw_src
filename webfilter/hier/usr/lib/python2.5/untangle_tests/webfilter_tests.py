@@ -320,7 +320,7 @@ class WebFilterTests(unittest.TestCase):
         flushEvents()
         query = None;
         for q in node.getEventQueries():
-            if q['name'] == 'Blocked Web Traffic': query = q;
+            if q['name'] == 'Blocked Web Events': query = q;
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
@@ -341,7 +341,7 @@ class WebFilterTests(unittest.TestCase):
         flushEvents()
         query = None;
         for q in node.getEventQueries():
-            if q['name'] == 'Flagged Web Traffic': query = q;
+            if q['name'] == 'Flagged Web Events': query = q;
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
@@ -360,7 +360,7 @@ class WebFilterTests(unittest.TestCase):
         time.sleep(1)
         flushEvents()
         for q in node.getEventQueries():
-            if q['name'] == 'All Web Traffic': query = q;
+            if q['name'] == 'All Web Events': query = q;
         assert(query != None)
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
