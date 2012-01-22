@@ -319,8 +319,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             {
                 public void run()
                 {
-                    NodeContext tctx = null == nodeManager
-                        ? null : nodeManager.threadContext();
+                    NodeContext tctx = null == nodeManager ? null : nodeManager.threadContext();
 
                     if (null != tctx) {
                         nodeManager.registerThreadContext(tctx);
@@ -332,7 +331,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                     } catch (Exception exn) {
                         logger.error("Exception running: " + runnable, exn);
                     } finally {
-                        if (null != tctx) {
+                        if (null != tctx && nodeManager != null) {
                             nodeManager.deregisterThreadContext();
                         }
                     }
