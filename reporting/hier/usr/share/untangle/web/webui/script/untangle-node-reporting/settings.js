@@ -134,29 +134,29 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             var weeklySched = this.getReportingSettings().schedule.weeklySched.list;
             for(var i=0; i<weeklySched.length;i++) {
                 switch (weeklySched[i].day)
-                    {
-                    case 1: //Schedule.SUNDAY
-                        weeklySundayCurrent = true;
-                        break;
-                    case 2: //Schedule.MONDAY:
-                        weeklyMondayCurrent = true;
-                        break;
-                    case 3: //Schedule.TUESDAY:
-                        weeklyTuesdayCurrent = true;
-                        break;
-                    case 4: //Schedule.WEDNESDAY:
-                        weeklyWednesdayCurrent = true;
-                        break;
-                    case 5: //Schedule.THURSDAY:
-                        weeklyThursdayCurrent = true;
-                        break;
-                    case 6: //Schedule.FRIDAY:
-                        weeklyFridayCurrent = true;
-                        break;
-                    case 7: //Schedule.SATURDAY:
-                        weeklySaturdayCurrent = true;
-                        break;
-                    }
+                {
+                  case 1: //Schedule.SUNDAY
+                    weeklySundayCurrent = true;
+                    break;
+                  case 2: //Schedule.MONDAY:
+                    weeklyMondayCurrent = true;
+                    break;
+                  case 3: //Schedule.TUESDAY:
+                    weeklyTuesdayCurrent = true;
+                    break;
+                  case 4: //Schedule.WEDNESDAY:
+                    weeklyWednesdayCurrent = true;
+                    break;
+                  case 5: //Schedule.THURSDAY:
+                    weeklyThursdayCurrent = true;
+                    break;
+                  case 6: //Schedule.FRIDAY:
+                    weeklyFridayCurrent = true;
+                    break;
+                  case 7: //Schedule.SATURDAY:
+                    weeklySaturdayCurrent = true;
+                    break;
+                }
             }
 
             // MONTHLY SCHEDULE
@@ -199,6 +199,11 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     this.grid.rowEditorChangePassword.show();
                 }
             });
+
+            var generationTime=new Date();
+            generationTime.setTime(0);
+            generationTime.setHours(this.getReportingSettings().nightlyHour);
+            generationTime.setMinutes(this.getReportingSettings().nightlyMinute);
 
             this.panelGeneration = new Ext.Panel({
                 // private fields
@@ -346,8 +351,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                                 }.createDelegate(this)
                             }
                         }
-                }
-            ]
+                    }
+                            ]
                 },{
                     title : this.i18n._("Daily Reports"),
                     labelWidth: 150,
@@ -468,7 +473,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             listeners : {
                                 "check" : {
                                     fn : function(elem, checked) {
-                                            Ext.getCmp('reporting_monthlyOnceCombo').setDisabled(!checked);
+                                        Ext.getCmp('reporting_monthlyOnceCombo').setDisabled(!checked);
                                     }
                                 }
                             }
@@ -524,81 +529,64 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             }
                         }
                     }]
-                },
-{
+                }, {
                     title: this.i18n._("Scheduling"),
                     labelWidth: 150,
                     items: [{
                         border: false,
                         cls: 'description',
                         html: this.i18n._("Time at which to run nightly reports.")
-                    },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Hour'),
-                        name : 'Hour',
-                        id: 'reporting_nightlyHour',
-                        value : this.getReportingSettings().nightlyHour,
-                        width: 25,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        minValue: 0,
-                        maxValue: 23,
+                    }, {
+                        xtype : 'timefield',
+                        fieldLabel : this.i18n._('Generation Time'),
+                        name : 'Generation Time',
+                        width : 90,
+                        hideLabel : true,
+                        // format : "H:i",
+                        value : generationTime,
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getReportingSettings().nightlyHour = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
-        },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Minute'),
-                        name : 'Minute',
-                        id: 'reporting_nightlyMinute',
-                        value : this.getReportingSettings().nightlyMinute,
-                        width: 25,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        minValue: 0,
-                        maxValue: 59,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getReportingSettings().nightlyMinute = newValue;
+                                    // newValue;
+                                    if (newValue != "") {
+                                        var v = elem.parseDate(newValue);
+                                        this.getReportingSettings().nightlyMinute = v.dateFormat("i");
+                                        this.getReportingSettings().nightlyHour   = v.dateFormat("H");
+                                    }
                                 }.createDelegate(this)
                             }
                         }
                     }]
                 },
-{
-                    title: this.i18n._("Reports Retention"),
-                    labelWidth: 150,
-                    items: [{
-                        border: false,
-                        cls: 'description',
-                        html: this.i18n._("Keep old reports on the server for this number of days.")
-                    },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Reports Retention days'),
-                        name : 'Reports Retention days',
-                        id: 'reporting_daysToKeepFiles',
-                        value : this.getReportingSettings().fileRetention,
-                        width: 25,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        minValue: 1,
-                        maxValue: 90,
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getReportingSettings().fileRetention = newValue;
-                                }.createDelegate(this)
-                            }
+                        {
+                            title: this.i18n._("Reports Retention"),
+                            labelWidth: 150,
+                            items: [{
+                                border: false,
+                                cls: 'description',
+                                html: this.i18n._("Keep old reports on the server for this number of days.")
+                            },{
+                                xtype : 'numberfield',
+                                fieldLabel : this.i18n._('Reports Retention days'),
+                                name : 'Reports Retention days',
+                                id: 'reporting_daysToKeepFiles',
+                                value : this.getReportingSettings().fileRetention,
+                                width: 25,
+                                allowDecimals: false,
+                                allowNegative: false,
+                                minValue: 1,
+                                maxValue: 90,
+                                listeners : {
+                                    "change" : {
+                                        fn : function(elem, newValue) {
+                                            this.getReportingSettings().fileRetention = newValue;
+                                        }.createDelegate(this)
+                                    }
+                                }
+                            }]
                         }
-                    }]
-                }
 
-]});
+                       ]});
 
             /* Create the row editor for updating the password */
             this.gridRecipients.rowEditorChangePassword = new Ung.RowEditorWindow({
@@ -702,15 +690,15 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             });
         },
         // validation
-/*        
-        validateClient: function() {
-            var recipientsList=this.gridRecipients.getFullSaveList();
-            for(var i=0;i<recipientsList.length;i++) {
-            	var recipient = recipientsList[i];
-            }
-            return true;
-        },
-*/        
+        /*        
+                  validateClient: function() {
+                  var recipientsList=this.gridRecipients.getFullSaveList();
+                  for(var i=0;i<recipientsList.length;i++) {
+            	  var recipient = recipientsList[i];
+                  }
+                  return true;
+                  },
+        */        
         validateServer: function() {
             // ipMaskedAddress list must be validated server side
             var ipMapList = this.gridIpMap.getSaveList();
@@ -740,7 +728,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     if (!result.valid) {
                         var errorMsg = "";
                         switch (result.errorCode) {
-                        case 'INVALID_IPMADDR' :
+                          case 'INVALID_IPMADDR' :
                             errorMsg = this.i18n._("Invalid \"IP address\" specified") + ": " + result.cause;
                             break;
                         default :
@@ -777,7 +765,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             this.gridRecipients.clearChangedData();
             this.gridRecipients.store.loadData( this.buildReportingUsersData());
             var cmpIds = this.getEditableFields(),
-                i;
+            i;
             for (i = 0; i < cmpIds.length; i++) {
                 if (cmpIds[i].isDirty()){
                     cmpIds[i].originalValue = cmpIds[i].getValue();
@@ -785,13 +773,13 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 }
             }
             /*
-            var rdtk = Ext.getCmp("reporting_daysToKeepFiles");
-            rdtk.setValue( this.getReportingSettings().fileRetention );
-            rdtk.originalValue = rdtk.getValue();
-            
-            rdtk = Ext.getCmp('reporting_daysToKeepDB');            
-            rdtk.setValue( this.getReportingSettings().dbRetention );
-            rdtk.originalValue = rdtk.getValue();
+              var rdtk = Ext.getCmp("reporting_daysToKeepFiles");
+              rdtk.setValue( this.getReportingSettings().fileRetention );
+              rdtk.originalValue = rdtk.getValue();
+              
+              rdtk = Ext.getCmp('reporting_daysToKeepDB');            
+              rdtk.setValue( this.getReportingSettings().dbRetention );
+              rdtk.originalValue = rdtk.getValue();
             */
 
             this.gridIpMap.clearChangedData();
@@ -836,7 +824,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 schedule.monthlyNFirst = Ext.getCmp('reporting_monthlyFirst').getValue();
                 schedule.monthlyNDaily = Ext.getCmp('reporting_monthlyEveryday').getValue();
                 var monthlyOnce = Ext.getCmp('reporting_monthlyOnce').getValue();
-                schedule.monthlyNDayOfWk = monthlyOnce ? Ext.getCmp('reporting_monthlyOnceCombo').getValue() : -1 //NONE ;
+                schedule.monthlyNDayOfWk = monthlyOnce ? Ext.getCmp('reporting_monthlyOnceCombo').getValue() : -1; //NONE 
                 
                 // set Ip Map list
                 this.getReportingSettings().networkDirectory.entries.list = this.gridIpMap.getFullSaveList();
@@ -862,7 +850,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         if ( recipient.clearPassword != null ) {
                             user.clearPassword = recipient.clearPassword;
                         }
-                    /* Otherwise, create a user if onlineReports is set or the password is set */
+                        /* Otherwise, create a user if onlineReports is set or the password is set */
                     } else if ( recipient.onlineReports || recipient.clearPassword ) {
                         user = {
                             "login" : recipient.emailAddress,
@@ -937,12 +925,11 @@ if (!Ung.hasResource["Ung.Reporting"]) {
             }
         },
         getEditableFields : function(){
-                return this.panelGeneration.findBy(function(obj){return obj.xtype =='checkbox' || obj.xtype == 'radiogroup' || obj.xtype == 'numberfield' || obj.xtype == 'textfield' ? true : false;});        
+            return this.panelGeneration.findBy(function(obj){return obj.xtype =='checkbox' || obj.xtype == 'radiogroup' || obj.xtype == 'numberfield' || obj.xtype == 'textfield' ? true : false;});        
         },
         isDirty: function() {
             if(this.panelGeneration.rendered) {
-                var cmpIds = this.getEditableFields(),
-                    i;
+                var cmpIds = this.getEditableFields(), i;
                 for (i = 0; i < cmpIds.length; i++) {
                     if (cmpIds[i].isDirty()){
                         return true;
