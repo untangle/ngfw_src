@@ -563,7 +563,7 @@ def __get_emails(start_date, end_date):
     conn = sql_helper.get_connection()
 
     try:
-        if not sql_helper.table_exists('reports', 'n_mail_addrs_totals'):
+        if not sql_helper.table_exists('reports', 'n_mail_addr_totals'):
             return [];
         curs = conn.cursor()
         # select all distinct email addresses from that time period
