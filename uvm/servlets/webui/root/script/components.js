@@ -653,7 +653,8 @@ Ung.Util= {
     generateListIds: function(list) {
         if(list == null) return;
         for(var i=0; i<list.length; i++) {
-            list[i]["id"]=i+1;
+            if(list[i]["id"] === undefined || list[i]["id"] == null)
+                list[i]["id"]=i+1;
         }
     },
     getGenericRuleFields: function(settingsCmp) {
