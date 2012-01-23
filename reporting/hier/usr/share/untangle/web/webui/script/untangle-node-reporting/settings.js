@@ -529,13 +529,39 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             }
                         }
                     }]
-                }, {
-                    title: this.i18n._("Scheduling"),
+                },  {
+                    title: this.i18n._("Reports Retention"),
                     labelWidth: 150,
                     items: [{
                         border: false,
                         cls: 'description',
-                        html: this.i18n._("Time at which to run nightly reports.")
+                        html: this.i18n._("Keep old reports on the server for this number of days.")
+                    },{
+                        xtype : 'numberfield',
+                        fieldLabel : this.i18n._('Reports Retention days'),
+                        name : 'Reports Retention days',
+                        id: 'reporting_daysToKeepFiles',
+                        value : this.getReportingSettings().fileRetention,
+                        width: 25,
+                        allowDecimals: false,
+                        allowNegative: false,
+                        minValue: 1,
+                        maxValue: 90,
+                        listeners : {
+                            "change" : {
+                                fn : function(elem, newValue) {
+                                    this.getReportingSettings().fileRetention = newValue;
+                                }.createDelegate(this)
+                            }
+                        }
+                    }]
+                }, {
+                    title: this.i18n._("Generation Time"),
+                    labelWidth: 150,
+                    items: [{
+                        border: false,
+                        cls: 'description',
+                        html: this.i18n._("Scheduled time to generate the reports.")
                     }, {
                         xtype : 'timefield',
                         fieldLabel : this.i18n._('Generation Time'),
@@ -557,36 +583,8 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             }
                         }
                     }]
-                },
-                        {
-                            title: this.i18n._("Reports Retention"),
-                            labelWidth: 150,
-                            items: [{
-                                border: false,
-                                cls: 'description',
-                                html: this.i18n._("Keep old reports on the server for this number of days.")
-                            },{
-                                xtype : 'numberfield',
-                                fieldLabel : this.i18n._('Reports Retention days'),
-                                name : 'Reports Retention days',
-                                id: 'reporting_daysToKeepFiles',
-                                value : this.getReportingSettings().fileRetention,
-                                width: 25,
-                                allowDecimals: false,
-                                allowNegative: false,
-                                minValue: 1,
-                                maxValue: 90,
-                                listeners : {
-                                    "change" : {
-                                        fn : function(elem, newValue) {
-                                            this.getReportingSettings().fileRetention = newValue;
-                                        }.createDelegate(this)
-                                    }
-                                }
-                            }]
-                        }
-
-                       ]});
+                }]
+            });
 
             /* Create the row editor for updating the password */
             this.gridRecipients.rowEditorChangePassword = new Ung.RowEditorWindow({
