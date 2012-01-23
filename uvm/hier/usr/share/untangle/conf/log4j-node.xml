@@ -195,7 +195,7 @@
   </category>
 
   <category name="com.untangle.node.classd">
-    <priority value="DEBUG"/>
+    <priority value="INFO"/>
   </category>
 
   <category name="com.untangle.node">
