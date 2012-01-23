@@ -54,14 +54,13 @@ class EventHandler extends AbstractEventHandler
     {
         boolean block = false;
         boolean log = false;
-        FirewallRule matchedRule = null;
         int ruleIndex     = 0;
+        FirewallRule matchedRule = null;
 
         /**
          * Find the matching rule compute block/log verdicts
          */
         for (FirewallRule rule : firewallRuleList) {
-            ruleIndex++;
             if (rule.isMatch(request.protocol(),
                              request.clientIntf(), request.serverIntf(),
                              request.clientAddr(), request.getNatToHost(),
@@ -75,6 +74,7 @@ class EventHandler extends AbstractEventHandler
         if (matchedRule != null) {
             block = matchedRule.getBlock();
             log = matchedRule.getLog();
+            ruleIndex = matchedRule.getId();
         }
 
         /**
