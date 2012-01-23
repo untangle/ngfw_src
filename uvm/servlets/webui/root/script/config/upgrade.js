@@ -3,7 +3,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
 
     Ung.Upgrade = Ext.extend(Ung.ConfigWin, {
         gridUpgrade : null,
-        panelSetup : null,
+        panelSettings : null,
         initComponent : function() {
             this.breadcrumbs = [{
                 title : i18n._("Configuration"),
@@ -14,9 +14,9 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 title : i18n._('Upgrade')
             }];
             this.buildUpgrade();
-            this.buildSetup();
+            this.buildSettings();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.gridUpgrade, this.panelSetup]);
+            this.buildTabPanel([this.gridUpgrade, this.panelSettings]);
             this.tabs.activate(this.gridUpgrade);
             Ung.Upgrade.superclass.initComponent.call(this);
         },
@@ -218,7 +218,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             });
 
         },
-        buildSetup : function() {
+        buildSettings : function() {
             // keep initial upgrade settings
             this.initialUpgradeSettings = Ung.Util.clone(this.getUpgradeSettings());
             
@@ -227,13 +227,13 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             upgradeTime.setHours(this.getUpgradeSettings().period.hour);
             upgradeTime.setMinutes(this.getUpgradeSettings().period.minute);
             
-            this.getUpgradeSettings().period.hour + ":" + this.getUpgradeSettings().period.minute
-            this.panelSetup = new Ext.Panel({
+            this.getUpgradeSettings().period.hour + ":" + this.getUpgradeSettings().period.minute,
+            this.panelSettings = new Ext.Panel({
                 // private fields
-                name : 'Upgrade Setup',
+                name : 'Upgrade Settings',
                 helpSource : 'upgrade_setup',
                 parentId : this.getId(),
-                title : this.i18n._('Upgrade Setup'),
+                title : this.i18n._('Upgrade Settings'),
                 layout : "form",
                 cls: 'ung-panel',
                 autoScroll : true,
