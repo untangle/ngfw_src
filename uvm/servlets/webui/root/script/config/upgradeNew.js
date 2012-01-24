@@ -4,7 +4,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
      Ext.define('Ung.Upgrade', {
     	extend: 'Ung.ConfigWin',
         gridUpgrade : null,
-        panelSetup : null,
+        panelSettings : null,
         initComponent : function() {
             this.breadcrumbs = [{
                 title : i18n._("Configuration"),
@@ -15,9 +15,9 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 title : i18n._('Upgrade')
             }];
             this.buildUpgrade();
-            this.buildSetup();
+            this.buildSettings();
             // builds the tab panel with the tabs
-            this.buildTabPanel([this.gridUpgrade, this.panelSetup]);
+            this.buildTabPanel([this.gridUpgrade, this.panelSettings]);
             this.callParent(arguments);
         },
 
@@ -216,7 +216,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             });
 
         },
-        buildSetup : function() {
+        buildSettings : function() {
             // keep initial upgrade settings
             this.initialUpgradeSettings = Ung.Util.clone(this.getUpgradeSettings());
             
@@ -224,17 +224,17 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             upgradeTime.setTime(0);
             upgradeTime.setHours(this.getUpgradeSettings().period.hour);
             upgradeTime.setMinutes(this.getUpgradeSettings().period.minute);
-            this.panelSetup = Ext.create('Ext.panel.Panel',{
+            this.panelSettings = Ext.create('Ext.panel.Panel',{
                 // private fields
-                name : 'Upgrade Setup',
+                name : 'Upgrade Settings',
                 helpSource : 'upgrade_setup',
                 parentId : this.getId(),
-                title : this.i18n._('Upgrade Setup'),
+                title : this.i18n._('Upgrade Settings'),
                 cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
                     xtype : 'fieldset',
-                    autoHeight : true,
+                    autoHeight : true
                 },
                 items : [{
                     title : this.i18n._('Automatic Upgrade'),
