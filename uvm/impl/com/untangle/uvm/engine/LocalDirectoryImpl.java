@@ -38,9 +38,15 @@ class LocalDirectoryImpl implements LocalDirectory
     {
         if ( username == null ) {
             logger.warn("Invalid arguments: username is null");
+            return false;
         }
         if ( password == null ) {
-            logger.warn("Invalid arguments: password is null");
+            logger.warn("Invalid arguments: password is null or empty");
+            return false;
+        }
+        if ( "".equals(password) ) {
+            logger.info("Blank passwords not allowed");
+            return false;
         }
             
         for (LocalDirectoryUser user : this.currentList) {
