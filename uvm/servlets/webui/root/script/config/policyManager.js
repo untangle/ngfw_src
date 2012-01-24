@@ -390,16 +390,17 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 fields : ['key', 'name', 'policy'],
                 data : this.policyStoreData
             });
-            var liveColumn = new Ext.grid.CheckColumn({
-                header : "<b>" + this.i18n._("live") + "</b>",
-                tooltip : this.i18n._("live"),
+            var enabledColumn = new Ext.grid.CheckColumn({
+                header : this.i18n._("Enabled"),
+                tooltip : this.i18n._("Enabled"),
                 dataIndex : 'live',
-                width : 25,
+                width : 60,
                 fixed : true
             });
             var usersColumn=new Ext.grid.ButtonColumn({
                 width: 80,
-                header: this.i18n._("user"),
+                header: this.i18n._("User"),
+                sortable : true,
                 dataIndex : 'user',
                 handle : userHandler
             });
@@ -473,9 +474,9 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 }, {
                     name : 'description'
                 }],
-                columns : [liveColumn, {
-                    header : this.i18n._("<b>Use this rack</b> when the <br/>next colums are matched..."),
-                    tooltip : this.i18n._("<b>Use this rack</b> when the <br/>next colums are matched..."),
+                columns : [enabledColumn, {
+                    header : this.i18n._("Destination Rack"),
+                    tooltip : this.i18n._("If the session matches this policy rule, use this rack to process the session."),
                     width : 140,
                     sortable : true,
                     dataIndex : 'policyName',
@@ -645,7 +646,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         allowBlank : false
                     })
                 }],
-                plugins : [liveColumn,usersColumn],
+                plugins : [enabledColumn,usersColumn],
 
                 initComponent : function() {
                     this.rowEditor = new Ung.RowEditorWindow({
