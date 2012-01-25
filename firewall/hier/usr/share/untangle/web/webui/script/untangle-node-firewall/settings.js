@@ -268,10 +268,10 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     Ext.MessageBox.alert(i18n._("Warning"),i18n._("A valid type must be selected for all matchers."));
                     return false;
                 }
-                if (this.store.data.items[i].data.value == null || this.store.data.items[i].data.value == "") {
-                    Ext.MessageBox.alert(i18n._("Warning"),i18n._("A valid value must be specified for all matchers."));
-                    return false;
-                }
+                //if (this.store.data.items[i].data.value == null || this.store.data.items[i].data.value == "") {
+                //    Ext.MessageBox.alert(i18n._("Warning"),i18n._("A valid value must be specified for all matchers."));
+                //    return false;
+                //}
             }
             return true;
         }
