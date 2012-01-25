@@ -2566,8 +2566,18 @@ Ext.define("Ung.GridEventLog", {
     rpc : null,
     helpSource : 'event_log',
     // mask to show during refresh
-    loadMask : {msg: i18n._("Refreshing...")},
+    //loadMask : {msg: i18n._("Refreshing...")},
     // called when the component is initialized
+    constructor: function(config) {
+    	 var modelName='Ung.GridEventLog.Store.ImplicitModel-' + Ext.id();
+    	 Ext.define(modelName), {
+             extend: 'Ext.data.Model',
+             fields: config.fields
+         });
+    	 config.model = modelName;
+
+    	this.callParent([config]);
+    },
     initComponent : function() {
         this.rpc = {};
 
@@ -2587,6 +2597,7 @@ Ext.define("Ung.GridEventLog", {
             this.eventQueriesFn = this.settingsCmp.node.nodeContext.rpcNode.getEventQueries;
         }
         this.rpc.repository = {};
+        /*
         this.store = new Ext.data.Store({
             proxy : new Ung.MemoryProxy({
                 root : 'list'
@@ -2602,7 +2613,8 @@ Ext.define("Ung.GridEventLog", {
                 fields : this.fields
             })
         });
-
+*/		
+        
         this.pagingToolbar = Ext.create('Ext.toolbar.Paging',{
             //y: -2,//TODO: no longer supported in extjs4
             //height: 21,
@@ -2614,10 +2626,12 @@ Ext.define("Ung.GridEventLog", {
 
         this.bbar = [{
             xtype : 'tbtext',
-            text : '<span id="querySelector_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '"></span>'
+            id: "querySelector_"+this.getId(),
+            text : ''
         }, {
             xtype : 'tbtext',
-            text : '<span id="rackSelector_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '"></span>'
+            id: "rackSelector_"+this.getId(),
+            text : ''
         }, {
             xtype : 'button',
             id: "refresh_"+this.getId(),
@@ -2790,8 +2804,8 @@ Ext.define("Ung.GridEventLog", {
                 out.push('<option value="' + queryDesc.query + '" ' + selOpt + '>' + this.settingsCmp.i18n._(queryDesc.name) + '</option>');
             }
             out.push('</select>');
-            var querySelector = document.getElementById('querySelector_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
-            querySelector.innerHTML = out.join("");
+            Ext.getCmp('querySelector_' + this.getId()).setText(out.join(""));
+            
 
             displayStyle="";
             if (this.settingsCmp.node.nodeContext.nodeDesc.type == "SERVICE") displayStyle = "display:none;"; //hide rack selector for services
@@ -2803,9 +2817,8 @@ Ext.define("Ung.GridEventLog", {
                 var selOpt = ( policyDesc == rpc.currentPolicy ) ? "selected" : "";
                 out.push('<option value="' + policyDesc.id + '" ' + selOpt + '>' + policyDesc.name + '</option>');
             }
-            var rackSelector = document.getElementById('rackSelector_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
-            rackSelector.innerHTML = out.join("");
-            
+            out.push('</select>');
+            Ext.getCmp('rackSelector_' + this.getId()).setText(out.join(""));
         }
     },
     // get selected query value
@@ -2860,20 +2873,14 @@ Ext.define("Ung.GridEventLog", {
             Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install and enable the Reports application."));
         } else {
             if (!forceFlush) {
-            	this.loadMask.disabled = false;
-            	this.loadMask.msg = i18n._('Refreshing Events...');
-                this.loadMask.show();
+            	this.setLoading(i18n._('Refreshing Events...'));
                 this.refreshList();
             } else {
-                this.loadMask.disabled = false;
-                this.loadMask.msg = i18n._('Syncing events to Database... ');
-                this.loadMask.show();
+            	this.setLoading(i18n._('Syncing events to Database... '));
                 this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
-                    this.loadMask.msg = i18n._('Refreshing Events...');
-                    this.loadMask.show();
+                	this.setLoading(i18n._('Refreshing Events...'));
                     this.refreshList();
                 },this));
-
                 this.updateFunction = Ext.bind(function(){
                     var statusStr = this.getUntangleNodeReporting().getCurrentStatus();
                     //if the loadMask is no longer shown, stop this task
@@ -2883,10 +2890,9 @@ Ext.define("Ung.GridEventLog", {
                     if(this.loadMask.msg.indexOf("Syncing") == -1)
                         return;
                     
-                    this.loadMask.msg = i18n._('Syncing events to Database... ') + statusStr;
-                    this.loadMask.show();
-                    window.setTimeout(this.updateFunction, 1000);
+                	this.setLoading(i18n._('Syncing events to Database... ') + statusStr);
 
+                    window.setTimeout(this.updateFunction, 1000);
                 },this);
 
                 window.setTimeout(this.updateFunction, 2000);
@@ -2909,17 +2915,15 @@ Ext.define("Ung.GridEventLog", {
                 });
             }
         }
-        this.loadMask.disabled = true;
-        this.loadMask.hide();
+        
+        this.setLoading(false);
         this.makeSelectable();
     },
     flushHandler: function (forceFlush) {
         if (!this.isReportsAppInstalled()) {
             Ext.MessageBox.alert(i18n._('Warning'), i18n._("Event Logs require the Reports application. Please install and enable the Reports application."));
         } else {
-            this.loadMask.disabled = false;
-            this.loadMask.msg = i18n._('Syncing events to Database... ');
-            this.loadMask.show();
+        	this.setLoading(i18n._('Syncing events to Database... '));
             this.getUntangleNodeReporting().flushEvents(Ext.bind(function(result, exception) {
                 // refresh after complete
                 this.refreshHandler();
@@ -2934,8 +2938,7 @@ Ext.define("Ung.GridEventLog", {
                 if(this.loadMask.msg.indexOf("Syncing") == -1)
                     return;
                 
-                this.loadMask.msg = i18n._('Syncing events to Database... ') + statusStr;
-                this.loadMask.show();
+            	this.setLoading(i18n._('Syncing events to Database... ') + statusStr);
                 window.setTimeout(this.updateFunction, 1000);
 
             }, this);
@@ -2949,8 +2952,7 @@ Ext.define("Ung.GridEventLog", {
         if (selQuery != null && selPolicy != null) {
             rpc.jsonrpc.UvmContext.getEvents(Ext.bind(this.refreshCallback,this), selQuery, selPolicy, 1000);
         } else {
-            this.loadMask.disabled = true;
-            this.loadMask.hide();
+            this.setLoading(false);
         }
     },
     // is reports node installed
