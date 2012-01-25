@@ -10,7 +10,8 @@
             "javaClass": "java.util.LinkedList",
             "list": [
                 "com.untangle.node.shield.ShieldRejectionEvent",
-                "com.untangle.node.shield.ShieldStatisticEvent"
+                "com.untangle.node.shield.ShieldStatisticEvent",
+                "com.untangle.uvm.logging.ShieldEventsFromReports"
             ]
         }
 }

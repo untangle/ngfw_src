@@ -36,26 +36,8 @@ class Shield(Node):
 
     @print_timing
     def setup(self, start_date, end_date):
-        ft = FactTable('reports.n_shield_rejection_totals',
-                       'events.n_shield_rejection_evt',
-                       'time_stamp',
-                       [Column('client_addr', 'inet'),
-                        Column('client_intf', 'integer'),
-                        Column('mode', 'integer')],
-                       [Column('limited', 'integer', 'sum(limited)'),
-                        Column('dropped', 'integer', 'sum(dropped)'),
-                        Column('rejected', 'integer', 'sum(rejected)')])
-        reports.engine.register_fact_table(ft)
-
-        ft = FactTable('reports.n_shield_totals',
-                       'events.n_shield_statistic_evt',
-                       'time_stamp',
-                       [],
-                       [Column('accepted', 'integer', 'sum(accepted)'),
-                        Column('limited', 'integer', 'sum(limited)'),
-                        Column('dropped', 'integer', 'sum(dropped)'),
-                        Column('rejected', 'integer', 'sum(rejected)')])
-        reports.engine.register_fact_table(ft)
+        self.__create_n_shield_rejection_totals(start_date, end_date)
+        self.__create_n_shield_totals(start_date, end_date)
 
     @sql_helper.print_timing
     def events_cleanup(self, cutoff):
@@ -65,6 +47,67 @@ class Shield(Node):
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_shield_rejection_totals", cutoff)
         sql_helper.drop_fact_table("n_shield_totals", cutoff)        
+
+    @print_timing
+    def __create_n_shield_rejection_totals(self, start_date, end_date):
+        sql_helper.create_fact_table("""\
+CREATE TABLE reports.n_shield_rejection_totals (
+    time_stamp timestamp without time zone,
+    client_addr inet,
+    client_intf integer,
+    mode        integer,
+    reputation  float8,
+    limited     integer,
+    dropped     integer,
+    rejected    integer,
+    event_id bigserial)""",  'time_stamp', start_date, end_date)
+
+        # old tables did not have event_id
+        sql_helper.add_column('reports', 'n_shield_rejection_totals', 'event_id', 'bigserial')
+        # old tables did not have reputation
+        sql_helper.add_column('reports', 'n_shield_rejection_totals', 'reputation', 'float8')
+
+        # convert from old name
+        sql_helper.rename_column("reports","n_shield_rejection_totals","trunc_time","time_stamp");
+
+        sql_helper.create_index("reports","n_shield_rejection_totals","event_id");
+        sql_helper.create_index("reports","n_shield_rejection_totals","time_stamp");
+
+        conn = sql_helper.get_connection()
+        try:
+            sql_helper.run_sql("""\
+INSERT INTO reports.n_shield_rejection_totals
+      (time_stamp, client_addr, client_intf, mode, reputation, limited, dropped, rejected)
+SELECT time_stamp, client_addr, client_intf, mode, reputation, limited, dropped, rejected
+FROM events.n_shield_rejection_evt""", (), connection=conn, auto_commit=False)
+            conn.commit()
+        except Exception, e:
+            conn.rollback()
+            raise e
+
+    def __create_n_shield_totals(self, start_date, end_date):
+        sql_helper.create_fact_table("""\
+CREATE TABLE reports.n_shield_totals (
+    time_stamp timestamp without time zone,
+    accepted   integer,
+    limited    integer,
+    dropped    integer,
+    rejected   integer)""",  'time_stamp', start_date, end_date)
+
+        # convert from old name
+        sql_helper.rename_column("reports","n_shield_totals","trunc_time","time_stamp");
+
+        conn = sql_helper.get_connection()
+        try:
+            sql_helper.run_sql("""\
+INSERT INTO reports.n_shield_totals
+      (time_stamp, accepted, limited, dropped, rejected)
+SELECT time_stamp, accepted, limited, dropped, rejected
+FROM events.n_shield_statistic_evt""", (), connection=conn, auto_commit=False)
+            conn.commit()
+        except Exception, e:
+            conn.rollback()
+            raise e
 
     def get_toc_membership(self):
         return [TOP_LEVEL]
@@ -151,7 +194,8 @@ class DailyRequest(Graph):
             q, h = sql_helper.get_averaged_query(sums, "reports.n_shield_totals",
                                                  start_date,
                                                  end_date,
-                                                 extra_where = extra_where)
+                                                 extra_where = extra_where,
+                                                 time_field = "time_stamp")
             curs.execute(q, h)
 
             times = []
@@ -222,7 +266,7 @@ class BlockedHosts(Graph):
         query = """\
 SELECT client_addr, sum(dropped + rejected) AS blocked
 FROM reports.n_shield_rejection_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND ((dropped > 0) OR (rejected > 0))
 GROUP BY client_addr
 ORDER BY blocked desc"""
@@ -270,7 +314,7 @@ class LimitedHosts(Graph):
         query = """\
 SELECT client_addr, sum(limited) AS limited
 FROM reports.n_shield_rejection_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
 AND limited > 0
 GROUP BY client_addr
 ORDER BY limited desc"""
@@ -309,7 +353,7 @@ class ShieldDetail(DetailSection):
         if user or email:
             return None
 
-        rv = [ColumnDesc('trunc_time', _('Time'), 'Date')]
+        rv = [ColumnDesc('time_stamp', _('Time'), 'Date')]
 
         rv = rv + [ColumnDesc('client_addr', _('Client')),
                    ColumnDesc('limited', _('Limited')),
@@ -322,17 +366,18 @@ class ShieldDetail(DetailSection):
         if user or email:
             return None
 
-        sql = "SELECT trunc_time, "
+        sql = "SELECT time_stamp, "
 
         sql = sql + ("""host(client_addr), limited, dropped, rejected
 FROM reports.n_shield_rejection_totals
-WHERE trunc_time >= %s::timestamp without time zone AND trunc_time < %s::timestamp without time zone
+WHERE time_stamp >= %s::timestamp without time zone AND time_stamp < %s::timestamp without time zone
       AND (limited + dropped + rejected) > 0""" % (DateFromMx(start_date),
                                                    DateFromMx(end_date)))
 
         if host:
             sql += " AND client_addr = %s" % (QuotedString(host),)
 
-        return sql + " ORDER BY trunc_time DESC"
+        return sql + " ORDER BY time_stamp DESC"
 
 reports.engine.register_node(Shield())
+

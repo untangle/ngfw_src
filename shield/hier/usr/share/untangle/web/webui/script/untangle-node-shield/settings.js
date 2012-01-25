@@ -183,16 +183,16 @@ if (!Ung.hasResource["Ung.Shield"]) {
         // Event Log
         buildEventLog : function() {
             this.gridEventLog = new Ung.GridEventLog({
+                title : this.i18n._( "Event Log" ),
+                helpSource : "event_log",
                 settingsCmp : this,
-                eventDepth : 1000,
-                eventQueriesFn : null,
-                
+                eventQueriesFn : this.getRpcNode().getEventQueries,
                 // the list of fields
                 fields : [{
-                    name : 'createDate',
+                    name : 'timeStamp',
                     sortType : Ung.SortTypes.asTimestamp
                 }, {
-                    name : 'client'
+                    name : 'clientAddr'
                 }, {
                     name : 'clientIntf'
                 }, {
@@ -210,22 +210,22 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 }],
                 // the list of columns
                 columns : [{
-                    header : this.i18n._("timestamp"),
-                    width : 120,
+                    header : this.i18n._("Timestamp"),
+                    width : Ung.Util.timestampFieldWidth,
                     sortable : true,
-                    dataIndex : 'createDate',
+                    dataIndex : 'timeStamp',
                     renderer : function(value) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    header : this.i18n._("source"),
-                    width : 120,
+                    header : this.i18n._("Client Address"),
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
-                    dataIndex : 'client'
+                    dataIndex : 'clientAddr'
                 }, {
                     id :'clientIntf',
-                    header : this.i18n._("source interface"),
-                    width : 120,
+                    header : this.i18n._("Client Interface"),
+                    width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'clientIntf'
                 }, {
@@ -237,7 +237,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                         return i18n.numberFormat(value);
                     }
                 }, {
-                    header : this.i18n._("limited"),
+                    header : this.i18n._("Limited"),
                     width : 110,
                     sortable : true,
                     dataIndex : 'limited',
@@ -245,7 +245,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                         return i18n.numberFormat(value);
                     }
                 }, {
-                    header : this.i18n._("dropped"),
+                    header : this.i18n._("Dropped"),
                     width : 110,
                     sortable : true,
                     dataIndex : 'dropped',
@@ -253,17 +253,14 @@ if (!Ung.hasResource["Ung.Shield"]) {
                         return i18n.numberFormat(value);
                     }
                 }, {
-                    header : this.i18n._("reject"),
+                    header : this.i18n._("Reject"),
                     width : 110,
                     sortable : true,
                     dataIndex : 'rejected',
                     renderer : function(value) {
                         return i18n.numberFormat(value);
                     }
-                }],
-                refreshList : function() {
-                    this.settingsCmp.node.nodeContext.rpcNode.getLogs(this.refreshCallback.createDelegate(this), this.eventDepth);
-                }
+                }]
             });
         },
         //apply function 

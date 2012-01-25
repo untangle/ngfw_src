@@ -20,6 +20,8 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.node.EventLogQuery;
+import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
@@ -49,12 +51,17 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
 
     private ShieldSettings settings;
 
+    private EventLogQuery eventQuery;
+
     private final ShieldManager shieldManager;
 
     public ShieldNodeImpl()
     {
         NodeContext tctx = getNodeContext();
 
+        this.eventQuery = new EventLogQuery(I18nUtil.marktr("Events"),
+                                            "FROM ShieldEventsFromReports evt ORDER BY evt.timeStamp DESC");                                                 
+        
         this.shieldManager = new ShieldManager( this );
     }
 
@@ -86,6 +93,11 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
         setSettings( settings);
     }
 
+    public EventLogQuery[] getEventQueries()
+    {
+        return new EventLogQuery[] { this.eventQuery };
+    }
+    
     protected void postInit(String[] args)
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -143,44 +155,6 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
         }
 
         this.reconfigure();
-    }
-
-    public List<ShieldRejectionLogEntry> getLogs( final int limit )
-    {
-        final List<ShieldRejectionLogEntry> l = new ArrayList<ShieldRejectionLogEntry>(limit);
-
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                @SuppressWarnings("deprecation")
-				public boolean doWork(Session s) throws SQLException
-                {
-                    Connection c = s.connection();
-                    PreparedStatement ps = c.prepareStatement( SHIELD_REJECTION_EVENT_QUERY );
-                    ps.setInt( 1, limit );
-                    long l0 = System.currentTimeMillis();
-                    ResultSet rs = ps.executeQuery();
-                    while (rs.next()) {
-                        Date createDate   = new Date( rs.getTimestamp( CREATE_DATE_IDX ).getTime());
-                        String clientAddr = rs.getString( CLIENT_ADDR_IDX );
-                        double reputation = rs.getDouble( REPUTATION_IDX );
-                        int limited       = rs.getInt( LIMITED_IDX );
-                        int dropped       = rs.getInt( DROPPED_IDX );
-                        int rejected      = rs.getInt( REJECTED_IDX );
-
-                        ShieldRejectionLogEntry entry = new ShieldRejectionLogEntry( createDate, clientAddr, reputation, limited, dropped, rejected );
-
-                        l.add(entry);
-                    }
-                    long l1 = System.currentTimeMillis();
-                    logger.debug( "getAccessLogs() in: " + ( l1 - l0 ));
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
-
-        return l;
     }
 
     protected void preStart()

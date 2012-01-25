@@ -19,8 +19,7 @@ import com.untangle.uvm.util.WorkerRunner;
 public class ShieldManager
 {
     private static final int SLEEP_DELAY_MS = 5000;
-    /* Currently set to 20 minutes */
-    private static final int STATISTIC_DELAY_MS = 1200000;
+    private static final int STATISTIC_DELAY_MS = 1 * 60 * 1000; /* 10 minutes */
 
     private static final String START_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/shield-start";
     private static final String STOP_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/shield-stop";
