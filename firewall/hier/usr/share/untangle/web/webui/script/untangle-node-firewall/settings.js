@@ -123,7 +123,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                         res='<input type="text" size="20" class="x-form-text x-form-field rule_builder_value" onchange="Ext.getCmp(\''+this.getId()+'\').changeRowValue(\''+record.id+'\',this)" value="'+value+'"/>';
                         break;
                       case "boolean":
-                        res="<div>&nbsp;</div>";
+                        res="<div>" + this.settingsCmp.i18n._("True") + "</div>";
                         break;
                       case "checkgroup":
                         var values_arr=(value!=null && value.length>0)?value.split(","):[];
