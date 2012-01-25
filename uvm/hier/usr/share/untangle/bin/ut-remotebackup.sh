@@ -78,14 +78,16 @@ function callCurl() {
 #
 function createBackup() {
   debug "Creating Backup in " $1
-  @UVM_HOME@/bin/ut-uvmdb-backup $1
+  @UVM_HOME@/bin/ut-backup $1
 #  pushd $1 > /dev/null 2>&1
-#  echo "FOO" > foo.txt;
-#  echo "MOO" > moo.txt;
-#  echo "DOO" > doo.txt;
+#  datestamp=$(date '+%Y%m%d%H%M')
+#  echo "FOO" > uvmdb-$datestamp.gz
+#  echo "MOO" > files-$datestamp.tar.gz
+#  echo "DOO" > installed-$datestamp
 #  popd > /dev/null 2>&1
   DUMP_EXIT=$?
   debug "Done creating backup with return code $DUMP_EXIT"
+  return $DUMP_EXIT
 }
 
 
