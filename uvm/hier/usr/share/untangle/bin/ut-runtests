@@ -107,11 +107,10 @@ def runTestSuite(suite):
         if (len(results.failures) > 0 or len(results.errors) > 0):
             print "Test FAILED  : %s " % test._testMethodName
             if (parser.fastfail): 
-                return 1
+                exit(1)
         else:
             print "Test success : %s " % test._testMethodName
     print "== Testing %s ==" % suite.nodeName()
-    return 0
 
 # Verify the test enviroment is setup correctly
 def runTestEnvironmentTests():
@@ -129,6 +128,9 @@ def runTestEnvironmentTests():
         else:
             print "Test success : %s " % test._testMethodName
     print "== Testing Test Environment =="
+
+
+
 
 parser = ArgumentParser()
 script_args = parser.parse_args()
@@ -152,19 +154,18 @@ if (not uvm.Uvm().getUvmContext().nodeManager().isInstantiated('untangle-node-re
     reportsAdded = True;
     reportsNodeDesc = uvm.Uvm().getUvmContext().nodeManager().instantiateAndStart('untangle-node-reporting', None)
     
-rc = 0
 if ("environment" in parser.nodesToTest or "all" in parser.nodesToTest):
     runTestEnvironmentTests()
 if ("webfilter" in parser.nodesToTest or "all" in parser.nodesToTest):
-    rc += runTestSuite(WebFilterTests)
+    runTestSuite(WebFilterTests)
 if ("sitefilter" in parser.nodesToTest or "all" in parser.nodesToTest):
-    rc += runTestSuite(SiteFilterTests)
+    runTestSuite(SiteFilterTests)
 if ("firewall" in parser.nodesToTest or "all" in parser.nodesToTest):
-    rc += runTestSuite(FirewallTests)
+    runTestSuite(FirewallTests)
 if ("classd" in parser.nodesToTest or "all" in parser.nodesToTest):
-    rc += runTestSuite(ClassdTests)
+    runTestSuite(ClassdTests)
 if ("spyware" in parser.nodesToTest or "all" in parser.nodesToTest): 
-    rc += runTestSuite(SpywareTests)
+    runTestSuite(SpywareTests)
 
 # if reports was added earlier, revert to original settings
 if reportsAdded:
@@ -173,5 +174,3 @@ if reportsAdded:
 
 print ""
 print "More details found in %s" % parser.logfile
-
-exit(rc)
