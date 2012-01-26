@@ -2570,11 +2570,11 @@ Ext.define("Ung.GridEventLog", {
     // called when the component is initialized
     constructor: function(config) {
     	 var modelName='Ung.GridEventLog.Store.ImplicitModel-' + Ext.id();
-    	 Ext.define(modelName), {
+    	 Ext.define(modelName, {
              extend: 'Ext.data.Model',
              fields: config.fields
          });
-    	 config.model = modelName;
+    	 config.modelName = modelName;
 
     	this.callParent([config]);
     },
@@ -2597,6 +2597,19 @@ Ext.define("Ung.GridEventLog", {
             this.eventQueriesFn = this.settingsCmp.node.nodeContext.rpcNode.getEventQueries;
         }
         this.rpc.repository = {};
+        this.store=Ext.create('Ext.data.Store', {
+            model: this.modelName,
+            data: [],
+            pageSize : this.recordsPerPage,
+            proxy: {
+                type: 'memory',
+                reader: {
+                    type: 'json',
+                    root: 'list'
+                }
+            },
+            autoLoad: false
+        });
         /*
         this.store = new Ext.data.Store({
             proxy : new Ung.MemoryProxy({
@@ -2884,11 +2897,10 @@ Ext.define("Ung.GridEventLog", {
                 this.updateFunction = Ext.bind(function(){
                     var statusStr = this.getUntangleNodeReporting().getCurrentStatus();
                     //if the loadMask is no longer shown, stop this task
-                    if(this.loadMask.disabled) 
-                        return;
                     //if the loadMask has moved on to a different phase, stop this task
-                    if(this.loadMask.msg.indexOf("Syncing") == -1)
+                    if(this.loadMask ==null || this.loadMask.disabled || this.loadMask.msg.indexOf("Syncing") == -1) { 
                         return;
+                    }
                     
                 	this.setLoading(i18n._('Syncing events to Database... ') + statusStr);
 
@@ -2905,6 +2917,11 @@ Ext.define("Ung.GridEventLog", {
            Ung.Util.handleException(exception);
         } else {
             var events = result;
+            //Add sample events for test
+            /*
+            for(var i=0; i<250; i++) {
+            	events.list.push({ id:i+1, timeStamp:{javaClass:"java.util.Date", time: (new Date()).getTime()}, clientAddr:"1.1.1."+i, clientIntf:"4"+i,reputation:i*0.5, limited:i, dropped:i*2, rejected:i*3 });
+            }*/
             if (this.settingsCmp !== null) {
                 this.getStore().proxy.data = events;
                 this.getStore().load({
@@ -2932,13 +2949,12 @@ Ext.define("Ung.GridEventLog", {
             this.updateFunction = Ext.bind( function(){
                 var statusStr = this.getUntangleNodeReporting().getCurrentStatus();
                 //if the loadMask is no longer shown, stop this task
-                if(this.loadMask.disabled) 
-                    return;
                 //if the loadMask has moved on to a different phase, stop this task
-                if(this.loadMask.msg.indexOf("Syncing") == -1)
+                if(this.loadMask ==null || this.loadMask.disabled || this.loadMask.msg.indexOf("Syncing") == -1) { 
                     return;
-                
-            	this.setLoading(i18n._('Syncing events to Database... ') + statusStr);
+                }
+
+                this.setLoading(i18n._('Syncing events to Database... ') + statusStr);
                 window.setTimeout(this.updateFunction, 1000);
 
             }, this);
