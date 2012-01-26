@@ -94,6 +94,8 @@ def prepareSystem():
     procset('/proc/sys/net/ipv4/tcp_synack_retries',"0",True);
     procset('/proc/sys/net/ipv4/tcp_syncookies',"1",True);
     procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait',"30",True);
+    procset('/proc/sys/net/core/rmem_max','1048576',True); # needed for larger buffers for classd 
+    procset('/proc/sys/net/core/wmem_max','1048576',True); # needed for larger buffers for classd 
 
     # remove tomcat sessions XXX is this needed?
     os.system("[ -d @UVM_HOME@/work ] && find @UVM_HOME@/work -name SESSIONS.ser -exec rm -f '{}' ';'");
