@@ -9,6 +9,10 @@ import java.io.FileReader;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -251,6 +255,10 @@ public class LogWorkerImpl implements Runnable, LogWorker
      */
     private void persist()
     {
+        String eventTypeDebugOuput = "";
+        if (logger.isInfoEnabled())
+            eventTypeDebugOuput = buildEventTypeDebugOutputString();
+        
         TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
@@ -259,7 +267,7 @@ public class LogWorkerImpl implements Runnable, LogWorker
 
                     for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
                         LogEvent event = i.next();
-
+                        
                         /**
                          * Write event to database
                          * If fails, just move on
@@ -286,8 +294,8 @@ public class LogWorkerImpl implements Runnable, LogWorker
 
         long t1 = System.currentTimeMillis();
 
-        logger.info("persist(): wrote " + count + " events to DB (" + (t1-t0) + " msec)");
-        
+        logger.info("persist(): " + String.format("%5d",count) + " events [" + String.format("%5d",(t1-t0)) + " ms]" + eventTypeDebugOuput);
+
         if (!s) {
             logger.error("could not log events");
         }
@@ -305,11 +313,70 @@ public class LogWorkerImpl implements Runnable, LogWorker
     {
         this.running = false;
         Thread t = thread;
-        thread = null;
+        thread = null; /* thread will exit if thread is null */
         synchronized (this) {
             if (interruptable && null != t) {
                 t.interrupt();
             }
         }
     }
+
+    /**
+     * This looks at the event queue to be written and builds a summary string of the type of objects about to be written
+     * Example: "PipelineEndpoints[45] WebFilterEvent[10]
+     */
+    private String buildEventTypeDebugOutputString()
+    {
+        /**
+         * This map stores the type of objects being written purely for debugging output
+         */
+        Map<String,Integer> countMap = new HashMap<String, Integer>();
+        for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
+            LogEvent event = i.next();
+
+            /**
+             * Update the stats
+             */
+            String eventTypeName = event.getClass().getSimpleName();
+            Integer currentCount = countMap.get(eventTypeName);
+            if (currentCount == null)
+                currentCount = 1;
+            else
+                currentCount = currentCount+1;
+            countMap.put(eventTypeName, currentCount);
+        }
+
+        /**
+         * Output the countMap
+         */
+        String mapOutput = "";
+        TreeMap<String,Integer> sortedCountMap = new TreeMap<String, Integer>(new ValueComparator<String>(countMap));
+        sortedCountMap.putAll(countMap);
+        for ( String key : sortedCountMap.keySet() ) {
+            mapOutput += " " + key + "[" + sortedCountMap.get(key) + "]";
+        }
+        
+        return mapOutput;
+    }
+    
+    class ValueComparator<T> implements Comparator<T>
+    {
+        Map base;
+        public ValueComparator(Map base)
+        {
+            this.base = base;
+        }
+
+        public int compare(T a, T b)
+        {
+            if((Integer)base.get(a) < (Integer)base.get(b)) {
+                return 1;
+            } else if((Integer)base.get(a) == (Integer)base.get(b)) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+    }
+
 }
