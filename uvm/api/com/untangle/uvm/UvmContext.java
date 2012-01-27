@@ -5,8 +5,9 @@ package com.untangle.uvm;
 
 import java.io.File;
 import java.util.ArrayList;
-
 import java.io.IOException;
+
+import org.hibernate.Session;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.logging.LoggingManager;
@@ -385,5 +386,7 @@ public interface UvmContext
      * Convenience method, log an event to the database
      */
     void logEvent(LogEvent evt);
+
+    Session makeHibernateSession();
 
 }

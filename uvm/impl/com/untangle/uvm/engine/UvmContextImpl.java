@@ -284,6 +284,20 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     // service methods --------------------------------------------------------
 
+    public Session makeHibernateSession()
+    {
+        synchronized(this) {
+            if (this.sessionFactoryNeedsRebuild == true) {
+                this.sessionFactory = this.makeSessionFactory(getClass().getClassLoader());
+                this.transactionRunner = new TransactionRunner(sessionFactory);
+                this.sessionFactoryNeedsRebuild = false;
+            }
+        }
+
+        return this.sessionFactory.openSession();
+
+    }
+    
     public boolean runTransaction(TransactionWork<?> tw)
     {
         synchronized(this) {

@@ -258,47 +258,35 @@ public class LogWorkerImpl implements Runnable, LogWorker
         String eventTypeDebugOuput = "";
         if (logger.isInfoEnabled())
             eventTypeDebugOuput = buildEventTypeDebugOutputString();
-        
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    logger.debug("Writing events to database... (size: " + logQueue.size() + ")");
 
-                    for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
-                        LogEvent event = i.next();
-                        
-                        /**
-                         * Write event to database
-                         * If fails, just move on
-                         */
-                        try {
-                            s.saveOrUpdate(event);
-                        } catch (Exception exc) {
-                            logger.error("could not log event: ", exc);
-                        }
-
-                        i.remove();
-                    }
-
-                    logger.debug("Writing events to database... Complete");
-
-                    return true;
-                }
-            };
+        Session s = UvmContextFactory.context().makeHibernateSession();
 
         int count = logQueue.size();
         long t0 = System.currentTimeMillis();
+        
+        logger.debug("Writing events to database... (size: " + logQueue.size() + ")");
+        for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
+            LogEvent event = i.next();
+                        
+            /**
+             * Write event to database
+             * If fails, just move on
+             */
+            try {
+                s.saveOrUpdate(event);
+            } catch (Exception exc) {
+                logger.error("could not log event: ", exc);
+            }
 
-        boolean s = UvmContextFactory.context().runTransaction(tw);
-
+            i.remove();
+        }
+        s.flush();
+        s.close();
+        logger.debug("Writing events to database... Complete");
+        
         long t1 = System.currentTimeMillis();
 
         logger.info("persist(): " + String.format("%5d",count) + " events [" + String.format("%5d",(t1-t0)) + " ms]" + eventTypeDebugOuput);
-
-        if (!s) {
-            logger.error("could not log events");
-        }
     }
 
     // package protected methods ------------------------------------------
