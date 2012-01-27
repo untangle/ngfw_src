@@ -7,7 +7,7 @@ sleep 1
 
 @PREFIX@/usr/bin/ucli refreshNetworkConfig
 
-/etc/init.d/untangle-net-alpaca-iptables restart
+/etc/init.d/untangle-net-alpaca-iptables restart openvpn-route-up
 
 true
 
