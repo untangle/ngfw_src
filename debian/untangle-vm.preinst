@@ -3,6 +3,11 @@
 # (empty for new installs)
 oldVersion=$2
 
+if [ -x /usr/bin/uvm-restart ]; then
+    uvm-restart restart
+fi
+
+# need to run this after uvm-restart to avoid postgres deadlocks/conflicts with untangle-vm
 if [ -n "$oldVersion" ]; then
     # To avoid massive auto-vacuuming (that creates extra load) with the new 
     # database layout, dump the entire events schema on upgrade.
@@ -12,10 +17,6 @@ if [ -n "$oldVersion" ]; then
       psql -U postgres -c 'DROP SCHEMA events CASCADE' uvm
       psql -U postgres -c 'UPDATE split_schema_ver SET events_version = NULL' uvm
     fi
-fi
-
-if [ -x /usr/bin/uvm-restart ]; then
-    uvm-restart restart
 fi
 
 exit 0
