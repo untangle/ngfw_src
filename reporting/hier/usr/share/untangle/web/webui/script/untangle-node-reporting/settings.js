@@ -762,23 +762,14 @@ if (!Ung.hasResource["Ung.Reporting"]) {
 
             this.gridRecipients.clearChangedData();
             this.gridRecipients.store.loadData( this.buildReportingUsersData());
-            var cmpIds = this.getEditableFields(),
-            i;
-            for (i = 0; i < cmpIds.length; i++) {
-                if (cmpIds[i].isDirty()){
-                    cmpIds[i].originalValue = cmpIds[i].getValue();
-                    cmpIds[i].reset();
-                }
-            }
-            /*
-              var rdtk = Ext.getCmp("reporting_daysToKeepFiles");
-              rdtk.setValue( this.getReportingSettings().fileRetention );
-              rdtk.originalValue = rdtk.getValue();
-              
-              rdtk = Ext.getCmp('reporting_daysToKeepDB');            
-              rdtk.setValue( this.getReportingSettings().dbRetention );
-              rdtk.originalValue = rdtk.getValue();
-            */
+            // var cmpIds = this.getEditableFields(),
+            //             i;
+            //             for (i = 0; i < cmpIds.length; i++) {
+            //                 if (cmpIds[i].isDirty()){
+            //                     cmpIds[i].originalValue = cmpIds[i].getValue();
+            //                     cmpIds[i].reset();
+            //                 }
+            //             }
 
             this.gridIpMap.clearChangedData();
             this.gridIpMap.store.loadData( this.getReportingSettings().networkDirectory.entries );
