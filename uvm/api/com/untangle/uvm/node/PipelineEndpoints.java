@@ -400,6 +400,16 @@ public class PipelineEndpoints extends LogEvent
         }
     }
 
+    public String toString()
+    {
+        String clientAddr = (getCClientAddr() != null ? getCClientAddr().toString() : "null");
+        String serverAddr = (getSServerAddr() != null ? getSServerAddr().toString() : "null");
+        String clientPort = (getCClientPort() != null ? getCClientPort().toString() : "null");
+        String serverPort = (getSServerPort() != null ? getSServerPort().toString() : "null");
+        String protocol  = getProtocolName();
+        
+        return "[" + protocol + "] " + clientAddr + ":" + clientPort + " -> " + serverAddr + ":" + serverPort;
+    }
     public int hashCode()
     {
         return getSessionId().hashCode();
