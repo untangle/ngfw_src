@@ -76,24 +76,15 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         name : 'Scan SMTP',
                         hideLabel : true,
                         checked : this.getNodeSettings().smtpConfig.scan,
-                        listeners : {
-                            "check" : {
-                                fn : Ext.bind(function(elem, newValue) {
+                        handler : Ext.bind(function(elem, newValue) {
                                     this.getNodeSettings().smtpConfig.scan = newValue;
                                 },this)
-                            }
-                        }
-                    }, {
+						}
+                     , {
                         xtype : 'combo',
                         name : 'SMTP Action',
                         editable : false,
-						store : Ext.create('Ext.data.Store',{
-								model:Ext.define('EmailModel',{
-										extend: 'Ext.data.Model',
-										fields : ['key', 'name']
-									}),
-								data : this.spamData
-                        }),
+						store :this.smtpData,
                         valueField : 'key',
                         displayField : 'name',
                         fieldLabel : this.i18n._('Action'),
@@ -122,24 +113,15 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         name : 'Scan POP3',
                         hideLabel : true,
                         checked : this.getNodeSettings().popConfig.scan,
-                        listeners : {
-                            "check" : {
-                                fn : Ext.bind(function(elem, newValue) {
+                        handler : Ext.bind(function(elem, newValue) {
                                     this.getNodeSettings().popConfig.scan = newValue;
                                 },this)
-                            }
-                        }
-                    }, {
+					}, 
+					{
                         xtype : 'combo',
                         name : 'POP3 Action',
                         editable : false,
-                        store : Ext.create('Ext.data.Store',{
-								model:Ext.define('EmailModel',{
-										extend: 'Ext.data.Model',
-										fields : ['key', 'name'],
-									}),
-								data : this.spamData
-                        }),
+                        store :this.spamData,
                         valueField : 'key',
                         displayField : 'name',
                         fieldLabel : this.i18n._('Action'),
@@ -168,24 +150,15 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         name : 'Scan IMAP',
                         hideLabel : true,
                         checked : this.getNodeSettings().imapConfig.scan,
-                        listeners : {
-                            "check" : {
-                                fn : Ext.bind(function(elem, newValue) {
+                        handler : Ext.bind(function(elem, newValue) {
                                   this.getNodeSettings().imapConfig.scan = newValue;
                                 },this)
-                            }
                         }
-                    }, {
+                     , {
                         xtype : 'combo',
                         name : 'IMAP Action',
                         editable : false,
-                        store : Ext.create('Ext.data.Store',{
-								model:Ext.define('EmailModel',{
-										extend: 'Ext.data.Model',
-										fields : ['key', 'name'],
-									}),
-								data : this.spamData
-                        }),
+                        store : this.spamData,
                         valueField : 'key',
                         displayField : 'name',
                         fieldLabel : this.i18n._('Action'),
@@ -233,15 +206,12 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         name : 'Enable Phish web filtering',
                         hideLabel : true,
                         checked : this.getNodeSettings().enableGooglePhishList,
-                        listeners : {
-                            "check" : {
-                                fn : Ext.bind(function(elem, checked) {
+						handler:Ext.bind(function(elem, checked) {
                                     this.getNodeSettings().enableGooglePhishList = checked;
                                 },this)
-                            }
-                        }
-                    }]
-                }, {
+                        }]
+                    }
+                  , {
                     xtype : 'fieldset',
                     title : this.i18n._('Note'),
                     autoHeight : true,
