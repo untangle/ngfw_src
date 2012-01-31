@@ -114,6 +114,10 @@ int  netcap_interface_dst_intf       ( netcap_session_t* session, char* intf_nam
     if ( netcap_arp_dst_intf( &server_intf_index, session->cli.intf, &src, &dst ) < 0 ) {
         return errlog( ERR_CRITICAL, "netcap_arp_dst_intf (%s -> %s)\n", unet_next_inet_ntoa( src.s_addr ), unet_next_inet_ntoa( dst.s_addr ) );
     }
+
+    if (server_intf_index == 0) {
+        return errlog(ERR_WARNING,"Unable to determine destination interface: (%s -> %s)\n", unet_next_inet_ntoa( src.s_addr ), unet_next_inet_ntoa( dst.s_addr ));
+    }
     
     debug( 10, "INTERFACE: (%10u) Session (%s -> %s) is going out %d\n", 
            session->session_id, unet_next_inet_ntoa( src.s_addr ), unet_next_inet_ntoa( dst.s_addr ), server_intf_index );
