@@ -2602,31 +2602,15 @@ Ext.define("Ung.GridEventLog", {
             data: [],
             pageSize : this.recordsPerPage,
             proxy: {
-                type: 'memory',
+                type: 'pagingmemory',
                 reader: {
                     type: 'json',
                     root: 'list'
                 }
             },
-            autoLoad: false
+            autoLoad: false,
+			remoteSort:true
         });
-        /*
-        this.store = new Ext.data.Store({
-            proxy : new Ung.MemoryProxy({
-                root : 'list'
-            }),
-            sortInfo : this.sortField ? {
-                field : this.sortField,
-                direction : this.sortOrder ? this.sortOrder : "ASC"
-            } : null,
-            remoteSort : true,
-            reader : new Ext.data.JsonReader({
-                totalProperty : "totalRecords",
-                root : 'list',
-                fields : this.fields
-            })
-        });
-*/		
         
         this.pagingToolbar = Ext.create('Ext.toolbar.Paging',{
             //y: -2,//TODO: no longer supported in extjs4
@@ -2695,16 +2679,8 @@ Ext.define("Ung.GridEventLog", {
             text : '<i><font color="red">' + i18n._('Warning') + ':</font></i> ' + i18n._('Event logs are delayed by a few minutes.')
         }];
         Ung.GridEventLog.superclass.initComponent.call(this);
-        //TODO: find extjs4 solution 
-        /*
-        var columnModel=this.getColumnModel();
-        columnModel.getRenderer = function(col){
-            if(!this.config[col].renderer){
-                return Ung.Util.defaultRenderer;
-            }
-            return this.config[col].renderer;
-        };
-        var cmConfig = this.getColumnModel().config;
+ 
+		var cmConfig = this.columns;
         for (i in cmConfig) {
             if (cmConfig[i].sortable == true || cmConfig[i].sortable == null) {
                 cmConfig[i].sortable = true;
@@ -2713,17 +2689,15 @@ Ext.define("Ung.GridEventLog", {
                 cmConfig[i].initialSortable = false;
             }
         }
-        */
     },
     autoRefreshEnabled:true,
     startAutoRefresh: function(setButton) {
         this.pagingToolbar.hide();
         this.autoRefreshEnabled=true;
-        var columnModel=this.getColumnModel();
-        this.getStore().sort(columnModel.getDataIndex(0), "DESC");
-        var cmConfig = columnModel.config;
-        for (i in cmConfig) {
-            cmConfig[i].sortable = false;
+        var columnModel=this.columns;
+        this.getStore().sort(columnModel[0].dataIndex, "DESC");
+        for (i in columnModel) {
+            columnModel[i].sortable = false;
         }
         if(setButton) {
             var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
@@ -2736,9 +2710,9 @@ Ext.define("Ung.GridEventLog", {
     stopAutoRefresh: function(setButton) {
         this.autoRefreshEnabled=false;
         this.pagingToolbar.show();
-        var cmConfig = this.getColumnModel().config;
-        for (i in cmConfig) {
-            cmConfig[i].sortable = cmConfig[i].initialSortable;
+        var columnModel=this.columns;
+        for (i in columnModel) {
+            columnModel[i].sortable = columnModel[i].initialSortable;
         }
         if(setButton) {
             var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
@@ -2918,21 +2892,14 @@ Ext.define("Ung.GridEventLog", {
         } else {
             var events = result;
             //Add sample events for test
-            /*
             for(var i=0; i<250; i++) {
-            	events.list.push({ id:i+1, timeStamp:{javaClass:"java.util.Date", time: (new Date()).getTime()}, clientAddr:"1.1.1."+i, clientIntf:"4"+i,reputation:i*0.5, limited:i, dropped:i*2, rejected:i*3 });
-            }*/
+            	events.list.push({ id:i+1, timeStamp:{javaClass:"java.util.Date", time: (new Date(i*10000000)).getTime()}, client:"1.1.1."+i, uid:"4"+i,swCookie:i,server:"" });
+            }
             if (this.settingsCmp !== null) {
                 this.getStore().proxy.data = events;
-                this.getStore().load({
-                    params : {
-                        start : 0,
-                        limit : this.recordsPerPage
-                    }
-                });
-            }
-        }
-        
+                this.getStore().loadPage(1);
+			}
+		}
         this.setLoading(false);
         this.makeSelectable();
     },
@@ -3972,7 +3939,7 @@ Ung.grid.CheckColumn = Ext.extend(Object, {
     }
 });
 // Grid edit column
-Ung.grid.IconColumn = Ext.extend(Object, {
+Ext.define('Ung.grid.IconColumn', {
     constructor : function(config) {
         Ext.apply(this, config);
         if (!this.id) {
@@ -4014,8 +3981,10 @@ Ung.grid.IconColumn = Ext.extend(Object, {
         return '<div class="'+this.iconClass+'">&nbsp;</div>';
     }
 });
+
 // Grid edit column
-Ung.grid.EditColumn=Ext.extend(Ung.grid.IconColumn, {
+Ext.define('Ung.grid.EditColumn', {
+	extend:'Ung.grid.IconColumn',
     constructor : function(config) {
         if (!config.header) {
             config.header = i18n._("Edit");
@@ -4030,8 +3999,10 @@ Ung.grid.EditColumn=Ext.extend(Ung.grid.IconColumn, {
         this.grid.editHandler(record);
     }
 });
+
 // Grid edit column
-Ung.grid.DeleteColumn=Ext.extend(Ung.grid.IconColumn, {
+Ext.define('Ung.grid.DeleteColumn', {
+	extend:'Ung.grid.IconColumn',
     constructor : function(config) {
         if (!config.header) {
             config.header = i18n._("Delete");
@@ -4046,8 +4017,9 @@ Ung.grid.DeleteColumn=Ext.extend(Ung.grid.IconColumn, {
         this.grid.deleteHandler(record);
     }
 });
+
 // Grid reorder column
-Ung.grid.ReorderColumn = Ext.extend(Object, {
+Ext.define('Ung.grid.ReorderColumn', {
     constructor : function(config) {
         Ext.apply(this, config);
         if (!this.id) {
@@ -4080,7 +4052,8 @@ Ung.grid.ReorderColumn = Ext.extend(Object, {
 });
 
 // Editor Grid class
-Ung.EditorGrid = Ext.extend(Ext.grid.Panel, {
+Ext.define('Ung.EditorGrid', {
+	extend:'Ext.grid.Panel',
     // record per page
     recordsPerPage : 25,
     // the minimum number of records for pagination
@@ -4138,12 +4111,12 @@ Ung.EditorGrid = Ext.extend(Ext.grid.Panel, {
     //clicksToEdit : 1,
     enableColumnHide : false,
     enableColumnMove: false,
-    
     autoGenerateId: false,
     addedId : 0,
     generatedId:1,
     loadMask: null,
     subCmps:null,
+	selType: 'rowmodel',
     constructor : function(config) {
         this.subCmps=[];
         this.changedData = {};
@@ -4163,7 +4136,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.Panel, {
                 appendOnly:true
             };
 
-            var reorderColumn = new Ung.grid.ReorderColumn(this.configReorder);
+            var reorderColumn = Ext.create('Ung.grid.ReorderColumn',this.configReorder);
             if (!this.plugins) {
                 this.plugins = [];
             }
@@ -4174,7 +4147,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.Panel, {
             if (this.configEdit == null) 
                 throw i18n._("Invalid configEdit for Grid with Edit enabled");
             
-            var editColumn = new Ung.grid.EditColumn(this.configEdit);
+            var editColumn = Ext.create('Ung.grid.EditColumn',this.configEdit);
             if (!this.plugins) {
                 this.plugins = [];
             }
@@ -4182,7 +4155,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.Panel, {
             this.columns.push(editColumn);
         }
         if (this.hasDelete) {
-            var deleteColumn = new Ung.grid.DeleteColumn(this.configDelete);
+            var deleteColumn = Ext.create('Ung.grid.DeleteColumn',this.configDelete);
             if (!this.plugins) {
                 this.plugins = [];
             }
@@ -4265,7 +4238,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.Panel, {
             this.totalRecords=this.data.length;
         }
         if(this.paginated) {
-            this.bbar = new Ext.PagingToolbar({
+            this.bbar = Ext.create('Ext.toolbar.Paging',{
                 pageSize : this.recordsPerPage,
                 store : this.store,
                 displayInfo : true,
@@ -4335,7 +4308,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.Panel, {
         }*/
     },
     addHandler : function() {
-        var record = new Ext.data.Record(Ext.decode(Ext.encode(this.emptyRow)));
+        var record = Ext.create('Ext.data.Record',Ext.decode(Ext.encode(this.emptyRow)));
         record.set("id", this.genAddedId());
         this.stopEditing();
         if (this.rowEditor) {
@@ -4362,7 +4335,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.Panel, {
     },
     importHandler : function() {
         if(this.importSettingsWindow == null) {
-            this.importSettingsWindow = new Ung.ImportSettingsWindow({
+            this.importSettingsWindow = Ext.create('Ung.ImportSettingsWindow',{
         	    grid : this
         	});
             this.subCmps.push(this.importSettingsWindow);
@@ -4384,7 +4357,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.Panel, {
         var records=[];
         for (var i = 0; i < importedRows.length; i++) {
             try {
-                var record= new Ext.data.Record(importedRows[i]);
+                var record= Ext.create('Ext.data.Record',importedRows[i]);
                 if(record.data["javaClass"] == this.recordJavaClass) {
                     record.set("id", this.genAddedId());
                     records.push(record);
@@ -4494,7 +4467,7 @@ Ung.EditorGrid = Ext.extend(Ext.grid.Panel, {
     afterRender : function() {
         Ung.EditorGrid.superclass.afterRender.call(this);
         if(this.hasReorder) {
-            var ddrowTarget = new Ext.dd.DropTarget(this.container, {
+            var ddrowTarget = Ext.create('Ext.dd.DropTarget',this.container, {
                 ddGroup: "GridDD",
                 // copy:false,
                 notifyDrop : Ext.bind(function(dd, e, data){
@@ -4708,14 +4681,14 @@ Ung.EditorGrid = Ext.extend(Ext.grid.Panel, {
         }
         if(this.paginated) {
             if (this.isPaginated()) {
-                this.getBottomToolbar().show();
-                this.getBottomToolbar().enable();
+                this.bbar.show();
+                this.bbar.enable();
             } else {
-                this.getBottomToolbar().hide();
-                this.getBottomToolbar().disable();
+                this.bbar.hide();
+                this.bbar.disable();
             }
             if(this.rendered) {
-                this.getBottomToolbar().syncSize();
+                this.bbar.syncSize();
             }
         }
     },
@@ -4860,7 +4833,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.Panel, {
 
 // Reads a list of strings form a json object
 // and creates a list of records
-Ung.JsonListReader = Ext.extend(Ext.data.JsonReader, {
+Ext.define('Ung.JsonListReader', {
+	extend:'Ext.data.JsonReader',
     autoGenerateId:true,
     generatedId:1,
     readRecords : function(o) {
@@ -4891,7 +4865,9 @@ Ung.JsonListReader = Ext.extend(Ext.data.JsonReader, {
         };
     }
 });
-Ung.Breadcrumbs = Ext.extend(Ext.Component, {
+
+Ext.define('Ung.Breadcrumbs', {
+	extend:'Ext.Component',
     autoEl : "div",
     // ---Node specific attributes------
     elements : null,
