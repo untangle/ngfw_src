@@ -225,8 +225,9 @@ public class EventHandler extends AbstractEventHandler
             if (logger.isInfoEnabled()) {
                 if (!elem.isBlocked()) {
                     // No sense logging twice.
-                    logger.info( "Logged: " l4prot + ": " + sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
-                                 sess.serverAddr().getHostAddress() + ":" + sess.serverPort() + " matched " + sessInfo.protocol);
+                    logger.info( "Logged: " + sessInfo.protocol + ": [" + l4prot + "] " +
+                                 sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
+                                 sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
                 }
             }
 
@@ -248,8 +249,9 @@ public class EventHandler extends AbstractEventHandler
                 node.incrementBlockCount();
 
                 if (logger.isInfoEnabled()) {
-                    logger.info( "Blocked: " + l4prot + ": " + sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
-                                 sess.serverAddr().getHostAddress() + ":" + sess.serverPort() + " matched " + sessInfo.protocol);
+                    logger.info( "Blocked: " + sessInfo.protocol + ": [" + l4prot + "] " +
+                                 sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
+                                 sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
                 }
 
                 if (sess instanceof TCPSession) {
