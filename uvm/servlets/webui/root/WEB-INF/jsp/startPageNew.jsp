@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <c:set var="isDebug" value="true"/>
+<c:set var="isCompat" value="true"/>
 <head>
 
     <title>${companyName}</title>
@@ -13,6 +14,7 @@
 <c:if test="${isDebug==false}">
     <script type="text/javascript" src="/ext4/builds/ext-core-debug.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
+	<script type="text/javascript" src="/ext4/PagingMemoryProxy.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc-min.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
@@ -27,7 +29,12 @@
 <c:if test="${isDebug==true}">
     <script type="text/javascript" src="/ext4/builds/ext-core-debug.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
+	<c:if test="${isCompat==true}">
+		    <script type="text/javascript" src="/ext4/ext3-compat.js?s=${buildStamp}"></script>
+			<script type="text/javascript" src="/ext4/ext3-core-compat.js?s=${buildStamp}"></script>
+    </c:if>				
 
+	<script type="text/javascript" src="/ext4/PagingMemoryProxy.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
@@ -43,6 +50,7 @@
     <script type="text/javascript" src="script/config/systemNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/systemInfoNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/upgradeNew.js?s=${buildStamp}"></script>
+
 </c:if>
 
 <c:if test="${param['console']==1}">
