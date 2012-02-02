@@ -101,8 +101,9 @@ def runTestSuite(suite):
     global parser
     global logfile
     print "== Testing %s ==" % suite.nodeName()
-    rc = 0
     tests = unittest.TestLoader().loadTestsFromTestCase(suite)
+    rc = 0
+    total = len(tests)
     for test in tests:
         results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
         if (len(results.failures) > 0 or len(results.errors) > 0):
@@ -114,7 +115,7 @@ def runTestSuite(suite):
         else:
             print "Test success : %s " % test._testMethodName
     print "== Testing %s ==" % suite.nodeName()
-    return rc
+    return rc, total
 
 # Verify the test enviroment is setup correctly
 def runTestEnvironmentTests():
@@ -159,16 +160,27 @@ if ("environment" in parser.nodesToTest or "all" in parser.nodesToTest):
     runTestEnvironmentTests()
 
 rc = 0
+total = 0
 if ("webfilter" in parser.nodesToTest or "all" in parser.nodesToTest):
-    rc += runTestSuite(WebFilterTests)
+    errors, subTotal = runTestSuite(WebFilterTests)
+    rc += errors
+    total += subTotal
 if ("sitefilter" in parser.nodesToTest or "all" in parser.nodesToTest):
-    rc += runTestSuite(SiteFilterTests)
+    errors, subTotal = runTestSuite(SiteFilterTests)
+    rc += errors
+    total += subTotal
 if ("firewall" in parser.nodesToTest or "all" in parser.nodesToTest):
-    rc += runTestSuite(FirewallTests)
+    errors, subTotal = runTestSuite(FirewallTests)
+    rc += errors
+    total += subTotal
 if ("classd" in parser.nodesToTest or "all" in parser.nodesToTest):
-    rc += runTestSuite(ClassdTests)
+    errors, subTotal = runTestSuite(ClassdTests)
+    rc += errors
+    total += subTotal
 if ("spyware" in parser.nodesToTest or "all" in parser.nodesToTest): 
-    rc += runTestSuite(SpywareTests)
+    errors, subTotal = runTestSuite(SpywareTests)
+    rc += errors
+    total += subTotal
 
 # if reports was added earlier, revert to original settings
 if reportsAdded:
@@ -176,6 +188,7 @@ if reportsAdded:
     uvm.Uvm().getUvmContext().nodeManager().destroy(reportsNodeDesc['nodeId']);
 
 print ""
+print "%s passed, %s failed" % (total-rc, rc)
 print "More details found in %s" % parser.logfile
 
 exit(rc)
