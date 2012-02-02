@@ -873,7 +873,7 @@ class ToolboxManagerImpl implements ToolboxManager
             hidePkgs = Arrays.asList(libitems);
         }
 
-        for (String line : availableList.split("\\n")) {
+        for (String line : availableList.split("\\n", -1)) {
             if (line.startsWith("#")) {
                 continue;
             }
@@ -960,7 +960,7 @@ class ToolboxManagerImpl implements ToolboxManager
     private Map<String, String> readInstalledList(String list) throws IOException
     {
         Map<String, String> m = new HashMap<String,String>();
-        for (String line: list.split("\\n")) {
+        for (String line: list.split("\\n", -1)) {
             StringTokenizer tok = new StringTokenizer(line);
 
             /* line is a Blank line */
@@ -1015,7 +1015,7 @@ class ToolboxManagerImpl implements ToolboxManager
         synchronized(this) {
             ExecManagerResult result = UvmContextFactory.context().execManager().exec(cmd);
 
-            for (String line : result.getOutput().split("\\n")) {
+            for (String line : result.getOutput().split("\\n", -1)) {
                 PackageDesc md = packageMap.get(line);
                 if (md == null) {
                     logger.debug("Ignoring non-package: " + line);
