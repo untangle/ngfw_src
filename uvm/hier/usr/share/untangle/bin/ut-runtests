@@ -103,7 +103,7 @@ def runTestSuite(suite):
     print "== Testing %s ==" % suite.nodeName()
     tests = unittest.TestLoader().loadTestsFromTestCase(suite)
     rc = 0
-    total = len(tests)
+    total = len([t for t in tests])
     for test in tests:
         results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
         if (len(results.failures) > 0 or len(results.errors) > 0):
