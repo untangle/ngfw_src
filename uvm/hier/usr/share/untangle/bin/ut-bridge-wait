@@ -1,6 +1,6 @@
 #! /bin/bash
 
-exec 2>&1 | logger -t uvmiptables
+exec &> >(logger -t uvmiptables)
 
 MAX_DELAY=$1
 ## Default amount of time, in seconds to wait for the bridge to come up

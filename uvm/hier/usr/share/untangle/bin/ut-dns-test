@@ -1,6 +1,6 @@
-#! /bin/dash
+#! /bin/bash
 
-exec 2>&1 | logger -t uvmiptables
+exec &> >(logger -t uvmiptables)
 
 DNS_TRIES=7
 DNS_TIMEOUT=2
