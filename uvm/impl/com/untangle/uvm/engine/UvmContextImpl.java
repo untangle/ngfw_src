@@ -40,6 +40,7 @@ import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.OemManager;
 import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.SessionMonitor;
@@ -123,6 +124,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private SessionMonitorImpl sessionMonitor;
     private BackupManager backupManager;
     private LocalDirectoryImpl localDirectory;
+    private ExecManagerImpl execManager;
     
     private volatile boolean sessionFactoryNeedsRebuild = true;
     private volatile SessionFactory sessionFactory;
@@ -228,7 +230,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.adminManager;
     }
 
-    @Override
     public NetworkManager networkManager()
     {
         return this.networkManager;
@@ -269,6 +270,16 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.sessionMonitor;
     }
 
+    public ExecManager execManager()
+    {
+        return this.execManager;
+    }
+
+    public ExecManager createExecManager()
+    {
+        return this.execManager;
+    }
+    
     public void waitForStartup()
     {
         synchronized (startupWaitLock) {
@@ -354,54 +365,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return new Thread(task, name);
     }
 
-    public Process exec(String cmd) throws IOException
-    {
-        StringTokenizer st = new StringTokenizer(cmd);
-        String[] cmdArray = new String[st.countTokens()];
-        for (int i = 0; i < cmdArray.length; i++) {
-            cmdArray[i] = st.nextToken();
-        }
-
-        return exec(cmdArray, null, null);
-    }
-
-    public Process exec(String[] cmd) throws IOException
-    {
-        return exec(cmd, null, null);
-    }
-
-    public Process exec(String[] cmd, String[] envp) throws IOException
-    {
-        return exec(cmd, envp, null);
-    }
-
-    public Process exec(String[] cmd, String[] envp, File dir) throws IOException
-    {
-        if (logger.isInfoEnabled()) {
-            String cmdStr = new String();
-            for (int i = 0 ; i < cmd.length; i++) {
-                cmdStr = cmdStr.concat(cmd[i] + " ");
-            }
-            logger.info("System.exec(" + cmdStr + ")");
-        }
-        try {
-            return Runtime.getRuntime().exec(cmd, envp, dir);
-        } catch (IOException x) {
-            // Check and see if we've run out of virtual memory.  This is very ugly
-            // but there's not another apparent way.  XXXXXXXXXX
-            String msg = x.getMessage();
-            if (msg.contains("Cannot allocate memory")) {
-                logger.error("Virtual memory exhausted in Process.exec()");
-                UvmContextImpl.getInstance().fatalError("UvmContextImpl.exec", x);
-                // There's no return from fatalError, but we have to
-                // keep the compiler happy.
-                return null;
-            } else {
-                throw x;
-            }
-        }
-    }
-
     public void shutdown()
     {
         Thread t = newThread(new Runnable()
@@ -423,58 +386,33 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     public void rebootBox()
     {
-        try {
-            Process p = exec(new String[] { REBOOT_SCRIPT });
-            for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
-            int exitValue = p.waitFor();
-            if (0 != exitValue) {
-                logger.error("Unable to reboot (" + exitValue + ")");
-            } else {
-                logger.info("Rebooted at admin request");
-            }
-        } catch (InterruptedException exn) {
-            logger.error("Interrupted during reboot");
-        } catch (IOException exn) {
-            logger.error("Exception during reboot");
+        Integer exitValue = this.execManager().execResult( REBOOT_SCRIPT );
+        if (0 != exitValue) {
+            logger.error("Unable to reboot (" + exitValue + ")");
+        } else {
+            logger.info("Rebooted at admin request");
         }
     }
 
     public void shutdownBox()
     {
-        try {
-            Process p = exec(new String[] { SHUTDOWN_SCRIPT , "-h" , "now" });
-            for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
-            int exitValue = p.waitFor();
-            if (0 != exitValue) {
-                logger.error("Unable to shutdown (" + exitValue + ")");
-            } else {
-                logger.info("Shutdown at admin request");
-            }
-        } catch (InterruptedException exn) {
-            logger.error("Interrupted during shutdown");
-        } catch (IOException exn) {
-            logger.error("Exception during shutdown");
+        Integer exitValue = this.execManager().execResult( SHUTDOWN_SCRIPT + " -h now" );
+        if (0 != exitValue) {
+            logger.error("Unable to shutdown (" + exitValue + ")");
+        } else {
+            logger.info("Shutdown at admin request");
         }
     }
 
     public int forceTimeSync()
     {
-        try {
-            Process p = exec(new String[] { TIMESYNC_SCRIPT });
-            for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
-            int exitValue = p.waitFor();
-            if (0 != exitValue) {
-                logger.error("Unable to synchronize time (" + exitValue + ")");
-            } else {
-                logger.info("Synchronized time");
-            }
-            return exitValue;
-        } catch (InterruptedException exn) {
-            logger.error("Interrupted during time synchronization");
-        } catch (IOException exn) {
-            logger.error("Exception during time synchronization");
+        Integer exitValue = this.execManager().execResult( TIMESYNC_SCRIPT );
+        if (0 != exitValue) {
+            logger.error("Unable to synchronize time (" + exitValue + ")");
+        } else {
+            logger.info("Synchronized time");
         }
-        return 1;
+        return exitValue;
     }
     
     public UvmState state()
@@ -550,23 +488,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     public boolean createUID()
     {
-        try {
-            Process p;
-            p = exec(new String[] { CREATE_UID_SCRIPT });
-            for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
-            int exitValue = p.waitFor();
-            if (0 != exitValue) {
-                logger.error("Unable to activate (" + exitValue + ")");
-                return false;
-            } else {
-                logger.info("Activated");
-            }
-        } catch (InterruptedException exn) {
-            logger.error("Interrupted during activation", exn);
+        Integer exitValue = this.execManager().execResult(CREATE_UID_SCRIPT);
+        if (0 != exitValue) {
+            logger.error("Unable to activate (" + exitValue + ")");
             return false;
-        } catch (IOException exn) {
-            logger.error("Exception during activation", exn);
-            return false;
+        } else {
+            logger.info("UID Created.");
         }
 
         return true;
@@ -628,6 +555,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     @Override
     protected void init()
     {
+        this.execManager = new ExecManagerImpl();
+
         this.oemManager = new OemManagerImpl();
 
         this.backupManager = new BackupManager();
@@ -645,6 +574,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             ServletUtils.getInstance().registerSerializers(serializer);
             settingsManager.setSerializer(serializer);
             sessionMonitor.setSerializer(serializer);
+            execManager.setSerializer(serializer);
         } catch (Exception e) {
             throw new IllegalStateException("register serializers should never fail!", e);
         }
@@ -1150,9 +1080,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             logger.info("Upgrade complete. Removing upgrade splash screen...");
 
             try {
-                Process p = exec(new String[] { UPGRADE_SPLASH_SCRIPT , "stop" });
-                for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
-                int exitValue = p.waitFor();
+                Integer exitValue = this.execManager().execResult( UPGRADE_SPLASH_SCRIPT + " stop" );
                 if (0 != exitValue) {
                     logger.warn("Upgrade complete. Removing upgrade splash screen... failed");
                 } else {

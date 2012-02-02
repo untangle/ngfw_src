@@ -46,7 +46,7 @@ class NetworkUtilPriv extends NetworkUtil
     Properties loadProperties() throws IOException
     {
         String cmd = System.getProperty( "uvm.bin.dir" ) + "/ut-net-properties";
-        Process process = UvmContextFactory.context().exec( cmd );
+        Process process = UvmContextFactory.context().execManager().execEvil( cmd );
         Properties properties = new Properties();
         properties.load( process.getInputStream());
         return properties;

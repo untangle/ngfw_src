@@ -53,7 +53,6 @@ import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
-import com.untangle.node.util.SimpleExec;
 
 public class SpywareImpl extends AbstractNode implements Spyware
 {
@@ -330,9 +329,10 @@ public class SpywareImpl extends AbstractNode implements Spyware
         if (readSettings == null) {
             logger.warn("No settings found - Running conversion script to check DB");
             try {
-                SimpleExec.SimpleExecResult result = null;
-                logger.warn("Running: " + SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + settingsFileName + ".js");
-                result = SimpleExec.exec( SETTINGS_CONVERSION_SCRIPT, new String[] { nodeID.toString() , settingsFileName + ".js"}, null, null, true, true, 1000*60, logger, true);
+                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + settingsFileName + ".js";
+
+                logger.warn("Running: " + convertCmd);
+                UvmContextFactory.context().execManager().exec( convertCmd );
             } catch ( Exception e ) {
                 logger.warn( "Conversion script failed.", e );
             } 

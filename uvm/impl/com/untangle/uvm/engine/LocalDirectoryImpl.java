@@ -13,7 +13,6 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.LocalDirectory;
 import com.untangle.uvm.LocalDirectoryUser;
-import com.untangle.node.util.SimpleExec;
 
 /**
  * Local Directory stores a local list of users
@@ -147,9 +146,9 @@ class LocalDirectoryImpl implements LocalDirectory
         if (users == null) {
             logger.warn("No settings found - Running conversion script to check DB");
             try {
-                SimpleExec.SimpleExecResult result = null;
-                logger.warn("Running: " + LOCAL_DIRECTORY_CONVERSION_SCRIPT + " " + LOCAL_DIRECTORY_SETTINGS_FILE + ".js");
-                result = SimpleExec.exec( LOCAL_DIRECTORY_CONVERSION_SCRIPT, new String[] { LOCAL_DIRECTORY_SETTINGS_FILE + ".js"}, null, null, true, true, 1000*60, logger, true);
+                String convertCmd = LOCAL_DIRECTORY_CONVERSION_SCRIPT + " " + LOCAL_DIRECTORY_SETTINGS_FILE + ".js";
+                logger.warn("Running: " + convertCmd);
+                UvmContextFactory.context().execManager().exec( convertCmd );
             } catch ( Exception e ) {
                 logger.warn( "Conversion script failed.", e );
             } 

@@ -202,7 +202,19 @@ public interface UvmContext
      * @return the TomcatManager
      */
     LocalTomcatManager tomcatManager();
-    
+
+    /**
+     * get the execManager for launching subprocesses
+     */
+    ExecManager execManager();
+
+    /**
+     * Create a new singleton exec manager
+     * This is usual for nodes that need their own exec managers
+     * You must call close on the execmanager!
+     */
+    ExecManager createExecManager();
+
     /**
      * Once settings have been restored, and the UVM has been booted, call
      * into here to get the corresponding OS files rewritten.  This calls through
@@ -325,14 +337,6 @@ public interface UvmContext
      * @return a <code>UvmState</code> enumerated value
      */
     UvmState state();
-
-    /**
-     * Exec utilities
-     */
-    Process exec(String cmd) throws IOException;
-    Process exec(String[] cmd) throws IOException;
-    Process exec(String[] cmd, String[] envp) throws IOException;
-    Process exec(String[] cmd, String[] envp, File dir) throws IOException;
 
     /**
      * Thread utilities

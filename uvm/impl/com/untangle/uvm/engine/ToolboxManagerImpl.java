@@ -34,6 +34,7 @@ import org.hibernate.Session;
 import com.untangle.uvm.CronJob;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.Period;
+import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.message.Counters;
@@ -848,8 +849,8 @@ class ToolboxManagerImpl implements ToolboxManager
         synchronized(this) {
             try {
                 String cmd = System.getProperty("uvm.bin.dir") + "/ut-apt available";
-                Process p = UvmContextFactory.context().exec(cmd);
-                pkgs = readPkgList(p.getInputStream(), instList);
+                String availableList = UvmContextFactory.context().execManager().execOutput(cmd);
+                pkgs = readPkgList(availableList, instList);
             } catch (Exception exn) {
                 logger.fatal("Unable to parse ut-apt available list, proceeding with empty list", exn);
                 return new HashMap<String, PackageDesc>();
@@ -859,23 +860,20 @@ class ToolboxManagerImpl implements ToolboxManager
         return pkgs;
     }
 
-    private Map<String, PackageDesc> readPkgList(InputStream is, Map<String, String> instList) throws IOException
+    private Map<String, PackageDesc> readPkgList(String availableList, Map<String, String> instList) throws IOException
     {
         Map<String, PackageDesc> pkgs = new HashMap<String, PackageDesc>();
-
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
         Map<String, String> m = new HashMap<String, String>();
         StringBuilder key = new StringBuilder();
         StringBuilder value = new StringBuilder();
-        String line;
         List<String> hidePkgs = new LinkedList<String>();
         if (System.getProperty("uvm.hidden.libitems") != null) {
             String[] libitems = System.getProperty("uvm.hidden.libitems").split(",");
             hidePkgs = Arrays.asList(libitems);
         }
 
-        while (null != (line = br.readLine())) {
+        for (String line : availableList.split("\\n")) {
             if (line.startsWith("#")) {
                 continue;
             }
@@ -938,7 +936,6 @@ class ToolboxManagerImpl implements ToolboxManager
                 }
             }
         }
-        is.close();
 
         return pkgs;
     }
@@ -950,8 +947,8 @@ class ToolboxManagerImpl implements ToolboxManager
         synchronized(this) {
             try {
                 String cmd = System.getProperty("uvm.bin.dir") + "/ut-apt installed";
-                Process p = UvmContextFactory.context().exec(cmd);
-                instList = readInstalledList(p.getInputStream());
+                String list = UvmContextFactory.context().execManager().execOutput(cmd);
+                instList = readInstalledList(list);
             } catch (IOException exn) {
                 throw new RuntimeException(exn); 
             }
@@ -960,12 +957,10 @@ class ToolboxManagerImpl implements ToolboxManager
         return instList;
     }
 
-    private Map<String, String> readInstalledList(InputStream is) throws IOException
+    private Map<String, String> readInstalledList(String list) throws IOException
     {
         Map<String, String> m = new HashMap<String,String>();
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        String line;
-        while (null != (line = br.readLine())) {
+        for (String line: list.split("\\n")) {
             StringTokenizer tok = new StringTokenizer(line);
 
             /* line is a Blank line */
@@ -984,7 +979,6 @@ class ToolboxManagerImpl implements ToolboxManager
             
             m.put(pkg, ver);
         }
-        is.close();
 
         return m;
     }
@@ -994,32 +988,9 @@ class ToolboxManagerImpl implements ToolboxManager
         String cmdStr = System.getProperty("uvm.bin.dir") + "/ut-apt " + (0 > key ? "" : "-k " + key + " ") + command;
 
         synchronized(this) {
-            logger.debug("Running apt: " + cmdStr);
-            try {
-                Process proc = UvmContextFactory.context().exec(cmdStr);
-                InputStream is = proc.getInputStream();
-                byte[] outBuf = new byte[4092];
-                int i;
-                while (-1 != (i = is.read(outBuf))) {
-                    System.out.write(outBuf, 0, i);
-                }
-                is.close();
-                boolean tryAgain;
-                do {
-                    tryAgain = false;
-                    try {
-                        proc.waitFor();
-                    } catch (InterruptedException e) {
-                        tryAgain = true;
-                    }
-                } while (tryAgain);
-                logger.debug("ut-apt done.");
-                int e = proc.exitValue();
-                if (0 != e) {
-                    throw new PackageException("ut-apt " + command + " exited with: " + e);
-                }
-            } catch (IOException e) {
-                logger.info( "exception while in package: ", e);
+            Integer exitCode = UvmContextFactory.context().execManager().execResult(cmdStr);
+            if (exitCode != 0) {
+                throw new PackageException("ut-apt " + command + " exited with: " + exitCode);
             }
         }
 
@@ -1042,48 +1013,27 @@ class ToolboxManagerImpl implements ToolboxManager
         String cmd = System.getProperty("uvm.bin.dir") + "/ut-apt predictInstall " + pkg;
 
         synchronized(this) {
-            try {
-                Process proc = UvmContextFactory.context().exec(cmd);
-                InputStream is = proc.getInputStream();
-                BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                String line;
-                while (null != (line = br.readLine())) {
-                    PackageDesc md = packageMap.get(line);
-                    if (md == null) {
-                        logger.debug("Ignoring non-package: " + line);
-                        continue;
-                    }
-                    PackageDesc.Type mdType = md.getType();
-                    if (mdType != PackageDesc.Type.NODE && mdType != PackageDesc.Type.SERVICE) {
-                        logger.debug("Ignoring non-node/service package: " + line);
-                        continue;
-                    }
-                    l.add(line);
-                }
+            ExecManagerResult result = UvmContextFactory.context().execManager().exec(cmd);
 
-                /**
-                 * Wait for completion
-                 */
-                boolean tryAgain;
-                do {
-                    tryAgain = false;
-                    try {
-                        proc.waitFor();
-                    } catch (InterruptedException e) {
-                        tryAgain = true;
-                    }
-                } while (tryAgain);
-                logger.debug("ut-apt done.");
-
-                /**
-                 * If returns non-zero throw an exception
-                 */
-                int e = proc.exitValue();
-                if (0 != e) {
-                    throw new PackageException("ut-apt predictInstall exited with: " + e);
+            for (String line : result.getOutput().split("\\n")) {
+                PackageDesc md = packageMap.get(line);
+                if (md == null) {
+                    logger.debug("Ignoring non-package: " + line);
+                    continue;
                 }
-            } catch (IOException exn) {
-                logger.warn("could not predict node install: " + pkg, exn);
+                PackageDesc.Type mdType = md.getType();
+                if (mdType != PackageDesc.Type.NODE && mdType != PackageDesc.Type.SERVICE) {
+                    logger.debug("Ignoring non-node/service package: " + line);
+                    continue;
+                }
+                l.add(line);
+            }
+
+            /**
+             * If returns non-zero throw an exception
+             */
+            if (result.getResult() != 0) {
+                throw new PackageException("ut-apt predictInstall exited with: " + result.getResult());
             }
         }
 

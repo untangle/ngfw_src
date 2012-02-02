@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $HeadURL$
+ */
 package com.untangle.uvm.snmp;
 
 import java.io.File;
@@ -222,11 +224,8 @@ public class SnmpManagerImpl implements SnmpManager, HasConfigFiles
     {
         try {
             logger.debug("Restarting the snmpd...");
-            Process p = UvmContextFactory.context().exec(new String[] {
-                    WRAPPER_NAME });
-            p.waitFor();
-            logger.debug("Restart of SNMPD exited with " +
-                         p.exitValue());
+            Integer result = UvmContextFactory.context().execManager().execResult( WRAPPER_NAME );
+            logger.debug("Restart of SNMPD exited with " + result);
         }
         catch(Exception ex) {
             logger.error("Error restarting snmpd", ex);

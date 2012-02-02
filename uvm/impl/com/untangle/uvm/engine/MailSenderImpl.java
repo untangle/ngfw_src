@@ -6,6 +6,8 @@ package com.untangle.uvm.engine;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -48,7 +50,6 @@ import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.User;
-import com.untangle.uvm.util.ConfigFileUtil;
 import com.untangle.uvm.util.HasConfigFiles;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionRunner;
@@ -145,16 +146,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
                         logger.info("Creating initial default mail settings");
                         mailSettings = new MailSettings();
                         String fromSender = MailSender.DEFAULT_SENDER;
-                        String fromHostname = "unknown.example.com";
-                        try {
-                            String getMailnameCmd[] = { "/bin/cat", "/etc/mailname" };
-                            Process proc = UvmContextFactory.context().exec(getMailnameCmd);
-                            BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-                            fromHostname = input.readLine();
-                            proc.destroy();
-                        } catch (java.io.IOException e) {
-                            logger.error("Unable to get mailname", e );
-                        }
+                        String fromHostname = UvmContextFactory.context().execManager().execOutput("/bin/cat /etc/mailname");
                         mailSettings.setFromAddress(fromSender + "@" + fromHostname);
                         s.save(mailSettings);
                     }
@@ -295,43 +287,27 @@ class MailSenderImpl implements MailSender, HasConfigFiles
                     sbpasswd.append(":");
                     sbpasswd.append(pass);
                     sbpasswd.append("\n");
-                    ConfigFileUtil.writeFile( sbpasswd, EXIM_AUTH_FILE );
+                    this.writeFile( sbpasswd, EXIM_AUTH_FILE );
                 }
                 else if (user == null && pass == null) {
                     StringBuilder blank = new StringBuilder();
                     blank.append("");
-                    ConfigFileUtil.writeFile( blank, EXIM_AUTH_FILE );
+                    this.writeFile( blank, EXIM_AUTH_FILE );
                 }
                     
 
                 /**
                  * Substitute the port in the exim template
                  */
-                try {
-                    String line;
-                    Process proc;
-                    BufferedReader input;
-                    // remove all "  port = xx"
-                    String cmd1[] = {"/bin/sed","-e","/..port.=.[0-9].*$/d","-i",EXIM_TEMPLATE_FILE};
-                    // insert new "  port = xx"
-                    String cmd2[] = {"/bin/sed","-e","s|  driver = smtp|  driver = smtp\\n  port = " + mailSettings.getSmtpPort() + "|g","-i",EXIM_TEMPLATE_FILE};
-
-                    proc = UvmContextFactory.context().exec(cmd1);
-                    input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-                    while ((line = input.readLine()) != null) {logger.warn(line);}
-                    proc.destroy();
-                    
-                    proc = UvmContextFactory.context().exec(cmd2);
-                    input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-                    while ((line = input.readLine()) != null) {logger.warn(line);}
-                    proc.destroy();
-                }
-                catch (java.io.IOException e) {
-                    logger.error( "Unable to save Mail Daemon configuration", e );
-                }
+                // remove all "  port = xx"
+                String cmd1 = "/bin/sed -e \"/..port.=.[0-9].*$/d\" -i " + EXIM_TEMPLATE_FILE;
+                UvmContextFactory.context().execManager().exec(cmd1);
+                // insert new "  port = xx"
+                String cmd2 = "/bin/sed -e \"s|  driver = smtp|  driver = smtp\\n  port = " + mailSettings.getSmtpPort() + "|g\" -i " + EXIM_TEMPLATE_FILE;
+                UvmContextFactory.context().execManager().exec(cmd2);
             }
             
-            ConfigFileUtil.writeFile( sb, EXIM_CONF_FILE );
+            this.writeFile( sb, EXIM_CONF_FILE );
 
             try {
                 ScriptRunner.getInstance().exec( EXIM_CMD_UPDATE_CONF );
@@ -356,16 +332,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
             }
 
             /* Force flush the queue */
-            try {
-                Process proc = UvmContextFactory.context().exec("/usr/sbin/exim -qff");
-                BufferedReader input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-                String line;
-                while ((line = input.readLine()) != null) {logger.warn(line);}
-                proc.destroy();
-            } catch ( Exception e ) {
-                logger.error( "Unable to flush mail queue", e );
-            }
-
+            UvmContextFactory.context().execManager().exec("/usr/sbin/exim -qff");
         }
     }
 
@@ -932,4 +899,28 @@ class MailSenderImpl implements MailSender, HasConfigFiles
             try { if (transport != null) transport.close(); } catch (MessagingException x) { }
         }
     }
+
+    private void writeFile( StringBuilder sb, String fileName )
+    {
+        BufferedWriter out = null;
+
+        /* Open up the interfaces file */
+        try {
+            String data = sb.toString();
+
+            out = new BufferedWriter(new FileWriter( fileName ));
+            out.write( data, 0, data.length());
+        } catch ( Exception ex ) {
+            /* XXX May need to catch this exception, restore defaults
+             * then try again */
+            logger.error( "Error writing file " + fileName + ":", ex );
+        }
+
+        try {
+            if ( out != null )
+                out.close();
+        } catch ( Exception ex ) {
+        }
+    }
+
 }

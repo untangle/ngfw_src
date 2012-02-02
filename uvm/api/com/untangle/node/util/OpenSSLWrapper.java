@@ -1,36 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
+/**
+ * $Id$
  */
-
 package com.untangle.node.util;
 
 import java.io.BufferedReader;
@@ -47,6 +17,8 @@ import javax.naming.InvalidNameException;
 
 import com.untangle.uvm.security.CertInfo;
 import com.untangle.uvm.security.RFC2253Name;
+import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.UvmContextFactory;
 
 /**
  * Wrapper around the OpenSSL application.  Note that the features
@@ -56,11 +28,9 @@ import com.untangle.uvm.security.RFC2253Name;
  * Note also that some of this could be obtained from Java's APIs, but those
  * are (a) way too complicated and (b) I don't trust Java as much as OpenSSL.
  */
-public class OpenSSLWrapper {
-
-    private static final String CERT_DATE_FORMAT =
-        "MMM d HH:mm:ss yyy z";
-
+public class OpenSSLWrapper
+{
+    private static final String CERT_DATE_FORMAT = "MMM d HH:mm:ss yyy z";
     private static final String KEY_PAIR_VALID_DAYS = "3650"; // In the neighborhood of 10 years
 
 
@@ -73,7 +43,8 @@ public class OpenSSLWrapper {
      * @return a String (with embedded new lines) suitable for display
      */
     public static String prettyPrint(byte[] certBytes)
-        throws IOException {
+        throws IOException
+    {
 
         File temp = File.createTempFile("ppc", ".tmp");
         try {
@@ -98,33 +69,20 @@ public class OpenSSLWrapper {
      * @return a String (with embedded new lines) suitable for display
      */
     public static String prettyPrint(File certFile)
-        throws IOException {
+        throws IOException
+    {
 
         if(!certFile.exists()) {
             throw new FileNotFoundException(certFile.getAbsolutePath());
         }
 
-        SimpleExec.SimpleExecResult result = SimpleExec.exec(
-                                                             "openssl",//cmd
-                                                             new String[] {//args
-                                                                 "x509",
-                                                                 "-in",
-                                                                 certFile.getAbsolutePath(),
-                                                                 "-text"
-                                                             },
-                                                             null,//env
-                                                             null,//rootDir
-                                                             true,//stdout
-                                                             true,//stderr
-                                                             1000*20);
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec("openssl x509 -in " + certFile.getAbsolutePath() + " -text");
 
-        if(result.exitCode==0) {
-            return new String(result.stdOut);
+        if(result.getResult()==0) {
+            return result.getOutput();
         }
-        throw new IOException("Error printing cert file.  Return code: " +
-                              result.exitCode + ", stdout \"" +
-                              new String(result.stdOut) + "\", stderr \"" +
-                              new String(result.stdErr) + "\"");
+
+        throw new IOException("Error printing cert file.  Return: " + result.getResult() + " output: \"" + result.getOutput() + "\"");
 
     }
 
@@ -139,15 +97,16 @@ public class OpenSSLWrapper {
      * @return the info
      */
     public static CertInfo getCertInfo(File certFile)
-        throws IOException, InvalidNameException {
+        throws IOException, InvalidNameException
+    {
 
         //=================================================
         // Tested command as follows:
         // prompt> openssl x509 -in gobbles.pem -dates -noout -subject -issuer -nameopt RFC2253
         // prompt> notBefore=Jan  4 22:53:52 2006 GMT
         // prompt> notAfter=Jan  4 22:53:52 2007 GMT
-        // prompt> subject= CN=gobbles.metavize.com,L=San Mateo,ST=CA,C=US
-        // prompt> issuer= CN=gobbles.metavize.com,L=San Mateo,ST=CA,C=US
+        // prompt> subject= CN=gobbles.untangle.com,L=San Mateo,ST=CA,C=US
+        // prompt> issuer= CN=gobbles.untangle.com,L=San Mateo,ST=CA,C=US
         //
         // Note that it exits "0" if there are no problems.
         //
@@ -156,32 +115,15 @@ public class OpenSSLWrapper {
         // be in "/usr/bin".  It exits with "1" if it is not a CA (0 if it is).
         //=================================================
 
-        SimpleExec.SimpleExecResult result = SimpleExec.exec(
-                                                             "openssl",//cmd
-                                                             new String[] {//args
-                                                                 "x509",
-                                                                 "-in",
-                                                                 certFile.getAbsolutePath(),
-                                                                 "-dates",
-                                                                 "-noout",
-                                                                 "-subject",
-                                                                 "-issuer",
-                                                                 "-nameopt",
-                                                                 "RFC2253"
-                                                             },
-                                                             null,//env
-                                                             null,//rootDir
-                                                             true,//stdout
-                                                             false,//stderr
-                                                             1000*20);
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec("openssl x509 -in " + certFile.getAbsolutePath() + " -dates -noout -subject -issuer -nameopt RFC2253");
 
-        if(result.exitCode==0) {
+        if(result.getResult()==0) {
             Date notBefore = null;
             Date notAfter = null;
             RFC2253Name subjectDN = null;
             RFC2253Name issuerDN = null;
             //Time to parse the output (I hate this in Java)
-            String[] theLines = new String(result.stdOut).split("(?m)$");//The "(?m") crap is so Java's
+            String[] theLines = result.getOutput().split("(?m)$");//The "(?m") crap is so Java's
             //Regex treats embedded new
             //lines correctly.
             for(int i = 0; i<theLines.length; i++) {
@@ -203,32 +145,21 @@ public class OpenSSLWrapper {
             String cmd = System.getProperty("uvm.bin.dir") + "/ut-inspect_ca";
 
             //Now figure out if this is a CA
-            result = SimpleExec.exec(
-                                     cmd,
-                                     new String[] {//args
-                                         certFile.getAbsolutePath(),
-                                     },
-                                     null,//env
-                                     null,//rootDir
-                                     false,//stdout
-                                     false,//stderr
-                                     1000*20,
-                                     null,//logas
-                                     false);//TODO More thread junk.  This is getting to be a real pain...
+            result = UvmContextFactory.context().execManager().exec( cmd + " " + certFile.getAbsolutePath() );
 
-           CertInfo ci = new CertInfo(notBefore,
-                                notAfter,
-                                subjectDN,
-                                issuerDN,
-                                result.exitCode == 0,
-                                prettyPrint(certFile));
+            CertInfo ci = new CertInfo(notBefore,
+                                       notAfter,
+                                       subjectDN,
+                                       issuerDN,
+                                       result.getResult() == 0,
+                                       prettyPrint(certFile));
 
-	   ci.setAppearsSelfSignedFlag(appearsSelfSigned(certFile));
+            ci.setAppearsSelfSignedFlag(appearsSelfSigned(certFile));
 
-	   return ci;
+            return ci;
         }
 
-        throw new IOException("openssl exited with value " + result.exitCode);
+        throw new IOException("openssl exited with value " + result.getResult());
     }
 
 
@@ -248,7 +179,8 @@ public class OpenSSLWrapper {
      * @return the info
      */
     public static CertInfo getCertInfo(byte[] certBytes)
-        throws IOException, InvalidNameException {
+        throws IOException, InvalidNameException
+    {
 
         File temp = File.createTempFile("gci", ".tmp");
         try {
@@ -267,76 +199,38 @@ public class OpenSSLWrapper {
         }
     }
 
-    public static String getCertFromPEM(String filename) {
+    public static String getCertFromPEM(String filename)
+    {
         return extractMatchFromFile(filename, "-----BEGIN CERTIFICATE-----.+-----END CERTIFICATE-----");
     }
 
-    public static String getCertKeyFromPEM(String filename) {
+    public static String getCertKeyFromPEM(String filename)
+    {
         return extractMatchFromFile(filename, "-----BEGIN .*? KEY-----.+-----END .*? KEY-----");
     }
+
     public static void generateSelfSignedCert(String alias, String filename)
-        throws IOException {
-        SimpleExec.SimpleExecResult resultKeyCopy = SimpleExec.exec( "openssl",
-                                                                     new String[] {
-                                                                      "rsa",
-                                                                      "-in", 
-                                                                      filename,
-                                                                      "-out",
-                                                                      filename+".new"
-                                                                     },
-                                                                     null,
-                                                                     null,
-                                                                     true,
-                                                                     false,
-                                                                     1000*60);
+        throws IOException
+    {
+        ExecManagerResult resultKeyCopy = UvmContextFactory.context().execManager().exec( "openssl rsa -in " + filename + " -out " + (filename+".new"));
 
-        if(resultKeyCopy.exitCode==0) {
-            SimpleExec.SimpleExecResult result = SimpleExec.exec(
-                                                             "openssl",
-                                                             new String[] {
-                                                                 "req",
-                                                                 "-batch",
-                                                                 "-subj",
-                                                                 alias,
-                                                                 "-new",
-                                                                 "-x509",
-                                                                 "-nodes",
-								 "-days",
-								 KEY_PAIR_VALID_DAYS,
-                                                                 "-key",
-                                                                 filename+".new",
-                                                                 "-out",
-                                                                 filename+".new",
-                                                                 "-keyout",
-                                                                 filename+".new"
-                                                             },
-                                                             null,
-                                                             null,
-                                                             true,
-                                                             false,
-                                                             1000*60);
-              File oldCertFile = new File(filename);
-              oldCertFile.renameTo(new File(filename+".old"));
-              File newCertFile = new File(filename+".new");
-              newCertFile.renameTo(new File(filename));
-              @SuppressWarnings("unused")
-              SimpleExec.SimpleExecResult resultRestartApache = SimpleExec.exec("apache2ctl", 
-                                                                                new String[] {
-                                                                                  "graceful"
-                                                                                },
-                                                                                null,
-                                                                                null,
-                                                                                true,
-                                                                                false,
-                                                                                1000*60);
+        if(resultKeyCopy.getResult()==0) {
+            ExecManagerResult result = UvmContextFactory.context().execManager().exec("openssl req -batch -subj alias -new -x509 -nodes -days " + KEY_PAIR_VALID_DAYS +
+                                                                                      " -key " + (filename+".new") +
+                                                                                      " -out " + (filename+".new") +
+                                                                                      " -keyout " + (filename+".new"));
+            File oldCertFile = new File(filename);
+            oldCertFile.renameTo(new File(filename+".old"));
+            File newCertFile = new File(filename+".new");
+            newCertFile.renameTo(new File(filename));
+            UvmContextFactory.context().execManager().exec("apache2ctl graceful");
 
-
-            if(result.exitCode==0) {
+            if(result.getResult()==0) {
                 return;
             }
-            throw new IOException("openssl exited with value " + result.exitCode);
+            throw new IOException("openssl exited with value " + result.getResult());
         }
-        throw new IOException("openssl exited with value " + resultKeyCopy.exitCode);
+        throw new IOException("openssl exited with value " + resultKeyCopy.getResult());
     }
 
     /**
@@ -345,24 +239,15 @@ public class OpenSSLWrapper {
      * @return the bytes of the private key (encoded)
      */
     public static byte[] genKey()
-        throws IOException {
+        throws IOException
+    {
         //openssl genrsa 2048
-        SimpleExec.SimpleExecResult result = SimpleExec.exec(
-                                                             "openssl",
-                                                             new String[] {
-                                                                 "genrsa",
-                                                                 "2048"
-                                                             },
-                                                             null,
-                                                             null,
-                                                             true,
-                                                             false,
-                                                             1000*60);
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( "openssl genrsa 2048");
 
-        if(result.exitCode==0) {
-            return result.stdOut;
+        if(result.getResult()==0) {
+            return result.getOutput().getBytes();
         }
-        throw new IOException("openssl exited with value " + result.exitCode);
+        throw new IOException("openssl exited with value " + result.getResult());
     }
 
     /**
@@ -377,14 +262,9 @@ public class OpenSSLWrapper {
      *
      * @return the CRS bytes
      */
-    public static byte[] createCSR(String cn,
-                                   String org,
-                                   String country,
-                                   String state,
-                                   String city,
-                                   byte[] privateKey)
-        throws IOException {
-
+    public static byte[] createCSR(String cn, String org, String country, String state, String city, byte[] privateKey)
+        throws IOException
+    {
         File temp = File.createTempFile("csr", ".tmp");
         try {
             IOUtil.bytesToFile(privateKey, temp);
@@ -410,13 +290,9 @@ public class OpenSSLWrapper {
      *
      * @return the CRS bytes
      */
-    public static byte[] createCSR(String cn,
-                                   String org,
-                                   String country,
-                                   String state,
-                                   String city,
-                                   File keyFile)
-        throws IOException {
+    public static byte[] createCSR(String cn, String org, String country, String state, String city, File keyFile)
+        throws IOException
+    {
 
         StringBuffer subject = new StringBuffer();
         if(country != null) {
@@ -440,94 +316,62 @@ public class OpenSSLWrapper {
             subject.append(cn);
         }
 
-	return createCSR(subject.toString(), keyFile);
+        return createCSR(subject.toString(), keyFile);
     }
-    public static byte[] createCSR(String subject,
-                                   File keyFile)
-        throws IOException {
 
-        SimpleExec.SimpleExecResult result = SimpleExec.exec(
-                                                             "openssl",
-                                                             new String[] {
-                                                                 "req",
-                                                                 "-new",
-                                                                 "-key",
-                                                                 keyFile.getAbsolutePath(),
-                                                                 "-subj",
-                                                                 subject
-                                                             },
-                                                             null,
-                                                             null,
-                                                             true,
-                                                             false,
-                                                             1000*60);
+    public static byte[] createCSR(String subject, File keyFile)
+        throws IOException
+    {
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec("openssl req -new -key " + keyFile.getAbsolutePath()  +" -subj " + subject);
 
-        if(result.exitCode==0) {
-            return result.stdOut;
+        if(result.getResult()==0) {
+            return result.getOutput().getBytes();
         }
-        throw new IOException("openssl exited with value " + result.exitCode + " key file " + keyFile.getAbsolutePath() + " Subject " + subject.toString());
+        throw new IOException("openssl exited with value " + result.getResult() + " key file " + keyFile.getAbsolutePath() + " Subject " + subject.toString());
     }
 
 
     public static void importCert(byte[] certBytes, byte[] caBytes, File keyFile)
-        throws IOException {
-	File temp = File.createTempFile("apache", ".tmp");
-	byte[] fullCertBytes;
+        throws IOException
+    {
+        File temp = File.createTempFile("apache", ".tmp");
+        byte[] fullCertBytes;
         try {
-	    SimpleExec.SimpleExecResult result = SimpleExec.exec(
-								 "openssl",
-								 new String[] {
-								     "rsa",
-								     "-in",
-								     keyFile.getAbsolutePath()
-								 },
-								 null,
-								 null,
-								 true,
-								 false,
-								 1000*60);
+            ExecManagerResult result = UvmContextFactory.context().execManager().exec( "openssl rsa -i " + keyFile.getAbsolutePath());
+
+            byte[] outputBytes = result.getOutput().getBytes();
+            
+            if (caBytes != null) {
+                fullCertBytes = new byte[certBytes.length+outputBytes.length+caBytes.length+2];
+            } else {
+                fullCertBytes = new byte[certBytes.length+outputBytes.length+2];
+            }
+
+            int i;
+            for (i = 0; i < certBytes.length; i++) {
+                fullCertBytes[i] = certBytes[i];
+            }
+
+            fullCertBytes[certBytes.length] = Byte.parseByte("10");
+
+            for (i = 0; i < outputBytes.length; i++) {
+                fullCertBytes[certBytes.length+i+1] = outputBytes[i];
+            }
 	    
-	    if (caBytes != null) {
-		fullCertBytes = new byte[certBytes.length+result.stdOut.length+caBytes.length+2];
-	    } else {
-		fullCertBytes = new byte[certBytes.length+result.stdOut.length+2];
-	    }
+            if (caBytes != null) {
+                for (i = 0; i < caBytes.length; i++) {
+                    fullCertBytes[certBytes.length+outputBytes.length+i+1] = caBytes[i];
+                }
+            }
 
-	    int i;
-	    for (i = 0; i < certBytes.length; i++) {
-		fullCertBytes[i] = certBytes[i];
-	    }
-
-	    fullCertBytes[certBytes.length] = Byte.parseByte("10");
-
-	    for (i = 0; i < result.stdOut.length; i++) {
-		fullCertBytes[certBytes.length+i+1] = result.stdOut[i];
-	    }
+            IOUtil.bytesToFile(fullCertBytes, temp);
 	    
-	    if (caBytes != null) {
-		for (i = 0; i < caBytes.length; i++) {
-		    fullCertBytes[certBytes.length+result.stdOut.length+i+1] = caBytes[i];
-		}
-	    }
-
-	    IOUtil.bytesToFile(fullCertBytes, temp);
-	    
-	    if (appearsSelfSigned(temp) == false) {
-		temp.renameTo(keyFile);
-	    } else {
-		throw new IOException("Error verifying cert against private key and CA");
-	    }
-            @SuppressWarnings("unused")
-			SimpleExec.SimpleExecResult resultRestartApache = SimpleExec.exec("apache2ctl", 
-                                                                              new String[] {
-                                                                                "graceful"
-                                                                              },
-                                                                              null,
-                                                                              null,
-                                                                              true,
-                                                                              false,
-                                                                              1000*60);
-
+            if (appearsSelfSigned(temp) == false) {
+                temp.renameTo(keyFile);
+            } else {
+                throw new IOException("Error verifying cert against private key and CA");
+            }
+			UvmContextFactory.context().execManager().exec("apache2ctl graceful");
         }
         catch(IOException ex) {
             IOUtil.delete(temp);
@@ -536,33 +380,15 @@ public class OpenSSLWrapper {
     }
 
 
-    public static boolean appearsSelfSigned(File certFile) {
-	try {
-	    SimpleExec.SimpleExecResult verifyResult = SimpleExec.exec(
-								       "openssl",
-								       new String[] {
-									   "verify",
-									   "-CApath",
-									   "/usr/share/ca-certificates",
-									   "-CAfile",
-									   certFile.getAbsolutePath(),
-									   "-purpose",
-									   "any",
-									   certFile.getAbsolutePath()
-								       },
-								       null,
-								       null,
-								       true,
-								       false,
-								       1000*60);
-	    if (verifyResult.exitCode == 0) {
-		return false; //If openssl verify succeeds then it checks against a CA
-	    }
-	} catch(IOException ex) {
-	    //hmm maybe do something here TODO FIXME !!!
+    public static boolean appearsSelfSigned(File certFile)
+    {
+        ExecManagerResult verifyResult = UvmContextFactory.context().execManager().exec("openssl verify -CApath /usr/share/ca-certificates -CAfile " + certFile.getAbsolutePath() + " -purpose any " + certFile.getAbsolutePath());
+
+        if (verifyResult.getResult() == 0) {
+            return false; //If openssl verify succeeds then it checks against a CA
         }
 	
-	return true;
+        return true;
     }
     
 
@@ -570,7 +396,8 @@ public class OpenSSLWrapper {
     // Helpers
     //============
 
-    private static String extractMatchFromFile(String filename, String stringPattern) {
+    private static String extractMatchFromFile(String filename, String stringPattern)
+    {
         try {
             BufferedReader in = new BufferedReader(new FileReader(filename));
             String input;
@@ -598,7 +425,8 @@ public class OpenSSLWrapper {
      * the output.
      */
     private static Date parseCertDate(String str)
-        throws IOException {
+        throws IOException
+    {
         SimpleDateFormat sdf = new SimpleDateFormat(CERT_DATE_FORMAT);
         try {
             return sdf.parse(str);
@@ -608,73 +436,6 @@ public class OpenSSLWrapper {
                                   str + "\" into a date based on format \"" +
                                   CERT_DATE_FORMAT + "\"");
         }
-    }
-
-
-    /**
-     * Parse an RFC2253 DN.  I hope the JavaSoft folks got the parsing
-     * right, because I sure as hell didn't want to write the parser.
-     */
-    /*
-      private static HashMap<String, String> parseDN(String dnStr)
-      throws IOException {
-
-      //TODO Replace with "RFC2253Name" class
-      dnStr = dnStr.trim();
-      try {
-      HashMap<String, String> ret = new HashMap<String, String>();
-
-      LdapName ldapName = new LdapName(dnStr);
-
-      List<Rdn> rdns = ldapName.getRdns();
-
-      for(Rdn rdn : rdns) {
-      ret.put(rdn.getType().toString(), rdn.getValue().toString());
-      }
-      return ret;
-      }
-      catch(Exception ex) {
-      throw new IOException("Unable to parse \"" +
-      dnStr + "\" into a distinguished name.  Error: " +
-      ex.toString());
-      }
-      }
-    */
-    //============
-    // Testing
-    //============
-
-    public static void main(String[] args) throws Exception {
-        /*
-          java.io.FileOutputStream fOut =
-          new java.io.FileOutputStream(new File("my.pri"));
-
-          byte[] pkBytes = genKey();
-
-          fOut.write(pkBytes);
-          fOut.flush();
-          fOut.close();
-
-          fOut = new java.io.FileOutputStream(new File("req.pem"));
-
-
-          byte[] csrBytes = createCSR("gobbles.metavize.com",
-          "metavize", "US", "California", "San Mateo", pkBytes);
-
-          fOut.write(csrBytes);
-          fOut.flush();
-          fOut.close();
-        */
-
-
-        File f = new File(args[0]);
-        CertInfo ci = getCertInfo(f);
-
-        System.out.println(ci);
-
-
-
-
     }
 
     //============================================================

@@ -1,0 +1,20 @@
+#!/usr/bin/python
+import subprocess;
+import sys;
+import simplejson as json;
+import base64;
+
+#f = open('/var/log/uvm/exec-launcher.log', 'w')
+
+while 1:
+    cmd = sys.stdin.readline()
+    proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    std_out = proc.stdout.read();
+    ret_code = proc.wait();
+
+    #f.write("Cmd: \"" + cmd);  
+    #f.write(json.dumps({"javaClass": "com.untangle.uvm.ExecManagerResult", "result": ret_code, "output": std_out}) + "\n");  f.flush();
+
+    sys.stdout.write(json.dumps({"javaClass": "com.untangle.uvm.ExecManagerResult", "result": ret_code, "output": std_out}) + "\n");
+    sys.stdout.flush();
+

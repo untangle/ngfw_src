@@ -9,7 +9,6 @@ import com.untangle.node.spam.SpamNodeImpl;
 import com.untangle.node.spam.SpamSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.node.util.SimpleExec;
 
 public class SpamAssassinNode extends SpamNodeImpl
 {
@@ -44,11 +43,9 @@ public class SpamAssassinNode extends SpamNodeImpl
             logger.warn("No json settings found... attempting to import from database");
             
             try {
-                SimpleExec.SimpleExecResult result = null;
-                
-                result = SimpleExec.exec(SETTINGS_CONVERSION_SCRIPT, new String[] { nodeID.toString(), settingsFile } , null, null, true, true, 1000*60, logger, true);
-                logger.info("EXEC stdout: " + new String(result.stdOut));
-                logger.info("EXEC stderr: " + new String(result.stdErr));
+                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " +  settingsFile;
+                logger.warn("Running: " + convertCmd);
+                UvmContextFactory.context().execManager().exec( convertCmd );
             }
 
             catch (Exception exn) {

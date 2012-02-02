@@ -26,7 +26,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.untangle.node.util.SimpleExec;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.script.ScriptRunner;
@@ -110,7 +109,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
             
                 try {
                     String args[] = { REPORTS_SCRIPT, "-r", "1", "-m", "-d", ts };
-                    Process proc = UvmContextFactory.context().exec(args);
+                    Process proc = UvmContextFactory.context().execManager().execEvil(args);
                     tailLog(REPORTER_LOG_FILE, REPORTER_LOG_FILE_READ_TIMEOUT, proc);
                     exitCode = proc.waitFor();
                     proc.destroy();
@@ -153,7 +152,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
         synchronized (this) {
             try {
                 String args[] = { REPORTS_SCRIPT, "-m", "-i", "-r", "1" };
-                Process proc = UvmContextFactory.context().exec(args);
+                Process proc = UvmContextFactory.context().execManager().execEvil(args);
                 tailLog(REPORTER_LOG_FILE, REPORTER_LOG_FILE_READ_TIMEOUT, proc);
                 exitCode = proc.waitFor();
                 proc.destroy();

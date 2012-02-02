@@ -10,8 +10,8 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.util.IOUtil;
-import com.untangle.node.util.SimpleExec;
 
 /**
  * Helper class to do backup/restore
@@ -55,30 +55,14 @@ class BackupManager
     {
 
         File tempFile = File.createTempFile("restore_", ".tar.gz");
-        SimpleExec.SimpleExecResult result = null;
+        Integer result = null;
 
         try {
             //Copy the bytes to a temp file
             IOUtil.bytesToFile(backupFileBytes, tempFile);
 
-            //unzip file
-            result = SimpleExec.exec(RESTORE_SCRIPT,//cmd
-                                     new String[] {//args
-                                         "-i",
-                                         tempFile.getAbsolutePath(),
-                                         "-v"
-                                     },
-                                     null,//env
-                                     null,//dir
-                                     true,//stdout
-                                     true,//stderr
-                                     1000*60,//timeout
-                                     logger,//log-into
-                                     true);//use UVM threads
-
-            // We no longer delete the file since it's a race.  jdi 7/06
-            // IOUtil.delete(tempFile);
-
+            //restore the file
+            result = UvmContextFactory.context().execManager().execResult(RESTORE_SCRIPT + " -i " + tempFile.getAbsolutePath() + " -v ");
         }
         catch(IOException ex) {
             //Delete our temp file
@@ -87,10 +71,9 @@ class BackupManager
             throw ex;
         }
 
-        // We don't usually ever get here since the uvm is stopped by restore-mv script
-
-        if(result.exitCode != 0) {
-            switch(result.exitCode) {
+        // We don't usually ever get here since the uvm is stopped by restore script
+        if(result != 0) {
+            switch(result) {
             case 1:
             case 2:
             case 3:
@@ -112,24 +95,10 @@ class BackupManager
         File tempFile = File.createTempFile("localdump", ".tar.gz.tmp");
 
         try {
-            SimpleExec.SimpleExecResult result =
-                SimpleExec.exec(BACKUP_SCRIPT,//cmd
-                                new String[] {//args
-                                    "-o",
-                                    tempFile.getAbsolutePath(),
-                                    "-v"
-                                },
-                                null,//env
-                                null,//dir
-                                true,//stdout
-                                true,//stderr
-                                1000*30,//timeout
-                                logger,//log-into
-                                true);//use UVM threads
+            Integer result = UvmContextFactory.context().execManager().execResult(BACKUP_SCRIPT + " -o " + tempFile.getAbsolutePath() +" -v");
 
-            if(result.exitCode != 0) {
-                throw new IOException("Unable to create local backup to \"" +
-                                      tempFile.getAbsolutePath() + "\".  Process details " + result);
+            if(result != 0) {
+                throw new IOException("Unable to create local backup to \"" + tempFile.getAbsolutePath() + "\".  Process details " + result);
             }
 
             //Read contents into a byte[]

@@ -254,11 +254,8 @@ public class SettingsManagerImpl implements SettingsManager
                 fileWriter.close();
                 fileWriter = null;
 
-                String  formatCmdArray[] = new String[] { "/bin/sh", "-c", "python -m simplejson.tool " + outputFileTmp + " > " + outputFile };
-                Process process = UvmContextImpl.context().exec(formatCmdArray);
-                int exitCode = process.waitFor();
-                outputTmp.delete();
-                process.destroy();
+                String formatCmd = "python -m simplejson.tool " + outputFileTmp + " > " + outputFile ;
+                UvmContextImpl.context().execManager().execResult(formatCmd);
                 
                 /*
                  * Why must SUN/Oracle try everyone's patience; The API for
@@ -266,28 +263,8 @@ public class SettingsManagerImpl implements SettingsManager
                  */
                 String[] chops = outputFile.split(File.separator);
                 String filename = chops[chops.length - 1];
-                String cmdArray[] = new String[] { "ln", "-sf", "./"+filename, link.toString() };
-
-                process = UvmContextImpl.context().exec(cmdArray);
-                exitCode = process.waitFor();
-                String line = null;
-                BufferedReader tmp = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                
-                while ((line = tmp.readLine()) != null) {
-                    System.out.println("out: " + line);
-                }
-
-                tmp = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-                
-                while ((line = tmp.readLine()) != null) {
-                    System.out.println("err: " + line);
-                }
-
-                if (exitCode != 0) {
-                    throw new SettingsException(
-                            "Unable to create symbolic link[" + exitCode + "]");
-                }
-                process.destroy();
+                String linkCmd = "ln -sf ./"+filename + " " + link.toString();
+                UvmContextImpl.context().execManager().exec(linkCmd);
 
                 /* Append the history to the end of the history file. */
                 /**
@@ -304,9 +281,6 @@ public class SettingsManagerImpl implements SettingsManager
             } catch (MarshallException e) {
                 logger.warn("Failed to save settings: ", e);
                 throw new SettingsException("Unable to marshal json string:", e);
-            } catch (InterruptedException e) {
-                logger.warn("Failed to save settings: ", e);
-                throw new SettingsException("Unable to create symbolic link:", e);
             } finally {
                 try {
                     if (fileWriter != null) {

@@ -285,21 +285,10 @@ class SessionMonitorImpl implements SessionMonitor
         String execStr = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-jnettop" + " " + systemIntfName);
 
         try {
-            StringBuilder jsonString = new StringBuilder();
-            Process p = uvmContext.exec(execStr);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                    jsonString.append(line);
-            }
-            
-            List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) serializer.fromJSON(jsonString.toString());
+            String output = uvmContext.execManager().execOutput(execStr);
+            List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) serializer.fromJSON(output);
             return entryList;
             
-        } catch (java.io.IOException exc) {
-            logger.error("Unable to read jnettop - error reading input",exc);
-            return null;
         } catch (org.jabsorb.serializer.UnmarshallException exc) {
             logger.error("Unable to read jnettop - invalid JSON",exc);
             return null;
@@ -315,21 +304,10 @@ class SessionMonitorImpl implements SessionMonitor
         String execStr = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-conntrack");
 
         try {
-            StringBuilder jsonString = new StringBuilder();
-            Process p = uvmContext.exec(execStr);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                    jsonString.append(line);
-            }
-            
-            List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) serializer.fromJSON(jsonString.toString());
+            String output = uvmContext.execManager().execOutput(execStr);
+            List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) serializer.fromJSON(output);
             return entryList;
             
-        } catch (java.io.IOException exc) {
-            logger.error("Unable to read conntrack - error reading input",exc);
-            return null;
         } catch (org.jabsorb.serializer.UnmarshallException exc) {
             logger.error("Unable to read conntrack - invalid JSON",exc);
             return null;

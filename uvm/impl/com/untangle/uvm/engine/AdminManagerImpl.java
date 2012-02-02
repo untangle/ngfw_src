@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $Id$
+ */
 package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
@@ -24,13 +26,13 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.untangle.node.util.SimpleExec;
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.MailSettings;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.User;
+import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.security.UvmPrincipal;
 import com.untangle.uvm.snmp.SnmpManager;
 import com.untangle.uvm.snmp.SnmpManagerImpl;
@@ -191,9 +193,7 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
         String id = timezone.getID();
 
         try {
-            Process p = uvmContext.exec(new String[] { SET_TIMEZONE_SCRIPT, id });
-            for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
-            int exitValue = p.waitFor();
+            Integer exitValue = uvmContext.execManager().execResult( SET_TIMEZONE_SCRIPT + " " + id );
             if (0 != exitValue) {
                 String message = "Unable to set time zone (" + exitValue + ") to: " + id;
                 logger.error(message);
@@ -202,10 +202,6 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
                 logger.info("Time zone set to : " + id);
                 TimeZone.setDefault(timezone); // Note: Only works for threads who haven't yet cached the zone!  XX
             }
-        } catch (InterruptedException exn) {
-            String message = "Interrupted during set time zone";
-            logger.error(message);
-            throw new TransactionRolledbackException(message);
         } catch (IOException exn) {
             String message = "Exception during set time zone to: " + id;
             logger.error(message, exn);
@@ -253,11 +249,12 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
     public String getFullVersionAndRevision()
     {
         try {
-            SimpleExec.SimpleExecResult result = SimpleExec.exec(UVM_VERSION_SCRIPT,null,null,null,true,true,1000*20);
-	    
-            if(result.exitCode==0) {
-                return new String(result.stdOut).replaceAll("(\\r|\\n)", "");
-            }
+            String version = uvmContext.execManager().execOutput(UVM_VERSION_SCRIPT);
+
+            if (version == null)
+                return "";
+            else
+                return version.replaceAll("(\\r|\\n)", "");
         } catch (Exception e) {
             logger.warn("Unable to fetch version",e);
         }
@@ -282,25 +279,14 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
         if (blessedFile.exists() && blessedFile.lastModified() > zshHistoryFile.lastModified())
             return "blessed";
 
-        /* otherwise say no and include the length of the history file */
-        Process process = null;
-        try {
-            String cmdArray[] = new String[] { "/bin/sh", "-c", "cat /root/.zsh_history | /usr/bin/wc -l" };
-            process = UvmContextImpl.context().exec(cmdArray);
-            int exitCode = process.waitFor();
+        ExecManagerResult result = uvmContext.execManager().exec("cat /root/.zsh_history | /usr/bin/wc -l");
+        int exitCode = result.getResult();
+        String output = result.getOutput();
 
-            BufferedReader tmp = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String output = tmp.readLine();
-            output = output.replaceAll("(\\r|\\n)", "");
+        output = output.replaceAll("(\\r|\\n)", "");
             
-            if( exitCode == 0 ) {
-                return new String("yes (" + output + ")");
-            }
-        } catch (Exception e) {
-            logger.warn("Unable to parse zsh_history",e);
-        } finally {
-            if (process != null)
-                process.destroy();
+        if( exitCode == 0 ) {
+            return new String("yes (" + output + ")");
         }
 
         return "UNKNOWN";
@@ -309,11 +295,12 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
     public String getRebootCount()
     {
         try {
-            SimpleExec.SimpleExecResult result = SimpleExec.exec(REBOOT_COUNT_SCRIPT,null,null,null,true,true,1000*20);
+            String count = uvmContext.execManager().execOutput(REBOOT_COUNT_SCRIPT);
 	    
-            if(result.exitCode==0) {
-                return new String(result.stdOut).replaceAll("(\\r|\\n)", "");
-            }
+            if (count == null)
+                return "";
+            else
+                return count.replaceAll("(\\r|\\n)", "");
         } catch (Exception e) {
             logger.warn("Unable to fetch version",e);
         }

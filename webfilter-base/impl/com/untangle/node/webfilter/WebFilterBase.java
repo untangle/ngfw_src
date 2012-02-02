@@ -39,7 +39,6 @@ import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.TCPSession;
 import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
-import com.untangle.node.util.SimpleExec;
 
 /**
  * The base implementation of the Web Filter.
@@ -360,9 +359,9 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
         if (readSettings == null) {
             logger.warn("No settings found - Running conversion script to check DB");
             try {
-                SimpleExec.SimpleExecResult result = null;
-                logger.warn("Running: " + SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + this.getName() + " " + settingsFileName + ".js");
-                result = SimpleExec.exec( SETTINGS_CONVERSION_SCRIPT, new String[] { nodeID.toString(), this.getName(), settingsFileName + ".js"} , null, null, true, true, 1000*60, logger, true);
+                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + this.getName() + " " + settingsFileName + ".js";
+                logger.warn("Running: " + convertCmd);
+                UvmContextFactory.context().execManager().exec( convertCmd );
             } catch ( Exception e ) {
                 logger.warn( "Conversion script failed.", e );
             } 

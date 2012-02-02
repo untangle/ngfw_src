@@ -43,7 +43,8 @@ public class SchemaUtil
 
     public synchronized void close()
     {
-        logger.info("Shutting down ut-update-schema...");
+        if (in != null || out != null || sock != null || proc != null)
+            logger.info("Shutting down ut-update-schema...");
         try { in.close(); } catch (Exception ex) { }
         try { out.close(); } catch (Exception ex) { }
         try { sock.close(); } catch (Exception ex) { }
