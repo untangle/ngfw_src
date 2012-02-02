@@ -604,21 +604,7 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
     {
         try {
             String command = System.getProperty("uvm.bin.dir") + "/" + LICENSE_SCRIPT_NUMUSERS;
-            Process proc = UvmContextFactory.context().exec(command);
-            InputStream is  = proc.getInputStream();
-            OutputStream os = proc.getOutputStream();
-            BufferedReader in = new BufferedReader(new InputStreamReader(is));
-            os.close();
-
-            StringBuilder wholeOutput = new StringBuilder();
-            String s;
-            while ((s = in.readLine()) != null) {
-                wholeOutput.append(s);
-            }
-
-            in.close();
-            is.close();
-
+            String wholeOutput = UvmContextFactory.context().execManager().execOutput(command);
             Integer result = new Integer(wholeOutput.toString());
             return result;
         } catch (Exception e) {
