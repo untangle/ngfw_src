@@ -10,11 +10,14 @@
     <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>
     <style type="text/css">
         @import "/ext4/resources/css/ext-all.css?s=${buildStamp}";
+		@import "/ext4/resources/css/CheckHeader.css?s=${buildStamp}";
     </style>
 <c:if test="${isDebug==false}">
     <script type="text/javascript" src="/ext4/builds/ext-core-debug.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
-	<script type="text/javascript" src="/ext4/PagingMemoryProxy.js?s=${buildStamp}"></script>
+	<script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
+	<script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
+
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc-min.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
@@ -34,7 +37,8 @@
 			<script type="text/javascript" src="/ext4/ext3-core-compat.js?s=${buildStamp}"></script>
     </c:if>				
 
-	<script type="text/javascript" src="/ext4/PagingMemoryProxy.js?s=${buildStamp}"></script>
+	<script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
+	<script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
@@ -50,6 +54,8 @@
     <script type="text/javascript" src="script/config/systemNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/systemInfoNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/upgradeNew.js?s=${buildStamp}"></script>
+	
+	<script type="text/javascript" src="script/untangle-node-spyware/settingsNew.js?s=${buildStamp}"></script>
 
 </c:if>
 
@@ -60,6 +66,9 @@
 </c:if>
     <script type="text/javascript">
         var storeWindowName='store_window_${storeWindowId}';
+		<c:if test="${isCompat==true}">		
+			Ext.Compat.showErrors=true;
+		</c:if>
         var isWizardComplete = ${isWizardComplete};
         function init() {
             main=new Ung.Main({debugMode:${isDebug}});

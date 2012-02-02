@@ -327,7 +327,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 columns : [{
                     id : 'name',
                     header : this.i18n._("name"),
-                    width : 150,
+                    width : 250,
                     dataIndex : 'name',
                     editor : Ext.create('Ext.form.TextField',{
                         allowBlank : false
@@ -335,7 +335,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }, {
                     id : 'string',
                     header : this.i18n._("subnet"),
-                    width : 200,
+                    width : 300,
                     dataIndex : 'string',
                     editor : Ext.create('Ext.form.TextField',{
                         allowBlank : false
@@ -350,13 +350,13 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     dataIndex : "name",
                     fieldLabel : this.i18n._("Name"),
                     allowBlank : false,
-                    width : 200
+                    width : 250
                 }), Ext.create('Ext.form.TextField',{
                     name : "Subnet",
                     dataIndex : "string",
                     fieldLabel : this.i18n._("Subnet"),
                     allowBlank : false,
-                    width : 200
+                    width : 300
                 }), Ext.create('Ext.form.Checkbox',{
                     name : "Log",
                     dataIndex : "flagged",
@@ -389,10 +389,69 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 header : "<b>" + this.i18n._("pass") + "</b>",
                 dataIndex : 'enabled',
                 width: 65,
-                fixed : true
+                fixed : true,
+				editor: {
+					xtype: 'checkbox',
+					cls: 'x-grid-checkheader-editor'
+				} 
             });
 
-            this.gridPassList = Ext.create('Ung.EditorGrid',{
+			this.gridPassList = Ext.create('Ung.EditorGrid', {
+				title : this.i18n._("Pass List"),
+                helpSource : 'pass_list',
+                settingsCmp : this,
+				emptyRow : {
+                    "string" : "",
+                    "enabled" : true,
+                    "description" : this.i18n._("[no description]")
+                },
+				data: this.getSettings().passedUrls.list,
+                recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                fields : this.genericRuleFields,
+				sortField : 'string',
+                columnsDefaultSortable : true,
+                autoExpandColumn : 'description',
+				columns: [{
+                    id : 'string',
+                    header : this.i18n._("site"),
+                    width : 200,
+                    dataIndex : 'string',
+					field:'textfield'
+                } 
+				,{
+                    id : 'description',
+                    header : this.i18n._("description"),
+                    width : 200,
+                    dataIndex : 'description',
+					field:'textfield'
+                }, passColumn],
+                sortField : 'string',
+                columnsDefaultSortable : true,
+                autoExpandColumn : 'description',
+                plugins : [passColumn],
+                rowEditorInputLines : [Ext.create('Ext.form.TextField',{
+                    name : "Site",
+                    dataIndex : "string",
+                    fieldLabel : this.i18n._("Site"),
+                    width : 200,
+                    validator : urlValidator,
+                    allowBlank : false,
+                    blankText : this.i18n._("Invalid \"URL\" specified")
+                }), Ext.create('Ext.form.Checkbox',{
+                    name : "Pass",
+                    dataIndex : "enabled",
+                    fieldLabel : this.i18n._("Pass")
+                }), Ext.create('Ext.form.TextArea',{
+                    name : "Description",
+                    dataIndex : "description",
+                    fieldLabel : this.i18n._("Description"),
+                    width : 200,
+                    height : 60
+                })]
+				
+	});
+			
+			/*Ext.create('Ung.EditorGrid',{
                 name : 'Pass List',
                 helpSource : 'pass_list',
                 settingsCmp : this,
@@ -447,7 +506,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     width : 200,
                     height : 60
                 })]
-            });
+            });*/
         },
 
         // Event Logs
