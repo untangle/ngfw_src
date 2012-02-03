@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +49,7 @@ import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.MessageManager;
@@ -59,6 +61,7 @@ import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.UploadManager;
+import com.untangle.uvm.user.ADLoginEvent;
 import com.untangle.uvm.util.TransactionRunner;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.XMLRPCUtil;
@@ -344,7 +347,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             {
                 public void run()
                 {
-                    NodeContext tctx = null == nodeManager ? null : nodeManager.threadContext();
+                    NodeContext tctx = null == nodeManager
+                        ? null : nodeManager.threadContext();
 
                     if (null != tctx) {
                         nodeManager.registerThreadContext(tctx);
@@ -356,7 +360,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                     } catch (Exception exn) {
                         logger.error("Exception running: " + runnable, exn);
                     } finally {
-                        if (null != tctx && nodeManager != null) {
+                        if (null != tctx) {
                             nodeManager.deregisterThreadContext();
                         }
                     }
@@ -908,6 +912,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                 last = id;
             }
         }
+        ADLoginEvent e1 = new ADLoginEvent(null,"a","b","c");
+        e1.setTimeStamp(new Date());
+        list.add(e1);
+        ADLoginEvent e2 = new ADLoginEvent(null,"d","e","f");
+        e2.setTimeStamp(new Date());
+        list.add(e2);
 
         return new ArrayList(list);
     }

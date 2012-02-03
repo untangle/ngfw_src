@@ -258,11 +258,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         },
         // Cookies List
         buildCookiesList : function() {
-            var enabledColumn = Ext.create('Ung.grid.CheckColumn',{
-                header : "<b>" + this.i18n._("block") + "</b>",
-                dataIndex : 'enabled',
-                fixed : true
-            });
 
             this.gridCookiesList = Ext.create('Ung.EditorGrid',{
                 name : 'Cookies List',
@@ -281,25 +276,32 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     header : this.i18n._("identification"),
                     width : 140,
                     dataIndex : 'string',
+                    flex: 1,
                     editor : Ext.create('Ext.form.TextField',{
                         allowBlank : false
                     })
-                }, enabledColumn],
+                }, {
+                	xtype: 'checkcolumn',
+                    header : "<b>" + this.i18n._("block") + "</b>",
+                    dataIndex : 'enabled',
+                    fixed: true,
+                    width:55
+                }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'string',
-                plugins : [enabledColumn],
-                rowEditorInputLines : [Ext.create('Ext.form.TextField',{
+                rowEditorInputLines : [{
+                	xtype:'textfield',
                     name : "Identification",
                     dataIndex : "string",
                     fieldLabel : this.i18n._("Identification"),
                     allowBlank : false,
-                    width : 200
-                }), Ext.create('Ext.form.Checkbox',{
+                    width : 400
+                }, {
+                	xtype: 'checkbox',
                     name : "Block",
                     dataIndex : "enabled",
                     fieldLabel : this.i18n._("Block")
-                })]
+                }]
             });
         },
 
@@ -329,6 +331,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     header : this.i18n._("name"),
                     width : 250,
                     dataIndex : 'name',
+                    flex: 1,
                     editor : Ext.create('Ext.form.TextField',{
                         allowBlank : false
                     })
@@ -343,25 +346,27 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }, flagColumn],
                 sortField : 'name',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'name',
                 plugins : [flagColumn],
-                rowEditorInputLines : [Ext.create('Ext.form.TextField',{
+                rowEditorInputLines : [{
+                	xtype:'textfield',
                     name : "Name",
                     dataIndex : "name",
                     fieldLabel : this.i18n._("Name"),
                     allowBlank : false,
                     width : 250
-                }), Ext.create('Ext.form.TextField',{
+                }, {
+                	xtype:'textfield',
                     name : "Subnet",
                     dataIndex : "string",
                     fieldLabel : this.i18n._("Subnet"),
                     allowBlank : false,
-                    width : 300
-                }), Ext.create('Ext.form.Checkbox',{
+                    width : 500
+                }, {
+                	xtype: 'checkbox',
                     name : "Log",
                     dataIndex : "flagged",
                     fieldLabel : this.i18n._("Log")
-                })]
+                }]
             });
         },
         // Pass List
@@ -397,61 +402,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             });
 
 			this.gridPassList = Ext.create('Ung.EditorGrid', {
-				title : this.i18n._("Pass List"),
-                helpSource : 'pass_list',
-                settingsCmp : this,
-				emptyRow : {
-                    "string" : "",
-                    "enabled" : true,
-                    "description" : this.i18n._("[no description]")
-                },
-				data: this.getSettings().passedUrls.list,
-                recordJavaClass : "com.untangle.uvm.node.GenericRule",
-                fields : this.genericRuleFields,
-				sortField : 'string',
-                columnsDefaultSortable : true,
-                autoExpandColumn : 'description',
-				columns: [{
-                    id : 'string',
-                    header : this.i18n._("site"),
-                    width : 200,
-                    dataIndex : 'string',
-					field:'textfield'
-                } 
-				,{
-                    id : 'description',
-                    header : this.i18n._("description"),
-                    width : 200,
-                    dataIndex : 'description',
-					field:'textfield'
-                }, passColumn],
-                sortField : 'string',
-                columnsDefaultSortable : true,
-                autoExpandColumn : 'description',
-                plugins : [passColumn],
-                rowEditorInputLines : [Ext.create('Ext.form.TextField',{
-                    name : "Site",
-                    dataIndex : "string",
-                    fieldLabel : this.i18n._("Site"),
-                    width : 200,
-                    validator : urlValidator,
-                    allowBlank : false,
-                    blankText : this.i18n._("Invalid \"URL\" specified")
-                }), Ext.create('Ext.form.Checkbox',{
-                    name : "Pass",
-                    dataIndex : "enabled",
-                    fieldLabel : this.i18n._("Pass")
-                }), Ext.create('Ext.form.TextArea',{
-                    name : "Description",
-                    dataIndex : "description",
-                    fieldLabel : this.i18n._("Description"),
-                    width : 200,
-                    height : 60
-                })]
-				
-	});
-			
-			/*Ext.create('Ung.EditorGrid',{
                 name : 'Pass List',
                 helpSource : 'pass_list',
                 settingsCmp : this,
@@ -464,49 +414,50 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 data: this.getSettings().passedUrls.list,
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
-                columns : [{
+				sortField : 'string',
+                columnsDefaultSortable : true,
+				columns: [{
                     id : 'string',
                     header : this.i18n._("site"),
                     width : 200,
                     dataIndex : 'string',
-                    editor : Ext.create('Ext.form.TextField',{
-                        allowBlank : false,
-                        validator : urlValidator,
-                        blankText : this.i18n._("Invalid \"URL\" specified")
-                    })
-                }, passColumn, {
+					field:'textfield'
+                }, passColumn,
+				{
                     id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
+                    flex: 1,
                     dataIndex : 'description',
-                    editor : Ext.create('Ext.form.TextField',{
-                        allowBlank : false
-                    })
+					field:'textfield'
                 }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'description',
                 plugins : [passColumn],
-                rowEditorInputLines : [Ext.create('Ext.form.TextField',{
+                rowEditorInputLines : [{
+                	xtype: 'textfield',
                     name : "Site",
                     dataIndex : "string",
                     fieldLabel : this.i18n._("Site"),
-                    width : 200,
+                    width : 500,
                     validator : urlValidator,
                     allowBlank : false,
                     blankText : this.i18n._("Invalid \"URL\" specified")
-                }), Ext.create('Ext.form.Checkbox',{
+                }, {
+                	xtype: 'checkbox',
                     name : "Pass",
                     dataIndex : "enabled",
                     fieldLabel : this.i18n._("Pass")
-                }), Ext.create('Ext.form.TextArea',{
+                }, {
+                	xtype: 'textarea',
                     name : "Description",
                     dataIndex : "description",
                     fieldLabel : this.i18n._("Description"),
-                    width : 200,
+                    width : 500,
                     height : 60
-                })]
-            });*/
+                }]
+				
+			});
         },
 
         // Event Logs
@@ -608,7 +559,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     name : 'server',
                     mapping : 'CServerAddr'
                 }],
-                autoExpandColumn: 'uri',
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
@@ -637,6 +587,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     header : this.i18n._("Uri"),
                     width : Ung.Util.uriFieldWidth,
                     sortable : true,
+                    flex: 1,
                     dataIndex : 'uri'
                 }, {
                     header : this.i18n._("server"),
