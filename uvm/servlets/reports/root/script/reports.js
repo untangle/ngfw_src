@@ -681,7 +681,12 @@ Ung.Reports = Ext.extend(Object,{
         toDate =new Date(selectedDate.dt.time - oneDay),
         fromDate = new Date(selectedDate.dt.time - ((selectedDate.numDays)*oneDay)),
         formatString = 'l, F j Y';
-        return i18n.dateLongFormat(fromDate,formatString) + " - "  +   i18n.dateLongFormat(toDate,formatString);
+        var startDate = i18n.dateLongFormat(fromDate,formatString);
+        var endDate = i18n.dateLongFormat(toDate,formatString);
+        if (startDate == endDate) // if its a one day report just say the day not "Monday - Monday"
+            return startDate;
+        else
+            return startDate + " - "  + endDate;
     },
 
     getApplicationData: function(nodeName, numDays) {
