@@ -1,5 +1,14 @@
 #! /bin/sh
 
+#
+# The script sets a plethora of untangle-vm parameters based on hardware
+# such as 32bit vs 64bit, memory size, etc.
+#
+# IMPORTANT:
+# It is not recommended to give over 50% of the memory to the java heap
+# This has shown to lead to load spikes and instability on the system.
+#
+
 FILE=/usr/share/untangle/conf/untangle-hw.conf
 
 echo "  Customizing HW-related settings for untangle-vm"
@@ -91,6 +100,11 @@ echo "    Reports interval (min)   -> ${REPORTS_INTERVAL_MIN}"
 echo "    Max load for reports     -> ${REPORTS_MAX_LOAD}"
 echo "    Events short sync        -> ${EVENTS_SHORT_SYNC}"
 echo "    Events long  sync        -> ${EVENTS_LONG_SYNC}"
+
+
+#
+# Apply the settings
+#
 
 perl -i -pe 's|(?<=\*/)\d+|'${REPORTS_INTERVAL_MIN}'| ; s|(?<= \*/)\d+|'${REPORTS_INTERVAL_HOUR}'| ; s|(?<=-b )\d+|'${REPORTS_MAX_LOAD}'|' /etc/cron.d/untangle-reports-incremental
 
