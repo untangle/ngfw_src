@@ -226,6 +226,13 @@ class FirewallTests(unittest.TestCase):
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
         assert (result != 0)
 
+    # verify protocol rule works
+    def test_046_blockProtocolTCP(self):
+        nukeRules();
+        appendRule( createSingleMatcherRule("PROTOCOL","TCP", blocked=True) );
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
+        assert (result != 0)
+
     # verify src intf any rule works
     def test_050_blockDstIntfAny(self):
         nukeRules();
@@ -264,7 +271,8 @@ class FirewallTests(unittest.TestCase):
     # verify dst intf non_wan not blocked
     def test_055_blockDstIntfNonWan(self):
         nukeRules();
-        appendRule( createSingleMatcherRule( "DST_INTF", "non_wan" ) );
+        # specify TCP so the DNS UDP session doesn't get blocked (if it happens to be inbound)
+        appendRule( createDualMatcherRule( "DST_INTF", "non_wan", "PROTOCOL", "tcp") );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
         assert (result == 0)
 
