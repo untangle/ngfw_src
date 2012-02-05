@@ -222,15 +222,6 @@ public class EventHandler extends AbstractEventHandler
             if (sess instanceof UDPSession)
                 l4prot = "UDP";
 
-            if (logger.isInfoEnabled()) {
-                if (!elem.isBlocked()) {
-                    // No sense logging twice.
-                    logger.info( "Logged: " + sessInfo.protocol + ": [" + l4prot + "] " +
-                                 sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
-                                 sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
-                }
-            }
-
             /**
              * Tag the session with metadata
              */
@@ -241,18 +232,14 @@ public class EventHandler extends AbstractEventHandler
                               
             node.incrementDetectCount();
 
-            if(elem.getAlert()) {
-                /* XXX Do alert here */
+            if (logger.isDebugEnabled()) {
+                logger.debug( (elem.isBlocked() ? "Blocked: " : "Logged: ") + sessInfo.protocol + ": [" + l4prot + "] " +
+                              sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
+                              sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
             }
 
             if (elem.isBlocked()) {
                 node.incrementBlockCount();
-
-                if (logger.isInfoEnabled()) {
-                    logger.info( "Blocked: " + sessInfo.protocol + ": [" + l4prot + "] " +
-                                 sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
-                                 sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
-                }
 
                 if (sess instanceof TCPSession) {
                     ((TCPSession)sess).resetClient();
