@@ -92,7 +92,7 @@ public class GoogleSafeBrowsingHashSet
 
             }
         } catch (Exception e) {
-            logger.warn("Google lookup failed", e);
+            logger.warn("Google lookup failed: ", e);
         }
 
         return false;

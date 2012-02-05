@@ -184,7 +184,7 @@ public class GoogleUrlUtils
 			url = sb.toString();
 
 		} catch (Exception e) {
-			throw new Exception("Could not canonicalise URL: " + queryURL);
+			throw new Exception("Could not canonicalise URL: " + queryURL, e);
 		}
 
 		return url;
