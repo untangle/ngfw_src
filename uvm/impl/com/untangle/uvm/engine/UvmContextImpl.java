@@ -912,12 +912,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                 last = id;
             }
         }
-        ADLoginEvent e1 = new ADLoginEvent(null,"a","b","c");
-        e1.setTimeStamp(new Date());
-        list.add(e1);
-        ADLoginEvent e2 = new ADLoginEvent(null,"d","e","f");
-        e2.setTimeStamp(new Date());
-        list.add(e2);
 
         return new ArrayList(list);
     }
