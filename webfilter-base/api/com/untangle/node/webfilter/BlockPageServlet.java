@@ -116,7 +116,7 @@ public class BlockPageServlet extends HttpServlet
         /* Retrieve the description of why this page was blocked. */
         public String getDescription( BrandingManager bm, Map<String,String> i18n_map )
         {
-            return I18nUtil.tr("{0}This web page was blocked{1} because it is considered inappropriate.", new Object[]{ "<b>","</b>" }, i18n_map );
+            return I18nUtil.tr("{0}This web page is blocked{1} because it violates network policy.", new Object[]{ "<b>","</b>" }, i18n_map );
         }
 
         public WebFilterBlockDetails getBlockDetails()

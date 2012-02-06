@@ -119,7 +119,7 @@ public class BlockPageServlet extends HttpServlet
         /* Retrieve the description of why this page was blocked. */
         public String getDescription( BrandingManager bm, Map<String,String> i18n_map )
         {
-            return I18nUtil.tr("{0}This file was blocked{1} because it contained a virus.",
+            return I18nUtil.tr("{0}This file was blocked{1} because it contains a virus.",
                     new Object[]{ "<b>","</b>" }, i18n_map);
         }
     

@@ -17,7 +17,7 @@ public class WebFilterReplacementGenerator extends ReplacementGenerator<WebFilte
         + "<TITLE>403 Forbidden</TITLE>"
         + "</HEAD><BODY>"
         + "<center><b>%s</b></center>"
-        + "<p>This site is blocked because of inappropriate content</p>"
+        + "<p>This site is blocked because it violates network policy.</p>"
         + "<p>Host: %s</p>"
         + "<p>URI: %s</p>"
         + "<p>Reason: %s</p>"
