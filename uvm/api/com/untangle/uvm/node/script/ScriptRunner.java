@@ -53,7 +53,7 @@ public class ScriptRunner
             String output = "";
             String cmdStr = new String();
             for (int i = 0 ; i < input.length; i++) {
-                cmdStr = cmdStr.concat(input[i] + " ");
+                cmdStr = cmdStr.concat("\"" + input[i] + "\"" + " ");
             }
 
             ExecManagerResult result = UvmContextFactory.context().execManager().exec(cmdStr);

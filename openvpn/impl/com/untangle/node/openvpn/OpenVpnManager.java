@@ -177,19 +177,7 @@ public class OpenVpnManager
         ScriptRunner.getInstance().exec( VPN_START_SCRIPT );
 
         try {
-            // XXX ALPACA_INTEGRATION
-            /* ** XXXXXXX Bridge mode is unsupported */
-//             UvmContextFactory.context().localIntfManager().
-//                 registerIntf( DEVICE_ROUTING, IntfConstants.VPN_INTF );
-
-            /* ** XXXXXXX Bridge mode is unsupported */
-
-            // if ( isBridgeMode ) {
-            // am.enableInternalBridgeIntf( UvmContextFactory.context().networkingManager().get(), intf );
-            // }
             UvmContextFactory.context().networkManager().refreshNetworkConfig();
-//         } catch ( ArgonException e ) {
-//             throw new Exception( e );
         } catch ( Exception e ) {
             throw new Exception( e );
         }
@@ -350,12 +338,25 @@ public class OpenVpnManager
             String key = client.getDistributionKey();
             if ( key == null ) key = "";
 
-            /* USB Distribution is no longer supported. */
-            ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName(),
-                                             key, publicAddress, method,
-                                             String.valueOf( client.isUntanglePlatform()),
-                                             settings.getInternalSiteName(),
-                                             title, msgBody1, msgBody2, msgBody3);
+            String cmdStr = GENERATE_DISTRO_SCRIPT + " " +
+                "\"" + client.getInternalName() + "\"" + " " +
+                "\"" + key + "\"" + " " +
+                "\"" + publicAddress + "\"" + " " +
+                "\"" + method + "\"" + " " +
+                "\"" + String.valueOf( client.isUntanglePlatform()) + "\"" + " " +
+                "\"" + settings.getInternalSiteName() + "\"" + " " +
+                "\"" + title + "\"" + " " +
+                "\"" + msgBody1 + "\"" + " " +
+                "\"" + msgBody2 + "\"" + " " +
+                "\"" + msgBody3 + "\"";
+                
+
+            UvmContextFactory.context().execManager().exec(cmdStr);
+            //             ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName(),
+            //                                              key, publicAddress, method,
+            //                                              String.valueOf( client.isUntanglePlatform()),
+            //                                              settings.getInternalSiteName(),
+            //                                              title, msgBody1, msgBody2, msgBody3);
         } catch ( Exception e ) {
             logger.warn( "Unable to execute distribution script", e );
             throw e;
