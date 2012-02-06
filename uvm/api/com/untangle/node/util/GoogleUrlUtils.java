@@ -62,8 +62,8 @@ public class GoogleUrlUtils
 
 		String text2 = url;
 		try {
-			while (text2.indexOf("%") != -1)
-				text2 = URLDecoder.decode(text2, ENCODING); // Unescape repeatedly until no more percent signs left
+			// while (text2.indexOf("%") != -1) // XXX removing this because %25 should remain as "%" in the canonical URL
+            text2 = URLDecoder.decode(text2, ENCODING); // Unescape repeatedly until no more percent signs left
 		} catch (UnsupportedEncodingException e) {
 			throw new Exception("unescapeUTF8: Could not decode URL " + url + ". ErrMsg=" + e.toString());
 		}
