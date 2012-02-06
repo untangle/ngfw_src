@@ -4059,6 +4059,11 @@ Ext.define('Ung.grid.ReorderColumn', {
 Ext.define('Ung.EditorGrid', {
 	extend:'Ext.grid.Panel',
 	selType: 'rowmodel',
+	plugins: [
+        Ext.create('Ext.grid.plugin.CellEditing', {
+            clicksToEdit: 2
+        })
+    ],
     // record per page
     recordsPerPage : 25,
     // the minimum number of records for pagination
