@@ -277,10 +277,9 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     width : 140,
                     dataIndex : 'string',
                     flex: 1,
-                    editor : Ext.create('Ext.form.TextField',{
-                        allowBlank : false
-                    })
-                }, {
+                    field:'textfield'
+				}, 
+				{
                 	xtype: 'checkcolumn',
                     header : "<b>" + this.i18n._("block") + "</b>",
                     dataIndex : 'enabled',
@@ -307,11 +306,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
 
         // Subnet List
         buildSubnetList : function() {
-            var flagColumn = Ext.create('Ung.grid.CheckColumn',{
-                header : "<b>" + this.i18n._("log") + "</b>",
-                dataIndex : 'flagged',
-                fixed : true
-            });
 
             this.gridSubnetList = Ext.create('Ung.EditorGrid',{
                 name : 'Subnet List',
@@ -327,26 +321,34 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
-                    id : 'name',
-                    header : this.i18n._("name"),
-                    width : 250,
-                    dataIndex : 'name',
-                    flex: 1,
-                    editor : Ext.create('Ext.form.TextField',{
-                        allowBlank : false
-                    })
-                }, {
-                    id : 'string',
-                    header : this.i18n._("subnet"),
-                    width : 300,
-                    dataIndex : 'string',
-                    editor : Ext.create('Ext.form.TextField',{
-                        allowBlank : false
-                    })
-                }, flagColumn],
+						id : 'name',
+						header : this.i18n._("name"),
+						width : 250,
+						dataIndex : 'name',
+						flex: 1,
+						field: {
+							xtype: 'textfield',
+							allowBlank: false
+						}
+					}, {
+						id : 'string',
+						header : this.i18n._("subnet"),
+						width : 300,
+						dataIndex : 'string',
+						field: {
+							xtype: 'textfield',
+							allowBlank: false
+						}
+					}, 
+					{
+					 xtype:'checkcolumn',
+					 header : "<b>" + this.i18n._("log") + "</b>",
+					 dataIndex : 'flagged',
+					 fixed : true,
+					 width:55
+					}],
                 sortField : 'name',
                 columnsDefaultSortable : true,
-                plugins : [flagColumn],
                 rowEditorInputLines : [{
                 	xtype:'textfield',
                     name : "Name",
