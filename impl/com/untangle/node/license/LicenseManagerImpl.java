@@ -605,7 +605,7 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
         try {
             String command = System.getProperty("uvm.bin.dir") + "/" + LICENSE_SCRIPT_NUMUSERS;
             String wholeOutput = UvmContextFactory.context().execManager().execOutput(command);
-            Integer result = new Integer(wholeOutput.toString());
+            Integer result = new Integer(wholeOutput.replaceAll("\\W",""));
             return result;
         } catch (Exception e) {
             logger.warn("Unabled to estimate seats",e);
