@@ -501,7 +501,6 @@ public class SpywareImpl extends AbstractNode implements Spyware
         for (String d = domain; !match && null != d; d = nextHost(d)) {
             GenericRule sr = cookieDomainMap.get(d);
             if (sr != null) {
-                logger.warn("Matching rule found: " + sr );
                 if (sr.getBlocked() != null)
                     match = sr.getBlocked();
                 else if (sr.getEnabled() != null) /* if Block is null, use enabled instead */
