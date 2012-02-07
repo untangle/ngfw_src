@@ -52,8 +52,6 @@ public class CPDImpl extends AbstractNode implements CPD
     private final CustomUploadHandler uploadHandler = new CustomUploadHandler(); 
     private final Logger logger = Logger.getLogger(CPDImpl.class);
 
-    private final CPDIpUsernameMapAssistant assistant = new CPDIpUsernameMapAssistant(this);
-
     private final PipeSpec[] pipeSpecs;
     
     private final CPDManager manager = new CPDManager(this);
@@ -62,6 +60,8 @@ public class CPDImpl extends AbstractNode implements CPD
     private final BlingBlinger authorizeBlinger;
 
     public static final String DEFAULT_USERNAME = "captive portal user";
+
+    private CPDIpUsernameMapAssistant assistant = null;
     
     private CPDSettings settings;
 
@@ -184,13 +184,16 @@ public class CPDImpl extends AbstractNode implements CPD
     @Override
     public List<HostDatabaseEntry> getCaptiveStatus()
     {
-        List<HostDatabaseEntry> captiveStatus = assistant.getCaptiveStatus();
+        List<HostDatabaseEntry> captiveStatus = null;
+
+        if (assistant != null) 
+            captiveStatus = assistant.getCaptiveStatus();
 
         if (captiveStatus == null) {
-           captiveStatus = new LinkedList<HostDatabaseEntry>();
+            return new LinkedList<HostDatabaseEntry>();
+        } else {
+            return captiveStatus;
         }
-
-        return captiveStatus;
     }
 
     @Override
@@ -359,7 +362,7 @@ public class CPDImpl extends AbstractNode implements CPD
             if (isAuthenticated) {
                 try {
                     /* if no auth is required, don't count the "default user" as a user */
-                    if ( this.settings.getBaseSettings().getAuthenticationType() != AuthenticationType.NONE )
+                    if ( this.settings.getBaseSettings().getAuthenticationType() != AuthenticationType.NONE && this.assistant != null)
                         assistant.addCache(InetAddress.getByName(address),username);
                 } catch (UnknownHostException e) {
                     logger.warn("Add Cache failed",e);
@@ -380,7 +383,8 @@ public class CPDImpl extends AbstractNode implements CPD
         /* Update the CPD Phone Book cache */
         if (isLoggedOut) {
             try {
-                assistant.removeCache(InetAddress.getByName(address));
+                if (assistant != null)
+                    assistant.removeCache(InetAddress.getByName(address));
             } catch (UnknownHostException e) {
                 logger.warn("Remove Cache failed",e);
             }
@@ -402,6 +406,8 @@ public class CPDImpl extends AbstractNode implements CPD
     @Override
     protected void preStart() throws Exception
     {
+        this.assistant = new CPDIpUsernameMapAssistant(this);
+        
         /* Check if there is at least one enabled capture rule */
         boolean hasCaptureRule = false;
         for ( CaptureRule rule : this.settings.getCaptureRules()) {
@@ -455,7 +461,10 @@ public class CPDImpl extends AbstractNode implements CPD
     {
         super.postStop();
 
-        this.assistant.destroy();
+        if (this.assistant != null) {
+            this.assistant.destroy();
+            this.assistant = null;
+        }
     }
     
     protected void postInit(final String[] args) {
@@ -487,7 +496,10 @@ public class CPDImpl extends AbstractNode implements CPD
                 
         unDeployWebAppIfRequired(this.logger);
 
-        this.assistant.stopDatabaseReader();
+        if (this.assistant != null) {
+            this.assistant.destroy();
+            this.assistant = null;
+        }
         
         super.preDestroy();
     }
