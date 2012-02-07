@@ -3761,9 +3761,10 @@ Ext.define('Ung.RowEditorWindow', {
     }
 });
 
+/*
 // RpcProxy
 // uses json rpc to get the information from the server
-Ung.RpcProxy = function(rpcFn, rpcFnArgs, paginated ) {
+Ung.RpcProxy = function(rpcFn, rpcFnArgs, paginated, modelName ) {
     Ung.RpcProxy.superclass.constructor.call(this);
     this.rpcFn = rpcFn;
     // specified if we fetch data paginated or all at once
@@ -3775,69 +3776,98 @@ Ung.RpcProxy = function(rpcFn, rpcFnArgs, paginated ) {
     }
     // specified if we have aditional args for rpcFnArgs
     this.rpcFnArgs = rpcFnArgs;
+	this.model = modelName;
 };
+*/
 
-Ext.extend(Ung.RpcProxy, Ext.data.DataProxy, {
+Ext.define('Ung.RpcProxy',{
+	extend:'Ext.data.Store',
+	rpcFn:null,
+	rpcFnArgs:null,
+	model: null,
+	paginated: false,
+    constructor : function(config) {
+        Ung.RpcProxy.superclass.constructor.apply(this, arguments);
+    },
+    initComponent : function() { },
     // sets the total number of records
     setTotalRecords : function(totalRecords) {
         this.totalRecords = totalRecords;
     },
-    // load function for Proxy class
-    load : function(params, reader, callback, scope, arg) {
+    load : function(config) {
         var obj = {};
-        obj.params = params;
-        obj.reader = reader;
-        obj.callback = callback;
-        obj.scope = scope;
-        obj.arg = arg;
+		if ( typeof config.params != 'undefined') {
+			obj.params = config.params;
+		} else {
+			obj.params = null;
+		}
+		if ( config.reader != null) {
+			obj.reader = config.reader;
+		} else {
+			obj.reader = this.proxy.getReader();
+		}
+		if ( config.callback != null) {
+			obj.callback = config.callback;
+		} else {
+			obj.callback = config.callback;
+		}
+        obj.scope = config.scope;
+        obj.arg = config.arg;
         obj.totalRecords = this.totalRecords;
+		obj.parent = this;
         var sortColumns = [];
-        if (params.sort) {
-            var type = scope.fields.get(params.sort).type;
-            var sortField = params.sort;
+        if (typeof config.params != 'undefined' && config.params.sort) {
+            var type = scope.fields.get(config.params.sort).type;
+            var sortField = config.params.sort;
             if (type == 'string') {
-                sortField = "UPPER("+params.sort+")";
+                sortField = "UPPER("+config.params.sort+")";
             }
-            sortColumns.push((params.dir == "ASC" ? "+" : "-") + sortField);
+            sortColumns.push((config.params.dir == "ASC" ? "+" : "-") + sortField);
         }
         if (this.paginated) {
             if (this.rpcFnArgs == null) {
-                this.rpcFn(Ext.bind(this.errorHandler,obj), params.start ? params.start : 0, params.limit
-                        ? params.limit
+					this.rpcFn(Ext.bind(this.errorHandler,obj), config.params.start ? config.params.start : 0, config.params.limit
+                        ? config.params.limit
                         : this.totalRecords != null ? this.totalRecords : Ung.Util.maxRowCount, sortColumns);
             } else {
                 var args = [Ext.bind(this.errorHandler,obj)].
                             concat(this.rpcFnArgs).
-                                concat([params.start ? params.start : 0,
-                                    params.limit ? params.limit : this.totalRecords != null ? this.totalRecords : Ung.Util.maxRowCount,
+                                concat([config.params.start ? config.params.start : 0,
+                                    config.params.limit ? config.params.limit : this.totalRecords != null ? this.totalRecords : Ung.Util.maxRowCount,
                                     sortColumns]);
-                this.rpcFn.apply(this, args);
+				this.rpcFn.apply(this, args);
             }
         } else {
             if (this.rpcFnArgs == null) {
-                this.rpcFn(Ext.bind(this.errorHandler,obj));
+				this.rpcFn(Ext.bind(this.errorHandler,obj));
             } else {
                 var args = [Ext.bind(this.errorHandler,obj)].concat(this.rpcFnArgs);
-                this.rpcFn.apply(this, args);
+				this.rpcFn.apply(this, args);
             }
         }
     },
     errorHandler : function(result, exception) {
         if(Ung.Util.handleException(exception, Ext.bind(function() {
-            this.callback.call(this.scope, null, this.arg, false);
+			if ( this.callback != null) {
+				this.callback.call(this.scope, null, this.arg, false);
+			}
         },this),"alert")) return;
 
         var res = null;
         try {
             res = this.reader.readRecords(result);
-            if (this.totalRecords) {
-                res.totalRecords = this.totalRecords;
-            }
-            this.callback.call(this.scope, res, this.arg, true);
+			if ( res ) {
+				this.parent.loadData(res.records);
+			}
+			if ( this.callback != null) {
+				this.callback.call(this.scope, res, this.arg, true);
+			}
         } catch (e) {
-            this.callback.call(this.scope, null, this.arg, false);
+			if ( this.callback != null) {
+				this.callback.call(this.scope, null, this.arg, false);
+			}
             return;
-        }
+        } 
     }
 });
 
@@ -4188,19 +4218,32 @@ Ext.define('Ung.EditorGrid', {
                 },this)
             });
         }
+		this.modelName='Ung.EditorGrid.Store.ImplicitModel-' + this.id;
+		if ( Ext.ModelManager.get(this.modelName) == null) {
+			Ext.define(this.modelName, {
+				extend: 'Ext.data.Model',
+				fields: this.fields
+			});
+		}
         if (this.proxyRpcFn) {
-            this.store = new Ext.data.Store({
-                proxy : new Ung.RpcProxy(this.proxyRpcFn, this.proxyRpcFnArgs, this.paginated),
+            this.store = Ext.create('Ung.RpcProxy',{
+				rpcFn:this.proxyRpcFn, 
+				rpcFnArgs:this.proxyRpcFnArgs,
+				paginated:this.paginated,
+				model:this.modelName,
+				proxy: {
+					type: 'pagingmemory',
+					reader: {
+						type:'json',
+						totalProperty : 'totalRecords',
+						root : 'list',
+					}
+				},
+				pageSize : this.recordsPerPage,
                 sortInfo : this.sortField ? {
                     field : this.sortField,
                     direction : this.sortOrder ? this.sortOrder : "ASC"
                 } : null,
-                reader : new Ext.data.JsonReader({
-                    totalProperty : "totalRecords",
-                    root : 'list',
-                    fields : this.fields
-                }),
-
                 remoteSort : this.paginated,
                 listeners : {
                     "update" : {
@@ -4216,11 +4259,6 @@ Ext.define('Ung.EditorGrid', {
                 }
             });
         } else if(this.data) {
-        	this.modelName='Ung.EditorGrid.Store.ImplicitModel-' + Ext.id();
-        	Ext.define(this.modelName, {
-                 extend: 'Ext.data.Model',
-                 fields: this.fields
-            });
     		this.store=Ext.create('Ext.data.Store', {
 				data: this.data,
 				model:this.modelName,	
