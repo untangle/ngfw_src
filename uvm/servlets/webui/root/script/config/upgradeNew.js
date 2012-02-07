@@ -56,23 +56,6 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                             Ext.MessageBox.hide();
                             if(!this.isVisible()) return;
                             var upgradeList = result;
-                            //TODO: just for test
-                            upgradeList.push({
-                                image : "image?name=unknown",
-                                name : 'aaa test',
-                                displayName : this.i18n._("TEST TEST"),
-                                availableVersion : this.i18n._("1.5"),
-                                type : 'NODE',
-                                size : 150000
-                            });
-                            upgradeList.push({
-                                image : "image?name=untangle-node-phish",
-                                name : 'bbb test',
-                                displayName : this.i18n._("TEST TEST"),
-                                availableVersion : this.i18n._("1.5"),
-                                type : 'NODE',
-                                size : 790000
-                            });
                             if (upgradeList.length > 0) {
                                 Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
                                 Ext.getCmp("config_start_upgrade_button").enable();
