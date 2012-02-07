@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-15 14:27-0700\n"
+"POT-Creation-Date: 2012-02-07 12:51-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,13 +34,13 @@ msgid "Move to Inbox (0  messages)"
 msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:255
-#: ../servlets/quarantine/root/quarantine.js:404
-msgid "Delete (0  messages)"
+#: ../servlets/quarantine/root/quarantine.js:422
+msgid "Move to Inbox & Add to Safelist (0  Senders)"
 msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:262
-#: ../servlets/quarantine/root/quarantine.js:422
-msgid "Add to Safelist (0  Senders)"
+#: ../servlets/quarantine/root/quarantine.js:404
+msgid "Delete (0  messages)"
 msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:365
@@ -84,11 +84,11 @@ msgid "Move to Inbox ({0} messages)"
 msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:425
-msgid "Add to Safelist (1  Sender)"
+msgid "Move to Inbox & Add to Safelist (1  Sender)"
 msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:428
-msgid "Add to Safelist ({0} Senders)"
+msgid "Move to Inbox & Add to Safelist ({0} Senders)"
 msgstr ""
 
 #: ../servlets/quarantine/root/quarantine.js:539
