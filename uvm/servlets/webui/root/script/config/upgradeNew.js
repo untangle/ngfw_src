@@ -56,6 +56,23 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                             Ext.MessageBox.hide();
                             if(!this.isVisible()) return;
                             var upgradeList = result;
+                            //TODO: just for test
+                            upgradeList.push({
+                                image : "image?name=unknown",
+                                name : 'aaa test',
+                                displayName : this.i18n._("TEST TEST"),
+                                availableVersion : this.i18n._("1.5"),
+                                type : 'NODE',
+                                size : 150000
+                            });
+                            upgradeList.push({
+                                image : "image?name=untangle-node-phish",
+                                name : 'bbb test',
+                                displayName : this.i18n._("TEST TEST"),
+                                availableVersion : this.i18n._("1.5"),
+                                type : 'NODE',
+                                size : 790000
+                            });
                             if (upgradeList.length > 0) {
                                 Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
                                 Ext.getCmp("config_start_upgrade_button").enable();
@@ -64,46 +81,46 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                                 var totalSize=0;
                                 for (var i = 0; i < upgradeList.length; i++) {
                                     var md = upgradeList[i];
-                    var mtype;
-                    var displayName = md.displayNane;
-                    totalSize+=md.size;
-                    // Leave out only libitems
-                    switch (md.type) {
-                    case "LIB_ITEM":
-                    case "TRIAL":
-                      // Skip
-                      continue;
-                    case "LIBRARY":
-                    case "BASE":
-                    case "CASING":
-                      mtype = this.i18n._("System Component");
-                      break;
-                    case "NODE":
-                    case "SERVICE":
-                      mtype = this.i18n._("Product");
-                      break;
-                    case "UNKNOWN":
-                      mtype = this.i18n._("System Component");
-                      break;
-                    }
-                    if (displayName == null) {
-                    if (md.shortDescription != null)
-                        displayName = md.shortDescription;
-                    else
-                        displayName = md.name;
-                    } 
-                    if (displayName != null) {
-                    displayName = displayName.replace("Untangle",main.getOemManager().getOemName());
-                    }
-                    somethingVisibleAdded = true;
-                    upgradeData.push({
-                      image : "image?name=" + md.name,
-                      name : md.name,
-                      displayName : displayName,
-                      availableVersion : md.availableVersion,
-                      type : mtype,
-                      size : Math.round(md.size / 1000)
-                    });
+				                    var mtype;
+				                    var displayName = md.displayNane;
+				                    totalSize+=md.size;
+				                    // Leave out only libitems
+				                    switch (md.type) {
+				                    case "LIB_ITEM":
+				                    case "TRIAL":
+				                      // Skip
+				                      continue;
+				                    case "LIBRARY":
+				                    case "BASE":
+				                    case "CASING":
+				                      mtype = this.i18n._("System Component");
+				                      break;
+				                    case "NODE":
+				                    case "SERVICE":
+				                      mtype = this.i18n._("Product");
+				                      break;
+				                    case "UNKNOWN":
+				                      mtype = this.i18n._("System Component");
+				                      break;
+				                    }
+				                    if (displayName == null) {
+				                    if (md.shortDescription != null)
+				                        displayName = md.shortDescription;
+				                    else
+				                        displayName = md.name;
+				                    } 
+				                    if (displayName != null) {
+				                    	displayName = displayName.replace("Untangle",main.getOemManager().getOemName());
+				                    }
+				                    somethingVisibleAdded = true;
+					                    upgradeData.push({
+					                    image : "image?name=" + md.name,
+					                    name : md.name,
+					                    displayName : displayName,
+					                    availableVersion : md.availableVersion,
+					                    type : mtype,
+					                    size : Math.round(md.size / 1000)
+				                    });
                                 }
                                 if (!somethingVisibleAdded) {
                                     upgradeData.push({
@@ -120,9 +137,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                                 Ext.getCmp("config_start_upgrade_button").disable();
                                 this.gridUpgrade.getDockedItems('toolbar[dock="top"]')[0].items.get(0).getEl().dom.innerHTML=i18n._("No upgrades available.");
                             }
-                            this.gridUpgrade.getStore().proxy.data = {
-                                list : upgradeData
-                            };
+                            this.gridUpgrade.getStore().proxy.data = upgradeData;
                             this.gridUpgrade.getStore().load();
                         },this));
                     },this),true);
@@ -131,37 +146,38 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
 
         },
         buildUpgrade : function() {
-            this.gridUpgrade = Ext.create('Ext.grid.GridPanel',{
+            this.gridUpgrade = Ext.create('Ext.grid.Panel',{
                 // private fields
                 name : 'Upgrade',
                 helpSource : 'upgrade',
                 parentId : this.getId(),
                 title : this.i18n._('Upgrade'),
-                enableHdMenu : false,
+                enableColumnHide : false,
                 enableColumnMove: false,
-                disableSelection: true,
+                disableSelection: true, //TODO: find extjs4 solution
                 tbar: [{xtype: 'tbtext', text: i18n._("Checking for upgrades...")}],
-                store : new Ext.data.Store({
-                    proxy : new Ung.MemoryProxy({
-                        root : 'list'
-                    }),
-                    reader : new Ext.data.JsonReader({
-                        totalProperty : "totalRecords",
-                        root : 'list',
-                        fields : [{
-                            name : 'image'
-                        }, {
-                            name : 'name'
-                        }, {
-                            name : 'displayName'
-                        }, {
-                            name : 'availableVersion'
-                        }, {
-                            name : 'type'
-                        }, {
-                            name : 'size'
-                        }]
-                    })
+                store : Ext.create('Ext.data.Store', {
+                	data:[],
+                	proxy: {
+    					type: 'memory',
+    					reader: {
+    						type: 'json',
+    						root: ''
+    					}
+    				},
+    				fields : [{
+	                        name : 'image'
+	                    }, {
+	                        name : 'name'
+	                    }, {
+	                        name : 'displayName'
+	                    }, {
+	                        name : 'availableVersion'
+	                    }, {
+	                        name : 'type'
+	                    }, {
+	                        name : 'size'
+                    }]
                 }),
                 columns : [{
                     header : "",
@@ -173,11 +189,11 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         return "<img src='" + value + "'/>";
                     }
                 }, {
-                    id: 'displayName',
                     header : this.i18n._("name"),
                     width : 190,
                     sortable : true,
                     menuDisabled: true,
+                    flex: 1,
                     dataIndex : 'displayName'
 
                 }, {
@@ -201,7 +217,6 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                     align: 'right', 
                     dataIndex : 'size'
                 }],
-                autoExpandColumn: 'displayName',
                 buttonAlign : 'center',
                 buttons : [{
                     id : 'config_start_upgrade_button',

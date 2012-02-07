@@ -85,14 +85,14 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 title : i18n._('Administration')
             }];
             this.skinManager = Ext.create('Ung.Config.Administration.SkinManager',{ 'i18n' :  i18n });
-            //this.buildAdministration();
+            this.buildAdministration();
             this.buildPublicAddress();
             this.buildCertificates();
             this.buildMonitoring();
             this.buildSkins();
 
             // builds the tab panel with the tabs
-            var adminTabs = [/*this.panelAdministration, */this.panelPublicAddress, this.panelCertificates, this.panelMonitoring, this.panelSkins];
+            var adminTabs = [this.panelAdministration, this.panelPublicAddress, this.panelCertificates, this.panelMonitoring, this.panelSkins];
             this.buildTabPanel(adminTabs);
             this.tabs.setActiveTab(this.panelAdministration);
             Ung.Administration.superclass.initComponent.call(this);
@@ -195,13 +195,14 @@ if (!Ung.hasResource["Ung.Administration"]) {
             this.initialAccessSettings = Ung.Util.clone(this.getAccessSettings());
             this.initialAddressSettings = Ung.Util.clone(this.getAddressSettings());
 
-            var changePasswordColumn = Ext.create("Ung.grid.IconColumn",{
+            var changePasswordColumn = Ext.create("Ung.grid.EditColumn",{
                 header : this.i18n._("change password"),
                 width : 130,
                 iconClass : 'icon-edit-row',
-                handle : function(record, index) {
+                handler : function(view, rowIndex, colIndex) {
                     // populate row editor
-                    this.grid.rowEditorChangePass.populate(record);
+                	var rec = view.getStore().getAt(rowIndex);
+                    this.grid.rowEditorChangePass.populate(rec);
                     this.grid.rowEditorChangePass.show();
                 }
             });
@@ -247,7 +248,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     autoExpandColumn : 'name',
 
                     data : storeData,
-                    dataRoot: null,
+                    //dataRoot: null,
                     // the list of fields; we need all as we get/set all records once
                     fields : [{
                         name : 'id'
@@ -268,7 +269,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     },{
                         name : 'javaClass' //needed as users is a set
                     }],
-                    autoExpandColumn: 'name',
                     // the list of columns for the column model
                     columns : [{
                         id : 'login',
@@ -284,6 +284,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         header : this.i18n._("description"),
                         width : 200,
                         dataIndex : 'name',
+                        flex: 1,
                         editor : new Ext.form.TextField({
                             allowBlank : false
                         })
@@ -301,65 +302,68 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     columnsDefaultSortable : true,
                     plugins : [changePasswordColumn],
                     // the row input lines used by the row editor window
-                    rowEditorInputLines : [new Ext.form.TextField({
+                    rowEditorInputLines : [{
+                    	xtype: "textfield",
                         name : "Login",
                         dataIndex : "login",
                         fieldLabel : this.i18n._("Login"),
                         allowBlank : false,
                         blankText : this.i18n._("The login name cannot be blank."),
-                        width : 200
-                    }), new Ext.form.TextField({
+                        width : 400
+                    }, {
+                    	xtype: "textfield",
                         name : "Name",
                         dataIndex : "name",
                         fieldLabel : this.i18n._("Description"),
                         allowBlank : false,
-                        width : 200
-                    }),/* new Ext.form.Checkbox({
-                        name : "Read-only",
-                        dataIndex : "readOnly",
-                        fieldLabel : this.i18n._("Read-only")
-                    }),  */new Ext.form.TextField({
+                        width : 400
+                    },{
+                    	xtype: "textfield",
                         name : "Email",
                         dataIndex : "email",
                         fieldLabel : this.i18n._("Email"),
-                        width : 200
-                    }), new Ext.form.TextField({
+                        width : 400
+                    },{
+                    	xtype: "textfield",
                         inputType: 'password',
                         name : "Password",
                         dataIndex : "clearPassword",
                         id : 'administration_rowEditor_password_'+ fieldID,
                         fieldLabel : this.i18n._("Password"),
-                        width : 200,
+                        width : 400,
                         minLength : 3,
                         minLengthText : Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
-                    }), new Ext.form.TextField({
+                    },{
+                    	xtype: "textfield",
                         inputType: 'password',
                         name : "Confirm Password",
                         dataIndex : "clearPassword",
                         vtype: 'password',
                         initialPassField: 'administration_rowEditor_password_'+ fieldID, // id of the initial password field
                         fieldLabel : this.i18n._("Confirm Password"),
-                        width : 200
-                    })],
+                        width : 400
+                    }],
                     // the row input lines used by the change password window
-                    rowEditorChangePassInputLines : [new Ext.form.TextField({
+                    rowEditorChangePassInputLines : [{
+                    	xtype: "textfield",
                         inputType: 'password',
                         name : "Password",
                         dataIndex : "clearPassword",
                         id : 'administration_rowEditor1_password_'+ fieldID,
                         fieldLabel : this.i18n._("Password"),
-                        width : 200,
+                        width : 400,
                         minLength : 3,
                         minLengthText : Ext.String.format(this.i18n._("The password is shorter than the minimum {0} characters."), 3)
-                    }), new Ext.form.TextField({
+                    }, {
+                    	xtype: "textfield",
                         inputType: 'password',
                         name : "Confirm Password",
                         dataIndex : "clearPassword",
                         vtype: 'password',
                         initialPassField: 'administration_rowEditor1_password_'+ fieldID, // id of the initial password field
                         fieldLabel : this.i18n._("Confirm Password"),
-                        width : 200
-                    })]
+                        width : 400
+                    }]
                 }), {
                     xtype : 'fieldset',
                     id:'external_administration_fieldset',
@@ -529,15 +533,12 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }]
                 }]
             });
-            //TODO: find extjs4 solution
-            /*
             if ( this.gridAdminAccounts.rowEditorChangePassInputLines != null) {
                  this.gridAdminAccounts.rowEditorChangePass = Ext.create("Ung.RowEditorWindow",{
                     grid : this.gridAdminAccounts,
                     inputLines : this.gridAdminAccounts.rowEditorChangePassInputLines
                 });
             }
-*/
         },
         buildPublicAddress : function() {
             var hostname = this.getHostname(true);
