@@ -3826,9 +3826,17 @@ Ext.define('Ung.RpcProxy',{
         }
         if (this.paginated) {
             if (this.rpcFnArgs == null) {
-					this.rpcFn(Ext.bind(this.errorHandler,obj), config.params.start ? config.params.start : 0, config.params.limit
-                        ? config.params.limit
-                        : this.totalRecords != null ? this.totalRecords : Ung.Util.maxRowCount, sortColumns);
+					start = 0;
+					if ( typeof config.params != 'undefined') {
+						start = config.params.start ? config.params.start:0;
+					}
+                    end=this.totalRecords != null ? this.totalRecords : Ung.Util.maxRowCount;
+					if ( typeof config.params != 'undefined') {
+						if ( config.params.limit) {
+							end = config.params.limit;
+						}
+					}
+					this.rpcFn(Ext.bind(this.errorHandler,obj), start,end, sortColumns);
             } else {
                 var args = [Ext.bind(this.errorHandler,obj)].
                             concat(this.rpcFnArgs).
