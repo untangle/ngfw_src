@@ -436,13 +436,13 @@ public class CasingAdaptor extends AbstractEventHandler
                  */
                 String message = exn.getMessage();
                 if (message != null && message.contains("no digits found")) {
-                    logger.warn("Protocol parse exception (no digits found). Releasing session: " + sessionEndpoints);
+                    logger.info("Protocol parse exception (no digits found). Releasing session: " + sessionEndpoints);
                 } else if (message != null && message.contains("expected")) {
-                    logger.warn("Protocol parse exception (got != expected). Releasing session: " + sessionEndpoints);
+                    logger.info("Protocol parse exception (got != expected). Releasing session: " + sessionEndpoints);
                 } else if (message != null && message.contains("data trapped")) {
-                    logger.warn("Protocol parse exception (data trapped). Releasing session: " + sessionEndpoints);
+                    logger.info("Protocol parse exception (data trapped). Releasing session: " + sessionEndpoints);
                 } else {
-                    logger.warn("Protocol parse exception. releasing session: " + sessionEndpoints, exn);
+                    logger.info("Protocol parse exception. releasing session: " + sessionEndpoints, exn);
                 }
                 
                 s.release();
