@@ -2161,9 +2161,9 @@ Ext.define("Ung.SystemStats", {
     },
     update : function(stats) {
         var sessionsText = '<font color="#55BA47">' + stats.map.uvmSessions + "</font>";
-        if (stats.map.uvmSessions > 2000)
+        if (stats.map.uvmSessions > 8000)
             sessionsText = '<font color="orange">' + stats.map.uvmSessions + "</font>";
-        if (stats.map.uvmSessions > 6000)
+        if (stats.map.uvmSessions > 9000)
             sessionsText = '<font color="red">' + stats.map.uvmSessions + "</font>";
         this.getEl().down("div[class=sessions]").dom.innerHTML=sessionsText;
         
