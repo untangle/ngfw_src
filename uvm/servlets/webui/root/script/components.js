@@ -18,7 +18,16 @@ Ext.override(Ext.Button, {
     }
 });
 
-Ext.override(Ext.form.Field, { 
+Ext.override(Ext.form.Field, {
+	clearDirty: function() {
+        if(this.xtype=='radiogroup') {
+            this.items.each(function(item) {
+                item.clearDirty();
+    		}); 
+        } else {
+        	this.originalValue=this.getValue();
+        }
+	},
     afterRender : Ext.form.Field.prototype.afterRender.createSequence(function(){
         Ext.QuickTips.init();    
         var qt = this.tooltip,

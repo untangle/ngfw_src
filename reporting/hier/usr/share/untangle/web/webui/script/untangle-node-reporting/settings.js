@@ -762,14 +762,12 @@ if (!Ung.hasResource["Ung.Reporting"]) {
 
             this.gridRecipients.clearChangedData();
             this.gridRecipients.store.loadData( this.buildReportingUsersData());
-            // var cmpIds = this.getEditableFields(),
-            //             i;
-            //             for (i = 0; i < cmpIds.length; i++) {
-            //                 if (cmpIds[i].isDirty()){
-            //                     cmpIds[i].originalValue = cmpIds[i].getValue();
-            //                     cmpIds[i].reset();
-            //                 }
-            //             }
+            var cmpIds = this.getEditableFields();
+            for (var i = 0; i < cmpIds.length; i++) {
+                if (cmpIds[i].isDirty()) {
+                    cmpIds[i].clearDirty();
+                }
+            }
 
             this.gridIpMap.clearChangedData();
             this.gridIpMap.store.loadData( this.getReportingSettings().networkDirectory.entries );

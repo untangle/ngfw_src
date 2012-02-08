@@ -21,6 +21,15 @@ Ext.override(Ext.Button, {
 });
 
 Ext.override(Ext.form.Field, { 
+	clearDirty: function() {
+        if(this.xtype=='radiogroup') {
+            this.items.each(function(item) {
+                item.clearDirty();
+    		}); 
+        } else {
+        	this.originalValue=this.getValue();
+        }
+	},
     afterRender : Ext.Function.createSequence(Ext.form.Field.prototype.afterRender,function(){
         Ext.QuickTips.init();    
         var qt = this.tooltip,
@@ -4270,9 +4279,9 @@ Ext.define('Ung.EditorGrid', {
     		this.store=Ext.create('Ext.data.Store', {
 				data: this.data,
 				model:this.modelName,	
-				pageSize : this.recordsPerPage,
+				pageSize : this.paginated?this.recordsPerPage:null,
 				proxy: {
-					type: 'pagingmemory',
+					type: this.paginated?'pagingmemory':'memory',
 					reader: {
 						type: 'json',
 						root: ''
