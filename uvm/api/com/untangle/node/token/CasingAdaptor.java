@@ -441,6 +441,8 @@ public class CasingAdaptor extends AbstractEventHandler
                     logger.info("Protocol parse exception (got != expected). Releasing session: " + sessionEndpoints);
                 } else if (message != null && message.contains("data trapped")) {
                     logger.info("Protocol parse exception (data trapped). Releasing session: " + sessionEndpoints);
+                } else if (message != null && message.contains("buf limit exceeded")) {
+                    logger.info("Protocol parse exception (buf limit exceeded). Releasing session: " + sessionEndpoints);
                 } else {
                     logger.info("Protocol parse exception. releasing session: " + sessionEndpoints, exn);
                 }
