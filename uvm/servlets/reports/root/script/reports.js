@@ -275,6 +275,7 @@ Ung.Reports = Ext.extend(Object,{
             cls : "base-container",
             layout : 'border',
             height : getWinHeight()-80,
+            width : 960,
             defaults : { border : false,
                          bodyStyle : 'background-color: transparent;'
                        },
@@ -283,6 +284,7 @@ Ung.Reports = Ext.extend(Object,{
                 layout : 'border',
                 style : 'padding: 7px 5px 7px 7px;',
                 height : 70,
+                width : 960,
                 defaults : {
                     border : false,
                     bodyStyle : 'background-color: transparent;'
@@ -301,11 +303,11 @@ Ung.Reports = Ext.extend(Object,{
                     style : 'height:60px;',
                     cls   : 'dateRange',
                     items : [{
-                            xtype : "fieldset",
-                            border : false,
-                            cls : 'dateContainer',
-                            id : 'rangeFieldSet',
-                            items : [{
+                        xtype : "fieldset",
+                        border : false,
+                        cls : 'dateContainer',
+                        id : 'rangeFieldSet',
+                        items : [{
                             xtype : 'label',
                             id : 'logout-link',
                             html : i18n._('Logout'),
@@ -328,7 +330,7 @@ Ung.Reports = Ext.extend(Object,{
                             listeners : {
                                 "render" : {
                                     fn : function(comp) {
-                                       comp.getEl().on("click",this.showAvailableReports,this);
+                                        comp.getEl().on("click",this.showAvailableReports,this);
                                     }.createDelegate(this)
                                 }
                             }                            
@@ -408,7 +410,7 @@ Ung.Reports = Ext.extend(Object,{
                     split : true,
                     margins : '2 2 0 2',
                     cmargins : '2 2 2 2',
-                    width : "80%",
+                    width : 766,
                     defaults: { border: false },
                     items : [{ html:"" }]
                 }]
