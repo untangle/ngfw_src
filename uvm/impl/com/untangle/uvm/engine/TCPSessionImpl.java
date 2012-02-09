@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.uvm.engine;
 
 import java.nio.ByteBuffer;
@@ -47,9 +32,6 @@ import com.untangle.uvm.node.SessionEndpoints;
 
 /**
  * This is the primary implementation class for TCP live sessions.
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
  */
 class TCPSessionImpl extends IPSessionImpl implements TCPSession
 {
@@ -187,8 +169,8 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     public VnetSessionDesc makeDesc()
     {
         return new VnetSessionDescImpl(id(), SessionEndpoints.PROTO_TCP, new SessionStats(stats),
-                                      clientState(), serverState(), clientIntf(), serverIntf(),
-                                      clientAddr(), serverAddr(), clientPort(), serverPort());
+                                       clientState(), serverState(), clientIntf(), serverIntf(),
+                                       clientAddr(), serverAddr(), clientPort(), serverPort());
     }
 
     public byte clientState()
@@ -304,7 +286,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     {
         if (streamer != null) {
             String message = "Already streaming";
-            error(message);
+            logger.error(message);
             throw new IllegalArgumentException(message);
         }
 
@@ -348,9 +330,9 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         assert out != null;
         if (out.isFull()) {
             if (warnIfUnable)
-                warn("tryWrite to full outgoing queue");
+                logger.warn("tryWrite to full outgoing queue");
             else
-                debug("tryWrite to full outgoing queue");
+                logger.debug("tryWrite to full outgoing queue");
         } else {
             // Old busted comment:
             // We know it's a data crumb since there can be nothing else
@@ -377,7 +359,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             }
 
             if (logger.isDebugEnabled())
-                debug("wrote " + numWritten + " to " + sideName);
+                logger.debug("wrote " + numWritten + " to " + sideName);
         }
     }
 
@@ -390,7 +372,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
         ByteBuffer buf2send = streamer.nextChunk();
         if (buf2send == null) {
-            debug("end of stream");
+            logger.debug("end of stream");
             endStream();
             return;
         }
@@ -398,7 +380,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         addBuf(side, buf2send);
 
         if (logger.isDebugEnabled())
-            debug("streamed " + buf2send.remaining() + " to " + sideName);
+            logger.debug("streamed " + buf2send.remaining() + " to " + sideName);
     }
 
     private void addBufs(int side, ByteBuffer[] new2send)
@@ -416,9 +398,9 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         int size = buf2send.remaining();
         if (size <= 0) {
             if (logger.isInfoEnabled())
-                info("ignoring empty send to " + (side == CLIENT ? "client" : "server") + ", pos: " +
-                     buf2send.position() + ", rem: " + buf2send.remaining() + ", ao: " +
-                     buf2send.arrayOffset());
+                logger.info("ignoring empty send to " + (side == CLIENT ? "client" : "server") + ", pos: " +
+                            buf2send.position() + ", rem: " + buf2send.remaining() + ", ao: " +
+                            buf2send.arrayOffset());
             return;
         }
 
@@ -426,7 +408,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             array = buf2send.array();
             offset += buf2send.arrayOffset();
         } else {
-            warn("out-of-heap byte buffer, had to copy");
+            logger.warn("out-of-heap byte buffer, had to copy");
             array = new byte[buf2send.remaining()];
             buf2send.get(array);
             buf2send.position(offset);
@@ -449,7 +431,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             return;
         if (result.readBuffer() != null)
             // Not allowed
-            warn("Ignoring readBuffer returned from writable event");
+            logger.warn("Ignoring readBuffer returned from writable event");
         addBufs(CLIENT, result.bufsToClient());
         addBufs(SERVER, result.bufsToServer());
     }
@@ -476,7 +458,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         if (result != null) {
             if (result.readBuffer() != null)
                 // Not allowed
-                warn("Ignoring readBuffer returned from FIN event");
+                logger.warn("Ignoring readBuffer returned from FIN event");
             addBufs(CLIENT, result.bufsToClient());
             addBufs(SERVER, result.bufsToServer());
         }
@@ -518,9 +500,9 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         } else if (!readBuf[side].hasRemaining()) {
             // This isn't really supposed to happen XXX
             // We need to kill the session to keep it from spinning.
-            error("read with full read buffer (" + readBuf[side].position() + "," +
-                  readBuf[side].limit() + "," + readBuf[side].capacity() +
-                  ", killing session");
+            logger.error("read with full read buffer (" + readBuf[side].position() + "," +
+                         readBuf[side].limit() + "," + readBuf[side].capacity() +
+                         ", killing session");
             readBuf[side] = null;
             killSession("full read buffer on " + sideName);
             return numRead;
@@ -533,9 +515,9 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             assert in != null;
             if (in.isEmpty()) {
                 if (warnIfUnable)
-                    warn("tryRead from empty incoming queue");
+                    logger.warn("tryRead from empty incoming queue");
                 else
-                    debug("tryRead from empty incoming queue");
+                    logger.debug("tryRead from empty incoming queue");
                 return numRead;
             }
 
@@ -547,7 +529,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             }
             switch (crumb.type()) {
             case Crumb.TYPE_SHUTDOWN:
-                debug("read FIN");
+                logger.debug("read FIN");
                 sendFINEvent(side, readBuf[side]);
                 in.read();
                 readBuf[side] = null;
@@ -555,7 +537,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             case Crumb.TYPE_RESET:
             default:
                 // Should never happen.
-                debug("read crumb " + crumb.type());
+                logger.debug("read crumb " + crumb.type());
                 in.read();
                 assert false;
                 break;
@@ -571,7 +553,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             int dcsize = dclimit - dcoffset;
 
             if (dcoffset >= dclimit) {
-                warn("Zero length TCP crumb read");
+                logger.warn("Zero length TCP crumb read");
                 in.read();  // Consume the crumb
                 return numRead;
             } else if (readBuf[side] == null &&
@@ -617,12 +599,12 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
                     // 'i' now means 'eolPosition', or 'last char I want in there'
                     dc.offset(dcoffset + i);
                     if (logger.isDebugEnabled())
-                        debug("Leaving " + (dcsize - i) + " bytes in the " + sideName +
-                              " incoming queue");
+                        logger.debug("Leaving " + (dcsize - i) + " bytes in the " + sideName +
+                                     " incoming queue");
                 } else {
                     in.read();  // Consume the crumb
                     if (logger.isDebugEnabled())
-                        debug("Removing incoming crumb for " + sideName);
+                        logger.debug("Removing incoming crumb for " + sideName);
                 }
             } else {
                 in.read();  // Consume the crumb
@@ -635,7 +617,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         }
 
         if (logger.isDebugEnabled())
-            debug("read " + numRead + " size chunk from " + sideName);
+            logger.debug("read " + numRead + " size chunk from " + sideName);
 
         stats.readData(side, numRead);
 
@@ -698,7 +680,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             TCPSessionEvent wevent = new TCPSessionEvent(argonConnector, this);
             dispatcher.dispatchTCPFinalized(wevent);
         } catch (Exception x) {
-            warn("Exception in Finalized", x);
+            logger.warn("Exception in Finalized", x);
         }
 
         readBuf[CLIENT] = null;

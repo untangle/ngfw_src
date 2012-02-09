@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.uvm.engine;
 
 import static com.untangle.uvm.engine.Dispatcher.SESSION_ID_MDC_KEY;
@@ -49,9 +34,6 @@ import com.untangle.uvm.node.NodeManager;
 
 /**
  * Abstract base class for all IP live sessions
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
  */
 abstract class IPSessionImpl
     extends SessionImpl
@@ -67,7 +49,7 @@ abstract class IPSessionImpl
     protected final PipelineEndpoints pipelineEndpoints;
 
     @SuppressWarnings("unchecked") //generics array creation not supported java6
-    protected final List<Crumb>[] crumbs2write = new ArrayList[] { null, null };
+        protected final List<Crumb>[] crumbs2write = new ArrayList[] { null, null };
 
     protected IPStreamer[] streamer = null;
 
@@ -174,7 +156,8 @@ abstract class IPSessionImpl
         // mpipe.cancelTimer(this);
     }
 
-    protected Crumb getNextCrumb2Send(int side) {
+    protected Crumb getNextCrumb2Send(int side)
+    {
         List<Crumb> crumbs = crumbs2write[side];
         assert crumbs != null;
         Crumb result = crumbs.get(0);
@@ -193,21 +176,18 @@ abstract class IPSessionImpl
 
     protected void addCrumb(int side, Crumb buf)
     {
-        if (buf == null
-            // The following no longer applies since data can be null for ICMP packets: (5/05  jdi)
-            // assert result.remaining() > 0 : "Cannot send zero length buffer";
-            //  buf.remaining() == 0
-            )
-            // Skip it.
+        if (buf == null)
             return;
+        
         OutgoingSocketQueue out;
         if (side == CLIENT)
             out = (argonSession).clientOutgoingSocketQueue();
         else
             out = (argonSession).serverOutgoingSocketQueue();
+
         if (out == null || out.isClosed()) {
             String sideName = side == CLIENT ? "client" : "server";
-            warn("Ignoring crumb for dead " + sideName + " outgoing socket queue");
+            logger.info("Ignoring crumb for dead " + sideName + " outgoing socket queue");
             return;
         }
 
@@ -227,7 +207,7 @@ abstract class IPSessionImpl
             size = ((DataCrumb)crumb).limit();
         boolean success = out.write(crumb);
         if (logger.isDebugEnabled()) {
-            debug("writing " + crumb.type() + " crumb to " + out + ", size: " + size);
+            logger.debug("writing " + crumb.type() + " crumb to " + out + ", size: " + size);
         }
         assert success;
         return size;
@@ -238,7 +218,7 @@ abstract class IPSessionImpl
         Node xform = argonConnector().node();
         if (xform.getRunState() != NodeState.RUNNING) {
             String message = "killing: complete(in) for node in state " + xform.getRunState();
-            warn(message);
+            logger.warn(message);
             // killSession(message);
             return;
         }
@@ -251,7 +231,7 @@ abstract class IPSessionImpl
             sendCompleteEvent();
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while completing";
-            // error(message, x);
+            // logger.error(message, x);
             killSession(message);
         } catch (OutOfMemoryError x) {
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
@@ -266,7 +246,7 @@ abstract class IPSessionImpl
         Node xform = argonConnector().node();
         if (xform.getRunState() != NodeState.RUNNING) {
             String message = "killing: raze for node in state " + xform.getRunState();
-            warn(message);
+            logger.warn(message);
             // No need to kill the session, it's already dead.
             // killSession(message);
             return;
@@ -278,22 +258,22 @@ abstract class IPSessionImpl
             nodeManager.registerThreadContext(tctx);
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
             if (released) {
-                debug("raze released");
+                logger.debug("raze released");
             } else {
                 if (logger.isDebugEnabled()) {
                     IncomingSocketQueue ourcin = (argonSession).clientIncomingSocketQueue();
                     IncomingSocketQueue oursin = (argonSession).serverIncomingSocketQueue();
                     OutgoingSocketQueue ourcout = (argonSession).clientOutgoingSocketQueue();
                     OutgoingSocketQueue oursout = (argonSession).serverOutgoingSocketQueue();
-                    debug("raze ourcin: " + ourcin +
-                          ", ourcout: " + ourcout + ", ourcsin: " + oursin + ", oursout: " + oursout +
-                          "  /  crumbs[CLIENT]: " + crumbs2write[CLIENT] + ", crumbs[SERVER]: " + crumbs2write[SERVER]);
+                    logger.debug("raze ourcin: " + ourcin +
+                                 ", ourcout: " + ourcout + ", ourcsin: " + oursin + ", oursout: " + oursout +
+                                 "  /  crumbs[CLIENT]: " + crumbs2write[CLIENT] + ", crumbs[SERVER]: " + crumbs2write[SERVER]);
                 }
             }
             closeFinal();
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " in raze";
-            error(message, x);
+            logger.error(message, x);
         } catch (OutOfMemoryError x) {
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
@@ -307,7 +287,7 @@ abstract class IPSessionImpl
         Node xform = argonConnector().node();
         if (xform.getRunState() != NodeState.RUNNING) {
             String message = "killing: clientEvent(in) for node in state " + xform.getRunState();
-            warn(message);
+            logger.warn(message);
             killSession(message);
             return;
         }
@@ -326,7 +306,7 @@ abstract class IPSessionImpl
         Node xform = argonConnector().node();
         if (xform.getRunState() != NodeState.RUNNING) {
             String message = "killing: serverEvent(in) for node in state " + xform.getRunState();
-            warn(message);
+            logger.warn(message);
             killSession(message);
             return;
         }
@@ -345,7 +325,7 @@ abstract class IPSessionImpl
         Node xform = argonConnector().node();
         if (xform.getRunState() != NodeState.RUNNING) {
             String message = "killing: clientEvent(out) for node in state " + xform.getRunState();
-            warn(message);
+            logger.warn(message);
             killSession(message);
             return;
         }
@@ -364,7 +344,7 @@ abstract class IPSessionImpl
         Node xform = argonConnector().node();
         if (xform.getRunState() != NodeState.RUNNING) {
             String message = "killing: serverEvent(out) for node in state " + xform.getRunState();
-            warn(message);
+            logger.warn(message);
             killSession(message);
             return;
         }
@@ -386,7 +366,7 @@ abstract class IPSessionImpl
         Node xform = argonConnector().node();
         if (xform.getRunState() != NodeState.RUNNING) {
             String message = "killing: output reset(client) for node in state " + xform.getRunState();
-            warn(message);
+            logger.warn(message);
             // killSession(message);
             return;
         }
@@ -402,7 +382,7 @@ abstract class IPSessionImpl
             sideDieing(CLIENT);
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while output resetting";
-            // error(message, x);
+            // logger.error(message, x);
             killSession(message);
         } catch (OutOfMemoryError x) {
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
@@ -420,7 +400,7 @@ abstract class IPSessionImpl
         Node xform = argonConnector().node();
         if (xform.getRunState() != NodeState.RUNNING) {
             String message = "killing: output reset(server) for node in state " + xform.getRunState();
-            warn(message);
+            logger.warn(message);
             // killSession(message);
             return;
         }
@@ -436,7 +416,7 @@ abstract class IPSessionImpl
             sideDieing(SERVER);
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while output resetting";
-            // error(message, x);
+            // logger.error(message, x);
             killSession(message);
         } catch (OutOfMemoryError x) {
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
@@ -529,7 +509,7 @@ abstract class IPSessionImpl
         try {
             assert out != null;
             if (!out.isEmpty()) {
-                warn("writeEvent to non empty outgoing queue on: " + sideName);
+                logger.warn("writeEvent to non empty outgoing queue on: " + sideName);
                 return;
             }
 
@@ -547,10 +527,10 @@ abstract class IPSessionImpl
             assert out == ourout;
 
             if (logger.isDebugEnabled()) {
-                debug("write(" + sideName + ") out: " + out +
-                      "   /  crumbs, write-queue  " +  crumbs2write[side] + ", " + out.numEvents() +
-                      "(" + out.numBytes() + " bytes)" + "   opp-read-queue: " +
-                      (ourin == null ? null : ourin.numEvents()));
+                logger.debug("write(" + sideName + ") out: " + out +
+                             "   /  crumbs, write-queue  " +  crumbs2write[side] + ", " + out.numEvents() +
+                             "(" + out.numBytes() + " bytes)" + "   opp-read-queue: " +
+                             (ourin == null ? null : ourin.numEvents()));
             }
 
             if (!doWrite(side, ourout)) {
@@ -563,7 +543,7 @@ abstract class IPSessionImpl
                 setupForNormal();
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while writing to " + sideName;
-            error(message, x);
+            logger.error(message, x);
             killSession(message);
         } catch (OutOfMemoryError x) {
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
@@ -588,7 +568,7 @@ abstract class IPSessionImpl
             }
 
             if (!in.isEnabled()) {
-                warn("ignoring readEvent called for disabled side " + side);
+                logger.warn("ignoring readEvent called for disabled side " + side);
                 return;
             }
             @SuppressWarnings("unused")
@@ -610,9 +590,9 @@ abstract class IPSessionImpl
             assert in == ourin;
 
             if (logger.isDebugEnabled()) {
-                debug("read(" + sideName + ") in: " + in +
-                      "   /  opp-write-crumbs: " + crumbs2write[1 - side] + ", opp-write-queue: " +
-                      (ourout == null ? null : ourout.numEvents()));
+                logger.debug("read(" + sideName + ") in: " + in +
+                             "   /  opp-write-crumbs: " + crumbs2write[1 - side] + ", opp-write-queue: " +
+                             (ourout == null ? null : ourout.numEvents()));
             }
 
             assert streamer == null : "readEvent when streaming";;
@@ -627,14 +607,14 @@ abstract class IPSessionImpl
                     return;
                 }
             } else {
-                error("Illegal State: read(" + sideName + ") in: " + in +
-                      "   /  opp-write-crumbs: " + crumbs2write[1 - side] + ", opp-write-queue: " +
-                      (ourout == null ? null : ourout.numEvents()));
+                logger.error("Illegal State: read(" + sideName + ") in: " + in +
+                             "   /  opp-write-crumbs: " + crumbs2write[1 - side] + ", opp-write-queue: " +
+                             (ourout == null ? null : ourout.numEvents()));
             }
             setupForNormal();
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while reading from " + sideName;
-            error(message, x);
+            logger.error(message, x);
             killSession(message);
         } catch (OutOfMemoryError x) {
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
@@ -661,47 +641,6 @@ abstract class IPSessionImpl
     boolean needsFinalization()
     {
         return needsFinalization;
-    }
-
-    protected void error(String message)
-    {
-        logger.error(message.toString());
-    }
-
-    protected void error(String message, Exception x)
-    {
-        logger.error(message.toString(), x);
-    }
-
-    protected void warn(String message)
-    {
-        logger.warn(message.toString());
-    }
-
-    protected void warn(String message, Exception x)
-    {
-        logger.warn(message.toString(), x);
-    }
-
-    protected void info(String message)
-    {
-        if (logger.isInfoEnabled()) {
-            logger.info(message.toString());
-        }
-    }
-
-    protected void debug(String message)
-    {
-        if (logger.isDebugEnabled()) {
-            logger.debug(message.toString());
-        }
-    }
-
-    protected void debug(String message, Exception x)
-    {
-        if (logger.isDebugEnabled()) {
-            logger.debug(message.toString(), x);
-        }
     }
 
     /**
@@ -732,7 +671,7 @@ abstract class IPSessionImpl
         }
 
         if (logger.isDebugEnabled()) {
-            debug("entering streaming mode c: " + streamer[CLIENT] + ", s: " + streamer[SERVER]);
+            logger.debug("entering streaming mode c: " + streamer[CLIENT] + ", s: " + streamer[SERVER]);
         }
     }
 

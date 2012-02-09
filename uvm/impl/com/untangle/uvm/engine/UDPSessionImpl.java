@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $Id$
+ */
 package com.untangle.uvm.engine;
 
 import java.net.InetAddress;
@@ -30,9 +32,6 @@ import com.untangle.uvm.vnet.event.UDPSessionEvent;
 
 /**
  * This is the primary implementation class for UDP live sessions.
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
  */
 class UDPSessionImpl extends IPSessionImpl implements UDPSession
 {
@@ -106,11 +105,11 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     }
 
     public VnetSessionDesc makeDesc()
-     {
-         return new VnetSessionDescImpl(id(), SessionEndpoints.PROTO_UDP, new SessionStats(stats),
-                                        clientState(), serverState(),
-                                        clientIntf(), serverIntf(), clientAddr(),
-                                        serverAddr(), clientPort(), serverPort());
+    {
+        return new VnetSessionDescImpl(id(), SessionEndpoints.PROTO_UDP, new SessionStats(stats),
+                                       clientState(), serverState(),
+                                       clientIntf(), serverIntf(), clientAddr(),
+                                       serverAddr(), clientPort(), serverPort());
     }
 
     public byte clientState()
@@ -198,7 +197,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             offset += packet.arrayOffset();
             limit += packet.arrayOffset();
         } else {
-            warn("out-of-help byte buffer, had to copy");
+            logger.warn("out-of-help byte buffer, had to copy");
             array = new byte[packet.remaining()];
             packet.get(array);
             packet.position(offset);
@@ -215,9 +214,9 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         assert out != null;
         if (out.isFull()) {
             if (warnIfUnable)
-                warn("tryWrite to full outgoing queue");
+                logger.warn("tryWrite to full outgoing queue");
             else
-                debug("tryWrite to full outgoing queue");
+                logger.debug("tryWrite to full outgoing queue");
         } else {
             Crumb nc = getNextCrumb2Send(side);
             PacketCrumb packet2send = (PacketCrumb) nc;
@@ -241,7 +240,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             }
 
             if (logger.isDebugEnabled()) {
-                debug("wrote " + numWritten + " to " + side);
+                logger.debug("wrote " + numWritten + " to " + side);
             }
         }
     }
@@ -257,7 +256,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
            ByteBuffer packet2send = streamer.nextPacket();
            if (packet2send == null) {
-           debug("end of stream");
+           logger.debug("end of stream");
            streamer = null;
            return;
            }
@@ -266,7 +265,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
            addBuf(side, packet2send);
 
            if (logger.isDebugEnabled())
-           debug("streamed " + packet2send.remaining() + " to " + sideName);
+           logger.debug("streamed " + packet2send.remaining() + " to " + sideName);
         */
     }
 
@@ -306,9 +305,9 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         assert in != null;
         if (in.isEmpty()) {
             if (warnIfUnable)
-                warn("tryReadClient from empty incoming queue");
+                logger.warn("tryReadClient from empty incoming queue");
             else
-                debug("tryReadClient from empty incoming queue");
+                logger.debug("tryReadClient from empty incoming queue");
             return;
         }
 
@@ -324,7 +323,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         case Crumb.TYPE_RESET:
         case Crumb.TYPE_DATA:
             // Should never happen (TCP).
-            debug("udp read crumb " + crumb.type());
+            logger.debug("udp read crumb " + crumb.type());
             assert false;
             break;
         default:
@@ -339,7 +338,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         int pcoffset = pc.offset();
         int pcsize = pclimit - pcoffset;
         if (pcoffset >= pclimit) {
-            warn("Zero length UDP crumb read");
+            logger.warn("Zero length UDP crumb read");
             return;
         }
         ByteBuffer pbuf;
@@ -358,7 +357,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         // converted to a DataCrumb on the other side (hence, the next node will fail)
 
         if (logger.isDebugEnabled())
-            debug("read " + numRead + " size " + crumb.type() + " packet from " + side);
+            logger.debug("read " + numRead + " size " + crumb.type() + " packet from " + side);
 
         stats.readData(side, numRead);
 
@@ -400,7 +399,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             UDPSessionEvent wevent = new UDPSessionEvent(argonConnector, this);
             dispatcher.dispatchUDPFinalized(wevent);
         } catch (Exception x) {
-            warn("Exception in Finalized", x);
+            logger.warn("Exception in Finalized", x);
         }
 
         super.closeFinal();
