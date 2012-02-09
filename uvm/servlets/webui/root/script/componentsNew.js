@@ -4420,7 +4420,7 @@ Ext.define('Ung.EditorGrid', {
     },
     addHandler : function() {
 		var record = Ext.create(this.modelName, Ext.decode(Ext.encode(this.emptyRow)));
-        record.set("id", this.genAddedId());
+		record.data.id = this.genAddedId();
         this.stopEditing();
         if (this.rowEditor) {
             this.rowEditor.populate(record, true);
@@ -4545,7 +4545,7 @@ Ext.define('Ung.EditorGrid', {
         }
     },
     getPageStart : function() {
-        if (this.store.lastOptions && this.store.lastOptions.params) {
+        if (this.store && this.store.lastOptions && this.store.lastOptions.params) {
             return this.store.lastOptions.params.start;
         } else {
             return 0;
@@ -4903,6 +4903,7 @@ Ext.define('Ung.EditorGrid', {
             //reload grid
             this.loadPage(0, Ext.bind(function() {
                 var result=this.getFullSaveList();
+				Ung.Util.generateListIds(result)
                 if(!skipRepagination) {
                     this.changedData = oldSettings.changedData;
                     this.minPaginateCount = oldSettings.minPaginateCount;
@@ -4920,9 +4921,11 @@ Ext.define('Ung.EditorGrid', {
                 };
             },this), this);
         } else {
+			var fullSaveList = this.getFullSaveList();
+			Ung.Util.generateListIds(fullSaveList);
             handler({
                 javaClass : "java.util.LinkedList",
-                list : this.getFullSaveList()
+                list :fullSaveList
             });
         }
     },
