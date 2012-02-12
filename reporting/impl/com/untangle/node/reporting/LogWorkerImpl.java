@@ -137,7 +137,10 @@ public class LogWorkerImpl implements Runnable, LogWorker
 
                 lastSync = System.currentTimeMillis();
                 nextSync = lastSync + getSyncTime();
-                forceFlush = false;
+                synchronized( this ) {
+                    forceFlush = false;
+                    notifyAll(); /* notify any waiting threads that the flush is done */
+                }
             }
         }
 
@@ -153,9 +156,26 @@ public class LogWorkerImpl implements Runnable, LogWorker
      */
     public void forceFlush()
     {
+        if (thread == null || running == false) {
+            logger.warn("forceFlush() called, but reporting not running.");
+            return;
+        }
+
         forceFlush = true;
         logger.info("forceFlush()");
         thread.interrupt();
+
+        /**
+         * Wait on the flush to finish - we will get notified)
+         */
+        synchronized( this ) {
+            while (true) {
+                try {wait();} catch (java.lang.InterruptedException e) {}
+            
+                if (!forceFlush)
+                    return;
+            }
+        }
     }
     
     public void logEvent(LogEvent evt)

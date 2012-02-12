@@ -146,7 +146,8 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
         this.currentStatus = "";
             
         logger.info("Flushing queued events...");
-        UvmContextFactory.context().loggingManager().forceFlush();
+        if (this.logWorker != null)
+            this.logWorker.forceFlush();
 
         logger.info("Running incremental report...");
         synchronized (this) {
