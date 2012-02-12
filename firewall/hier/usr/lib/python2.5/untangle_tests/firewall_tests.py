@@ -305,14 +305,14 @@ class FirewallTests(unittest.TestCase):
         assert (result != 0)
 
     # verify src intf non_wan is blocked
-    def test_064_blockSrcIntfWan(self):
+    def test_064_blockSrcIntfNonWan(self):
         nukeRules();
         appendRule( createSingleMatcherRule( "SRC_INTF", "non_wan" ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
         assert (result != 0)
 
     # verify src intf wan not blocked
-    def test_065_blockSrcIntfNonWan(self):
+    def test_065_blockSrcIntfWan(self):
         nukeRules();
         appendRule( createSingleMatcherRule( "SRC_INTF", "wan" ) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
