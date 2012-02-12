@@ -108,16 +108,6 @@ class LoggingManagerImpl implements LoggingManager
         return;
     }
 
-    public void forceFlush()
-    {
-        if (this.logWorker == null)
-            getLogWorker();
-        if (this.logWorker == null)
-            return;
-
-        this.logWorker.forceFlush();
-    }
-
     public void logEvent(LogEvent evt)
     {
         if (this.logWorker == null)

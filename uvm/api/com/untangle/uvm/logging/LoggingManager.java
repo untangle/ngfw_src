@@ -3,15 +3,10 @@
  */
 package com.untangle.uvm.logging;
 
-import java.util.concurrent.BlockingQueue;
-
 import com.untangle.uvm.logging.LogEvent;
 
 /**
  * Manager for Logging.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public interface LoggingManager
 {
@@ -31,14 +26,7 @@ public interface LoggingManager
     void logEvent(LogEvent evt);
 
     /**
-     * Force currently queued hibernate events to be flushed to the DB
-     */
-    void forceFlush();
-
-    /**
      * Returns true if the schema conversion on startup are complete
      */
     boolean isConversionComplete();
-
-    
 }
