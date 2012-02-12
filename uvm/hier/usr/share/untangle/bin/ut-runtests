@@ -21,6 +21,7 @@ class ArgumentParser(object):
         self.verbosity = 0
         self.logfile = '/tmp/unittest.log'
         self.fastfail = False
+        self.repeat = False
         self.externalIntfId = 1
         self.internalIntfId = 2
         self.nodesToTest = ['all']
@@ -39,6 +40,9 @@ class ArgumentParser(object):
 
     def set_fastfail( self, arg ):
         self.fastfail = True
+
+    def set_repeat( self, arg ):
+        self.repeat = True
 
     def set_nodesToTest( self, arg ):
         self.nodesToTest = arg.split(",")
@@ -60,13 +64,14 @@ class ArgumentParser(object):
             '-l' : self.set_logfile,
             '-v' : self.increase_verbosity,
             '-q' : self.set_fastfail,
+            '-r' : self.set_repeat,
             '-t' : self.set_nodesToTest,
             '-d' : self.set_externalIntfId,
             '-s' : self.set_internalIntfId
         }
 
         try:
-            (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:d:s:t:vq')
+            (optlist, args) = getopt.getopt(sys.argv[1:], 'h:u:i:l:d:s:t:vqr')
             for opt in optlist:
                 handlers[opt[0]](opt[1])
             return args
@@ -88,6 +93,7 @@ def printUsage():
     -t <nodes> : comma seperated list nodes to test (default: "all") (exm: "webfilter,spyware")
     -v         : verbose (can be specified more than one time)
     -q         : quit on first failure
+    -r         : repeat test indefinitely (or until failure if -q is specified)
 """ % sys.argv[0] )
 
 def exit(code):
@@ -159,28 +165,31 @@ if (not uvm.Uvm().getUvmContext().nodeManager().isInstantiated('untangle-node-re
 if ("environment" in parser.nodesToTest or "all" in parser.nodesToTest):
     runTestEnvironmentTests()
 
-rc = 0
-total = 0
-if ("webfilter" in parser.nodesToTest or "all" in parser.nodesToTest):
-    errors, subTotal = runTestSuite(WebFilterTests)
-    rc += errors
-    total += subTotal
-if ("sitefilter" in parser.nodesToTest or "all" in parser.nodesToTest):
-    errors, subTotal = runTestSuite(SiteFilterTests)
-    rc += errors
-    total += subTotal
-if ("firewall" in parser.nodesToTest or "all" in parser.nodesToTest):
-    errors, subTotal = runTestSuite(FirewallTests)
-    rc += errors
-    total += subTotal
-if ("classd" in parser.nodesToTest or "all" in parser.nodesToTest):
-    errors, subTotal = runTestSuite(ClassdTests)
-    rc += errors
-    total += subTotal
-if ("spyware" in parser.nodesToTest or "all" in parser.nodesToTest): 
-    errors, subTotal = runTestSuite(SpywareTests)
-    rc += errors
-    total += subTotal
+while True:
+    rc = 0
+    total = 0
+    if ("webfilter" in parser.nodesToTest or "all" in parser.nodesToTest):
+        errors, subTotal = runTestSuite(WebFilterTests)
+        rc += errors
+        total += subTotal
+    if ("sitefilter" in parser.nodesToTest or "all" in parser.nodesToTest):
+        errors, subTotal = runTestSuite(SiteFilterTests)
+        rc += errors
+        total += subTotal
+    if ("firewall" in parser.nodesToTest or "all" in parser.nodesToTest):
+        errors, subTotal = runTestSuite(FirewallTests)
+        rc += errors
+        total += subTotal
+    if ("classd" in parser.nodesToTest or "all" in parser.nodesToTest):
+        errors, subTotal = runTestSuite(ClassdTests)
+        rc += errors
+        total += subTotal
+    if ("spyware" in parser.nodesToTest or "all" in parser.nodesToTest): 
+        errors, subTotal = runTestSuite(SpywareTests)
+        rc += errors
+        total += subTotal
+    if not parser.repeat:
+        break
 
 # if reports was added earlier, revert to original settings
 if reportsAdded:

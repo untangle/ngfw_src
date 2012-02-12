@@ -316,7 +316,6 @@ class WebFilterTests(unittest.TestCase):
         addBlockedUrl("metaloft.com/test/testPage1.html", blocked=True, flagged=True)
         # specify an argument so it isn't confused with other events
         result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
-        time.sleep(10)
         flushEvents()
         query = None;
         for q in node.getEventQueries():
@@ -337,7 +336,6 @@ class WebFilterTests(unittest.TestCase):
         addBlockedUrl("metaloft.com/test/testPage1.html", blocked=False, flagged=True)
         # specify an argument so it isn't confused with other events
         result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
-        time.sleep(1)
         flushEvents()
         query = None;
         for q in node.getEventQueries():
@@ -357,7 +355,6 @@ class WebFilterTests(unittest.TestCase):
         nukeBlockedUrls();
         # specify an argument so it isn't confused with other events
         result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
-        time.sleep(1)
         flushEvents()
         for q in node.getEventQueries():
             if q['name'] == 'All Web Events': query = q;
