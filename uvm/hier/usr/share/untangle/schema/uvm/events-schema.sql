@@ -101,18 +101,6 @@ CREATE TABLE events.n_shield_statistic_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
-
--- com.untangle.mvvm.user.LookupLogEvent
-CREATE TABLE events.u_lookup_evt (
-    event_id    INT8 NOT NULL,
-    lookup_key  INT8 NOT NULL,
-    address     INET,
-    username    TEXT,
-    hostname    TEXT,
-    lookup_time TIMESTAMP,
-    time_stamp  TIMESTAMP,
-    PRIMARY KEY (event_id));
-
 -- LoginEvent
 CREATE TABLE events.n_login_evt (
     event_id    INT8 NOT NULL,
