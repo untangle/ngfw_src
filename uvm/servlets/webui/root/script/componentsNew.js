@@ -4067,35 +4067,22 @@ Ext.define('Ung.grid.DeleteColumn', {
 
 // Grid reorder column
 Ext.define('Ung.grid.ReorderColumn', {
+	extend:'Ext.grid.column.Action',
+	iconCls:'icon-drag',
+	menuDisabled:true,
+	fixed:true,
     constructor : function(config) {
-        Ext.apply(this, config);
-        if (!this.id) {
-            this.id = Ext.id();
+        if (!config.header) {
+            config.header = i18n._("Reorder");
         }
-        if (!this.header) {
-            this.header = i18n._("Reorder");
+        if (!config.width) {
+            config.width = 55;
         }
-        if (!this.width) {
-            this.width = 55;
-        }
-        if (this.fixed == null) {
-            this.fixed = true;
-        }
-        if (this.sortable == null) {
-            this.sortable = false;
-        }
-        if (!this.dataIndex) {
-            this.dataIndex = null;
-        }
-        this.renderer = Ext.bind(this.renderer,this);
+		Ung.grid.ReorderColumn.superclass.constructor.call(this,config);
     },
     init : function(grid) {
         this.grid = grid;
     },
-
-    renderer : function(value, metadata, record) {
-        return '<div class="icon-drag">&nbsp;</div>';
-    }
 });
 
 
@@ -4306,39 +4293,6 @@ Ext.define('Ung.EditorGrid', {
                     }
                 }
 			});
-        	
-        	/*
-            this.store = new Ext.data.Store({
-                proxy : new Ung.MemoryProxy({
-                    root : this.dataRoot,
-                    data: this.data
-                }),
-                sortInfo : this.sortField ? {
-                    field : this.sortField,
-                    direction : this.sortOrder ? this.sortOrder : "ASC"
-                } : null,
-                remoteSort : this.paginated,
-                reader : new Ext.data.JsonReader({
-                    totalProperty : "totalRecords",
-                    root : this.dataRoot,
-                    fields : this.fields
-                }),
-                listeners : {
-                    "update" : {
-                        fn : Ext.bind(function(store, record, operation) {
-                            this.updateChangedData(record, "modified");
-                        },this)
-                    },
-                    "load" : {
-                        fn : Ext.bind(function(store, records, options) {
-                            this.updateFromChangedData(records, options);
-                        },this)
-                    }
-                }
-            });
-            this.getStore().reload();
-             */
-        	//TODO: extjs4 find solution
             this.totalRecords=this.data.length;
         }
         if(this.paginated) {
