@@ -154,7 +154,7 @@ WHERE NOT EXISTS
         s = SummarySection('summary', _('Summary Report'),
                            [VmHighlight(self.name, self.branded_name),
                             BandwidthUsage(),
-                            ActiveSessions(),
+                            SessionsPerMinute(),
                             DestinationPorts()])
 
         sections.append(s)
@@ -745,9 +745,9 @@ class BandwidthUsage(Graph):
 
         return (lks, plot)
 
-class ActiveSessions(Graph):
+class SessionsPerMinute(Graph):
     def __init__(self):
-        Graph.__init__(self, 'active-sessions', _('Active Sessions'))
+        Graph.__init__(self, 'sessions-per-minute', _('Sessions per Minute'))
 
     @print_timing
     def get_graph(self, end_date, report_days, host=None, user=None,
@@ -789,11 +789,11 @@ class ActiveSessions(Graph):
             if not num_sessions:
                 num_sessions = [0,]
 
-            ks = KeyStatistic(_('Avg Active Sessions'),
+            ks = KeyStatistic(_('Avg Sessions/Min'),
                               int(sum(num_sessions)/len(num_sessions)),
                               _('Sessions'))
             lks.append(ks)
-            ks = KeyStatistic(_('Max Active Sessions'),
+            ks = KeyStatistic(_('Max Sessions/Min'),
                               int(max(num_sessions)), _('Sessions'))
             lks.append(ks)
             ks = KeyStatistic(_('Total Sessions'), int(sum(num_sessions)), _('sessions'))
