@@ -5057,7 +5057,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         /* sAMAccountName is the unique identifier for a group. */
                         name : "SAMAccountName"
                     },{
-                        name: "name",
+                        name: "type",
                         type : "string",
                         mapping: "UID",
                         convert : function(val, rec) {
@@ -5066,7 +5066,18 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                             } else if ( rec.javaClass == "com.untangle.node.adconnector.GroupEntry" ) {
                                 return i18n._("Group");
                             }
-                            
+                            return val;
+                        }
+                    },{
+                        name: "name",
+                        type : "string",
+                        mapping: "UID",
+                        convert : function(val, rec) {
+                            if ( rec.javaClass == "com.untangle.node.adconnector.UserEntry" ) {
+                                return rec.UID;
+                            } else if ( rec.javaClass == "com.untangle.node.adconnector.GroupEntry" ) {
+                                return rec.SAMAccountName;
+                            }
                             return val;
                         }
                     },{
@@ -5091,14 +5102,19 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 })
             }),
             columns: [selModel,{
-                header : this.singleSelectUser ? i18n._( "User" ) :  i18n._( "Type" ),
+                header : i18n._( "Type" ),
                 width : 100,
                 sortable : true,
-                dataIndex : "name"
+                dataIndex : "type"
             },{
                 header : i18n._("Name"),
+                width: 100,
+                sortable : true,
+                dataIndex: "name"
+            },{
+                header : i18n._("Full Name"),
                 width: 350,
-                sortable : false,
+                sortable : true,
                 dataIndex: "displayName"
             }],
             selModel : selModel
