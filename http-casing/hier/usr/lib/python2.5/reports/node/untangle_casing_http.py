@@ -21,20 +21,16 @@ class HttpCasing(Node):
     @print_timing
     def setup(self, start_date, end_date):
         self.__create_n_http_events(start_date, end_date)
-        self.__update_n_http_events(start_date, end_date)
 
         ft = FactTable('reports.n_http_totals', 'reports.n_http_events',
                        'time_stamp',
-                       [Column('hname', 'text'), Column('uid', 'text'),
+                       [Column('hname', 'text'), 
+                        Column('uid', 'text'),
                         Column('host', 'text'),
                         Column('s2c_content_type', 'text')],
                        [Column('hits', 'bigint', 'count(*)'),
-                        Column('c2s_content_length', 'bigint',
-                                   'sum(c2s_content_length)'),
-                        Column('s2c_content_length', 'bigint',
-                                   'sum(s2c_content_length)'),
-                        Column('s2c_bytes', 'bigint', 'sum(p2c_bytes)'),
-                        Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')])
+                        Column('c2s_content_length', 'bigint', 'sum(c2s_content_length)'),
+                        Column('s2c_content_length', 'bigint', 'sum(s2c_content_length)')])
         reports.engine.register_fact_table(ft)
 
     @print_timing
@@ -164,24 +160,6 @@ INSERT INTO reports.n_http_events
     LEFT OUTER JOIN events.n_http_evt_resp resp on req.request_id = resp.request_id
     LEFT OUTER JOIN reports.merged_address_map mam
         ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time""",
-                               (), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
-
-    @print_timing
-    def __update_n_http_events(self, start_date, end_date):
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-UPDATE reports.n_http_events
-SET c2p_bytes = ps.c2p_bytes, 
-    s2p_bytes = ps.s2p_bytes,
-    p2c_bytes = ps.p2c_bytes,
-    p2s_bytes = ps.p2s_bytes
-FROM events.pl_stats as ps
-WHERE reports.n_http_events.session_id = ps.session_id""",
                                (), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
