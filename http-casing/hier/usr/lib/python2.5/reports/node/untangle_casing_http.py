@@ -31,6 +31,11 @@ class HttpCasing(Node):
                        [Column('hits', 'bigint', 'count(*)'),
                         Column('c2s_content_length', 'bigint', 'sum(c2s_content_length)'),
                         Column('s2c_content_length', 'bigint', 'sum(s2c_content_length)')])
+        
+        # remove obsolete columns
+        sql_helper.drop_column('reports', 'n_http_totals', 's2c_bytes')
+        sql_helper.drop_column('reports', 'n_http_totals', 'c2s_bytes')
+
         reports.engine.register_fact_table(ft)
 
     @print_timing
