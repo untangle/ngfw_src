@@ -140,12 +140,13 @@ CREATE TABLE events.event_data_days (
 -- indices for reporting and event log viewing
 
 CREATE INDEX pl_endp_session_id_idx ON events.pl_endp (session_id);
+
 CREATE INDEX pl_endp_time_stamp_idx ON events.pl_endp (time_stamp);
 
 CREATE INDEX pl_stats_session_id_idx ON events.pl_stats (session_id);
 
 CREATE INDEX u_login_evt_time_stamp_idx ON events.u_login_evt (time_stamp);
-CREATE INDEX u_lookup_evt_time_stamp_idx ON events.u_lookup_evt (time_stamp);
+
 CREATE INDEX n_shield_rejection_evt_time_stamp_idx ON n_shield_rejection_evt (time_stamp);
 
 

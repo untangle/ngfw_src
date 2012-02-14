@@ -117,7 +117,6 @@ INSERT INTO reports.n_admin_logins
     @sql_helper.print_timing
     def events_cleanup(self, cutoff):
         sql_helper.clean_table("events", "u_login_evt", cutoff);
-        sql_helper.clean_table("events", "u_lookup_evt", cutoff);
         sql_helper.clean_table("events", "pl_endp", cutoff); 
         sql_helper.clean_table("events", "pl_stats", cutoff);
 
