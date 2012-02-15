@@ -160,12 +160,16 @@ INSERT INTO reports.n_http_events
         -- from webpages
         COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname
     FROM events.pl_endp pe
-    JOIN events.n_http_req_line req ON pe.session_id = req.session_id
-    JOIN events.n_http_evt_req er ON er.request_id = req.request_id
-    LEFT OUTER JOIN events.n_http_evt_resp resp on req.request_id = resp.request_id
+    JOIN events.n_http_req_line req 
+        ON pe.session_id = req.session_id
+    JOIN events.n_http_evt_req er 
+        ON er.request_id = req.request_id
+    LEFT OUTER JOIN events.n_http_evt_resp resp 
+        ON req.request_id = resp.request_id
     LEFT OUTER JOIN reports.merged_address_map mam
-        ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time""",
-                               (), connection=conn, auto_commit=False)
+        ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time
+    WHERE pe.time_stamp < %s::timestamp without time zone""",
+                               (start_date,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()
