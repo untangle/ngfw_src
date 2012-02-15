@@ -1,7 +1,8 @@
 if (!Ung.hasResource["Ung.PolicyManager"]) {
     Ung.hasResource["Ung.PolicyManager"] = true;
     
-    Ung.PolicyManager = Ext.extend(Ung.ConfigWin, {
+    Ext.define('Ung.PolicyManager', {
+        extend:'Ung.ConfigWin',
         fnCallback : null,
         panelPolicyManagement : null,
         gridRacks : null,
@@ -20,51 +21,50 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     id : this.getId() + "_removeBtn",
                     iconCls : 'node-remove-icon',
                     text : i18n._('Remove'),
-                    handler : function() {
+                    handler : Ext.bind(function() {
                         if(this.node && this.node.settingsWin) {
                             this.node.settingsWin.removeAction();
                         }
-                    }.createDelegate(this)
+                    },this)
                 },'-',{
                     name : 'Help',
                     id : this.getId() + "_helpBtn",
                     iconCls : 'icon-help',
                     text : i18n._("Help"),
-                    handler : function() {
+                    handler : Ext.bind(function() {
                         this.helpAction();
-                    }.createDelegate(this)
+                    },this)
                 },'->',{
                     name : 'Save',
                     id : this.getId() + "_saveBtn",
                     iconCls : 'save-icon',
                     text : i18n._("OK"),
-                    handler : function() {
+                    handler : Ext.bind(function() {
                         this.saveAction.defer(1, this);
-                    }.createDelegate(this)
+                    },this)
                 },"-",{
                     name : 'Cancel',
                     id : this.getId() + "_cancelBtn",
                     iconCls : 'cancel-icon',
                     text : i18n._("Cancel"),
-                    handler : function() {
+                    handler : Ext.bind(function() {
                         this.cancelAction();
-                    }.createDelegate(this)
+                    },this)
                 },"-",{
                     name : "Apply",
                     id : this.getId() + "_applyBtn",
                     iconCls : 'apply-icon',
                     text : i18n._("Apply"),
-                    handler : function() {
-                        this.applyAction.defer(1, this,[true]);
-                    }.createDelegate(this)
+                    handler : Ext.bind(function() {
+                        Ext.defer(this.applyAction,1, this,[true]);
+                    },this)
                 },"-"];
             }
-            
             this.rackDatabase = this.buildRackDatabase( this.getPolicyConfiguration().policies.list );
             this.buildPolicyManagement();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelPolicyManagement]);
-            this.tabs.activate(this.panelPolicyManagement);
+            this.tabs.setActiveTab(this.panelPolicyManagement);
             Ung.PolicyManager.superclass.initComponent.call(this);
         },
 
@@ -99,10 +99,10 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         },
         buildPolicyManagement : function() {
             Ung.Util.clearInterfaceStore();
-
             this.buildInfo();
             this.buildRacks();
             this.buildPolicies();
+            
 
             var items = [];
 
@@ -118,15 +118,13 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 if (this.getPolicyConfiguration().userPolicyRules.list.length > 0)
                     items.push( this.gridRules );
             }
-
-
-            this.panelPolicyManagement = new Ext.Panel({
+            this.panelPolicyManagement = Ext.create('Ext.panel.Panel',{
                 // private fields
                 anchor: "100% 100%",
                 name : 'Policy Management',
                 parentId : this.getId(),
                 title : this.i18n._('Policy Management'),
-                layout : "form",
+                //layout : "form",
                 autoScroll : true,
                 items : items
             });
@@ -141,15 +139,15 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             },{
                 xtype : 'button',
                 text : this.i18n._( "More Info" ),
-                handler : function() {
+                handler : Ext.bind(function() {
                     var app = Ung.AppItem.getAppByLibItem("untangle-libitem-policy");
                     if (app != null && app.libItem != null) {
                         Ung.Window.cancelAction( this.isDirty(), function() {app.linkToStoreFn();});
                     }
-                }.createDelegate(this)
+                },this)
             }];
 
-            this.infoLabel = new Ext.form.FieldSet({
+            this.infoLabel = Ext.create('Ext.form.FieldSet',{
                 title : this.i18n._("Racks / Policies"),
                 items : items,
                 autoHeight : true
@@ -158,7 +156,19 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         
         buildRacks : function()
         {   
-            this.gridRacks = new Ung.EditorGrid({
+            this.modelName='Ung.BuildRacksModel-' + this.id;
+            if ( Ext.ModelManager.get(this.modelName) == null) {
+                Ext.define(this.modelName, {
+                    extend: 'Ext.data.Model',
+                    fields:  ["id", "name","parent"]
+                });
+            }
+            this.parentStore = Ext.create('Ext.data.ArrayStore',{
+                    idIndex: 0,
+                    fields: ['id','name','parent'],
+                    data: []
+            }),
+            this.gridRacks = Ext.create('Ung.EditorGrid',{
                 settingsCmp : this,
                 anchor :"100% 50%",
                 name : "Racks / Policies",
@@ -174,10 +184,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     "notes" : this.i18n._("[no description]"),
                     "parentId" : null
                 },
-                data : this.getPolicyConfiguration().policies,
-                dataRoot : 'list',
+                data : this.getPolicyConfiguration().policies.list,
                 paginated : false,
-                //autoExpandColumn: "name",
                 fields : [{
                     name : 'id'
                 }, {
@@ -190,25 +198,33 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     name : 'parentId'
                 }],
                 columns : [{
-                    id : "rack-name",
                     header : this.i18n._("name"),
                     width : 200,
                     sortable : true,
                     dataIndex : 'name',
-                    editor : new Ext.form.TextField({allowBlank : false})
-                }, {
+                    flex:1,
+                    field: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
+                },
+                {
                     header : this.i18n._("description"),
                     width : 200,
                     sortable : true,
                     dataIndex : "notes",
-                    editor : new Ext.form.TextField({allowBlank : false})
-                },{
+                    field :  {
+                        xtype:'textfield',
+                        allowBlank : false
+                    }
+                },
+                {
                     header : this.i18n._("Parent Rack"),
                     width : 200,
                     id : "parent-rack",
                     sortable : true,
                     dataIndex: "parentId",
-                    renderer : function (value,metadata,record)
+                    renderer : Ext.bind(function (value,metadata,record)
                     {
                         if ( value == null ) {
                             return this.i18n._("None");
@@ -221,41 +237,43 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         }
                         
                         return rack.name;
-                    }.createDelegate(this),
-                    editor : this.gridParentRackCombo = new Ext.form.ComboBox({
-                        store : this.parentStore = new Ext.data.SimpleStore({
-                            fields : ["id", "name"],
-                            data : [],
-                            autoLoad : false
-                        }),
+                    },this),
+                    editor : this.gridParentRackCombo = Ext.create('Ext.form.ComboBox',{
+                        store:this.parentStore,
                         displayField : "name",
                         valueField : "id",
                         editable : false,
-                        mode : "local",
+                        queryMode : "local",
                         triggerAction : "all",
                         listClass : 'x-combo-list-small'
                     })
                 }],
-                rowEditorInputLines : [new Ext.form.TextField({
+                rowEditorInputLines : [
+                {
+                    xtype:'textfield',
                     name : "Name",
                     dataIndex : "name",
                     fieldLabel : this.i18n._("Name"),
                     allowBlank : false,
                     blankText : this.i18n._("The policy name cannot be blank."),
-                    width : 200,
-                    editor : new Ext.form.TextField({
+                    width : 300,
+                    field : {
+                        xtype:'textfield',
                         allowBlank : false
-                    })
-                }), new Ext.form.TextField({
+                    }
+                }, 
+                {
+                    xtype:'textfield',
                     name : "Description",
                     dataIndex : "notes",
                     fieldLabel : this.i18n._("Description"),
                     allowBlank : false,
                     width : 200,
-                    editor : new Ext.form.TextField({
+                    field: {
+                        xtype:'textfield',
                         allowBlank : true
-                    })
-                }),this.editorRackCombo = new Ext.form.ComboBox({
+                    }
+                },this.editorRackCombo = Ext.create('Ext.form.ComboBox',{
                     name : "Parent Rack",
                     dataIndex : 'parentId',
                     fieldLabel : this.i18n._("Parent Rack"),
@@ -264,7 +282,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     valueField : "id",
                     forceSelection : true,
                     typeAhead : true,
-                    mode : 'local',
+                    queryMode : 'local',
                     editable : false,
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small',
@@ -281,16 +299,16 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         scope : this
                     }
                 },
-                addHandler : function() {
+                addHandler : Ext.bind(function() {
                     if (!this.getPolicyManagerLicense(true).valid){
                         this.showPolicyManagerRequired();
                     } else {
-                        this.updateParentRackStore( this.editorRackCombo, new Ext.data.Record([]));
+                        this.updateParentRackStore( this.editorRackCombo, Ext.create(this.modelName,{id:null,name:null, parent:null}));
                         //this.gridParentRackCombo.setValue(0);
                         Ung.EditorGrid.prototype.addHandler.call(this.gridRacks);
                     }
-                }.createDelegate(this),
-                editHandler : function(record) {
+                },this),
+                editHandler : Ext.bind(function(record) {
                     if (!this.getPolicyManagerLicense(true).valid){
                         this.showPolicyManagerRequired();
                     } else {
@@ -299,8 +317,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         Ung.EditorGrid.prototype.editHandler.call(this.gridRacks,record);
                         
                     }
-                }.createDelegate(this),
-                deleteHandler : function(record) {
+                },this),
+                deleteHandler : Ext.bind(function(record) {
                     if (!this.getPolicyManagerLicense(true).valid){
                         this.showPolicyManagerRequired();
                     } else {
@@ -310,10 +328,10 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
 
                         this.gridRacks.getView().refresh(false);
                     }
-                }.createDelegate(this)
+                },this)
             });
 
-            this.gridRacks.rowEditor.updateAction = function() 
+            this.gridRacks.rowEditor.updateAction = Ext.bind(function() 
             {
                 Ung.RowEditorWindow.prototype.updateAction.call(this.gridRacks.rowEditor);
 
@@ -332,7 +350,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 }
 
                 this.gridRacks.getView().refresh(false);
-            }.createDelegate(this);
+            },this);
         },
         showPolicyManagerRequired : function(){
             Ext.MessageBox.show({
@@ -367,7 +385,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     this.grid.usersWindow.populate(record);
                 };
             } else {
-                userHandler = function(record) {
+                userHandler = Ext.bind(function(record) {
                     Ext.MessageBox.show({
                         title: this.i18n._("Directory Connector Feature"),
                         msg: this.i18n._("Creating policies based on Username requires Directory Connector."),
@@ -376,7 +394,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         },
                         icon: Ext.MessageBox.INFO
                     });
-                }.createDelegate( this );
+                },this );
             }
                 
             for (var i = 0; i < this.getPolicyConfiguration().policies.list.length; i++) {
@@ -386,24 +404,18 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     policy : policiesList[i]
                 });
             }
-            this.policyStore = new Ext.data.JsonStore({
+            this.policyStore = Ext.create('Ext.data.ArrayStore',{
+                idIndex:0,
                 fields : ['key', 'name', 'policy'],
                 data : this.policyStoreData
             });
-            var liveColumn = new Ext.grid.CheckColumn({
-                header : "<b>" + this.i18n._("live") + "</b>",
-                tooltip : this.i18n._("live"),
-                dataIndex : 'live',
-                width : 25,
-                fixed : true
-            });
-            var usersColumn=new Ext.grid.ButtonColumn({
+          /*  var usersColumn=new Ext.grid.ButtonColumn({
                 width: 80,
                 header: this.i18n._("user"),
                 dataIndex : 'user',
                 handle : userHandler
-            });
-            this.gridRules = new Ung.EditorGrid({
+            }); */
+            this.gridRules = Ext.create('Ung.EditorGrid',{
                 settingsCmp : this,
                 name : 'Policy Rules',
                 height : 250,
@@ -413,6 +425,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 title : this.i18n._('Policy Rules'),
                 recordJavaClass : "com.untangle.uvm.policy.UserPolicyRule",
                 hasReorder : true,
+                hasDelete:true,
+                hasEdit:true,
                 configReorder:{width:35,fixed:false,tooltip:this.i18n._("Reorder")},
                 configDelete:{width:30,fixed:false,tooltip:this.i18n._("Delete")},
                 configEdit:{width:25,fixed:false,tooltip:this.i18n._("Edit")},
@@ -433,8 +447,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     "description" : this.i18n._('[no description]')
                 },
                 // autoExpandColumn : 'notes',
-                data : this.getPolicyConfiguration().userPolicyRules,
-                dataRoot : 'list',
+                data : this.getPolicyConfiguration().userPolicyRules.list,
                 paginated : false,
                 fields : [{
                     name : 'id'
@@ -473,13 +486,22 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 }, {
                     name : 'description'
                 }],
-                columns : [liveColumn, {
-                    header : this.i18n._("<b>Use this rack</b> when the <br/>next colums are matched..."),
-                    tooltip : this.i18n._("<b>Use this rack</b> when the <br/>next colums are matched..."),
+                columns : [
+                   {
+                    xtype:'checkcolumn',
+                    header : this.i18n._("Enabled"),
+                    tooltip : this.i18n._("Enabled"),
+                    dataIndex : 'live',
+                    width : 55,
+                    fixed : true
+                   }, 
+                   {
+                    header : this.i18n._("Destination Rack"),
+                    tooltip : this.i18n._("If the session matches this policy rule, use this rack to process the session."),
                     width : 140,
                     sortable : true,
                     dataIndex : 'policyName',
-                    renderer : function(value, metadata, record) {
+                    renderer : Ext.bind(function(value, metadata, record) {
                         var result = "";
                         var store = this.policyStore;
                         if (store) {
@@ -496,8 +518,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                             }
                         }
                         return result;
-                    }.createDelegate(this),
-                    editor : new Ext.form.ComboBox({
+                    },this)
+                 /*   editor : Ext.create('Ext.form.ComboBox',{
                         store : this.policyStore,
                         displayField : 'name',
                         valueField : 'key',
@@ -505,7 +527,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small'
-                    })
+                    })*/
                 }, {
                     header : this.i18n._("client <br/>interface"),
                     tooltip : this.i18n._("client <br/>interface"),
@@ -522,8 +544,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                             }
                         }
                         return result;
-                    },
-                    editor : new Ung.Util.InterfaceCombo({})
+                    }
+                 //   editor : new Ung.Util.InterfaceCombo({})
 
                 }, {
                     header : this.i18n._("server <br/>interface"),
@@ -541,8 +563,8 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                             }
                         }
                         return result;
-                    },
-                    editor : new Ung.Util.InterfaceCombo({})
+                    }
+                  //  editor : new Ung.Util.InterfaceCombo({})
 
                 }, {
                     header : this.i18n._("protocol"),
@@ -560,69 +582,69 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                             }
                         }
                         return result;
-                    },
-                    editor : new Ung.Util.ProtocolCombo({})
+                    }
+                 //   editor : new Ung.Util.ProtocolCombo({})
 
                 }, {
                     header : this.i18n._("client <br/>address"),
                     tooltip: this.i18n._("client <br/>address"),
                     width : 70,
                     sortable : true,
-                    dataIndex : 'clientAddr',
-                    editor : new Ext.form.TextField({
+                    dataIndex : 'clientAddr'
+                  /*  editor : new Ext.form.TextField({
                         allowBlank : false
-                    })
+                    })*/
 
                 }, {
                     header : this.i18n._("server <br/>address"),
                     tooltip: this.i18n._("server <br/>address"),
                     width : 70,
                     sortable : true,
-                    dataIndex : 'serverAddr',
-                    editor : new Ext.form.TextField({
+                    dataIndex : 'serverAddr'
+                  /*  editor : new Ext.form.TextField({
                         allowBlank : false
-                    })
+                    })*/
 
                 }, {
                     header : this.i18n._("server<br/>port"),
                     tooltip: this.i18n._("server<br/>port"),
-                    width : 45,
+                    width : 65,
                     sortable : true,
-                    dataIndex : 'serverPort',
-                    editor : new Ext.form.TextField({
+                    dataIndex : 'serverPort'
+                   /* editor : new Ext.form.TextField({
                         allowBlank : false
-                    })
+                    }) */
 
                 },
-                usersColumn,
+               // usersColumn,
                 {
                     header : this.i18n._("start time"),
                     tooltip: this.i18n._("start time"),
-                    width : 55,
+                    width : 115,
                     sortable : true,
-                    dataIndex : 'startTimeString',
-                    editor : new Ung.form.TimeField({
+                    dataIndex : 'startTimeString'
+                    /*editor : new Ung.form.TimeField({
                         format : "H:i",
                         allowBlank : false
-                    })
+                    })*/
                 }, {
                     header : this.i18n._("end time"),
                     tooltip: this.i18n._("end time"),
-                    width : 55,
+                    width : 115,
                     sortable : true,
-                    dataIndex : 'endTimeString',
-                    editor : new Ung.form.TimeField({
+                    dataIndex : 'endTimeString'
+                  /*  editor : new Ung.form.TimeField({
                         format : "H:i",
                         allowBlank : false,
                         endTime : true
-                    })
+                    })*/
                 }, {
                     header : this.i18n._("day of week"),
                     tooltip: this.i18n._("day of week"),
-                    width : 70,
+                    width : 120,
                     sortable : true,
                     dataIndex : 'dayOfWeek',
-                    renderer : function(value, metadata, record) {
+                    renderer : Ext.bind(function(value, metadata, record) {
                         var out=[];
                         if(value!=null) {
                                 var arr=value.split(",");
@@ -631,24 +653,25 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                                 }
                         }
                         return out.join(",");
-                    }.createDelegate(this)/*,
+                    },this)
+                    /*,
                     editor : new Ext.form.TextField({
                         allowBlank : false
                     })*/
                 }, {
                     header : this.i18n._("description"),
                     tooltip: this.i18n._("description"),
-                    width : 75,
+                    width : 125,
                     sortable : true,
-                    dataIndex : 'description',
-                    editor : new Ext.form.TextField({
+                    dataIndex : 'description'
+                  /*  editor : new Ext.form.TextField({
                         allowBlank : false
-                    })
+                    })*/
                 }],
-                plugins : [liveColumn,usersColumn],
+               // plugins : [usersColumn],
 
                 initComponent : function() {
-                    this.rowEditor = new Ung.RowEditorWindow({
+                    this.rowEditor = Ext.create('Ung.RowEditorWindow',{
                         grid : this,
                         sizeToRack : true,
                         title : this.settingsCmp.i18n._("Policy Wizard"),
@@ -777,7 +800,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         }
                     });
 
-                    this.usersWindow= new Ung.UsersWindow({
+                    this.usersWindow= Ext.create('Ung.UsersWindow',{
                         grid : this,
                         title : i18n._('Select Users'),
                         userDataIndex : "user",
@@ -878,12 +901,12 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         xtype: "button",
                         name : 'Change Users',
                         text : i18n._("Change Users"),
-                        handler : function() {
+                        handler : Ext.bind(function() {
                             this.gridRules.usersWindow.show();
-                            this.gridRules.usersWindow.populate(this.gridRules.rowEditor.record,function() {
+                            this.gridRules.usersWindow.populate(this.gridRules.rowEditor.record,Ext.bind(function() {
                                 Ext.getCmp("gridRules_rowEditor_user").setValue(this.gridRules.rowEditor.record.data.user);
-                            }.createDelegate(this));
-                        }.createDelegate(this)
+                            },this));
+                        },this)
                     }]
                 },{
                     xtype : 'fieldset',
@@ -1105,17 +1128,17 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         
         saveAction : function()
         {
-            this.commitSettings(this.completeSaveAction.createDelegate(this));
+            this.commitSettings(Ext.bind(this.completeSaveAction,this));
         },
         completeSaveAction : function()
         {
             Ext.MessageBox.hide();
             this.closeWindow();
-            main.loadPolicies.defer(1,main);
+            Ext.defer(main.loadPolicies,1,main);
         },
         applyAction : function()        
         {
-            this.commitSettings(this.reloadSettings.createDelegate(this));
+            this.commitSettings(Ext.bind(this.reloadSettings,this));
         },
         reloadSettings : function()
         {
@@ -1146,7 +1169,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
 
             this.policyStore.loadData(this.policyStoreData);
 
-            main.loadPolicies.defer(1,main);
+            Ext.defer(main.loadPolicies,1,main);
 
             Ext.MessageBox.hide();
         },
@@ -1172,11 +1195,11 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         
             this.getPolicyConfiguration().userPolicyRules.list=this.gridRules.getFullSaveList();
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-            rpc.policyManager.setPolicyConfiguration(function(result, exception) {
+            rpc.policyManager.setPolicyConfiguration(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 
                 callback();
-            }.createDelegate(this), this.getPolicyConfiguration());
+            },this), this.getPolicyConfiguration());
         },
         // save function
         closeWindow : function() {
@@ -1216,7 +1239,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 isRackDeleted = true;
             }            
             rackDatabase[id] = {
-                name : isRackDeleted == true ? rack.name : String.format( this.i18n._( "Deleted ({0})"), rack.name ),
+                name : isRackDeleted == true ? rack.name : Ext.String.format( this.i18n._( "Deleted ({0})"), rack.name ),
                 deleted : true,
                 rack : rack
             };
@@ -1258,7 +1281,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         },
         updateParentRackStore : function( combo, record )
         {
-            var storeData = [[null,this.i18n._("None")]], id = record.get( "id" ), c = 0, rack;
+            var storeData = [[0,this.i18n._("None")]], id = record.get( "id" ), c = 0, rack;
 
             /* Default rack can't have a parent. */
             if ( record.get( "default" )) {
@@ -1305,12 +1328,11 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 return null;
             }
 
-            var racks = this.gridRacks.store.query( "id", id );
-            if ( racks == null || racks.getCount() == 0 ) {
+            var record = this.gridRacks.store.findRecord("id",id);
+            if ( record == null) {
                 return null;
             }
-            
-            return racks.first().data;
+            return record.data;
         },
         
         /* Return true if rackB is a child of rackA */

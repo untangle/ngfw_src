@@ -167,6 +167,7 @@ Ext.override( Ext.form.TextField, {
 
 Ext.define("Ung.form.TimeField", {
 	extend: "Ext.form.TimeField",
+    alias:"widget.utimefield",
 	
     /* Default the format to 24 hour */
     format : "H:i",
@@ -179,13 +180,12 @@ Ext.define("Ung.form.TimeField", {
         Ung.form.TimeField.superclass.initComponent.call(this);
         
         /* If necesary, add the last minute of the day. */
-        if ( this.endTime && store == null && this.maxValue == null && this.minValue == null && this.format == "H:i" ) {
+        if ( this.endTime && store != null && this.maxValue == null && this.minValue == null && this.format == "H:i" ) {
             this.store.add([new Ext.data.Record({text : "23:59"})]);
         }
     }
 });
 
-Ext.ComponentMgr.registerType('utimefield', Ung.form.TimeField);
 
 Ung.Util= {
     goToStartPage: function () {
@@ -193,6 +193,7 @@ Ung.Util= {
         window.location.href="/webui";
     },
     rpcExHandler: function(exception) {
+        console.log("In rpcExHandler:" + exception);
         if(exception instanceof JSONRpcClient.Exception)
         {
             if(exception.code == 550 || exception.code == 12029 || exception.code == 12019 )
@@ -480,12 +481,14 @@ Ung.Util= {
             data = this.getInterfaceList(false, true);
         else
             data = this.getInterfaceList(true, true);
-        
-        var interfaceStore=new Ext.data.SimpleStore({
+            
+        var interfaceStore=Ext.create('Ext.data.ArrayStore',{
+            idIndex:0,
             fields : ['key', 'name'],
             data : data
         });
 
+        
         return interfaceStore;
     },
     clearInterfaceStore : function()
@@ -496,7 +499,8 @@ Ung.Util= {
     protocolStore:null,
     getProtocolStore : function() {
         if(this.protocolStore==null) {
-            this.protocolStore=new Ext.data.SimpleStore({
+        this.protocolStore=Ext.create('Ext.data.ArrayStore',{
+                idIndex:0,
                 fields : ['key', 'name'],
                 data :[
                     ["tcp&udp", i18n._("TCP & UDP")],
@@ -3122,7 +3126,7 @@ Ext.define("Ung.SettingsWin", {
         Ung.SettingsWin.superclass.constructor.apply(this, arguments);
     },
     buildTabPanel : function(itemsArray) {
-        this.tabs = new Ext.TabPanel({
+        this.tabs = Ext.create('Ext.tab.Panel',{
             anchor: '100% 100%',
             autoWidth : true,
             defaults: {
@@ -3522,7 +3526,7 @@ Ext.define('Ung.RowEditorWindow', {
                     iconCls : 'apply-icon',
                     text : i18n._('Done'),
                     handler : Ext.bind(function() {
-                    	Ext.Function.defer(this.updateAction,1, this);
+                    	Ext.defer(this.updateAction,1, this);
                     },this)
             },'-'];         
         }        
@@ -5074,32 +5078,28 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                     },'-'
             ];         
         }
-        var selModel = new Ext.grid.CheckboxSelectionModel({
+/*        var selModel = new Ext.grid.CheckboxSelectionModel({
             singleSelect : this.singleSelectUser,
             listeners : {
                 rowselect : Ext.bind(this.onSelectRow, this )
             }
-        });
-        this.usersGrid=new Ext.grid.Panel({
+        }); */
+        this.usersGrid=Ext.create('Ext.grid.Panel',{
            // title: i18n._('Users'),
            height: 210,
            width: 500,
            enableHdMenu : false,
            enableColumnMove: false,
-           store: new Ext.data.Store({
-                proxy : new Ung.MemoryProxy({
-                    root : 'list'
-                }),
-
-                sortInfo : this.sortField ? {
-                    field: this.sortField,
-                    direction : this.sortOrder ? this.sortOrder : "ASC"
-                }: null,
-                remoteSort : false,
-                reader : new Ext.data.JsonReader({
-                    totalProperty : "totalRecords",
-                    root : "list",
-                    fields : [{
+           store: Ext.create('Ext.data.Store',{
+                    proxy: {
+                        type: 'pagingmemory',
+                        reader: {
+                            type:'json',
+                            totalProperty : 'totalRecords',
+                            root : 'list',
+                        }
+                    },
+                     fields : [{
                         name : "lastName"
                     },{
                         name : "sortColumn",
@@ -5175,10 +5175,15 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                                 	return "";
                             }
                         }
-                    }]
-                })
+                    }],
+                sortInfo : this.sortField ? {
+                    field: this.sortField,
+                    direction : this.sortOrder ? this.sortOrder : "ASC"
+                }: null,
+                remoteSort : false,
             }),
-            columns: [selModel,{
+            columns: [//selModel,
+            {
                 header : i18n._( "Type" ),
                 width : 100,
                 sortable : true,
@@ -5194,9 +5199,9 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 sortable : true,
                 dataIndex: "displayName"
             }],
-            selModel : selModel
+            //selModel : selModel
         });
-        this.items = new Ext.FormPanel({
+        this.items = Ext.create('Ext.form.Panel',{
             labelWidth : 75,
             buttonAlign : 'right',
             border : false,
