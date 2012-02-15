@@ -102,8 +102,9 @@ CREATE TABLE reports.n_admin_logins (
 INSERT INTO reports.n_admin_logins
       (time_stamp, login, local, client_addr, succeeded, reason)
     SELECT time_stamp, login, local, client_addr, succeeded, reason
-    FROM events.u_login_evt evt""",
-                               (), connection=conn, auto_commit=False)
+    FROM events.u_login_evt evt
+    WHERE time_stamp < %s::timestamp without time zone""",
+                               (start_date,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()

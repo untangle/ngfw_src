@@ -80,7 +80,7 @@ INSERT INTO reports.n_shield_rejection_totals
       (time_stamp, client_addr, client_intf, mode, reputation, limited, dropped, rejected)
 SELECT time_stamp, client_addr, client_intf, mode, reputation, limited, dropped, rejected
 FROM events.n_shield_rejection_evt
-WHERE pl.time_stamp < %s::timestamp without time zone""", 
+WHERE time_stamp < %s::timestamp without time zone""", 
                                (start_date,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
@@ -106,7 +106,7 @@ INSERT INTO reports.n_shield_totals
       (time_stamp, accepted, limited, dropped, rejected)
 SELECT time_stamp, accepted, limited, dropped, rejected
 FROM events.n_shield_statistic_evt
-WHERE pl.time_stamp < %s::timestamp without time zone""", 
+WHERE time_stamp < %s::timestamp without time zone""", 
                                (start_date,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
