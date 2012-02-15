@@ -113,8 +113,9 @@ INSERT INTO reports.n_openvpn_stats
     SELECT time_stamp, start_time, end_time, rx_bytes, tx_bytes,
            extract('epoch' from (end_time - start_time)) AS seconds,
            remote_address, remote_port, client_name
-    FROM events.n_openvpn_connect_evt evt""",
-                               (), connection=conn, auto_commit=False)
+    FROM events.n_openvpn_connect_evt evt
+    WHERE time_stamp < %s::timestamp without time zone""",
+                               (start_date,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()

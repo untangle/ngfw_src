@@ -79,7 +79,9 @@ CREATE TABLE reports.n_shield_rejection_totals (
 INSERT INTO reports.n_shield_rejection_totals
       (time_stamp, client_addr, client_intf, mode, reputation, limited, dropped, rejected)
 SELECT time_stamp, client_addr, client_intf, mode, reputation, limited, dropped, rejected
-FROM events.n_shield_rejection_evt""", (), connection=conn, auto_commit=False)
+FROM events.n_shield_rejection_evt
+WHERE pl.time_stamp < %s::timestamp without time zone""", 
+                               (start_date,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()
@@ -103,7 +105,9 @@ CREATE TABLE reports.n_shield_totals (
 INSERT INTO reports.n_shield_totals
       (time_stamp, accepted, limited, dropped, rejected)
 SELECT time_stamp, accepted, limited, dropped, rejected
-FROM events.n_shield_statistic_evt""", (), connection=conn, auto_commit=False)
+FROM events.n_shield_statistic_evt
+WHERE pl.time_stamp < %s::timestamp without time zone""", 
+                               (start_date,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()

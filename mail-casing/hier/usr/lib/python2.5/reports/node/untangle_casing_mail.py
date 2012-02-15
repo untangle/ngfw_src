@@ -196,8 +196,9 @@ INSERT INTO reports.n_mail_addrs
     LEFT OUTER JOIN events.n_mail_message_stats mms ON mms.msg_id = mi.id
     LEFT OUTER JOIN reports.merged_address_map mam
         ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time
-           AND pe.time_stamp < mam.end_time""",
-                               (), connection=conn, auto_commit=False)
+           AND pe.time_stamp < mam.end_time
+    WHERE pe.time_stamp < %s::timestamp without time zone""",
+                               (start_date,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()
@@ -354,8 +355,9 @@ INSERT INTO reports.n_mail_msgs
     JOIN events.n_mail_message_info mi ON mi.session_id = pe.session_id
     JOIN events.n_mail_message_info_addr mias ON ( mias.msg_id = mi.id AND mias.kind = 'F' )
     LEFT OUTER JOIN reports.merged_address_map mam
-        ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time""",
-                               (), connection=conn, auto_commit=False)
+        ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time
+    WHERE pe.time_stamp < %s::timestamp without time zone""",
+                               (start_date,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()

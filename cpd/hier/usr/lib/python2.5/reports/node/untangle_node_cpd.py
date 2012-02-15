@@ -140,8 +140,9 @@ CREATE TABLE reports.n_cpd_login_events (
 INSERT INTO reports.n_cpd_login_events
       (time_stamp, login_name, event, auth_type, client_addr)
 SELECT time_stamp, login_name, event, auth_type, client_addr
-FROM events.n_cpd_login_evt""",
-                               (), connection=conn, auto_commit=False)
+FROM events.n_cpd_login_evt
+WHERE events.n_cpd_login_evt.time_stamp < %s::timestamp without time zone""",
+                               (start_date,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()
@@ -174,8 +175,9 @@ CREATE TABLE reports.n_cpd_block_events (
 INSERT INTO reports.n_cpd_block_events
       (time_stamp, proto, client_intf, client_address, client_port, server_address, server_port)
 SELECT time_stamp, proto, client_intf, client_address, client_port, server_address, server_port
-FROM events.n_cpd_block_evt""",
-                               (), connection=conn, auto_commit=False)
+FROM events.n_cpd_block_evt
+WHERE events.n_cpd_block_evt.time_stamp < %s::timestamp without time zone""",
+                               (start_date,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()

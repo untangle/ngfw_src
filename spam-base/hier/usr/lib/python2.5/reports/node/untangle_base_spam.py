@@ -155,8 +155,9 @@ CREATE TABLE reports.n_spam_smtp_tarpit_events (
 INSERT INTO reports.n_spam_smtp_tarpit_events
       (time_stamp, ipaddr, hostname, vendor_name, policy_id)
 SELECT evts.time_stamp, ipaddr, hostname, vendor_name, policy_id
-FROM events.n_spam_smtp_tarpit_evt as evts join reports.sessions using (session_id)""", 
-                               (), connection=conn, auto_commit=False)
+FROM events.n_spam_smtp_tarpit_evt as evts join reports.sessions using (session_id)
+WHERE evts.time_stamp < %s::timestamp without time zone""", 
+                               (start_date,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()
