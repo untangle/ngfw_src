@@ -215,7 +215,8 @@ public class OpenSSLWrapper
         ExecManagerResult resultKeyCopy = UvmContextFactory.context().execManager().exec( "openssl rsa -in " + filename + " -out " + (filename+".new"));
 
         if(resultKeyCopy.getResult()==0) {
-            ExecManagerResult result = UvmContextFactory.context().execManager().exec("openssl req -batch -subj alias -new -x509 -nodes -days " + KEY_PAIR_VALID_DAYS +
+            ExecManagerResult result = UvmContextFactory.context().execManager().exec("openssl req -batch -subj " + alias +
+                                                                                      " -new -x509 -nodes -days " + KEY_PAIR_VALID_DAYS +
                                                                                       " -key " + (filename+".new") +
                                                                                       " -out " + (filename+".new") +
                                                                                       " -keyout " + (filename+".new"));
