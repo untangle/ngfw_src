@@ -338,7 +338,8 @@ INSERT INTO reports.sessions
     FROM events.pl_endp pl
     LEFT OUTER JOIN reports.merged_address_map mam
       ON (pl.c_client_addr = mam.addr AND pl.time_stamp >= mam.start_time AND pl.time_stamp < mam.end_time)
-    WHERE pl.time_stamp < %s""", (start_date,)
+    WHERE pl.time_stamp < %s::timestamp without time zone""", 
+                               (start_date,),
                                connection=conn, 
                                auto_commit=False)
             conn.commit()
