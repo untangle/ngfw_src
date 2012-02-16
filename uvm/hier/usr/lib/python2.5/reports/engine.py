@@ -545,7 +545,8 @@ def __get_hosts(start_date, end_date):
         # select all distinct hname where the client was on a non-WAN interface from that time period
         curs.execute("""SELECT DISTINCT hname from reports.session_totals 
                         WHERE trunc_time >= %s and trunc_time < %s
-                        AND client_intf NOT IN """ + get_wan_clause(),
+                        AND client_intf NOT IN """ + get_wan_clause() + 
+                     " AND server_intf IN " + get_wan_clause(),
                      (start_date, end_date))
         rows = curs.fetchall()
         rv = [row[0] for row in rows if row[0]]
