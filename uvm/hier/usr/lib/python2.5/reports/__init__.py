@@ -104,7 +104,7 @@ class UnicodeWriter:
     def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
         # Redirect output to a queue
         self.queue = cStringIO.StringIO()
-        dialect.delimiter = ';'
+        dialect.delimiter = ','
         self.writer = csv.writer(self.queue, dialect=dialect, quoting=csv.QUOTE_ALL, **kwds)
         self.stream = f
         self.encoding = encoding
@@ -116,7 +116,7 @@ class UnicodeWriter:
                 s = unicode(s).encode("utf-8")
             except:
                 pass
-            s = s.replace(';', ',')
+            s = s.replace(',', '')
             s = s.replace('\n', '  ')
             row2.append(s)
 
