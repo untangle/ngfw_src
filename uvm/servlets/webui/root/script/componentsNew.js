@@ -4174,6 +4174,9 @@ Ext.define('Ung.EditorGrid', {
 		this.callParent(arguments);
     },
     initComponent : function() {
+        if ( this.dataRoot == null) {
+            this.dataRoot='list';
+        }
         if(this.loadMask===null) {
            this.loadMask={msg: i18n._("Loading ...")} ;
         }
@@ -4244,7 +4247,7 @@ Ext.define('Ung.EditorGrid', {
 					reader: {
 						type:'json',
 						totalProperty : 'totalRecords',
-						root : 'list',
+						root : this.dataRoot,
 					}
 				},
 				pageSize : this.recordsPerPage,

@@ -1083,14 +1083,14 @@ Ext.define("Ung.Main", {
     changePolicy: function () {
         if(this.value=='SHOW_POLICY_MANAGER'){
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-            Ext.Function.defer(Ung.Util.loadResourceAndExecute,1,this,["Ung.PolicyManager",Ung.Util.getScriptSrc("script/config/policyManager.js"), function() {
+            Ext.Function.defer(Ung.Util.loadResourceAndExecute,1,this,["Ung.PolicyManager",Ung.Util.getScriptSrc("script/config/policyManagerNew.js"), function() {
                 main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager", "helpSource":"policy_manager"});
                 main.policyManagerWin.show();
                 Ext.MessageBox.hide();
             }]);
         } else if(this.value=='SHOW_SESSIONS'){
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-            Ext.Function.defer(Ung.Util.loadResourceAndExecute,1,this,["Ung.SessionMonitor",Ung.Util.getScriptSrc("script/config/sessionMonitor.js"), function() {
+            Ext.Function.defer(Ung.Util.loadResourceAndExecute,1,this,["Ung.SessionMonitor",Ung.Util.getScriptSrc("script/config/sessionMonitorNew.js"), function() {
                 main.sessionMonitorWin=new Ung.SessionMonitor({"name":"sessionMonitor", "helpSource":"session_viewer"});
                 main.sessionMonitorWin.show();
                 Ext.MessageBox.hide();

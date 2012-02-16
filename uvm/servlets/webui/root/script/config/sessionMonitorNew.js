@@ -1,7 +1,8 @@
 if (!Ung.hasResource["Ung.SessionMonitor"]) {
     Ung.hasResource["Ung.SessionMonitor"] = true;
 
-    Ung.SessionMonitor = Ext.extend(Ung.ConfigWin, {
+    Ext.define('Ung.SessionMonitor', {
+        extend:'Ung.ConfigWin',
         fnCallback : null,
         panelPolicyManagement : null,
         gridRacks : null,
@@ -30,7 +31,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
         },
         // Current Sessions Grid
         buildGridCurrentSessions : function() {
-            this.gridCurrentSessions = new Ung.EditorGrid({
+            this.gridCurrentSessions = Ext.create('Ung.EditorGrid',{
                 name : "gridCurrentSessions",
                 settingsCmp : this,
                 height : 500,
@@ -189,22 +190,22 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 initComponent : function() {
                     this.bbar = ['-',
                         {
-                            xtype : 'tbbutton',
+                            xtype : 'button',
                             id: "refresh_"+this.getId(),
                             text : i18n._('Refresh'),
                             name : "Refresh",
                             tooltip : i18n._('Refresh'),
                             iconCls : 'icon-refresh',
-                            handler : function() {
+                            handler : Ext.bind(function() {
                                 Ext.MessageBox.wait(this.settingsCmp.i18n._("Refreshing..."), this.settingsCmp.i18n._("Please wait"));
-                                this.store.reload({
-                                    callback: function () {
+                                this.store.load({
+                                    callback: Ext.bind(function () {
                                         Ext.MessageBox.hide();
-                                    }.createDelegate(this)
+                                    },this)
                                 });
-                            }.createDelegate(this)
+                            },this)
                         },{
-                            xtype : 'tbbutton',
+                            xtype : 'button',
                             id: "auto_refresh_"+this.getId(),
                             text : i18n._('Auto Refresh'),
                             enableToggle: true,
@@ -212,14 +213,14 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                             name : "Auto Refresh",
                             tooltip : i18n._('Auto Refresh'),
                             iconCls : 'icon-autorefresh',
-                            handler : function() {
+                            handler : Ext.bind(function() {
                                 var autoRefreshButton=Ext.getCmp("auto_refresh_"+this.getId());
                                 if(autoRefreshButton.pressed) {
                                     this.startAutoRefresh();
                                 } else {
                                     this.stopAutoRefresh();
                                 }
-                            }.createDelegate(this)
+                            },this)
                         }
                     ];
                     Ung.EditorGrid.prototype.initComponent.call(this);
@@ -247,12 +248,12 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     refreshButton.enable();
                 },
                 autorefreshList : function() {
-                    this.store.reload({
-                        callback: function () {
+                    this.store.load({
+                        callback: Ext.bind(function () {
                             if(this!=null && this.autoRefreshEnabled && Ext.getCmp(this.id) != null) {
-                                this.autorefreshList.defer(5000,this);
+                                Ext.defer(this.autorefreshList,5000,this);
                             }
-                        }.createDelegate(this)
+                        },this)
                     });
                 }
             });
