@@ -22,9 +22,11 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     iconCls : 'node-remove-icon',
                     text : i18n._('Remove'),
                     handler : Ext.bind(function() {
-                        if(this.node && this.node.settingsWin) {
-                            this.node.settingsWin.removeAction();
+                    	if ( this.node.hasMultipleRacks ) {
+                            Ext.MessageBox.alert(i18n._("Warning"), i18n._( "Unable to remove policy manager when there are multiple policies." ));
+                            return;
                         }
+                        this.node.removeAction();
                     },this)
                 },'-',{
                     name : 'Help',
@@ -124,7 +126,6 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 name : 'Policy Management',
                 parentId : this.getId(),
                 title : this.i18n._('Policy Management'),
-                //layout : "form",
                 autoScroll : true,
                 items : items
             });
