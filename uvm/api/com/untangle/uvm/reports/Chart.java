@@ -105,7 +105,7 @@ public class Chart extends SummaryItem implements Serializable
 
     public static CategoryDataset readFromCsv(String path)
     throws IOException {
-        CSV csv = new CSV(';','"');
+        CSV csv = new CSV(',','"');
 
         File f = new File(path);
         if (!f.exists()) {
