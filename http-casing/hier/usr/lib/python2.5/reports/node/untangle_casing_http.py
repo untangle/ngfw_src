@@ -168,8 +168,7 @@ INSERT INTO reports.n_http_events
         ON req.request_id = resp.request_id
     LEFT OUTER JOIN reports.merged_address_map mam
         ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time
-    WHERE pe.time_stamp < %s::timestamp without time zone AND
-          req.request_id not in (select request_id from reports.n_http_events)""",
+    WHERE pe.time_stamp < %s::timestamp without time zone""",
                                (start_time,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:

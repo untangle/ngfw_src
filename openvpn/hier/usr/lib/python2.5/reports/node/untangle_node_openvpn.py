@@ -36,7 +36,7 @@ class OpenVpn(Node):
         Node.__init__(self, 'untangle-node-openvpn')
 
     def setup(self, start_date, end_date, start_time):
-        self.__create_n_openvpn_stats(start_date, end_date)
+        self.__create_n_openvpn_stats(start_date, end_date, start_time)
 
         ft = FactTable('reports.n_openvpn_connect_totals',
                        'reports.n_openvpn_stats',
@@ -76,7 +76,7 @@ class OpenVpn(Node):
         sql_helper.clean_table("events", "n_openvpn_connect_evt ", cutoff);
 
     @print_timing
-    def __create_n_openvpn_stats(self, start_date, end_date):
+    def __create_n_openvpn_stats(self, start_date, end_date, start_time):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_openvpn_stats (
     time_stamp timestamp without time zone,
@@ -115,7 +115,7 @@ INSERT INTO reports.n_openvpn_stats
            remote_address, remote_port, client_name
     FROM events.n_openvpn_connect_evt evt
     WHERE time_stamp < %s::timestamp without time zone""",
-                               (start_date,), connection=conn, auto_commit=False)
+                               (start_time,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()

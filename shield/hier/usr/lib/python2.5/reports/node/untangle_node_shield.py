@@ -36,8 +36,8 @@ class Shield(Node):
 
     @print_timing
     def setup(self, start_date, end_date, start_time):
-        self.__create_n_shield_rejection_totals(start_date, end_date)
-        self.__create_n_shield_totals(start_date, end_date)
+        self.__create_n_shield_rejection_totals(start_date, end_date, start_time)
+        self.__create_n_shield_totals(start_date, end_date, start_time)
 
     @sql_helper.print_timing
     def events_cleanup(self, cutoff):
@@ -49,7 +49,7 @@ class Shield(Node):
         sql_helper.drop_fact_table("n_shield_totals", cutoff)        
 
     @print_timing
-    def __create_n_shield_rejection_totals(self, start_date, end_date):
+    def __create_n_shield_rejection_totals(self, start_date, end_date, start_time):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_shield_rejection_totals (
     time_stamp timestamp without time zone,
@@ -81,13 +81,13 @@ INSERT INTO reports.n_shield_rejection_totals
 SELECT time_stamp, client_addr, client_intf, mode, reputation, limited, dropped, rejected
 FROM events.n_shield_rejection_evt
 WHERE time_stamp < %s::timestamp without time zone""", 
-                               (start_date,), connection=conn, auto_commit=False)
+                               (start_time,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()
             raise e
 
-    def __create_n_shield_totals(self, start_date, end_date):
+    def __create_n_shield_totals(self, start_date, end_date, start_time):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_shield_totals (
     time_stamp timestamp without time zone,
@@ -107,7 +107,7 @@ INSERT INTO reports.n_shield_totals
 SELECT time_stamp, accepted, limited, dropped, rejected
 FROM events.n_shield_statistic_evt
 WHERE time_stamp < %s::timestamp without time zone""", 
-                               (start_date,), connection=conn, auto_commit=False)
+                               (start_time,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()

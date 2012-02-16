@@ -52,8 +52,8 @@ class Cpd(Node):
         Node.__init__(self, 'untangle-node-cpd')
 
     def setup(self, start_date, end_date, start_time):
-        self.__create_n_cpd_login_events(start_date, end_date)
-        self.__create_n_cpd_block_events(start_date, end_date)
+        self.__create_n_cpd_login_events(start_date, end_date, start_time)
+        self.__create_n_cpd_block_events(start_date, end_date, start_time)
         
         ft = FactTable('reports.n_cpd_login_totals',
                        'reports.n_cpd_login_events',
@@ -116,7 +116,7 @@ class Cpd(Node):
         sql_helper.drop_fact_table("n_cpd_block_totals", cutoff)
         
     @print_timing
-    def __create_n_cpd_login_events(self, start_date, end_date):
+    def __create_n_cpd_login_events(self, start_date, end_date, start_time):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_cpd_login_events (
     time_stamp timestamp without time zone,
@@ -142,14 +142,14 @@ INSERT INTO reports.n_cpd_login_events
 SELECT time_stamp, login_name, event, auth_type, client_addr
 FROM events.n_cpd_login_evt
 WHERE time_stamp < %s::timestamp without time zone""",
-                               (start_date,), connection=conn, auto_commit=False)
+                               (start_time,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()
             raise e
 
     @print_timing
-    def __create_n_cpd_block_events(self, start_date, end_date):
+    def __create_n_cpd_block_events(self, start_date, end_date, start_time):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_cpd_block_events (
     time_stamp timestamp without time zone,
@@ -177,7 +177,7 @@ INSERT INTO reports.n_cpd_block_events
 SELECT time_stamp, proto, client_intf, client_address, client_port, server_address, server_port
 FROM events.n_cpd_block_evt
 WHERE time_stamp < %s::timestamp without time zone""",
-                               (start_date,), connection=conn, auto_commit=False)
+                               (start_time,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()

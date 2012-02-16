@@ -44,7 +44,7 @@ class UvmNode(Node):
     def setup(self, start_date, end_date, start_time):
         self.__generate_address_map(start_date, mx.DateTime.now())
 
-        self.__create_n_admin_logins(start_date, end_date)
+        self.__create_n_admin_logins(start_date, end_date, start_time)
 
         self.__make_sessions_table(start_date, end_date, start_time)
 
@@ -86,7 +86,7 @@ class UvmNode(Node):
         return None
         
     @print_timing
-    def __create_n_admin_logins(self, start_date, end_date):
+    def __create_n_admin_logins(self, start_date, end_date, start_time):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_admin_logins (
     time_stamp timestamp without time zone,
@@ -104,7 +104,7 @@ INSERT INTO reports.n_admin_logins
     SELECT time_stamp, login, local, client_addr, succeeded, reason
     FROM events.u_login_evt evt
     WHERE time_stamp < %s::timestamp without time zone""",
-                               (start_date,), connection=conn, auto_commit=False)
+                               (start_time,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()

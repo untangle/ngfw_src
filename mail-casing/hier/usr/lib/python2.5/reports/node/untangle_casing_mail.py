@@ -20,8 +20,8 @@ class MailCasing(Node):
 
     @print_timing
     def setup(self, start_date, end_date, start_time):
-        self.__create_n_mail_msgs(start_date, end_date)
-        self.__create_n_mail_addrs(start_date, end_date)
+        self.__create_n_mail_msgs(start_date, end_date, start_time)
+        self.__create_n_mail_addrs(start_date, end_date, start_time)
         self.__update_n_mail_msgs(start_date, end_date)
         self.__update_n_mail_addrs(start_date, end_date)
 
@@ -65,7 +65,7 @@ class MailCasing(Node):
         sql_helper.drop_fact_table("email", cutoff)        
 
     @print_timing
-    def __create_n_mail_addrs(self, start_date, end_date):
+    def __create_n_mail_addrs(self, start_date, end_date, start_time):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_mail_addrs (
     time_stamp timestamp without time zone,
@@ -198,7 +198,7 @@ INSERT INTO reports.n_mail_addrs
         ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time
            AND pe.time_stamp < mam.end_time
     WHERE pe.time_stamp < %s::timestamp without time zone""",
-                               (start_date,), connection=conn, auto_commit=False)
+                               (start_time,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()
@@ -249,7 +249,7 @@ INSERT INTO reports.email (date, email)
             raise e
 
     @print_timing
-    def __create_n_mail_msgs(self, start_date, end_date):
+    def __create_n_mail_msgs(self, start_date, end_date, start_time):
 
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_mail_msgs (
@@ -357,7 +357,7 @@ INSERT INTO reports.n_mail_msgs
     LEFT OUTER JOIN reports.merged_address_map mam
         ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time
     WHERE pe.time_stamp < %s::timestamp without time zone""",
-                               (start_date,), connection=conn, auto_commit=False)
+                               (start_time,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()

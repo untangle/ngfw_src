@@ -56,7 +56,7 @@ class SpamBaseNode(Node):
         self.__update_n_mail_events('events.n_spam_evt_smtp', 'reports.n_mail_addrs', 'smtp',     start_date, end_date)
         self.__update_n_mail_events('events.n_spam_evt',      'reports.n_mail_msgs',  'pop/imap', start_date, end_date)
         self.__update_n_mail_events('events.n_spam_evt_smtp', 'reports.n_mail_msgs',  'smtp',     start_date, end_date)
-        self.__create_n_spam_smtp_tarpit_events( start_date, end_date )
+        self.__create_n_spam_smtp_tarpit_events( start_date, end_date, start_time )
 
         column = Column('%s_spam_msgs' % self.__short_name, 'integer',
                         "count(CASE WHEN %s_is_spam THEN 1 ELSE null END)" \
@@ -136,7 +136,7 @@ AND %s.msg_id = %s.msg_id""" % (target_table, self.__short_name,
             raise e
 
     @print_timing
-    def __create_n_spam_smtp_tarpit_events(self, start_date, end_date):
+    def __create_n_spam_smtp_tarpit_events(self, start_date, end_date, start_time):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.n_spam_smtp_tarpit_events (
     time_stamp timestamp without time zone,
@@ -157,7 +157,7 @@ INSERT INTO reports.n_spam_smtp_tarpit_events
 SELECT evts.time_stamp, ipaddr, hostname, vendor_name, policy_id
 FROM events.n_spam_smtp_tarpit_evt as evts join reports.sessions using (session_id)
 WHERE evts.time_stamp < %s::timestamp without time zone""", 
-                               (start_date,), connection=conn, auto_commit=False)
+                               (start_time,), connection=conn, auto_commit=False)
             conn.commit()
         except Exception, e:
             conn.rollback()
