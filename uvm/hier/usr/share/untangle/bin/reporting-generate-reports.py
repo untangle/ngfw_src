@@ -61,7 +61,6 @@ attach_csv = False
 attachment_size_limit = 10
 end_date = mx.DateTime.today()
 start_time = mx.DateTime.now()
-time.sleep(100)
 locale = None
 maxLoad = None
 db_retention = None
