@@ -19,7 +19,7 @@ class MailCasing(Node):
         return ['untangle-vm']
 
     @print_timing
-    def setup(self, start_date, end_date):
+    def setup(self, start_date, end_date, start_time):
         self.__create_n_mail_msgs(start_date, end_date)
         self.__create_n_mail_addrs(start_date, end_date)
         self.__update_n_mail_msgs(start_date, end_date)

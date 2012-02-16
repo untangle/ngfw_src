@@ -51,7 +51,7 @@ class SpamBaseNode(Node):
         return ['untangle-casing-mail']
 
     @print_timing
-    def setup(self, start_date, end_date):
+    def setup(self, start_date, end_date, start_time):
         self.__update_n_mail_events('events.n_spam_evt',      'reports.n_mail_addrs', 'pop/imap', start_date, end_date)
         self.__update_n_mail_events('events.n_spam_evt_smtp', 'reports.n_mail_addrs', 'smtp',     start_date, end_date)
         self.__update_n_mail_events('events.n_spam_evt',      'reports.n_mail_msgs',  'pop/imap', start_date, end_date)

@@ -36,7 +36,7 @@ class Spyware(Node):
     def __init__(self):
         Node.__init__(self, 'untangle-node-spyware')
 
-    def setup(self, start_date, end_date):
+    def setup(self, start_date, end_date, start_time):
         self.__update_access(start_date, end_date)
         self.__update_url(start_date, end_date)
         self.__update_cookie(start_date, end_date)

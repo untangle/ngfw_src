@@ -41,7 +41,7 @@ class Ips(Node):
         self.__vendor_name = vendor_name
 
     @print_timing
-    def setup(self, start_date, end_date):
+    def setup(self, start_date, end_date, start_time):
         self.__update_sessions(start_date, end_date)
 
         ft = reports.engine.get_fact_table('reports.session_totals')

@@ -41,12 +41,12 @@ class UvmNode(Node):
         Node.__init__(self, 'untangle-vm')
 
     @print_timing
-    def setup(self, start_date, end_date):
+    def setup(self, start_date, end_date, start_time):
         self.__generate_address_map(start_date, mx.DateTime.now())
 
         self.__create_n_admin_logins(start_date, end_date)
 
-        self.__make_sessions_table(start_date, end_date)
+        self.__make_sessions_table(start_date, end_date, start_time)
 
         self.__update_session_stats(start_date, end_date)
 
@@ -217,7 +217,7 @@ INSERT INTO reports.hnames (date, hname)
             raise e
 
     @print_timing
-    def __make_sessions_table(self, start_date, end_date):
+    def __make_sessions_table(self, start_date, end_date, start_time):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.sessions (
         session_id int8 NOT NULL,
@@ -339,8 +339,9 @@ INSERT INTO reports.sessions
     FROM events.pl_endp pl
     LEFT OUTER JOIN reports.merged_address_map mam
       ON (pl.c_client_addr = mam.addr AND pl.time_stamp >= mam.start_time AND pl.time_stamp < mam.end_time)
-    WHERE pl.time_stamp < %s::timestamp without time zone""", 
-                               (start_date,),
+    WHERE pl.time_stamp < %s::timestamp without time zone AND
+          pl.session_id not in (select session_id from reports.sessions)""", 
+                               (start_time,),
                                connection=conn, 
                                auto_commit=False)
             conn.commit()

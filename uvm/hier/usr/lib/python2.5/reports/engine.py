@@ -379,7 +379,7 @@ def init_engine(node_module_dir):
     __get_nodes(node_module_dir)
 
 @print_timing
-def setup(start_date, end_date):
+def setup(start_date, end_date, start_time):
     global __nodes
 
     count = 0.0
@@ -396,7 +396,7 @@ def setup(start_date, end_date):
                     node.alter_fact_tables()
                 except Exception, e: # that table didn't exist
                     logger.info("Could not alter fact tables for %s: %s" % (name, e.message,))
-                node.setup(start_date, end_date)
+                node.setup(start_date, end_date, start_time)
 
             count = count+1.0 
             print_progress_str( count, len(__get_node_partial_order())+1 )
