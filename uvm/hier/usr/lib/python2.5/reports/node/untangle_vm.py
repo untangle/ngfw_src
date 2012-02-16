@@ -339,8 +339,7 @@ INSERT INTO reports.sessions
     FROM events.pl_endp pl
     LEFT OUTER JOIN reports.merged_address_map mam
       ON (pl.c_client_addr = mam.addr AND pl.time_stamp >= mam.start_time AND pl.time_stamp < mam.end_time)
-    WHERE pl.time_stamp < %s::timestamp without time zone AND
-          pl.session_id not in (select session_id from reports.sessions)""", 
+    WHERE pl.time_stamp < %s::timestamp without time zone""", 
                                (start_time,),
                                connection=conn, 
                                auto_commit=False)
