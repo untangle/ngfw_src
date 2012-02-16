@@ -45,7 +45,7 @@ class WebFilterBaseNode(Node):
         return ['untangle-casing-http']
 
     @print_timing
-    def setup(self, start_date, end_date):
+    def setup(self, start_date, end_date, start_time):
         self.__update_n_http_events(start_date, end_date)
 
         ft = reports.engine.get_fact_table('reports.n_http_totals')

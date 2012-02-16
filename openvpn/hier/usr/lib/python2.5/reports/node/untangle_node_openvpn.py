@@ -35,7 +35,7 @@ class OpenVpn(Node):
     def __init__(self):
         Node.__init__(self, 'untangle-node-openvpn')
 
-    def setup(self, start_date, end_date):
+    def setup(self, start_date, end_date, start_time):
         self.__create_n_openvpn_stats(start_date, end_date)
 
         ft = FactTable('reports.n_openvpn_connect_totals',

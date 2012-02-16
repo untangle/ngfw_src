@@ -16,7 +16,6 @@ Options:
   -i | --incremental            only update fact tables, do not generate reports themselves
   -a | --attach-csv             attach events as csv
   -t | --trial-report           only report on given trial
-  -e | --events-retention       number of minutes in events schema to keep (default is 0)
   -r | --report-length          number of days to report on
   -l | --locale                 locale
   -b <load> | --behave <load>   do not run if load is greated than the specified amount
@@ -60,9 +59,9 @@ no_mail = False
 incremental = False
 attach_csv = False
 attachment_size_limit = 10
-events_retention = 0
 end_date = mx.DateTime.today()
 start_time = mx.DateTime.now()
+time.sleep(100)
 locale = None
 maxLoad = None
 db_retention = None
@@ -92,8 +91,6 @@ for opt in opts:
           trial_report = v
           ## Disable cleanup on trial reports
           no_cleanup = True
-     elif k == '-e' or k == '--events-retention':
-          events_retention = int(v)
      elif k == '-b' or k == '--behave':
           maxLoad = float(v)
      elif k == '-r' or k == '--report-length':
@@ -383,7 +380,7 @@ if trial_report:
 
 if not no_migration:
      init_date = end_date - mx.DateTime.DateTimeDelta(max(report_lengths))
-     reports.engine.setup(init_date, end_date)
+     reports.engine.setup(init_date, end_date, start_time)
      if not incremental:
           reports.engine.process_fact_tables(init_date, start_time)
           reports.engine.post_facttable_setup(init_date, start_time)
@@ -422,7 +419,7 @@ else:
      logger.info("Incremental mode, not generating reports themselves")
 
 if not no_cleanup and not simulate:
-    events_cutoff = start_time - mx.DateTime.DateTimeDeltaFromSeconds(60 * events_retention)
+    events_cutoff = start_time
     reports.engine.events_cleanup(events_cutoff)
 
     if not incremental:
@@ -431,8 +428,7 @@ if not no_cleanup and not simulate:
       write_cutoff_date(DateFromMx(reports_cutoff))
 
       files_cutoff = end_date - mx.DateTime.DateTimeDelta(file_retention)
-      reports.engine.delete_old_reports('%s/data' % REPORTS_OUTPUT_BASE,
-                                        files_cutoff)
+      reports.engine.delete_old_reports('%s/data' % REPORTS_OUTPUT_BASE, files_cutoff)
 
 # These are only for end of trial, a reboot will delete these files since they are in /tmp
 # if trial_report and ( reports_output_base != REPORTS_OUTPUT_BASE ):

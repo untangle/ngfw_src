@@ -38,7 +38,7 @@ class Template(Node):
     def __init__(self):
         Node.__init__(self, 'untangle-node-template')
 
-    def setup(self, start_date, end_date):
+    def setup(self, start_date, end_date, start_time):
         pass
 
     def get_toc_membership(self):

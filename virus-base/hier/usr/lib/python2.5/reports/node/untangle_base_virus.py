@@ -47,7 +47,7 @@ class VirusBaseNode(Node):
         return ['untangle-casing-http', 'untangle-casing-mail']
 
     @sql_helper.print_timing
-    def setup(self, start_date, end_date):
+    def setup(self, start_date, end_date, start_time):
         self.__update_n_http_events(start_date, end_date)
         self.__update_n_mail_table('n_mail_msgs', start_date, end_date)
         self.__update_n_mail_table('n_mail_addrs', start_date, end_date)

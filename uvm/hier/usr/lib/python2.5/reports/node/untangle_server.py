@@ -35,7 +35,7 @@ class ServerNode(Node):
         Node.__init__(self, 'untangle-node-reporting')
 
     @print_timing
-    def setup(self, start_date, end_date):
+    def setup(self, start_date, end_date, start_time):
         self.__create_n_server_events(start_date, end_date)
 
         ft = FactTable('reports.n_server_totals',

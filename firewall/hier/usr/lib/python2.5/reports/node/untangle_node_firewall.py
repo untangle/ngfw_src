@@ -38,7 +38,7 @@ class Firewall(Node):
         Node.__init__(self, 'untangle-node-firewall')
 
     @sql_helper.print_timing
-    def setup(self, start_date, end_date):
+    def setup(self, start_date, end_date, start_time):
         self.__update_sessions(start_date, end_date)
 
         ft = reports.engine.get_fact_table('reports.session_totals')
