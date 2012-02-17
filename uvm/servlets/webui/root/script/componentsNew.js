@@ -3792,165 +3792,20 @@ Ung.RpcProxy = function(rpcFn, rpcFnArgs, paginated, modelName ) {
 	this.model = modelName;
 };
 */
-
-Ext.define('Ung.RpcProxy',{
-	extend:'Ext.data.Store',
-	rpcFn:null,
-	rpcFnArgs:null,
-	model: null,
-	paginated: false,
-    constructor : function(config) {
-        Ung.RpcProxy.superclass.constructor.apply(this, arguments);
-    },
-    initComponent : function() { },
-    // sets the total number of records
-    setTotalRecords : function(totalRecords) {
-        this.totalRecords = totalRecords;
-    },
-    load : function(config) {
-        var obj = {};
-		if ( typeof config.params != 'undefined') {
-			obj.params = config.params;
-		} else {
-			obj.params = null;
-		}
-		if ( config.reader != null) {
-			obj.reader = config.reader;
-		} else {
-			obj.reader = this.proxy.getReader();
-		}
-		if ( config.callback != null) {
-			obj.callback = config.callback;
-		} else {
-			obj.callback = config.callback;
-		}
-        obj.scope = config.scope;
-        obj.arg = config.arg;
-        obj.totalRecords = this.totalRecords;
-		obj.parent = this;
-        var sortColumns = [];
-        if (typeof config.params != 'undefined' && config.params.sort) {
-            var type = scope.fields.get(config.params.sort).type;
-            var sortField = config.params.sort;
-            if (type == 'string') {
-                sortField = "UPPER("+config.params.sort+")";
-            }
-            sortColumns.push((config.params.dir == "ASC" ? "+" : "-") + sortField);
-        }
-        if (this.paginated) {
-            if (this.rpcFnArgs == null) {
-					start = 0;
-					if ( typeof config.params != 'undefined') {
-						start = config.params.start ? config.params.start:0;
-					}
-                    end=this.totalRecords != null ? this.totalRecords : Ung.Util.maxRowCount;
-					if ( typeof config.params != 'undefined') {
-						if ( config.params.limit) {
-							end = config.params.limit;
-						}
-					}
-					this.rpcFn(Ext.bind(this.errorHandler,obj), start,end, sortColumns);
-            } else {
-                var args = [Ext.bind(this.errorHandler,obj)].
-                            concat(this.rpcFnArgs).
-                                concat([config.params.start ? config.params.start : 0,
-                                    config.params.limit ? config.params.limit : this.totalRecords != null ? this.totalRecords : Ung.Util.maxRowCount,
-                                    sortColumns]);
-				this.rpcFn.apply(this, args);
-            }
-        } else {
-            if (this.rpcFnArgs == null) {
-				this.rpcFn(Ext.bind(this.errorHandler,obj));
-            } else {
-                var args = [Ext.bind(this.errorHandler,obj)].concat(this.rpcFnArgs);
-				this.rpcFn.apply(this, args);
-            }
-        }
-    },
-    errorHandler : function(result, exception) {
-        if(Ung.Util.handleException(exception, Ext.bind(function() {
-			if ( this.callback != null) {
-				this.callback.call(this.scope, null, this.arg, false);
-			}
-        },this),"alert")) return;
-
-        var res = null;
-        try {
-            res = this.reader.readRecords(result);
-			if ( res ) {
-				this.parent.loadData(res.records);
-			}
-			if ( this.callback != null) {
-				this.callback.call(this.scope, res, this.arg, true);
-			}
-        } catch (e) {
-			if ( this.callback != null) {
-				this.callback.call(this.scope, null, this.arg, false);
-			}
-            return;
-        } 
+Ext.define("Ung.RpcProxy",{
+	extend: "Ext.data.proxy.Server",
+	dataFn: null,
+	dataRoot: "list",
+	doRequest: function(operation, callback, scope) {
+		var response = this.dataFn();
+		var success=true;
+		this.processResponse(success, operation, null, response, callback, scope);
+	},
+    reader : {
+    	type: 'json',
+        root : this.dataRoot
     }
-});
-
-// Memory Proxy
-// holds all the data and returns only the page data
-// is used by Event Log store
-Ung.MemoryProxy = function(config) {
-    Ext.apply(this, config);
-    Ung.MemoryProxy.superclass.constructor.call(this);
-};
-
-Ext.extend(Ung.MemoryProxy, Ext.data.DataProxy, {
-    // sets the total number of records
-    setTotalRecords : function(totalRecords) {
-        this.totalRecords = totalRecords;
-    },
-    // the root property
-    root : null,
-    // the data
-    data : null,
-    // load function for Proxy class
-    load : function(params, reader, callback, scope, arg) {
-        params = params || {};
-        var result;
-        try {
-            var readerData = {};
-            var list = null;
-            if (this.data != null) {
-                list = (this.root != null) ? this.data[this.root] : this.data;
-            }
-            if(list==null) {
-                list = [];
-            }
-            var totalRecords = list.length;
-            if (this.root == null) {
-                readerData = list;
-            } else {
-                readerData[this.root] = list;
-                readerData.totalRecords = totalRecords;
-            }
-            result = reader.readRecords(readerData);
-
-            if (params.sort != null) {
-                var st = scope.fields.get(params.sort).sortType;
-                var fn = function(r1, r2) {
-                    var v1 = st(r1.data[params.sort]), v2 = st(r2.data[params.sort]);
-                    var ret = params.dir == "ASC" ? -1 : 1;
-                    return v1 == v2 ? 0 : (v1 < v2) ? ret : -ret;
-                };
-                result.records.sort(fn);
-            }
-            if (params.start != null && params.limit != null && list != null) {
-                result.records = result.records.slice(params.start, params.start + params.limit);
-            }
-        } catch (e) {
-            this.fireEvent("loadexception", this, arg, null, e);
-            callback.call(scope, null, arg, false);
-            return;
-        }
-        callback.call(scope, result, arg, true);
-    }
-});
+})
 
 // Grid check column
 Ext.define('Ung.grid.CheckColumn', {
@@ -3971,10 +3826,6 @@ Ext.define('Ung.grid.CheckColumn', {
         this.grid = grid;
     },
 });
-
-
-
-
 
 
 // Grid edit column
@@ -4174,9 +4025,6 @@ Ext.define('Ung.EditorGrid', {
 		this.callParent(arguments);
     },
     initComponent : function() {
-        if ( this.dataRoot == null) {
-            this.dataRoot='list';
-        }
         if(this.loadMask===null) {
            this.loadMask={msg: i18n._("Loading ...")} ;
         }
@@ -4236,7 +4084,48 @@ Ext.define('Ung.EditorGrid', {
 				fields: this.fields
 			});
 		}
-        if (this.proxyRpcFn) {
+		if(this.dataFn && this.dataRoot==null) {
+			this.dataRoot="list";
+		}
+		this.store=Ext.create('Ext.data.Store',{
+			data: this.data!=null?this.data:[],
+			model:this.modelName,
+			proxy: {
+				type: this.paginated?'pagingmemory':'memory',
+				dataFn:this.dataFn,						
+				reader: {
+					type: 'json',
+					root: this.dataRoot
+				}
+			},
+			pageSize : this.paginated?this.recordsPerPage:null,
+			autoLoad: false,
+			sorters : this.sortField ? {
+                property : this.sortField,
+                direction : this.sortOrder ? this.sortOrder : "ASC"
+            } : null,
+			remoteSort:this.paginated,
+            listeners : {
+                "update" : {
+                    fn : Ext.bind(function(store, record, operation) {
+                        this.updateChangedData(record, "modified");
+                    },this)
+                },
+                "load" : {
+                    fn : Ext.bind(function(store, records, options) {
+                        this.updateFromChangedData(records, options);
+                    },this)
+                }
+            }
+		});
+		if(this.dataFn) {
+			this.store.proxy.read=Ext.Function.createInterceptor(this.store.proxy.read, function() {
+				this.data=this.dataFn();
+				return true;
+			});
+		}
+		/*
+        if (this.dataFn) {
             this.store = Ext.create('Ung.RpcProxy',{
 				rpcFn:this.proxyRpcFn, 
 				rpcFnArgs:this.proxyRpcFnArgs,
@@ -4301,7 +4190,7 @@ Ext.define('Ung.EditorGrid', {
                 }
 			});
             this.totalRecords=this.data.length;
-        }
+        }*/
         if(this.paginated) {
             this.bbar = Ext.create('Ext.toolbar.Paging',{
                 pageSize : this.recordsPerPage,

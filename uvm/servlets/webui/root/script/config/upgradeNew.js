@@ -56,10 +56,10 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                             Ext.MessageBox.hide();
                             if(!this.isVisible()) return;
                             var upgradeList = result;
+                            var upgradeData = [];
                             if (upgradeList.length > 0) {
                                 Ext.getCmp("configItem_upgrade").setIconCls("icon-config-upgrade-available");
                                 Ext.getCmp("config_start_upgrade_button").enable();
-                                var upgradeData = [];
                                 var somethingVisibleAdded = false;
                                 var totalSize=0;
                                 for (var i = 0; i < upgradeList.length; i++) {

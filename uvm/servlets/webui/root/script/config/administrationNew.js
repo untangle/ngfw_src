@@ -1506,19 +1506,27 @@ if (!Ung.hasResource["Ung.Administration"]) {
             // keep initial skin settings
             this.initialSkinSettings = Ung.Util.clone(this.getSkinSettings());
 
-            var adminSkinsStore = new Ext.data.Store({
-                proxy : new Ung.RpcProxy(rpc.skinManager.getSkinsList, [true, false], false),
-                reader : new Ext.data.JsonReader({
-                    root : 'list',
-                    fields: [{
-                        name: 'name'
-                    },{
-                        name: 'displayName',
-                        convert : Ext.bind(function(v) {
-                            if ( v == "Default" ) return this.i18n._("Default");
-                            return v;
-                        },this)
-                    }]
+            var adminSkinsStore = Ext.create("Ext.data.Store",{
+            	fields: [{
+                    name: 'name'
+                },{
+                    name: 'displayName',
+                    convert : Ext.bind(function(v) {
+                        if ( v == "Default" ) return this.i18n._("Default");
+                        return v;
+                    },this)
+                }],
+                proxy: Ext.create("Ext.data.proxy.Server",{
+                	doRequest: function(operation, callback, scope) {
+                		rpc.skinManager.getSkinsList(Ext.bind(function(result, exception) {
+                            if(Ung.Util.handleException(exception)) return;
+                    		this.processResponse(exception==null, operation, null, result, callback, scope);
+                		},this),true,false);
+                	},
+                    reader : {
+                    	type: 'json',
+                        root : 'list'
+                    }
                 })
             });
 
