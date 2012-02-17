@@ -106,7 +106,8 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         },
                         title : this.i18n._("Rules"),
                         recordJavaClass : "com.untangle.node.ips.IpsRule",
-                        proxyRpcFn : this.getRpcNode().getRules,
+                        //proxyRpcFn : this.getRpcNode().getRules,
+                        data : this.getRpcNode().getRules(0,this.getBaseSettings().rulesLength,[]).list,
                         fields : [{
                             name : 'id'
                         }, {
@@ -258,7 +259,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         },
                         title : this.i18n._("Variables"),
                         recordJavaClass : "com.untangle.node.ips.IpsVariable",
-                        proxyRpcFn : this.getRpcNode().getVariables,
+                        data : this.getRpcNode().getVariables(0,this.getBaseSettings().variablesLength,[]).list,
                         fields : [{
                             name : 'id'
                         }, {
@@ -424,8 +425,8 @@ if (!Ung.hasResource["Ung.Ips"]) {
                                 Ext.MessageBox.hide();                            
                                 this.gridRules.setTotalRecords(result2.rulesLength);
                                 this.gridVariables.setTotalRecords(result2.variablesLength);
-                                this.gridRules.reloadGrid();
-                                this.gridVariables.reloadGrid();
+                                this.gridRules.reloadGrid({data:this.getRpcNode().getRules(0,this.getBaseSettings().rulesLength,[]).list});
+                                this.gridVariables.reloadGrid({data:this.getRpcNode().getVariables(0,this.getBaseSettings().variablesLength,[]).list});
                             },this));
                             //this.gridEventLog.reloadGrid();                                     
                     }
