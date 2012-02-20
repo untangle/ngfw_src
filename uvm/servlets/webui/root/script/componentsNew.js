@@ -3774,24 +3774,6 @@ Ext.define('Ung.RowEditorWindow', {
     }
 });
 
-/*
-// RpcProxy
-// uses json rpc to get the information from the server
-Ung.RpcProxy = function(rpcFn, rpcFnArgs, paginated, modelName ) {
-    Ung.RpcProxy.superclass.constructor.call(this);
-    this.rpcFn = rpcFn;
-    // specified if we fetch data paginated or all at once
-    // default to true
-    if (paginated === undefined) {
-        this.paginated = true;
-    } else {
-        this.paginated = paginated;
-    }
-    // specified if we have aditional args for rpcFnArgs
-    this.rpcFnArgs = rpcFnArgs;
-	this.model = modelName;
-};
-*/
 Ext.define("Ung.RpcProxy",{
 	extend: "Ext.data.proxy.Server",
 	dataFn: null,
@@ -3956,15 +3938,11 @@ Ext.define('Ung.EditorGrid', {
     // record per page
     recordsPerPage : 25,
     // the minimum number of records for pagination
-    minPaginateCount : 60,
+    minPaginateCount : 65,
     // the total number of records
     totalRecords : null,
     // settings component
     settingsCmp : null,
-    // proxy Json Rpc function to populate the Store
-    proxyRpcFn : null,
-    // specified if we have aditional args for proxyRpcFn
-    proxyRpcFnArgs : null,
     // the list of fields used to by the Store
     fields : null,
     // has Add button
@@ -4003,7 +3981,6 @@ Ext.define('Ung.EditorGrid', {
     recordJavaClass : null,
     // the map of changed data in the grid
     // used by rendering functions and by save
-    dataRoot: null,
     importSettingsWindow: null,    
     changedData : null,
     stripeRows : true,
@@ -4084,15 +4061,17 @@ Ext.define('Ung.EditorGrid', {
 				fields: this.fields
 			});
 		}
-		if(this.dataFn && this.dataRoot==null) {
-			this.dataRoot="list";
+		if(this.dataFn) {
+			if(this.dataRoot === undefined) {
+				this.dataRoot="list";
+			}
+			this.data=this.dataFn();
 		}
 		this.store=Ext.create('Ext.data.Store',{
 			data: this.data!=null?this.data:[],
 			model:this.modelName,
 			proxy: {
 				type: this.paginated?'pagingmemory':'memory',
-				dataFn:this.dataFn,						
 				reader: {
 					type: 'json',
 					root: this.dataRoot
@@ -4118,79 +4097,7 @@ Ext.define('Ung.EditorGrid', {
                 }
             }
 		});
-		if(this.dataFn) {
-			this.store.proxy.read=Ext.Function.createInterceptor(this.store.proxy.read, function() {
-				this.data=this.dataFn();
-				return true;
-			});
-		}
-		/*
-        if (this.dataFn) {
-            this.store = Ext.create('Ung.RpcProxy',{
-				rpcFn:this.proxyRpcFn, 
-				rpcFnArgs:this.proxyRpcFnArgs,
-				paginated:this.paginated,
-				model:this.modelName,
-				proxy: {
-					type: 'pagingmemory',
-					reader: {
-						type:'json',
-						totalProperty : 'totalRecords',
-						root : this.dataRoot,
-					}
-				},
-				pageSize : this.recordsPerPage,
-                sortInfo : this.sortField ? {
-                    field : this.sortField,
-                    direction : this.sortOrder ? this.sortOrder : "ASC"
-                } : null,
-                remoteSort : this.paginated,
-                listeners : {
-                    "update" : {
-                        fn : Ext.bind(function(store, record, operation) {
-                            this.updateChangedData(record, "modified");
-                        },this)
-                    },
-                    "load" : {
-                        fn : Ext.bind(function(store, records, options) {
-                            this.updateFromChangedData(records, options);
-                        },this)
-                    }
-                }
-            });
-        } else if(this.data) {
-    		this.store=Ext.create('Ext.data.Store', {
-				data: this.data,
-				model:this.modelName,	
-				pageSize : this.paginated?this.recordsPerPage:null,
-				proxy: {
-					type: this.paginated?'pagingmemory':'memory',
-					reader: {
-						type: 'json',
-						root: ''
-					}
-				},
-				autoLoad: false,
-				sorters : this.sortField ? {
-                    property : this.sortField,
-                    direction : this.sortOrder ? this.sortOrder : "ASC"
-                } : null,
-				remoteSort:this.paginated,
-                listeners : {
-                    "update" : {
-                        fn : Ext.bind(function(store, record, operation) {
-                            this.updateChangedData(record, "modified");
-                        },this)
-                    },
-                    "load" : {
-                        fn : Ext.bind(function(store, records, options) {
-                            this.updateFromChangedData(records, options);
-                        },this)
-                    }
-                }
-			});
-            this.totalRecords=this.data.length;
-        }*/
+
         if(this.paginated) {
             this.bbar = Ext.create('Ext.toolbar.Paging',{
                 pageSize : this.recordsPerPage,
@@ -4414,13 +4321,15 @@ Ext.define('Ung.EditorGrid', {
     },
     reloadGrid : function(options){
         this.clearChangedData();
+		if(this.dataFn) {
+			this.data=this.dataFn();
+		}
         if(options && options.data){
-            Ung.Util.generateListIds(options.data);                
-            this.store.proxy.data = options.data;
-            this.setTotalRecords(this.store.proxy.data.length);
+        	this.data=options.data
         }
-        //TODO: find extjs4 solution
-        //this.store.reload();           
+        this.store.proxy.data = this.data;
+        this.setTotalRecords(this.store.proxy.data.length);
+        this.store.load();           
     },
     beforeDestroy : function() {
         Ext.each(this.subCmps, Ext.destroy);
