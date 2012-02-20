@@ -93,7 +93,6 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         name : 'Rules',
                         settingsCmp : this,
                         height : 350,
-                        totalRecords : this.getBaseSettings().rulesLength,
                         emptyRow : {
                             "category" : this.i18n._("[no category]"),
                             "name" : this.i18n._("[no name]"),
@@ -106,8 +105,9 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         },
                         title : this.i18n._("Rules"),
                         recordJavaClass : "com.untangle.node.ips.IpsRule",
-                        //proxyRpcFn : this.getRpcNode().getRules,
-                        data : this.getRpcNode().getRules(0,this.getBaseSettings().rulesLength,[]).list,
+                        dataFn:	Ext.bind(function() {
+                        	return this.getRpcNode().getRules(0, Ung.Util.maxRowCount,[]);
+                        },this),
                         fields : [{
                             name : 'id'
                         }, {
@@ -132,7 +132,6 @@ if (!Ung.hasResource["Ung.Ips"]) {
                             type : 'string'
                         }],
                         columns : [{
-                            id : 'category',
                             header : this.i18n._("category"),
                             width : 180,
                             dataIndex : 'category',
@@ -156,7 +155,6 @@ if (!Ung.hasResource["Ung.Ips"]) {
                             width:55
                         }, 
                         {
-                            id : 'description',
                             header : this.i18n._("description"),
                             width : 200,
                             dataIndex : 'description',
@@ -174,13 +172,11 @@ if (!Ung.hasResource["Ung.Ips"]) {
                                 return description;
                             }
                         }, {
-                            id : 'id',
                             header : this.i18n._("id"),
                             width : 70,
                             dataIndex : 'sid',
                             editor : null
                         }, {
-                            id : 'info',
                             header : this.i18n._("info"),
                             width : 70,
                             dataIndex : 'URL',
@@ -250,7 +246,6 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     this.gridVariables = Ext.create('Ung.EditorGrid',{
                         name : 'Variables',
                         settingsCmp : this,
-                        totalRecords : this.getBaseSettings().variablesLength,
                         height : 350,
                         emptyRow : {
                             "variable" : this.i18n._("[no name]"),
@@ -259,7 +254,9 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         },
                         title : this.i18n._("Variables"),
                         recordJavaClass : "com.untangle.node.ips.IpsVariable",
-                        data : this.getRpcNode().getVariables(0,this.getBaseSettings().variablesLength,[]).list,
+                        dataFn : Ext.bind(function() {
+                        	return this.getRpcNode().getVariables(0,this.getBaseSettings().variablesLength,[]);
+                        },this),
                         fields : [{
                             name : 'id'
                         }, {
@@ -423,10 +420,8 @@ if (!Ung.hasResource["Ung.Ips"]) {
                     //refresh the settings
                             this.getRpcNode().getBaseSettings(Ext.bind(function(result2,exception2){
                                 Ext.MessageBox.hide();                            
-                                this.gridRules.setTotalRecords(result2.rulesLength);
-                                this.gridVariables.setTotalRecords(result2.variablesLength);
-                                this.gridRules.reloadGrid({data:this.getRpcNode().getRules(0,this.getBaseSettings().rulesLength,[]).list});
-                                this.gridVariables.reloadGrid({data:this.getRpcNode().getVariables(0,this.getBaseSettings().variablesLength,[]).list});
+                                this.gridRules.reloadGrid();
+                                this.gridVariables.reloadGrid();
                             },this));
                             //this.gridEventLog.reloadGrid();                                     
                     }

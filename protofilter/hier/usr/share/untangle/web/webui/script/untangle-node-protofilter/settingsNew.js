@@ -73,10 +73,8 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 settingsCmp : this,
                 name : 'Signatures',
                 helpSource : 'protocol_list',
-                paginated : false,
                 autoGenerateId: true,
-                // the total records is set from the base settings
-                // patternsLength field
+                paginated : false,
                 data : this.nodeData.patterns.list,
                 emptyRow : {
                     "protocol" : this.i18n._("[no protocol]"),
@@ -88,9 +86,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 },
                 title : this.i18n._("Signatures"),
                 // the column is autoexpanded if the grid width permits
-                autoExpandColumn : 'description',
                 recordJavaClass : "com.untangle.node.protofilter.ProtoFilterPattern",
-                // this is the function used by Ung.RpcProxy to retrive data
                 // from the server
                 // the list of fields
                 fields : [{
@@ -132,7 +128,6 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                 }],
                 // the list of columns for the column model
                 columns : [{
-                    id : 'protocol',
                     header : this.i18n._("protocol"),
                     width : 200,
                     dataIndex : 'protocol',
@@ -142,7 +137,6 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
 					}
                 }, 
 				{
-                    id : 'category',
                     header : this.i18n._("category"),
                     width : 200,
                     dataIndex : 'category',
@@ -159,17 +153,17 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
 					width:55
 				},
 				{
-				  xtype:'checkcolumn',
-				  header : "<b>" + this.i18n._("log") + "</b>",
-				  dataIndex : 'log',
-				  fixed : true,
-				  width:55
+					xtype:'checkcolumn',
+					header : "<b>" + this.i18n._("log") + "</b>",
+					dataIndex : 'log',
+					fixed : true,
+					width:55
 				},
 				{
-                    id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
                     dataIndex : 'description',
+                    flex: 1,
 					field:{
 						xtype:'textfield',
                         allowBlank : false
@@ -247,7 +241,6 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     type : 'string',
                     mapping : 'pfProtocol'
                 }],
-                autoExpandColumn : 'protocol',
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
@@ -267,10 +260,10 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     sortable : true,
                     dataIndex : 'uid'
                 }, {
-                    id : 'protocol',
                     header : this.i18n._("protocol"),
                     width : 120,
                     sortable : true,
+                    flex:1,
                     dataIndex : 'protocol'
                 }, {
                     header : this.i18n._("blocked"),

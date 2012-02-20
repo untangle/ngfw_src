@@ -262,7 +262,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
             this.gridExtensions = Ext.create('Ung.EditorGrid',{
                 name : 'File Extensions',
                 settingsCmp : this,
-                totalRecords : this.getBaseSettings().extensionsLength,
                 emptyRow : {
                     "string" : "undefined type",
                     "live" : true,
@@ -270,7 +269,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 },
                 title : this.i18n._("File Extensions"),
                 recordJavaClass : "com.untangle.uvm.node.StringRule",
-                proxyRpcFn : this.getRpcNode().getExtensions,
+                dataFn : Ext.bind(function(){
+                	return this.getRpcNode().getExtensions(0, Ung.Util.maxRowCount,[]);
+                }, this),
                 fields : [{
                     name : 'id'
                 }, {
@@ -283,7 +284,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     type : 'string'
                 }],
                 columns : [{
-                    id : 'string',
                     header : this.i18n._("file type"),
                     width : 200,
                     dataIndex : 'string',
@@ -299,10 +299,10 @@ if (!Ung.hasResource["Ung.Virus"]) {
 					fixed : true,
 					width:55
 				}, {
-                    id : 'name',
                     header : this.i18n._("description"),
                     width : 200,
                     dataIndex : 'name',
+                    flex: 1,
 					field: {
 						xtype:'textfield',
 						allowBlank:false
@@ -310,7 +310,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'name',
                 rowEditorInputLines : [
 				{
 					xtype:'textfield',
@@ -342,7 +341,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
             this.gridMimeTypes = new Ung.EditorGrid({
                 name : 'MIME Types',
                 settingsCmp : this,
-                totalRecords : this.getBaseSettings().httpMimeTypesLength,
                 emptyRow : {
                     "mimeType" : "undefined type",
                     "live" : true,
@@ -350,7 +348,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 },
                 title : this.i18n._("MIME Types"),
                 recordJavaClass : "com.untangle.uvm.node.MimeTypeRule",
-                proxyRpcFn : this.getRpcNode().getHttpMimeTypes,
+                dataFn : Ext.bind(function(){
+                	return this.getRpcNode().getHttpMimeTypes(0, Ung.Util.maxRowCount,[]);
+                }, this),
                 fields : [{
                     name : 'id'
                 }, {
@@ -363,7 +363,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     type : 'string'
                 }],
                 columns : [{
-                    id : 'mimeType',
                     header : this.i18n._("MIME type"),
                     width : 200,
                     dataIndex : 'mimeType',
@@ -371,27 +370,24 @@ if (!Ung.hasResource["Ung.Virus"]) {
 						xtype:'textfield',
 						allowBlank:false
 					}
-                }, 
-				{
+                }, {
 					xtype:'checkcolumn',
 					header : this.i18n._("scan"),
 					dataIndex : 'live',
 					fixed : true,
 					width:55
-				}, 
-				{
-                    id : 'name',
+				}, {
                     header : this.i18n._("description"),
                     width : 200,
                     dataIndex : 'name',
-					field:{
+                    flex : 1,
+					field : {
 						xtype:'textfield',
 						allowBlank:false
 					}
                 }],
                 sortField : 'mimeType',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'name',
                 rowEditorInputLines : [
 				{
 					xtype:'textfield',

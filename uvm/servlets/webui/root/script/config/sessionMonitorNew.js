@@ -48,7 +48,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 qtip : this.i18n._("This shows all current sessions."),
                 paginated : false,
                 recordJavaClass : "com.untangle.uvm.SessionMonitorEntry",
-                proxyRpcFn : rpc.jsonrpc.UvmContext.sessionMonitor().getMergedSessions,
+                dataFn : rpc.jsonrpc.UvmContext.sessionMonitor().getMergedSessions,
                 fields : [{
                     name : "id"
                 },{
@@ -85,22 +85,18 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     name : "portForwarded"
                 }],
                 columns : [{
-                    id : "protocol",
                     header : this.i18n._("Protocol"),
                     dataIndex: "protocol",
                     width : 70
                 },{
-                    id : "bypassed",
                     header : this.i18n._("Bypassed"),
                     dataIndex: "bypassed",
                     width : 70
                 },{
-                    id : "policy",
                     header : this.i18n._("Policy"),
                     dataIndex: "policy",
                     width : 100
                 },{
-                    id : "clientIntf",
                     header : this.i18n._("Client Interface"),
                     dataIndex: "clientIntf",
                     width : 100,
@@ -116,27 +112,22 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                         return result;
                     }
                 },{
-                    id : "preNatClient",
                     header : this.i18n._("Client (Pre-NAT)"),
                     dataIndex: "preNatClient",
                     width : 100
                 },{
-                    id : "preNatServer",
                     header : this.i18n._("Server (Pre-NAT)"),
                     dataIndex: "preNatServer",
                     width : 100
                 },{
-                    id : "preNatClientPort",
                     header : this.i18n._("Client Port (Pre-NAT)"),
                     dataIndex: "preNatClientPort",
                     width : 80
                 },{
-                    id : "preNatServerPort",
                     header : this.i18n._("Server Port (Pre-NAT)"),
                     dataIndex: "preNatServerPort",
                     width : 80
                 },{
-                    id : "serverIntf",
                     header : this.i18n._("Server Interface"),
                     dataIndex: "serverIntf",
                     width : 100,
@@ -152,37 +143,30 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                         return result;
                     }
                 },{
-                    id : "postNatClient",
                     header : this.i18n._("Client (Post-NAT)"),
                     dataIndex: "postNatClient",
                     width : 100
                 },{
-                    id : "postNatServer",
                     header : this.i18n._("Server (Post-NAT)"),
                     dataIndex: "postNatServer",
                     width : 100
                 },{
-                    id : "postNatClientPort",
                     header : this.i18n._("Client Port (Post-NAT)"),
                     dataIndex: "postNatClientPort",
                     width : 80
                 },{
-                    id : "postNatServerPort",
                     header : this.i18n._("Server Port (Post-NAT)"),
                     dataIndex: "postNatServerPort",
                     width : 80
                 },{
-                    id : "localTraffic",
                     header : this.i18n._("Local"),
                     dataIndex: "localTraffic",
                     width : 50
                 },{
-                    id : "natted",
                     header : this.i18n._("NATd"),
                     dataIndex: "natted",
                     width : 50
                 },{
-                    id : "portForwarded",
                     header : this.i18n._("Port Forwarded"),
                     dataIndex: "portForwarded",
                     width : 50
@@ -198,11 +182,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                             iconCls : 'icon-refresh',
                             handler : Ext.bind(function() {
                                 Ext.MessageBox.wait(this.settingsCmp.i18n._("Refreshing..."), this.settingsCmp.i18n._("Please wait"));
-                                this.store.load({
-                                    callback: Ext.bind(function () {
-                                        Ext.MessageBox.hide();
-                                    },this)
-                                });
+                                this.reloadGrid();
+                                Ext.MessageBox.hide();
                             },this)
                         },{
                             xtype : 'button',
@@ -248,13 +229,10 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     refreshButton.enable();
                 },
                 autorefreshList : function() {
-                    this.store.load({
-                        callback: Ext.bind(function () {
-                            if(this!=null && this.autoRefreshEnabled && Ext.getCmp(this.id) != null) {
-                                Ext.defer(this.autorefreshList,5000,this);
-                            }
-                        },this)
-                    });
+                    if(this!=null && this.autoRefreshEnabled && Ext.getCmp(this.id) != null) {
+                    	this.reloadGrid();
+                        Ext.defer(this.autorefreshList,5000,this);
+                    }
                 }
             });
         }

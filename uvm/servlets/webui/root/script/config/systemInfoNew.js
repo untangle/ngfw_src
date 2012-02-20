@@ -137,14 +137,13 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                                 //reload licenses for each node in rack
                                 main.loadLicenses();
                                 //reload grid
-                                this.gridLicenses.store.reload();
+                                this.gridLicenses.reloadGrid();
                             },this)
                         }
                     ]
                 }),
                 recordJavaClass : "com.untangle.uvm.node.License",
-                proxyRpcFn : main.getLicenseManager().getLicenses,
-                plugins : [],
+                dataFn : main.getLicenseManager().getLicenses,
                 fields : [{
                     name : "displayName"
                 },{
@@ -163,34 +162,35 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                     name : "id"
                 }],
                 columns : [{
-                    id : "displayName",
                     header : this.i18n._("Name"),
-                    width : 150
+                    dataIndex: "displayName",
+                    width : 150,
+                    flex: 1
                 },{
-                    id : "name",
                     header : this.i18n._("App"),
+                    dataIndex: "name",
                     width : 150
                 },{
-                    id : "UID",
                     header : this.i18n._("UID"),
+                    dataIndex: "UID",
                     width : 150
                 },{
-                    id : "start",
                     header : this.i18n._("Start Date"),
+                    dataIndex: "start",
                     width : 240,
                     renderer : function(value) { return new Date(value*1000); }
                 },{
-                    id : "end",
                     header : this.i18n._("End Date"),
+                	dataIndex : "end",
                     width : 240,
                     renderer : function(value) { return new Date(value*1000); }
                 },{
-                    id : "valid",
                     header : this.i18n._("Valid"),
+                	dataIndex : "valid",
                     width : 50
                 },{
-                    id : "status",
                     header : this.i18n._("Status"),
+                	dataIndex : "status",
                     width : 150
                 }]
             });
