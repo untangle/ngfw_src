@@ -3774,85 +3774,6 @@ Ext.define('Ung.RowEditorWindow', {
     }
 });
 
-Ext.define("Ung.RpcProxy",{
-	extend: "Ext.data.proxy.Server",
-	dataFn: null,
-	dataRoot: "list",
-	doRequest: function(operation, callback, scope) {
-		var response = this.dataFn();
-		var success=true;
-		this.processResponse(success, operation, null, response, callback, scope);
-	},
-    reader : {
-    	type: 'json',
-        root : this.dataRoot
-    }
-})
-
-// Grid check column
-Ext.define('Ung.grid.CheckColumn', {
-	extend:'Ext.ux.CheckColumn',
-	alias: 'widget.ung.checkcolumn',
-	fixed: true,
-    constructor : function(config) {
-        Ext.apply(this, config);
-        if (!this.id) {
-            this.id = Ext.id();
-        }
-        if (!this.width) {
-            this.width = 55;
-        }
-		Ung.grid.CheckColumn.superclass.constructor.call(this,config);
-    },
-    init : function(grid) {
-        this.grid = grid;
-    },
-});
-
-
-// Grid edit column
-Ext.define('Ung.grid.IconColumn_Old', {
-    constructor : function(config) {
-        Ext.apply(this, config);
-        if (!this.id) {
-            this.id = Ext.id();
-        }
-        if (!this.width) {
-            this.width = 50;
-        }
-        if (this.fixed == null) {
-            this.fixed = true;
-        }
-        if (this.sortable == null) {
-            this.sortable = false;
-        }
-        if (!this.dataIndex) {
-            this.dataIndex = null;
-        }
-        this.renderer = Ext.bind(this.renderer,this);
-    },
-    init : function(grid) {
-        this.grid = grid;
-        this.grid.on('render', function() {
-            var view = this.grid.getView();
-            //TODO: extjs4 fix
-            //view.mainBody.on('mousedown', this.onMouseDown, this);
-        }, this);
-    },
-
-    onMouseDown : function(e, t) {
-        if (t.className && t.className.indexOf(this.iconClass) != -1) {
-            e.stopEvent();
-            var index = this.grid.getView().findRowIndex(t);
-            var record = this.grid.store.getAt(index);
-            this.handle(record, index);
-        }
-    },
-
-    renderer : function(value, metadata, record) {
-        return '<div class="'+this.iconClass+'">&nbsp;</div>';
-    }
-});
 
 // Grid edit column
 Ext.define('Ung.grid.EditColumn', {
@@ -3901,29 +3822,27 @@ Ext.define('Ung.grid.DeleteColumn', {
 		this.grid.deleteHandler(rec);
 	}
 });
-
+/*
 // Grid reorder column
-Ext.define('Ung.grid.ReorderColumn', {
+Ext.define('Ung.grid.ReorderColumn1', {
 	extend:'Ext.grid.column.Action',
 	iconCls:'icon-drag',
 	menuDisabled:true,
 	fixed:true,
-    constructor : function(config) {
-        if (!config.header) {
-            config.header = i18n._("Reorder");
-        }
-        if (!config.width) {
-            config.width = 55;
-        }
-		Ung.grid.ReorderColumn.superclass.constructor.call(this,config);
-    },
-    init : function(grid) {
-        this.grid = grid;
-    },
+	header:i18n._("Reorder"),
+	width: 55
 });
+*/
 
-
-	
+//Grid reorder column
+Ext.define('Ung.grid.ReorderColumn', {
+	extend:'Ext.grid.column.Template',
+	menuDisabled:true,
+	fixed:true,
+	header:i18n._("Reorder"),
+	width: 55,
+	tpl:'<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>'
+});
 
 
 // Editor Grid class
@@ -4013,18 +3932,15 @@ Ext.define('Ung.EditorGrid', {
         	}
         }        
         if (this.hasReorder) {
-            this.enableDragDrop = true;
-            this.selType= 'rowmodel';
-            this.dropConfig= {
-                appendOnly:true
-            };
-
             var reorderColumn = Ext.create('Ung.grid.ReorderColumn',this.configReorder);
-            if (!this.plugins) {
-                this.plugins = [];
-            }
-            this.plugins.push(reorderColumn);
             this.columns.push(reorderColumn);
+        	
+            this.viewConfig= {
+                plugins: {
+                    ptype: 'gridviewdragdrop',
+                    dragText: i18n._('Drag and drop to reorganize')
+                }
+            }
         }
         if (this.hasEdit) {
             if (this.configEdit == null) 
@@ -4337,42 +4253,14 @@ Ext.define('Ung.EditorGrid', {
     },
     afterRender : function() {
         Ung.EditorGrid.superclass.afterRender.call(this);
-        if(this.hasReorder) {
-            var ddrowTarget = Ext.create('Ext.dd.DropTarget',this.container, {
-                ddGroup: "GridDD",
-                // copy:false,
-                notifyDrop : Ext.bind(function(dd, e, data){
-                
-                    var sm = this.getSelectionModel();
-                    var rows = sm.getSelections();
-                    var cindex = dd.getDragData(e).rowIndex;    // Here is need
-
-                    var dsGrid = this.getStore();
-
-                    for(i = 0; i < rows.length; i++) {
-                        rowData = dsGrid.getById(rows[i].id);
-                        dsGrid.remove(dsGrid.getById(rows[i].id));
-                        dsGrid.insert(cindex, rowData);
-                    }
-
-                    this.getView().refresh();
-
-                    // put the cursor focus on the row of the gridRules which we
-                    // just draged
-                    this.getSelectionModel().selectRow(cindex);
-                },this)
-            });
-        }
-        //TODO: extjs4 migration find an alternative
-        //this.getGridEl().down("div[class*=x-grid3-viewport]").set({'name' : "Table"});
-
+        var grid=this;
         this.getView().getRowClass = function(record, index, rowParams, store) {
             var id = record.get("id");
             if (id == null || id < 0) {
                 return "grid-row-added";
             } else {
             	//HACK: this.panel is not standard api 
-                var d = this.panel.changedData[id];
+                var d = grid.changedData[id];
                 if (d) {
                     if (d.op == "deleted") {
                         return "grid-row-deleted";

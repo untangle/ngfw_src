@@ -392,17 +392,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 return true;
             },this);
 
-            var passColumn = Ext.create('Ung.grid.CheckColumn',{
-                header : "<b>" + this.i18n._("pass") + "</b>",
-                dataIndex : 'enabled',
-                width: 65,
-                fixed : true,
-				editor: {
-					xtype: 'checkbox',
-					cls: 'x-grid-checkheader-editor'
-				} 
-            });
-
 			this.gridPassList = Ext.create('Ung.EditorGrid', {
                 name : 'Pass List',
                 helpSource : 'pass_list',
@@ -424,7 +413,13 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     width : 200,
                     dataIndex : 'string',
 					field:'textfield'
-                }, passColumn,
+                }, {
+                	xtype: "checkcolumn",
+                    header : "<b>" + this.i18n._("pass") + "</b>",
+                    dataIndex : 'enabled',
+                    width: 65,
+                    fixed : true
+                },
 				{
                     id : 'description',
                     header : this.i18n._("description"),
@@ -435,7 +430,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                plugins : [passColumn],
                 rowEditorInputLines : [{
                 	xtype: 'textfield',
                     name : "Site",
