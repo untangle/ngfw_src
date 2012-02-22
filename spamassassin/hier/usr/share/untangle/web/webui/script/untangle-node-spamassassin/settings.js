@@ -109,7 +109,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         // Email Config Panel
         buildEmail : function() {
             this.smtpData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')],
-                             ['BLOCK', this.i18n._('Drop')], ['QUARANTINE', this.i18n._('Quarantine')]];
+                             ['DROP', this.i18n._('Drop')], ['QUARANTINE', this.i18n._('Quarantine')]];
             this.spamData = [['MARK', this.i18n._('Mark')], ['PASS', this.i18n._('Pass')]];
             this.strengthsData = [[50, this.i18n._('Low (Threshold: 5.0)')], [43, this.i18n._('Medium (Threshold: 4.3)')], [35, this.i18n._('High (Threshold: 3.5)')],
                                   [33, this.i18n._('Very High (Threshold: 3.3)')], [30, this.i18n._('Extreme (Threshold: 3.0)')], [0, this.i18n._('Custom')]];
