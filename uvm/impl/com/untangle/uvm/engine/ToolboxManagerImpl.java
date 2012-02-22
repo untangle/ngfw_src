@@ -443,7 +443,12 @@ class ToolboxManagerImpl implements ToolboxManager
             catch (PackageException e) {
                 throw new PackageInstallException(e);
             }
-                
+            
+            
+            logger.info("SUBNODES:");
+            for (String node : subnodes) 
+                logger.info(node);
+
             /**
              * Install the package
              */

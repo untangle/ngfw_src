@@ -111,7 +111,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
                                                        
         this.tarpitEventQuery = new EventLogQuery(I18nUtil.marktr("Tarpit Events"),
                                                   "FROM TarpitEventsFromReports evt " +
-                                                  "WHERE evt.vendorName = '" + vendor + "' " +
+                                                  "WHERE evt.vendorName = '" + vendorTag + "' " +
                                                   "AND evt.policyId = :policyId " +
                                                   "ORDER BY evt.timeStamp DESC");
         
