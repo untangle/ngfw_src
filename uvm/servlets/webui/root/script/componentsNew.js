@@ -3914,13 +3914,12 @@ Ext.define('Ung.EditorGrid', {
 	modelName: null,
     constructor : function(config) {
         this.subCmps=[];
-        this.changedData = {};
-        this.configReorder={};
-        this.configEdit={};
-        this.configDelete={};
 		this.callParent(arguments);
     },
     initComponent : function() {
+        if (!this.plugins) {
+            this.plugins = [];
+        }
         if(this.loadMask===null) {
            this.loadMask={msg: i18n._("Loading ...")} ;
         }
@@ -3932,7 +3931,7 @@ Ext.define('Ung.EditorGrid', {
         	}
         }        
         if (this.hasReorder) {
-            var reorderColumn = Ext.create('Ung.grid.ReorderColumn',this.configReorder);
+            var reorderColumn = Ext.create('Ung.grid.ReorderColumn', this.configReorder || {});
             this.columns.push(reorderColumn);
         	
             this.viewConfig= {
@@ -3946,18 +3945,12 @@ Ext.define('Ung.EditorGrid', {
             if (this.configEdit == null) 
                 throw i18n._("Invalid configEdit for Grid with Edit enabled");
             
-            var editColumn = Ext.create('Ung.grid.EditColumn',this.configEdit);
-            if (!this.plugins) {
-                this.plugins = [];
-            }
+            var editColumn = Ext.create('Ung.grid.EditColumn', this.configEdit || {});
             this.plugins.push(editColumn);
             this.columns.push(editColumn);
         }
         if (this.hasDelete) {
-            var deleteColumn = Ext.create('Ung.grid.DeleteColumn',this.configDelete);
-            if (!this.plugins) {
-                this.plugins = [];
-            }
+            var deleteColumn = Ext.create('Ung.grid.DeleteColumn', this.configDelete || {});
             this.plugins.push(deleteColumn);
             this.columns.push(deleteColumn);
         }
@@ -3970,13 +3963,6 @@ Ext.define('Ung.EditorGrid', {
                 },this)
             });
         }
-		this.modelName='Ung.EditorGrid.Store.ImplicitModel-' + this.id;
-		if ( Ext.ModelManager.get(this.modelName) == null) {
-			Ext.define(this.modelName, {
-				extend: 'Ext.data.Model',
-				fields: this.fields
-			});
-		}
 		if(this.dataFn) {
 			if(this.dataRoot === undefined) {
 				this.dataRoot="list";
@@ -3985,8 +3971,10 @@ Ext.define('Ung.EditorGrid', {
 		}
 		this.store=Ext.create('Ext.data.Store',{
 			data: this.data!=null?this.data:[],
-			model:this.modelName,
 			proxy: {
+				model: Ext.create('Ext.data.Model',{
+					fields: this.fields
+				})
 				type: this.paginated?'pagingmemory':'memory',
 				reader: {
 					type: 'json',
@@ -4034,7 +4022,6 @@ Ext.define('Ung.EditorGrid', {
         }
 
         if(this.rowEditor!=null) {
-            //this.rowEditor.render();
             this.subCmps.push(this.rowEditor);
         }
         if (this.tbar == null) {        
@@ -4092,7 +4079,7 @@ Ext.define('Ung.EditorGrid', {
     	//TODO:remove this
     },
     addHandler : function() {
-		var record = Ext.create(this.modelName, Ext.decode(Ext.encode(this.emptyRow)));
+		var record = Ext.create(Ext.ClassManager.getName(this.store.proxy.model), Ext.decode(Ext.encode(this.emptyRow)));
 		record.data.id = this.genAddedId();
         this.stopEditing();
         if (this.rowEditor) {
@@ -4259,7 +4246,6 @@ Ext.define('Ung.EditorGrid', {
             if (id == null || id < 0) {
                 return "grid-row-added";
             } else {
-            	//HACK: this.panel is not standard api 
                 var d = grid.changedData[id];
                 if (d) {
                     if (d.op == "deleted") {
