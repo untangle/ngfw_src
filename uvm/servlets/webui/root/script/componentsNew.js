@@ -1236,6 +1236,40 @@ Ung.AppItem.getAppByLibItem = function(libItemName) {
 // Node Class
 Ext.define("Ung.Node", {
 	extend: "Ext.Component",
+	statics: {
+		// Get node component by tid
+		getCmp: function(tid) {
+		    return Ext.getCmp("node_" + tid);
+		},
+		getStatusTip: function() {
+		    return [
+		        '<div style="text-align: left;">',
+		        i18n._("The <B>Status Indicator</B> shows the current operating condition of a particular application."),
+		        '<BR>',
+		        '<font color="#00FF00"><b>' + i18n._("Green") + '</b></font> '
+		                + i18n._('indicates that the application is "on" and operating normally.'),
+		        '<BR>',
+		        '<font color="#FF0000"><b>' + i18n._("Red") + '</b></font> '
+		                + i18n._('indicates that the application is "on", but that an abnormal condition has occurred.'),
+		        '<BR>',
+		        '<font color="#FFFF00"><b>' + i18n._("Yellow") + '</b></font> '
+		                + i18n._('indicates that the application is saving or refreshing settings.'), '<BR>',
+		        '<b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the application is "off", and may be turned "on" by the user.'),
+		        '</div>'].join('');
+		},
+		getPowerTip: function() {
+		    return i18n._('The <B>Power Button</B> allows you to turn a application "on" and "off".');
+		},
+		getNonEditableNodeTip: function () {
+		    return i18n._('This node belongs to the parent rack shown above.<br/> To access the settings for this node, select the parent rack.'); 
+		},
+		template: new Ext.Template('<div class="node-cap" style="display:{isNodeEditable}"></div><div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>',
+		    '<div class="node-faceplate-info">{licenseMessage}</div>',
+		    '<div class="node-blingers" id="node-blingers_{id}"></div>',
+		    '<div class="node-state" id="node-state_{id}" name="State"></div>',
+		    '<div class="{nodePowerCls}" id="node-power_{id}" name="Power"></div>',
+		    '<div class="node-buttons" id="node-buttons_{id}"></div>')
+	},	
     autoEl : "div",
     // ---Node specific attributes------
     // node name
@@ -1718,39 +1752,8 @@ Ext.define("Ung.Node", {
         }
     }
 });
-// Get node component by tid
-Ung.Node.getCmp = function(tid) {
-    return Ext.getCmp("node_" + tid);
-};
 
-Ung.Node.getStatusTip = function() {
-    return [
-        '<div style="text-align: left;">',
-        i18n._("The <B>Status Indicator</B> shows the current operating condition of a particular application."),
-        '<BR>',
-        '<font color="#00FF00"><b>' + i18n._("Green") + '</b></font> '
-                + i18n._('indicates that the application is "on" and operating normally.'),
-        '<BR>',
-        '<font color="#FF0000"><b>' + i18n._("Red") + '</b></font> '
-                + i18n._('indicates that the application is "on", but that an abnormal condition has occurred.'),
-        '<BR>',
-        '<font color="#FFFF00"><b>' + i18n._("Yellow") + '</b></font> '
-                + i18n._('indicates that the application is saving or refreshing settings.'), '<BR>',
-        '<b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the application is "off", and may be turned "on" by the user.'),
-        '</div>'].join('');
-};
-Ung.Node.getPowerTip = function() {
-    return i18n._('The <B>Power Button</B> allows you to turn a application "on" and "off".');
-};
-Ung.Node.getNonEditableNodeTip = function (){
-    return i18n._('This node belongs to the parent rack shown above.<br/> To access the settings for this node, select the parent rack.'); 
-};
-Ung.Node.template = new Ext.Template('<div class="node-cap" style="display:{isNodeEditable}"></div><div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>',
-    '<div class="node-faceplate-info">{licenseMessage}</div>',
-    '<div class="node-blingers" id="node-blingers_{id}"></div>',
-    '<div class="node-state" id="node-state_{id}" name="State"></div>',
-    '<div class="{nodePowerCls}" id="node-power_{id}" name="Power"></div>',
-    '<div class="node-buttons" id="node-buttons_{id}"></div>');
+
 Ext.define("Ung.NodePreview", {
 	extend: "Ext.Component",
     autoEl : "div",
@@ -3822,17 +3825,6 @@ Ext.define('Ung.grid.DeleteColumn', {
 		this.grid.deleteHandler(rec);
 	}
 });
-/*
-// Grid reorder column
-Ext.define('Ung.grid.ReorderColumn1', {
-	extend:'Ext.grid.column.Action',
-	iconCls:'icon-drag',
-	menuDisabled:true,
-	fixed:true,
-	header:i18n._("Reorder"),
-	width: 55
-});
-*/
 
 //Grid reorder column
 Ext.define('Ung.grid.ReorderColumn', {
@@ -3849,11 +3841,6 @@ Ext.define('Ung.grid.ReorderColumn', {
 Ext.define('Ung.EditorGrid', {
 	extend:'Ext.grid.Panel',
 	selType: 'rowmodel',
-	plugins: [
-        Ext.create('Ext.grid.plugin.CellEditing', {
-            clicksToEdit: 2
-        })
-    ],
     // record per page
     recordsPerPage : 25,
     // the minimum number of records for pagination
@@ -3864,8 +3851,6 @@ Ext.define('Ung.EditorGrid', {
     settingsCmp : null,
     // the list of fields used to by the Store
     fields : null,
-    // the data array
-    data:[],
     // has Add button
     hasAdd : true,
     // should add add rows at top or bottom
@@ -3903,20 +3888,31 @@ Ext.define('Ung.EditorGrid', {
     // the map of changed data in the grid
     // used by rendering functions and by save
     importSettingsWindow: null,    
-    changedData : {},
-    viewConfig: {
-    	stripeRows : true,
-    },
-	plugins:[],
-	loadMask:{
-		msg: i18n._("Loading ...")
-	},
     enableColumnHide : false,
     enableColumnMove: false,
     autoGenerateId: false,
     addedId : 0,
     generatedId:1,
-    subCmps:[],
+    constructor : function(config) {
+    	var defaults = {
+		    data:[],
+    		plugins: [
+    	        Ext.create('Ext.grid.plugin.CellEditing', {
+    	            clicksToEdit: 2
+    	        })
+    	    ],
+    	    viewConfig: {
+    	    	stripeRows : true,
+    	    },
+    		loadMask:{
+    			msg: i18n._("Loading ...")
+    		},
+    	    changedData : {},
+    	    subCmps:[]
+    	};
+        Ext.applyIf(config, defaults)
+		this.callParent(arguments);
+    },
     initComponent : function() {
         for (var i = 0; i < this.columns.length; i++) {
         	var col=this.columns[i];
