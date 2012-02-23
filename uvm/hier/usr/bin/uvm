@@ -399,7 +399,6 @@ while True:
     
     # if the untangle-vm returns in the dev env, don't bother restarting it
     if developmentEnv:
-        time.sleep(10);
         debug("*** Development environment: not restarting untangle-vm");
         resetIptables();    
         sys.exit(1);
@@ -425,4 +424,7 @@ while True:
     os.system("cp -fa %s.crash   %s.crash.1 2>/dev/null" % (uvm_packages_log, uvm_packages_log));
     os.system("dpkg -l 'untangle*' >| %s.crash" % (uvm_packages_log));
     
+    # we sleep here to allow the system to recover from unexpected crashes
+    # This will allow the kernel time to close sockets so they will be available when the UVM restarts
+    time.sleep(30); 
     # end while loop
