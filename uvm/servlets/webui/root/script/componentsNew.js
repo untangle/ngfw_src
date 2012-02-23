@@ -1304,9 +1304,8 @@ Ext.define("Ung.Node", {
         });
         if(this.fadeIn) {
             this.getEl().scrollIntoView(Ext.getCmp("center").body);
-            this.getEl().syncFx();
-            this.getEl().fadeIn({duration: 6});
-            this.getEl().frame(null, 1, { duration: 1 });
+            this.getEl().setOpacity(0.5);
+            this.getEl().syncFx().frame(null, 1, { duration: 1000 }).fadeIn({duration: 6000});
         }
         var nodeButtons=[{
             xtype: "button",
@@ -1619,14 +1618,14 @@ Ext.define("Ung.Node", {
                 }
                 this.setState("attention");
                 this.getEl().mask();
-                this.getEl().fadeOut({ endOpacity: 0.1, duration: 2, remove: false, useDisplay :false});
+                this.getEl().fadeOut({ opacity: 0.1, duration: 2000, remove: false, useDisplay :false});
                 rpc.nodeManager.destroy(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception, Ext.bind(function() {
                         this.getEl().unmask();
-                        this.getEl().stopFx();
+                        this.getEl().stopAnimation();
                     },this),"alert")) return;
                     if (this) {
-                        this.getEl().stopFx();
+                        this.getEl().stopAnimation();
                         var nodeName = this.name;
                         var cmp = this;
                         Ext.destroy(cmp);
@@ -1773,7 +1772,8 @@ Ext.define("Ung.NodePreview", {
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
         this.getEl().scrollIntoView(Ext.getCmp("center").body);
-        this.getEl().fadeIn({ endOpacity: 0.58, duration: 20});
+        this.getEl().setOpacity(0);
+        this.getEl().fadeIn({ opacity: 0.6, duration: 12000});
     }
 });
 Ung.NodePreview.template = new Ext.Template('<div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>');
@@ -3864,6 +3864,8 @@ Ext.define('Ung.EditorGrid', {
     settingsCmp : null,
     // the list of fields used to by the Store
     fields : null,
+    // the data array
+    data:[],
     // has Add button
     hasAdd : true,
     // should add add rows at top or bottom
@@ -3901,28 +3903,21 @@ Ext.define('Ung.EditorGrid', {
     // the map of changed data in the grid
     // used by rendering functions and by save
     importSettingsWindow: null,    
-    changedData : null,
-    stripeRows : true,
-    //clicksToEdit : 1,
+    changedData : {},
+    viewConfig: {
+    	stripeRows : true,
+    },
+	plugins:[],
+	loadMask:{
+		msg: i18n._("Loading ...")
+	},
     enableColumnHide : false,
     enableColumnMove: false,
     autoGenerateId: false,
     addedId : 0,
     generatedId:1,
-    loadMask: null,
-    subCmps:null,
-	modelName: null,
-    constructor : function(config) {
-        this.subCmps=[];
-		this.callParent(arguments);
-    },
+    subCmps:[],
     initComponent : function() {
-        if (!this.plugins) {
-            this.plugins = [];
-        }
-        if(this.loadMask===null) {
-           this.loadMask={msg: i18n._("Loading ...")} ;
-        }
         for (var i = 0; i < this.columns.length; i++) {
         	var col=this.columns[i];
         	col.menuDisabled= true;
@@ -3934,17 +3929,12 @@ Ext.define('Ung.EditorGrid', {
             var reorderColumn = Ext.create('Ung.grid.ReorderColumn', this.configReorder || {});
             this.columns.push(reorderColumn);
         	
-            this.viewConfig= {
-                plugins: {
-                    ptype: 'gridviewdragdrop',
-                    dragText: i18n._('Drag and drop to reorganize')
-                }
+            this.viewConfig.plugins= {
+                ptype: 'gridviewdragdrop',
+                dragText: i18n._('Drag and drop to reorganize')
             }
         }
         if (this.hasEdit) {
-            if (this.configEdit == null) 
-                throw i18n._("Invalid configEdit for Grid with Edit enabled");
-            
             var editColumn = Ext.create('Ung.grid.EditColumn', this.configEdit || {});
             this.plugins.push(editColumn);
             this.columns.push(editColumn);
@@ -3970,11 +3960,9 @@ Ext.define('Ung.EditorGrid', {
 			this.data=this.dataFn();
 		}
 		this.store=Ext.create('Ext.data.Store',{
-			data: this.data!=null?this.data:[],
+			data: this.data,
+			fields: this.fields,
 			proxy: {
-				model: Ext.create('Ext.data.Model',{
-					fields: this.fields
-				})
 				type: this.paginated?'pagingmemory':'memory',
 				reader: {
 					type: 'json',
@@ -4001,6 +3989,7 @@ Ext.define('Ung.EditorGrid', {
                 }
             }
 		});
+		this.totalRecords=this.data.length;
 
         if(this.paginated) {
             this.bbar = Ext.create('Ext.toolbar.Paging',{
@@ -4205,8 +4194,8 @@ Ext.define('Ung.EditorGrid', {
         }
     },
     getPageStart : function() {
-        if (this.store && this.store.lastOptions && this.store.lastOptions.params) {
-            return this.store.lastOptions.params.start;
+        if (this.store && this.store.currentPage) {
+            return this.store.currentPage;
         } else {
             return 0;
         }
@@ -4306,7 +4295,7 @@ Ext.define('Ung.EditorGrid', {
             var cd = this.changedData[id];
             if (pageStart == cd.pageStart) {
                 if ("added" == cd.op) {
-                    var record = new Ext.data.Record(cd.recData);
+                    var record = Ext.create(Ext.ClassManager.getName(this.store.proxy.model), cd.recData);
                     this.store.insert(0, [record]);
                 } else if ("modified" == cd.op) {
                     var recIndex = this.store.find("id", id);
