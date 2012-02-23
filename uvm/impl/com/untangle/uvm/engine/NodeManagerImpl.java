@@ -929,17 +929,17 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         return nodeId;
     }
 
-    private List<Policy> getAllPolicies(Policy p)
+    private List<Policy> getParentPolicies(Policy policy)
     {
-        PolicyManager lpi = UvmContextFactory.context().policyManager();
+        PolicyManager pm = UvmContextFactory.context().policyManager();
 
-        List<Policy> l = new ArrayList<Policy>();
-        while (null != p) {
-            l.add(p);
-            p = lpi.getParent(p);
+        List<Policy> parentList = new ArrayList<Policy>();
+        
+        for ( Policy p = pm.getParent(policy) ; p != null ; p = pm.getParent(p) ) {
+            parentList.add(p);
         }
 
-        return l;
+        return parentList;
     }
 
     private List<NodeId> getNodesForPolicy(Policy policy)
@@ -947,35 +947,29 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         return getNodesForPolicy(policy,true);
     }
 
-    private List<NodeId> getNodesForPolicy(Policy policy,boolean parents)
+    private List<NodeId> getNodesForPolicy(Policy policy, boolean parents)
     {
-        List<Policy> policies = null;
+        List<Policy> parentPolicies = null;
 
-        if (parents) {
-            if (policy == null) {
-                policies = new ArrayList<Policy>(1);
-                policies.add(null);
-            } else {
-                policies = getAllPolicies(policy);
-            }
-        } else {
-            policies = new ArrayList<Policy>(1);
-            policies.add(policy);
-        }
-
+        if (parents && policy != null) 
+            parentPolicies = getParentPolicies(policy);
+        else 
+            parentPolicies = new ArrayList<Policy>();
+        
         /*
          * This is a list of nodeIds.  Each index of the first list corresponds to its
          * policy in the policies array.  Each index in the second list is a nodeId of the nodes
          * in the policy
-         * ll[0] == list of nodeIds in policies[0]
-         * ll[1] == list of nodeIds in policies[1]
+         * parentNodeIdArray[0] == list of nodeIds in parentPolicies[0]
+         * parentNodeIdArray[1] == list of nodeIds in parentPolicies[1]
          * ...
-         * ll[n] == list of nodeIds in policies[n]
-         * Policies are ordered ll[0] is the current policy, ll[1] is its parent.
+         * parentNodeIdArray[n] == list of nodeIds in parentPolicies[n]
+         * Policies are ordered parentNodeIdArray[0] is the first parent, etc 
          */
-        List<List<NodeId>> ll = new ArrayList<List<NodeId>>(policies.size());
-        for (int i = 0; i < policies.size(); i++) {
-            ll.add(new ArrayList<NodeId>());
+        List<List<NodeId>> parentNodeIdArray = new ArrayList<List<NodeId>>(parentPolicies.size());
+        List<NodeId> thisPolicyNodeIds = new ArrayList<NodeId>();
+        for (int i = 0; i < parentPolicies.size(); i++) {
+            parentNodeIdArray.add(new ArrayList<NodeId>());
         }
 
         /*
@@ -983,39 +977,55 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
          * nodes in the policy.
          */
         for (NodeId nodeId : nodeIds.keySet()) {
-            NodeContext tc = nodeIds.get(nodeId);
+            NodeContext nodeContext = nodeIds.get(nodeId);
 
-            if (null != tc) {
+            if (nodeContext != null) {
                 Policy p = nodeId.getPolicy();
 
-                int i = policies.indexOf(p);
-                if (0 <= i) {
-                    List<NodeId> tl = ll.get(i);
-                    tl.add(nodeId);
+                /**
+                 * If its in the parent policy list - add it
+                 * Otherwise it its in the policy - add it
+                 */
+                int i = parentPolicies.indexOf(p);
+                if (i >= 0) {
+                    parentNodeIdArray.get(i).add(nodeId);
+                } else if (p == null && policy == null) {
+                    logger.warn("ADDING " + nodeId.getNodeName());
+                    thisPolicyNodeIds.add(nodeId);
+                } else if (p != null && policy != null && p.equals(policy)) {
+                    logger.warn("ADDING " + nodeId.getNodeName());
+                    thisPolicyNodeIds.add(nodeId);
                 }
             }
         }
 
         /*
-         * Strip out duplicates.  By iterating the list in order, this
+         * Add all the nodeIds from the current policy
+         * And all the nodes from the parent IFF they don't already exists
          * will only add the first entry (which will be most specific node.
          */
-        List<NodeId> l = new ArrayList<NodeId>(nodeIds.size());
+        List<NodeId> finalList = thisPolicyNodeIds;
         Set<String> names = new HashSet<String>();
 
-        for (List<NodeId> tl : ll) {
-            if (null != tl) {
-                for (NodeId t : tl) {
-                    String n = t.getNodeName();
+        for (NodeId nodeId : thisPolicyNodeIds) {
+            String n = nodeId.getNodeName();
+            if (!names.contains(n))
+                names.add(n);
+        }
+        for (List<NodeId> parentPolicyList : parentNodeIdArray) {
+            if (parentPolicyList != null) {
+                for (NodeId nodeId : parentPolicyList) {
+                    String n = nodeId.getNodeName();
                     if (!names.contains(n)) {
                         names.add(n);
-                        l.add(t);
+                        logger.warn("ADDING " + nodeId.getNodeName());
+                        finalList.add(nodeId);
                     }
                 }
             }
         }
 
-        return l;
+        return finalList;
     }
     
     /**
