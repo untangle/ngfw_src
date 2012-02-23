@@ -121,26 +121,33 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     email = Ext.create('Ext.form.FieldSet',{
                         title : this.i18n._('or Distribute Client Config via Email'),
                         autoHeight : true,
-                        labelWidth: 150,
                         items: [{
                             html : this.i18n._('Click "Send Email" to send an email to "Email Address" with information to retrieve the OpenVPN Client.'),
                             border: false,
-                            cls : "description"
+                            cls : "description",
+                            labelWidth: 150,
+                            labelAlign:'left'
                         },{
                             html : this.i18n._('Note: Clients can only download the client linked in the email if HTTPS remote administration is enabled!'),
                             border: false,
                             bodyStyle : 'paddingBottom:10px',
-                            cls: 'description warning'
+                            cls: 'description warning',
+                            labelWidth: 150,
+                            labelAlign:'left'
+
                         },{
                             xtype : 'textfield',
                             fieldLabel : this.i18n._('Email Address'),
                             labelWidth: 150,
-                            width: 200,
+                            labelAlign:'left',
+                            width: 300,
                             name : 'emailAddress'
                         },{
                             xtype : 'button',
                             text : this.i18n._( "Send Email" ),
                             name : 'sendEmail',
+                            labelWidth: 150,
+                            labelAlign:'left',
                             handler : Ext.bind(this.sendEmail, this )
                         }]
                     });
@@ -497,7 +504,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     ]
                 }),
                 recordJavaClass : "com.untangle.node.openvpn.ClientConnectEvent",
-                proxyRpcFn : this.getRpcNode().getActiveClients,
+                dataFn : this.getRpcNode().getActiveClients,
                 fields : [{
                     name : "address"
                 },{
@@ -749,21 +756,26 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 header : this.i18n._("distribute"),
                 dataIndex : null,
                 i18n : this.i18n,
-                handle : function(record) {
+                iconCls:'',
+                handler : function(view, rowIndex, colIndex) {
                     Ext.MessageBox.wait(
                         this.i18n._( "Building OpenVPN Client..." ),
                         this.i18n._( "Please Wait" )
                     );
-                    this.grid.distributeWindow.populate(record);
-                    this.grid.distributeWindow.show();
+                    var record = view.getStore().getAt(rowIndex);
+                    view.ownerCt.distributeWindow.populate(record);
+                    view.ownerCt.distributeWindow.show();
                 },
-                renderer : Ext.bind(function(value, metadata, record) {
+                
+                renderer : Ext.bind(function(value, metadata, record,rowIndex,colIndex,store,view) {
                     var out= '';
                     if(record.data.id>=0) {
-                        out= '<div class="ung-button button-column" style="text-align:center;" >' + this.i18n._("Distribute Client") + '</div>';
+                        //adding the x-action-col-0 class to force the processing of click event
+                        out= '<div class="x-action-col-0 ung-button button-column" style="text-align:center;">' + this.i18n._("Distribute Client") + '</div>';
                     }
                     return out;
                 }, this )
+                
             });
         },
         getGroupsColumn : function() {
@@ -790,7 +802,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             var defaultGroup= this.getGroupsStore().getCount()>0?this.getGroupsStore().getAt(0).data:null;
             var gridClients = Ext.create('Ung.EditorGrid',{
                 initComponent : function() {
-                    this.distributeWindow = new Ung.Node.OpenVPN.DistributeClient({
+                    this.distributeWindow = Ext.create('Ung.Node.OpenVPN.DistributeClient',{
                         i18n : this.settingsCmp.i18n,
                         node : this.settingsCmp.getRpcNode()
                     });
@@ -841,7 +853,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         fixed : true
                     },
                     {
-                        id : 'name',
                         header : this.i18n._("client name"),
                         width : 130,
                         dataIndex : 'name',
@@ -851,15 +862,17 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             allowBlank : false,
                             vtype : 'openvpnClientName'
                         }
-                    }, groupsColumn, distributeColumn, {
-                    id : 'address',
-                    header : this.i18n._("virtual address"),
-                    width : 100,
-                    dataIndex : 'address',
-                    renderer : Ext.bind(function(value, metadata, record) {
-                        return value==null ? this.i18n._("unassigned") : value;
-                    },this)
-                }],
+                    }, 
+                    groupsColumn, 
+                    distributeColumn, 
+                    {
+                        header : this.i18n._("virtual address"),
+                        width : 100,
+                        dataIndex : 'address',
+                        renderer : Ext.bind(function(value, metadata, record) {
+                            return value==null ? this.i18n._("unassigned") : value;
+                        },this)
+                    }],
                 //sortField : 'name',
                 columnsDefaultSortable : true,
                 // the row input lines used by the row editor window
@@ -903,7 +916,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
             var gridSites = Ext.create('Ung.EditorGrid',{
                 initComponent : function() {
-                    this.distributeWindow = new Ung.Node.OpenVPN.DistributeClient({
+                    this.distributeWindow = Ext.create('Ung.Node.OpenVPN.DistributeClient',{
                         i18n : this.settingsCmp.i18n,
                         node : this.settingsCmp.getRpcNode(),
                         isVpnSite : true
@@ -964,7 +977,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 columns : [
                     {
                         xtype:'checkcolumn',
-                        id : "live",
                         header : this.i18n._("enabled"),
                         dataIndex : 'live',
                         width : 80,
@@ -972,7 +984,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }
                     , 
                     {
-                        id : 'name',
                         header : this.i18n._("site name"),
                         width : 130,
                         dataIndex : 'name',
@@ -986,14 +997,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                    , 
                    groupsColumn, 
                    {
-                        id : 'network',
                         header : this.i18n._("network address"),
                         width : 100,
                         dataIndex : 'network',
                         renderer : Ext.bind(function(value, metadata, record) {
-                            record.data.exportedAddressList.list[0].network=value;
-                            return value;
-                        }, this ),
+                                        record.data.exportedAddressList.list[0].network=value;
+                                        return value;
+                                    }, this ),
                         field: {
                             xtype:'textfield',
                             allowBlank : false,
@@ -1001,13 +1011,12 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         }
                     }, 
                     {
-                        id : 'netmask',
                         header : this.i18n._("network mask"),
                         width : 100,
                         dataIndex : 'netmask',
                         renderer : Ext.bind(function(value, metadata, record) {
-                            record.data.exportedAddressList.list[0].netmask=value;
-                            return value;
+                                        record.data.exportedAddressList.list[0].netmask=value;
+                                        return value;
                         }, this ),
                         field: {
                             xtype:'textfield',

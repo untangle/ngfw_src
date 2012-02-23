@@ -3953,7 +3953,8 @@ Ext.define('Ung.EditorGrid', {
 			if(this.dataRoot === undefined) {
 				this.dataRoot="list";
 			}
-			this.data=this.dataFn();
+			var data=this.dataFn();
+            this.data = data[this.dataRoot];
 		}
 		this.store=Ext.create('Ext.data.Store',{
 			data: this.data,
@@ -3961,8 +3962,7 @@ Ext.define('Ung.EditorGrid', {
 			proxy: {
 				type: this.paginated?'pagingmemory':'memory',
 				reader: {
-					type: 'json',
-					root: this.dataRoot
+					type: 'json' 
 				}
 			},
 			pageSize : this.paginated?this.recordsPerPage:null,
@@ -3985,7 +3985,7 @@ Ext.define('Ung.EditorGrid', {
                 }
             }
 		});
-		this.totalRecords=this.data.length;
+        this.totalRecords = this.data.length;
 
         if(this.paginated) {
             this.bbar = Ext.create('Ext.toolbar.Paging',{
