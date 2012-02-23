@@ -355,9 +355,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
 
         /* Verify the packet is from the same interface */
         if ( intf != pkt->src_intf ) {
-            debug( 5, "UDP: Packet from the incorrect interface expected %d actual %d\n", 
-                   intf, pkt->src_intf );
-            
+            errlog( ERR_WARNING, "UDP: Packet from the incorrect interface expected %d actual %d. Dropping...\n", intf, pkt->src_intf );
             netcap_pkt_raze( pkt );
             SESSTABLE_UNLOCK();
             return 0;
