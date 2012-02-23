@@ -990,10 +990,8 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
                 if (i >= 0) {
                     parentNodeIdArray.get(i).add(nodeId);
                 } else if (p == null && policy == null) {
-                    logger.warn("ADDING " + nodeId.getNodeName());
                     thisPolicyNodeIds.add(nodeId);
                 } else if (p != null && policy != null && p.equals(policy)) {
-                    logger.warn("ADDING " + nodeId.getNodeName());
                     thisPolicyNodeIds.add(nodeId);
                 }
             }
@@ -1018,7 +1016,6 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
                     String n = nodeId.getNodeName();
                     if (!names.contains(n)) {
                         names.add(n);
-                        logger.warn("ADDING " + nodeId.getNodeName());
                         finalList.add(nodeId);
                     }
                 }
