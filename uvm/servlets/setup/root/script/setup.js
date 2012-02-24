@@ -681,7 +681,8 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
                     width : 120,
                     listWidth : 125,
                     value : "255.255.255.0",
-                    editable : false
+                    editable : false,
+                    allowBlank : false
                 },{
                     name : "gateway",
                     fieldLabel : i18n._( "Gateway" ),
@@ -896,6 +897,7 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         var complete = this.complete.createDelegate( this, [ handler, hideWindow ], true );
         rpc.networkManager.setSetupSettings( complete, wanConfig );
     },
+
     saveStatic : function( handler, hideWindow )
     {
         var wanConfig = Ung.SetupWizard.CurrentValues.wanConfiguration;
@@ -992,21 +994,15 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             return;
         }
 
-        Ext.MessageBox.wait(i18n._("Testing Connectivity..."), i18n._("Please Wait"));
+        Ext.MessageBox.wait(i18n._("Saving Settings..."), i18n._("Please Wait"));
 
         var handler = this.execConnectivityTest.createDelegate( this );
-
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.saveData.createDelegate( this, [ handler, false ] ));
     },
 
     saveData : function( handler, hideWindow )
     {
         this.cardPanel.layout.activeItem.saveData( handler, hideWindow );
-    },
-
-    execConnectivityTest : function()
-    {
-        rpc.connectivityTester.getStatus( this.completeConnectivityTest.createDelegate( this ));
     },
 
     completeConnectivityTest : function( result, exception )
@@ -1041,6 +1037,12 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
             icon:Ext.MessageBox.INFO
         });
         //Ext.MessageBox.alert( i18n._( "Internet Status" ), message );
+    },
+
+    execConnectivityTest : function()
+    {
+        Ext.MessageBox.wait(i18n._("Testing Connectivity..."), i18n._("Please Wait"));
+        rpc.connectivityTester.getStatus( this.completeConnectivityTest.createDelegate( this ));
     },
 
     /* This does not reload the settings, it just updates what is

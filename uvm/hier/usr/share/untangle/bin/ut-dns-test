@@ -1,18 +1,19 @@
 #! /bin/bash
 
-exec &> >(logger -t uvmiptables)
-
-DNS_TRIES=7
+DNS_TRIES=4
 DNS_TIMEOUT=2
 DNS_TEST_FAIL=255
 DNS_TEST_PASS=0
 
-
 TEST_HOSTNAME_BASE="updates"
 TEST_DOMAIN="untangle.com"
 
-DNS_SERVER=$1
+if [ $# -lt 1 ] ; then
+    echo "Usage: $0 <dns-server-ip>"
+    exit ${DNS_TEST_FAIL}
+fi
 
+DNS_SERVER=$1
 
 if [ -z "${DNS_SERVER}" ]; then
     exit ${DNS_TEST_FAIL}
@@ -22,7 +23,7 @@ lookup() {
     local address=$1
     local server=$2
 
-    dig @${server} +tries=${DNS_TRIES} +time=${DNS_TIMEOUT} +short ${address} > /dev/null
+    dig @${server} +tries=${DNS_TRIES} +time=${DNS_TIMEOUT} +short ${address} 
 }
 
 lookup ${TEST_HOSTNAME_BASE}.${TEST_DOMAIN} ${DNS_SERVER}

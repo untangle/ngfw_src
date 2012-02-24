@@ -74,7 +74,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
     private static final String MAIL_FROM_PROP = "mail.from";
     private static final String MAIL_TRANSPORT_PROTO_PROP = "mail.transport.protocol";
 
-    private static final String EXIM_CMD_UPDATE_CONF  = "/usr/sbin/update-exim4.conf";
+    private static final String EXIM_CMD_UPDATE_CONF  = System.getProperty( "uvm.bin.dir" ) + "/ut-restart-exim.sh";
     private static final String EXIM_CONF_DIR     = "/etc/exim4";
     private static final String EXIM_CONF_FILE    = "/etc/exim4/update-exim4.conf.conf";
     private static final String EXIM_TEMPLATE_FILE    = "/etc/exim4/exim4.conf.template";
@@ -309,30 +309,7 @@ class MailSenderImpl implements MailSender, HasConfigFiles
             
             this.writeFile( sb, EXIM_CONF_FILE );
 
-            try {
-                ScriptRunner.getInstance().exec( EXIM_CMD_UPDATE_CONF );
-            }
-            catch (Exception e) {
-                logger.error( "Unable to save Mail Daemon configuration", e );
-            }
-
-        }
-    }
-
-    void restartMailDaemon()
-    {
-        File exim_dir = new File(EXIM_CONF_DIR);
-        if (exim_dir.isDirectory()) {
-
-            /* Run the script */
-            try {
-                ScriptRunner.getInstance().exec( "/etc/init.d/exim4","restart" );
-            } catch ( Exception e ) {
-                logger.error( "Unable to reload Mail Daemon configuration", e );
-            }
-
-            /* Force flush the queue */
-            UvmContextFactory.context().execManager().exec("/usr/sbin/exim -qff");
+            UvmContextFactory.context().execManager().exec( EXIM_CMD_UPDATE_CONF + " >/dev/null 2>&1 & " );
         }
     }
 
@@ -340,7 +317,6 @@ class MailSenderImpl implements MailSender, HasConfigFiles
     {
         refreshSessions();
         writeConfiguration();
-        restartMailDaemon();
     }
 
     // Called when settings updated.
