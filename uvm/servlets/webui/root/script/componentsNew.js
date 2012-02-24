@@ -3977,7 +3977,7 @@ Ext.define('Ung.EditorGrid', {
                 },
                 "load" : {
                     fn : Ext.bind(function(store, records, options) {
-                        this.updateFromChangedData(records, options);
+                        this.updateFromChangedData(store,records, options);
                     },this)
                 }
             }
@@ -4271,7 +4271,7 @@ Ext.define('Ung.EditorGrid', {
     },
     // when a page is rendered load the changedData for it
     updateFromChangedData : function(store, records, options) {
-        var page = this.getStore().currentPage;
+        var page = store.currentPage;
         for (id in this.changedData) {
             var cd = this.changedData[id];
             if (page == cd.page) {
