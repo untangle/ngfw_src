@@ -212,7 +212,7 @@ def monitor_uvm(pid):
         if needToRestart(pid):
             debug("*** Killing untangle-vm(%i)." % pid);
             os.system("kill %i" % pid);
-
+            os.system("pkill -%s -f com.untangle.uvm.engine.Main" % str(signal));
     return;
 
 # Return True if we need to kill the UVM
@@ -289,6 +289,7 @@ def sigINThandler(signal, frame):
     exit_flag = 1;
     if not uvm_pid == 0:
         os.kill(uvm_pid, signal);
+        os.system("pkill -%s -f com.untangle.uvm.engine.Main" % str(signal));
 
 #
 # SIGTERM handler 
@@ -300,6 +301,7 @@ def sigTERMhandler(signal, frame):
     exit_flag = 1;
     if not uvm_pid == 0:
         os.kill(uvm_pid, signal);
+        os.system("pkill -%s -f com.untangle.uvm.engine.Main" % str(signal));
 
 #
 # SIGARB handler 
@@ -311,6 +313,7 @@ def sigABRThandler(signal, frame):
     exit_flag = 1;
     if not uvm_pid == 0:
         os.kill(uvm_pid, signal);
+        os.system("pkill -%s -f com.untangle.uvm.engine.Main" % str(signal));
 
 
 ##############################################################
@@ -335,8 +338,10 @@ while True:
     debug("==============================");
 
     resetIptables();
-
     flushConntrack();
+
+    if exit_flag == 1:
+        sys.exit(0);
 
     pid, exfd = os.forkpty(); # must use forkpty to avoid signals to children
     if pid == 0:
