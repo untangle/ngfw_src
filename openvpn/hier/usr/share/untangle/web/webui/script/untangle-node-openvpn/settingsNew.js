@@ -83,7 +83,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
             try {
                 if ( this.config.isVpnSite == true ) {
-                    download = Ext.create(' Ext.form.FieldSet',{
+                    download = Ext.create('Ext.form.FieldSet',{
                         title : this.i18n._('Download Client Config'),
                         autoHeight : true,
                         labelWidth: 150,
