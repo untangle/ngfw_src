@@ -93,8 +93,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
                     public void run()
                     {
                         try {
-                            ScriptRunner.getInstance().exec( BRIDGE_WAIT_SCRIPT,
-                                                             String.valueOf( BRIDGE_WAIT_TIMEOUT ));
+                            ScriptRunner.getInstance().exec( BRIDGE_WAIT_SCRIPT, String.valueOf( BRIDGE_WAIT_TIMEOUT ));
                         } catch ( Exception e ) {
                             logger.info( "Exception executing bridge wait script", e );
                         }
@@ -116,21 +115,17 @@ class ConnectivityTesterImpl implements ConnectivityTester
     private boolean isDnsWorking( InetAddress dnsPrimaryServer, InetAddress dnsSecondaryServer )
     {
         boolean isWorking = false;
-        /* Run the DNS script first, this will indicate whether or not DNS is working */
-        try {
-            String primaryServer = dnsPrimaryServer.getHostAddress();
-            String secondaryServer = "";
-            if ( dnsSecondaryServer != null ) secondaryServer = dnsSecondaryServer.getHostAddress();
+        String primaryServer = null;
+        String secondaryServer = null;
 
-            /* This should throw an exception if it isn't working. */
-            ScriptRunner.getInstance().exec( DNS_TEST_SCRIPT, primaryServer, secondaryServer );
-            
+        if ( dnsPrimaryServer != null) primaryServer = dnsPrimaryServer.getHostAddress();
+        if ( dnsSecondaryServer != null ) secondaryServer = dnsSecondaryServer.getHostAddress();
+
+        if ( primaryServer != null && UvmContextFactory.context().execManager().execResult(DNS_TEST_SCRIPT + " " + primaryServer ) == 0)
             isWorking = true;
-        } catch ( Exception e ) {
-            logger.warn( "DNS is not working", e );
-            isWorking = false;
-        } 
-
+        if ( secondaryServer != null && UvmContextFactory.context().execManager().execResult(DNS_TEST_SCRIPT + " " + secondaryServer ) == 0)
+            isWorking = true;
+            
         /* Now run the dns test just to get the address of updates */
         DnsLookup dnsLookup = new DnsLookup();
         Thread test = new Thread( dnsLookup );
