@@ -296,7 +296,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         width:55
                     },
                     {
-                        id : "description",
                         header : this.i18n._("Description"),
                         width : 200,
                         dataIndex : "description",

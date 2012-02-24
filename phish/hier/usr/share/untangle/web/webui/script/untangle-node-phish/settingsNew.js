@@ -275,7 +275,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     sortType : asRequest
                 }],
                 // the list of columns
-                autoExpandColumn : 'request',
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
@@ -296,10 +295,10 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     dataIndex : 'client',
                     renderer : asClient
                 }, {
-                    id : 'request',
                     header : this.i18n._("request"),
                     width : 120,
                     sortable : true,
+                    flex:1,
                     dataIndex : 'request',
                     renderer : asRequest
                 }, {
@@ -368,7 +367,6 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     type : 'string'
                 }],
                 // the list of columns
-                autoExpandColumn : 'subject',
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
@@ -388,8 +386,8 @@ if (!Ung.hasResource["Ung.Phish"]) {
                     sortable : true,
                     dataIndex : 'sender'
                 }, {
-                    id : 'subject',
                     header : this.i18n._("subject"),
+                    flex:1,
                     width : 150,
                     sortable : true,
                     dataIndex : 'subject'

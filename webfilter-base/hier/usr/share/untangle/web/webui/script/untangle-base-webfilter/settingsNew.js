@@ -333,7 +333,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 fields : this.genericRuleFields,
                 paginated : false,
                 columns : [{
-                    id : 'name',
                     header : this.i18n._("category"),
                     width : 200,
                     dataIndex : 'name'
@@ -361,8 +360,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 					tooltip : this.i18n._("Flag as Violation")
 				},
 				{
-                    id : 'description',
                     header : this.i18n._("description"),
+                    flex:1,
                     width : 400,
                     dataIndex : 'description',
 					field:{
@@ -372,7 +371,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 }],
                 sortField : 'name',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'description',
                 rowEditorInputLines : [
 					{
 						xtype:'textfield',
@@ -459,7 +457,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
-                    id : 'string',
                     header : this.i18n._("site"),
                     width : 200,
                     dataIndex : 'string',
@@ -486,9 +483,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 					tooltip : this.i18n._("Flag as Violation")
 				},
 				{
-                    id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
+                    flex:1,
                     dataIndex : 'description',
 					field: {
 						xtype:'textfield',
@@ -497,7 +494,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'description',
                 rowEditorInputLines : [
 					{
 						xtype:'textfield',
@@ -550,7 +546,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
-                    id : 'string',
                     header : this.i18n._("file type"),
                     width : 200,
                     dataIndex : 'string',
@@ -575,7 +570,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 					tooltip : this.i18n._("Flag as Violation")
 				},
 				{
-                    id : 'category',
                     header : this.i18n._("category"),
                     width : 200,
                     dataIndex : 'category',
@@ -585,10 +579,10 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 					}
                 }, 
 				{
-                    id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
                     dataIndex : 'description',
+                    flex:1,
 					field: {
 						xtype:'textfield',
 						allowBlank:false
@@ -596,7 +590,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'description',
                 rowEditorInputLines : [
 				{
 					xtype:'textfield',
@@ -654,7 +647,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 fields : this.genericRuleFields,
                 data : this.getSettings().blockedMimeTypes.list,
                 columns : [{
-                    id : 'string',
                     header : this.i18n._("MIME type"),
                     width : 200,
                     dataIndex : 'string',
@@ -679,7 +671,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 					tooltip : this.i18n._("Flag as Violation")
 				}, 
 				{
-                    id : 'category',
                     header : this.i18n._("category"),
                     width : 100,
                     dataIndex : 'category',
@@ -689,9 +680,9 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 					}
                 }, 
 				{
-                    id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
+                    flex:1,
                     dataIndex : 'description',
                     field: {
 						xtype:'textfield',
@@ -700,7 +691,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'description',
                 rowEditorInputLines : [
 				{
 					xtype:'textfield',
@@ -932,7 +922,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
-                    id : 'string',
                     header : this.i18n._("site"),
                     width : 200,
                     dataIndex : 'string',
@@ -951,8 +940,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 					fixed : true
 				},
 				{
-                    id : 'description',
                     header : this.i18n._("description"),
+                    flex:1,
                     width : 200,
                     dataIndex : 'description',
 					field: {
@@ -962,7 +951,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'description',
                 rowEditorInputLines : [
 				{
 					xtype:'textfield',
@@ -1006,7 +994,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
-                    id : 'string',
                     header : this.i18n._("IP address/range"),
                     width : 200,
                     dataIndex : 'string',
@@ -1023,8 +1010,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
 					fixed : true
 				},
 				{
-                    id : 'description',
                     header : this.i18n._("description"),
+                    flex:1,
                     width : 200,
                     dataIndex : 'description',
 					field: {
@@ -1034,7 +1021,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 }],
                 sortField : 'string',
                 columnsDefaultSortable : true,
-                autoExpandColumn : 'description',
                 rowEditorInputLines : [
 				{
 					xtype:'textfield',
@@ -1123,7 +1109,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     },this)
 
                 }],
-                autoExpandColumn: 'uri',
                 columnsDefaultSortable : true,
                 columns : [{
                     header : this.i18n._("timestamp"),
@@ -1141,13 +1126,12 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     width : Ung.Util.usernameFieldWidth,
                     dataIndex : 'uid'
                 }, {
-                    id: 'host',
                     header : this.i18n._("host"),
                     width : Ung.Util.hostnameFieldWidth,
                     dataIndex : 'host'
                 }, {
-                    id: 'uri',
                     header : this.i18n._("uri"),
+                    flex:1,
                     width : Ung.Util.uriFieldWidth,
                     dataIndex : 'uri'
                 }, {

@@ -243,7 +243,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         sortField: "emailAddress",
                         columnsDefaultSortable: true,
                         columns: [{
-                            id: "emailAddress",
                             header: this.i18n._("Email Address (username)"),
                             dataIndex: "emailAddress",
                             width : 200,
@@ -707,7 +706,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 }],
                 // the list of columns for the column model
                 columns: [{
-                    id: 'ipMaskedAddress',
                     header: this.i18n._("Name Map"),
                     width: 200,
                     dataIndex: 'ipMaskedAddress',
@@ -715,7 +713,6 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                         xtype:'textfield'
                     }
                 }, {
-                    id: 'name',
                     header: this.i18n._("name"),
                     width: 200,
                     dataIndex: 'name',

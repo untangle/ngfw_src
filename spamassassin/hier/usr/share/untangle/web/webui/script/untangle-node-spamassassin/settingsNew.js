@@ -865,7 +865,6 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     mapping : this.getRpcNode().getVendor() + 'Score'
                 }],
                 // the list of columns
-                autoExpandColumn : 'subject',
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
@@ -885,9 +884,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                     sortable : true,
                     dataIndex : 'sender'
                 }, {
-                    id : 'subject',
                     header : this.i18n._("subject"),
                     width : 150,
+                    flex:1,
                     sortable : true,
                     dataIndex : 'subject'
                 }, {

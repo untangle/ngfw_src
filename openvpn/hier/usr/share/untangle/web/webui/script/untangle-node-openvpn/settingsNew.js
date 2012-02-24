@@ -519,24 +519,19 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     name : "id"
                 }],
                 columns : [{
-                    id : "address",
                     header : this.i18n._("Address"),
                     width : 150
                 },{
-                    id : "clientName",
                     header : this.i18n._("Client"),
                     width : 200
                 },{
-                    id : "start",
                     header : this.i18n._("Start Time"),
                     width : 180,
                     renderer : function(value) { return i18n.timestampFormat(value); }
                 },{
-                    id : "bytesRx",
                     header : this.i18n._("Rx Bytes"),
                     width : 180
                 },{
-                    id : "bytesTx",
                     header : this.i18n._("Tx Bytes"),
                     width : 180
                 }]
@@ -824,8 +819,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     "address" : null
                 },
                 title : this.i18n._("VPN Clients"),
-                // the column is autoexpanded if the grid width permits
-                // autoExpandColumn : 'name',
                 recordJavaClass : "com.untangle.node.openvpn.VpnClient",
                 data : clientList,
                 // the list of fields
@@ -846,7 +839,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 columns : [
                     {
                         xtype:'checkcolumn',
-                        id : "live",
                         header : this.i18n._("enabled"),
                         dataIndex : 'live',
                         width : 80,
@@ -946,8 +938,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     }
                 },
                 title : this.i18n._("VPN Sites"),
-                // the column is autoexpanded if the grid width permits
-                // autoExpandColumn : 'name',
                 recordJavaClass : "com.untangle.node.openvpn.VpnSite",
                 data : siteList,
                 // the list of fields
@@ -1121,8 +1111,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     "netmask" : "255.255.255.0"
                 },
                 title : this.i18n._("Exported Hosts and Networks"),
-                // the column is autoexpanded if the grid width permits
-                // autoExpandColumn : 'name',
                 recordJavaClass : "com.untangle.node.openvpn.ServerSiteNetwork",
                 data : exportedAddressList,
                 // the list of fields
@@ -1141,7 +1129,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 columns : [
                     {
                         xtype:'checkcolumn',
-                        id : "live",
                         header : this.i18n._("enabled"),
                         dataIndex : 'live',
                         width : 80,
@@ -1229,8 +1216,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     "netmask": "255.255.255.0"
                 },
                 title : this.i18n._("Address Pools"),
-                // the column is autoexpanded if the grid width permits
-                // autoExpandColumn : 'name',
                 recordJavaClass : "com.untangle.node.openvpn.VpnGroup",
                 data : this.getVpnSettings().groupList,
                 dataRoot : 'list',

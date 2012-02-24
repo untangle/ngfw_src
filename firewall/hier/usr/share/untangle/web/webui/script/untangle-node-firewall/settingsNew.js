@@ -384,7 +384,6 @@ if (!Ung.hasResource["Ung.Firewall"]) {
 								width:55
 							}],
                     columnsDefaultSortable : false,
-                    autoExpandColumn : 'description',
 
                     initComponent : function() {
                         this.rowEditor = Ext.create('Ung.RowEditorWindow',{
@@ -549,7 +548,6 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     name : 'serverPort',
                     mapping : 'SServerPort'
                 }],
-                autoExpandColumn: 'ruleIndex',
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
@@ -579,10 +577,10 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     sortable : true,
                     dataIndex : 'blocked'
                 }, {
-                    id: 'ruleIndex',
                     header : this.i18n._('rule Id'),
                     width : 60,
                     sortable : true,
+                    flex:1,
                     dataIndex : 'firewallRuleIndex'
                 }, {
                     header : this.i18n._("server") ,

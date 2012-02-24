@@ -92,22 +92,21 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     width: 55,
                     fixed : true
                 }, {
-                    id : 'address',
                     header : this.i18n._("address"),
                     width : 200,
                     dataIndex : 'address',
                     // this is a simple text editor
-                    editor : new Ext.form.TextField({
+                    field: {
+                        xtype:'textfield',
                         allowBlank : false,
                         vtype : 'ipAddress'
-                    })
+                    }
                 }, {
-                    id : 'divider',
                     header : this.i18n._("user count"),
                     width : 100,
                     dataIndex : 'divider',
-                    editor : new Ext.form.ComboBox({
-                        store : new Ext.data.SimpleStore({
+                    editor : Ext.create('Ext.form.ComboBox',{
+                        store : Ext.create('Ext.data.ArrayStore',{
                             fields : ['dividerValue', 'dividerName'],
                             data : deviderData
                         }),
@@ -128,14 +127,14 @@ if (!Ung.hasResource["Ung.Shield"]) {
                         return value;
                     }
                 }, {
-                    id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
                     flex : 1,
                     dataIndex : 'description',
-                    editor : new Ext.form.TextField({
-                        allowBlank : false
-                    })
+                    field: {
+                        xtype:'textfield',
+                        allowBlank:false
+                    }
                 }],
                 sortField: 'address',
                 columnsDefaultSortable : true,
@@ -158,7 +157,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     name : "User Count",
                     dataIndex : "divider",
                     fieldLabel : this.i18n._("User Count"),
-                    store : new Ext.data.SimpleStore({
+                    store : Ext.create('Ext.data.ArrayStore',{
                         fields : ['dividerValue', 'dividerName'],
                         data : deviderData
                     }),
@@ -222,7 +221,6 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     sortable : true,
                     dataIndex : 'clientAddr'
                 }, {
-                    id :'clientIntf',
                     header : this.i18n._("Client Interface"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,

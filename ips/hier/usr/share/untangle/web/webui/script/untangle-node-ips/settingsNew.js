@@ -270,7 +270,6 @@ if (!Ung.hasResource["Ung.Ips"]) {
                             type : 'string'
                         }],
                         columns : [{
-                            id : 'variable',
                             header : this.i18n._("name"),
                             width : 170,
                             dataIndex : 'variable',
@@ -289,7 +288,6 @@ if (!Ung.hasResource["Ung.Ips"]) {
                                 allowBlank : false
                             }
                         }, {
-                            id : 'description',
                             header : this.i18n._("description"),
                             width : 300,
                             dataIndex : 'description',

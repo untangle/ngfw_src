@@ -272,7 +272,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
-                    id : 'string',
                     header : this.i18n._("identification"),
                     width : 140,
                     dataIndex : 'string',
@@ -321,7 +320,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
-						id : 'name',
 						header : this.i18n._("name"),
 						width : 250,
 						dataIndex : 'name',
@@ -408,7 +406,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
 				sortField : 'string',
                 columnsDefaultSortable : true,
 				columns: [{
-                    id : 'string',
                     header : this.i18n._("site"),
                     width : 200,
                     dataIndex : 'string',
@@ -421,7 +418,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     fixed : true
                 },
 				{
-                    id : 'description',
                     header : this.i18n._("description"),
                     width : 200,
                     flex: 1,

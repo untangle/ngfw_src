@@ -668,7 +668,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     mapping : 'virus' + main.capitalize(this.getRpcNode().getVendor()) + 'Name'
                 }],
                 // the list of columns
-                autoExpandColumn: 'uri',
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
@@ -678,35 +677,30 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    id : 'client',
                     header : this.i18n._("client"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
                     dataIndex : 'client'
                 }, {
-                    id : 'username',
                     header : this.i18n._("username"),
                     width : Ung.Util.usernameFieldWidth,
                     sortable : true,
                     dataIndex : 'uid'
                 }, {
-                    id: 'host',
                     header : this.i18n._("host"),
                     width : Ung.Util.hostnameFieldWidth,
                     dataIndex : 'host'
                 }, {
-                    id: 'uri',
                     header : this.i18n._("uri"),
+                    flex:1,
                     width : Ung.Util.uriFieldWidth,
                     dataIndex : 'uri'
                 }, {
-                    id : 'reason',
                     header : this.i18n._("virus name"),
                     width : 140,
                     sortable : true,
                     dataIndex : 'reason'
                 }, {
-                    id : 'server',
                     header : this.i18n._("server"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
@@ -749,7 +743,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     mapping : 'virus' + main.capitalize(this.getRpcNode().getVendor()) + 'Name'
                 }],
                 // the list of columns
-                autoExpandColumn: 'subject',
                 columns : [{
                     header : this.i18n._("timestamp"),
                     width : Ung.Util.timestampFieldWidth,
@@ -759,7 +752,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    id : 'client',
                     header : this.i18n._("client"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
@@ -775,19 +767,17 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     sortable : true,
                     dataIndex : 'sender'
                 }, {
-                    id : 'subject',
                     header : this.i18n._("subject"),
+                    flex:1,
                     width : 150,
                     sortable : true,
                     dataIndex : 'subject'
                 }, {
-                    id : 'reason',
                     header : this.i18n._("virus name"),
                     width : 140,
                     sortable : true,
                     dataIndex : 'reason'
                 }, {
-                    id : 'server',
                     header : this.i18n._("server"),
                     width : Ung.Util.ipFieldWidth,
                     sortable : true,
