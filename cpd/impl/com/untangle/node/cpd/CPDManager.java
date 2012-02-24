@@ -63,7 +63,7 @@ public class CPDManager
         fw.close();
 
         fw = new FileWriter(CPD_WEB_CONFIG);
-        fw.write(String.format( "<?php $https_redirect = %s;?>", settings.getBaseSettings().getUseHttpsPage() ? "TRUE" : "FALSE" ));
+        fw.write(String.format( "<?php $https_redirect = %s;?>", settings.getUseHttpsPage() ? "TRUE" : "FALSE" ));
         fw.close();
     }
     
@@ -119,8 +119,8 @@ public class CPDManager
         }
         
         boolean isAuthenticated = false;
-        CPDBaseSettings baseSettings = this.cpd.getBaseSettings();
-        AuthenticationType method = baseSettings.getAuthenticationType(); 
+        CPDSettings cpdSettings = this.cpd.getCPDSettings();
+        AuthenticationType method = cpdSettings.getAuthenticationType(); 
         /**
          * bug #7951
          * Try an alternative username that removes domain
@@ -247,9 +247,9 @@ public class CPDManager
             adconnector.getIpUsernameMap().expireUser( address );
         }
 
-        CPDBaseSettings baseSettings = this.cpd.getBaseSettings();
+        CPDSettings cpdSettings = this.cpd.getCPDSettings();
         
-        AuthenticationType method = baseSettings.getAuthenticationType(); 
+        AuthenticationType method = cpdSettings.getAuthenticationType(); 
 
         CPDLoginEvent event = new CPDLoginEvent( address, "", method, CPDLoginEvent.EventType.LOGOUT );
         this.cpd.logEvent(event);
@@ -261,20 +261,20 @@ public class CPDManager
     {
         JSONObject json = new JSONObject();
         
-        CPDBaseSettings baseSettings = settings.getBaseSettings();  
+        CPDSettings cpdSettings = this.cpd.getCPDSettings();  
                 
         /* Save the values from the base settings */
         json.put("enabled", isEnabled );
-        json.put("capture_bypassed_traffic", baseSettings.getCaptureBypassedTraffic());
-        json.put("concurrent_logins", baseSettings.getConcurrentLoginsEnabled());
-        json.put("authentication_type", baseSettings.getAuthenticationType().toString());
-        json.put("idle_timeout_s", baseSettings.getIdleTimeout());
-        json.put("timeout_s", baseSettings.getTimeout());
-        json.put("page_type", baseSettings.getPageType().toString());
-        json.put("page_parameters", new JSONObject(baseSettings.getPageParameters()));
-        json.put("redirect_https_enabled", baseSettings.getRedirectHttpsEnabled());
-        json.put("redirect_url", baseSettings.getRedirectUrl());
-        json.put("use_https_page", baseSettings.getUseHttpsPage());
+        json.put("capture_bypassed_traffic", cpdSettings.getCaptureBypassedTraffic());
+        json.put("concurrent_logins", cpdSettings.getConcurrentLoginsEnabled());
+        json.put("authentication_type", cpdSettings.getAuthenticationType().toString());
+        json.put("idle_timeout_s", cpdSettings.getIdleTimeout());
+        json.put("timeout_s", cpdSettings.getTimeout());
+        json.put("page_type", cpdSettings.getPageType().toString());
+        json.put("page_parameters", new JSONObject(cpdSettings.getPageParameters()));
+        json.put("redirect_https_enabled", cpdSettings.getRedirectHttpsEnabled());
+        json.put("redirect_url", cpdSettings.getRedirectUrl());
+        json.put("use_https_page", cpdSettings.getUseHttpsPage());
         
         /* This setting is not configurable through the UI */
         json.put("expiration_frequency_s", 60);

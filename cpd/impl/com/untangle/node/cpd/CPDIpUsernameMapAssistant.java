@@ -133,7 +133,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
     {
         MapValue newCacheEntry = new MapValue();
 
-        newCacheEntry.expirationDate = new Date(System.currentTimeMillis() + (this.cpd.getCPDSettings().getBaseSettings().getTimeout()*1000));
+        newCacheEntry.expirationDate = new Date(System.currentTimeMillis() + (this.cpd.getCPDSettings().getTimeout()*1000));
         newCacheEntry.username = username;
         synchronized(cache) {
             cache.put(addr,newCacheEntry);
@@ -260,7 +260,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
                                 }
                                 /* if cache hit - update expire time as its still in the database */
                                 else {
-                                    cacheEntry.expirationDate = new Date(now.getTime() + (cpd.getCPDSettings().getBaseSettings().getTimeout()*1000));
+                                    cacheEntry.expirationDate = new Date(now.getTime() + (cpd.getCPDSettings().getTimeout()*1000));
                                 }
                             }
                             
@@ -285,7 +285,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
                                     /**
                                      * too far in future - oldest entries should expire in DATABASE_CACHE_TIME
                                      */
-                                    if (value.expirationDate.after(new Date(now.getTime() + (cpd.getCPDSettings().getBaseSettings().getTimeout()*1000)*10))) {
+                                    if (value.expirationDate.after(new Date(now.getTime() + (cpd.getCPDSettings().getTimeout()*1000)*10))) {
                                         logger.warn("cache entry expires too far in the future - removing");
                                         toRemove.add(inet);
                                     }

@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -33,9 +33,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
-
 import com.untangle.uvm.security.NodeId;
 
 /**
@@ -44,25 +41,32 @@ import com.untangle.uvm.security.NodeId;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-@Entity
-@Table(name="n_cpd_settings", schema="settings")
 @SuppressWarnings("serial")
 public class CPDSettings implements Serializable
 {
 
-    public static enum AuthenticationType { ACTIVE_DIRECTORY, RADIUS, LOCAL_DIRECTORY, NONE };    
+    public static enum AuthenticationType { ACTIVE_DIRECTORY, RADIUS, LOCAL_DIRECTORY, NONE };
     public static enum PageType { BASIC_LOGIN, BASIC_MESSAGE, CUSTOM };
 
     private Long id;
     private NodeId tid;
 
     private List<CaptureRule> captureRules = new LinkedList<CaptureRule>();
-    
+
     private List<PassedClient> passedClients = new LinkedList<PassedClient>();
     private List<PassedServer> passedServers = new LinkedList<PassedServer>();
-    
-    private CPDBaseSettings baseSettings = new CPDBaseSettings();
-    
+
+    private boolean captureBypassedTraffic = false;
+    private AuthenticationType authenticationType = AuthenticationType.NONE;
+    private int idleTimeout = 0;
+    private int timeout = 3600;
+    private boolean areConcurrentLoginsEnabled = true;
+    private PageType pageType = PageType.BASIC_MESSAGE;
+    private String pageParameters = "";
+    private String redirectUrl = "";
+    private boolean useHttpsPage= false;
+    private boolean isRedirectHttpsEnabled = false;
+
     public CPDSettings()
     {
     }
@@ -72,9 +76,6 @@ public class CPDSettings implements Serializable
         this.tid = tid;
     }
 
-    @Id
-    @Column(name="settings_id")
-    @GeneratedValue
     public Long getId()
     {
         return id;
@@ -90,8 +91,6 @@ public class CPDSettings implements Serializable
      *
      * @return tid for these settings
      */
-    @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="tid", nullable=false)
     public NodeId getNodeId()
     {
         return tid;
@@ -102,11 +101,6 @@ public class CPDSettings implements Serializable
         this.tid = tid;
     }
 
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinColumn(name="settings_id")
-    @IndexColumn(name="position")
     public List<CaptureRule> getCaptureRules()
     {
     	if ( this.captureRules == null ) {
@@ -119,12 +113,7 @@ public class CPDSettings implements Serializable
     {
         this.captureRules = newValue;
     }
-    
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinColumn(name="settings_id")
-    @IndexColumn(name="position")
+
     public List<PassedClient> getPassedClients()
     {
         return this.passedClients;
@@ -135,11 +124,6 @@ public class CPDSettings implements Serializable
         this.passedClients = newValue;
     }
 
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinColumn(name="settings_id")
-    @IndexColumn(name="position")
     public List<PassedServer> getPassedServers()
     {
         return this.passedServers;
@@ -150,14 +134,118 @@ public class CPDSettings implements Serializable
         this.passedServers = newValue;
     }
 
-    
-    @Embedded
-    public CPDBaseSettings getBaseSettings() {
-        return baseSettings;
+    public boolean getCaptureBypassedTraffic()
+    {
+        return this.captureBypassedTraffic;
     }
 
-    public void setBaseSettings(CPDBaseSettings baseSettings) {
-        this.baseSettings = baseSettings;
+    public void setCaptureBypassedTraffic(boolean newValue)
+    {
+        this.captureBypassedTraffic = newValue;
     }
 
+    public AuthenticationType getAuthenticationType()
+    {
+        return this.authenticationType;
+    }
+
+    public void setAuthenticationType( AuthenticationType newValue )
+    {
+        this.authenticationType = newValue;
+    }
+
+    /**
+     * @return Idle timeout in seconds.
+     */
+    public int getIdleTimeout()
+    {
+        return this.idleTimeout;
+    }
+
+    /**
+     * Set the idle timeout.
+     * @param newValue The new idle timeout in seconds.
+     */
+    public void setIdleTimeout( int newValue )
+    {
+        this.idleTimeout = newValue;
+    }
+
+    /**
+     * Retrieve the session timeout.
+     * @return The session timeout in seconds
+     */
+    public int getTimeout()
+    {
+        return this.timeout;
+    }
+
+    /**
+     * Set the session timeout.
+     * @param newValue The new session timeout in seconds.
+     */
+    public void setTimeout( int newValue )
+    {
+        this.timeout = newValue;
+    }
+
+    public boolean getConcurrentLoginsEnabled()
+    {
+        return this.areConcurrentLoginsEnabled;
+    }
+
+    public void setConcurrentLoginsEnabled( boolean newValue)
+    {
+        this.areConcurrentLoginsEnabled = newValue;
+    }
+
+    public PageType getPageType()
+    {
+        return this.pageType;
+    }
+
+    public void setPageType( PageType newValue)
+    {
+        this.pageType = newValue;
+    }
+
+    public String getPageParameters()
+    {
+        return this.pageParameters;
+    }
+
+    public void setPageParameters( String newValue)
+    {
+        this.pageParameters = newValue;
+    }
+
+    public String getRedirectUrl()
+    {
+        return this.redirectUrl;
+    }
+
+    public void setRedirectUrl( String newValue)
+    {
+        this.redirectUrl = newValue;
+    }
+
+    public boolean getUseHttpsPage()
+    {
+        return this.useHttpsPage;
+    }
+
+    public void setUseHttpsPage( boolean newValue)
+    {
+        this.useHttpsPage = newValue;
+    }
+
+    public boolean getRedirectHttpsEnabled()
+    {
+        return this.isRedirectHttpsEnabled;
+    }
+
+    public void setRedirectHttpsEnabled( boolean newValue)
+    {
+        this.isRedirectHttpsEnabled = newValue;
+    }
 }

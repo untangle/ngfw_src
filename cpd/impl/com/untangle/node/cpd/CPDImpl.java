@@ -15,8 +15,6 @@ import java.net.UnknownHostException;
 import org.apache.catalina.Valve;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,6 +42,7 @@ import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.JsonClient.ConnectionException;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.SettingsManager;
 
 public class CPDImpl extends AbstractNode implements CPD
 {
@@ -67,7 +66,9 @@ public class CPDImpl extends AbstractNode implements CPD
 
     private EventLogQuery loginEventQuery;
     private EventLogQuery blockEventQuery;
-    
+
+    private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+    private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-cpd/settings_" + getNodeId().getId().toString());
 
     public CPDImpl()
     {
@@ -109,7 +110,7 @@ public class CPDImpl extends AbstractNode implements CPD
                                   "8:00", "17:00", CaptureRule.ALL_DAYS));
         
         settings.setCaptureRules(rules);
-        settings.getBaseSettings().setPageParameters(getDefaultPageParameters());
+        settings.setPageParameters(getDefaultPageParameters());
 
         try {
             setCPDSettings(settings);
@@ -122,63 +123,22 @@ public class CPDImpl extends AbstractNode implements CPD
     // CPDNode methods --------------------------------------------------
 
     @Override
-    public void setCPDSettings(final CPDSettings settings) throws Exception {
-        if ( settings == this.settings ) {
+    public void setCPDSettings(final CPDSettings settings) throws Exception
+    {
+        if ( settings == this.settings )
+        {
             throw new IllegalArgumentException("Unable to update original settings, set this.settings to null first.");
         }
         
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-        {
-            public boolean doWork(Session s)
-            {
-                s.saveOrUpdate(settings);
-                CPDImpl.this.settings = settings;
-                return true;
-            }
-
-            public Void getResult() {
-                return null;
-            }
-        };
-        getNodeContext().runTransaction(tw);
+        this.settings = settings;
+        settingsManager.save(CPDSettings.class, settingsFile, settings);
         
         reconfigure();
     }
 
-    public CPDSettings getCPDSettings() {
+    public CPDSettings getCPDSettings()
+    {
         return this.settings;
-    }
-    
-    @Override
-    public CPDBaseSettings getBaseSettings()
-    {
-        CPDBaseSettings baseSettings = this.settings.getBaseSettings();
-        if ( baseSettings == null ) {
-            baseSettings = new CPDBaseSettings();
-        }
-        
-        return baseSettings;        
-    }
-    
-    @Override
-    public void setBaseSettings(final CPDBaseSettings baseSettings) throws Exception
-    {
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-        {
-            public boolean doWork(Session s)
-            {
-                CPDImpl.this.settings.setBaseSettings( baseSettings );
-                CPDImpl.this.settings = (CPDSettings)s.merge(settings);
-                return true;
-            }
-
-            public Void getResult() {
-                return null;
-            }
-        };
-        getNodeContext().runTransaction(tw);
-        
-        reconfigure();
     }
 
     @Override
@@ -210,21 +170,7 @@ public class CPDImpl extends AbstractNode implements CPD
     @Override
     public void setCaptureRules( final List<CaptureRule> captureRules ) throws Exception
     {
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-        {
-            public boolean doWork(Session s)
-            {
-                CPDImpl.this.settings.setCaptureRules( captureRules );
-                CPDImpl.this.settings = (CPDSettings)s.merge(settings);
-                return true;
-            }
-
-            public Void getResult() {
-                return null;
-            }
-        };
-        getNodeContext().runTransaction(tw);
-        
+        this.settings.setCaptureRules( captureRules );
         reconfigure();
     }
     
@@ -237,21 +183,7 @@ public class CPDImpl extends AbstractNode implements CPD
     @Override
     public void setPassedClients( final List<PassedClient> newValue ) throws Exception
     {
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-        {
-            public boolean doWork(Session s)
-            {
-                CPDImpl.this.settings.setPassedClients( newValue );
-                CPDImpl.this.settings = (CPDSettings)s.merge(settings);
-                return true;
-            }
-
-            public Void getResult() {
-                return null;
-            }
-        };
-        getNodeContext().runTransaction(tw);
-        
+        this.settings.setPassedClients( newValue );
         reconfigure();
     }
     
@@ -264,59 +196,7 @@ public class CPDImpl extends AbstractNode implements CPD
     @Override
     public void setPassedServers( final List<PassedServer> newValue ) throws Exception
     {
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-        {
-            public boolean doWork(Session s)
-            {
-                CPDImpl.this.settings.setPassedServers( newValue );
-                CPDImpl.this.settings = (CPDSettings)s.merge(settings);
-                return true;
-            }
-
-            public Void getResult() {
-                return null;
-            }
-        };
-        getNodeContext().runTransaction(tw);
-        
-        reconfigure();
-    }
-    
-    @Override
-    public void setAll( final CPDBaseSettings baseSettings, 
-            final List<CaptureRule> captureRules,
-            final List<PassedClient> passedClients, 
-            final List<PassedServer> passedServers ) throws Exception
-    {
-        TransactionWork<Void> tw = new TransactionWork<Void>()
-        {
-            public boolean doWork(Session s)
-            {
-                if ( baseSettings != null ) {
-                    CPDImpl.this.settings.setBaseSettings( baseSettings );
-                }
-                
-                if ( captureRules != null ) {
-                    CPDImpl.this.settings.setCaptureRules(captureRules);
-                }
-                
-                if ( passedClients != null ) {
-                    CPDImpl.this.settings.setPassedClients( passedClients );
-                }
-
-                if ( passedServers != null ) {
-                    CPDImpl.this.settings.setPassedServers( passedServers );
-                }
-                CPDImpl.this.settings = (CPDSettings)s.merge(settings);
-                return true;
-            }
-
-            public Void getResult() {
-                return null;
-            }
-        };
-        getNodeContext().runTransaction(tw);
-        
+        this.settings.setPassedServers( newValue );
         reconfigure();
     }
 
@@ -352,7 +232,7 @@ public class CPDImpl extends AbstractNode implements CPD
         boolean isAuthenticated = false;
         if ( this.getRunState() ==  NodeState.RUNNING ) {
             /* Enforcing this here so the user can't pick another username at login. */
-            if ( this.settings.getBaseSettings().getAuthenticationType() == AuthenticationType.NONE) {
+            if ( this.settings.getAuthenticationType() == AuthenticationType.NONE) {
                 username = this.DEFAULT_USERNAME;
             }
             /* This is split out for debugging */
@@ -362,7 +242,7 @@ public class CPDImpl extends AbstractNode implements CPD
             if (isAuthenticated) {
                 try {
                     /* if no auth is required, don't count the "default user" as a user */
-                    if ( this.settings.getBaseSettings().getAuthenticationType() != AuthenticationType.NONE && this.assistant != null)
+                    if ( this.settings.getAuthenticationType() != AuthenticationType.NONE && this.assistant != null)
                         assistant.addCache(InetAddress.getByName(address),username);
                 } catch (UnknownHostException e) {
                     logger.warn("Add Cache failed",e);
@@ -467,25 +347,35 @@ public class CPDImpl extends AbstractNode implements CPD
         }
     }
     
-    protected void postInit(final String[] args) {
-        TransactionWork<Object> tw = new TransactionWork<Object>() {
-            public boolean doWork(Session s) {
-                Query q = s.createQuery("from CPDSettings cs where cs.nodeId = :nodeId");
-                q.setParameter("nodeId", getNodeId());
-
-                CPDImpl.this.settings = (CPDSettings) q.uniqueResult();
-                return true;
-            }
-
-            public Object getResult() {
-                return null;
-            }
-        };
+    protected void postInit(final String[] args)
+    {
+        CPDSettings readSettings = null;
         
-        getNodeContext().runTransaction(tw);
+        try
+        {
+            // read our node settings from the file
+            readSettings = settingsManager.load( CPDSettings.class, settingsFile );
+
+            // if not found initialize with the defaults
+            if (readSettings == null)
+            {
+                initializeSettings();
+            }
+
+            // apply the settings loaded from the file
+            else
+            {
+                logger.info("Loaded settings from " + settingsFile);
+                setCPDSettings(readSettings);
+            }
+        }
+
+        catch (Exception e)
+        {
+            logger.error("postInit()",e);
+        }        
         
         UvmContextFactory.context().uploadManager().registerHandler(this.uploadHandler);
-        
         deployWebAppIfRequired(this.logger);
     }
     

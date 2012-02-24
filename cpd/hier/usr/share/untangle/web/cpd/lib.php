@@ -5,14 +5,14 @@ $uvm_db = null;
 function open_db_connection()
 {
     global $uvm_db;
-    $uvm_db = pg_connect("host=localhost dbname=uvm user=postgres") or die("Unable to connect to the database.  " . pg_last_error());    
+    $uvm_db = pg_connect("host=localhost dbname=uvm user=postgres") or die("Unable to connect to the database.  " . pg_last_error());
 }
 
 function get_skin_settings()
 {
     global $uvm_db;
     $result = pg_query($uvm_db, "SELECT * FROM u_skin_settings ORDER BY skin_settings_id DESC LIMIT 1");
-    $row = pg_fetch_assoc($result);    
+    $row = pg_fetch_assoc($result);
     pg_free_result($result);
     return $row;
 }
@@ -22,7 +22,7 @@ function get_branding_settings()
     global $uvm_db;
     $result = @pg_query($uvm_db, "SELECT * FROM n_branding_settings ORDER BY settings_id DESC LIMIT 1");
     if ($result) {
-        $row = pg_fetch_assoc($result);    
+        $row = pg_fetch_assoc($result);
 	pg_free_result($result);
 	return $row;
     } else {
@@ -32,96 +32,67 @@ function get_branding_settings()
        $oem_file = "/etc/untangle/oem/oem.php";
        if (is_file($oem_file)) {
        	  include($oem_file);
-       } 
+       }
 
        $row = array("company_url" => $oem_url, "company_name" => $oem_name);
        return $row;
-    } 
+    }
 }
 
 function get_cpd_settings()
 {
-    global $uvm_db;
-    $query =<<<END_OF_QUERY
-SELECT 
-  n_cpd_settings.authentication_type AS authentication_type, 
-  n_cpd_settings.idle_timeout AS idle_timeout, 
-  n_cpd_settings.timeout AS timeout, 
-  n_cpd_settings.concurrent_logins AS concurrent_logins, 
-  n_cpd_settings.page_type AS page_type, 
-  n_cpd_settings.page_parameters AS page_parameters, 
-  n_cpd_settings.redirect_url AS redirect_url, 
-  n_cpd_settings.https_page AS https_page, 
-  n_cpd_settings.redirect_https AS redirect_https
-FROM 
-  settings.n_cpd_settings, 
-  settings.u_node_persistent_state
-WHERE 
-  n_cpd_settings.tid = u_node_persistent_state.tid AND
-  u_node_persistent_state.target_state = 'running' AND 
-  name = 'untangle-node-cpd'
-ORDER BY
-  n_cpd_settings.settings_id DESC;
-END_OF_QUERY;
-
-    $result = pg_query($uvm_db, $query);
-    $row = pg_fetch_assoc($result);
-    pg_free_result($result);
-
-    $row['page_parameters'] = json_decode($row['page_parameters'], true);;
-
-    return $row;    
+	$data = file_get_contents("/home/mahotz/work/src/dist/usr/share/untangle/settings/untangle-node-cpd/settings_5.js");
+	$json = json_decode($data,true);
+    $json['page_parameters'] = json_decode($json['pageParameters'],true);
+    return $json;
 }
 
 function get_radius_server_settings()
 {
     global $uvm_db;
     $query =<<<END_OF_QUERY
-SELECT 
-  u_radius_server_settings.enabled AS enabled, 
-  u_radius_server_settings.server AS host, 
-  u_radius_server_settings.port AS port, 
-  u_radius_server_settings.shared_secret AS shared_secret, 
+SELECT
+  u_radius_server_settings.enabled AS enabled,
+  u_radius_server_settings.server AS host,
+  u_radius_server_settings.port AS port,
+  u_radius_server_settings.shared_secret AS shared_secret,
   u_radius_server_settings.auth_method AS auth_method
-FROM 
-  settings.u_radius_server_settings, 
+FROM
+  settings.u_radius_server_settings,
   settings.u_ab_settings
-WHERE 
+WHERE
   u_ab_settings.radius_server_settings = u_radius_server_settings.settings_id;
 END_OF_QUERY;
 
     $result = pg_query( $uvm_db, $query );
-    $row = pg_fetch_assoc($result);    
+    $row = pg_fetch_assoc($result);
     pg_free_result($result);
-    return $row;    
+    return $row;
 }
 
 function get_ad_settings()
 {
     global $uvm_db;
     $query =<<<END_OF_QUERY
-SELECT 
-    u_ab_repository_settings."domain" AS ad_domain, 
-    u_ab_repository_settings.ldap_host AS host, 
-    u_ab_repository_settings.ou_filter AS ou_filter, 
+SELECT
+    u_ab_repository_settings."domain" AS ad_domain,
+    u_ab_repository_settings.ldap_host AS host,
+    u_ab_repository_settings.ou_filter AS ou_filter,
   u_ab_repository_settings.port AS port
-FROM 
-    settings.u_ab_settings, 
+FROM
+    settings.u_ab_settings,
   settings.u_ab_repository_settings
-WHERE 
+WHERE
     u_ab_settings.ad_repo_settings = u_ab_repository_settings.settings_id;
 END_OF_QUERY;
 
     $result = pg_query( $uvm_db, $query );
-    $row = pg_fetch_assoc($result);    
+    $row = pg_fetch_assoc($result);
     pg_free_result($result);
-    return $row;    
-
-
-
+    return $row;
 }
 
-function ad_authenticate($username, $password, $base_dn, 
+function ad_authenticate($username, $password, $base_dn,
                          $account_suffix, $domain_controller)
 {
   try {
@@ -176,18 +147,17 @@ function run_command($postdata)
     return !$has_error;
 }
 
-
 function replace_host($username)
 {
-    return run_command(array("function" => "replace_host", 
-                             "username" => $username, 
+    return run_command(array("function" => "replace_host",
+                             "username" => $username,
                              "ipv4_addr" => $_SERVER['REMOTE_ADDR']
                            ));
 }
 
 function remove_host()
 {
-    return run_command(array("function" => "remove_ipv4_addr", 
+    return run_command(array("function" => "remove_ipv4_addr",
                              "ipv4_addr" => $_SERVER['REMOTE_ADDR']
                            ));
 }
@@ -195,11 +165,11 @@ function remove_host()
 function get_redirect_url()
 {
     global $cpd_settings;
-    $redirect_url = $cpd_settings["redirect_url"];
-    if ( $redirect_url == NULL ) { 
+    $redirect_url = $cpd_settings["redirectUrl"];
+    if ( $redirect_url == NULL ) {
         $redirect_url = "";
     }
-    
+
     /* If the user provides a redirect URL, always send them to the redirect url */
     $redirect_url = trim( $redirect_url );
 
@@ -211,7 +181,7 @@ function get_redirect_url()
     $server_name = $_SESSION["server_name"];
     $path = $_SESSION["path"];
     $ssl = $_SESSION["ssl"];
-    
+
     if (( $server_name != null ) && ( $path != null )  && ( $server_name != $_SERVER["SERVER_ADDR"] )) {
         return (( $ssl ) ? "https" : "http" ) . "://" . $server_name . $path;
     }

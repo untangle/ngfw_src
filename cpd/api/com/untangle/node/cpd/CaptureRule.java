@@ -18,19 +18,10 @@
 
 package com.untangle.node.cpd;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.Type;
-
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.IPMatcher;
 
-@Entity
-@Table(name="n_cpd_capture_rule", schema="settings")
-@SuppressWarnings("serial")
 public class CaptureRule extends Rule
 {
     
@@ -68,7 +59,6 @@ public class CaptureRule extends Rule
 	    this.days = days;
 	}
    
-    @Column(name="capture_enabled", nullable=false)
     public boolean getCapture()
     {
         return this.capture;
@@ -79,8 +69,6 @@ public class CaptureRule extends Rule
         this.capture = newValue;
     }
 
-    @Column(name="client_interface", nullable=false)
-    @Type(type="com.untangle.uvm.type.IntfMatcherUserType")
     public IntfMatcher getClientInterface()
     {
         return this.clientInterface;
@@ -91,8 +79,6 @@ public class CaptureRule extends Rule
         this.clientInterface = newValue;
     }
 
-    @Column(name="client_address", nullable=false)
-    @Type(type="com.untangle.uvm.type.IPMatcherUserType")
     public IPMatcher getClientAddress()
     {
         return this.clientAddress;
@@ -103,8 +89,6 @@ public class CaptureRule extends Rule
         this.clientAddress = newValue;
     }
 
-    @Column(name="server_address", nullable=false)
-    @Type(type="com.untangle.uvm.type.IPMatcherUserType")
     public IPMatcher getServerAddress()
     {
         return this.serverAddress;
@@ -115,7 +99,6 @@ public class CaptureRule extends Rule
         this.serverAddress = newValue;
     }
 
-    @Column(name="start_time", nullable=false)
     public String getStartTime()
     {
         return this.startTime;
@@ -126,7 +109,6 @@ public class CaptureRule extends Rule
         this.startTime = newValue;
     }
 
-    @Column(name="end_time", nullable=false)
     public String getEndTime()
     {
         return this.endTime;
@@ -137,7 +119,6 @@ public class CaptureRule extends Rule
         this.endTime = newValue;
     }
 
-    @Column(name="days", nullable=false)
     public String getDays()
     {
         return this.days;

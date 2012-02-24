@@ -28,7 +28,7 @@ $cpd_settings = get_cpd_settings();
 
 $redirectUrl = $cpd_settings[""];
 
-switch ( $cpd_settings["page_type"] ) {
+switch ( $cpd_settings["pageType"] ) {
 case "BASIC_MESSAGE":
     include "basicmessage.php";
     break;
