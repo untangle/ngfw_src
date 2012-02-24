@@ -3976,8 +3976,8 @@ Ext.define('Ung.EditorGrid', {
                     },this)
                 },
                 "load" : {
-                    fn : Ext.bind(function(store, records, options) {
-                        this.updateFromChangedData(store,records, options);
+                    fn : Ext.bind(function(store, records, successful, options, eOpts) {
+                        this.updateFromChangedData(store,records);
                     },this)
                 }
             }
@@ -4270,18 +4270,18 @@ Ext.define('Ung.EditorGrid', {
         });
     },
     // when a page is rendered load the changedData for it
-    updateFromChangedData : function(store, records, options) {
+    updateFromChangedData : function(store, records) {
         var page = store.currentPage;
         for (id in this.changedData) {
             var cd = this.changedData[id];
             if (page == cd.page) {
                 if ("added" == cd.op) {
-                    var record = Ext.create(Ext.ClassManager.getName(this.getStore().getProxy().getModel()), cd.recData);
-                    this.getStore().insert(0, [record]);
+                    var record = Ext.create(Ext.ClassManager.getName(store.getProxy().getModel()), cd.recData);
+                    store.insert(0, [record]);
                 } else if ("modified" == cd.op) {
-                    var recIndex = this.getStore().find("id", id);
+                    var recIndex = store.find("id", id);
                     if (recIndex >= 0) {
-                        var rec = this.getStore().getAt(recIndex);
+                        var rec = store.getAt(recIndex);
                         rec.data = cd.recData;
                         rec.commit();
                     }
@@ -5218,7 +5218,6 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
         }
         this.items = Ext.create('Ext.panel.Panel',{
             anchor: "100% 100%",
-            layout:"form",
             buttonAlign : 'right',
             border : false,
             bodyStyle : 'padding:10px 10px 0px 10px;',
