@@ -23,6 +23,8 @@
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/componentsNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/mainNew.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/rulebuilder.js?s=${buildStamp}"></script>
+
 
     <!-- todo, move this to a place where it is loaded dynamically. -->
     <script type="text/javascript" src="/script/timezone.js?s=${buildStamp}"></script>
@@ -44,7 +46,8 @@
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/componentsNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/mainNew.js?s=${buildStamp}"></script>
-
+    <script type="text/javascript" src="script/rulebuilder.js?s=${buildStamp}"></script>
+ 
     <!-- todo, move this to a place where it is loaded dynamically. -->
     <script type="text/javascript" src="/script/timezone.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/country.js?s=${buildStamp}"></script>
@@ -56,7 +59,7 @@
     <script type="text/javascript" src="script/config/upgradeNew.js?s=${buildStamp}"></script>
 	
 	<script type="text/javascript" src="script/untangle-node-spyware/settingsNew.js?s=${buildStamp}"></script>
-
+    
 </c:if>
 
 <c:if test="${param['console']==1}">
