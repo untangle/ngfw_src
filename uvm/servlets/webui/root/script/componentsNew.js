@@ -3861,6 +3861,7 @@ Ext.define('Ung.EditorGrid', {
     configDelete: null,
     // the default Empty record for a new row
     hasReorder : false,
+    hasInlineEditor:true,
     configReorder: null,
     // the default Empty record for a new row
     emptyRow : null,
@@ -3893,9 +3894,6 @@ Ext.define('Ung.EditorGrid', {
         var defaults = {
             data:[],
             plugins: [
-                Ext.create('Ext.grid.plugin.CellEditing', {
-                    clicksToEdit: 2
-                })
             ],
             viewConfig: {
                 stripeRows : true,
@@ -3916,7 +3914,12 @@ Ext.define('Ung.EditorGrid', {
             if(this.columnsDefaultSortable && col.sortable == null) {
                 col.sortable=true;
             }
-        }        
+        }
+        if(this.hasInlineEditor) {
+        	this.plugins.push(Ext.create('Ext.grid.plugin.CellEditing', {
+                clicksToEdit: 2
+            }))
+        }
         if (this.hasReorder) {
             var reorderColumn = Ext.create('Ung.grid.ReorderColumn', this.configReorder || {});
             this.columns.push(reorderColumn);
