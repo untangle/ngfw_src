@@ -41,7 +41,8 @@ function get_branding_settings()
 
 function get_cpd_settings()
 {
-	$data = file_get_contents("/home/mahotz/work/src/dist/usr/share/untangle/settings/untangle-node-cpd/settings_5.js");
+	$path = file_get_contents("/etc/untangle-cpd/settings.file");
+	$data = file_get_contents(trim($path));
 	$json = json_decode($data,true);
     $json['page_parameters'] = json_decode($json['pageParameters'],true);
     return $json;

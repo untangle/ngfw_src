@@ -4,7 +4,10 @@
 package com.untangle.node.cpd;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.BufferedWriter;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -132,6 +135,10 @@ public class CPDImpl extends AbstractNode implements CPD
         
         this.settings = settings;
         settingsManager.save(CPDSettings.class, settingsFile, settings);
+        
+        BufferedWriter out = new BufferedWriter(new FileWriter("/etc/untangle-cpd/settings.file"));
+        out.write(settingsFile + ".js");
+        out.close();
         
         reconfigure();
     }
