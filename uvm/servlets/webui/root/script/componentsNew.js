@@ -3907,14 +3907,8 @@ Ext.define('Ung.EditorGrid', {
         Ext.applyIf(config, defaults)
         this.callParent(arguments);
     },
+    
     initComponent : function() {
-        for (var i = 0; i < this.columns.length; i++) {
-            var col=this.columns[i];
-            col.menuDisabled= true;
-            if(this.columnsDefaultSortable && col.sortable == null) {
-                col.sortable=true;
-            }
-        }
         if(this.hasInlineEditor) {
         	this.plugins.push(Ext.create('Ext.grid.plugin.CellEditing', {
                 clicksToEdit: 2
@@ -3928,7 +3922,15 @@ Ext.define('Ung.EditorGrid', {
                 ptype: 'gridviewdragdrop',
                 dragText: i18n._('Drag and drop to reorganize')
             }
+            this.columnsDefaultSortable = false;
         }
+        for (var i = 0; i < this.columns.length; i++) {
+            var col=this.columns[i];
+            col.menuDisabled= true;
+            if( col.sortable == null) {
+                col.sortable = this.columnsDefaultSortable;
+            }
+        }    
         if (this.hasEdit) {
             var editColumn = Ext.create('Ung.grid.EditColumn', this.configEdit || {});
             this.plugins.push(editColumn);
@@ -4112,7 +4114,7 @@ Ext.define('Ung.EditorGrid', {
         var records=[];
         for (var i = 0; i < importedRows.length; i++) {
             try {
-                var record= Ext.create('Ext.data.Record',importedRows[i]);
+                var record= Ext.create(Ext.ClassManager.getName(this.getStore().getProxy().getModel()),importedRows[i]);
                 if(record.data["javaClass"] == this.recordJavaClass) {
                     record.set("id", this.genAddedId());
                     records.push(record);
@@ -4298,11 +4300,10 @@ Ext.define('Ung.EditorGrid', {
     },
     disableSorting : function () {
         if (!this.isDirty()) {
-            //TODO: find extjs4 solution
-//            var cmConfig = this.getColumnModel().config;
-//            for (i in cmConfig) {
-//                cmConfig[i].sortable = false;
-//            }
+            var cmConfig = this.columns;
+            for (i in cmConfig) {
+                cmConfig[i].sortable = false;
+            }
         }
     },
     // Update Changed data after an import
@@ -4722,7 +4723,8 @@ Ung.grid.ButtonColumn.prototype = {
 };
 
 // Row editor window used by editor grid
-Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
+Ext.define('Ung.UsersWindow', {
+    extend:'Ung.UpdateWindow',
     // the record currently edit
     record : null,
     sizeToRack : true,
@@ -4765,12 +4767,13 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                     },'-'
             ];         
         }
-/*        var selModel = new Ext.grid.CheckboxSelectionModel({
-            singleSelect : this.singleSelectUser,
+        var selectionModel = Ext.create('Ext.selection.CheckboxModel',{
+            //singleSelect : this.singleSelectUser,
+            mode: 'SIMPLE',
             listeners : {
-                rowselect : Ext.bind(this.onSelectRow, this )
+                select : Ext.bind(this.onSelectRow, this )
             }
-        }); */
+        });
         this.usersGrid=Ext.create('Ext.grid.Panel',{
            // title: i18n._('Users'),
            height: 210,
@@ -4869,7 +4872,8 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 }: null,
                 remoteSort : false,
             }),
-            columns: [//selModel,
+            selModel : selectionModel,
+            columns: [
             {
                 header : i18n._( "Type" ),
                 width : 100,
@@ -4885,8 +4889,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                 width: 350,
                 sortable : true,
                 dataIndex: "displayName"
-            }],
-            //selModel : selModel
+            }]
         });
         this.items = Ext.create('Ext.form.Panel',{
             labelWidth : 75,
@@ -4941,7 +4944,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                         handler : Ext.bind(function() {
                             Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
                             Ext.Function.defer(Ung.Util.loadResourceAndExecute,1,this,["Ung.LocalDirectory",Ung.Util.getScriptSrc("script/config/localDirectory.js"), Ext.bind(function() {
-                                main.localDirectoryWin=new Ung.LocalDirectory({"name":"localDirectory",fnCallback: Ext.bind(function() {
+                                main.localDirectoryWin=Ext.create('Ung.LocalDirectory',{"name":"localDirectory",fnCallback: Ext.bind(function() {
                                     this.populate(this.record,this.fnCallback);
                                 },this)});
                                 main.localDirectoryWin.show();
@@ -4979,7 +4982,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         this.fnCallback=fnCallback;
         this.record = record;
         Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-        this.usersGrid.getSelectionModel().clearSelections();
+        this.usersGrid.getSelectionModel().deselectAll(false);
         var store=this.usersGrid.getStore();
         store.getProxy().data = {list:[]};
         store.load({
@@ -5028,12 +5031,9 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         if (this.populateSemaphore == 0) {
             if (this.settingsCmp !== null) {
                 var sm=this.usersGrid.getSelectionModel();
-                sm.clearSelections();
+                sm.deselectAll(false);
                 var store=this.usersGrid.getStore();
-                store.getProxy().data = {list:this.userEntries};
-                store.load({
-                    start : 0
-                });
+                store.loadRawData(this.userEntries);
 
                 var users = this.record.get(this.userDataIndex),user,group,index;
 
@@ -5055,14 +5055,13 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
                     } else {
                         index=store.find("SAMAccountName",group);
                     }
-
                     if(index>=0) {
-                        sm.selectRow(index,true);
+                        sm.select(index,true);
                     } else {
                         freeForm.push( user );
                     }
 
-                    this.find( "name", "otherUsers" )[0].setValue( freeForm.join( " ;" ));
+                    this.query('textfield[name="otherUsers"]' )[0].setValue( freeForm.join( " ;" ));
                 }
             }
             Ext.MessageBox.hide();
@@ -5073,7 +5072,7 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
     isFormValid : function() {
         if (this.singleSelectUser) {
             // one user must be selected
-            return (this.usersGrid.getSelectionModel().getSelections().length == 1);
+            return (this.usersGrid.getSelectionModel().getSelection().length == 1);
         }
         return true;
     },
@@ -5084,11 +5083,11 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
             if (this.record !== null) {
                 var sm=this.usersGrid.getSelectionModel();
                 var users = [];
-                var selRecs=sm.getSelections();
+                var selRecs=sm.getSelection();
                 var value, record, i;
                 
                 /* First throw in the free form values */
-                record = this.find( "name", "otherUsers" )[0].getValue().split( ";" );
+                record = this. query('textfield[name="otherUsers"]')[0].getValue().split( ";" );
                 for ( i = 0 ; i < record.length ; i++ ) {
                     value = record[i].trim();
                     if ( value.length > 0 ) {
@@ -5120,8 +5119,8 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
 
                 /* Update the selection model if necessary */
                 if ( users.length == 1 && users[0] == "[any]" ) {
-                    sm.clearSelections();
-                    sm.selectFirstRow();
+                    sm.deselectAll(false);
+                    sm.select(0);
                 }
                 
                 if(this.fnCallback) {
@@ -5146,35 +5145,21 @@ Ung.UsersWindow = Ext.extend(Ung.UpdateWindow, {
         this.hide();
     },
     
-    onSelectRow : function( selectionModel, rowIndex, record )
+    onSelectRow : function( rowModel,record,index,opts )
     {
         /* Uncheck any if they select another user. */
         if ( !this.singleSelectUser && record.get("UID") != "[any]" ) {
-            selectionModel.suspendEvents();
-            selectionModel.deselectRow(0);
-            selectionModel.resumeEvents();
+            rowModel.suspendEvents();
+            rowModel.deselect(0);
+            rowModel.resumeEvents();
         }
-    }
-});
-Ung.ImportSettingsReader = function(meta, recordType){
-    meta = meta || {};
-    Ung.ImportSettingsReader.superclass.constructor.call(this, meta, recordType || meta.fields);
-};
-Ext.extend(Ung.ImportSettingsReader, Ext.data.DataReader, {
-    read : function(response){
-        var jsonString = Ext.util.Format.htmlDecode(response.responseText);
-        var json = eval("("+jsonString+")");
-        if(!json) {
-            Ext.MessageBox.alert(i18n._("Warning"), i18n._("Import failed."));
-        }
-        return {
-            success : json
-        };
     }
 });
 
+
 //Import Settings window
-Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
+Ext.define('Ung.ImportSettingsWindow', {
+    extend:'Ung.UpdateWindow',
     // the editor grid
     grid : null,
     height:230,
@@ -5236,7 +5221,7 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
                 name : 'importMode',
                 checked : (this.importMode=='replace'),
                 listeners : {
-                    "check" : {
+                    "change" : {
                         fn : Ext.bind(function(elem, checked) {
                             if(checked) {
                                 this.importMode = 'replace';
@@ -5251,7 +5236,7 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
                 name : 'importMode',
                 checked : (this.importMode=='prepend'),
                 listeners : {
-                    "check" : {
+                    "change" : {
                         fn : Ext.bind(function(elem, checked) {
                             if(checked) {
                                 this.importMode = 'prepend';
@@ -5266,7 +5251,7 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
                 name : 'importMode',
                 checked : (this.importMode=='append'),
                 listeners : {
-                    "check" : {
+                    "change" : {
                         fn : Ext.bind(function(elem, checked) {
                             if(checked) {
                                 this.importMode = 'append';
@@ -5283,7 +5268,6 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
                 fileUpload : true,
                 xtype : 'form',
                 id : 'import_settings_form'+this.getId(),
-                errorReader: new Ung.ImportSettingsReader(),
                 url : 'gridSettings',
                 border : false,
                 items : [{
@@ -5321,7 +5305,7 @@ Ung.ImportSettingsWindow = Ext.extend(Ung.UpdateWindow, {
         }
     },
     importSettingsSuccess : function (form, action) {
-        var result = action.result.success;
+        var result = action.result;
         Ext.MessageBox.wait(i18n._("Importing Settings..."), i18n._("Please wait"));
         if(!result) {
             Ext.MessageBox.alert(i18n._("Warning"), i18n._("Import failed."));

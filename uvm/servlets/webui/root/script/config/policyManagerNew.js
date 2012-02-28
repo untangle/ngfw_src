@@ -893,7 +893,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     }, {
                         xtype : 'textfield',
                         name : 'Users',
-                        width : 200,
+                        width : 300,
                         readOnly : true,
                         id : 'gridRules_rowEditor_user',
                         fieldLabel : this.i18n._("Users"),
