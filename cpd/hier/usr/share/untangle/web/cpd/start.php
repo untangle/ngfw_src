@@ -16,6 +16,8 @@ $server_name=urlencode( $_SERVER["SERVER_NAME"] );
 $method=urlencode( $_SERVER["REQUEST_METHOD"] );
 $path=urlencode( $_SERVER["SCRIPT_URL"] );
 $ssl=urlencode( $_SERVER["HTTPS"] );
+$local_server_name = getHostbyAddr($_SERVER["SERVER_ADDR"]);
+
 
 $protocol = "http";
 if (( $ssl == "on" ) || ( $https_redirect )) {
@@ -23,5 +25,6 @@ if (( $ssl == "on" ) || ( $https_redirect )) {
 }
 
 
-header( "Location: $protocol://" . $_SERVER["SERVER_ADDR"] . "/cpd/index.php?server_name=$server_name&method=$method&path=$path&ssl=$ssl");
+header( "Location: $protocol://$local_server_name/cpd/index.php?server_name=$server_name&method=$method&path=$path&ssl=$ssl");
+
 ?>
