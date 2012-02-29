@@ -194,17 +194,16 @@ case "$1" in
         rm -f ${UVM_RUNDIR}/${UVM_PID_FILE}  &> /dev/null
 
         # Wait for completion
-        for i in `seq 1 15` ; do
+        for i in `seq 1 10` ; do
             echo -n "."
+            sleep 1
             if grep -qi 'shutdown complete' $UVM_CONSOLE_LOG 2>/dev/null ; then
-                sleep 1
 		        unmonitorAll
                 updateStatusExit "]\n" "Stopped"
             fi
             if [ -z "`uvmJavaPid`" ] ; then
                 break
             fi
-            sleep 1
         done
 
         # Attempt more aggressive kill now
