@@ -18,6 +18,23 @@ Ext.override(Ext.Button, {
     }
 });
 
+Ext.override(Ext.data.Store,{
+    /**
+     * Finds the index of the first matching record in this store by a specific property/value.
+     * @param {String} property A property on your objects
+     * @param {String/RegExp} value The value to match against
+     * @param {Number} startIndex (optional) The index to start searching at
+     * @return {Number} The matched index or -1
+     */
+    findExact: function(property, value, start){
+        console.log("property=" + property +", value=" + value);
+        return this.data.findIndexBy(function(rec){
+            console.log(rec.get(property) + " ? " + value + " " + typeof(rec.get(property)) +" " + typeof(value));
+            return rec.get(property) == value;
+        }, this, start);
+    }
+});
+
 Ext.override(Ext.form.Field, {
 	clearDirty: function() {
         if(this.xtype=='radiogroup') {
@@ -4564,7 +4581,8 @@ Ung.EditorGrid = Ext.extend(Ext.grid.EditorGridPanel, {
                     var record = new Ext.data.Record(cd.recData);
                     this.store.insert(0, [record]);
                 } else if ("modified" == cd.op) {
-                    var recIndex = this.store.find("id", id);
+                    console.log("Finding id=" + id);
+                    var recIndex = this.store.findExact( "id", id,0);
                     if (recIndex >= 0) {
                         var rec = this.store.getAt(recIndex);
                         rec.data = cd.recData;

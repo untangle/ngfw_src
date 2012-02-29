@@ -4284,7 +4284,7 @@ Ext.define('Ung.EditorGrid', {
                     var record = Ext.create(Ext.ClassManager.getName(store.getProxy().getModel()), cd.recData);
                     store.insert(0, [record]);
                 } else if ("modified" == cd.op) {
-                    var recIndex = store.find("id", id);
+                    var recIndex = store.findExact("id", id);
                     if (recIndex >= 0) {
                         var rec = store.getAt(recIndex);
                         rec.data = cd.recData;
@@ -4423,7 +4423,7 @@ Ext.define('Ung.EditorGrid', {
     },
 
     focusChangedDataField : function(cd, field) {
-        var recIndex = this.getStore().find("id", cd.recData["id"]);
+        var recIndex = this.getStore().findExact("id", cd.recData["id"]);
         if (recIndex >= 0) {
             this.getView().focusRow(recIndex);
         }
@@ -5051,9 +5051,9 @@ Ext.define('Ung.UsersWindow', {
                     index = -1;
 
                     if ( user == group ) {
-                        index=store.find("UID",user);
+                        index=store.findExact("UID",user);
                     } else {
-                        index=store.find("SAMAccountName",group);
+                        index=store.findExact("SAMAccountName",group);
                     }
                     if(index>=0) {
                         sm.select(index,true);
