@@ -162,12 +162,6 @@ public class OpenSSLWrapper
         throw new IOException("openssl exited with value " + result.getResult());
     }
 
-
-
-
-
-
-
     /**
      * Get some info about a cert.
      * <br>
@@ -323,7 +317,7 @@ public class OpenSSLWrapper
     public static byte[] createCSR(String subject, File keyFile)
         throws IOException
     {
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec("openssl req -new -key " + keyFile.getAbsolutePath()  +" -subj " + subject);
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec("openssl req -new -key " + keyFile.getAbsolutePath()  +" -subj " + "\"" + subject + "\"");
 
         if(result.getResult()==0) {
             return result.getOutput().getBytes();
