@@ -49,43 +49,43 @@ import com.untangle.uvm.SettingsManager;
 
 public class CPDImpl extends AbstractNode implements CPD
 {
+    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/cpd-convert-settings.py";
     private static int deployCount = 0;
-    
-    private final CustomUploadHandler uploadHandler = new CustomUploadHandler(); 
+
+    private final CustomUploadHandler uploadHandler = new CustomUploadHandler();
     private final Logger logger = Logger.getLogger(CPDImpl.class);
 
     private final PipeSpec[] pipeSpecs;
-    
+
     private final CPDManager manager = new CPDManager(this);
-    
+
     private final BlingBlinger blockBlinger;
     private final BlingBlinger authorizeBlinger;
 
     public static final String DEFAULT_USERNAME = "captive portal user";
 
     private CPDIpUsernameMapAssistant assistant = null;
-    
+
     private CPDSettings settings;
 
     private EventLogQuery loginEventQuery;
     private EventLogQuery blockEventQuery;
 
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-    private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-cpd/settings_" + getNodeId().getId().toString());
 
     public CPDImpl()
     {
         NodeContext nodeContext = getNodeContext();
 
         this.loginEventQuery = new EventLogQuery(I18nUtil.marktr("Login Events"),
-                                                 "FROM CpdLoginEventsFromReports evt ORDER BY evt.timeStamp DESC");                                                 
-                                                 
+                                                 "FROM CpdLoginEventsFromReports evt ORDER BY evt.timeStamp DESC");
+
         this.blockEventQuery = new EventLogQuery(I18nUtil.marktr("Block Events"),
                                                  "FROM CpdBlockEventsFromReports evt ORDER BY evt.timeStamp DESC");
-        
+
         this.settings = new CPDSettings();
         this.pipeSpecs = new PipeSpec[0];
-        
+
         MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeId());
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Blocked Sessions"), null, I18nUtil.marktr("BLOCK"));
@@ -96,22 +96,22 @@ public class CPDImpl extends AbstractNode implements CPD
     public void initializeSettings()
     {
         logger.info("Initializing Settings...");
-        
+
         CPDSettings settings = new CPDSettings(this.getNodeId());
         /* Create a set of default capture rules */
         List<CaptureRule> rules = new LinkedList<CaptureRule>();
         rules.add(new CaptureRule(false, true,
-                                  "Require a login for traffic on the an interface (example rule)", 
-                                  new IntfMatcher("2"), 
+                                  "Require a login for traffic on the an interface (example rule)",
+                                  new IntfMatcher("2"),
                                   IPMatcher.getAnyMatcher(), IPMatcher.getAnyMatcher(),
                                   CaptureRule.START_OF_DAY, CaptureRule.END_OF_DAY, CaptureRule.ALL_DAYS));
-        
+
         rules.add(new CaptureRule(false, true,
-                                  "Require a login between 8:00 AM and 5 PM on on interface. (example rule)", 
-                                  new IntfMatcher("2"), 
+                                  "Require a login between 8:00 AM and 5 PM on on interface. (example rule)",
+                                  new IntfMatcher("2"),
                                   IPMatcher.getAnyMatcher(), IPMatcher.getAnyMatcher(),
                                   "8:00", "17:00", CaptureRule.ALL_DAYS));
-        
+
         settings.setCaptureRules(rules);
         settings.setPageParameters(getDefaultPageParameters());
 
@@ -128,18 +128,22 @@ public class CPDImpl extends AbstractNode implements CPD
     @Override
     public void setCPDSettings(final CPDSettings settings) throws Exception
     {
+        String nodeID = this.getNodeId().getId().toString();
+        String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-cpd/settings_" + nodeID;
+        String settingsFile = settingsBase + ".js";
+
         if ( settings == this.settings )
         {
             throw new IllegalArgumentException("Unable to update original settings, set this.settings to null first.");
         }
-        
+
         this.settings = settings;
-        settingsManager.save(CPDSettings.class, settingsFile, settings);
-        
+        settingsManager.save(CPDSettings.class, settingsBase, settings);
+
         BufferedWriter out = new BufferedWriter(new FileWriter("/etc/untangle-cpd/settings.file"));
-        out.write(settingsFile + ".js");
+        out.write(settingsFile);
         out.close();
-        
+
         reconfigure();
     }
 
@@ -153,7 +157,7 @@ public class CPDImpl extends AbstractNode implements CPD
     {
         List<HostDatabaseEntry> captiveStatus = null;
 
-        if (assistant != null) 
+        if (assistant != null)
             captiveStatus = assistant.getCaptiveStatus();
 
         if (captiveStatus == null) {
@@ -170,30 +174,30 @@ public class CPDImpl extends AbstractNode implements CPD
         if ( captureRules == null ) {
             captureRules = new LinkedList<CaptureRule>();
         }
-        
+
         return captureRules;
     }
-    
+
     @Override
     public void setCaptureRules( final List<CaptureRule> captureRules ) throws Exception
     {
         this.settings.setCaptureRules( captureRules );
         reconfigure();
     }
-    
+
     @Override
     public List<PassedClient> getPassedClients()
     {
         return this.settings.getPassedClients();
     }
-    
+
     @Override
     public void setPassedClients( final List<PassedClient> newValue ) throws Exception
     {
         this.settings.setPassedClients( newValue );
         reconfigure();
     }
-    
+
     @Override
     public List<PassedServer> getPassedServers()
     {
@@ -212,13 +216,13 @@ public class CPDImpl extends AbstractNode implements CPD
     {
         return new EventLogQuery[] { this.loginEventQuery };
     }
-    
+
     @Override
     public EventLogQuery[] getBlockEventQueries()
     {
         return new EventLogQuery[] { this.blockEventQuery };
     }
-    
+
     @Override
     public void incrementCount(BlingerType blingerType, long delta )
     {
@@ -226,13 +230,13 @@ public class CPDImpl extends AbstractNode implements CPD
         case BLOCK:
             this.blockBlinger.increment(delta);
             break;
-            
+
         case AUTHORIZE:
             this.authorizeBlinger.increment(delta);
             break;
         }
     }
-    
+
     @Override
     public boolean authenticate( String address, String username, String password, String credentials )
     {
@@ -258,7 +262,7 @@ public class CPDImpl extends AbstractNode implements CPD
         }
         return isAuthenticated;
     }
-    
+
     @Override
     public boolean logout( String address )
     {
@@ -276,10 +280,9 @@ public class CPDImpl extends AbstractNode implements CPD
                 logger.warn("Remove Cache failed",e);
             }
         }
-        
+
         return isLoggedOut;
     }
-
 
     // AbstractNode methods ----------------------------------------------
 
@@ -294,7 +297,7 @@ public class CPDImpl extends AbstractNode implements CPD
     protected void preStart() throws Exception
     {
         this.assistant = new CPDIpUsernameMapAssistant(this);
-        
+
         /* Check if there is at least one enabled capture rule */
         boolean hasCaptureRule = false;
         for ( CaptureRule rule : this.settings.getCaptureRules()) {
@@ -303,16 +306,16 @@ public class CPDImpl extends AbstractNode implements CPD
                 break;
             }
         }
-        
+
         if ( !hasCaptureRule ) {
             Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-cpd");
             I18nUtil i18nUtil = new I18nUtil(i18nMap);
             throw new Exception( i18nUtil.tr( "You must create and enable at least one Capture Rule before turning on the Captive Portal" ));
         }
         reconfigure(true);
-           
+
         UvmContextFactory.context().uploadManager().registerHandler(this.uploadHandler);
-        
+
         super.preStart();
      }
 
@@ -323,7 +326,7 @@ public class CPDImpl extends AbstractNode implements CPD
             /* Only stop if requested by the user (not during shutdown). */
             if ( UvmContextFactory.context().state() != UvmState.DESTROYED ) {
                 this.manager.clearHostDatabase();
-                
+
                 /* Flush all of the entries that are in the phonebook XXX */
                 //UvmContextFactory.context().localIpUsernameMap().flushEntries();
             }
@@ -332,7 +335,7 @@ public class CPDImpl extends AbstractNode implements CPD
         } catch (ConnectionException e) {
             logger.warn( "Unable to clear host database settings, continuing.", e);
         }
-        
+
         try {
             this.manager.setConfig(this.settings, false);
         } catch (JSONException e) {
@@ -342,7 +345,7 @@ public class CPDImpl extends AbstractNode implements CPD
         }
         this.manager.stop();
     }
-    
+
     @Override
     protected void postStop() throws Exception
     {
@@ -353,23 +356,66 @@ public class CPDImpl extends AbstractNode implements CPD
             this.assistant = null;
         }
     }
-    
+
     protected void postInit(final String[] args)
     {
+        String nodeID = this.getNodeId().getId().toString();
+        String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-cpd/settings_" + nodeID;
+        String settingsFile = settingsBase + ".js";
+
         CPDSettings readSettings = null;
-        
+        logger.info("Loading settings from " + settingsFile );
+
         try
         {
-            // read our node settings from the file
-            readSettings = settingsManager.load( CPDSettings.class, settingsFile );
+			// first we try to read our json settings
+            readSettings = settingsManager.load( CPDSettings.class, settingsBase );
+        }
 
-            // if not found initialize with the defaults
+        catch (Exception exn)
+        {
+            logger.error("postInit()",exn);
+        }
+
+        // if no settings found try importing from the database
+        if (readSettings == null)
+        {
+            logger.info("No json settings found... attempting to import from database");
+
+            try
+            {
+                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + settingsFile;
+                logger.info("Running: " + convertCmd);
+                UvmContextFactory.context().execManager().exec( convertCmd );
+            }
+
+            catch (Exception exn)
+            {
+                logger.error("Conversion script failed", exn);
+            }
+
+            try
+            {
+				// try to read the settings created by the conversion script
+                readSettings = settingsManager.load( CPDSettings.class, settingsBase );
+            }
+
+            catch (Exception exn)
+            {
+                logger.error("Could not read node settings", exn);
+            }
+        }
+
+        try
+        {
+			// still no settings found so init with defaults
             if (readSettings == null)
             {
+                logger.warn("No database or json settings found... initializing with defaults");
                 initializeSettings();
             }
 
-            // apply the settings loaded from the file
+            // otherwise apply the loaded or imported settings from the file
             else
             {
                 logger.info("Loaded settings from " + settingsFile);
@@ -377,30 +423,30 @@ public class CPDImpl extends AbstractNode implements CPD
             }
         }
 
-        catch (Exception e)
+        catch (Exception exn)
         {
-            logger.error("postInit()",e);
-        }        
-        
+            logger.error("Could not apply node settings",exn);
+        }
+
         UvmContextFactory.context().uploadManager().registerHandler(this.uploadHandler);
         deployWebAppIfRequired(this.logger);
     }
-    
+
     @Override
     protected void preDestroy() throws Exception
     {
         UvmContextFactory.context().uploadManager().unregisterHandler(this.uploadHandler.getName());
-                
+
         unDeployWebAppIfRequired(this.logger);
 
         if (this.assistant != null) {
             this.assistant.destroy();
             this.assistant = null;
         }
-        
+
         super.preDestroy();
     }
-    
+
     @Override
     protected void uninstall()
     {
@@ -409,13 +455,12 @@ public class CPDImpl extends AbstractNode implements CPD
         super.uninstall();
     }
 
-
     // private methods -------------------------------------------------------
     private void reconfigure() throws Exception
     {
         reconfigure(false);
     }
-    
+
     private void reconfigure(boolean force) throws Exception
     {
         if ( force || this.getRunState() == NodeState.RUNNING) {
@@ -426,7 +471,7 @@ public class CPDImpl extends AbstractNode implements CPD
             } catch (IOException e) {
                 throw new Exception( "Unable to write settings.", e);
             }
-                        
+
             try {
                 this.manager.start();
             } catch ( Exception e ) {
@@ -444,7 +489,7 @@ public class CPDImpl extends AbstractNode implements CPD
             this.manager.stop();
         }
     }
-    
+
     private String getDefaultPageParameters() {
 
         try {
@@ -469,7 +514,7 @@ public class CPDImpl extends AbstractNode implements CPD
 
         return "{}";
     }
-    
+
     private class CustomUploadHandler implements UploadHandler
     {
         @Override
@@ -483,11 +528,10 @@ public class CPDImpl extends AbstractNode implements CPD
             fileItem.write(temp);
             manager.loadCustomPage(temp.getAbsolutePath());
             return "Successfully uploaded a custom portal page";
-            
+
         }
-        
     }
-    
+
     protected static synchronized void deployWebAppIfRequired(Logger logger)
     {
         if (0 != deployCount++) {

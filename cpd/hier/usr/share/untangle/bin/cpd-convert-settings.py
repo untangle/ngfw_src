@@ -223,7 +223,7 @@ if len(sys.argv) < 3:
 
 nodeid = sys.argv[1]
 target = sys.argv[2]
-debug = True
+debug = False
 
 try:
     (pathname, filename) = os.path.split(target)
