@@ -20,7 +20,7 @@ Ext.override(Ext.Button, {
     }
 });
 
-Ext.override(Ext.form.Field, { 
+Ext.override(Ext.form.field.Field, { 
     clearDirty: function() {
         if(this.xtype=='radiogroup') {
             this.items.each(function(item) {
@@ -56,7 +56,7 @@ Ext.override(Ext.form.Field, {
     })
 });
 
-Ext.override(Ext.Panel, {
+Ext.override(Ext.panel.Panel, {
     listeners : {
         "render" : {
             fn : function() {
@@ -2908,7 +2908,7 @@ Ext.define("Ung.GridEventLog", {
             if (this.settingsCmp !== null) {
                 this.getStore().getProxy().data = events;
                 this.getStore().loadPage(1, {
-                    limit:this.isPaginated() ? this.recordsPerPage : Ung.Util.maxRowCount
+                    limit:this.recordsPerPage ? this.recordsPerPage: Ung.Util.maxRowCount
                 });
             }
         }

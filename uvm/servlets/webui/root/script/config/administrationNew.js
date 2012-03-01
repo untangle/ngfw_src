@@ -1570,7 +1570,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         listeners : {
                             "select" : {
                                 fn : Ext.bind(function(elem, record) {
-                                    this.getSkinSettings().administrationClientSkin = record.data.name;
+                                    this.getSkinSettings().administrationClientSkin = record[0].data.name;
                                 },this)
                             }
                         }
