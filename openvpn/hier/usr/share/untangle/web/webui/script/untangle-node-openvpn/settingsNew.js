@@ -27,7 +27,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
             this.record.data.distributionEmail = emailAddress;
 
-            Ext.MessageBox.wait( this.i18n._( "Distributing digital key..." ), this.i18n._( "Please wait" ));
+            Ext.MessageBox.wait( this.i18n._( "Distributing Client Installer..." ), this.i18n._( "Please wait" ));
             
             this.node.distributeClientConfig(Ext.bind(this.completeSendEmail,this), this.record.data);
         },
@@ -36,13 +36,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         {
             if (exception) {
                 Ext.MessageBox.alert( this.i18n._("Error saving/sending key"),
-                                      this.i18n._("OpenVPN was not able to send your digital key via email.  Please try again." ));
+                                      this.i18n._("OpenVPN was not able to send your client installer via email.  Please try again." ));
                 return;
             }
 
             // go to next step
             Ext.MessageBox.alert( this.i18n._("Success"),
-                                  this.i18n._("OpenVPN successfully sent your digital key via email."),
+                                  this.i18n._("OpenVPN successfully sent your Client Installer via email."),
                                   Ext.bind(this.hide, this ));
         },
 
