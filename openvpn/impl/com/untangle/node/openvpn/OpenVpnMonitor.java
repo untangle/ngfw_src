@@ -126,6 +126,10 @@ class OpenVpnMonitor implements Runnable
                 } catch ( Exception e ) {
                     logger.info( "Error updating status", e );
                 }
+
+                if ( now.after( nextUpdate )) {
+                    nextUpdate.setTime( now.getTime() + LOG_TIME_MSEC );
+                }
             }
 
             /* Check if the node is still running */
