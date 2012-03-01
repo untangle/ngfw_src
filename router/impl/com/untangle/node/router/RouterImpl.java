@@ -44,7 +44,7 @@ public class RouterImpl extends AbstractNode implements Router
         this.handler          = new RouterEventHandler(this);
         this.sessionManager   = new RouterSessionManager(this);
         this.statisticManager = new RouterStatisticManager();
-        this.dhcpMonitor      = new DhcpMonitor( this, UvmContextFactory.context());
+        this.dhcpMonitor      = new DhcpMonitor( this );
         this.listener         = new SettingsListener();
 
         /**
