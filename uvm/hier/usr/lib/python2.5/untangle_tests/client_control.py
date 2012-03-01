@@ -10,6 +10,8 @@ class ClientControl:
     logfile = None
     verbosity = 0
 
+    # set the key file permissions correctly just in case
+    os.system("chmod 600 %s" % hostKeyFile)
 
     def redirectOutput(self, logfile):
         self.orig_stdout = sys.stdout
