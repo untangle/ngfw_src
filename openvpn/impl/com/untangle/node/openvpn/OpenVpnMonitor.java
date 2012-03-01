@@ -123,8 +123,14 @@ class OpenVpnMonitor implements Runnable
                     /* Cleanup UNDEF sessions every time you are going to update the stats */
                     boolean killUndef = now.after( nextUpdate );
                     updateStatus( killUndef );
+                } catch (java.net.ConnectException e) {
+                    logger.info( "Unable to connect to OpenVPN - trying again in " + SLEEP_TIME_MSEC + " ms.");
                 } catch ( Exception e ) {
                     logger.info( "Error updating status", e );
+                }
+
+                if ( now.after( nextUpdate )) {
+                    nextUpdate.setTime( now.getTime() + LOG_TIME_MSEC );
                 }
             }
 
