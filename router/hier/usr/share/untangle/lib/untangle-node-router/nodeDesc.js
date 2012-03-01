@@ -9,10 +9,7 @@
         "annotatedClasses" : {
             "javaClass": "java.util.LinkedList",
             "list": [
-                "com.untangle.node.router.DhcpAbsoluteEvent",
-                "com.untangle.node.router.DhcpAbsoluteLease",
-                "com.untangle.node.router.RouterStatisticEvent",
-                "com.untangle.node.router.DhcpLeaseEvent"
+                "com.untangle.node.router.RouterStatisticEvent"
             ]
         },
         "parents" : {
