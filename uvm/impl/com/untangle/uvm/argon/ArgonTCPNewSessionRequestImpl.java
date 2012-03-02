@@ -18,13 +18,13 @@
 
 package com.untangle.uvm.argon;
 
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 
 class ArgonTCPNewSessionRequestImpl extends ArgonIPNewSessionRequestImpl implements ArgonTCPNewSessionRequest
 {
     final boolean acked;
 
-    public ArgonTCPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent, PipelineEndpoints pe )
+    public ArgonTCPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent, SessionEvent pe )
     {
         super( sessionGlobalState, agent, pe );
 
@@ -32,7 +32,7 @@ class ArgonTCPNewSessionRequestImpl extends ArgonIPNewSessionRequestImpl impleme
         acked = sessionGlobalState.netcapTCPSession().acked();
     }
 
-    public ArgonTCPNewSessionRequestImpl( ArgonTCPSession session, ArgonAgent agent, PipelineEndpoints pe, SessionGlobalState sessionGlobalState)
+    public ArgonTCPNewSessionRequestImpl( ArgonTCPSession session, ArgonAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
         super( session, agent, pe, sessionGlobalState);
 

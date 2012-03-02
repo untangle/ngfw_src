@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.Protocol;
@@ -183,7 +183,7 @@ public class IpsDetectionEngine
         }
 
         //Check matches
-        PipelineEndpoints pe = request.pipelineEndpoints();
+        SessionEvent pe = request.sessionEvent();
         
         Integer clientIntf = pe.getClientIntf();
         InterfaceConfiguration sourceIntf = null;

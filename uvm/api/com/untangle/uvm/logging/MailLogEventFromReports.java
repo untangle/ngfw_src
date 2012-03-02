@@ -21,10 +21,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.annotations.Type;
 
-import com.untangle.uvm.logging.PipelineEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
-import com.untangle.uvm.node.PipelineEndpoints;
 
 /**
  * Log event from the denormalized reports.n_mail_addrs table

@@ -19,7 +19,7 @@
 package com.untangle.uvm.argon;
 
 import com.untangle.jnetcap.NetcapUDPSession;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 
 class ArgonUDPNewSessionRequestImpl extends ArgonIPNewSessionRequestImpl implements ArgonUDPNewSessionRequest
 {
@@ -27,7 +27,7 @@ class ArgonUDPNewSessionRequestImpl extends ArgonIPNewSessionRequestImpl impleme
     protected byte tos;
     protected byte[] options;
 
-    public ArgonUDPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent, PipelineEndpoints pe )
+    public ArgonUDPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent, SessionEvent pe )
     {
         super( sessionGlobalState, agent, pe );
 
@@ -38,7 +38,7 @@ class ArgonUDPNewSessionRequestImpl extends ArgonIPNewSessionRequestImpl impleme
         this.tos    = netcapUDPSession.tos();
     }
     
-    public ArgonUDPNewSessionRequestImpl( ArgonUDPSession session, ArgonAgent agent, PipelineEndpoints pe, SessionGlobalState sessionGlobalState)
+    public ArgonUDPNewSessionRequestImpl( ArgonUDPSession session, ArgonAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
         super( session, agent, pe, sessionGlobalState );
 

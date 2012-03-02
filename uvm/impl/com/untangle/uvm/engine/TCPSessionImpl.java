@@ -15,7 +15,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.argon.ArgonTCPSession;
 import com.untangle.uvm.vnet.VnetSessionDesc;
@@ -57,7 +57,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     
     protected TCPSessionImpl(Dispatcher disp,
                              ArgonTCPSession argonSession,
-                             PipelineEndpoints pe,
+                             SessionEvent pe,
                              int clientReadBufferSize,
                              int serverReadBufferSize)
     {

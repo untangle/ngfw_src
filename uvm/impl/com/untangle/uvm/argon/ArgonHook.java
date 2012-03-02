@@ -23,11 +23,12 @@ import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.Session;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
 import com.untangle.uvm.node.DirectoryConnector;
+import com.untangle.uvm.node.HostnameLookup;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.security.NodeId;
 
@@ -82,7 +83,7 @@ public abstract class ArgonHook implements Runnable
     {
         long start = 0;
 
-        PipelineEndpoints endpoints = null;
+        SessionEvent endpoints = null;
         try {
             ClassLoader cl = getClass().getClassLoader();
             Thread.currentThread().setContextClassLoader(cl);
@@ -147,13 +148,26 @@ public abstract class ArgonHook implements Runnable
             /* lookup the user information */
             DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
             String username = null;
-            if (adconnector != null) {
+            if (adconnector != null)
                 username = adconnector.getIpUsernameMap().tryLookupUser( clientSide.clientAddr() );
-                if (username != null && username.length() > 0 ) { 
-                    logger.debug( "user information: " + username );
-                    sessionGlobalState.setUser( username );
-                    sessionGlobalState.attach( Session.KEY_PLATFORM_ADCONNECTOR_USERNAME, username );
-                }
+            if (username != null && username.length() > 0 ) { 
+                logger.debug( "user information: " + username );
+                sessionGlobalState.setUser( username );
+                sessionGlobalState.attach( Session.KEY_PLATFORM_ADCONNECTOR_USERNAME, username );
+            }
+            /* lookup the hostname information */
+            HostnameLookup router = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-router");
+            HostnameLookup reporting = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reporting");
+            String hostname = null;
+            if ((hostname == null || "".equals(hostname)) && reporting != null)
+                hostname = reporting.lookupHostname( clientSide.clientAddr() );
+            if ((hostname == null || "".equals(hostname)) && router != null)
+                hostname = router.lookupHostname( clientSide.clientAddr() );
+            if ((hostname == null || "".equals(hostname)))
+                hostname = clientSide.clientAddr().getHostAddress();
+            if (hostname != null && hostname.length() > 0 ) {
+                logger.debug( "hostname information: " + hostname );
+                sessionGlobalState.attach( Session.KEY_PLATFORM_HOSTNAME, hostname );
             }
             
             pipelineDesc = pipelineFoundry.weld( clientSide );
@@ -161,7 +175,7 @@ public abstract class ArgonHook implements Runnable
 
             /* Create the (fake) endpoints early so they can be
              * available at request time. */
-            endpoints = pipelineFoundry.createInitialEndpoints(clientSide, username);
+            endpoints = pipelineFoundry.createInitialEndpoints(clientSide, username, hostname);
 
             /* Initialize all of the nodes, sending the request events
              * to each in turn */
@@ -310,7 +324,7 @@ public abstract class ArgonHook implements Runnable
     /**
      * Initialize each of the nodes for the new session. </p>
      */
-    private void initNodes( PipelineEndpoints pe )
+    private void initNodes( SessionEvent pe )
     {
         for ( Iterator<ArgonAgent> iter = pipelineAgents.iterator() ; iter.hasNext() ; ) {
             ArgonAgent agent = iter.next();
@@ -667,7 +681,7 @@ public abstract class ArgonHook implements Runnable
     protected abstract Source makeClientSource();
     protected abstract Source makeServerSource();
 
-    protected abstract void newSessionRequest( ArgonAgent agent, Iterator<?> iter, PipelineEndpoints pe );
+    protected abstract void newSessionRequest( ArgonAgent agent, Iterator<?> iter, SessionEvent pe );
 
     protected abstract void raze();
 

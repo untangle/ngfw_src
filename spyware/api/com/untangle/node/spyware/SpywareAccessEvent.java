@@ -13,7 +13,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.untangle.uvm.node.IPMaskedAddress;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 import org.hibernate.annotations.Type;
 
 /**
@@ -28,7 +28,7 @@ import org.hibernate.annotations.Type;
 @SuppressWarnings("serial")
 public class SpywareAccessEvent extends SpywareEvent
 {
-    private PipelineEndpoints pipelineEndpoints;
+    private SessionEvent sessionEvent;
     private String identification;
     private IPMaskedAddress ipMaddr; // location
     private Boolean blocked;
@@ -37,9 +37,9 @@ public class SpywareAccessEvent extends SpywareEvent
 
     public SpywareAccessEvent() { }
 
-    public SpywareAccessEvent(PipelineEndpoints pe, String identification, IPMaskedAddress ipMaddr, Boolean blocked)
+    public SpywareAccessEvent(SessionEvent pe, String identification, IPMaskedAddress ipMaddr, Boolean blocked)
     {
-        this.pipelineEndpoints = pe;
+        this.sessionEvent = pe;
         this.identification = identification;
         this.ipMaddr = ipMaddr;
         this.blocked = blocked;
@@ -68,35 +68,35 @@ public class SpywareAccessEvent extends SpywareEvent
     // accessors --------------------------------------------------------------
 
     /**
-     * Get the PipelineEndpoints.
+     * Get the SessionEvent.
      *
-     * @return the PipelineEndpoints.
+     * @return the SessionEvent.
      */
     /**
-     * Get the PipelineEndpoints.
+     * Get the SessionEvent.
      *
-     * @return the PipelineEndpoints.
+     * @return the SessionEvent.
      */
     @Column(name="session_id", nullable=false)
     public Long getSessionId()
     {
-        return pipelineEndpoints.getSessionId();
+        return sessionEvent.getSessionId();
     }
 
     public void setSessionId( Long sessionId )
     {
-        this.pipelineEndpoints.setSessionId(sessionId);
+        this.sessionEvent.setSessionId(sessionId);
     }
 
     @Transient
-    public PipelineEndpoints getPipelineEndpoints()
+    public SessionEvent getSessionEvent()
     {
-        return pipelineEndpoints;
+        return sessionEvent;
     }
 
-    public void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
+    public void setSessionEvent(SessionEvent sessionEvent)
     {
-        this.pipelineEndpoints = pipelineEndpoints;
+        this.sessionEvent = sessionEvent;
     }
 
     /**

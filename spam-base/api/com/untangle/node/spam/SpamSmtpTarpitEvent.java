@@ -12,12 +12,12 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
-import com.untangle.uvm.logging.PipelineEvent;
+import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 
 /**
  * Log for Spam SMTP Tarpit events.
@@ -26,8 +26,9 @@ import com.untangle.uvm.node.PipelineEndpoints;
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="n_spam_smtp_tarpit_evt", schema="events")
 @SuppressWarnings("serial")
-public class SpamSmtpTarpitEvent extends PipelineEvent
+public class SpamSmtpTarpitEvent extends LogEvent
 {
+    private SessionEvent sessionEvent;
     private String hostname;
     private IPAddress ipAddr;
     private String vendorName;
@@ -36,17 +37,17 @@ public class SpamSmtpTarpitEvent extends PipelineEvent
 
     public SpamSmtpTarpitEvent() {}
 
-    public SpamSmtpTarpitEvent(PipelineEndpoints plEndp, String hostname, IPAddress ipAddr, String vendorName)
+    public SpamSmtpTarpitEvent(SessionEvent sessionEvent, String hostname, IPAddress ipAddr, String vendorName)
     {
-        super(plEndp);
+        this.sessionEvent = sessionEvent;
         this.hostname = hostname;
         this.ipAddr = ipAddr;
         this.vendorName = vendorName;
     }
 
-    public SpamSmtpTarpitEvent(PipelineEndpoints plEndp, String hostname, InetAddress ipAddrIN, String vendorName)
+    public SpamSmtpTarpitEvent(SessionEvent sessionEvent, String hostname, InetAddress ipAddrIN, String vendorName)
     {
-        super(plEndp);
+        this.sessionEvent = sessionEvent;
         this.hostname = hostname;
         this.ipAddr = new IPAddress(ipAddrIN);
         this.vendorName = vendorName;
@@ -105,13 +106,35 @@ public class SpamSmtpTarpitEvent extends PipelineEvent
         this.vendorName = vendorName;
     }
 
+    @Column(name="session_id", nullable=false)
+    public Long getSessionId()
+    {
+        return sessionEvent.getSessionId();
+    }
+
+    public void setSessionId( Long sessionId )
+    {
+        this.sessionEvent.setSessionId(sessionId);
+    }
+
+    @Transient
+    public SessionEvent getSessionEvent()
+    {
+        return sessionEvent;
+    }
+
+    public void setSessionEvent(SessionEvent sessionEvent)
+    {
+        this.sessionEvent = sessionEvent;
+    }
+
     // Syslog methods ---------------------------------------------------------
 
     @Transient
     public void appendSyslog(SyslogBuilder sb)
     {
         // No longer log pipeline endpoints, they are not necessary anyway.
-        // PipelineEndpoints pe = getPipelineEndpoints();
+        // SessionEvent pe = getSessionEvent();
         /* unable to log this event */
         // pe.appendSyslog(sb);
 

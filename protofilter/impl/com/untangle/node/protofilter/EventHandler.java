@@ -252,7 +252,7 @@ public class EventHandler extends AbstractEventHandler
 
             }
 
-            ProtoFilterLogEvent evt = new ProtoFilterLogEvent(sess.pipelineEndpoints(), sessInfo.protocol, elem.isBlocked());
+            ProtoFilterLogEvent evt = new ProtoFilterLogEvent(sess.sessionEvent(), sessInfo.protocol, elem.isBlocked());
             node.logEvent(evt);
 
             // We release session immediately upon first match.

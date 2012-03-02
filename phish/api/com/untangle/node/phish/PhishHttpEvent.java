@@ -163,7 +163,7 @@ import org.hibernate.annotations.Type;
 
         public void appendSyslog(SyslogBuilder sb)
         {
-            requestLine.getPipelineEndpoints().appendSyslog(sb);
+            requestLine.getSessionEvent().appendSyslog(sb);
 
             sb.startSection("info");
             sb.addField("url", requestLine.getUrl().toString());

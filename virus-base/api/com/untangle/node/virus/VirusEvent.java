@@ -36,7 +36,7 @@ package com.untangle.node.virus;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 
 /**
  * Event for virus scans.
@@ -60,7 +60,7 @@ public abstract class VirusEvent extends LogEvent
 
     // abstract methods -------------------------------------------------------
 
-    public abstract PipelineEndpoints getPipelineEndpoints();
+    public abstract SessionEvent getSessionEvent();
     public abstract String getType();
     public abstract String getLocation();
     public abstract boolean isInfected();
@@ -79,7 +79,7 @@ public abstract class VirusEvent extends LogEvent
 
     public void appendSyslog(SyslogBuilder sb)
     {
-        PipelineEndpoints pe = getPipelineEndpoints();
+        SessionEvent pe = getSessionEvent();
         if (null != pe) {
             pe.appendSyslog(sb);
         }

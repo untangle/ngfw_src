@@ -5,7 +5,7 @@ package com.untangle.uvm.vnet;
 
 import java.net.InetAddress;
 
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.SessionEndpoints;
 
 /**
@@ -33,7 +33,10 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints
      */
     void serverPort( int port );
 
-    PipelineEndpoints pipelineEndpoints();
+    /**
+     *
+     */
+    SessionEvent sessionEvent();
 
     /**
      * May only be called before session is established (from

@@ -4,11 +4,13 @@
 package com.untangle.node.reporting;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.HostnameLookup;
 import com.untangle.uvm.node.Validator;
 
-public interface ReportingNode extends Node
+public interface ReportingNode extends Node, HostnameLookup
 {
     void setReportingSettings(ReportingSettings settings);
 
@@ -29,4 +31,6 @@ public interface ReportingNode extends Node
      * This can be used to display progress in the UI
      */
     String getCurrentStatus();
+
+    String lookupHostname( InetAddress address );
 }

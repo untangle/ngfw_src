@@ -853,7 +853,7 @@ Ung.SortTypes = {
     },
 
     /**
-     * @param {Mixed} value The PipelineEndpoints value being converted
+     * @param {Mixed} value The SessionEvent value being converted
      * @return {String} The comparison value
      */
     asClient : function(value) {
@@ -861,7 +861,7 @@ Ung.SortTypes = {
     },
 
     /**
-     * @param {Mixed} value The PipelineEndpoints value being converted
+     * @param {Mixed} value The SessionEvent value being converted
      * @return {String} The comparison value
      */
     asServer : function(value) {

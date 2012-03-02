@@ -6,6 +6,7 @@ package com.untangle.uvm.logging;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -82,6 +83,30 @@ public abstract class LogEvent implements Comparable<LogEvent>, Serializable
         return true;
     }
 
+    /**
+     * This returns true if this is a special event that is written directly to the reports schema.
+     * This is almost always false except for special cases
+     *
+     * The log worker uses this to determine how to persist the event to the DB
+     */
+    @Transient
+    public boolean isDirectEvent()
+    {
+        return false;
+    }
+
+    @Transient
+    public String getDirectEventSql()
+    {
+        return null;
+    }
+
+    @Transient
+    public List<String> getDirectEventSqls()
+    {
+        return null;
+    }
+    
     public abstract void appendSyslog(SyslogBuilder a);
 
     @Transient

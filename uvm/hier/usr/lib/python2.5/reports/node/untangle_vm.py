@@ -42,7 +42,8 @@ class UvmNode(Node):
 
     @print_timing
     def setup(self, start_date, end_date, start_time):
-        self.__generate_address_map(start_date, mx.DateTime.now())
+
+        self.__do_housekeeping()
 
         self.__create_n_admin_logins(start_date, end_date, start_time)
 
@@ -118,28 +119,7 @@ INSERT INTO reports.n_admin_logins
     @sql_helper.print_timing
     def events_cleanup(self, cutoff):
         sql_helper.clean_table("events", "u_login_evt", cutoff);
-        sql_helper.clean_table("events", "pl_endp", cutoff); 
         sql_helper.clean_table("events", "pl_stats", cutoff);
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_router_evt_dhcp_abs 
-WHERE time_stamp < %s::timestamp without time zone - interval '1 day'""", (cutoff,))
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_router_evt_dhcp 
-WHERE time_stamp < %s::timestamp without time zone - interval '1 day'""", (cutoff,))
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_router_dhcp_abs_lease 
-WHERE end_of_lease < %s - interval '1 day'""", (cutoff,))
-
-        sql_helper.run_sql("""\
-DELETE FROM events.n_router_evt_dhcp_abs_leases glue
-WHERE NOT EXISTS
-  (SELECT *
-   FROM events.n_router_evt_dhcp_abs evt
-   WHERE evt.event_id = glue.event_id)""")
-
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_admin_logins", cutoff)
@@ -275,8 +255,20 @@ CREATE TABLE reports.sessions (
         sql_helper.rename_column("reports","sessions","pl_endp_id","session_id");
         sql_helper.rename_index("reports","sessions_pl_endp_id_idx","sessions_session_id_idx");
 
-        sql_helper.create_index("reports","sessions","session_id");
-        sql_helper.create_index("reports","sessions","event_id");
+        # If the new index does not exist, create it
+        if not sql_helper.index_exists("reports","sessions","session_id", unique=True):
+            sql_helper.create_index("reports","sessions","session_id", unique=True);
+        # If the new index does exist, delete the old one
+        if sql_helper.index_exists("reports","sessions","session_id", unique=True):
+            sql_helper.drop_index("reports","sessions","session_id", unique=False);
+
+        # If the new index does not exist, create it
+        if not sql_helper.index_exists("reports","sessions","event_id", unique=True):
+            sql_helper.create_index("reports","sessions","event_id", unique=True);
+        # If the new index does exist, delete the old one
+        if sql_helper.index_exists("reports","sessions","event_id", unique=True):
+            sql_helper.drop_index("reports","sessions","event_id", unique=False);
+
         sql_helper.create_index("reports","sessions","policy_id");
         sql_helper.create_index("reports","sessions","time_stamp");
 
@@ -297,57 +289,6 @@ CREATE TABLE reports.sessions (
 
         # bandwidth event log query indexes
         # sql_helper.create_index("reports","sessions","bandwidth_priority");
-
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-INSERT INTO reports.sessions
-    (event_id,
-     session_id, 
-     time_stamp,
-     end_time,
-     hname,
-     uid,
-     policy_id,
-     c_client_addr,
-     c_server_addr,
-     c_server_port,
-     c_client_port,
-     s_client_addr,
-     s_server_addr,
-     s_server_port,
-     s_client_port,
-     client_intf,
-     server_intf)
-    SELECT pl.session_id,
-           pl.session_id,
-           pl.time_stamp,
-           pl.time_stamp + interval '1 days',
-           COALESCE(NULLIF(mam.name, ''), HOST(pl.c_client_addr)) AS hname,
-           pl.username,
-           pl.policy_id,
-           pl.c_client_addr,
-           pl.c_server_addr,
-           pl.c_server_port,
-           pl.c_client_port,
-           pl.s_client_addr,
-           pl.s_server_addr,
-           pl.s_server_port,
-           pl.s_client_port,
-           pl.client_intf,
-           pl.server_intf
-    FROM events.pl_endp pl
-    LEFT OUTER JOIN reports.merged_address_map mam
-      ON (pl.c_client_addr = mam.addr AND pl.time_stamp >= mam.start_time AND pl.time_stamp < mam.end_time)
-    WHERE pl.time_stamp < %s::timestamp without time zone AND
-          pl.session_id not in (select session_id from reports.sessions)""", 
-                               (start_time,),
-                               connection=conn, 
-                               auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
 
     @print_timing
     def __update_session_stats(self, start_date, end_date):
@@ -415,20 +356,6 @@ GROUP BY time, uid, hname, client_intf, server_intf
         pass
 
     @print_timing
-    def __generate_address_map(self, start_date, end_date):
-        self.__do_housekeeping()
-
-        m = {}
-
-        if self.__nat_installed():
-            self.__generate_abs_leases(m, start_date, end_date)
-            self.__generate_relative_leases(m, start_date, end_date)
-
-        self.__generate_manual_map(m, start_date, end_date)
-
-        self.__write_leases(m)
-
-    @print_timing
     def __do_housekeeping(self):
         sql_helper.run_sql("""\
 DELETE FROM settings.n_reporting_settings WHERE tid NOT IN
@@ -446,192 +373,6 @@ DELETE FROM settings.u_ipmaddr_dir WHERE id NOT IN
 
         if sql_helper.table_exists('reports', 'merged_address_map'):
             sql_helper.run_sql("DROP TABLE reports.merged_address_map");
-
-        sql_helper.run_sql("""\
-CREATE TABLE reports.merged_address_map (
-    id         SERIAL8 NOT NULL,
-    addr       INET NOT NULL,
-    name       VARCHAR(255),
-    start_time TIMESTAMP NOT NULL,
-    end_time   TIMESTAMP,
-    PRIMARY KEY (id))""")
-
-    @print_timing
-    def __write_leases(self, m):
-        values = []
-
-        for v in m.values():
-            for l in v:
-                if l.hostname:
-                    values.append(l.values())
-
-        conn = sql_helper.get_connection()
-        try:
-            curs = conn.cursor()
-
-            curs.executemany("""\
-INSERT INTO reports.merged_address_map (addr, name, start_time, end_time)
-VALUES (%s, %s, %s, %s)""", values)
-
-        finally:
-            conn.commit()
-
-    def __nat_installed(self):
-        return sql_helper.table_exists('events',
-                                       'n_router_evt_dhcp_abs_leases')
-
-    @print_timing
-    def __generate_abs_leases(self, m, start_date, end_date):
-        self.__generate_leases(m, """\
-SELECT evt.time_stamp, lease.end_of_lease, lease.ip, lease.hostname,
-       CASE WHEN (lease.event_type = 0) THEN 0 ELSE 3 END AS event_type
-FROM events.n_router_evt_dhcp_abs_leases AS glue,
-     events.n_router_evt_dhcp_abs AS evt,
-     events.n_router_dhcp_abs_lease AS lease
-WHERE lease.hostname != ''
-AND glue.event_id = evt.event_id
-AND glue.lease_id = lease.event_id
-AND (%s <= evt.time_stamp
-     OR %s <= lease.end_of_lease)
-ORDER BY evt.time_stamp""", start_date, end_date)
-
-    @print_timing
-    def __generate_relative_leases(self, m, start_date, end_date):
-        self.__generate_leases(m, """\
-SELECT evt.time_stamp, evt.end_of_lease, evt.ip, evt.hostname, evt.event_type
-FROM events.n_router_evt_dhcp AS evt
-WHERE hostname != ''
-AND (%s <= evt.time_stamp
-     OR %s <= evt.end_of_lease)
-ORDER BY evt.time_stamp""", start_date, end_date)
-
-    @print_timing
-    def __generate_manual_map(self, m, start_date, end_date):
-        conn = sql_helper.get_connection()
-        try:
-            curs = conn.cursor()
-
-            curs.execute("""\
-SELECT addr, name
-FROM (SELECT addr, min(position) AS min_idx
-      FROM (SELECT c_client_addr AS addr
-            FROM events.pl_endp WHERE pl_endp.client_intf NOT IN %s
-            UNION
-            SELECT c_server_addr AS addr
-            FROM events.pl_endp WHERE pl_endp.server_intf NOT IN %s
-            UNION
-            SELECT client_addr AS addr
-            FROM events.u_login_evt) AS addrs
-      JOIN settings.u_ipmaddr_dir_entries entry
-      JOIN settings.u_ipmaddr_rule rule USING (rule_id)
-      ON rule.ipmaddr >>= addr
-      WHERE NOT addr ISNULL
-      GROUP BY addr) AS pos_idxs
-LEFT OUTER JOIN settings.u_ipmaddr_dir_entries entry
-JOIN settings.u_ipmaddr_rule rule USING (rule_id)
-ON min_idx = position""" % (2*(reports.engine.get_wan_clause(),)))
-
-            while 1:
-                r = curs.fetchone()
-                if not r:
-                    break
-
-                (ip, hostname) = r
-
-                m[ip] = [Lease((start_date, end_date, ip, hostname, None))]
-        finally:
-            conn.commit()
-
-    def __generate_leases(self, m, q, start_date, end_date):
-        st = DateFromMx(start_date)
-
-        conn = sql_helper.get_connection()
-        try:
-            curs = conn.cursor()
-
-            curs.execute(q, (st, end_date))
-
-            while 1:
-                r = curs.fetchone()
-                if not r:
-                    break
-
-                self.__insert_lease(m, Lease(r))
-        finally:
-            conn.commit()
-
-    def __insert_lease(self, m, event):
-        et = event.event_type
-
-        if et == EVT_TYPE_REGISTER or et == EVT_TYPE_RENEW:
-            self.__merge_event(m, event)
-        elif et == EVT_TYPE_RELEASE or et == EVT_TYPE_EXPIRE:
-            self.__truncate_event(m, event)
-        else:
-            logging.warn('do not know type: %d' % et)
-
-    def __merge_event(self, m, event):
-        l = m.get(event.ip, None)
-
-        if not l:
-            m[event.ip] = [event]
-        else:
-            for (index, lease) in enumerate(l):
-                same_hostname = lease.hostname = event.hostname
-
-                if lease.after(event):
-                    l.insert(index, lease)
-                    return
-                elif lease.intersects_before(event):
-                    if same_hostname:
-                        lease.start = event.start
-                        return
-                    else:
-                        event.end_of_lease = lease.start
-                        l.insert(index, lease)
-                        return
-                elif lease.encompass(event):
-                    if same_hostname:
-                        return
-                    else:
-                        lease.end_of_lease = event.start
-                        l.insert(index + 1, lease)
-                        return
-                elif lease.intersects_after(event):
-                    if same_hostname:
-                        lease.end_of_lease = event.end_of_lease
-                    else:
-                        lease.end_of_lease = event.start
-                        index = index + 1
-                        l.insert(index, event)
-
-                    if index + 1 < len(l):
-                        index = index + 1
-                        next_lease = l[index]
-
-                        if (next_lease.start > lease.start
-                            and next_lease.start < lease.end_of_lease):
-                            if next_lease.hostname == lease.hostname:
-                                del(l[index])
-                                lease.end_of_lease = next_lease.end_of_lease
-                            else:
-                                lease.end_of_lease = next_lease.start
-                    return
-                elif lease.encompassed(event):
-                    lease.start = event.start
-                    return
-
-            l.append(event)
-
-    def __truncate_event(self, m, event):
-        l = m.get(event.ip, None)
-
-        if l:
-            for (index, lease) in enumerate(l):
-                if (lease.start < event.start
-                    and lease.end_of_lease > event.start):
-                    lease.end_of_lease = event.start
-                    return
 
 class VmHighlight(Highlight):
     def __init__(self, name, branded_name):

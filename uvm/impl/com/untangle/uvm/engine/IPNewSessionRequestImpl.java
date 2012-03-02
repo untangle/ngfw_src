@@ -20,7 +20,7 @@ package com.untangle.uvm.engine;
 
 import java.net.InetAddress;
 
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.ArgonConnector;
 import com.untangle.uvm.argon.ArgonIPNewSessionRequest;
@@ -98,9 +98,9 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
         return argonRequest.serverIntf();
     }
 
-    public PipelineEndpoints pipelineEndpoints()
+    public SessionEvent sessionEvent()
     {
-        return argonRequest.pipelineEndpoints();
+        return argonRequest.sessionEvent();
     }
 
     public void clientAddr(InetAddress addr)

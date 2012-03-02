@@ -3,6 +3,8 @@
  */
 package com.untangle.node.router;
 
+import java.net.InetAddress;
+
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
@@ -96,6 +98,13 @@ public class RouterImpl extends AbstractNode implements Router
         statisticManager.stop();
     }
 
+    public String lookupHostname( InetAddress address )
+    {
+        if (dhcpMonitor != null)
+            return dhcpMonitor.lookupHostname( address );
+        return null;
+    }
+    
     @Override
     protected void postInit(String[] args) throws Exception
     {

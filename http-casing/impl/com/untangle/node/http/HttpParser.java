@@ -224,9 +224,7 @@ public class HttpParser extends AbstractParser
                         /* XXX This is a problem because it doesn't actually log anything.
                          * Ignoring not sure if removing it will have effects */
                         @SuppressWarnings("unused")
-                        HttpRequestEvent evt = new HttpRequestEvent
-                            (requestLineToken.getRequestLine(),
-                             header.getValue("host"), lengthCounter);
+                        HttpRequestEvent evt = new HttpRequestEvent(requestLineToken.getRequestLine(), header.getValue("host"), lengthCounter);
                     }
 
                     if (NO_BODY == transferEncoding) {
@@ -393,27 +391,21 @@ public class HttpParser extends AbstractParser
 
                     if (!clientSide) {
                         String contentType = header.getValue("content-type");
-                        String mimeType = null == contentType ? null
-                            : MimeType.getType(contentType);
+                        String mimeType = null == contentType ? null : MimeType.getType(contentType);
 
-                        RequestLine rl = null == requestLineToken ? null
-                            : requestLineToken.getRequestLine();
+                        RequestLine rl = null == requestLineToken ? null : requestLineToken.getRequestLine();
 
                         if (null != rl) {
-                            HttpResponseEvent evt = new HttpResponseEvent
-                                (rl, mimeType, lengthCounter);
+                            HttpResponseEvent evt = new HttpResponseEvent(rl, mimeType, lengthCounter);
 
                             casing.getNode().logEvent(evt);
                         }
                     } else {
-                        HttpRequestEvent evt = requestLineToken
-                            .getRequestLine()
-                            .getHttpRequestEvent();
+                        HttpRequestEvent evt = requestLineToken.getRequestLine().getHttpRequestEvent();
                         evt.setContentLength(lengthCounter);
 
-                        if (null == evt.getRequestLine()) {
-                            logger.warn("null request for: "
-                                        + getSession().pipelineEndpoints());
+                        if (evt.getRequestUri() == null) {
+                            logger.warn("null request for: " + getSession().sessionEvent());
                         }
 
                         casing.getNode().logEvent(evt);
@@ -606,7 +598,7 @@ public class HttpParser extends AbstractParser
         String httpVersion = version(data);
         eatCrLf(data);
 
-        RequestLine rl = new RequestLine(getSession().pipelineEndpoints(), method, requestUri);
+        RequestLine rl = new RequestLine(getSession().sessionEvent(), method, requestUri);
         return new RequestLineToken(rl, httpVersion);
     }
 

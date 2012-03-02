@@ -13,7 +13,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 import com.untangle.node.http.RequestLine;
 
 /**
@@ -73,9 +73,9 @@ public class SpywareCookieEvent extends SpywareEvent
     }
 
     @Transient
-    public PipelineEndpoints getPipelineEndpoints()
+    public SessionEvent getSessionEvent()
     {
-        return requestLine.getPipelineEndpoints();
+        return requestLine.getSessionEvent();
     }
 
     // accessors --------------------------------------------------------------
@@ -134,7 +134,7 @@ public class SpywareCookieEvent extends SpywareEvent
 
     public void appendSyslog(SyslogBuilder sb)
     {
-        getPipelineEndpoints().appendSyslog(sb);
+        getSessionEvent().appendSyslog(sb);
 
         sb.startSection("info");
         sb.addField("info", getIdentification());

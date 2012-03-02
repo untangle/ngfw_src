@@ -24,7 +24,7 @@ import com.untangle.uvm.argon.ArgonIPSession;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPSession;
 import com.untangle.uvm.vnet.VnetSessionDesc;
@@ -46,7 +46,7 @@ abstract class IPSessionImpl
     
     protected final Dispatcher dispatcher;
 
-    protected final PipelineEndpoints pipelineEndpoints;
+    protected final SessionEvent sessionEvent;
 
     @SuppressWarnings("unchecked") //generics array creation not supported java6
         protected final List<Crumb>[] crumbs2write = new ArrayList[] { null, null };
@@ -63,12 +63,12 @@ abstract class IPSessionImpl
 
     protected IPSessionImpl(Dispatcher disp,
                             ArgonIPSession argonSession,
-                            PipelineEndpoints pe)
+                            SessionEvent pe)
     {
         super(disp.argonConnector(), argonSession);
         this.dispatcher = disp;
         this.stats = new RWSessionStats();
-        this.pipelineEndpoints = pe;
+        this.sessionEvent = pe;
         if (RWSessionStats.DoDetailedTimes) {
             timesLogger = Logger.getLogger("com.untangle.uvm.vnet.SessionTimes");
         } else {
@@ -108,9 +108,9 @@ abstract class IPSessionImpl
         return stats;
     }
 
-    public PipelineEndpoints pipelineEndpoints()
+    public SessionEvent sessionEvent()
     {
-        return pipelineEndpoints;
+        return sessionEvent;
     }
 
     public void release()

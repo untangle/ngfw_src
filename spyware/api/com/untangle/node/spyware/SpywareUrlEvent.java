@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 import com.untangle.node.http.HttpRequestEvent;
 import com.untangle.node.http.RequestLine;
 
@@ -57,7 +57,7 @@ public class SpywareUrlEvent extends SpywareEvent
     {
         HttpRequestEvent hre = requestLine.getHttpRequestEvent();
         String host = null == hre
-            ? getPipelineEndpoints().getSServerAddr().toString()
+            ? getSessionEvent().getSServerAddr().toString()
             : hre.getHost();
         return "http://" + host + requestLine.getRequestUri().toString();
     }
@@ -75,9 +75,9 @@ public class SpywareUrlEvent extends SpywareEvent
     }
 
     @Transient
-    public PipelineEndpoints getPipelineEndpoints()
+    public SessionEvent getSessionEvent()
     {
-        return requestLine.getPipelineEndpoints();
+        return requestLine.getSessionEvent();
     }
 
     // accessors --------------------------------------------------------------

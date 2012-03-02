@@ -19,13 +19,14 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
-import com.untangle.uvm.logging.PipelineEvent;
+import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.node.SessionEvent;
 
 /**
  * Used to record the Session stats at session end time.
- * PipelineStats and PipelineEndpoints used to be the PiplineInfo
+ * PipelineStats and SessionEvent used to be the PiplineInfo
  * object.
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
@@ -36,8 +37,10 @@ import com.untangle.uvm.policy.Policy;
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="pl_stats", schema="events")
 @SuppressWarnings("serial")
-public class PipelineStats extends PipelineEvent
+public class PipelineStats extends LogEvent
 {
+    private SessionEvent sessionEvent;
+
     private long c2pBytes = 0;
     private long p2sBytes = 0;
     private long s2pBytes = 0;
@@ -54,9 +57,9 @@ public class PipelineStats extends PipelineEvent
 
     public PipelineStats() { }
 
-    public PipelineStats(SessionStats begin, SessionStats end, PipelineEndpoints pe)
+    public PipelineStats(SessionStats begin, SessionStats end, SessionEvent pe)
     {
-        super(pe);
+        this.sessionEvent = pe;
 
         c2pBytes = begin.c2tBytes();
         p2cBytes = begin.t2cBytes();
@@ -200,11 +203,34 @@ public class PipelineStats extends PipelineEvent
         this.p2sChunks = p2sChunks;
     }
 
+    @Column(name="session_id", nullable=false)
+    public Long getSessionId()
+    {
+        return sessionEvent.getSessionId();
+    }
+
+    public void setSessionId( Long sessionId )
+    {
+        this.sessionEvent.setSessionId(sessionId);
+    }
+
+    @Transient
+    public SessionEvent getSessionEvent()
+    {
+        return sessionEvent;
+    }
+
+    public void setSessionEvent(SessionEvent sessionEvent)
+    {
+        this.sessionEvent = sessionEvent;
+    }
+
+
     // Syslog methods ---------------------------------------------------------
 
     public void appendSyslog(SyslogBuilder sb)
     {
-        getPipelineEndpoints().appendSyslog(sb);
+        getSessionEvent().appendSyslog(sb);
 
         sb.startSection("stats");
         sb.addField("raze-date", getTimeStamp());

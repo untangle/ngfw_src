@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.firewall;
 
 import java.io.Serializable;
@@ -25,10 +10,10 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.uvm.logging.PipelineEvent;
+import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 
 /**
  * Log event for the firewall.
@@ -40,8 +25,9 @@ import com.untangle.uvm.node.PipelineEndpoints;
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="n_firewall_evt", schema="events")
 @SuppressWarnings("serial")
-public class FirewallEvent extends PipelineEvent implements Serializable
+public class FirewallEvent extends LogEvent implements Serializable
 {
+    private SessionEvent sessionEvent;
     private int     ruleIndex;
     private long    ruleId;
     private boolean wasBlocked;
@@ -49,10 +35,9 @@ public class FirewallEvent extends PipelineEvent implements Serializable
     // Constructors
     public FirewallEvent() { }
 
-    public FirewallEvent( PipelineEndpoints pe, boolean wasBlocked, int ruleIndex )
+    public FirewallEvent( SessionEvent sessionEvent, boolean wasBlocked, int ruleIndex )
     {
-        super(pe);
-
+        this.sessionEvent = sessionEvent;
         this.wasBlocked = wasBlocked;
         this.ruleIndex  = ruleIndex;
     }
@@ -105,11 +90,33 @@ public class FirewallEvent extends PipelineEvent implements Serializable
         this.ruleId = ruleId;
     }
 
+    @Column(name="session_id", nullable=false)
+    public Long getSessionId()
+    {
+        return sessionEvent.getSessionId();
+    }
+
+    public void setSessionId( Long sessionId )
+    {
+        this.sessionEvent.setSessionId(sessionId);
+    }
+
+    @Transient
+    public SessionEvent getSessionEvent()
+    {
+        return sessionEvent;
+    }
+
+    public void setSessionEvent(SessionEvent sessionEvent)
+    {
+        this.sessionEvent = sessionEvent;
+    }
+    
     // Syslog methods -----------------------------------------------------
 
     public void appendSyslog(SyslogBuilder sb)
     {
-        getPipelineEndpoints().appendSyslog(sb);
+        getSessionEvent().appendSyslog(sb);
 
         sb.startSection("info");
         sb.addField("reason-rule#", getRuleIndex());

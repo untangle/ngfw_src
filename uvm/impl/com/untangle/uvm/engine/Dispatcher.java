@@ -347,7 +347,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
             // Create the session, client and server channels
             ArgonTCPSession argonSession = new ArgonTCPSessionImpl(request);
-            TCPSessionImpl session = new TCPSessionImpl(this, argonSession, request.pipelineEndpoints(), TCP_READ_BUFFER_SIZE, TCP_READ_BUFFER_SIZE);
+            TCPSessionImpl session = new TCPSessionImpl(this, argonSession, request.sessionEvent(), TCP_READ_BUFFER_SIZE, TCP_READ_BUFFER_SIZE);
             
             session.attach(treq.attachment());
             registerPipelineListener(argonSession, session);
@@ -461,7 +461,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
             // Create the session, client and server channels
             ArgonUDPSession argonSession = new ArgonUDPSessionImpl(request);
-            UDPSessionImpl session = new UDPSessionImpl(this, argonSession, request.pipelineEndpoints(), UDP_MAX_PACKET_SIZE, UDP_MAX_PACKET_SIZE);
+            UDPSessionImpl session = new UDPSessionImpl(this, argonSession, request.sessionEvent(), UDP_MAX_PACKET_SIZE, UDP_MAX_PACKET_SIZE);
             
             session.attach(ureq.attachment());
             registerPipelineListener(argonSession, session);

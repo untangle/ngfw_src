@@ -16,6 +16,9 @@ import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -279,29 +282,75 @@ public class LogWorkerImpl implements Runnable, LogWorker
         if (logger.isInfoEnabled())
             eventTypeDebugOuput = buildEventTypeDebugOutputString();
 
-        Session s = UvmContextFactory.context().makeHibernateSession();
-
         int count = logQueue.size();
         long t0 = System.currentTimeMillis();
+
+        Session session = null; 
+        Connection conn = null;
+        Statement statement = null;
+        try {
+            session = UvmContextFactory.context().makeHibernateSession();
+            conn = UvmContextFactory.context().getDBConnection();
+            if (conn != null) 
+                statement = conn.createStatement();
+        } catch (Exception e) {
+            logger.warn("Unable to create connection to DB",e);
+        }
         
         logger.debug("Writing events to database... (size: " + logQueue.size() + ")");
         for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
             LogEvent event = i.next();
-                        
-            /**
-             * Write event to database
-             * If fails, just move on
-             */
-            try {
-                s.saveOrUpdate(event);
-            } catch (Exception exc) {
-                logger.error("could not log event: ", exc);
+
+            if (event.isDirectEvent()) {
+                if (conn != null && statement != null) {
+                    /**
+                     * Write event to database using SQL
+                     * If fails, just move on
+                     */
+                    String sqlStr = event.getDirectEventSql();
+                    if (sqlStr != null) {
+                        logger.debug("Write direct event: " + sqlStr);
+                        try {
+                            statement.execute(sqlStr);
+                        } catch (SQLException e) {
+                            logger.warn("Failed SQL query: \"" + sqlStr + "\": ",e);
+                        }
+                    }
+                    List<String> sqls = event.getDirectEventSqls();
+                    if (sqls != null) {
+                        for (String sql : sqls) {
+                            logger.debug("Write direct event: " + sql);
+                            try {
+                                statement.execute(sql);
+                            } catch (SQLException e) {
+                                logger.warn("Failed SQL query: \"" + sql + "\": ",e);
+                            }
+                        }
+                    }
+                } 
+            } else {
+                if (session != null) {
+                    /**
+                     * Write event to database using hibernate
+                     * If fails, just move on
+                     */
+                    try {
+                        session.saveOrUpdate(event);
+                    } catch (Exception exc) {
+                        logger.error("could not log event: ", exc);
+                    }
+                }
             }
 
             i.remove();
         }
-        s.flush();
-        s.close();
+        if (session != null) {
+            session.flush();
+            session.close();
+        }
+        if (conn != null) {
+            try {conn.close();} catch (SQLException e) {}
+        }
         logger.debug("Writing events to database... Complete");
         
         long t1 = System.currentTimeMillis();
@@ -331,7 +380,7 @@ public class LogWorkerImpl implements Runnable, LogWorker
 
     /**
      * This looks at the event queue to be written and builds a summary string of the type of objects about to be written
-     * Example: "PipelineEndpoints[45] WebFilterEvent[10]
+     * Example: "SessionEvent[45] WebFilterEvent[10]
      */
     private String buildEventTypeDebugOutputString()
     {

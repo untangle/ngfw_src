@@ -107,6 +107,14 @@ class DhcpMonitor implements Runnable
     {
         return currentLeaseMap.get( address );
     }
+
+    String lookupHostname( InetAddress address )
+    {
+        DhcpLease lease = lookupLease( address );
+        if (lease != null)
+            return lease.getHostname();
+        return null;
+    }
     
     synchronized void start()
     {
@@ -244,13 +252,13 @@ class DhcpMonitor implements Runnable
             host = tmp;
         }
 
-        processgDhcpLease( eol, mac, ip, host, now );
+        processDhcpLease( eol, mac, ip, host, now );
 
         /* Remove the item from the set of deleted items */
         deletedSet.remove( ip.getAddr());
     }
 
-    private void processgDhcpLease( Date eol, MACAddress mac, IPAddress ip, String host, Date now )
+    private void processDhcpLease( Date eol, MACAddress mac, IPAddress ip, String host, Date now )
     {
         /* Determine if this lease is already being tracked */
         DhcpLease lease = currentLeaseMap.get( ip.getAddr() );

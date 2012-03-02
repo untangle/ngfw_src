@@ -38,7 +38,7 @@ import com.untangle.node.mime.EmailAddress;
 import com.untangle.node.mime.EmailAddressWithRcptType;
 import com.untangle.node.mime.MIMEMessageHeaders;
 import com.untangle.node.mime.RcptType;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 
 public class MessageInfoFactory
 {
@@ -50,7 +50,7 @@ public class MessageInfoFactory
      * it be in MessageInfo.java.
      */
     public static MessageInfo fromMIMEMessage(MIMEMessageHeaders headers,
-                                              PipelineEndpoints pe,
+                                              SessionEvent pe,
                                               int port) {
 
         MessageInfo ret = new MessageInfo(pe, port, headers.getSubject());

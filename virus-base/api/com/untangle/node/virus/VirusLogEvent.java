@@ -15,7 +15,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Type;
 
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 
 /**
  * Log for FTP virus events.
@@ -29,15 +29,15 @@ import com.untangle.uvm.node.PipelineEndpoints;
 @SuppressWarnings("serial")
 public class VirusLogEvent extends VirusEvent
 {
-    private PipelineEndpoints pipelineEndpoints;
+    private SessionEvent sessionEvent;
     private VirusScannerResult result;
     private String vendorName;
 
     public VirusLogEvent() { }
 
-    public VirusLogEvent(PipelineEndpoints pe, VirusScannerResult result, String vendorName)
+    public VirusLogEvent(SessionEvent pe, VirusScannerResult result, String vendorName)
     {
-        this.pipelineEndpoints = pe;
+        this.sessionEvent = pe;
         this.result = result;
         this.vendorName = vendorName;
     }
@@ -51,7 +51,7 @@ public class VirusLogEvent extends VirusEvent
     @Transient
     public String getLocation()
     {
-        return null == pipelineEndpoints ? "" : pipelineEndpoints.getSServerAddr().getHostAddress();
+        return null == sessionEvent ? "" : sessionEvent.getSServerAddr().getHostAddress();
     }
 
     @Transient
@@ -103,23 +103,23 @@ public class VirusLogEvent extends VirusEvent
     @Column(name="session_id", nullable=false)
     public Long getSessionId()
     {
-        return pipelineEndpoints.getSessionId();
+        return sessionEvent.getSessionId();
     }
 
     public void setSessionId( Long sessionId )
     {
-        this.pipelineEndpoints.setSessionId(sessionId);
+        this.sessionEvent.setSessionId(sessionId);
     }
 
     @Transient
-    public PipelineEndpoints getPipelineEndpoints()
+    public SessionEvent getSessionEvent()
     {
-        return pipelineEndpoints;
+        return sessionEvent;
     }
 
-    public void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
+    public void setSessionEvent(SessionEvent sessionEvent)
     {
-        this.pipelineEndpoints = pipelineEndpoints;
+        this.sessionEvent = sessionEvent;
     }
 
     /**

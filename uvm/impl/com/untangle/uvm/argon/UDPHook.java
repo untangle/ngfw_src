@@ -15,7 +15,7 @@ import com.untangle.jvector.Sink;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.UDPSink;
 import com.untangle.jvector.UDPSource;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 
 
 public class UDPHook implements NetcapHook
@@ -197,7 +197,7 @@ public class UDPHook implements NetcapHook
             return new UDPSource( netcapUDPSession.serverMailbox(), serverSideListener );
         }
 
-        protected void newSessionRequest( ArgonAgent agent, Iterator<?> iter, PipelineEndpoints pe )
+        protected void newSessionRequest( ArgonAgent agent, Iterator<?> iter, SessionEvent pe )
         {
             ArgonUDPNewSessionRequest request;
 

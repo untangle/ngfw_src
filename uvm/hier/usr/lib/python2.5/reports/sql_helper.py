@@ -183,13 +183,37 @@ def convert_column(schema, tablename, columnname, oldtype, newtype):
     run_sql(sql);
     return;
 
-def create_index(schema, tablename, columnname):
-    already_exists = run_sql_one("select 1 from pg_class where relname = '%s_%s_idx'" % (tablename, columnname))
-    if already_exists:
+def index_exists(schema, tablename, columnname, unique=False):
+    if unique:
+        uniqueStr1="unique_"
+    else:
+        uniqueStr1=""
+    return run_sql_one("select 1 from pg_class where relname = '%s_%s_%sidx'" % (tablename, columnname, uniqueStr1))
+
+def create_index(schema, tablename, columnname, unique=False):
+    if (index_exists(schema, tablename, columnname, unique)):
         return
-    sql = 'CREATE INDEX %s_%s_idx ON %s.%s(%s)' % (tablename, columnname, schema, tablename, columnname)
+    if unique:
+        uniqueStr1="unique_"
+        uniqueStr2=" UNIQUE "
+    else:
+        uniqueStr1=""
+        uniqueStr2=""
+    logger.warn("CREATE INDEX %s_%s_%sidx" % (tablename, columnname, uniqueStr1))
+    sql = 'CREATE %s INDEX %s_%s_%sidx ON %s.%s(%s)' % (uniqueStr2, tablename, columnname, uniqueStr1, schema, tablename, columnname)
     run_sql(sql)
 
+def drop_index(schema, tablename, columnname, unique=False):
+    if (not index_exists(schema, tablename, columnname, unique)):
+        return
+    if unique:
+        uniqueStr1="unique_"
+    else:
+        uniqueStr1=""
+    logger.warn("DROP INDEX %s_%s_%sidx" % (tablename, columnname, uniqueStr1))
+    sql = 'DROP INDEX %s_%s_%sidx' % (tablename, columnname, uniqueStr1 )
+    run_sql(sql)
+                                    
 def rename_index(schema, oldname, newname):
     already_exists = run_sql_one("select 1 from pg_class where relname = '%s'" % (oldname))
     if not already_exists:

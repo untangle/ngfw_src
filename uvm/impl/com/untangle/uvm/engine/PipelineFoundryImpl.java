@@ -25,7 +25,7 @@ import com.untangle.uvm.argon.SessionEndpoints;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.PipelineStats;
 import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.policy.Policy;
@@ -175,17 +175,17 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return new PipelineDesc(pr, argonAgentList);
     }
 
-    public PipelineEndpoints createInitialEndpoints(IPSessionDesc start, String username)
+    public SessionEvent createInitialEndpoints(IPSessionDesc start, String username, String hostname)
     {
-        return new PipelineEndpoints(start, username);
+        return new SessionEvent(start, username, hostname);
     }
 
-    public void registerEndpoints(PipelineEndpoints pe)
+    public void registerEndpoints(SessionEvent pe)
     {
         UvmContextFactory.context().logEvent(pe);
     }
 
-    public void destroy(ArgonIPSessionDesc start, ArgonIPSessionDesc end, PipelineEndpoints pe)
+    public void destroy(ArgonIPSessionDesc start, ArgonIPSessionDesc end, SessionEvent pe)
     {
         PipelineImpl pipeline = pipelines.remove(start.id());
 

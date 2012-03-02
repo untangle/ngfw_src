@@ -16,7 +16,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.argon.ArgonUDPSession;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPPacketHeader;
@@ -50,7 +50,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
     protected UDPSessionImpl(Dispatcher disp,
                              ArgonUDPSession argonSession,
-                             PipelineEndpoints pe,
+                             SessionEvent pe,
                              int clientMaxPacketSize,
                              int serverMaxPacketSize)
     {

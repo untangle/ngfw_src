@@ -15,7 +15,7 @@ import com.untangle.jvector.Sink;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.TCPSink;
 import com.untangle.jvector.TCPSource;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 
 public class TCPHook implements NetcapHook
 {
@@ -226,7 +226,7 @@ public class TCPHook implements NetcapHook
             return new TCPSource( netcapTCPSession.tcpServerSide().fd(), serverSideListener );
         }
 
-        protected void newSessionRequest( ArgonAgent agent, Iterator<?> iter, PipelineEndpoints pe )
+        protected void newSessionRequest( ArgonAgent agent, Iterator<?> iter, SessionEvent pe )
         {
             ArgonTCPNewSessionRequest request;
 

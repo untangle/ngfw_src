@@ -137,8 +137,20 @@ CREATE TABLE reports.n_mail_addrs (
         sql_helper.convert_column("reports","n_mail_addrs","event_id","integer","bigint");
         sql_helper.convert_column("reports","n_mail_addrs","session_id","integer","bigint");
 
-        sql_helper.create_index("reports","n_mail_addrs","msg_id");
-        sql_helper.create_index("reports","n_mail_addrs","event_id");
+        # If the new index does not exist, create it
+        if not sql_helper.index_exists("reports","n_mail_addrs","msg_id", unique=True):
+            sql_helper.create_index("reports","n_mail_addrs","msg_id", unique=True);
+        # If the new index does exist, delete the old one
+        if sql_helper.index_exists("reports","n_mail_addrs","msg_id", unique=True):
+            sql_helper.drop_index("reports","n_mail_addrs","msg_id", unique=False);
+
+        # If the new index does not exist, create it
+        if not sql_helper.index_exists("reports","n_mail_addrs","event_id", unique=True):
+            sql_helper.create_index("reports","n_mail_addrs","event_id", unique=True);
+        # If the new index does exist, delete the old one
+        if sql_helper.index_exists("reports","n_mail_addrs","event_id", unique=True):
+            sql_helper.drop_index("reports","n_mail_addrs","event_id", unique=False);
+
         sql_helper.create_index("reports","n_mail_addrs","policy_id");
         sql_helper.create_index("reports","n_mail_addrs","time_stamp");
         sql_helper.create_index("reports","n_mail_addrs","addr_kind");
@@ -153,56 +165,6 @@ CREATE TABLE reports.n_mail_addrs (
         # sql_helper.create_index("reports","n_mail_addrs","sa_action");
         # sql_helper.create_index("reports","n_mail_addrs","ct_action");
         # sql_helper.create_index("reports","n_mail_addrs","phish_action");
-
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-INSERT INTO reports.n_mail_addrs
-      (time_stamp, 
-       session_id, client_intf, server_intf,
-       c_client_addr, s_client_addr, c_server_addr, s_server_addr, 
-       c_client_port, s_client_port, c_server_port, s_server_port,
-       policy_id, 
-       uid, 
-       msg_id, subject, server_type, 
-       addr_pos, addr, addr_name, addr_kind, 
-       sender, 
-       msg_bytes, msg_attachments, 
-       hname)
-    SELECT
-        -- timestamp from request
-        mi.time_stamp,
-        -- pipeline endpoints
-        pe.session_id, pe.client_intf, pe.server_intf,
-        pe.c_client_addr, pe.s_client_addr, pe.c_server_addr, pe.s_server_addr,
-        pe.c_client_port, pe.s_client_port, pe.c_server_port, pe.s_server_port,
-        pe.policy_id, 
-        -- pipeline stats
-        pe.username,
-        -- n_message_info
-        mi.id, mi.subject, mi.server_type,
-        -- events.n_mail_message_info_addr
-        mia.position, lower(mia.addr), mia.personal, mia.kind,
-        -- events.n_mail_message_info_addr (sender)
-        lower(mias.addr),
-        -- events.n_mail_message_stats
-        mms.msg_bytes, mms.msg_attachments,
-        -- from webpages
-        COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname
-    FROM events.pl_endp pe
-    JOIN events.n_mail_message_info mi ON mi.session_id = pe.session_id
-    JOIN events.n_mail_message_info_addr mia ON mia.msg_id = mi.id
-    JOIN events.n_mail_message_info_addr mias ON ( mias.msg_id = mi.id AND mias.kind = 'F' )
-    LEFT OUTER JOIN events.n_mail_message_stats mms ON mms.msg_id = mi.id
-    LEFT OUTER JOIN reports.merged_address_map mam
-        ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time
-           AND pe.time_stamp < mam.end_time
-    WHERE pe.time_stamp < %s::timestamp without time zone""",
-                               (start_time,), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
 
     @print_timing
     def __update_n_mail_addrs(self, start_date, end_date):
@@ -318,50 +280,22 @@ CREATE TABLE reports.n_mail_msgs (
         sql_helper.convert_column("reports","n_mail_msgs","event_id","integer","bigint");
         sql_helper.convert_column("reports","n_mail_msgs","session_id","integer","bigint");
 
-        sql_helper.create_index("reports","n_mail_msgs","msg_id");
-        sql_helper.create_index("reports","n_mail_msgs","event_id");
+        # If the new index does not exist, create it
+        if not sql_helper.index_exists("reports","n_mail_msgs","msg_id", unique=True):
+            sql_helper.create_index("reports","n_mail_msgs","msg_id", unique=True);
+        # If the new index does exist, delete the old one
+        if sql_helper.index_exists("reports","n_mail_msgs","msg_id", unique=True):
+            sql_helper.drop_index("reports","n_mail_msgs","msg_id", unique=False);
+
+        # If the new index does not exist, create it
+        if not sql_helper.index_exists("reports","n_mail_msgs","event_id", unique=True):
+            sql_helper.create_index("reports","n_mail_msgs","event_id", unique=True);
+        # If the new index does exist, delete the old one
+        if sql_helper.index_exists("reports","n_mail_msgs","event_id", unique=True):
+            sql_helper.drop_index("reports","n_mail_msgs","event_id", unique=False);
+
         sql_helper.create_index("reports","n_mail_msgs","policy_id");
         sql_helper.create_index("reports","n_mail_msgs","time_stamp");
-
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-INSERT INTO reports.n_mail_msgs
-      (time_stamp, session_id, client_intf, server_intf, 
-       c_client_addr, s_client_addr, c_server_addr, s_server_addr, 
-       c_client_port, s_client_port, c_server_port, s_server_port, 
-       policy_id, 
-       uid, 
-       msg_id, subject, server_type, 
-       sender,
-       hname)
-    SELECT
-        -- timestamp from request
-        mi.time_stamp,
-        -- pipeline endpoints
-        pe.session_id, pe.client_intf, pe.server_intf,
-        pe.c_client_addr, pe.s_client_addr, pe.c_server_addr, pe.s_server_addr,
-        pe.c_client_port, pe.s_client_port, pe.c_server_port, pe.s_server_port,
-        pe.policy_id, 
-        -- pipeline stats
-        pe.username,
-        -- n_message_info
-        mi.id, mi.subject, mi.server_type,
-        -- n_message_info_addr
-        lower(mias.addr),
-         -- from webpages
-        COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname
-    FROM events.pl_endp pe
-    JOIN events.n_mail_message_info mi ON mi.session_id = pe.session_id
-    JOIN events.n_mail_message_info_addr mias ON ( mias.msg_id = mi.id AND mias.kind = 'F' )
-    LEFT OUTER JOIN reports.merged_address_map mam
-        ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time
-    WHERE pe.time_stamp < %s::timestamp without time zone""",
-                               (start_time,), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
 
     @print_timing
     def __update_n_mail_msgs(self, start_date, end_date):

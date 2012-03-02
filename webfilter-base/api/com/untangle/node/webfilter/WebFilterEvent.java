@@ -1,5 +1,5 @@
-/*
- * $HeadURL$
+/**
+ * $Id$
  */
 package com.untangle.node.webfilter;
 
@@ -20,10 +20,7 @@ import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
 
 /**
- * Log event for a blocked request.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
+ * Log event for a web filter cation
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
@@ -31,7 +28,7 @@ import com.untangle.uvm.logging.SyslogPriority;
 @SuppressWarnings("serial")
 public class WebFilterEvent extends LogEvent
 {
-    private RequestLine requestLine;
+    private Long requestId;
     private Boolean blocked;
     private Boolean flagged;
     private Reason  reason;
@@ -40,10 +37,9 @@ public class WebFilterEvent extends LogEvent
 
     public WebFilterEvent() { }
 
-    public WebFilterEvent(RequestLine requestLine, Boolean blocked, Boolean flagged, Reason reason,
-                          String category, String vendorName)
+    public WebFilterEvent(RequestLine requestLine, Boolean blocked, Boolean flagged, Reason reason, String category, String vendorName)
     {
-        this.requestLine = requestLine;
+        this.requestId = requestLine.getRequestId();
         this.blocked = blocked;
         this.flagged = flagged;
         this.reason = reason;
@@ -56,16 +52,15 @@ public class WebFilterEvent extends LogEvent
      *
      * @return the request line.
      */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="request_id")
-    public RequestLine getRequestLine()
+    @Column(name="request_id")
+    public Long getRequestId()
     {
-        return requestLine;
+        return requestId;
     }
 
-    public void setRequestLine(RequestLine requestLine)
+    public void setRequestId(Long requestId)
     {
-        this.requestLine = requestLine;
+        this.requestId = requestId;
     }
 
     /**
@@ -152,10 +147,8 @@ public class WebFilterEvent extends LogEvent
 
     public void appendSyslog(SyslogBuilder sb)
     {
-        requestLine.getPipelineEndpoints().appendSyslog(sb);
-
         sb.startSection("info");
-        sb.addField("url", requestLine.getUrl().toString());
+        sb.addField("id", requestId);
         sb.addField("blocked", blocked);
         sb.addField("flagged", flagged);
         sb.addField("reason", null == reason ? "none" : reason.toString());
@@ -178,7 +171,6 @@ public class WebFilterEvent extends LogEvent
 
     public String toString()
     {
-        return "WebFilterEvent id: " + getId() + " RequestLine: "
-            + requestLine;
+        return "WebFilterEvent id: " + getId();
     }
 }

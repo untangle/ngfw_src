@@ -46,7 +46,7 @@ import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Type;
 
 import com.untangle.node.mail.papi.MessageInfo;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 
 /**
  * Log for POP3/IMAP Virus events.
@@ -123,9 +123,9 @@ public class VirusMailEvent extends VirusEvent
     }
 
     @Transient
-    public PipelineEndpoints getPipelineEndpoints()
+    public SessionEvent getSessionEvent()
     {
-        return null == messageInfo ? null : messageInfo.getPipelineEndpoints();
+        return null == messageInfo ? null : messageInfo.getSessionEvent();
     }
 
     // accessors --------------------------------------------------------------

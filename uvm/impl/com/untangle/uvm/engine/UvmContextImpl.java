@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 import java.sql.SQLException;
+import java.sql.Connection;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -913,6 +914,15 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return new ArrayList(list);
     }
 
+    public Connection getDBConnection()
+    {
+        try {
+            return DataSourceFactory.factory().getConnection();
+        } catch (SQLException e) {
+            logger.warn("Failed to create DB Connection.",e);
+            return null;
+        }
+    }
     // private methods --------------------------------------------------------
 
     private boolean testHibernateConnection()
@@ -1045,7 +1055,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.addAnnotatedClass("com.untangle.uvm.node.IPMaskedAddressRule");
         this.addAnnotatedClass("com.untangle.uvm.node.MimeTypeRule");
         this.addAnnotatedClass("com.untangle.uvm.node.NodePreferences");
-        this.addAnnotatedClass("com.untangle.uvm.node.PipelineEndpoints");
+        this.addAnnotatedClass("com.untangle.uvm.node.SessionEvent");
         this.addAnnotatedClass("com.untangle.uvm.node.StringRule");
         this.addAnnotatedClass("com.untangle.uvm.policy.Policy");
         this.addAnnotatedClass("com.untangle.uvm.policy.UserPolicyRule");

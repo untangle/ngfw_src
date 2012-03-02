@@ -101,9 +101,22 @@ CREATE TABLE reports.n_http_events (
             sql_helper.add_column('reports', 'n_http_events', 'virus_%s_clean' % vendor, 'boolean')
             sql_helper.add_column('reports', 'n_http_events', 'virus_%s_name' % vendor, 'text')
 
+        # If the new index does not exist, create it
+        if not sql_helper.index_exists("reports","n_http_events","request_id", unique=True):
+            sql_helper.create_index("reports","n_http_events","request_id", unique=True);
+        # If the new index does exist, delete the old one
+        if sql_helper.index_exists("reports","n_http_events","request_id", unique=True):
+            sql_helper.drop_index("reports","n_http_events","request_id", unique=False);
+
+
+        # If the new index does not exist, create it
+        if not sql_helper.index_exists("reports","n_http_events","event_id", unique=True):
+            sql_helper.create_index("reports","n_http_events","event_id", unique=True);
+        # If the new index does exist, delete the old one
+        if sql_helper.index_exists("reports","n_http_events","event_id", unique=True):
+            sql_helper.drop_index("reports","n_http_events","event_id", unique=False);
+        
         sql_helper.create_index("reports","n_http_events","session_id");
-        sql_helper.create_index("reports","n_http_events","request_id");
-        sql_helper.create_index("reports","n_http_events","event_id");
         sql_helper.create_index("reports","n_http_events","policy_id");
         sql_helper.create_index("reports","n_http_events","time_stamp");
 
@@ -128,52 +141,6 @@ CREATE TABLE reports.n_http_events (
         # spyware blocker
         # sql_helper.create_index("reports","n_http_events","sw_blacklisted");
         # sql_helper.create_index("reports","n_http_events","sw_cookie_ident");
-
-
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-INSERT INTO reports.n_http_events
-      (time_stamp, 
-       session_id, client_intf, server_intf, 
-       c_client_addr, s_client_addr, c_server_addr, s_server_addr, 
-       c_client_port, s_client_port, c_server_port, s_server_port, 
-       policy_id, uid,
-       request_id, method, uri, 
-       host, c2s_content_length, 
-       s2c_content_length, s2c_content_type, 
-       hname)
-    SELECT
-        -- timestamp from request
-        req.time_stamp,
-        -- pipeline endpoints
-        pe.session_id, pe.client_intf, pe.server_intf,
-        pe.c_client_addr, pe.s_client_addr, pe.c_server_addr, pe.s_server_addr,
-        pe.c_client_port, pe.s_client_port, pe.c_server_port, pe.s_server_port,
-        pe.policy_id, pe.username,
-        -- n_http_req_line
-        req.request_id, req.method, req.uri,
-        -- n_http_evt_req
-        er.host, er.content_length,
-        -- n_http_evt_resp
-        resp.content_length, resp.content_type,
-        -- from webpages
-        COALESCE(NULLIF(mam.name, ''), host(c_client_addr)) AS hname
-    FROM events.pl_endp pe
-    JOIN events.n_http_req_line req 
-        ON pe.session_id = req.session_id
-    JOIN events.n_http_evt_req er 
-        ON er.request_id = req.request_id
-    LEFT OUTER JOIN events.n_http_evt_resp resp 
-        ON req.request_id = resp.request_id
-    LEFT OUTER JOIN reports.merged_address_map mam
-        ON pe.c_client_addr = mam.addr AND pe.time_stamp >= mam.start_time AND pe.time_stamp < mam.end_time
-    WHERE pe.time_stamp < %s::timestamp without time zone""",
-                               (start_time,), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
 
     @sql_helper.print_timing
     def events_cleanup(self, cutoff):

@@ -7,14 +7,14 @@ package com.untangle.node.spyware;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 
 @SuppressWarnings("serial")
 public abstract class SpywareEvent extends LogEvent
 {
     public SpywareEvent() { }
 
-    public abstract PipelineEndpoints getPipelineEndpoints();
+    public abstract SessionEvent getSessionEvent();
     public abstract String getType();
     public abstract String getReason();
     public abstract String getIdentification();
@@ -25,7 +25,7 @@ public abstract class SpywareEvent extends LogEvent
 
     public void appendSyslog(SyslogBuilder sb)
     {
-        getPipelineEndpoints().appendSyslog(sb);
+        getSessionEvent().appendSyslog(sb);
 
         sb.startSection("info");
         sb.addField("ident", getIdentification());

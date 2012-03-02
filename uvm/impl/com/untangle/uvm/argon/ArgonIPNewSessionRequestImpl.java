@@ -5,7 +5,7 @@ import java.net.InetAddress;
 
 import com.untangle.jnetcap.Endpoint;
 import com.untangle.jnetcap.Endpoints;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 
 public abstract class ArgonIPNewSessionRequestImpl extends ArgonNewSessionRequestImpl implements ArgonIPNewSessionRequest
 {
@@ -22,7 +22,7 @@ public abstract class ArgonIPNewSessionRequestImpl extends ArgonNewSessionReques
     protected final InetAddress natToHost;
     protected final int natToPort;
 
-    protected PipelineEndpoints pipelineEndpoints;
+    protected SessionEvent sessionEvent;
 
     protected byte state = REQUESTED;
 
@@ -32,7 +32,7 @@ public abstract class ArgonIPNewSessionRequestImpl extends ArgonNewSessionReques
     /* Two ways to create an IPNewSessionRequest:
      * A. Pass in the netcap session and get the parameters from there.
      */
-    public ArgonIPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent, PipelineEndpoints pe )
+    public ArgonIPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent, SessionEvent pe )
     {
         super( sessionGlobalState, agent );
 
@@ -48,7 +48,7 @@ public abstract class ArgonIPNewSessionRequestImpl extends ArgonNewSessionReques
 
         clientIntf = clientSide.interfaceId();
         serverIntf = serverSide.interfaceId();
-        this.pipelineEndpoints = pe;
+        this.sessionEvent = pe;
 
         serverAddr = server.host();
         serverPort = server.port();
@@ -62,7 +62,7 @@ public abstract class ArgonIPNewSessionRequestImpl extends ArgonNewSessionReques
     /* Two ways to create an IPNewSessionRequest:
      * B. Pass in the previous request and get the parameters from there
      */
-    public ArgonIPNewSessionRequestImpl( ArgonIPSession session, ArgonAgent agent, PipelineEndpoints pe, SessionGlobalState sessionGlobalState)
+    public ArgonIPNewSessionRequestImpl( ArgonIPSession session, ArgonAgent agent, SessionEvent pe, SessionGlobalState sessionGlobalState)
     {
         super( session.sessionGlobalState(), agent);
 
@@ -80,7 +80,7 @@ public abstract class ArgonIPNewSessionRequestImpl extends ArgonNewSessionReques
         natToHost = sessionGlobalState.netcapSession.natInfo.toHost;
         natToPort = sessionGlobalState.netcapSession.natInfo.toPort;
 
-        this.pipelineEndpoints = pe;
+        this.sessionEvent = pe;
     }
 
     public short protocol()
@@ -138,9 +138,9 @@ public abstract class ArgonIPNewSessionRequestImpl extends ArgonNewSessionReques
         return serverIntf;
     }
 
-    public PipelineEndpoints pipelineEndpoints()
+    public SessionEvent sessionEvent()
     {
-        return pipelineEndpoints;
+        return sessionEvent;
     }
 
     // One of REQUESTED, REJECTED, RELEASED

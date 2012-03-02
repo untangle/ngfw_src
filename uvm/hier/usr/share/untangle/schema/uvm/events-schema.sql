@@ -1,24 +1,7 @@
--- events schema for release-5.0
+-- events schema 
 -- $HeadURL$
--- Copyright (c) 2003-2007 Untangle, Inc.
---
--- This program is free software; you can redistribute it and/or modify
--- it under the terms of the GNU General Public License, version 2,
--- as published by the Free Software Foundation.
---
--- This program is distributed in the hope that it will be useful, but
--- AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
--- NONINFRINGEMENT.  See the GNU General Public License for more details.
---
--- You should have received a copy of the GNU General Public License
--- along with this program; if not, write to the Free Software
--- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
---
 
 CREATE SCHEMA events;
-
--- SET search_path TO settings,events,public;
 
 -- com.untangle.mvvm.engine.LoginEvent
 CREATE TABLE events.u_login_evt (
@@ -31,32 +14,12 @@ CREATE TABLE events.u_login_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.untangle.mvvm.engine.TransformStateChange
+-- com.untangle.uvm.node.NodeStateChange
 CREATE TABLE events.u_node_state_change (
     event_id int8 NOT NULL,
     time_stamp timestamp,
     tid int8 NOT NULL,
     state text NOT NULL,
-    PRIMARY KEY (event_id));
-
--- PipelineEndpoints
-CREATE TABLE events.pl_endp (
-    event_id int8 NOT NULL,
-    session_id int8 NOT NULL,
-    time_stamp timestamp,
-    proto int2,
-    client_intf int2,
-    server_intf int2,
-    c_client_addr inet,
-    s_client_addr inet,
-    c_server_addr inet,
-    s_server_addr inet,
-    c_client_port int4,
-    s_client_port int4,
-    c_server_port int4,
-    s_server_port int4,
-    policy_id int8,
-    username   text,
     PRIMARY KEY (event_id));
 
 -- PipelineStats
@@ -136,12 +99,6 @@ CREATE TABLE events.event_data_days (
 ----------------
 -- constraints |
 ----------------
-
--- indices for reporting and event log viewing
-
-CREATE INDEX pl_endp_session_id_idx ON events.pl_endp (session_id);
-
-CREATE INDEX pl_endp_time_stamp_idx ON events.pl_endp (time_stamp);
 
 CREATE INDEX pl_stats_session_id_idx ON events.pl_stats (session_id);
 

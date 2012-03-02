@@ -17,13 +17,5 @@ CREATE TABLE events.n_mail_message_info_addr (
     time_stamp timestamp,
     PRIMARY KEY (id));
 
-CREATE TABLE events.n_mail_message_stats (
-    id int8 NOT NULL,
-    msg_id int8,
-    msg_bytes int8,
-    msg_attachments int4,
-    time_stamp timestamp,
-    PRIMARY KEY (id));
-
 CREATE INDEX n_mail_message_info_session_id_idx ON events.n_mail_message_info (session_id);
 CREATE INDEX n_mail_message_info_addr_msg_id_idx ON events.n_mail_message_info_addr (msg_id);

@@ -6,6 +6,7 @@ package com.untangle.uvm;
 import java.io.File;
 import java.util.ArrayList;
 import java.io.IOException;
+import java.sql.Connection;
 
 import org.hibernate.Session;
 
@@ -393,4 +394,6 @@ public interface UvmContext
 
     Session makeHibernateSession();
 
+    Connection getDBConnection();
+    
 }

@@ -19,8 +19,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -28,6 +30,9 @@ import org.hibernate.Session;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Validator;
+import com.untangle.uvm.node.IPMaskedAddressDirectory;
+import com.untangle.uvm.node.IPMaskedAddressRule;
+import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptRunner.ScriptException;
 import com.untangle.uvm.AdminManager;
@@ -187,6 +192,25 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
     public void setSettings(Object settings)
     {
         setReportingSettings((ReportingSettings)settings);
+    }
+
+    public String lookupHostname( InetAddress address )
+    {
+        ReportingSettings settings = this.getReportingSettings();
+        if (settings == null)
+            return null;
+        IPMaskedAddressDirectory nameMap = settings.getNetworkDirectory();
+        if (nameMap == null)
+            return null;
+        List<IPMaskedAddressRule> nameMapList = nameMap.getEntries();
+        if (nameMapList == null)
+            return null;
+        for (IPMaskedAddressRule rule : nameMapList) {
+            IPMaskedAddress addr = rule.getIpMaskedAddress();
+            if (addr != null && addr.contains(address))
+                return rule.getName();
+        }
+        return null;
     }
 
     public LogWorker getLogWorker()

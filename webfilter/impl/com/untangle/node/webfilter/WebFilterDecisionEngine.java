@@ -202,7 +202,7 @@ class WebFilterDecisionEngine extends DecisionEngine
                     }
                 }
                 in.close();
-                logger.info("Loaded  Category \"" + categoryName + "\" from \"" + fileName + "\" : " + urlCount + " urls. " + stringLength + " stringLength");
+                logger.info("Loaded  Category \"" + categoryName + "\" from \"" + fileName + "\" : " + urlCount + " urls. " + stringLength + " characters.");
 
             }
             catch (IOException e) {

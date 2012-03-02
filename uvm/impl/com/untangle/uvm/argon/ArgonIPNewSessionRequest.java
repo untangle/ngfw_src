@@ -20,7 +20,7 @@ package com.untangle.uvm.argon;
 
 import java.net.InetAddress;
 
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 
 public interface ArgonIPNewSessionRequest extends ArgonNewSessionRequest, ArgonIPSessionDesc
 {
@@ -44,7 +44,7 @@ public interface ArgonIPNewSessionRequest extends ArgonNewSessionRequest, ArgonI
      */
     void serverPort( int port );
 
-    PipelineEndpoints pipelineEndpoints();
+    SessionEvent sessionEvent();
 
     /**
      * Session requests have a state of <code>REQUESTED</code> when the session request has not

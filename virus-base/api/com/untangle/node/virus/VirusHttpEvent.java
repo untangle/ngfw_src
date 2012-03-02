@@ -46,7 +46,7 @@ import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Type;
 
 import com.untangle.node.http.RequestLine;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 
 /**
  * Log for HTTP Virus events.
@@ -132,9 +132,9 @@ public class VirusHttpEvent extends VirusEvent
     }
 
     @Transient
-    public PipelineEndpoints getPipelineEndpoints()
+    public SessionEvent getSessionEvent()
     {
-        return null == requestLine ? null : requestLine.getPipelineEndpoints();
+        return null == requestLine ? null : requestLine.getSessionEvent();
     }
 
     // accessors ----------------------------------------------------------

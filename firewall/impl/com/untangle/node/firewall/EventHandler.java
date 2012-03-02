@@ -100,7 +100,7 @@ class EventHandler extends AbstractEventHandler
             node.incrementBlockCount(); 
 
             /* We just blocked, so we have to log too, regardless of what the rule actually says */
-            FirewallEvent fwe = new FirewallEvent(request.pipelineEndpoints(), block, ruleIndex);
+            FirewallEvent fwe = new FirewallEvent(request.sessionEvent(), block, ruleIndex);
             request.attach(fwe);
             node.incrementLogCount(); 
         } else { /* not blocked */
@@ -116,7 +116,7 @@ class EventHandler extends AbstractEventHandler
 
             /* If necessary log the event */
             if (log) {
-                FirewallEvent fwe = new FirewallEvent(request.pipelineEndpoints(), block, ruleIndex);
+                FirewallEvent fwe = new FirewallEvent(request.sessionEvent(), block, ruleIndex);
                 fwe.setRuleId(ruleIndex);
                 request.attach(fwe);
                 node.incrementLogCount();

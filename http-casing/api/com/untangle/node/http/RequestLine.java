@@ -12,72 +12,52 @@ import java.net.URL;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Type;
 
 import com.untangle.node.util.UriUtil;
-import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEvent;
 
 /**
  * Holds a RFC 2616 request-line.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
-@Entity
-@org.hibernate.annotations.Entity(mutable=false)
-@Table(name="n_http_req_line", schema="events")
 @SuppressWarnings("serial")
 public class RequestLine implements Serializable
 {
-
-    private Long id;
     private HttpMethod method;
     private byte[] requestUriBytes;
     private URI requestUri;
-    private PipelineEndpoints pipelineEndpoints;
+    private SessionEvent sessionEvent;
     private HttpRequestEvent httpRequestEvent; // Filled in after creation time.
     private Date timeStamp = new Date();
-
+    private long requestId = 0;
+    
+    private static long nextId = 0;
+    
     // constructors -----------------------------------------------------------
 
-    public RequestLine() { }
-
-    public RequestLine(PipelineEndpoints pe, HttpMethod method,
-                       byte[] requestUriBytes)
+    public RequestLine(SessionEvent pe, HttpMethod method, byte[] requestUriBytes)
     {
-        this.pipelineEndpoints = pe;
+        this.sessionEvent = pe;
         this.method = method;
-
         this.requestUriBytes = new byte[requestUriBytes.length];
-        System.arraycopy(requestUriBytes, 0, this.requestUriBytes, 0,
-                         requestUriBytes.length);
+        System.arraycopy(requestUriBytes, 0, this.requestUriBytes, 0, requestUriBytes.length);
 
         this.requestUri = getUri(requestUriBytes);
+
+        synchronized(this) {
+            if (this.nextId == 0) 
+                this.nextId = sessionEvent.getSessionId(); /* borrow the session Id as a starting point */
+            this.requestId = ++this.nextId;
+        }
     }
 
     // business methods -------------------------------------------------------
 
-    @Transient
     public URL getUrl()
     {
         // XXX this shouldn't happen in practice
-        String host = null == httpRequestEvent ? ""
-            : httpRequestEvent.getHost();
+        String host = null == httpRequestEvent ? "" : httpRequestEvent.getHost();
 
         URL url;
         try {
@@ -89,7 +69,6 @@ public class RequestLine implements Serializable
         return url;
     }
 
-    @Transient
     public byte[] getUriBytes()
     {
         byte[] b = null;
@@ -103,43 +82,41 @@ public class RequestLine implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    @SuppressWarnings("unused")
-	@Id
-    @Column(name="request_id")
-    @GeneratedValue
-    private Long getId()
+    /**
+     * Get the sessionId
+     *
+     * @return the SessionEvent.
+     */
+    public long getSessionId()
     {
-        return id;
+        return sessionEvent.getSessionId();
     }
 
-    @SuppressWarnings("unused")
-	private void setId(Long id)
+    public void setSessionId( long sessionId )
     {
-        this.id = id;
+        this.sessionEvent.setSessionId(sessionId);
     }
 
     /**
      * Get the sessionId
      *
-     * @return the PipelineEndpoints.
+     * @return the SessionEvent.
      */
-    @Column(name="session_id", nullable=false)
-    public Long getSessionId()
+    public long getRequestId()
     {
-        return pipelineEndpoints.getSessionId();
+        return this.requestId;
     }
 
-    public void setSessionId( Long sessionId )
+    public void setRequestId( long requestId )
     {
-        this.pipelineEndpoints.setSessionId(sessionId);
+        this.requestId = requestId;
     }
-
+    
     /**
      * Request method.
      *
      * @return the request method.
      */
-    @Type(type="com.untangle.node.http.HttpMethodUserType")
     public HttpMethod getMethod()
     {
         return method;
@@ -155,8 +132,6 @@ public class RequestLine implements Serializable
      *
      * @return the request URI.
      */
-    @Column(name="uri")
-    @Type(type="com.untangle.uvm.type.UriUserType")
     public URI getRequestUri()
     {
         return requestUri;
@@ -175,8 +150,6 @@ public class RequestLine implements Serializable
      *
      * @return time logged.
      */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="time_stamp")
     public Date getTimeStamp()
     {
         return timeStamp;
@@ -201,7 +174,6 @@ public class RequestLine implements Serializable
      *
      * @return the HttpRequestEvent.
      */
-    @OneToOne(mappedBy="requestLine")
     public HttpRequestEvent getHttpRequestEvent()
     {
         return httpRequestEvent;
@@ -212,28 +184,26 @@ public class RequestLine implements Serializable
         this.httpRequestEvent = httpRequestEvent;
     }
 
-    @Transient
-    public PipelineEndpoints getPipelineEndpoints()
+    public SessionEvent getSessionEvent()
     {
-        return pipelineEndpoints;
+        return sessionEvent;
     }
 
-    public void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
+    public void setSessionEvent(SessionEvent sessionEvent)
     {
-        this.pipelineEndpoints = pipelineEndpoints;
+        this.sessionEvent = sessionEvent;
     }
 
     // Object methods ---------------------------------------------------------
 
     public String toString()
     {
-        return "RequestLine id: " + id + " length: "
+        return "RequestLine " + " length: "
             + requestUri.toString().length() + " (" + super.toString() + ")";
     }
 
     // private methods --------------------------------------------------------
 
-    @Transient
     private URI getUri(byte[] b)
     {
         String uriStr;

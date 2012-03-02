@@ -19,10 +19,8 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.logging.PipelineEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
-import com.untangle.uvm.node.PipelineEndpoints;
 
 /**
  * Log event from the denormalized reports.n_spam_smtp_tarpit_events reports table

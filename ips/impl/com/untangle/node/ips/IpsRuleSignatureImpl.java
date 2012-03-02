@@ -232,7 +232,7 @@ public class IpsRuleSignatureImpl
         }
 
         //Add list number that this rule came from
-        ips.logEvent(new IpsLogEvent(session.pipelineEndpoints(), sid, classification, message, blocked));
+        ips.logEvent(new IpsLogEvent(session.sessionEvent(), sid, classification, message, blocked));
     }
 
     public String toString()
