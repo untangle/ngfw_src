@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.Column;
 
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.node.http.HttpRequestEvent;
@@ -27,6 +28,7 @@ import com.untangle.node.http.RequestLine;
 @SuppressWarnings("serial")
 public class SpywareUrlEvent extends SpywareEvent
 {
+    private Long requestId;
     private RequestLine requestLine; // pipeline endpoints & location
 
     // constructors -----------------------------------------------------------
@@ -35,6 +37,7 @@ public class SpywareUrlEvent extends SpywareEvent
 
     public SpywareUrlEvent(RequestLine requestLine)
     {
+        this.requestId = requestLine.getRequestId();
         this.requestLine = requestLine;
     }
 
@@ -82,24 +85,15 @@ public class SpywareUrlEvent extends SpywareEvent
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * Request line for this HTTP response pair.
-     *
-     * @return the request line.
-     */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="request_id")
-    public RequestLine getRequestLine()
+    @Column(name="request_id")
+    public Long getRequestId()
     {
-        return requestLine;
+        return requestId;
     }
 
-    public void setRequestLine(RequestLine requestLine)
+    public void setRequestId(Long requestId)
     {
-        this.requestLine = requestLine;
+        this.requestId = requestId;
     }
 
-    // Syslog methods ---------------------------------------------------------
-
-    // use SpywareEvent appendSyslog, getSyslogId and getSyslogPriority
 }

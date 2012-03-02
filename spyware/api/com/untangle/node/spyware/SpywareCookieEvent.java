@@ -28,6 +28,7 @@ import com.untangle.node.http.RequestLine;
 @SuppressWarnings("serial")
 public class SpywareCookieEvent extends SpywareEvent
 {
+    private Long requestId;
     private String identification;
     private RequestLine requestLine; // pipeline endpoints & location
     private Boolean toServer;
@@ -41,6 +42,7 @@ public class SpywareCookieEvent extends SpywareEvent
 
     public SpywareCookieEvent(RequestLine requestLine, String identification, Boolean toServer)
     {
+        this.requestId = requestLine.getRequestId();
         this.identification = identification;
         this.requestLine = requestLine;
         this.toServer = toServer;
@@ -85,17 +87,33 @@ public class SpywareCookieEvent extends SpywareEvent
      *
      * @return the request line.
      */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="request_id")
-    public RequestLine getRequestLine()
+    /**
+     * Request line for this HTTP response pair.
+     *
+     * @return the request line.
+     */
+    @Column(name="request_id")
+    public Long getRequestId()
     {
-        return requestLine;
+        return requestId;
     }
 
-    public void setRequestLine(RequestLine requestLine)
+    public void setRequestId(Long requestId)
     {
-        this.requestLine = requestLine;
+        this.requestId = requestId;
     }
+
+//     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+//     @JoinColumn(name="request_id")
+//     public RequestLine getRequestLine()
+//     {
+//         return requestLine;
+//     }
+
+//     public void setRequestLine(RequestLine requestLine)
+//     {
+//         this.requestLine = requestLine;
+//     }
 
     /**
      * The identification (name of IP address range matched)
