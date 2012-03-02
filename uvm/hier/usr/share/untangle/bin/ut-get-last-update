@@ -5,5 +5,12 @@ FILES="$*"
 ## Helper script so that all of the last updates have a common place to call.  
 if [ -n "${FILES}" ]; then
     ## Ignore errors
-    find ${FILES} -type f -printf "%T@\n" 2>/dev/null | sed -e 's/\..*$//' | sort -n | tail -n 1
+    DATESTAMP=`find ${FILES} -type f -printf "%T@\n" 2>/dev/null | sed -e 's/\..*$//' | sort -n | tail -n 1`
+    if [ -z "$DATESTAMP" ] ; then  
+       echo 0
+    else 
+       echo $DATESTAMP
+    fi
+else
+    echo 0
 fi
