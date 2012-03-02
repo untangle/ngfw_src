@@ -11,7 +11,7 @@ import com.untangle.uvm.policy.Policy;
 
 /**
  * Used to record the Session endpoints at session end time.
- * PipelineStats and SessionEvent used to be the PiplineInfo
+ * SessionStatsEvent and SessionEvent used to be the PiplineInfo
  * object.
  */
 @SuppressWarnings("serial")

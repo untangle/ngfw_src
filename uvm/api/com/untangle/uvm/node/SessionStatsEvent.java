@@ -7,16 +7,6 @@ import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.logging.LogEvent;
@@ -26,18 +16,15 @@ import com.untangle.uvm.node.SessionEvent;
 
 /**
  * Used to record the Session stats at session end time.
- * PipelineStats and SessionEvent used to be the PiplineInfo
+ * SessionStatsEvent and SessionEvent used to be the PiplineInfo
  * object.
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-@Entity
-@org.hibernate.annotations.Entity(mutable=false)
-@Table(name="pl_stats", schema="events")
 @SuppressWarnings("serial")
-public class PipelineStats extends LogEvent
+public class SessionStatsEvent extends LogEvent
 {
     private SessionEvent sessionEvent;
 
@@ -55,9 +42,9 @@ public class PipelineStats extends LogEvent
 
     // constructors -----------------------------------------------------------
 
-    public PipelineStats() { }
+    public SessionStatsEvent() { }
 
-    public PipelineStats(SessionStats begin, SessionStats end, SessionEvent pe)
+    public SessionStatsEvent(SessionStats begin, SessionStats end, SessionEvent pe)
     {
         this.sessionEvent = pe;
 
@@ -79,8 +66,6 @@ public class PipelineStats extends LogEvent
      *
      * @return the number of bytes sent from the client into the pipeline
      */
-
-    @Column(name="c2p_bytes", nullable=false)
     public long getC2pBytes()
     {
         return c2pBytes;
@@ -96,7 +81,6 @@ public class PipelineStats extends LogEvent
      *
      * @return the number of bytes sent from the server into the pipeline
      */
-    @Column(name="s2p_bytes", nullable=false)
     public long getS2pBytes()
     {
         return s2pBytes;
@@ -112,7 +96,6 @@ public class PipelineStats extends LogEvent
      *
      * @return the number of bytes sent from the pipeline to the client
      */
-    @Column(name="p2c_bytes", nullable=false)
     public long getP2cBytes()
     {
         return p2cBytes;
@@ -128,7 +111,6 @@ public class PipelineStats extends LogEvent
      *
      * @return the number of bytes sent from the pipeline to the server
      */
-    @Column(name="p2s_bytes", nullable=false)
     public long getP2sBytes()
     {
         return p2sBytes;
@@ -144,7 +126,6 @@ public class PipelineStats extends LogEvent
      *
      * @return the number of chunks sent from the client into the pipeline
      */
-    @Column(name="c2p_chunks", nullable=false)
     public long getC2pChunks()
     {
         return c2pChunks;
@@ -160,7 +141,6 @@ public class PipelineStats extends LogEvent
      *
      * @return the number of chunks sent from the server into the pipeline
      */
-    @Column(name="s2p_chunks", nullable=false)
     public long getS2pChunks()
     {
         return s2pChunks;
@@ -176,7 +156,6 @@ public class PipelineStats extends LogEvent
      *
      * @return the number of chunks sent from the pipeline to the client
      */
-    @Column(name="p2c_chunks", nullable=false)
     public long getP2cChunks()
     {
         return p2cChunks;
@@ -192,7 +171,6 @@ public class PipelineStats extends LogEvent
      *
      * @return the number of chunks sent from the pipeline to the server
      */
-    @Column(name="p2s_chunks", nullable=false)
     public long getP2sChunks()
     {
         return p2sChunks;
@@ -203,7 +181,6 @@ public class PipelineStats extends LogEvent
         this.p2sChunks = p2sChunks;
     }
 
-    @Column(name="session_id", nullable=false)
     public Long getSessionId()
     {
         return sessionEvent.getSessionId();
@@ -214,7 +191,6 @@ public class PipelineStats extends LogEvent
         this.sessionEvent.setSessionId(sessionId);
     }
 
-    @Transient
     public SessionEvent getSessionEvent()
     {
         return sessionEvent;
@@ -225,7 +201,27 @@ public class PipelineStats extends LogEvent
         this.sessionEvent = sessionEvent;
     }
 
+    @Override
+    public boolean isDirectEvent()
+    {
+        return true;
+    }
 
+    @Override
+    public String getDirectEventSql()
+    {
+        String sql = "UPDATE reports.sessions " +
+            "SET " +
+            " c2p_bytes = " + getC2pBytes() + ", " + 
+            " s2p_bytes = " + getS2pBytes() + ", " +
+            " p2c_bytes = " + getP2cBytes() + ", " +
+            " p2s_bytes = " + getP2sBytes() + 
+            " WHERE " + 
+            " session_id = " + getSessionId() + ";";
+
+            return sql;
+    }
+    
     // Syslog methods ---------------------------------------------------------
 
     public void appendSyslog(SyslogBuilder sb)

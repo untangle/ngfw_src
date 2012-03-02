@@ -49,8 +49,6 @@ class UvmNode(Node):
 
         self.__make_sessions_table(start_date, end_date, start_time)
 
-        self.__update_session_stats(start_date, end_date)
-
         ft = FactTable('reports.session_totals',
                        'reports.sessions',
                        'time_stamp',
@@ -119,7 +117,6 @@ INSERT INTO reports.n_admin_logins
     @sql_helper.print_timing
     def events_cleanup(self, cutoff):
         sql_helper.clean_table("events", "u_login_evt", cutoff);
-        sql_helper.clean_table("events", "pl_stats", cutoff);
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_admin_logins", cutoff)
@@ -289,26 +286,6 @@ CREATE TABLE reports.sessions (
 
         # bandwidth event log query indexes
         # sql_helper.create_index("reports","sessions","bandwidth_priority");
-
-    @print_timing
-    def __update_session_stats(self, start_date, end_date):
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-UPDATE reports.sessions
-SET end_time = events.pl_stats.time_stamp,
-    c2p_bytes = events.pl_stats.c2p_bytes,
-    s2p_bytes = events.pl_stats.s2p_bytes,
-    p2c_bytes = events.pl_stats.p2c_bytes,
-    p2s_bytes = events.pl_stats.p2s_bytes
-FROM events.pl_stats
-WHERE events.pl_stats.session_id = reports.sessions.session_id""",
-                               connection=conn,
-                               auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
 
     @print_timing
     def __make_session_counts_table(self, start_date, end_date):

@@ -48,7 +48,6 @@ CREATE TABLE reports.n_http_events (
     c_client_addr inet, s_client_addr inet, c_server_addr inet, s_server_addr inet,
     c_client_port integer, s_client_port integer, c_server_port integer, s_server_port integer,
     policy_id bigint, policy_inbound boolean,
-    c2p_bytes bigint, s2p_bytes bigint, p2c_bytes bigint, p2s_bytes bigint,
     uid text,
     request_id bigint, method character(1), uri text,
     host text, c2s_content_length integer,
@@ -89,6 +88,11 @@ CREATE TABLE reports.n_http_events (
         sql_helper.drop_column('reports', 'n_http_events', 's2p_chunks')
         sql_helper.drop_column('reports', 'n_http_events', 'p2c_chunks')
         sql_helper.drop_column('reports', 'n_http_events', 'p2s_chunks')
+        sql_helper.drop_column('reports', 'n_http_events', 'c2p_bytes')
+        sql_helper.drop_column('reports', 'n_http_events', 's2p_bytes')
+        sql_helper.drop_column('reports', 'n_http_events', 'p2c_bytes')
+        sql_helper.drop_column('reports', 'n_http_events', 'p2s_bytes')
+
 
         for vendor in ("untangle", "esoft"):
             sql_helper.drop_column('reports', 'n_http_events', 'wf_%s_action' % vendor)

@@ -22,21 +22,6 @@ CREATE TABLE events.u_node_state_change (
     state text NOT NULL,
     PRIMARY KEY (event_id));
 
--- PipelineStats
-CREATE TABLE events.pl_stats (
-    event_id int8 NOT NULL,
-    time_stamp timestamp,
-    session_id int8,
-    c2p_bytes int8,
-    s2p_bytes int8,
-    p2c_bytes int8,
-    p2s_bytes int8,
-    c2p_chunks int8,
-    s2p_chunks int8,
-    p2c_chunks int8,
-    p2s_chunks int8,
-    PRIMARY KEY (event_id));
-
 -- com.untangle.mvvm.shield.ShieldRejectionEvent
 CREATE TABLE events.n_shield_rejection_evt (
     event_id int8 NOT NULL,

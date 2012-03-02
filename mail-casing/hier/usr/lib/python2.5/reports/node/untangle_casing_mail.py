@@ -22,8 +22,6 @@ class MailCasing(Node):
     def setup(self, start_date, end_date, start_time):
         self.__create_n_mail_msgs(start_date, end_date, start_time)
         self.__create_n_mail_addrs(start_date, end_date, start_time)
-        self.__update_n_mail_msgs(start_date, end_date)
-        self.__update_n_mail_addrs(start_date, end_date)
 
         ft = FactTable('reports.n_mail_msg_totals', 'reports.n_mail_msgs',
                        'time_stamp',
@@ -31,9 +29,7 @@ class MailCasing(Node):
                         Column('client_intf', 'smallint'),
                         Column('server_type', 'char(1)')],
                        [Column('msgs', 'bigint', 'count(*)'),
-                        Column('msg_bytes', 'bigint', 'sum(msg_bytes)'),
-                        Column('s2c_bytes', 'bigint', 'sum(p2c_bytes)'),
-                        Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')])
+                        Column('msg_bytes', 'bigint', 'sum(msg_bytes)')])
         reports.engine.register_fact_table(ft)
 
         ft = FactTable('reports.n_mail_addr_totals', 'reports.n_mail_addrs',
@@ -44,9 +40,7 @@ class MailCasing(Node):
                         Column('addr_pos', 'text'), Column('addr', 'text'),
                         Column('addr_kind', 'char(1)')],
                        [Column('msgs', 'bigint', 'count(*)'),
-                        Column('msg_bytes', 'bigint', 'sum(msg_bytes)'),
-                        Column('s2c_bytes', 'bigint', 'sum(p2c_bytes)'),
-                        Column('c2s_bytes', 'bigint', 'sum(p2s_bytes)')])
+                        Column('msg_bytes', 'bigint', 'sum(msg_bytes)')])
         reports.engine.register_fact_table(ft)
 
     def post_facttable_setup(self, start_date, end_date):
@@ -76,7 +70,6 @@ CREATE TABLE reports.n_mail_addrs (
     c_client_port integer, s_client_port integer, c_server_port integer,
     s_server_port integer,
     policy_id bigint, 
-    c2p_bytes bigint, s2p_bytes bigint, p2c_bytes bigint, p2s_bytes bigint,
     uid text,
     msg_id bigint,
     subject text,
@@ -113,6 +106,10 @@ CREATE TABLE reports.n_mail_addrs (
         sql_helper.drop_column('reports', 'n_mail_addrs', 's2p_chunks')
         sql_helper.drop_column('reports', 'n_mail_addrs', 'p2c_chunks')
         sql_helper.drop_column('reports', 'n_mail_addrs', 'p2s_chunks')
+        sql_helper.drop_column('reports', 'n_mail_addrs', 'c2p_bytes')
+        sql_helper.drop_column('reports', 'n_mail_addrs', 's2p_bytes')
+        sql_helper.drop_column('reports', 'n_mail_addrs', 'p2c_bytes')
+        sql_helper.drop_column('reports', 'n_mail_addrs', 'p2s_bytes')
 
         sql_helper.add_column('reports', 'n_mail_addrs', 'event_id', 'bigserial')
         sql_helper.add_column('reports', 'n_mail_addrs', 'sender', 'text')
@@ -167,24 +164,6 @@ CREATE TABLE reports.n_mail_addrs (
         # sql_helper.create_index("reports","n_mail_addrs","phish_action");
 
     @print_timing
-    def __update_n_mail_addrs(self, start_date, end_date):
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-UPDATE reports.n_mail_addrs
-SET c2p_bytes = ps.c2p_bytes, 
-    s2p_bytes = ps.s2p_bytes,
-    p2c_bytes = ps.p2c_bytes,
-    p2s_bytes = ps.p2s_bytes
-FROM events.pl_stats as ps
-WHERE reports.n_mail_addrs.session_id = ps.session_id""",
-                                         (), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
-
-    @print_timing
     def __make_email_table(self, start_date, end_date):
         sql_helper.create_fact_table("""\
 CREATE TABLE reports.email (
@@ -223,7 +202,6 @@ CREATE TABLE reports.n_mail_msgs (
     c_client_port integer, s_client_port integer, c_server_port integer,
     s_server_port integer,
     policy_id bigint, 
-    c2p_bytes bigint, s2p_bytes bigint, p2c_bytes bigint, p2s_bytes bigint,
     uid text,
     msg_id bigint,
     subject text,
@@ -256,6 +234,10 @@ CREATE TABLE reports.n_mail_msgs (
         sql_helper.drop_column('reports', 'n_mail_msgs', 's2p_chunks')
         sql_helper.drop_column('reports', 'n_mail_msgs', 'p2c_chunks')
         sql_helper.drop_column('reports', 'n_mail_msgs', 'p2s_chunks')
+        sql_helper.drop_column('reports', 'n_mail_msgs', 'c2p_bytes')
+        sql_helper.drop_column('reports', 'n_mail_msgs', 's2p_bytes')
+        sql_helper.drop_column('reports', 'n_mail_msgs', 'p2c_bytes')
+        sql_helper.drop_column('reports', 'n_mail_msgs', 'p2s_bytes')
 
         sql_helper.add_column('reports', 'n_mail_msgs', 'event_id', 'bigserial')
         sql_helper.add_column('reports', 'n_mail_msgs', 'sender', 'text')
@@ -296,23 +278,5 @@ CREATE TABLE reports.n_mail_msgs (
 
         sql_helper.create_index("reports","n_mail_msgs","policy_id");
         sql_helper.create_index("reports","n_mail_msgs","time_stamp");
-
-    @print_timing
-    def __update_n_mail_msgs(self, start_date, end_date):
-        conn = sql_helper.get_connection()
-        try: 
-            sql_helper.run_sql("""\
-UPDATE reports.n_mail_msgs
-SET c2p_bytes = ps.c2p_bytes, 
-    s2p_bytes = ps.s2p_bytes,
-    p2c_bytes = ps.p2c_bytes,
-    p2s_bytes = ps.p2s_bytes
-FROM events.pl_stats as ps
-WHERE reports.n_mail_msgs.session_id = ps.session_id""",
-                                         (), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
 
 reports.engine.register_node(MailCasing())

@@ -26,7 +26,7 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.node.PipelineStats;
+import com.untangle.uvm.node.SessionStatsEvent;
 import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.policy.PolicyRule;
@@ -196,7 +196,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         // Endpoints can be null, if the session was never properly
         // set up at all (unknown server interface for example)
         if (pe != null)
-            UvmContextFactory.context().logEvent(new PipelineStats(start, end, pe));
+            UvmContextFactory.context().logEvent(new SessionStatsEvent(start, end, pe));
 
         pipeline.destroy();
     }
