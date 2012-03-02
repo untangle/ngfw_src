@@ -49,10 +49,6 @@ public class MailLogEventFromReports extends LogEvent
     private Integer sServerPort;
     private Long policyId;
     private Boolean policyInbound;
-    private Long c2pBytes;
-    private Long s2pBytes;
-    private Long p2cBytes;
-    private Long p2sBytes;
     private String uid;
     private Long msgId;
     private String subject;
@@ -138,22 +134,6 @@ public class MailLogEventFromReports extends LogEvent
     @Column(name="policy_id")
     public Long getPolicyId() { return policyId; }
     public void setPolicyId(Long policyId) { this.policyId = policyId; }
-
-    @Column(name="c2p_bytes")
-    public Long getC2pBytes() { return c2pBytes; }
-    public void setC2pBytes(Long c2pBytes) { this.c2pBytes = c2pBytes; }
-
-    @Column(name="s2p_bytes")
-    public Long getS2pBytes() { return s2pBytes; }
-    public void setS2pBytes(Long s2pBytes) { this.s2pBytes = s2pBytes; }
-
-    @Column(name="p2c_bytes")
-    public Long getP2cBytes() { return p2cBytes; }
-    public void setP2cBytes(Long p2cBytes) { this.p2cBytes = p2cBytes; }
-
-    @Column(name="p2s_bytes")
-    public Long getP2sBytes() { return p2sBytes; }
-    public void setP2sBytes(Long p2sBytes) { this.p2sBytes = p2sBytes; }
 
     @Column(name="uid")
     public String getUid() { return uid; }

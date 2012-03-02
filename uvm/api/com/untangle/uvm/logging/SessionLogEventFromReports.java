@@ -138,22 +138,6 @@ import com.untangle.uvm.logging.SyslogPriority;
         public Integer getServerIntf() { return serverIntf; }
         public void setServerIntf(Integer serverIntf) { this.serverIntf = serverIntf; }
 
-        @Column(name="c2p_bytes")
-        public Long getC2pBytes() { return c2pBytes; }
-        public void setC2pBytes(Long c2pBytes) { this.c2pBytes = c2pBytes; }
-
-        @Column(name="p2c_bytes")
-        public Long getP2cBytes() { return p2cBytes; }
-        public void setP2cBytes(Long p2cBytes) { this.p2cBytes = p2cBytes; }
-
-        @Column(name="s2p_bytes")
-        public Long getS2pBytes() { return s2pBytes; }
-        public void setS2pBytes(Long s2pBytes) { this.s2pBytes = s2pBytes; }
-
-        @Column(name="p2s_bytes")
-        public Long getP2sBytes() { return p2sBytes; }
-        public void setP2sBytes(Long p2sBytes) { this.p2sBytes = p2sBytes; }
-
         @Column(name="bandwidth_priority")
         public Long getBandwidthPriority() { return bandwidthPriority; }
         public void setBandwidthPriority(Long bandwidthPriority) { this.bandwidthPriority = bandwidthPriority; }

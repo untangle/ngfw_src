@@ -133,22 +133,6 @@ public class HttpLogEventFromReports extends LogEvent
     public Long getPolicyId() { return policyId; }
     public void setPolicyId(Long policyId) { this.policyId = policyId; }
 
-    @Column(name="c2p_bytes")
-    public Long getC2pBytes() { return c2pBytes; }
-    public void setC2pBytes(Long c2pBytes) { this.c2pBytes = c2pBytes; }
-
-    @Column(name="s2p_bytes")
-    public Long getS2pBytes() { return s2pBytes; }
-    public void setS2pBytes(Long s2pBytes) { this.s2pBytes = s2pBytes; }
-
-    @Column(name="p2c_bytes")
-    public Long getP2cBytes() { return p2cBytes; }
-    public void setP2cBytes(Long p2cBytes) { this.p2cBytes = p2cBytes; }
-
-    @Column(name="p2s_bytes")
-    public Long getP2sBytes() { return p2sBytes; }
-    public void setP2sBytes(Long p2sBytes) { this.p2sBytes = p2sBytes; }
-
     @Column(name="uid")
     public String getUid() { return uid; }
     public void setUid(String uid) { this.uid = uid; }
