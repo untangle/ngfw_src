@@ -53,8 +53,11 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-branding)
             d=$hades/src/branding
             ;;
-        untangle-node-commtouch)
-            d=$hades/src/commtouch
+        untangle-node-commtouchas)
+            d=$hades/src/commtouchas
+            ;;
+        untangle-node-commtouchav)
+            d=$hades/src/commtouchav
             ;;
         untangle-node-cpd)
             d=$work/src/cpd
@@ -68,8 +71,6 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-ips)
             d=$work/src/ips
             ;;
-        untangle-node-kav)
-            d=$hades/src/kav
             ;;
         untangle-node-license)
             d=$hades/src/license

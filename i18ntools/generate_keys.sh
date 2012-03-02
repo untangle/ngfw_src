@@ -1,5 +1,5 @@
 #!/bin/sh
-# untangle-node-webfiter untangle-node-kav and untangle-node-commtouchav are not needed since they rely on base-webfilter and base-virus
+# untangle-node-webfiter and untangle-node-commtouchav are not needed since they rely on base-webfilter and base-virus
 ALL_MODULES='untangle-vm untangle-libuvm untangle-apache2-config untangle-net-alpaca untangle-casing-mail 
     untangle-base-virus untangle-base-webfilter untangle-node-adblocker 
     untangle-node-cpd untangle-node-firewall 

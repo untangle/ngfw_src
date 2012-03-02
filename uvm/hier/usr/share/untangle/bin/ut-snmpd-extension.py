@@ -175,13 +175,15 @@ class SnmpExtensionUvm(SnmpExtension):
             'untangle-node-spyware' : 8,
             'untangle-node-clam' : 9,
             'untangle-node-spamassassin' : 10,
-            'untangle-node-kav' : 11,
+            'untangle-node-commtouchav' : 11,
             'untangle-node-webcache' : 12,
-            'untangle-node-commtouch' : 13,
+            'untangle-node-commtouchas' : 13,
             'untangle-node-sitefilter' : 14,
             'untangle-node-openvpn' : 15,
             'untangle-node-bandwidth' : 16,
-            'untangle-node-adblocker' : 17 }
+            'untangle-node-adblocker' : 17,
+            'untangle-node-ipsec' : 18,
+            'untangle-node-classd' : 19 }
 
   RACKS = { 'Policy(default: Default Rack)' : 1 }
 

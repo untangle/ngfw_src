@@ -126,10 +126,6 @@
     <priority value="DEBUG"/>
   </category>
  
-  <category name="com.untangle.node.kav">
-    <priority value="INFO"/>
-  </category>
- 
   <category name="com.untangle.node.license">
     <priority value="WARN"/>
   </category>

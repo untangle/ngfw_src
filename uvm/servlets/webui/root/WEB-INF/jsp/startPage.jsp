@@ -48,12 +48,14 @@
     <script type="text/javascript" src="script/untangle-node-boxbackup/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-branding/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-clam/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-commtouch/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-classd/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-commtouchas/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-commtouchav/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-cpd/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-faild/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-firewall/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-ips/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-kav/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-ipsec/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-license/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-openvpn/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-phish/settings.js?s=${buildStamp}"></script>

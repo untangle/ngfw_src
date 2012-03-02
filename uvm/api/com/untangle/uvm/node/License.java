@@ -29,7 +29,6 @@ public class License implements Serializable
     public static final String DATAVAULT = "untangle-node-datavault";
     public static final String FAILD = "untangle-node-faild";
     public static final String IPSEC = "untangle-node-ipsec";
-    public static final String KAV = "untangle-node-kav";
     public static final String POLICY = "untangle-node-policy";
     public static final String SITEFILTER = "untangle-node-sitefilter";
     public static final String SPLITD = "untangle-node-splitd";
