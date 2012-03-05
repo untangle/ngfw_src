@@ -8,21 +8,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         gridEventLog : null,
         // called when the component is rendered
         initComponent : function() {
+        	this.getSettings();
             this.genericRuleFields = Ung.Util.getGenericRuleFields(this);
-            Ung.Util.generateListIds(this.getSettings().categories.list);
-            Ung.Util.generateListIds(this.getSettings().blockedUrls.list);
-            Ung.Util.generateListIds(this.getSettings().blockedExtensions.list);
-            Ung.Util.generateListIds(this.getSettings().blockedMimeTypes.list);
-            Ung.Util.generateListIds(this.getSettings().passedUrls.list);
-            Ung.Util.generateListIds(this.getSettings().passedClients.list);
             this.buildBlockLists();
             this.buildPassLists();
             this.buildEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.panelBlockLists, this.panelPassLists, this.gridEventLog]);
-            // keep initial base settings
-            this.initialSettings = Ung.Util.clone(this.getSettings());
-            
             Ung.BaseWebFilter.superclass.initComponent.call(this);
         },
         // Block Lists Panel
@@ -90,11 +82,11 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                         boxLabel : this.i18n._("Block pages from IP only hosts"),
                         hideLabel : true,
                         name : 'Block IPHost',
-                        checked : this.getSettings().blockAllIpHosts,
+                        checked : this.settings.blockAllIpHosts,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, checked) {
-                                    this.getSettings().blockAllIpHosts = checked;
+                                    this.settings.blockAllIpHosts = checked;
                                 },this)
                             }
                         }
@@ -109,13 +101,13 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                     ["Global", this.i18n._("Permanent and Global")]],
                         displayField : "unblockModeName",
                         valueField : "unblockModeValue",
-                        value : this.getSettings().unblockMode,
+                        value : this.settings.unblockMode,
                         triggerAction : "all",
                         listClass : 'x-combo-list-small',
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getSettings().unblockMode = newValue;
+                                    this.settings.unblockMode = newValue;
                                 },this)
                             }
                         }
@@ -155,9 +147,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                         this.getRpcNode().getCategories(Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
                                             if(Ung.Util.handleException(exception)) return;
-                                            this.gridCategories.reloadGrid({data:result.list});
-                                            this.getSettings().categories = result;
-                                            this.initialSettings.categories = result;
+                                            this.settings.categories = result;
+                                            this.gridCategories.clearDirty();
                                             if(callback != null) {
                                                 callback();
                                             }
@@ -203,9 +194,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                         this.getRpcNode().getBlockedUrls(Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
                                             if(Ung.Util.handleException(exception)) return;
-                                            this.gridBlockedUrls.reloadGrid({data:result.list});
-                                            this.getSettings().blockedUrls = result;
-                                            this.initialSettings.blockedUrls = result;
+                                            this.settings.blockedUrls = result;
+                                            this.gridBlockedUrls.clearDirty();
                                             if(callback != null) {
                                                 callback();
                                             }
@@ -251,9 +241,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                         this.getRpcNode().getBlockedExtensions(Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
                                             if(Ung.Util.handleException(exception)) return;
-                                            this.gridBlockedExtensions.reloadGrid({data:result.list});
-                                            this.getSettings().blockedExtensions = result;
-                                            this.initialSettings.blockedExtensions = result;
+                                            this.settings.blockedExtensions = result;
+                                            this.gridBlockedExtensions.clearDirty();
                                             if(callback != null) {
                                                 callback();
                                             }
@@ -299,9 +288,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                         this.getRpcNode().getBlockedMimeTypes(Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
                                             if(Ung.Util.handleException(exception)) return;
-                                            this.gridBlockedMimeTypes.reloadGrid({data:result.list});
-                                            this.getSettings().blockedMimeTypes = result;
-                                            this.initialSettings.blockedMimeTypes = result;
+                                            this.settings.blockedMimeTypes = result;
+                                            this.gridBlockedMimeTypes.clearDirty();
                                             if(callback != null) {
                                                 callback();
                                             }
@@ -328,7 +316,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 hasAdd : false,
                 hasDelete : false,
                 title : this.i18n._("Categories"),
-                data: this.getSettings().categories.list,
+                dataProperty: "categories",
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 paginated : false,
@@ -453,7 +441,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Sites"),
-                data: this.getSettings().blockedUrls.list,
+                dataProperty: "blockedUrls",
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
@@ -542,7 +530,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("File Types"),
-                data : this.getSettings().blockedExtensions.list,
+                dataProperty : "blockedExtensions",
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
@@ -645,7 +633,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 title : this.i18n._("MIME Types"),
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
-                data : this.getSettings().blockedMimeTypes.list,
+                dataProperty: "blockedMimeTypes",
                 columns : [{
                     header : this.i18n._("MIME type"),
                     width : 200,
@@ -807,9 +795,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                         this.getRpcNode().getPassedUrls(Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
                                             if(Ung.Util.handleException(exception)) return;
-                                            this.gridPassedUrls.reloadGrid({data:result.list});
-                                            this.getSettings().passedUrls = result;
-                                            this.initialSettings.passedUrls = result;
+                                            this.settings.passedUrls = result;
+                                            this.gridPassedUrls.clearDirty();
                                             if(callback != null) {
                                                 callback();
                                             }
@@ -860,9 +847,8 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                                         this.getRpcNode().getPassedClients(Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
                                             if(Ung.Util.handleException(exception)) return;
-                                            this.gridPassedClients.reloadGrid({data:result.list});
-                                            this.getSettings().passedClients = result;
-                                            this.initialSettings.passedClients = result;
+                                            this.settings.passedClients = result;
+                                            this.gridPassedClients.clearDirty();
                                             if(callback != null) {
                                                 callback();
                                             }
@@ -918,7 +904,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Sites"),
-                data: this.getSettings().passedUrls.list,
+                dataProperty: "passedUrls",
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
@@ -990,7 +976,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Client IP addresses"),
-                data: this.getSettings().passedClients.list,
+                dataProperty: "passedClients",
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
@@ -1238,33 +1224,6 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                 }
             }
             return true;
-        },
-        applyAction : function(){
-            this.saveAction(true);
-        },        
-        // save function
-        saveAction : function(keepWindowOpen) {
-            // validate first
-            if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    // exit settings screen
-                    if(!keepWindowOpen){
-                        Ext.MessageBox.hide();                    
-                        this.closeWindow();
-                    }else{
-                        //refresh the settings
-                        this.getSettings(true);
-                        // keep initial  settings
-                        this.initialSettings = Ung.Util.clone(this.getSettings());
-                        Ext.MessageBox.hide();
-                    }
-                },this), this.getSettings());
-            }
-        },        
-        isDirty : function() {
-            return !Ung.Util.equals(this.getSettings(), this.initialSettings);
         }
     });
 }
