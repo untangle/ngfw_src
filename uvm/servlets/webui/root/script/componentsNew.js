@@ -20,7 +20,7 @@ Ext.override(Ext.Button, {
     }
 });
 
-Ext.override(Ext.form.field.Field, { 
+Ext.override(Ext.form.field.Base, { 
     clearDirty: function() {
         if(this.xtype=='radiogroup') {
             this.items.each(function(item) {
@@ -206,7 +206,10 @@ Ung.Util= {
 				if(Ung.Util.isDirty(item, depth++)) {
 					isDirty=true;
 					return false;
+				} else {
+					return true;
 				}
+				
 			});
 			return isDirty;
 		}
@@ -3395,7 +3398,7 @@ Ext.define("Ung.NodeWin", {
     	if(!this.validate()) {
     		return;
     	}
-    	Ext.MessageBox.wait(this.i18n._("Saving..."), this.i18n._("Please wait"));
+    	Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
     	if(Ext.isFunction(this.beforeSave)) {
     		this.beforeSave(isApply, this.saveActionContinue);
     	} else {
