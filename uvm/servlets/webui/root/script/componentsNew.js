@@ -188,6 +188,55 @@ Ext.define("Ung.form.TimeField", {
 
 
 Ung.Util= {
+	isDirty: function (item, depth) {
+		if(depth==null) {
+			depth=0;
+		} else if(depth>30) {
+			return false;
+		}
+		if(item==null) {
+			return false;
+		}
+		if(Ext.isFunction(item.isDirty)) {
+			return item.isDirty();
+		}
+		if(item.items!=null) {
+			var isDirty=false;
+			item.items.each(function(item) {
+				if(Ung.Util.isDirty(item, depth++)) {
+					isDirty=true;
+					return false;
+				}
+			});
+			return isDirty;
+		}
+		return false;
+	},
+	clearDirty: function(item, depth) {
+		if(depth==null) {
+			depth=0;
+		} else if(depth>30) {
+			return;
+		}
+		if(item==null) {
+			return;
+		}
+		if(Ext.isFunction(item.isDirty)) {
+			if(!item.isDirty()) {
+				return;
+			}
+		}
+		if(Ext.isFunction(item.clearDirty)) {
+			item.clearDirty();
+			return;
+		}
+		if(item.items!=null) {
+			item.items.each(function(item) {
+				Ung.Util.clearDirty(item, depth++);
+				return true;
+			});
+		}
+	},
     goToStartPage: function () {
         Ext.MessageBox.wait(i18n._("Redirecting to the start page..."), i18n._("Please wait"));
         window.location.href="/webui";
@@ -2997,6 +3046,9 @@ Ext.define("Ung.GridEventLog", {
                 }
             }
         }
+    },
+    isDirty: function() {
+    	return false;
     }
 });
 
@@ -3114,6 +3166,7 @@ Ext.define("Ung.SettingsWin", {
     rpc : null,
     // tabs (if the window has tabs layout)
     tabs : null,
+    dirtyFlag: false,
     // holds the json rpc results for the settings class like baseSettings
     // object, repository, repositoryDesc
     rpc : null,
@@ -3160,6 +3213,7 @@ Ext.define("Ung.SettingsWin", {
         this.hide();
         Ext.destroy(this);
     },
+    /*
     // to override
     saveAction : function() {
         Ung.Util.todo();
@@ -3184,16 +3238,37 @@ Ext.define("Ung.SettingsWin", {
                 },this), this.getSettings());
             }
         }
-    },    
-    // validation functions
+    },
+    */
+    isDirty : function() {
+    	return this.dirtyFlag || Ung.Util.isDirty(this.tabs);
+    },
+    markDirty: function() {
+    	this.dirtyFlag=true;
+    },
+    clearDirty: function() {
+    	console.log("SettingsWin clearDirty");
+    	this.dirtyFlag=false;
+    	Ung.Util.clearDirty(this.tabs);
+    },
+    //To override
+    saveAction: function (isApply) {
+    	
+    },
+    applyAction: function() {
+    	this.saveAction(true);
+    },
+    
+    //TODO: remove this
+    // validation functions, to override if needed
+    validate : function() {
+        return this.validateClient() && this.validateServer();
+    },
     validateClient : function() {
         return true;
     },
     validateServer : function() {
         return true;
-    },
-    validate : function() {
-        return this.validateClient() && this.validateServer();
     }
 });
 // Node Settings Window
@@ -3269,9 +3344,6 @@ Ext.define("Ung.NodeWin", {
     },
     closeWindow : function() {
         this.hide();
-        if(this.node.fnCallback) {
-            this.node.fnCallback.call();
-        }
         Ext.destroy(this);
     },
     // get nodeContext.rpcNode object
@@ -3293,14 +3365,14 @@ Ext.define("Ung.NodeWin", {
     },
     // get node settings object
     getSettings : function(forceReload) {
-        if (forceReload || this.rpc.settings === undefined) {
+        if (forceReload || this.settings === undefined) {
             try {
-                this.rpc.settings = this.getRpcNode().getSettings();
+                this.settings = this.getRpcNode().getSettings();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return this.rpc.settings;
+        return this.settings;
     },
     // get Validator object
     getValidator : function() {
@@ -3312,7 +3384,41 @@ Ext.define("Ung.NodeWin", {
             }
         }
         return this.node.nodeContext.rpcNode.validator;
+    },
+    saveAction: function (isApply) {
+    	if(!this.isDirty()) {
+    		if(!isApply) {
+    			this.closeWindow();
+    		}
+    		return;
+    	}
+    	if(!this.validate()) {
+    		return;
+    	}
+    	Ext.MessageBox.wait(this.i18n._("Saving..."), this.i18n._("Please wait"));
+    	if(Ext.isFunction(this.beforeSave)) {
+    		this.beforeSave(isApply, this.saveActionContinue);
+    	} else {
+    		this.saveActionContinue(isApply);
+    	}
+    },
+    saveActionContinue:function(isApply) {
+    	this.getRpcNode().setSettings( Ext.bind(function(result,exception) {
+			Ext.MessageBox.hide();
+			if(Ung.Util.handleException(exception)) return;
+			if (!isApply) {
+				this.closeWindow();
+				return;
+			} else {
+				this.getSettings(true);
+		    	if(Ext.isFunction(this.afterSave)) {
+		    		this.afterSave();
+		    	}
+				this.clearDirty();
+			}
+    	},this),this.getSettings());
     }
+
 });
 Ung.NodeWin._nodeScripts = {};
 
@@ -3887,9 +3993,14 @@ Ext.define('Ung.EditorGrid', {
     importSettingsWindow: null,    
     enableColumnHide : false,
     enableColumnMove: false,
+    //This add a new column called id
+    //To be used for entities wit no id property
     autoGenerateId: false,
     addedId : 0,
     generatedId:1,
+    //Ignore ids generatedfrom the server and records with missing ids.
+    //if this is set the ids will be generated on thi client usint Ung.Util.generateListIds
+    ignoreServerIds:true,
     constructor : function(config) {
         var defaults = {
             data:[],
@@ -3956,6 +4067,13 @@ Ext.define('Ung.EditorGrid', {
             }
             var data=this.dataFn();
             this.data = (this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;
+        } else if(this.dataProperty) {
+        	this.data=this.settingsCmp.settings[this.dataProperty].list;
+        } else if(this.dataExpression) {
+        	this.data=eval("this.settingsCmp."+this.dataExpression);
+        }
+        if(this.ignoreServerIds) {
+        	Ung.Util.generateListIds(this.data);
         }
         this.totalRecords = this.data.length;
         this.store=Ext.create('Ext.data.Store',{
@@ -4044,17 +4162,6 @@ Ext.define('Ung.EditorGrid', {
             },'-');        
         }
         Ung.EditorGrid.superclass.initComponent.call(this);
-        /* TODO migration: find an alternate solution
-        var columnModel=this.getColumnModel();
-        columnModel.getRenderer = function(col){
-            if(!this.config[col].renderer){
-                return Ung.Util.defaultRenderer;
-            }
-            return this.config[col].renderer;
-        };
-        if (this.columnsDefaultSortable !== null) {
-            columnModel.defaultSortable = this.columnsDefaultSortable;
-        }*/
     },
     stopEditing: function() {
         //added for compatimbilty
@@ -4212,6 +4319,10 @@ Ext.define('Ung.EditorGrid', {
         } else if(this.dataFn) {
             var data=this.dataFn();
             this.data = (this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;
+        } else if(this.dataProperty) {
+        	this.data=this.settingsCmp.settings[this.dataProperty].list;
+        } else if(this.dataExpression) {
+        	this.data=eval("this.settingsCmp."+this.dataExpression);
         }
  
         this.getStore().getProxy().data = this.data;
@@ -4297,6 +4408,10 @@ Ext.define('Ung.EditorGrid', {
     isDirty : function() {
         // Test if there are changed data
         return Ung.Util.hasData(this.changedData);
+    },
+    clearDirty: function() {
+    	console.log("EditorGrid clearDirty");
+    	this.reloadGrid();
     },
     disableSorting : function () {
         if (!this.isDirty()) {
@@ -4550,7 +4665,7 @@ Ext.define('Ung.EditorGrid', {
         var data=null;
         if(this.isPaginated()) {
             var oldSettings = {
-                changedData : Ext.decode(Ext.encode(this.changedData)),
+                changedData : Ext.clone(this.changedData),
                 page : this.getStore().currentPage
             };
             //make all cahnged data apear in first page
