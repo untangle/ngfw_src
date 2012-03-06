@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <c:set var="isDebug" value="true"/>
-<c:set var="isCompat" value="true"/>
+<c:set var="isCompat" value="false"/>
 <head>
 
     <title>${companyName}</title>
@@ -58,7 +58,8 @@
     <script type="text/javascript" src="script/config/systemInfoNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/upgradeNew.js?s=${buildStamp}"></script>
 	
-	<script type="text/javascript" src="script/untangle-node-spyware/settingsNew.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-spyware/settingsNew.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/untangle-node-classd/settingsNew.js?s=${buildStamp}"></script>
     
 </c:if>
 

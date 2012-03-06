@@ -3216,33 +3216,6 @@ Ext.define("Ung.SettingsWin", {
         this.hide();
         Ext.destroy(this);
     },
-    /*
-    // to override
-    saveAction : function() {
-        Ung.Util.todo();
-    },
-    // save function
-    applyAction : function() {
-        if (this.validate()) {
-        Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-            // If it uses the old getBaseSettings/setBaseSettings
-            if (typeof this.getRpcNode().setBaseSettings == 'function') {
-                this.getRpcNode().setBaseSettings(Ext.bind(function(result, exception) {
-                    this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());            
-                    Ext.MessageBox.hide();
-                    if(Ung.Util.handleException(exception)) return;
-                },this), this.getBaseSettings());
-            // If it uses the old getSettings/setSettings
-            } else {
-                this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
-                    this.initialSettings = Ung.Util.clone(this.getSettings());            
-                    Ext.MessageBox.hide();
-                    if(Ung.Util.handleException(exception)) return;
-                },this), this.getSettings());
-            }
-        }
-    },
-    */
     isDirty : function() {
     	return this.dirtyFlag || Ung.Util.isDirty(this.tabs);
     },
@@ -3256,7 +3229,6 @@ Ext.define("Ung.SettingsWin", {
     },
     //To override
     saveAction: function (isApply) {
-    	
     },
     applyAction: function() {
     	this.saveAction(true);
@@ -3996,6 +3968,7 @@ Ext.define('Ung.EditorGrid', {
     importSettingsWindow: null,    
     enableColumnHide : false,
     enableColumnMove: false,
+    dirtyFlag: false,
     //This add a new column called id
     //To be used for entities wit no id property
     autoGenerateId: false,
@@ -4034,7 +4007,15 @@ Ext.define('Ung.EditorGrid', {
             
             this.viewConfig.plugins= {
                 ptype: 'gridviewdragdrop',
-                dragText: i18n._('Drag and drop to reorganize')
+                dragText: i18n._('Drag and drop to reorganize'),
+                listeners: {
+                    "drop": {
+                        fn: Ext.bind(function() {
+                        	console.log("Ext.grid drop");
+                        	this.markDirty();
+                        },this)
+                    }
+                }
             }
             this.columnsDefaultSortable = false;
         }
@@ -4312,26 +4293,6 @@ Ext.define('Ung.EditorGrid', {
     isPaginated : function() {
         return  this.paginated && (this.totalRecords != null && this.totalRecords >= this.minPaginateCount);
     },
-    clearChangedData : function () {
-        this.changedData = {};
-    },
-    reloadGrid : function(options){
-        this.clearChangedData();
-        if(options && options.data){
-            this.data=options.data
-        } else if(this.dataFn) {
-            var data=this.dataFn();
-            this.data = (this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;
-        } else if(this.dataProperty) {
-        	this.data=this.settingsCmp.settings[this.dataProperty].list;
-        } else if(this.dataExpression) {
-        	this.data=eval("this.settingsCmp."+this.dataExpression);
-        }
- 
-        this.getStore().getProxy().data = this.data;
-        this.setTotalRecords(this.data.length);
-        this.getStore().load();           
-    },
     beforeDestroy : function() {
         Ext.each(this.subCmps, Ext.destroy);
         Ung.EditorGrid.superclass.beforeDestroy.call(this);
@@ -4408,13 +4369,33 @@ Ext.define('Ung.EditorGrid', {
             }
         }
     },
-    isDirty : function() {
+    isDirty: function() {
         // Test if there are changed data
-        return Ung.Util.hasData(this.changedData);
+        return this.dirtyFlag || Ung.Util.hasData(this.changedData);
+    },
+    markDirty: function() {
+    	this.dirtyFlag=true;
     },
     clearDirty: function() {
-    	console.log("EditorGrid clearDirty");
-    	this.reloadGrid();
+        if(this.dataFn) {
+            var data=this.dataFn();
+            this.data = (this.dataRoot!=null && this.dataRoot.length>0) ? data[this.dataRoot]:data;
+        } else if(this.dataProperty) {
+        	this.data=this.settingsCmp.settings[this.dataProperty].list;
+        } else if(this.dataExpression) {
+        	this.data=eval("this.settingsCmp."+this.dataExpression);
+        }
+        this.changedData = {};
+        this.dirtyFlag=false;
+        this.getStore().getProxy().data = this.data;
+        this.setTotalRecords(this.data.length);
+        this.getStore().load();           
+    },
+    reloadGrid : function(options){
+        if(options && options.data){
+            this.data=options.data
+        }
+        this.clearDirty();
     },
     disableSorting : function () {
         if (!this.isDirty()) {
