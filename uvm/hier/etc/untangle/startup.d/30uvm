@@ -19,7 +19,7 @@ if [ $MEM -gt 4900000 ] ; then
     MAX_HEAP_SIZE=`echo $MEM | awk '{printf int($1 * .5 / 1000) "m"}'`
     MAX_VIRTUAL_SIZE=`echo $MEM | awk '{printf int($1 * 1.5  / 1000) "m"}'`
     GC_SAFETY_FACTOR=10
-    GC_MIN_CYCLE=0
+    GC_MIN_CYCLE=1
     EVENTS_LONG_SYNC=40 # seconds
     EVENTS_SHORT_SYNC=5 # seconds
     REPORTS_INTERVAL_MIN=5 # minutes
@@ -29,7 +29,7 @@ elif [ $MEM -gt 3900000 ] ; then
     MAX_HEAP_SIZE=2000m
     MAX_VIRTUAL_SIZE=6000m
     GC_SAFETY_FACTOR=10
-    GC_MIN_CYCLE=0
+    GC_MIN_CYCLE=2
     EVENTS_LONG_SYNC=50 # seconds
     EVENTS_SHORT_SYNC=7 # seconds
     REPORTS_INTERVAL_MIN=10 # minutes
