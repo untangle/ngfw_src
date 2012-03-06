@@ -1,3 +1,10 @@
+/*
+TODO: modify api to use standards: setSettings instead of setCPDSettings, getSettings instead of getCPDSettings
+TODO: server side: high priority fix issue when saving: 
+  An exception has occurred:
+  java.io.FileNotFoundException
+  /etc/untangle-cpd/settings.file (No such file or directory)
+ */
 if (!Ung.hasResource["Ung.CPD"]) {
     Ung.hasResource["Ung.CPD"] = true;
     Ung.NodeWin.registerClassName("untangle-node-cpd", "Ung.CPD");
@@ -18,19 +25,15 @@ if (!Ung.hasResource["Ung.CPD"]) {
         gridBlockEventLog : null,
         pageParameters : null,
 
-        workingNodeSettings : null,
-        initialNodeSettings : null,
-
         initComponent : function()
         {
             Ung.Util.clearInterfaceStore();
+            this.getRpcNode().getSettings=this.getRpcNode().getCPDSettings;
+            this.getRpcNode().setSettings=this.getRpcNode().setCPDSettings;
 
-            // keep initial base settings
-            this.workingNodeSettings = Ext.clone(this.getRpcNode().getCPDSettings());
-            this.initialNodeSettings = Ext.clone(this.workingNodeSettings);
-
+            this.getSettings();
             try {
-                this.pageParameters = Ext.util.JSON.decode( this.workingNodeSettings.pageParameters );
+                this.pageParameters = Ext.util.JSON.decode( this.settings.pageParameters );
             } catch ( e ) {
                 /* User should never see this. */
                 /* XXX Currently this doesn't work because execution continues. */
@@ -40,7 +43,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
                 this.pageParameters = {};
             }
-            this.initialPageParameters = Ung.Util.clone(this.pageParameters);
 
             // builds the tabs
             this.buildCaptiveStatus();
@@ -111,7 +113,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 }, this )
             });
 
-            this.gridCaptiveStatus = new Ext.create('Ung.EditorGrid',{
+            this.gridCaptiveStatus = Ext.create('Ung.EditorGrid',{
                 name : "gridCaptiveStatus",
                 settingsCmp : this,
                 height : 500,
@@ -143,8 +145,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     ]
                 }),
                 recordJavaClass : "com.untangle.node.cpd.HostDatabaseEntry",
-                //proxyRpcFn : this.getRpcNode().getCaptiveStatus,
-                 data: this.getRpcNode().getCaptiveStatus().list,
+                data: this.getRpcNode().getCaptiveStatus().list,
                 fields : [{
                     name : "ipv4Address"
                 },{
@@ -213,10 +214,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         boxLabel : this.i18n._("Capture Bypassed Traffic"),
                         tooltip : this.i18n._("If enabled, traffic that is bypassed in Bypass Rules will also captured until the host is authenticated."),
                         hideLabel : true,
-                        checked : this.workingNodeSettings.captureBypassedTraffic,
+                        checked : this.settings.captureBypassedTraffic,
                         listeners : {
                             "change" : Ext.bind(function(elem, checked) {
-                                this.workingNodeSettings.captureBypassedTraffic = checked;
+                                this.settings.captureBypassedTraffic = checked;
                             },this)
                         }
                     }]
@@ -252,8 +253,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 qtip : this.i18n._("The Capture Rules are a set of rules to define which hosts and traffic are subject to the Captive Portal. All enabled rules are evaluated in order."),
                 recordJavaClass : "com.untangle.node.cpd.CaptureRule",
                 paginated : false,
-                //proxyRpcFn : this.getRpcNode().getCaptureRules,
-                data : this.getRpcNode().getCaptureRules().list,
+                dataProperty: "captureRules",
                 fields : [{
                     name : "id"
                 },{
@@ -493,14 +493,14 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 this.buildGridPassedList( "gridPassedClients",
                                           this.i18n._( "Pass Listed Client Addresses"),
                                           "com.untangle.node.cpd.PassedClient",
-                                          this.getRpcNode().getPassedClients().list,
+                                          "passedClients",
                                           "Pass Listed Client Addresses is a list of Client IPs that are not subjected to the Captive Portal.");
 
                 this.gridPassedServers =
                 this.buildGridPassedList( "gridPassedServers",
                                           this.i18n._( "Pass Listed Server Addresses"),
                                           "com.untangle.node.cpd.PassedServer",
-                                          this.getRpcNode().getPassedServers().list,
+                                          "passedServers",
                                           "Pass Listed Server Addresses is a list of Server IPs that unauthenticated clients can access without authentication.");
 
             this.panelPassedHosts = Ext.create('Ext.panel.Panel',{
@@ -517,7 +517,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
             });
         },
 
-        buildGridPassedList : function( name, title, javaClass,gridData , tooltip)
+        buildGridPassedList : function( name, title, javaClass, dataProperty , tooltip)
         {
 
             return Ext.create('Ung.EditorGrid',{
@@ -526,7 +526,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 settingsCmp : this,
                 hasEdit : false,
                 anchor : "100% 49%",
-                hasReorder : false,
                 emptyRow : {
                     "live" : true,
                     "log" : false,
@@ -539,7 +538,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 title : this.i18n._(title),
                 recordJavaClass : javaClass,
                 paginated : false,
-                data : gridData,
+                dataProperty: dataProperty,
                 fields : [{
                     name : "id"
                 },{
@@ -594,13 +593,14 @@ if (!Ung.hasResource["Ung.CPD"]) {
             var onUpdateRadioButton = Ext.bind(function( elem, checked )
             {
                 if ( checked ) {
-                    this.workingNodeSettings.authenticationType = elem.inputValue;
+                    this.settings.authenticationType = elem.inputValue;
                 }
             },this);
 
             var onRenderRadioButton = Ext.bind(function( elem )
             {
-                elem.setValue(this.workingNodeSettings.authenticationType);
+                elem.setValue(this.settings.authenticationType);
+                elem.clearDirty();
             },this);
 
             this.panelUserAuthentication = Ext.create('Ext.panel.Panel',{
@@ -694,10 +694,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         fieldLabel : this.i18n._( "Idle Timeout" ),
                         boxLabel : this.i18n._( "minutes" ),
                         tooltip : this.i18n._( "Clients will be unauthenticated after this amount of idle time. They may re-authenticate immediately." ),
-                        value : this.workingNodeSettings.idleTimeout / 60,
+                        value : this.settings.idleTimeout / 60,
                         listeners : {
                             "change" : Ext.bind(function( elem, newValue ){
-                                this.workingNodeSettings.idleTimeout = newValue * 60;
+                                this.settings.idleTimeout = newValue * 60;
                             },this)
                         }
                     },{
@@ -712,10 +712,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         boxLabel : this.i18n._( "minutes" ),
                         invalidText : this.i18n._( "The Timeout must be between 5 minutes and 24 hours." ),
                         tooltip : this.i18n._( "Clients will be unauthenticated after this amount of time regardless of activity. They may re-authenticate immediately." ),
-                        value : this.workingNodeSettings.timeout / 60,
+                        value : this.settings.timeout / 60,
                         listeners : {
                             "change" : Ext.bind(function( elem, newValue ){
-                                this.workingNodeSettings.timeout = newValue * 60;
+                                this.settings.timeout = newValue * 60;
                             },this)
                         }
                     },{
@@ -723,10 +723,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         boxLabel : this.i18n._("Allow Concurrent Logins"),
                         tooltip : this.i18n._("This will allow multiple hosts to use the same username & password concurrently."),
                         hideLabel : true,
-                        checked : this.workingNodeSettings.concurrentLoginsEnabled,
+                        checked : this.settings.concurrentLoginsEnabled,
                         listeners : {
                             "change" : Ext.bind(function(elem, checked) {
-                                this.workingNodeSettings.concurrentLoginsEnabled = checked;
+                                this.settings.concurrentLoginsEnabled = checked;
                             },this)
                         }
                     }]
@@ -747,24 +747,19 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 },this));
             }
         },
-        setCaptivePageDefaults : function (){
-            this.panelCaptivePage.query('radio[name="pageType"]')[0].setValue(this.workingNodeSettings.pageType);
-            this.captivePageHideComponents(this.workingNodeSettings.pageType );
-        },
-
         buildCaptivePage : function()
         {
             var onUpdateRadioButton = Ext.bind(function( elem, checked )
             {
                 if ( checked ) {
-                    this.workingNodeSettings.pageType = elem.inputValue;
+                    this.settings.pageType = elem.inputValue;
                     this.captivePageHideComponents( elem.inputValue );
                 }
             },this);
 
             var onRenderRadioButton = Ext.bind(function( elem )
             {
-                this.panelCaptivePage.query('radio[name="pageType"]')[0].setValue(this.workingNodeSettings.pageType);
+                this.panelCaptivePage.query('radio[name="pageType"]')[0].setValue(this.settings.pageType);
             },this);
 
             this.panelCaptivePage = Ext.create('Ext.panel.Panel',{
@@ -777,7 +772,12 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 border : false,
                 cls: "ung-panel",
                 listeners : {
-                    "activate" : Ext.bind(this.setCaptivePageDefaults,this)
+                    "render" : Ext.bind(function () {
+                    	console.log("setCaptivePageDefaults");
+                        this.panelCaptivePage.query('radio[name="pageType"]')[0].setValue(this.settings.pageType);
+                        this.captivePageHideComponents(this.settings.pageType );
+                        Ung.Util.clearDirty(this.panelCaptivePage);
+                    },this)
                 },
                 items : [{
                     xtype : "fieldset",
@@ -1025,10 +1025,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         width : 200,
                         fieldLabel : this.i18n._("Redirect URL"),
                         tooltip : this.i18n._("Users will be redirected to this page immediately after authentication. Blank sends the user to their original destination."),
-                        value : this.workingNodeSettings.redirectUrl,
+                        value : this.settings.redirectUrl,
                         listeners : {
                             "change" : Ext.bind(function( elem, newValue ){
-                                this.workingNodeSettings.redirectUrl = newValue;
+                                this.settings.redirectUrl = newValue;
                             },this)
                         }
                     },{
@@ -1036,10 +1036,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         boxLabel : this.i18n._("Redirect HTTP traffic to HTTPS captive page"),
                         tooltip : this.i18n._("If unchecked, HTTP traffic to unauthenticated hosts will be redirect to the HTTP Captive page. If checked, users will be redirected to an HTTPS captive page."),
                         hideLabel : true,
-                        checked : this.workingNodeSettings.useHttpsPage,
+                        checked : this.settings.useHttpsPage,
                         listeners : {
                             "check" : Ext.bind(function(elem, checked) {
-                                this.workingNodeSettings.useHttpsPage = checked;
+                                this.settings.useHttpsPage = checked;
                             },this)
                         }
                     },{
@@ -1047,10 +1047,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         boxLabel : this.i18n._("Redirect HTTPS traffic to HTTPS captive page"),
                         tooltip : this.i18n._("If unchecked, HTTPS traffic for unauthenticated users is blocked. If checked HTTPS traffic will be redirected to the HTTPS captive page. Warning: This will cause certificate warning errors in the browser."),
                         hideLabel : true,
-                        checked : this.workingNodeSettings.redirectHttpsEnabled,
+                        checked : this.settings.redirectHttpsEnabled,
                         listeners : {
                             "check" : Ext.bind(function(elem, checked) {
-                                this.workingNodeSettings.redirectHttpsEnabled = checked;
+                                this.settings.redirectHttpsEnabled = checked;
                             },this)
                         }
                     }]
@@ -1226,45 +1226,38 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 }]
             });
         },
-
-        //apply function
-        applyAction : function()
-        {
-            this.commitSettings(Ext.bind(this.reloadSettings,this));
-        },
-        saveAction : function()
-        {
-            this.commitSettings(Ext.bind(this.completeSaveAction,this));
-        },
-        completeSaveAction : function()
-        {
-            Ext.MessageBox.hide();
-            // exit settings screen
-            this.closeWindow();
-        },
-        reloadSettings : function()
-        {
-            this.getRpcNode().getCPDSettings(Ext.bind(this.completeReloadSettings,this ));
-        },
-        completeReloadSettings : function( result, exception )
-        {
-            if(Ung.Util.handleException(exception)) {
-                return;
+        beforeSave: function(isApply, handler) {
+        	this.settings.pageParameters = Ext.JSON.encode( this.pageParameters );
+        	if ( this.gridCaptureRules.isDirty() ) {
+            	this.settings.captureRules = {
+                    javaClass : "java.util.ArrayList",
+                    list : this.gridCaptureRules.getFullSaveList()
+                };
             }
-
-            this.rpc.baseSettings = result;
-            this.initialNodeSettings = Ung.Util.clone(this.rpc.baseSettings);
-
+            if ( this.gridPassedClients.isDirty() ) {
+            	this.settings.passedClients = {
+                    javaClass : "java.util.ArrayList",
+                    list : this.gridPassedClients.getFullSaveList()
+                };
+            }
+            if ( this.gridPassedServers.isDirty() ) {
+            	this.settings.passedServers = {
+                    javaClass : "java.util.ArrayList",
+                    list : this.gridPassedServers.getFullSaveList()
+                };
+            }
+            handler.call(this, isApply);
+        },
+        afterSave: function() {
             try {
-                this.pageParameters = Ext.util.JSON.decode( this.workingNodeSettings.pageParameters );
+                this.pageParameters = Ext.util.JSON.decode( this.settings.pageParameters );
             } catch ( e ) {
-                /* User should never see this. */
+                //User should never see this. 
                 Ext.MessageBox.alert(i18n._("Warning"), i18n._("The current settings have an error, previous values may be lost."));
                 this.pageParameters = {};
             }
-            this.initialPageParameters = Ung.Util.clone(this.pageParameters);
 
-            /* Only reload the data for the grids if they have already been rendered. */
+        	// Only reload the data for the grids if they have already been rendered. 
             if ( this.gridCaptureRules.rendered ) {
                 this.gridCaptureRules.reloadGrid();
             }
@@ -1274,47 +1267,46 @@ if (!Ung.hasResource["Ung.CPD"]) {
             if ( this.gridPassedServers.rendered ) {
                 this.gridPassedServers.reloadGrid();
             }
-
-            Ext.MessageBox.hide();
+        	
         },
-        validateClient : function()
+        validate: function()
         {
-            /* Iterate all of the fields checking if they are valid */
+            // Iterate all of the fields checking if they are valid
             if ( !this.query('numberfield[name="idleTimeout"]')[0].isValid() ||
                  !this.query('numberfield[name="timeout"]')[0].isValid()) {
                 Ext.MessageBox.alert(this.i18n._("Warning"),
                                      this.i18n._("Please correct any highlighted fields."),
-                                     Ext.create(function () {
+                                     Ext.bind(function () {
                                          this.tabs.setActiveTab(this.panelUserAuthentication);
                                      },this));
                 return false;
             }
 
-            if ( this.workingNodeSettings.pageType == "BASIC_MESSAGE" ) {
-                if (this.workingNodeSettings.authenticationType != "NONE" ) {
+            if ( this.settings.pageType == "BASIC_MESSAGE" ) {
+                if (this.settings.authenticationType != "NONE" ) {
                     Ext.MessageBox.alert(this.i18n._("Warning"),
                                          this.i18n._("When using 'Basic Message', 'Authentication' must be set to 'None'."),
-                                         Ext.create(function () {
+                                         Ext.bind(function () {
                                              this.tabs.setActiveTab(this.panelUserAuthentication);
                                          },this));
                     return false;
                 }
 
-                if ( !this.workingNodeSettings.concurrentLoginsEnabled ) {
+                if ( !this.settings.concurrentLoginsEnabled ) {
                     Ext.MessageBox.alert(this.i18n._("Warning"),
                                          this.i18n._("When using 'Basic Message', 'Allow Concurrent Logins' must be enabled."),
-                                         Ext.create(function () {
+                                         Ext.bind(function () {
                                              this.tabs.setActiveTab(this.panelUserAuthentication);
                                          },this));
                     return false;
                 }
             }
 
-            if ( this.workingNodeSettings.pageType == "BASIC_LOGIN" ) {
-                if (this.workingNodeSettings.authenticationType == "NONE" ) {
+            if ( this.settings.pageType == "BASIC_LOGIN" ) {
+                if (this.settings.authenticationType == "NONE" ) {
                     Ext.MessageBox.alert(this.i18n._("Warning"),
                                          this.i18n._("When using 'Basic Login', 'Authentication' cannot be set to 'None'."),
-                                         Ext.create(function () {
+                                         Ext.bind(function () {
                                              this.tabs.setActiveTab(this.panelUserAuthentication);
                                          },this));
                     return false;
@@ -1323,52 +1315,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
             return true;
         },
-        // commit function
-        commitSettings : function(callback)
-        {
-            if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                var captureRules = null, passedClients = null, passedServers = null;
-                this.workingNodeSettings.pageParameters = Ext.JSON.encode( this.pageParameters );
-
-                if ( this.gridCaptureRules.rendered ) {
-                	this.workingNodeSettings.captureRules = {
-                        javaClass : "java.util.ArrayList",
-                        list : this.gridCaptureRules.getFullSaveList()
-                    };
-                }
-                if ( this.gridPassedClients.rendered ) {
-                	this.workingNodeSettings.passedClients = {
-                        javaClass : "java.util.ArrayList",
-                        list : this.gridPassedClients.getFullSaveList()
-                    };
-                }
-                if ( this.gridPassedServers.rendered ) {
-                	this.workingNodeSettings.passedServers = {
-                        javaClass : "java.util.ArrayList",
-                        list : this.gridPassedServers.getFullSaveList()
-                    };
-                }
-
-                var wrapper = Ext.bind(function( result, exception )
-                {
-                    if(Ung.Util.handleException(exception)) {
-                        return;
-                    }
-                    callback();
-                },this);
-                this.getRpcNode().setCPDSettings(wrapper, this.workingNodeSettings );
-                
-            }
-        },
-        isDirty : function() {
-            return !Ung.Util.equals(this.workingNodeSettings, this.initialNodeSettings)
-                || !Ung.Util.equals(this.pageParameters, this.initialPageParameters )
-                || this.gridCaptureRules.isDirty()
-                || this.gridPassedClients.isDirty()
-                || this.gridPassedServers.isDirty();
-        },
-
         configureLocalDirectory : function()
         {
             Ext.MessageBox.wait(i18n._("Loading Config..."),

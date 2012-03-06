@@ -3374,7 +3374,7 @@ Ext.define("Ung.NodeWin", {
     	if(Ext.isFunction(this.beforeSave)) {
     		this.beforeSave(isApply, this.saveActionContinue);
     	} else {
-    		this.saveActionContinue(isApply);
+    		this.saveActionContinue.call(this, isApply);
     	}
     },
     saveActionContinue:function(isApply) {
@@ -3386,10 +3386,10 @@ Ext.define("Ung.NodeWin", {
 				return;
 			} else {
 				this.getSettings(true);
-		    	if(Ext.isFunction(this.afterSave)) {
-		    		this.afterSave();
-		    	}
 				this.clearDirty();
+		    	if(Ext.isFunction(this.afterSave)) {
+		    		this.afterSave.call(this);
+		    	}
 			}
     	},this),this.getSettings());
     }
@@ -3977,6 +3977,7 @@ Ext.define('Ung.EditorGrid', {
     //Ignore ids generatedfrom the server and records with missing ids.
     //if this is set the ids will be generated on thi client usint Ung.Util.generateListIds
     ignoreServerIds:true,
+    sortingDisabled:false,
     constructor : function(config) {
         var defaults = {
             data:[],
@@ -4398,11 +4399,12 @@ Ext.define('Ung.EditorGrid', {
         this.clearDirty();
     },
     disableSorting : function () {
-        if (!this.isDirty()) {
+        if (!this.sortingDisabled) {
             var cmConfig = this.columns;
             for (i in cmConfig) {
                 cmConfig[i].sortable = false;
             }
+            this.sortingDisabled=true;
         }
     },
     // Update Changed data after an import
