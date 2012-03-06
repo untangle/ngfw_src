@@ -3984,6 +3984,14 @@ Ext.define('Ung.EditorGrid', {
             ],
             viewConfig: {
                 stripeRows : true,
+                listeners: {
+                    "drop": {
+                        fn: Ext.bind(function() {
+                        	this.markDirty();
+                        },this)
+                    }
+                }
+
             },
             loadMask:{
                 msg: i18n._("Loading ...")
@@ -4007,15 +4015,7 @@ Ext.define('Ung.EditorGrid', {
             
             this.viewConfig.plugins= {
                 ptype: 'gridviewdragdrop',
-                dragText: i18n._('Drag and drop to reorganize'),
-                listeners: {
-                    "drop": {
-                        fn: Ext.bind(function() {
-                        	console.log("Ext.grid drop");
-                        	this.markDirty();
-                        },this)
-                    }
-                }
+                dragText: i18n._('Drag and drop to reorganize')
             }
             this.columnsDefaultSortable = false;
         }
