@@ -25,8 +25,8 @@ if (!Ung.hasResource["Ung.CPD"]) {
             Ung.Util.clearInterfaceStore();
 
             // keep initial base settings
-            this.initialNodeSettings = Ung.Util.clone(this.getRpcNode().getCPDSettings());
-            this.workingNodeSettings = Ung.Util.clone(this.getRpcNode().getCPDSettings());
+            this.initialNodeSettings = Ung.Util.clone(this.getRpcNode().getSettings());
+            this.workingNodeSettings = Ung.Util.clone(this.getRpcNode().getSettings());
 
             try {
                 this.pageParameters = Ext.util.JSON.decode( this.workingNodeSettings.pageParameters );
@@ -1350,7 +1350,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                     }
                     callback();
                 }.createDelegate(this);
-                this.getRpcNode().setCPDSettings(wrapper, this.workingNodeSettings );
+                this.getRpcNode().setSettings(wrapper, this.workingNodeSettings );
             }
         },
         isDirty : function() {

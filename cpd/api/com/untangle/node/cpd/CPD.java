@@ -15,8 +15,8 @@ public interface CPD extends Node
 	 * @param settings
 	 * @throws Exception
 	 */
-    void setCPDSettings(CPDSettings settings) throws Exception;
-    CPDSettings getCPDSettings();
+    void setSettings(CPDSettings settings) throws Exception;
+    CPDSettings getSettings();
 
     List<HostDatabaseEntry> getCaptiveStatus();
 

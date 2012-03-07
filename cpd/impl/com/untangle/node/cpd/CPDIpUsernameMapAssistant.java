@@ -41,7 +41,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
     private final int ASSISTANT_PRIORITY = 3;
 
     private final Logger logger = Logger.getLogger(getClass());
-    
+
     private HashMap<InetAddress,MapValue> cache = new HashMap<InetAddress,MapValue>();
 
     private final Pulse databaseReader;
@@ -49,9 +49,9 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
     private boolean registered = false;
 
     private CPDImpl cpd;
-    
-    private List<HostDatabaseEntry> localStatus = new LinkedList<HostDatabaseEntry>();    
-    
+
+    private List<HostDatabaseEntry> localStatus = new LinkedList<HostDatabaseEntry>();
+
     /* -------------- Constructors -------------- */
     public CPDIpUsernameMapAssistant(CPDImpl cpd)
     {
@@ -107,7 +107,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
     {
         return null;
     }
-    
+
     /**
      * return name
      */
@@ -133,7 +133,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
     {
         MapValue newCacheEntry = new MapValue();
 
-        newCacheEntry.expirationDate = new Date(System.currentTimeMillis() + (this.cpd.getCPDSettings().getTimeout()*1000));
+        newCacheEntry.expirationDate = new Date(System.currentTimeMillis() + (this.cpd.getSettings().getTimeout()*1000));
         newCacheEntry.username = username;
         synchronized(cache) {
             cache.put(addr,newCacheEntry);
@@ -178,7 +178,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
             logger.debug("CPDIpUsernameMapAssistant unregistered");
         }
     }
-    
+
     void startDatabaseReader()
     {
         this.databaseReader.start(DATABASE_READER_INTERVAL);
@@ -188,7 +188,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
     {
         this.databaseReader.stop();
     }
-    
+
     private class MapValue
     {
         public String username;
@@ -207,7 +207,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
             this.cpd = cpd;
             this.assistant = assistant;
         }
-        
+
         @SuppressWarnings("unchecked") /* for cast of Query result */
         public void run()
         {
@@ -260,12 +260,12 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
                                 }
                                 /* if cache hit - update expire time as its still in the database */
                                 else {
-                                    cacheEntry.expirationDate = new Date(now.getTime() + (cpd.getCPDSettings().getTimeout()*1000));
+                                    cacheEntry.expirationDate = new Date(now.getTime() + (cpd.getSettings().getTimeout()*1000));
                                 }
                             }
-                            
+
                             LinkedList<InetAddress> toRemove = new LinkedList<InetAddress>();
-                            
+
                             synchronized(cache) {
                                 Set<InetAddress> inets = cache.keySet();
 
@@ -275,7 +275,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
                                  */
                                 for ( InetAddress inet : inets ) {
                                     MapValue value = cache.get(inet);
-                                    
+
                                     /**
                                      * expiration time has lapsed
                                      */
@@ -285,11 +285,10 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
                                     /**
                                      * too far in future - oldest entries should expire in DATABASE_CACHE_TIME
                                      */
-                                    if (value.expirationDate.after(new Date(now.getTime() + (cpd.getCPDSettings().getTimeout()*1000)*10))) {
+                                    if (value.expirationDate.after(new Date(now.getTime() + (cpd.getSettings().getTimeout()*1000)*10))) {
                                         logger.warn("cache entry expires too far in the future - removing");
                                         toRemove.add(inet);
                                     }
-                                    
                                 }
                             }
 
@@ -306,11 +305,11 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
                         return true;
                     }
                 };
-        
+
             this.cpd.getNodeContext().runTransaction(tw);
         }
     }
-   
+
     @SuppressWarnings("unchecked") /* for cast of Query result */
     public List<HostDatabaseEntry> getCaptiveStatus()
     {
@@ -325,7 +324,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
                     return true;
                 }
             };
-    
+
         this.cpd.getNodeContext().runTransaction(tw);
         return(localStatus);
     }

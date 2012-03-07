@@ -30,7 +30,7 @@ public class CPDManager
     public static final long CACHE_DELAY_MS = 10l * 60l * 1000l;
     private static String CPD_CONFIG_FILE = "/etc/untangle-cpd/config.js";
     private static String CPD_CONFIG_DIR = "/etc/untangle-cpd";
-    
+
     private static final String START_SCRIPT =  System.getProperty( "uvm.home" ) + "/cpd/start";
     private static final String STOP_SCRIPT = System.getProperty( "uvm.home" ) + "/cpd/stop";
 
@@ -39,24 +39,24 @@ public class CPDManager
     private static final String LOAD_CUSTOM_SCRIPT = System.getProperty( "uvm.home" ) + "/cpd/load_custom";
 
     private static final String CPD_URL = System.getProperty( "uvm.node.cpd.url", "http://localhost:3005");
-        
+
     private final CPDImpl cpd;
 
     CPDManager(CPDImpl cpd)
     {
         this.cpd = cpd;
     }
-       
+
     void setConfig(CPDSettings settings, boolean isEnabled ) throws JSONException, IOException
     {
         /* Convert the settings to JSON */
         JSONObject json = serializeCPDSettings(settings, isEnabled );
-        
+
         (new File( CPD_CONFIG_DIR)).mkdir();
-        
+
         /* Save the configuration into the captive portal */
         FileWriter fw = new FileWriter(CPD_CONFIG_FILE);
-        
+
         /* Write out the configuration */
         fw.write( json.toString());
         fw.write("\n");
@@ -66,34 +66,34 @@ public class CPDManager
         fw.write(String.format( "<?php $https_redirect = %s;?>", settings.getUseHttpsPage() ? "TRUE" : "FALSE" ));
         fw.close();
     }
-    
+
     boolean clearHostDatabase() throws JSONException, ConnectionException
     {
         JSONObject jsonObject = new JSONObject();
-        
+
         jsonObject.put( "function", "clear_host_database" );
-        
+
         JSONObject response = JsonClient.getInstance().call(CPD_URL, jsonObject);
         if ( logger.isDebugEnabled()) {
             logger.debug( "Server Returned: " + response.toString());
         }
-        
+
         int status = response.getInt( JsonClient.RESPONSE_STATUS);
         String message = response.getString( JsonClient.RESPONSE_MESSAGE);
-        
+
         if (  status != JsonClient.STATUS_SUCCESS ) {
             logger.info( "CPD could clear host database. [" + message + "]");
             return false;
         }
-        
+
         return true;
     }
-    
+
     void start() throws Exception
     {
         ScriptRunner.getInstance().exec( START_SCRIPT );
     }
-    
+
     void stop()
     {
         try {
@@ -102,12 +102,12 @@ public class CPDManager
             logger.debug( "Unable to stop untangle-cpd.", e);
         }
     }
-    
+
     void loadCustomPage( String fileName ) throws Exception
     {
         ScriptRunner.getInstance().exec( LOAD_CUSTOM_SCRIPT, fileName );
     }
-    
+
     boolean authenticate( String addressString, String username, String password, String credentials )
     {
         InetAddress address = null;
@@ -117,10 +117,10 @@ public class CPDManager
             logger.info( "Unable to resolve the host:" + addressString );
             return false;
         }
-        
+
         boolean isAuthenticated = false;
-        CPDSettings cpdSettings = this.cpd.getCPDSettings();
-        AuthenticationType method = cpdSettings.getAuthenticationType(); 
+        CPDSettings cpdSettings = this.cpd.getSettings();
+        AuthenticationType method = cpdSettings.getAuthenticationType();
         /**
          * bug #7951
          * Try an alternative username that removes domain
@@ -139,14 +139,14 @@ public class CPDManager
             String u;
             if (i == 0)
                 u = username;
-            else 
+            else
                 u = strippedUsername;
-                
+
             switch( method ) {
             case NONE:
                 isAuthenticated = true;
                 break;
-            
+
             case ACTIVE_DIRECTORY:
                 try {
                     DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
@@ -157,7 +157,7 @@ public class CPDManager
                     isAuthenticated = false;
                 }
                 break;
-            
+
             case LOCAL_DIRECTORY:
                 try {
                     isAuthenticated = UvmContextFactory.context().localDirectory().authenticate( u, password );
@@ -166,7 +166,7 @@ public class CPDManager
                     isAuthenticated = false;
                 }
                 break;
-            
+
             case RADIUS:
                 try {
                     DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
@@ -187,7 +187,7 @@ public class CPDManager
         if ( !isAuthenticated ) {
             return false;
         }
-        
+
         /* Tell the Captive Portal daemon about the new success */
         try {
             if ( !replaceHost(address, username)) {
@@ -197,27 +197,27 @@ public class CPDManager
             logger.info( "Unable to replace host", e );
             return false;
         }
-        
+
         /* Expire the cache on the phonebook */
         /* This will force adconnector to relookup the address and log any associated events */
         DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
         if (adconnector != null) {
             adconnector.getIpUsernameMap().expireUser( address );
         }
-        
-        CPDLoginEvent.EventType eventType = isAuthenticated ? 
-                CPDLoginEvent.EventType.LOGIN : CPDLoginEvent.EventType.FAILED; 
+
+        CPDLoginEvent.EventType eventType = isAuthenticated ?
+                CPDLoginEvent.EventType.LOGIN : CPDLoginEvent.EventType.FAILED;
         CPDLoginEvent event = new CPDLoginEvent( address, username, method, eventType );
 
-        this.cpd.logEvent(event);        
-        
+        this.cpd.logEvent(event);
+
         if ( isAuthenticated ) {
             this.cpd.incrementCount(BlingerType.AUTHORIZE, 1);
         }
-        
+
         return isAuthenticated;
     }
-    
+
     boolean logout( String addressString )
     {
         InetAddress address = null;
@@ -227,7 +227,7 @@ public class CPDManager
             logger.info( "Unable to resolve the host:" + addressString );
             return false;
         }
-        
+
         try {
             if ( !removeHost(address)) {
                 return false;
@@ -239,7 +239,7 @@ public class CPDManager
             logger.warn( "Unable to remove host", e);
             return false;
         }
-        
+
         /* Expire the cache on the phonebook */
         /* This will force adconnector to relookup the address and log any associated events */
         DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
@@ -247,22 +247,22 @@ public class CPDManager
             adconnector.getIpUsernameMap().expireUser( address );
         }
 
-        CPDSettings cpdSettings = this.cpd.getCPDSettings();
-        
-        AuthenticationType method = cpdSettings.getAuthenticationType(); 
+        CPDSettings cpdSettings = this.cpd.getSettings();
+
+        AuthenticationType method = cpdSettings.getAuthenticationType();
 
         CPDLoginEvent event = new CPDLoginEvent( address, "", method, CPDLoginEvent.EventType.LOGOUT );
         this.cpd.logEvent(event);
-        
+
         return true;
     }
 
     private JSONObject serializeCPDSettings( CPDSettings settings, boolean isEnabled ) throws JSONException
     {
         JSONObject json = new JSONObject();
-        
-        CPDSettings cpdSettings = this.cpd.getCPDSettings();  
-                
+
+        CPDSettings cpdSettings = this.cpd.getSettings();
+
         /* Save the values from the base settings */
         json.put("enabled", isEnabled );
         json.put("capture_bypassed_traffic", cpdSettings.getCaptureBypassedTraffic());
@@ -275,31 +275,31 @@ public class CPDManager
         json.put("redirect_https_enabled", cpdSettings.getRedirectHttpsEnabled());
         json.put("redirect_url", cpdSettings.getRedirectUrl());
         json.put("use_https_page", cpdSettings.getUseHttpsPage());
-        
+
         /* This setting is not configurable through the UI */
         json.put("expiration_frequency_s", 60);
-        
+
         JSONArray captureRules = new JSONArray();
-        
+
         /* Add the passed clients and addresses first, and then add the capture rules */
         for ( PassedClient client : settings.getPassedClients()) {
             if (client.isLive()) {
                 serializePassedAddress(captureRules, client.getAddress(), IPMatcher.getAnyMatcher());
             }
         }
-        
+
         for ( PassedServer server : settings.getPassedServers()) {
             if (server.isLive()) {
                 serializePassedAddress(captureRules, IPMatcher.getAnyMatcher(), server.getAddress());
             }
         }
-        
+
         for ( CaptureRule captureRule : settings.getCaptureRules()) {
             serializeCaptureRule(captureRules, captureRule);
         }
-        
+
         json.put( "capture_rules",  captureRules );
-        
+
         return json;
     }
 
@@ -309,17 +309,17 @@ public class CPDManager
         if ( interfaceList == null ) {
             return;
         }
-        
+
         List<String> clientAddressList = splitAddressList(captureRule.getClientAddress());
         if ( clientAddressList == null ) {
             return;
         }
-        
+
         List<String> serverAddressList = splitAddressList(captureRule.getServerAddress());
         if ( serverAddressList == null ) {
             return;
         }
-        
+
         for ( Integer intf : interfaceList ) {
             for ( String clientAddress : clientAddressList ) {
                 for ( String serverAddress : serverAddressList ) {
@@ -333,13 +333,13 @@ public class CPDManager
                     json.put("days",captureRule.getDays());
                     json.put("start_time", captureRule.getStartTime());
                     json.put("end_time", captureRule.getEndTime());
-                    
+
                     rules.put(json);
                 }
             }
         }
     }
-    
+
     /* CPD doesn't understand the set syntax, have to break rules into their individual parts */
     private List<Integer> splitInterfaceList(IntfMatcher matcher)
     {
@@ -378,19 +378,19 @@ public class CPDManager
 
         }
     }
-    
+
     private List<String> splitAddressList(IPMatcher matcher)
     {
         List<String> addressList = new ArrayList<String>();
         addressList.add("any");
 
         IPMatcher.IPMatcherType type = matcher.getType();
-        
+
         if ( ( type == IPMatcher.IPMatcherType.SINGLE ) ||
              ( type == IPMatcher.IPMatcherType.SUBNET ) ||
              ( type == IPMatcher.IPMatcherType.RANGE )  ||
              ( type == IPMatcher.IPMatcherType.LIST )) {
-            
+
             addressList = new ArrayList<String>(1);
             addressList.add(matcher.toDatabaseString());
 
@@ -407,62 +407,61 @@ public class CPDManager
             return null;
             /* Other matcher types are ignored */
         }
-        
+
         return addressList;
     }
-    
+
     private void serializePassedAddress(JSONArray captureRules, IPMatcher client, IPMatcher server)
             throws JSONException
     {
         serializeCaptureRule(captureRules, new CaptureRule(true, false, "passed client", IntfMatcher.getAnyMatcher(), client, server, "00:00", "23:59", "mon,tue,wed,thu,fri,sat,sun"));
     }
-    
+
     private boolean replaceHost( InetAddress clientAddress, String username ) throws JSONException, ConnectionException
     {
         JSONObject jsonObject = new JSONObject();
-        
+
         jsonObject.put( "function", "replace_host" );
         jsonObject.put( "username", username );
         jsonObject.put( "update_session_start", true);
         jsonObject.put( "ipv4_addr", clientAddress.getHostAddress());
-        
+
         JSONObject response = JsonClient.getInstance().call(CPD_URL, jsonObject);
         if ( logger.isDebugEnabled()) {
             logger.debug( "Server Returned: " + response.toString());
         }
-        
+
         int status = response.getInt( JsonClient.RESPONSE_STATUS);
         String message = response.getString( JsonClient.RESPONSE_MESSAGE);
-        
+
         if (  status != JsonClient.STATUS_SUCCESS ) {
             logger.info( "CPD could not replace host. [" + message + "]");
             return false;
         }
-        
-        return true;   
+
+        return true;
     }
-    
+
     private boolean removeHost( InetAddress clientAddress ) throws JSONException, ConnectionException
     {
         JSONObject jsonObject = new JSONObject();
-        
+
         jsonObject.put( "function", "remove_ipv4_addr" );
         jsonObject.put( "ipv4_addr", clientAddress.getHostAddress());
-        
+
         JSONObject response = JsonClient.getInstance().call(CPD_URL, jsonObject);
         if ( logger.isDebugEnabled()) {
             logger.debug( "Server Returned: " + response.toString());
         }
-        
+
         int status = response.getInt( JsonClient.RESPONSE_STATUS);
         String message = response.getString( JsonClient.RESPONSE_MESSAGE);
-        
+
         if (  status != JsonClient.STATUS_SUCCESS ) {
             logger.info( "CPD could not remove host. [" + message + "]");
             return false;
         }
-        
-        return true;   
+
+        return true;
     }
-    
 }

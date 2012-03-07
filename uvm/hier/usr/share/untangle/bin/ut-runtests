@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-sys.path.insert(0, '@PREFIX@/usr/lib/python2.5/')
+sys.path.insert(0, '/home/mahotz/work/src/dist/usr/lib/python2.5/')
 import getopt
 
 import unittest
@@ -12,6 +12,7 @@ from   untangle_tests.sitefilter_tests import SiteFilterTests
 from   untangle_tests.firewall_tests import FirewallTests
 from   untangle_tests.classd_tests import ClassdTests
 from   untangle_tests.spyware_tests import SpywareTests
+from   untangle_tests.cpd_tests import CpdTests
 
 class ArgumentParser(object):
     def __init__(self):
@@ -114,7 +115,7 @@ def runTestSuite(suite):
         results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
         if (len(results.failures) > 0 or len(results.errors) > 0):
             print "Test FAILED  : %s " % test._testMethodName
-            if (parser.fastfail): 
+            if (parser.fastfail):
                 exit(1)
             else:
                 rc += 1
@@ -161,7 +162,7 @@ if (not uvm.Uvm().getUvmContext().nodeManager().isInstantiated('untangle-node-re
     print "== Installing untangle-node-reporting =="
     reportsAdded = True;
     reportsNodeDesc = uvm.Uvm().getUvmContext().nodeManager().instantiateAndStart('untangle-node-reporting', None)
-    
+
 if ("environment" in parser.nodesToTest or "all" in parser.nodesToTest):
     runTestEnvironmentTests()
 
@@ -184,8 +185,12 @@ while True:
         errors, subTotal = runTestSuite(ClassdTests)
         rc += errors
         total += subTotal
-    if ("spyware" in parser.nodesToTest or "all" in parser.nodesToTest): 
+    if ("spyware" in parser.nodesToTest or "all" in parser.nodesToTest):
         errors, subTotal = runTestSuite(SpywareTests)
+        rc += errors
+        total += subTotal
+    if ("cpd" in parser.nodesToTest or "all" in parser.nodesToTest):
+        errors, subTotal = runTestSuite(CpdTests)
         rc += errors
         total += subTotal
     if not parser.repeat:

@@ -116,7 +116,7 @@ public class CPDImpl extends AbstractNode implements CPD
         settings.setPageParameters(getDefaultPageParameters());
 
         try {
-            setCPDSettings(settings);
+            setSettings(settings);
         } catch (Exception e) {
             logger.error( "Unable to initialize the settings", e );
             throw new IllegalStateException("Error initializing cpd", e);
@@ -126,7 +126,7 @@ public class CPDImpl extends AbstractNode implements CPD
     // CPDNode methods --------------------------------------------------
 
     @Override
-    public void setCPDSettings(final CPDSettings settings) throws Exception
+    public void setSettings(final CPDSettings settings) throws Exception
     {
         String nodeID = this.getNodeId().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-cpd/settings_" + nodeID;
@@ -147,7 +147,7 @@ public class CPDImpl extends AbstractNode implements CPD
         reconfigure();
     }
 
-    public CPDSettings getCPDSettings()
+    public CPDSettings getSettings()
     {
         return this.settings;
     }
@@ -419,7 +419,7 @@ public class CPDImpl extends AbstractNode implements CPD
             else
             {
                 logger.info("Loaded settings from " + settingsFile);
-                setCPDSettings(readSettings);
+                setSettings(readSettings);
             }
         }
 
