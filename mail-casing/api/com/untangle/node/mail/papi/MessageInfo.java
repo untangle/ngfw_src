@@ -19,9 +19,6 @@ import com.untangle.uvm.node.SessionEvent;
 
 /**
  * Log e-mail message info.
- *
- * @author <a href="mailto:cng@untangle.com">C Ng</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class MessageInfo extends LogEvent implements Serializable
