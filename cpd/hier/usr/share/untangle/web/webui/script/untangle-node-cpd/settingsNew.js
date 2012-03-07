@@ -1,5 +1,4 @@
 /*
-TODO: modify api to use standards: setSettings instead of setCPDSettings, getSettings instead of getCPDSettings
 TODO: server side: high priority fix issue when saving: 
   An exception has occurred:
   java.io.FileNotFoundException
@@ -28,9 +27,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
         initComponent : function()
         {
             Ung.Util.clearInterfaceStore();
-            this.getRpcNode().getSettings=this.getRpcNode().getCPDSettings;
-            this.getRpcNode().setSettings=this.getRpcNode().setCPDSettings;
-
             this.getSettings();
             try {
                 this.pageParameters = Ext.util.JSON.decode( this.settings.pageParameters );
