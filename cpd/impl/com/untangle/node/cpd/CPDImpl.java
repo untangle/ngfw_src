@@ -140,9 +140,17 @@ public class CPDImpl extends AbstractNode implements CPD
         this.settings = settings;
         settingsManager.save(CPDSettings.class, settingsBase, settings);
 
-        BufferedWriter out = new BufferedWriter(new FileWriter("/etc/untangle-cpd/settings.file"));
-        out.write(settingsFile);
-        out.close();
+            try
+            {
+                BufferedWriter out = new BufferedWriter(new FileWriter("/etc/untangle-cpd/settings.file"));
+                out.write(settingsFile);
+                out.close();
+            }
+            
+            catch(Exception e)
+            {
+                logger.warn("Unable to create daemon settings file.  The untangle-cpd daemon is probably not installed.");
+            }
 
         reconfigure();
     }
