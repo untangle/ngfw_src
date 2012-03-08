@@ -41,10 +41,8 @@ function get_branding_settings()
 
 function get_cpd_settings()
 {
-	$path = file_get_contents("/etc/untangle-cpd/settings.file");
-	$data = file_get_contents(trim($path));
+	$data = file_get_contents("/etc/untangle-cpd/config.js");
 	$json = json_decode($data,true);
-    $json['page_parameters'] = json_decode($json['pageParameters'],true);
     return $json;
 }
 
@@ -166,7 +164,7 @@ function remove_host()
 function get_redirect_url()
 {
     global $cpd_settings;
-    $redirect_url = $cpd_settings["redirectUrl"];
+    $redirect_url = $cpd_settings["redirect_url"];
     if ( $redirect_url == NULL ) {
         $redirect_url = "";
     }
@@ -205,7 +203,7 @@ function get_time_remaining()
         return 0;
     }
 
-    return $cpd_settings["timeout"] - $row[0];
+    return $cpd_settings["timeout_s"] - $row[0];
 }
 
 ?>

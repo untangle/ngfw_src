@@ -40,7 +40,7 @@
           <?= trim( $cpd_settings["page_parameters"]["basicMessageMessageText"] ) ?>
         </div>
 
-     <?php if ( $cpd_settings["page_parameters"]["basicMessageAgree"] == true ) { ?>
+     <?php if ( $cpd_settings["page_parameters"]["basicMessageAgreeBox"] == true ) { ?>
           <div class="agree-checkbox">
                 <input class="u-form-text u-form-field" type="checkbox"  id="agree"/>
               <label for="agree"> <?= trim( $cpd_settings["page_parameters"]["basicMessageAgreeText"] ) ?></label>

@@ -924,13 +924,13 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         },{
                             xtype : "checkbox",
                             allowBlank : false,
-                            name : "basicMessageAgree",
+                            name : "basicMessageAgreeBox",
                             fieldLabel : this.i18n._("Agree Checkbox"),
                             pageType : "BASIC_MESSAGE",
-                            checked : this.pageParameters.basicMessageAgree,
+                            checked : this.pageParameters.basicMessageAgreeBox,
                             listeners : {
                                 "check" : function(elem, checked) {
-                                    this.pageParameters.basicMessageAgree = checked;
+                                    this.pageParameters.basicMessageAgreeBox = checked;
                                 }.createDelegate(this)
                             }
                         },{

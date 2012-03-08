@@ -140,18 +140,6 @@ public class CPDImpl extends AbstractNode implements CPD
         this.settings = settings;
         settingsManager.save(CPDSettings.class, settingsBase, settings);
 
-            try
-            {
-                BufferedWriter out = new BufferedWriter(new FileWriter("/etc/untangle-cpd/settings.file"));
-                out.write(settingsFile);
-                out.close();
-            }
-            
-            catch(Exception e)
-            {
-                logger.warn("Unable to create daemon settings file.  The untangle-cpd daemon is probably not installed.");
-            }
-
         reconfigure();
     }
 
@@ -513,6 +501,7 @@ public class CPDImpl extends AbstractNode implements CPD
             parameters.put( "basicMessagePageTitle", "Captive Portal");
             parameters.put( "basicMessagePageWelcome", "Welcome to the " + brand.getCompanyName() + " Captive Portal");
             parameters.put( "basicMessageMessageText", "Click Continue to connect to the Internet.");
+            parameters.put( "basicMessageAgreeBox", false);
             parameters.put( "basicMessageAgreeText", "Clicking here means you agree to the terms above.");
             parameters.put( "basicMessageFooter", "If you have any questions, please contact your network administrator.");
             return parameters.toString();

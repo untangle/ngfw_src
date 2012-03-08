@@ -26,9 +26,9 @@ $skin_settings = get_skin_settings();
 $branding_settings = get_branding_settings();
 $cpd_settings = get_cpd_settings();
 
-$redirectUrl = $cpd_settings[""];
+$redirectUrl = $cpd_settings["redirect_url"];
 
-switch ( $cpd_settings["pageType"] ) {
+switch ( $cpd_settings["page_type"] ) {
 case "BASIC_MESSAGE":
     include "basicmessage.php";
     break;
