@@ -6,9 +6,6 @@ package com.untangle.node.spyware;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -102,18 +99,6 @@ public class SpywareCookieEvent extends SpywareEvent
     {
         this.requestId = requestId;
     }
-
-//     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-//     @JoinColumn(name="request_id")
-//     public RequestLine getRequestLine()
-//     {
-//         return requestLine;
-//     }
-
-//     public void setRequestLine(RequestLine requestLine)
-//     {
-//         this.requestLine = requestLine;
-//     }
 
     /**
      * The identification (name of IP address range matched)
