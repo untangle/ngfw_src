@@ -271,10 +271,22 @@ public class CPDManager
         json.put("idle_timeout_s", cpdSettings.getIdleTimeout());
         json.put("timeout_s", cpdSettings.getTimeout());
         json.put("page_type", cpdSettings.getPageType().toString());
-        json.put("page_parameters", new JSONObject(cpdSettings.getPageParameters()));
         json.put("redirect_https_enabled", cpdSettings.getRedirectHttpsEnabled());
         json.put("redirect_url", cpdSettings.getRedirectUrl());
         json.put("use_https_page", cpdSettings.getUseHttpsPage());
+        
+        json.put("basicLoginPageTitle", cpdSettings.getBasicLoginPageTitle());
+        json.put("basicLoginPageWelcome", cpdSettings.getBasicLoginPageWelcome());
+        json.put("basicLoginUsername", cpdSettings.getBasicLoginUsername());
+        json.put("basicLoginPassword", cpdSettings.getBasicLoginPassword());
+        json.put("basicLoginMessageText", cpdSettings.getBasicLoginMessageText());
+        json.put("basicLoginFooter", cpdSettings.getBasicLoginFooter());
+        json.put("basicMessagePageTitle", cpdSettings.getBasicMessagePageTitle());
+        json.put("basicMessagePageWelcome", cpdSettings.getBasicMessagePageWelcome());
+        json.put("basicMessageMessageText", cpdSettings.getBasicMessageMessageText());
+        json.put("basicMessageAgreeBox", cpdSettings.getBasicMessageAgreeBox());
+        json.put("basicMessageAgreeText", cpdSettings.getBasicMessageAgreeText());
+        json.put("basicMessageFooter", cpdSettings.getBasicMessageFooter());
 
         /* This setting is not configurable through the UI */
         json.put("expiration_frequency_s", 60);

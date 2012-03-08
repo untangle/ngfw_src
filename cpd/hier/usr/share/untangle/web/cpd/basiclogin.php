@@ -19,7 +19,7 @@
       <div id="header">
         <a href="<?= trim( $branding_settings["company_url"] ) ?>"><img alt="" src="/images/BrandingLogo.gif"/></a>
         <div class="title">
-          <?= trim( $cpd_settings["page_parameters"]["basicLoginPageTitle"] ) ?>
+          <?= trim( $cpd_settings["basicLoginPageTitle"] ) ?>
         </div>
       </div>
       <div id="main">
@@ -30,7 +30,7 @@
         <p class="description">
           <span>
             <b>
-              <?= trim( $cpd_settings["page_parameters"]["basicLoginPageWelcome"] ) ?>
+              <?= trim( $cpd_settings["basicLoginPageWelcome"] ) ?>
             </b>
           </span>
         </p>        
@@ -38,7 +38,7 @@
         <div class="info-list-captive-portal">
           <div class="u-form-item">
             <label class="u-form-item-label cpd-label">
-              <?= trim( $cpd_settings["page_parameters"]["basicLoginUsername"] ) ?>
+              <?= trim( $cpd_settings["basicLoginUsername"] ) ?>
             </label>
           </div>
           <div class="u-form-item text-field">
@@ -46,7 +46,7 @@
           </div>
           <div class="u-form-item">
             <label class="u-form-item-label cpd-label">
-              <?= trim( $cpd_settings["page_parameters"]["basicLoginPassword"] ) ?>
+              <?= trim( $cpd_settings["basicLoginPassword"] ) ?>
             </label>
 
           </div>
@@ -63,13 +63,13 @@
           </div>
           <div class="message-text">
               <p>
-              <?= $cpd_settings["page_parameters"]["basicLoginMessageText"] ?>
+              <?= $cpd_settings["basicLoginMessageText"] ?>
               </p> 
           </div>
         </div>
         <p class="contact">
           <span>
-            <?= trim( $cpd_settings["page_parameters"]["basicLoginFooter"] ) ?>
+            <?= trim( $cpd_settings["basicLoginFooter"] ) ?>
           </span>
         </p>
       </div>

@@ -19,7 +19,7 @@
       <div id="header">
         <a href="<?= trim( $branding_settings["company_url"] ) ?>"><img alt="" src="/images/BrandingLogo.gif"/></a>
         <div class="title">
-          <?= trim( $cpd_settings["page_parameters"]["basicMessagePageTitle"] ) ?>
+          <?= trim( $cpd_settings["basicMessagePageTitle"] ) ?>
         </div>
       </div>
       <div id="main">
@@ -30,20 +30,20 @@
         <p class="description">
           <span>
             <b>
-              <?= trim( $cpd_settings["page_parameters"]["basicMessagePageWelcome"] ) ?>
+              <?= trim( $cpd_settings["basicMessagePageWelcome"] ) ?>
             </b>
           </span>
         </p>
         <p id="agree-error" class="error">In order to continue, you must check the box below.</p>        
         <div class="info-list-captive-portal">
         <div id="basic-message-text" class="message-text">
-          <?= trim( $cpd_settings["page_parameters"]["basicMessageMessageText"] ) ?>
+          <?= trim( $cpd_settings["basicMessageMessageText"] ) ?>
         </div>
 
-     <?php if ( $cpd_settings["page_parameters"]["basicMessageAgreeBox"] == true ) { ?>
+     <?php if ( $cpd_settings["basicMessageAgreeBox"] == true ) { ?>
           <div class="agree-checkbox">
                 <input class="u-form-text u-form-field" type="checkbox"  id="agree"/>
-              <label for="agree"> <?= trim( $cpd_settings["page_parameters"]["basicMessageAgreeText"] ) ?></label>
+              <label for="agree"> <?= trim( $cpd_settings["basicMessageAgreeText"] ) ?></label>
           </div>
           
      <?php } else { ?>
@@ -66,7 +66,7 @@
         </div>
         <p class="contact">
           <span>
-            <?= trim( $cpd_settings["page_parameters"]["basicMessageFooter"] ) ?>
+            <?= trim( $cpd_settings["basicMessageFooter"] ) ?>
           </span>
         </p>
       </div>

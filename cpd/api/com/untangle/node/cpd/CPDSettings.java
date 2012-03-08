@@ -62,10 +62,22 @@ public class CPDSettings implements Serializable
     private int timeout = 3600;
     private boolean areConcurrentLoginsEnabled = true;
     private PageType pageType = PageType.BASIC_MESSAGE;
-    private String pageParameters = "";
     private String redirectUrl = "";
     private boolean useHttpsPage= false;
     private boolean isRedirectHttpsEnabled = false;
+
+    private String basicLoginPageTitle = "";
+    private String basicLoginPageWelcome = "";
+    private String basicLoginUsername = "";
+    private String basicLoginPassword = "";
+    private String basicLoginMessageText = "";
+    private String basicLoginFooter = "";
+    private String basicMessagePageTitle = "";
+    private String basicMessagePageWelcome = "";
+    private String basicMessageMessageText = "";
+    private boolean basicMessageAgreeBox = false;
+    private String basicMessageAgreeText = "";
+    private String basicMessageFooter = "";
 
     public CPDSettings()
     {
@@ -209,16 +221,6 @@ public class CPDSettings implements Serializable
         this.pageType = newValue;
     }
 
-    public String getPageParameters()
-    {
-        return this.pageParameters;
-    }
-
-    public void setPageParameters( String newValue)
-    {
-        this.pageParameters = newValue;
-    }
-
     public String getRedirectUrl()
     {
         return this.redirectUrl;
@@ -248,4 +250,30 @@ public class CPDSettings implements Serializable
     {
         this.isRedirectHttpsEnabled = newValue;
     }
+
+    public String getBasicLoginPageTitle()      { return this.basicLoginPageTitle; }
+    public String getBasicLoginPageWelcome()    { return this.basicLoginPageWelcome; }
+    public String getBasicLoginUsername()       { return this.basicLoginUsername; }
+    public String getBasicLoginPassword()       { return this.basicLoginPassword; }
+    public String getBasicLoginMessageText()    { return this.basicLoginMessageText; }
+    public String getBasicLoginFooter()         { return this.basicLoginFooter; }
+    public String getBasicMessagePageTitle()    { return this.basicMessagePageTitle; }
+    public String getBasicMessagePageWelcome()  { return this.basicMessagePageWelcome; }
+    public String getBasicMessageMessageText()  { return this.basicMessageAgreeText; }
+    public boolean getBasicMessageAgreeBox()    { return this.basicMessageAgreeBox; }
+    public String getBasicMessageAgreeText()    { return this.basicMessageAgreeText; }
+    public String getBasicMessageFooter()       { return this.basicMessageFooter; }
+    
+    public void setBasicLoginPageTitle( String newValue )       { this.basicLoginPageTitle = newValue; }
+    public void setBasicLoginPageWelcome( String newValue )     { this.basicLoginPageWelcome = newValue; }
+    public void setBasicLoginUsername( String newValue )        { this.basicLoginUsername = newValue; }
+    public void setBasicLoginPassword( String newValue )        { this.basicLoginPassword = newValue; }
+    public void setBasicLoginMessageText( String newValue )     { this.basicLoginMessageText = newValue; }
+    public void setBasicLoginFooter( String newValue )          { this.basicLoginFooter = newValue; }
+    public void setBasicMessagePageTitle( String newValue )     { this.basicMessagePageTitle = newValue; }
+    public void setBasicMessagePageWelcome( String newValue )   { this.basicMessagePageWelcome = newValue; }
+    public void setBasicMessageMessageText( String newValue )   { this.basicMessageAgreeText = newValue; }
+    public void setBasicMessageAgreeBox( boolean newValue )     { this.basicMessageAgreeBox = newValue; }
+    public void setBasicMessageAgreeText( String newValue )     { this.basicMessageAgreeText = newValue; }
+    public void setBasicMessageFooter( String newValue )        { this.basicMessageFooter = newValue; }
 }

@@ -15,7 +15,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
         gridLoginEventLog : null,
         gridBlockEventLog : null,
-        pageParameters : null,
 
         workingNodeSettings : null,
         initialNodeSettings : null,
@@ -27,19 +26,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
             // keep initial base settings
             this.initialNodeSettings = Ung.Util.clone(this.getRpcNode().getSettings());
             this.workingNodeSettings = Ung.Util.clone(this.getRpcNode().getSettings());
-
-            try {
-                this.pageParameters = Ext.util.JSON.decode( this.workingNodeSettings.pageParameters );
-            } catch ( e ) {
-                /* User should never see this. */
-                /* XXX Currently this doesn't work because execution continues. */
-                Ext.MessageBox.alert(
-                    this.i18n._("Warning"),
-                    this.i18n._("The current settings have an error, previous values may be lost."));
-
-                this.pageParameters = {};
-            }
-            this.initialPageParameters = Ung.Util.clone(this.pageParameters);
 
             // builds the tabs
             this.buildCaptiveStatus();
@@ -811,10 +797,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             name : "basicLoginPageTitle",
                             fieldLabel : this.i18n._("Page Title"),
                             pageType : "BASIC_LOGIN",
-                            value : this.pageParameters.basicLoginPageTitle,
+                            value : this.workingNodeSettings.basicLoginPageTitle,
                             listeners : {
                                 "change" : function( elem, newValue ){
-                                    this.pageParameters.basicLoginPageTitle = newValue;
+                                    this.workingNodeSettings.basicLoginPageTitle = newValue;
                                 }.createDelegate(this)
                             }
                         },{
@@ -824,10 +810,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             fieldLabel : this.i18n._("Welcome Text"),
                             width : 400,
                             pageType : "BASIC_LOGIN",
-                            value : this.pageParameters.basicLoginPageWelcome,
+                            value : this.workingNodeSettings.basicLoginPageWelcome,
                             listeners : {
                                 "change" : function( elem, newValue ){
-                                    this.pageParameters.basicLoginPageWelcome = newValue;
+                                    this.workingNodeSettings.basicLoginPageWelcome = newValue;
                                 }.createDelegate(this)
                             }
                         },{
@@ -836,10 +822,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             name : "basicLoginUsername",
                             fieldLabel : this.i18n._("Username Text"),
                             pageType : "BASIC_LOGIN",
-                            value : this.pageParameters.basicLoginUsername,
+                            value : this.workingNodeSettings.basicLoginUsername,
                             listeners : {
                                 "change" : function( elem, newValue ){
-                                    this.pageParameters.basicLoginUsername = newValue;
+                                    this.workingNodeSettings.basicLoginUsername = newValue;
                                 }.createDelegate(this)
                             }
                         },{
@@ -848,10 +834,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             name : "basicLoginPassword",
                             fieldLabel : this.i18n._("Password Text"),
                             pageType : "BASIC_LOGIN",
-                            value : this.pageParameters.basicLoginPassword,
+                            value : this.workingNodeSettings.basicLoginPassword,
                             listeners : {
                                 "change" : function( elem, newValue ){
-                                    this.pageParameters.basicLoginPassword = newValue;
+                                    this.workingNodeSettings.basicLoginPassword = newValue;
                                 }.createDelegate(this)
                             }
                         },{
@@ -862,10 +848,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             height : 250,
                             fieldLabel : this.i18n._("Message Text"),
                             pageType : "BASIC_LOGIN",
-                            value : this.pageParameters.basicLoginMessageText,
+                            value : this.workingNodeSettings.basicLoginMessageText,
                             listeners : {
                                 "change" : function( elem, newValue ){
-                                    this.pageParameters.basicLoginMessageText = newValue;
+                                    this.workingNodeSettings.basicLoginMessageText = newValue;
                                 }.createDelegate(this)
                             }
                         },{
@@ -875,10 +861,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             fieldLabel : this.i18n._("Lower Text"),
                             width : 400,
                             pageType : "BASIC_LOGIN",
-                            value : this.pageParameters.basicLoginFooter,
+                            value : this.workingNodeSettings.basicLoginFooter,
                             listeners : {
                                 "change" : function( elem, newValue ){
-                                    this.pageParameters.basicLoginFooter = newValue;
+                                    this.workingNodeSettings.basicLoginFooter = newValue;
                                 }.createDelegate(this)
                             }
                         },{
@@ -888,10 +874,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             fieldLabel : this.i18n._("Page Title"),
                             pageType : "BASIC_MESSAGE",
                             width : 400,
-                            value : this.pageParameters.basicMessagePageTitle,
+                            value : this.workingNodeSettings.basicMessagePageTitle,
                             listeners : {
                                 "change" : function( elem, newValue ){
-                                    this.pageParameters.basicMessagePageTitle = newValue;
+                                    this.workingNodeSettings.basicMessagePageTitle = newValue;
                                 }.createDelegate(this)
                             }
                         },{
@@ -901,10 +887,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             fieldLabel : this.i18n._("Welcome Text"),
                             width : 400,
                             pageType : "BASIC_MESSAGE",
-                            value : this.pageParameters.basicMessagePageWelcome,
+                            value : this.workingNodeSettings.basicMessagePageWelcome,
                             listeners : {
                                 "change" : function( elem, newValue ){
-                                    this.pageParameters.basicMessagePageWelcome = newValue;
+                                    this.workingNodeSettings.basicMessagePageWelcome = newValue;
                                 }.createDelegate(this)
                             }
                         },{
@@ -915,10 +901,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             height : 250,
                             fieldLabel : this.i18n._("Message Text"),
                             pageType : "BASIC_MESSAGE",
-                            value : this.pageParameters.basicMessageMessageText,
+                            value : this.workingNodeSettings.basicMessageMessageText,
                             listeners : {
                                 "change" : function( elem, newValue ){
-                                    this.pageParameters.basicMessageMessageText = newValue;
+                                    this.workingNodeSettings.basicMessageMessageText = newValue;
                                 }.createDelegate(this)
                             }
                         },{
@@ -927,10 +913,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             name : "basicMessageAgreeBox",
                             fieldLabel : this.i18n._("Agree Checkbox"),
                             pageType : "BASIC_MESSAGE",
-                            checked : this.pageParameters.basicMessageAgreeBox,
+                            checked : this.workingNodeSettings.basicMessageAgreeBox,
                             listeners : {
                                 "check" : function(elem, checked) {
-                                    this.pageParameters.basicMessageAgreeBox = checked;
+                                    this.workingNodeSettings.basicMessageAgreeBox = checked;
                                 }.createDelegate(this)
                             }
                         },{
@@ -940,10 +926,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             fieldLabel : this.i18n._("Agree Text"),
                             width : 400,
                             pageType : "BASIC_MESSAGE",
-                            value : this.pageParameters.basicMessageAgreeText,
+                            value : this.workingNodeSettings.basicMessageAgreeText,
                             listeners : {
                                 "change" : function( elem, newValue ){
-                                    this.pageParameters.basicMessageAgreeText = newValue;
+                                    this.workingNodeSettings.basicMessageAgreeText = newValue;
                                 }.createDelegate(this)
                             }
                         },{
@@ -953,10 +939,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             fieldLabel : this.i18n._("Lower Text"),
                             width : 400,
                             pageType : "BASIC_MESSAGE",
-                            value : this.pageParameters.basicMessageFooter,
+                            value : this.workingNodeSettings.basicMessageFooter,
                             listeners : {
                                 "change" : function( elem, newValue ){
-                                    this.pageParameters.basicMessageFooter = newValue;
+                                    this.workingNodeSettings.basicMessageFooter = newValue;
                                 }.createDelegate(this)
                             }
                         },{
@@ -1248,15 +1234,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
             this.rpc.baseSettings = result;
             this.initialNodeSettings = Ung.Util.clone(this.rpc.baseSettings);
 
-            try {
-                this.pageParameters = Ext.util.JSON.decode( this.workingNodeSettings.pageParameters );
-            } catch ( e ) {
-                /* User should never see this. */
-                Ext.MessageBox.alert(i18n._("Warning"), i18n._("The current settings have an error, previous values may be lost."));
-                this.pageParameters = {};
-            }
-            this.initialPageParameters = Ung.Util.clone(this.pageParameters);
-
             /* Only reload the data for the grids if they have already been rendered. */
             if ( this.gridCaptureRules.rendered ) {
                 this.gridCaptureRules.reloadGrid();
@@ -1322,7 +1299,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                 var captureRules = null, passedClients = null, passedServers = null;
-                this.workingNodeSettings.pageParameters = Ext.util.JSON.encode( this.pageParameters );
 
                 if ( this.gridCaptureRules.rendered ) {
                     this.workingNodeSettings.captureRules = {
@@ -1355,7 +1331,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
         },
         isDirty : function() {
             return !Ung.Util.equals(this.workingNodeSettings, this.initialNodeSettings)
-                || !Ung.Util.equals(this.pageParameters, this.initialPageParameters )
                 || this.gridCaptureRules.isDirty()
                 || this.gridPassedClients.isDirty()
                 || this.gridPassedServers.isDirty();

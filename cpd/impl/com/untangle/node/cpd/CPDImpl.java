@@ -113,7 +113,21 @@ public class CPDImpl extends AbstractNode implements CPD
                                   "8:00", "17:00", CaptureRule.ALL_DAYS));
 
         settings.setCaptureRules(rules);
-        settings.setPageParameters(getDefaultPageParameters());
+
+        BrandingManager brand = UvmContextFactory.context().brandingManager();
+
+        settings.setBasicLoginPageTitle("Captive Portal");
+        settings.setBasicLoginPageWelcome("Welcome to the " + brand.getCompanyName() + " Captive Portal");
+        settings.setBasicLoginUsername("Username:");
+        settings.setBasicLoginPassword("Password:");
+        settings.setBasicLoginMessageText("Please enter your username and password to connect to the Internet.");
+        settings.setBasicLoginFooter("If you have any questions, please contact your network administrator.");
+        settings.setBasicMessagePageTitle("Captive Portal");
+        settings.setBasicMessagePageWelcome("Welcome to the " + brand.getCompanyName() + " Captive Portal");
+        settings.setBasicMessageMessageText("Click Continue to connect to the Internet.");
+        settings.setBasicMessageAgreeBox(false);
+        settings.setBasicMessageAgreeText("Clicking here means you agree to the terms above.");
+        settings.setBasicMessageFooter("If you have any questions, please contact your network administrator.");
 
         try {
             setSettings(settings);
@@ -484,32 +498,6 @@ public class CPDImpl extends AbstractNode implements CPD
 
             this.manager.stop();
         }
-    }
-
-    private String getDefaultPageParameters() {
-
-        try {
-            BrandingManager brand = UvmContextFactory.context().brandingManager();
-
-            JSONObject parameters = new JSONObject();
-            parameters.put( "basicLoginPageTitle", "Captive Portal");
-            parameters.put( "basicLoginPageWelcome", "Welcome to the " + brand.getCompanyName() + " Captive Portal");
-            parameters.put( "basicLoginUsername", "Username:");
-            parameters.put( "basicLoginPassword", "Password:");
-            parameters.put( "basicLoginMessageText", "Please enter your username and password to connect to the Internet.");
-            parameters.put( "basicLoginFooter", "If you have any questions, please contact your network administrator.");
-            parameters.put( "basicMessagePageTitle", "Captive Portal");
-            parameters.put( "basicMessagePageWelcome", "Welcome to the " + brand.getCompanyName() + " Captive Portal");
-            parameters.put( "basicMessageMessageText", "Click Continue to connect to the Internet.");
-            parameters.put( "basicMessageAgreeBox", false);
-            parameters.put( "basicMessageAgreeText", "Clicking here means you agree to the terms above.");
-            parameters.put( "basicMessageFooter", "If you have any questions, please contact your network administrator.");
-            return parameters.toString();
-        } catch ( JSONException e ) {
-            logger.warn( "Unable to create default page parameters" );
-        }
-
-        return "{}";
     }
 
     private class CustomUploadHandler implements UploadHandler
