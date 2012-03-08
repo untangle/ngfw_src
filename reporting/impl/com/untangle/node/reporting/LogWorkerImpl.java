@@ -98,7 +98,12 @@ public class LogWorkerImpl implements Runnable, LogWorker
 
         long lastSync = System.currentTimeMillis();
         long nextSync = lastSync + getSyncTime();
+        boolean wasForced = false;
 
+        do {
+            try {Thread.sleep(1000);} catch (Exception e) {}
+        } while (!UvmContextFactory.context().loggingManager().isConversionComplete());
+        
         while (thread != null) {
             long t = System.currentTimeMillis();
 
@@ -130,19 +135,20 @@ public class LogWorkerImpl implements Runnable, LogWorker
             }
 
             if (logQueue.size() >= BATCH_SIZE || t >= nextSync || forceFlush) {
-                if (UvmContextFactory.context().loggingManager().isConversionComplete()) {
-                    try {
-                        persist();
-                    } catch (Exception exn) { // never say die
-                        logger.error("Hibernate error, see nested exception below", exn);
-                    }
+                if (forceFlush) {
+                    wasForced = true;
                 }
+
+                persist();
 
                 lastSync = System.currentTimeMillis();
                 nextSync = lastSync + getSyncTime();
                 synchronized( this ) {
                     forceFlush = false;
-                    notifyAll(); /* notify any waiting threads that the flush is done */
+                    if (wasForced) {
+                        notifyAll(); /* notify any waiting threads that the flush is done */
+                        wasForced = false;
+                    }
                 }
             }
         }
