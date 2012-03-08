@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import conversion.sql_helper as sql_helper
+import simplejson
 import sys
 import os
 
@@ -30,6 +31,9 @@ def get_capture_rules(sid, debug=False):
         print "Getting n_cpd_capture_rule list for SID: ",sid
 
     list = sql_helper.run_sql("select name, category, description, live, alert, log, capture_enabled, client_interface, client_address, server_address, start_time, end_time, days from n_cpd_capture_rule where settings_id = '%s'" % sid, debug=debug)
+    
+    if (len(list) == 0):
+        return '{\n' + pad(8) + '"javaClass": "java.util.ArrayList",\n' + pad(8) + '"list": []\n' + pad(4) + '},'
 
     str = '{\n'
     str += pad(8) + '"javaClass": "java.util.ArrayList",\n'
@@ -87,6 +91,9 @@ def get_passed_clients(sid, debug = False):
 
     list = sql_helper.run_sql("select name, category, description, live, alert, log, address from n_cpd_passed_client where settings_id = '%s'" % sid, debug=debug)
 
+    if (len(list) == 0):
+        return '{\n' + pad(8) + '"javaClass": "java.util.ArrayList",\n' + pad(8) + '"list": []\n' + pad(4) + '},'
+
     str = '{\n'
     str += pad(8) + '"javaClass": "java.util.ArrayList",\n'
     str += pad(8) + '"list": [\n'
@@ -130,6 +137,9 @@ def get_passed_servers(sid, debug = False):
         print "Getting n_cpd_passed_server list for SID: ",sid
 
     list = sql_helper.run_sql("select name, category, description, live, alert, log, address from n_cpd_passed_server where settings_id = '%s'" % sid, debug=debug)
+
+    if (len(list) == 0):
+        return '{\n' + pad(8) + '"javaClass": "java.util.ArrayList",\n' + pad(8) + '"list": []\n' + pad(4) + '},'
 
     str = '{\n'
     str += pad(8) + '"javaClass": "java.util.ArrayList",\n'
@@ -193,15 +203,35 @@ def get_settings(tid, debug=False):
     redirect_url = n_cpd_settings[0][8]
     https_page = n_cpd_settings[0][9]
     redirect_https = n_cpd_settings[0][10]
-
+    
+    job = simplejson.loads(page_parameters)
+    
     str = '{\n'
     str += pad(4) + '"authenticationType": "%s",\n' % authentication_type
+
+    str += pad(4) + '"basicLoginFooter": "%s",\n' % escape(job['basicLoginFooter'])
+    str += pad(4) + '"basicLoginMessageText": "%s",\n' % escape(job['basicLoginMessageText'])
+    str += pad(4) + '"basicLoginPageTitle": "%s",\n' % escape(job['basicLoginPageTitle'])
+    str += pad(4) + '"basicLoginPageWelcome": "%s",\n' % escape(job['basicLoginPageWelcome'])
+    str += pad(4) + '"basicLoginPassword": "%s",\n' % escape(job['basicLoginPassword'])
+    str += pad(4) + '"basicLoginUsername": "%s",\n' % escape(job['basicLoginUsername'])
+
+    if (job.has_key('basicMessageAgree')):
+        str += pad(4) + '"basicMessageAgreeBox": %s,\n' % 'True'
+    else:
+        str += pad(4) + '"basicMessageAgreeBox": %s,\n' % 'False'
+
+    str += pad(4) + '"basicMessageAgreeText": "%s",\n' % escape(job['basicMessageAgreeText'])
+    str += pad(4) + '"basicMessageFooter": "%s",\n' % escape(job['basicMessageFooter'])
+    str += pad(4) + '"basicMessageMessageText": "%s",\n' % escape(job['basicMessageMessageText'])
+    str += pad(4) + '"basicMessagePageTitle": "%s",\n' % escape(job['basicMessagePageTitle'])
+    str += pad(4) + '"basicMessagePageWelcome": "%s",\n' % escape(job['basicMessagePageWelcome'])
+    
     str += pad(4) + '"captureBypassedTraffic": %s,\n' % capture_bypassed_traffic
     str += pad(4) + '"captureRules": %s\n' % get_capture_rules(settings_id, debug=debug)
     str += pad(4) + '"concurrentLoginsEnabled": %s,\n' % concurrent_logins
     str += pad(4) + '"idleTimeout": %s,\n' % idle_timeout
     str += pad(4) + '"javaClass": "com.untangle.node.cpd.CPDSettings",\n'
-    str += pad(4) + '"pageParameters": "%s",\n' % escape(page_parameters)
     str += pad(4) + '"pageType": "%s",\n' % page_type
     str += pad(4) + '"passedClients": %s\n' % get_passed_clients(settings_id, debug=debug)
     str += pad(4) + '"passedServers": %s\n' % get_passed_servers(settings_id, debug=debug)
