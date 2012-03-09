@@ -22,23 +22,11 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
         gridLoginEventLog : null,
         gridBlockEventLog : null,
-        pageParameters : null,
 
         initComponent : function()
         {
             Ung.Util.clearInterfaceStore();
             this.getSettings();
-            try {
-                this.pageParameters = Ext.util.JSON.decode( this.settings.pageParameters );
-            } catch ( e ) {
-                /* User should never see this. */
-                /* XXX Currently this doesn't work because execution continues. */
-                Ext.MessageBox.alert(
-                    this.i18n._("Warning"),
-                    this.i18n._("The current settings have an error, previous values may be lost."));
-
-                this.pageParameters = {};
-            }
 
             // builds the tabs
             this.buildCaptiveStatus();
@@ -769,7 +757,6 @@ if (!Ung.hasResource["Ung.CPD"]) {
                 cls: "ung-panel",
                 listeners : {
                     "render" : Ext.bind(function () {
-                    	console.log("setCaptivePageDefaults");
                         this.panelCaptivePage.query('radio[name="pageType"]')[0].setValue(this.settings.pageType);
                         this.captivePageHideComponents(this.settings.pageType );
                         Ung.Util.clearDirty(this.panelCaptivePage);
@@ -817,10 +804,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             name : "basicLoginPageTitle",
                             fieldLabel : this.i18n._("Page Title"),
                             pageType : "BASIC_LOGIN",
-                            value : this.pageParameters.basicLoginPageTitle,
+                            value : this.settings.basicLoginPageTitle,
                             listeners : {
                                 "change" : Ext.bind(function( elem, newValue ){
-                                    this.pageParameters.basicLoginPageTitle = newValue;
+                                    this.settings.basicLoginPageTitle = newValue;
                                 },this)
                             }
                         },{
@@ -830,10 +817,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             fieldLabel : this.i18n._("Welcome Text"),
                             width : 400,
                             pageType : "BASIC_LOGIN",
-                            value : this.pageParameters.basicLoginPageWelcome,
+                            value : this.settings.basicLoginPageWelcome,
                             listeners : {
                                 "change" : Ext.bind(function( elem, newValue ){
-                                    this.pageParameters.basicLoginPageWelcome = newValue;
+                                    this.settings.basicLoginPageWelcome = newValue;
                                 },this)
                             }
                         },{
@@ -842,10 +829,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             name : "basicLoginUsername",
                             fieldLabel : this.i18n._("Username Text"),
                             pageType : "BASIC_LOGIN",
-                            value : this.pageParameters.basicLoginUsername,
+                            value : this.settings.basicLoginUsername,
                             listeners : {
                                 "change" : Ext.bind(function( elem, newValue ){
-                                    this.pageParameters.basicLoginUsername = newValue;
+                                    this.settings.basicLoginUsername = newValue;
                                 },this)
                             }
                         },{
@@ -854,10 +841,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             name : "basicLoginPassword",
                             fieldLabel : this.i18n._("Password Text"),
                             pageType : "BASIC_LOGIN",
-                            value : this.pageParameters.basicLoginPassword,
+                            value : this.settings.basicLoginPassword,
                             listeners : {
                                 "change" : Ext.bind(function( elem, newValue ){
-                                    this.pageParameters.basicLoginPassword = newValue;
+                                    this.settings.basicLoginPassword = newValue;
                                 },this)
                             }
                         },{
@@ -868,10 +855,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             height : 250,
                             fieldLabel : this.i18n._("Message Text"),
                             pageType : "BASIC_LOGIN",
-                            value : this.pageParameters.basicLoginMessageText,
+                            value : this.settings.basicLoginMessageText,
                             listeners : {
                                 "change" : Ext.bind(function( elem, newValue ){
-                                    this.pageParameters.basicLoginMessageText = newValue;
+                                    this.settings.basicLoginMessageText = newValue;
                                 },this)
                             }
                         },{
@@ -881,10 +868,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             fieldLabel : this.i18n._("Lower Text"),
                             width : 400,
                             pageType : "BASIC_LOGIN",
-                            value : this.pageParameters.basicLoginFooter,
+                            value : this.settings.basicLoginFooter,
                             listeners : {
                                 "change" : Ext.bind(function( elem, newValue ){
-                                    this.pageParameters.basicLoginFooter = newValue;
+                                    this.settings.basicLoginFooter = newValue;
                                 },this)
                             }
                         },{
@@ -894,10 +881,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             fieldLabel : this.i18n._("Page Title"),
                             pageType : "BASIC_MESSAGE",
                             width : 400,
-                            value : this.pageParameters.basicMessagePageTitle,
+                            value : this.settings.basicMessagePageTitle,
                             listeners : {
                                 "change" : Ext.bind(function( elem, newValue ){
-                                    this.pageParameters.basicMessagePageTitle = newValue;
+                                    this.settings.basicMessagePageTitle = newValue;
                                 },this)
                             }
                         },{
@@ -907,10 +894,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             fieldLabel : this.i18n._("Welcome Text"),
                             width : 400,
                             pageType : "BASIC_MESSAGE",
-                            value : this.pageParameters.basicMessagePageWelcome,
+                            value : this.settings.basicMessagePageWelcome,
                             listeners : {
                                 "change" : Ext.bind(function( elem, newValue ){
-                                    this.pageParameters.basicMessagePageWelcome = newValue;
+                                    this.settings.basicMessagePageWelcome = newValue;
                                 },this)
                             }
                         },{
@@ -921,22 +908,22 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             height : 250,
                             fieldLabel : this.i18n._("Message Text"),
                             pageType : "BASIC_MESSAGE",
-                            value : this.pageParameters.basicMessageMessageText,
+                            value : this.settings.basicMessageMessageText,
                             listeners : {
                                 "change" : Ext.bind(function( elem, newValue ){
-                                    this.pageParameters.basicMessageMessageText = newValue;
+                                    this.settings.basicMessageMessageText = newValue;
                                 },this)
                             }
                         },{
                             xtype : "checkbox",
                             allowBlank : false,
-                            name : "basicMessageAgree",
+                            name : "basicMessageAgreeBox",
                             fieldLabel : this.i18n._("Agree Checkbox"),
                             pageType : "BASIC_MESSAGE",
-                            checked : this.pageParameters.basicMessageAgree,
+                            checked : this.settings.basicMessageAgreeBox,
                             listeners : {
                                 "change" : Ext.bind(function(elem, checked) {
-                                    this.pageParameters.basicMessageAgree = checked;
+                                    this.settings.basicMessageAgreeBox = checked;
                                 },this)
                             }
                         },{
@@ -946,10 +933,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             fieldLabel : this.i18n._("Agree Text"),
                             width : 400,
                             pageType : "BASIC_MESSAGE",
-                            value : this.pageParameters.basicMessageAgreeText,
+                            value : this.settings.basicMessageAgreeText,
                             listeners : {
                                 "change" : Ext.bind(function( elem, newValue ){
-                                    this.pageParameters.basicMessageAgreeText = newValue;
+                                    this.settings.basicMessageAgreeText = newValue;
                                 },this)
                             }
                         },{
@@ -959,10 +946,10 @@ if (!Ung.hasResource["Ung.CPD"]) {
                             fieldLabel : this.i18n._("Lower Text"),
                             width : 400,
                             pageType : "BASIC_MESSAGE",
-                            value : this.pageParameters.basicMessageFooter,
+                            value : this.settings.basicMessageFooter,
                             listeners : {
                                 "change" : Ext.bind(function( elem, newValue ){
-                                    this.pageParameters.basicMessageFooter = newValue;
+                                    this.settings.basicMessageFooter = newValue;
                                 },this)
                             }
                         },{
@@ -1223,47 +1210,16 @@ if (!Ung.hasResource["Ung.CPD"]) {
             });
         },
         beforeSave: function(isApply, handler) {
-        	this.settings.pageParameters = Ext.JSON.encode( this.pageParameters );
         	if ( this.gridCaptureRules.isDirty() ) {
-            	this.settings.captureRules = {
-                    javaClass : "java.util.ArrayList",
-                    list : this.gridCaptureRules.getFullSaveList()
-                };
+            	this.settings.captureRules.list = this.gridCaptureRules.getFullSaveList();
             }
             if ( this.gridPassedClients.isDirty() ) {
-            	this.settings.passedClients = {
-                    javaClass : "java.util.ArrayList",
-                    list : this.gridPassedClients.getFullSaveList()
-                };
+            	this.settings.passedClients.list = this.gridPassedClients.getFullSaveList();
             }
             if ( this.gridPassedServers.isDirty() ) {
-            	this.settings.passedServers = {
-                    javaClass : "java.util.ArrayList",
-                    list : this.gridPassedServers.getFullSaveList()
-                };
+            	this.settings.passedServers.list = this.gridPassedServers.getFullSaveList();
             }
             handler.call(this, isApply);
-        },
-        afterSave: function() {
-            try {
-                this.pageParameters = Ext.util.JSON.decode( this.settings.pageParameters );
-            } catch ( e ) {
-                //User should never see this. 
-                Ext.MessageBox.alert(i18n._("Warning"), i18n._("The current settings have an error, previous values may be lost."));
-                this.pageParameters = {};
-            }
-
-        	// Only reload the data for the grids if they have already been rendered. 
-            if ( this.gridCaptureRules.rendered ) {
-                this.gridCaptureRules.reloadGrid();
-            }
-            if ( this.gridPassedClients.rendered ) {
-                this.gridPassedClients.reloadGrid();
-            }
-            if ( this.gridPassedServers.rendered ) {
-                this.gridPassedServers.reloadGrid();
-            }
-        	
         },
         validate: function()
         {
