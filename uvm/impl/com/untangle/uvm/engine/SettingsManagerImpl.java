@@ -256,6 +256,7 @@ public class SettingsManagerImpl implements SettingsManager
 
                 String formatCmd = "python -m simplejson.tool " + outputFileTmp + " > " + outputFile ;
                 UvmContextImpl.context().execManager().execResult(formatCmd);
+                outputTmp.delete();
                 
                 /*
                  * Why must SUN/Oracle try everyone's patience; The API for
