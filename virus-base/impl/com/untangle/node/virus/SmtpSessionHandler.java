@@ -11,6 +11,7 @@ import com.untangle.node.mail.papi.MessageInfo;
 import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
 import com.untangle.node.mail.papi.smtp.SmtpTransaction;
 import com.untangle.node.mail.papi.smtp.sapi.BufferingSessionHandler;
+import com.untangle.node.mail.papi.WrappedMessageGenerator;
 import com.untangle.node.mime.MIMEMessage;
 import com.untangle.node.mime.MIMEPart;
 import com.untangle.node.mime.MIMEUtil;
@@ -26,22 +27,30 @@ import com.untangle.uvm.vnet.TCPSession;
  */
 public class SmtpSessionHandler extends BufferingSessionHandler
 {
+    private static final String MOD_SUB_TEMPLATE =
+        "[VIRUS] $MIMEMessage:SUBJECT$";
+
+    private static final String MOD_BODY_TEMPLATE =
+        "The attached message from $MIMEMessage:FROM$\r\n" +
+        "was found to contain the virus \"$VirusReport:VIRUS_NAME$\".\r\n"+
+        "The infected portion of the message was removed by Virus Blocker.\r\n";
+
     private final Logger logger = Logger.getLogger(SmtpSessionHandler.class);
     private final Pipeline pipeline;
     private final TempFileFactory fileFactory;
 
     private final VirusNodeImpl virusImpl;
-    private final VirusSMTPConfig config;
 
-    public SmtpSessionHandler(TCPSession session, long maxClientWait, long maxSvrWait, VirusNodeImpl impl, VirusSMTPConfig config)
+    private final WrappedMessageGenerator generator;
+    
+    public SmtpSessionHandler(TCPSession session, long maxClientWait, long maxSvrWait, VirusNodeImpl impl)
     {
         super(Integer.MAX_VALUE, maxClientWait, maxSvrWait, true);
 
         this.virusImpl = impl;
-        this.config = config;
-        this.pipeline = UvmContextFactory.context().
-            pipelineFoundry().getPipeline(session.id());
+        this.pipeline = UvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
         this.fileFactory = new TempFileFactory(this.pipeline);
+        this.generator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE, MOD_BODY_TEMPLATE);
     }
 
     @Override
@@ -62,11 +71,7 @@ public class SmtpSessionHandler extends BufferingSessionHandler
         //we'll just use the first
         VirusScannerResult scanResultForWrap = null;
 
-        SMTPVirusMessageAction action = this.config.getMsgAction();
-        if(action == null) {
-            this.logger.error("SMTPVirusMessageAction null.  Assume REMOVE");
-            action = SMTPVirusMessageAction.REMOVE;
-        }
+        String actionTaken = "pass";
 
         for(MIMEPart part : candidateParts) {
             if(!MIMEUtil.shouldScan(part)) {
@@ -76,18 +81,16 @@ public class SmtpSessionHandler extends BufferingSessionHandler
             VirusScannerResult scanResult = scanPart(part);
 
             if(scanResult == null) {
-                this.logger.warn("Scanning returned null (error already reported).  Skip " +
-                              "part assuming local error");
+                this.logger.warn("Scanning returned null (error already reported).  Skip " + "part assuming local error");
                 continue;
             }
-
+            if (scanResult.isClean())
+                actionTaken = "pass";
+            else
+                actionTaken = virusImpl.getSettings().getSmtpAction();
+            
             //Make log report
-            VirusSmtpEvent event = new VirusSmtpEvent(
-                                                      msgInfo,
-                                                      scanResult,
-                                                      scanResult.isClean()?SMTPVirusMessageAction.PASS:action,
-                                                      scanResult.isClean()?SMTPNotifyAction.NEITHER:this.config.getNotifyAction(),
-                                                      this.virusImpl.getScanner().getVendorName());
+            VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, scanResult, actionTaken, this.virusImpl.getScanner().getVendorName());
             this.virusImpl.logEvent(event);
 
             if(scanResult.isClean()) {
@@ -99,20 +102,17 @@ public class SmtpSessionHandler extends BufferingSessionHandler
                 }
                 foundVirus = true;
 
-
-
                 this.logger.debug("Part contained virus");
-                if(action == SMTPVirusMessageAction.PASS) {
+                if("pass".equals(actionTaken)) {
                     this.logger.debug("Passing infected part as-per policy");
                 }
-                else if(action == SMTPVirusMessageAction.BLOCK) {
+                else if("block".equals(actionTaken)) {
                     this.logger.debug("Stop scanning remaining parts, as the policy is to block");
                     break;
                 }
-                else {
+                else { /* remove */
                     if(part == msg) {
-                        this.logger.debug("Top-level message itself was infected.  \"Remove\"" +
-                                       "virus by converting part to text");
+                        this.logger.debug("Top-level message itself was infected.  \"Remove\"" + "virus by converting part to text");
                     }
                     else {
                         this.logger.debug("Removing infected part");
@@ -129,33 +129,20 @@ public class SmtpSessionHandler extends BufferingSessionHandler
         }
 
         if(foundVirus) {
-            //Perform notification (if we should)
-            if(this.config.getNotificationMessageGenerator().sendNotification(
-                                                                           UvmContextFactory.context().mailSender(),
-                                                                           this.config.getNotifyAction(),
-                                                                           msg,
-                                                                           tx,
-                                                                           tx, scanResultForWrap)) {
-                this.logger.debug("Notification handled without error");
-            }
-            else {
-                this.logger.warn("Error sending notification");
-            }
-
-            if(action == SMTPVirusMessageAction.BLOCK) {
+            if("block".equals(actionTaken)) {
                 this.logger.debug("Returning BLOCK as-per policy");
                 this.virusImpl.incrementBlockCount();
                 return BLOCK_MESSAGE;
             }
-            else if(action == SMTPVirusMessageAction.REMOVE) {
+            else if("remove".equals(actionTaken)) {
                 this.logger.debug("REMOVE (wrap) message");
-                MIMEMessage wrappedMsg = this.config.getMessageGenerator().wrap(msg, tx, scanResultForWrap);
+                MIMEMessage wrappedMsg = this.generator.wrap(msg, tx, scanResultForWrap);
                 this.virusImpl.incrementRemoveCount();
                 return new BPMEvaluationResult(wrappedMsg);
             }
             else {
                 this.logger.debug("Passing infected message (as-per policy)");
-		this.virusImpl.incrementPassedInfectedMessageCount();
+                this.virusImpl.incrementPassedInfectedMessageCount();
             }
         }
         this.virusImpl.incrementPassCount();
@@ -174,15 +161,15 @@ public class SmtpSessionHandler extends BufferingSessionHandler
             this.logger.debug("Message has: " + candidateParts.length
                            + " scannable parts");
         }
-        SMTPVirusMessageAction action = this.config.getMsgAction();
+        String action = this.virusImpl.getSettings().getSmtpAction();
 
         //Check for the impossible-to-satisfy action of "REMOVE"
-        if(action == SMTPVirusMessageAction.REMOVE) {
+        if("remove".equals(action)) {
             //Change action now, as it'll make the event logs
             //more accurate
             this.logger.debug("Implicitly converting policy from \"REMOVE\"" +
                            " to \"BLOCK\" as we have already begun to trickle");
-            action = SMTPVirusMessageAction.BLOCK;
+            action = "block";
         }
 
         boolean foundVirus = false;
@@ -215,12 +202,11 @@ public class SmtpSessionHandler extends BufferingSessionHandler
                 VirusSmtpEvent event = new VirusSmtpEvent(
                                                           msgInfo,
                                                           scanResult,
-                                                          scanResult.isClean()?SMTPVirusMessageAction.PASS:action,
-                                                          scanResult.isClean()?SMTPNotifyAction.NEITHER:this.config.getNotifyAction(),
+                                                          scanResult.isClean()?"pass":action,
                                                           this.virusImpl.getScanner().getVendorName());
                 this.virusImpl.logEvent(event);
 
-                if(action == SMTPVirusMessageAction.PASS) {
+                if("pass".equals(action)) {
                     this.logger.debug("Passing infected part as-per policy");
                 }
                 else {
@@ -230,19 +216,7 @@ public class SmtpSessionHandler extends BufferingSessionHandler
             }
         }
         if(foundVirus) {
-            //Make notification
-            if(this.config.getNotificationMessageGenerator().sendNotification(
-                                                                           UvmContextFactory.context().mailSender(),
-                                                                           this.config.getNotifyAction(),
-                                                                           msg,
-                                                                           tx,
-                                                                           tx, scanResultForWrap)) {
-                this.logger.debug("Notification handled without error");
-            }
-            else {
-                this.logger.error("Error sending notification");
-            }
-            if(action == SMTPVirusMessageAction.BLOCK) {
+            if("block".equals(action)) {
                 this.logger.debug("Blocking mail as-per policy");
                 this.virusImpl.incrementBlockCount();
                 return BlockOrPassResult.BLOCK;

@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Iterator;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Logger;
 
@@ -24,8 +26,8 @@ import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenException;
 import com.untangle.node.util.TempFileFactory;
-import com.untangle.uvm.node.MimeTypeRule;
-import com.untangle.uvm.node.StringRule;
+import com.untangle.node.util.GlobUtil;
+import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.vnet.TCPSession;
 
 /**
@@ -89,13 +91,14 @@ class VirusHttpHandler extends HttpStateMachine
     {
         logger.debug("got a request header");
 
-        if (null != requestHeader.getValue("range")
-            && node.getHttpDisableResume()) {
-            String ua = requestHeader.getValue("user-agent");
-            if (!ua.startsWith("Microsoft BITS")) {
-                requestHeader.removeField("range");
-            }
-        }
+        // no longer have a setting for blocking partial fetches
+        // it causes too many issues
+        //         if (null != requestHeader.getValue("range") && !node.getSettings().getAllowHttpResume()) {
+        //             String ua = requestHeader.getValue("user-agent");
+        //             if (!ua.startsWith("Microsoft BITS")) {
+        //                 requestHeader.removeField("range");
+        //             }
+        //         }
 
         return requestHeader;
     }
@@ -257,9 +260,9 @@ class VirusHttpHandler extends HttpStateMachine
     {
         if (null == extension) { return false; }
 
-        for (Iterator<StringRule> i = node.getExtensions().iterator(); i.hasNext();) {
-            StringRule sr = i.next();
-            if (sr.isLive() && sr.getString().equalsIgnoreCase(extension)) {
+        for (Iterator<GenericRule> i = node.getSettings().getHttpFileExtensions().iterator(); i.hasNext();) {
+            GenericRule sr = i.next();
+            if (sr.getEnabled() && sr.getString().equalsIgnoreCase(extension)) {
                 return true;
             }
         }
@@ -277,43 +280,38 @@ class VirusHttpHandler extends HttpStateMachine
             return false;
         }
 
-        /*
-         * XXX This is inefficient, but typically there are only a few
-         * rules in this list.
-         */
-        for (Iterator<MimeTypeRule> i = node.getHttpMimeTypes().iterator(); i.hasNext();) {
+        for (Iterator<GenericRule> i = node.getSettings().getHttpMimeTypes().iterator(); i.hasNext();) {
+            GenericRule rule = i.next();
+            Object  regexO = rule.attachment();
+            Pattern regex  = null;
 
-            MimeTypeRule mtr = i.next();
-            String currentMt = mtr.getMimeType().getType();
+            /**
+             * If the regex is not attached to the rule, compile a new one and attach it
+             * Otherwise just use the regex already compiled and attached to the rule
+             */
+            if (regexO == null || !(regexO instanceof Pattern)) {
+                String re = GlobUtil.urlGlobToRegex(rule.getString());
 
-            /* Skip all of the shorter or equal mimetypes */
-            if (currentMt.length() <= longestMatch) {
-                continue;
+                logger.debug("Compile  rule: " + re );
+                regex = Pattern.compile(re);
+                rule.attach(regex);
+            } else {
+                regex = (Pattern)regexO;
             }
 
-            if (mtr.getMimeType().matches(mimeType)) {
-                /* Exact match, break */
-                if (currentMt.length() == mimeType.length()) {
-                    isLive = mtr.isLive();
-                    match = currentMt;
-                    break;
-                }
-
-                /* This must be a wildcard match, don't include the
-                 * '*' in the length of the match
-                 */
-                longestMatch = currentMt.length() - 1;
-                isLive = mtr.isLive();
-                match = currentMt;
+            /**
+             * Check the match
+             */
+            try {
+                if (regex.matcher(mimeType).matches()) {
+                    return rule.getEnabled();
+                } 
+            } catch (PatternSyntaxException e) {
+                logger.error("findMatchRule: ** invalid pattern '" + regex + "'");		
             }
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Mapped: " + mimeType + " to: '" + match
-                         + "' scan: "+ isLive);
-        }
-
-        return isLive;
+        return false;
     }
 
     private void setupFile(String reason)

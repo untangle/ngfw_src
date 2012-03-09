@@ -17,7 +17,6 @@
             "list": [
                 "com.untangle.node.http.HttpSettings",
                 "com.untangle.node.http.HttpRequestEvent",
-                "com.untangle.node.http.RequestLine",
                 "com.untangle.node.http.HttpResponseEvent",
                 "com.untangle.node.spyware.SpywareAccessEvent",
                 "com.untangle.node.spyware.SpywareUrlEvent",

@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.mail.papi.MessageInfo;
 import com.untangle.node.mail.papi.imap.BufferingImapTokenStreamHandler;
+import com.untangle.node.mail.papi.WrappedMessageGenerator;
 import com.untangle.node.mime.MIMEMessage;
 import com.untangle.node.mime.MIMEPart;
 import com.untangle.node.mime.MIMEUtil;
@@ -21,18 +22,27 @@ import com.untangle.uvm.vnet.TCPSession;
  */
 public class VirusImapHandler extends BufferingImapTokenStreamHandler
 {
+    private static final String MOD_SUB_TEMPLATE =
+        "[VIRUS] $MIMEMessage:SUBJECT$";
+
+    private static final String MOD_BODY_TEMPLATE =
+        "The attached message from $MIMEMessage:FROM$\r\n" +
+        "was found to contain the virus \"$VirusReport:VIRUS_NAME$\".\r\n"+
+        "The infected portion of the message was removed by Virus Blocker.\r\n";
+
     private final Logger logger = Logger.getLogger(VirusImapHandler.class);
 
     private final VirusNodeImpl virusImpl;
-    private final VirusIMAPConfig config;
     private TempFileFactory fileFactory;
 
-    protected VirusImapHandler(TCPSession session, long maxClientWait, long maxServerWait, VirusNodeImpl node, VirusIMAPConfig config)
+    private final WrappedMessageGenerator generator;
+    
+    protected VirusImapHandler(TCPSession session, long maxClientWait, long maxServerWait, VirusNodeImpl node)
     {
         super(maxClientWait, maxServerWait, Integer.MAX_VALUE);
         this.virusImpl = node;
-        this.config = config;
         this.fileFactory = new TempFileFactory( UvmContextFactory.context().pipelineFoundry().getPipeline(session.id()) );
+        this.generator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE, MOD_BODY_TEMPLATE);
     }
 
 
@@ -55,10 +65,10 @@ public class VirusImapHandler extends BufferingImapTokenStreamHandler
         //we'll just use the first
         VirusScannerResult scanResultForWrap = null;
 
-        VirusMessageAction action = this.config.getMsgAction();
+        String action = this.virusImpl.getSettings().getImapAction();
         if(action == null) {
             this.logger.error("VirusMessageAction null.  Assume REMOVE");
-            action = VirusMessageAction.REMOVE;
+            action = "remove";
         }
 
         for(MIMEPart part : candidateParts) {
@@ -75,11 +85,7 @@ public class VirusImapHandler extends BufferingImapTokenStreamHandler
             }
 
             //Make log report
-            VirusMailEvent event = new VirusMailEvent(
-                                                      msgInfo,
-                                                      scanResult,
-                                                      scanResult.isClean()?VirusMessageAction.PASS:action,
-                                                      this.virusImpl.getScanner().getVendorName());
+            VirusMailEvent event = new VirusMailEvent( msgInfo, scanResult, scanResult.isClean()?"pass":action, this.virusImpl.getScanner().getVendorName());
             this.virusImpl.logEvent(event);
 
             if(scanResult.isClean()) {
@@ -92,7 +98,7 @@ public class VirusImapHandler extends BufferingImapTokenStreamHandler
                 foundVirus = true;
 
                 this.logger.debug("Part contained virus");
-                if(action == VirusMessageAction.PASS) {
+                if(action.equals("pass")) {
                     this.logger.debug("Passing infected part as-per policy");
                 }
                 else {
@@ -114,9 +120,9 @@ public class VirusImapHandler extends BufferingImapTokenStreamHandler
         }
 
         if(foundVirus) {
-            if(action == VirusMessageAction.REMOVE) {
+            if(action.equals("remove")) {
                 this.logger.debug("REMOVE (wrap) message");
-                MIMEMessage wrappedMsg = this.config.getMessageGenerator().wrap(msg, scanResultForWrap);
+                MIMEMessage wrappedMsg = this.generator.wrap(msg, scanResultForWrap);
                 this.virusImpl.incrementRemoveCount();
                 return HandleMailResult.forReplaceMessage(wrappedMsg);
             }

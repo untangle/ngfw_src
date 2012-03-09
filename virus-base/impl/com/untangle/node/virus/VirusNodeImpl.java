@@ -6,15 +6,18 @@ package com.untangle.node.virus;
 import static com.untangle.node.util.Ascii.CRLF;
 
 import java.util.Date;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.json.JSONString;
 
+import com.untangle.uvm.SettingsManager;
 import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
@@ -26,9 +29,7 @@ import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
-import com.untangle.uvm.node.MimeType;
-import com.untangle.uvm.node.MimeTypeRule;
-import com.untangle.uvm.node.StringRule;
+import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.util.I18nUtil;
@@ -49,27 +50,24 @@ import com.untangle.uvm.vnet.TCPSession;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public abstract class VirusNodeImpl extends AbstractNode
-    implements VirusNode
+public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
 {
-    private static int deployCount = 0;
+    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/virus-base-convert-settings.py";
 
-    //Programatic defaults for the contents
-    //of the "message" emails generated as a result
-    //of a virus being found (and "notify" being
-    //enabled.
+    private static final int TRICKLE_RATE = 90;
+    
     private static final String MOD_SUB_TEMPLATE =
         "[VIRUS] $MIMEMessage:SUBJECT$";
 
     private static final String MOD_BODY_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$\r\n" +
         "was found to contain the virus \"$VirusReport:VIRUS_NAME$\".\r\n"+
-        "The infected portion of the message was removed by Untangle Virus Blocker.\r\n";
+        "The infected portion of the message was removed by Virus Blocker.\r\n";
 
     private static final String MOD_BODY_SMTP_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
         "was found to contain the virus \"$VirusReport:VIRUS_NAME$\".\r\n"+
-        "The infected portion of the message was removed by Untangle Virus Blocker.\r\n";
+        "The infected portion of the message was removed by Virus Blocker.\r\n";
 
     private static final String NOTIFY_SUB_TEMPLATE =
         "[VIRUS NOTIFICATION] re: $MIMEMessage:SUBJECT$";
@@ -78,13 +76,15 @@ public abstract class VirusNodeImpl extends AbstractNode
         "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)" + CRLF +
         "was received by $SMTPTransaction:TO$.  The message was found" + CRLF +
         "to contain the virus \"$VirusReport:VIRUS_NAME$\"." + CRLF +
-        "The infected portion of the message was removed by Untangle Virus Blocker";
+        "The infected portion of the message was removed by Virus Blocker";
 
     private static final int FTP = 0;
     private static final int HTTP = 1;
     private static final int SMTP = 2;
     private static final int POP = 3;
 
+    private static int deployCount = 0;
+    
     private final VirusScanner scanner;
     private final PipeSpec[] pipeSpecs;
     private final VirusReplacementGenerator replacementGenerator;
@@ -201,120 +201,14 @@ public abstract class VirusNodeImpl extends AbstractNode
     }
 
     // VirusNode methods -------------------------------------------------
-    public VirusBaseSettings getBaseSettings()
+    public VirusSettings getSettings()
     {
-        return getBaseSettings(false);
+        return this.settings;
     }
 
-    public VirusBaseSettings getBaseSettings(boolean updateScannerInfo)
+    public void setSettings( VirusSettings settings )
     {
-        VirusBaseSettings baseSettings = settings.getBaseSettings();
-
-        if (updateScannerInfo) {
-            Date lastSignatureUpdate = scanner.getLastSignatureUpdate();
-            if (lastSignatureUpdate != null) {
-                this.lastSignatureUpdate = lastSignatureUpdate;
-            }
-        }
-
-        baseSettings.setLastUpdate(this.lastSignatureUpdate);
-
-        return baseSettings;
-    }
-
-    public void setBaseSettings(final VirusBaseSettings baseSettings)
-    {
-        TransactionWork<Object> tw = new TransactionWork<Object>() {
-                public boolean doWork(Session s) {
-                    settings.setBaseSettings(baseSettings);
-                    s.merge(settings);
-                    return true;
-                }
-
-                public Object getResult() {
-                    return null;
-                }
-            };
-        getNodeContext().runTransaction(tw);
-    }
-
-    public void setVirusSettings(final VirusSettings settings)
-    {
-        //TEMP hack - bscott
-        ensureTemplateSettings(settings.getBaseSettings());
-
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    s.merge(settings);
-                    VirusNodeImpl.this.settings = settings;
-
-                    reconfigure();
-
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
-        killMatchingSessions(VIRUS_SESSION_MATCHER);
-    }
-
-    public VirusSettings getVirusSettings()
-    {
-        if( settings == null )
-            logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
-        return settings;
-    }
-
-    @SuppressWarnings("unchecked") //getItems
-    public List<MimeTypeRule> getHttpMimeTypes(final int start, final int limit, final String... sortColumns) {
-        return listUtil.getItems("select vs.httpMimeTypes from VirusSettings vs " +
-                                 "join vs.httpMimeTypes as httpMimeTypes where vs.nodeId = :nodeId ",
-                                 getNodeContext(), getNodeId(),"httpMimeTypes", start, limit, sortColumns);
-    }
-
-    public void updateHttpMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified) {
-
-        updateRules(getHttpMimeTypes(), added, deleted, modified);
-    }
-
-    @SuppressWarnings("unchecked") //getItems
-    public List<StringRule> getExtensions(final int start, final int limit, final String... sortColumns) {
-        return listUtil.getItems("select vs.extensions from VirusSettings vs where vs.nodeId = :nodeId ",
-                                 getNodeContext(), getNodeId(), start, limit, sortColumns);
-    }
-
-    public void updateExtensions(List<StringRule> added, List<Long> deleted, List<StringRule> modified) {
-
-        updateRules(getExtensions(), added, deleted, modified);
-    }
-
-    @SuppressWarnings("unchecked")
-	public void updateAll(final VirusBaseSettings baseSettings, final List[] httpMimeTypes, final List[] extensions)
-    {
-        TransactionWork<Object> tw = new TransactionWork<Object>() {
-                public boolean doWork(Session s) {
-                    if (baseSettings != null) {
-                        settings.setBaseSettings(baseSettings);
-                    }
-                    listUtil.updateCachedItems(getHttpMimeTypes(), httpMimeTypes );
-
-                    listUtil.updateCachedItems(getExtensions(), extensions );
-
-                    settings = (VirusSettings)s.merge(settings);
-
-                    return true;
-                }
-
-                public Object getResult() {
-                    return null;
-                }
-            };
-        getNodeContext().runTransaction(tw);
-
-        reconfigure();
+        _setSettings(settings);
     }
 
     public EventLogQuery[] getWebEventQueries()
@@ -327,18 +221,17 @@ public abstract class VirusNodeImpl extends AbstractNode
         return new EventLogQuery[] { this.mailInfectedEventQuery, this.mailCleanEventQuery };
     }
 
-    public VirusBlockDetails getDetails(String nonce)
+    public VirusBlockDetails getDetails( String nonce )
     {
         return replacementGenerator.getNonceData(nonce);
     }
 
-    String generateNonce(VirusBlockDetails details)
+    String generateNonce( VirusBlockDetails details )
     {
         return replacementGenerator.generateNonce(details);
     }
 
-    Token[] generateResponse(String nonce, TCPSession session,
-                             String uri,boolean persistent)
+    Token[] generateResponse( String nonce, TCPSession session, String uri, boolean persistent )
     {
         return replacementGenerator.generateResponse(nonce, session, uri,
                                                      null, persistent);
@@ -346,6 +239,8 @@ public abstract class VirusNodeImpl extends AbstractNode
     }
 
     abstract protected int getStrength();
+
+    abstract public String getName();
 
     // Node methods ------------------------------------------------------
 
@@ -384,7 +279,7 @@ public abstract class VirusNodeImpl extends AbstractNode
 
         // HTTP
         subscriptions = new HashSet<Subscription>();
-        if (settings.getBaseSettings().getHttpConfig().getScan()) {
+        if (settings.getScanHttp()) {
             Subscription subscription = new Subscription(Protocol.TCP);
             subscriptions.add(subscription);
         }
@@ -420,151 +315,131 @@ public abstract class VirusNodeImpl extends AbstractNode
         return pipeSpecs;
     }
 
-    /**
-     * The settings for the IMAP/POP/SMTP
-     * templates have been added to the
-     * Config objects, yet not in the database
-     * (9/05).  This method makes sure that
-     * they are set to the programatic
-     * default.
-     *
-     * Once we move these to the database,
-     * this method is obsolete.
-     */
-    private void ensureTemplateSettings(VirusBaseSettings vs) {
-        vs.getImapConfig().setSubjectWrapperTemplate(MOD_SUB_TEMPLATE);
-        vs.getImapConfig().setBodyWrapperTemplate(MOD_BODY_TEMPLATE);
-        vs.getImapConfig().setBodyWrapperTemplate(MOD_BODY_TEMPLATE);
-
-        vs.getPopConfig().setSubjectWrapperTemplate(MOD_SUB_TEMPLATE);
-        vs.getPopConfig().setBodyWrapperTemplate(MOD_BODY_TEMPLATE);
-
-        vs.getSmtpConfig().setSubjectWrapperTemplate(MOD_SUB_TEMPLATE);
-        vs.getSmtpConfig().setBodyWrapperTemplate(MOD_BODY_SMTP_TEMPLATE);
-
-        vs.getSmtpConfig().setNotifySubjectTemplate(NOTIFY_SUB_TEMPLATE);
-        vs.getSmtpConfig().setNotifyBodyTemplate(NOTIFY_BODY_TEMPLATE);
-    }
-
     public void initializeSettings()
     {
-        VirusSettings vs = new VirusSettings(getNodeId());
-        VirusBaseSettings baseSettings = vs.getBaseSettings();
-        baseSettings.setHttpConfig(new VirusConfig(true, true, "Scan HTTP files"));
-        baseSettings.setFtpConfig(new VirusConfig(true, true, "Scan FTP files" ));
-
-        baseSettings.setSmtpConfig(new VirusSMTPConfig(true,
-                                                       SMTPVirusMessageAction.REMOVE,
-                                                       SMTPNotifyAction.NEITHER,
-                                                       "Scan SMTP e-mail",
-                                                       MOD_SUB_TEMPLATE,
-                                                       MOD_BODY_SMTP_TEMPLATE,
-                                                       NOTIFY_SUB_TEMPLATE,
-                                                       NOTIFY_BODY_TEMPLATE));
-
-        baseSettings.setPopConfig(new VirusPOPConfig(true,
-                                                     VirusMessageAction.REMOVE,
-                                                     "Scan POP e-mail",
-                                                     MOD_SUB_TEMPLATE,
-                                                     MOD_BODY_TEMPLATE));
-
-        baseSettings.setImapConfig(new VirusIMAPConfig(true,
-                                                       VirusMessageAction.REMOVE,
-                                                       "Scan IMAP e-mail",
-                                                       MOD_SUB_TEMPLATE,
-                                                       MOD_BODY_TEMPLATE));
-
+        VirusSettings vs = new VirusSettings();
         initMimeTypes(vs);
         initFileExtensions(vs);
 
-        setVirusSettings(vs);
+        setSettings(vs);
     }
 
     private void initMimeTypes(VirusSettings vs)
     {
-        Set<MimeTypeRule> s = new HashSet<MimeTypeRule>();
-        s.add(new MimeTypeRule(new MimeType("message/*"), "messages", "misc", true));
+        List<GenericRule> s = new LinkedList<GenericRule>();
+        s.add(new GenericRule("message/*", "messages", "misc", null, true));
 
         vs.setHttpMimeTypes(s);
     }
 
     private void initFileExtensions(VirusSettings vs)
     {
-        Set<StringRule> s = new HashSet<StringRule>();
-        /* XXX Need a description here */
-        // Note that category is unused in the UI
-        s.add(new StringRule("exe", "executable", "download" , true));
-        s.add(new StringRule("com", "executable", "download", true));
-        s.add(new StringRule("ocx", "executable", "ActiveX", true));
-        s.add(new StringRule("dll", "executable", "ActiveX", false));
-        s.add(new StringRule("cab", "executable", "ActiveX", true));
-        s.add(new StringRule("bin", "executable", "download", true));
-        s.add(new StringRule("bat", "executable", "download", true));
-        s.add(new StringRule("pif", "executable", "download" , true));
-        s.add(new StringRule("scr", "executable", "download" , true));
-        s.add(new StringRule("cpl", "executable", "download" , true));
-        s.add(new StringRule("hta", "executable", "download" , true));
-        s.add(new StringRule("vb",  "script", "download" , true));
-        s.add(new StringRule("vbe", "script", "download" , true));
-        s.add(new StringRule("vbs", "script", "download" , true));
-        s.add(new StringRule("zip", "archive", "download" , true));
-        s.add(new StringRule("eml", "archive", "download" , true));
-        s.add(new StringRule("hqx", "archive", "download", true));
-        s.add(new StringRule("rar", "archive", "download" , true));
-        s.add(new StringRule("arj", "archive", "download" , true));
-        s.add(new StringRule("ace", "archive", "download" , true));
-        s.add(new StringRule("gz",  "archive", "download" , true));
-        s.add(new StringRule("tar", "archive", "download" , true));
-        s.add(new StringRule("tgz", "archive", "download" , true));
-        s.add(new StringRule("doc", "document", "document", false));
-        s.add(new StringRule("docx", "document", "document", false));
-        s.add(new StringRule("ppt", "presentation", "document", false));
-        s.add(new StringRule("pptx", "presentation", "document", false));
-        s.add(new StringRule("xls", "spreadsheet", "document", false));
-        s.add(new StringRule("xlsx", "spreadsheet", "document", false));
-        s.add(new StringRule("pdf", "document", "document" , true));
-        s.add(new StringRule("mp3", "audio", "download", false));
-        s.add(new StringRule("wav", "audio", "download", false));
-        s.add(new StringRule("wmf", "audio", "download", false));
-        s.add(new StringRule("mov", "video", "download", false));
-        s.add(new StringRule("mpg", "video", "download", false));
-        s.add(new StringRule("avi", "video", "download", false));
-        s.add(new StringRule("swf", "flash", "download", false));
-        s.add(new StringRule("jar",   "java", "download", false));
-        s.add(new StringRule("class", "java", "download", false));
-        vs.setExtensions(s);
+        List<GenericRule> s = new LinkedList<GenericRule>();
+
+        s.add(new GenericRule("exe", "executable", "download" , null, true));
+        s.add(new GenericRule("com", "executable", "download", null, true));
+        s.add(new GenericRule("ocx", "executable", "ActiveX", null, true));
+        s.add(new GenericRule("dll", "executable", "ActiveX", null, false));
+        s.add(new GenericRule("cab", "executable", "ActiveX", null, true));
+        s.add(new GenericRule("bin", "executable", "download", null, true));
+        s.add(new GenericRule("bat", "executable", "download", null, true));
+        s.add(new GenericRule("pif", "executable", "download" , null, true));
+        s.add(new GenericRule("scr", "executable", "download" , null, true));
+        s.add(new GenericRule("cpl", "executable", "download" , null, true));
+        s.add(new GenericRule("hta", "executable", "download" , null, true));
+        s.add(new GenericRule("vb",  "script", "download" , null, true));
+        s.add(new GenericRule("vbe", "script", "download" , null, true));
+        s.add(new GenericRule("vbs", "script", "download" , null, true));
+        s.add(new GenericRule("zip", "archive", "download" , null, true));
+        s.add(new GenericRule("eml", "archive", "download" , null, true));
+        s.add(new GenericRule("hqx", "archive", "download", null, true));
+        s.add(new GenericRule("rar", "archive", "download" , null, true));
+        s.add(new GenericRule("arj", "archive", "download" , null, true));
+        s.add(new GenericRule("ace", "archive", "download" , null, true));
+        s.add(new GenericRule("gz",  "archive", "download" , null, true));
+        s.add(new GenericRule("tar", "archive", "download" , null, true));
+        s.add(new GenericRule("tgz", "archive", "download" , null, true));
+        s.add(new GenericRule("doc", "document", "document", null, false));
+        s.add(new GenericRule("docx", "document", "document", null, false));
+        s.add(new GenericRule("ppt", "presentation", "document", null, false));
+        s.add(new GenericRule("pptx", "presentation", "document", null, false));
+        s.add(new GenericRule("xls", "spreadsheet", "document", null, false));
+        s.add(new GenericRule("xlsx", "spreadsheet", "document", null, false));
+        s.add(new GenericRule("pdf", "document", "document" , null, true));
+        s.add(new GenericRule("mp3", "audio", "download", null, false));
+        s.add(new GenericRule("wav", "audio", "download", null, false));
+        s.add(new GenericRule("wmf", "audio", "download", null, false));
+        s.add(new GenericRule("mov", "video", "download", null, false));
+        s.add(new GenericRule("mpg", "video", "download", null, false));
+        s.add(new GenericRule("avi", "video", "download", null, false));
+        s.add(new GenericRule("swf", "flash", "download", null, false));
+        s.add(new GenericRule("jar",   "java", "download", null, false));
+        s.add(new GenericRule("class", "java", "download", null, false));
+
+        vs.setHttpFileExtensions(s);
     }
 
 
     protected void preInit(String args[])
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery("from VirusSettings vs where vs.nodeId = :nodeId");
-                    q.setParameter("nodeId", getNodeId());
-                    settings = (VirusSettings)q.uniqueResult();
+    }
 
-                    boolean changed = false;
-                    if (settings.getHttpMimeTypes() == null || settings.getHttpMimeTypes().isEmpty()) {
-                        initMimeTypes(settings);
-                        changed = true;
-                    }
-                    if (settings.getExtensions() == null || settings.getExtensions().isEmpty()) {
-                        initFileExtensions(settings);
-                        changed = true;
-                    }
-                    ensureTemplateSettings(settings.getBaseSettings());
-                    if (changed) {
-                        s.merge(settings);
-                    }
-                    return true;
+    @Override
+    protected void postInit(String[] args)
+    {
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeId().getId().toString();
+        VirusSettings readSettings = null;
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getName() + "/" + "settings_" + nodeID;
+        
+        try {
+            readSettings = settingsManager.load( VirusSettings.class, settingsFileName );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:",e);
+        }
+
+        /**
+         * If there are no settings, run the conversion script to see if there are any in the database
+         * Then check again for the file
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Running conversion script to check DB");
+            try {
+                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + this.getName() + " " + settingsFileName + ".js";
+                logger.warn("Running: " + convertCmd);
+                UvmContextFactory.context().execManager().exec( convertCmd );
+            } catch ( Exception e ) {
+                logger.warn( "Conversion script failed.", e );
+            } 
+
+            try {
+                readSettings = settingsManager.load( VirusSettings.class, settingsFileName );
+                if (readSettings != null) {
+                    logger.warn("Found settings imported from database");
                 }
+            } catch (SettingsManager.SettingsException e) {
+                logger.warn("Failed to load settings:",e);
+            }
+        }
 
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
+        /**
+         * If there are still no settings, just initialize
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Initializing new settings.");
+
+            initializeSettings();
+        }
+        else {
+            logger.info("Loading Settings...");
+
+            // UPDATE settings if necessary
+            
+            this.settings = readSettings;
+            logger.info("Settings: " + this.settings.toJSONString());
+        }
+
+        deployWebAppIfRequired(logger);
     }
 
     protected void preStart() throws Exception
@@ -578,13 +453,7 @@ public abstract class VirusNodeImpl extends AbstractNode
     }
 
     @Override
-        protected void postInit(String[] args)
-    {
-        deployWebAppIfRequired(logger);
-    }
-
-    @Override
-        protected void postDestroy()
+    protected void postDestroy()
     {
         unDeployWebAppIfRequired(logger);
     }
@@ -598,27 +467,7 @@ public abstract class VirusNodeImpl extends AbstractNode
 
     int getTricklePercent()
     {
-        return settings.getBaseSettings().getTricklePercent();
-    }
-
-    Set<StringRule> getExtensions()
-    {
-        return settings.getExtensions();
-    }
-
-    Set<MimeTypeRule> getHttpMimeTypes()
-    {
-        return settings.getHttpMimeTypes();
-    }
-
-    boolean getFtpDisableResume()
-    {
-        return settings.getBaseSettings().getFtpDisableResume();
-    }
-
-    boolean getHttpDisableResume()
-    {
-        return settings.getBaseSettings().getHttpDisableResume();
+        return TRICKLE_RATE;
     }
 
     /**
@@ -708,24 +557,34 @@ public abstract class VirusNodeImpl extends AbstractNode
         }
     }
 
-    // private methods --------------------------------------------------------
-    private void updateRules(final Set<?> rules, final List<?> added,
-                             final List<Long> deleted, final List<?> modified)
+    /**
+     * Set the current settings to new Settings
+     * And save the settings to disk
+     */
+    protected void _setSettings( VirusSettings newSettings )
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    listUtil.updateCachedItems(rules, added, deleted, modified);
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeId().getId().toString();
+        try {
+            settingsManager.save(VirusSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-" + this.getName() + "/" + "settings_" + nodeID, newSettings);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+        }
 
-                    settings = (VirusSettings)s.merge(settings);
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
-                    return true;
-                }
-
-
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
+        /**
+         * Reset existing sessions
+         */
+        killMatchingSessions(VIRUS_SESSION_MATCHER);
     }
+
+    
 }

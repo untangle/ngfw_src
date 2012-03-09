@@ -15,19 +15,19 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Type;
 
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.node.SessionEvent;
 
 /**
  * Log for FTP virus events.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="n_virus_evt", schema="events")
 @SuppressWarnings("serial")
-public class VirusLogEvent extends VirusEvent
+public class VirusLogEvent extends LogEvent
 {
     private SessionEvent sessionEvent;
     private VirusScannerResult result;
@@ -58,33 +58,6 @@ public class VirusLogEvent extends VirusEvent
     public boolean isInfected()
     {
         return !result.isClean();
-    }
-
-    @Transient
-    public int getActionType()
-    {
-        if (true == result.isClean()) {
-            return PASSED;
-        } else if (true == result.isVirusCleaned()) {
-            return CLEANED;
-        } else {
-            return BLOCKED;
-        }
-    }
-
-    @Transient
-    public String getActionName()
-    {
-        switch(getActionType())
-            {
-            case PASSED:
-                return "clean";
-            case CLEANED:
-                return "cleaned";
-            default:
-            case BLOCKED:
-                return "blocked";
-            }
     }
 
     @Transient
@@ -156,5 +129,18 @@ public class VirusLogEvent extends VirusEvent
     public void setVendorName(String vendorName)
     {
         this.vendorName = vendorName;
+    }
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        SessionEvent pe = getSessionEvent();
+        if (null != pe) {
+            pe.appendSyslog(sb);
+        }
+
+        sb.startSection("info");
+        sb.addField("location", getLocation());
+        sb.addField("infected", isInfected());
+        sb.addField("virus-name", getVirusName());
     }
 }

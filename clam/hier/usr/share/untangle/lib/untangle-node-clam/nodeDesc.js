@@ -20,7 +20,6 @@
             "list": [
                 "com.untangle.node.http.HttpSettings",
                 "com.untangle.node.http.HttpRequestEvent",
-                "com.untangle.node.http.RequestLine",
                 "com.untangle.node.http.HttpResponseEvent",
                 "com.untangle.node.mail.papi.EmailAddressPairRule",
                 "com.untangle.node.mail.papi.EmailAddressRule",
@@ -32,13 +31,7 @@
                 "com.untangle.node.mail.papi.safelist.SafelistSender",
                 "com.untangle.node.mail.papi.safelist.SafelistSettings",
                 "com.untangle.node.ftp.FtpSettings",
-                "com.untangle.node.virus.VirusConfig",
-                "com.untangle.node.virus.VirusIMAPConfig",
                 "com.untangle.node.virus.VirusMailEvent",
-                "com.untangle.node.virus.VirusPOPConfig",
-                "com.untangle.node.virus.VirusSMTPConfig",
-                "com.untangle.node.virus.VirusSettings",
-                "com.untangle.node.virus.VirusBaseSettings",
                 "com.untangle.node.virus.VirusHttpEvent",
                 "com.untangle.node.virus.VirusLogEvent",
                 "com.untangle.node.virus.VirusSmtpEvent"

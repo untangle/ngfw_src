@@ -1,39 +1,10 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- *
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
+/**
+ * $Id$
  */
-
 package com.untangle.node.virus;
 
 import java.util.List;
+import java.util.Date;
 
 import com.untangle.uvm.node.MimeTypeRule;
 import com.untangle.uvm.node.Node;
@@ -41,35 +12,12 @@ import com.untangle.uvm.node.StringRule;
 import com.untangle.uvm.node.EventLogQuery;
 
 /**
- * Interface to the Virus Node.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
+ * Interface to the Virus Blocker nodes.
  */
 public interface VirusNode extends Node
 {
-    void setBaseSettings(VirusBaseSettings virusBaseSettings);
-    VirusBaseSettings getBaseSettings();
-    VirusBaseSettings getBaseSettings(boolean updateScannerInfo);
-
-    List<MimeTypeRule> getHttpMimeTypes(int start, int limit, String... sortColumns);
-    void updateHttpMimeTypes(List<MimeTypeRule> added, List<Long> deleted, List<MimeTypeRule> modified);
-
-    List<StringRule> getExtensions(int start, int limit, String... sortColumns);
-    void updateExtensions(List<StringRule> added, List<Long> deleted, List<StringRule> modified);
-
-    /**
-     * Update all settings once, in a single transaction
-     */
-    @SuppressWarnings("unchecked")
-	void updateAll(VirusBaseSettings baseSettings, List[] httpMimeTypes, List[] extensions);
-
-    /**
-     * Reconfigure node. This method should be called after some
-     * settings are updated in order to reconfigure the node
-     * accordingly.
-     */
-    void reconfigure();
+    void setSettings(VirusSettings virusSettings);
+    VirusSettings getSettings();
 
     String getVendor();
     

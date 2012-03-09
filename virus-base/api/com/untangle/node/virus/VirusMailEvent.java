@@ -15,8 +15,11 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Type;
 
-import com.untangle.node.mail.papi.MessageInfo;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.node.mail.papi.MessageInfo;
 
 /**
  * Log for POP3/IMAP Virus events.
@@ -28,19 +31,19 @@ import com.untangle.uvm.node.SessionEvent;
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="n_virus_evt_mail", schema="events")
 @SuppressWarnings("serial")
-public class VirusMailEvent extends VirusEvent
+public class VirusMailEvent extends LogEvent
 {
     private Long messageId;
     private MessageInfo messageInfo;
     private VirusScannerResult result;
-    private VirusMessageAction action;
+    private String action;
     private String vendorName;
 
     // constructors -----------------------------------------------------------
 
     public VirusMailEvent() { }
 
-    public VirusMailEvent(MessageInfo messageInfo, VirusScannerResult result, VirusMessageAction action, String vendorName)
+    public VirusMailEvent(MessageInfo messageInfo, VirusScannerResult result, String action, String vendorName)
     {
         this.messageId = messageInfo.getMessageId();
         this.messageInfo = messageInfo;
@@ -67,22 +70,6 @@ public class VirusMailEvent extends VirusEvent
     public boolean isInfected()
     {
         return !result.isClean();
-    }
-
-    @Transient
-    public int getActionType()
-    {
-        if (VirusMessageAction.PASS_KEY == action.getKey()) {
-            return PASSED;
-        } else { // REMOVE_KEY
-            return CLEANED;
-        }
-    }
-
-    @Transient
-    public String getActionName()
-    {
-        return action.getName();
     }
 
     @Transient
@@ -142,13 +129,13 @@ public class VirusMailEvent extends VirusEvent
      *
      * @return action.
      */
-    @Type(type="com.untangle.node.virus.VirusMessageActionUserType")
-    public VirusMessageAction getAction()
+    @Column(name="action")
+    public String getAction()
     {
         return action;
     }
 
-    public void setAction(VirusMessageAction action)
+    public void setAction(String action)
     {
         this.action = action;
     }
@@ -167,5 +154,18 @@ public class VirusMailEvent extends VirusEvent
     public void setVendorName(String vendorName)
     {
         this.vendorName = vendorName;
+    }
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        SessionEvent pe = getSessionEvent();
+        if (null != pe) {
+            pe.appendSyslog(sb);
+        }
+
+        sb.startSection("info");
+        sb.addField("location", getLocation());
+        sb.addField("infected", isInfected());
+        sb.addField("virus-name", getVirusName());
     }
 }

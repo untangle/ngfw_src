@@ -23,13 +23,21 @@ import com.untangle.uvm.vnet.TCPSession;
 
 public class VirusPopHandler extends PopStateMachine
 {
-    private final VirusNodeImpl zNode;
-    private final VirusScanner zScanner;
-    private final String zVendorName;
+    private static final String MOD_SUB_TEMPLATE =
+        "[VIRUS] $MIMEMessage:SUBJECT$";
 
-    private final WrappedMessageGenerator zWMsgGenerator;
-    private final VirusMessageAction zMsgAction;
-    private final boolean bScan;
+    private static final String MOD_BODY_TEMPLATE =
+        "The attached message from $MIMEMessage:FROM$\r\n" +
+        "was found to contain the virus \"$VirusReport:VIRUS_NAME$\".\r\n"+
+        "The infected portion of the message was removed by Virus Blocker.\r\n";
+
+    private final VirusNodeImpl node;
+    private final VirusScanner scanner;
+    private final String vendorName;
+
+    private final WrappedMessageGenerator generator;
+    private final String popAction;
+    private final boolean scan;
 
     // constructors -----------------------------------------------------------
 
@@ -37,22 +45,15 @@ public class VirusPopHandler extends PopStateMachine
     {
         super(session);
 
-        zNode = node;
-        zScanner = node.getScanner();
-        zVendorName = zScanner.getVendorName();
+        this.node = node;
+        scanner = node.getScanner();
+        vendorName = scanner.getVendorName();
 
         MailNodeSettings zMTSettings = zMExport.getExportSettings();
 
-        VirusPOPConfig zConfig;
-        WrappedMessageGenerator zWMGenerator;
-
-        zConfig = node.getVirusSettings().getBaseSettings().getPopConfig();
-        zWMGenerator = zConfig.getMessageGenerator();
-        lTimeout = zMTSettings.getPopTimeout();
-
-        bScan = zConfig.getScan();
-        zMsgAction = zConfig.getMsgAction();
-        zWMsgGenerator = zWMGenerator;
+        scan = node.getSettings().getScanPop();
+        popAction = node.getSettings().getPopAction();
+        generator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE, MOD_BODY_TEMPLATE);
     }
 
     // PopStateMachine methods -----------------------------------------------
@@ -61,9 +62,9 @@ public class VirusPopHandler extends PopStateMachine
     {
         MIMEPart azMPart[];
 
-        if (true == bScan &&
+        if (true == scan &&
             MIMEUtil.EMPTY_MIME_PARTS != (azMPart = MIMEUtil.getCandidateParts(zMMessage))) {
-            zNode.incrementScanCount();
+            node.incrementScanCount();
 
             TempFileFactory zTFFactory = new TempFileFactory(getPipeline());
             VirusScannerResult zFirstResult = null;
@@ -80,8 +81,7 @@ public class VirusPopHandler extends PopStateMachine
                         throw new TokenException("cannot get message/mime part file: " + exn);
                     }
 
-                    if (null != (zCurResult = scanFile(zMPFile)) &&
-                        VirusMessageAction.REMOVE == zMsgAction) {
+                    if (null != (zCurResult = scanFile(zMPFile)) && "remove".equals(popAction)) {
                         try {
                             MIMEUtil.removeChild(zMPart);
                         } catch (HeaderParseException exn) {
@@ -98,10 +98,10 @@ public class VirusPopHandler extends PopStateMachine
             }
 
             if (null != zFirstResult) {
-                zNode.incrementRemoveCount();
+                node.incrementRemoveCount();
 
                 /* wrap infected message and rebuild message token */
-                MIMEMessage zWMMessage = zWMsgGenerator.wrap(zMMessage, zFirstResult);
+                MIMEMessage zWMMessage = generator.wrap(zMMessage, zFirstResult);
                 try {
                     zMsgFile = zWMMessage.toFile(zTFFactory);
 
@@ -117,7 +117,7 @@ public class VirusPopHandler extends PopStateMachine
                     throw new TokenException("cannot create wrapped message file after removing virus: " + exn);
                 }
             } else {
-                zNode.incrementPassCount();
+                node.incrementPassCount();
             }
         } //else {
         //logger.debug("scan is not enabled or message contains no MIME parts");
@@ -129,12 +129,12 @@ public class VirusPopHandler extends PopStateMachine
     private VirusScannerResult scanFile(File zFile) throws TokenException
     {
         try {
-            VirusScannerResult zScanResult = zScanner.scanFile(zFile);
+            VirusScannerResult zScanResult = scanner.scanFile(zFile);
             VirusMailEvent event = new VirusMailEvent(zMsgInfo,
                                                       zScanResult,
-                                                      zScanResult.isClean() ? VirusMessageAction.PASS : zMsgAction,
-                                                      zVendorName);
-            zNode.logEvent(event);
+                                                      zScanResult.isClean() ? "pass" : popAction,
+                                                      vendorName);
+            node.logEvent(event);
 
             if (false == zScanResult.isClean()) {
                 return zScanResult;

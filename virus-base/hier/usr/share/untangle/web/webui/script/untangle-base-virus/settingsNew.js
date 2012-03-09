@@ -10,20 +10,20 @@ if (!Ung.hasResource["Ung.Virus"]) {
         gridWebEventLog : null,
         gridMailEventLog : null,
         // override get base settings object to reload the signature information.
-        getBaseSettings : function(forceReload) {
+        getSettings : function(forceReload) {
             if (forceReload || this.rpc.baseSettings === undefined) {
                 try {
-                    this.rpc.baseSettings = this.getRpcNode().getBaseSettings(true);
+                    this.rpc.settings = this.getRpcNode().getSettings(true);
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
             }
-            return this.rpc.baseSettings;
+            return this.rpc.settings;
         },
         // called when the component is rendered
         initComponent : function() {
             // keep initial base settings
-            this.initialBaseSettings = Ung.Util.clone(this.getBaseSettings());
+            this.initialBaseSettings = Ung.Util.clone(this.getSettings());
             
             this.buildWeb();
             this.buildEmail();
@@ -60,11 +60,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         boxLabel : this.i18n._('Scan HTTP'),
                         hideLabel : true,
                         name : 'Scan HTTP',
-                        checked : this.getBaseSettings().httpConfig.scan,
+                        checked : this.getSettings().scanHttp,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, checked) {
-                                    this.getBaseSettings().httpConfig.scan = checked;
+                                    this.getSettings().scanHttp = checked;
                                 },this)
                             }
                         }
@@ -98,45 +98,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
 								this.panelWeb.onManageMimeTypes();
 							},this)
 						}
-                    }, {
-                        xtype : 'checkbox',
-                        boxLabel : this.i18n._('Disable HTTP Resume'),
-                        hideLabel : true,
-                        name : 'Disable HTTP Resume',
-                        checked : this.getBaseSettings().httpDisableResume,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, checked) {
-                                    this.getBaseSettings().httpDisableResume = checked;
-                                },this)
-                            }
-                        }
-                    },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Scan trickle rate (1-99)'),
-                        name : 'Scan trickle rate',
-                        id: 'virus_http_trickle_percent',
-                        value : this.getBaseSettings().tricklePercent,
-                        width: 130,
-						hideTrigger:true,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        minValue: 1,                        
-                        maxValue: 99,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
-                                    var tricklePercentFtpCmp = Ext.getCmp('virus_ftp_trickle_percent');
-                                    tricklePercentFtpCmp.setValue(newValue);
-                                    this.getBaseSettings().tricklePercent = newValue;
-                                },this)
-                            }
-                        }
                     }]
                 }, {
                     cls: 'description',
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
+                            + ((this.getSettings().lastUpdate != null) ? i18n.timestampFormat(this.getSettings().lastUpdate) : 
                             this.i18n._("Unknown"))
                 }],
 
@@ -178,7 +144,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                                         Ext.MessageBox.hide();
                                         return;
                                     }
-                                    this.getRpcNode().getBaseSettings(Ext.bind(function(result2,exception2){
+                                    this.getRpcNode().getSettings(Ext.bind(function(result2,exception2){
                                         Ext.MessageBox.hide();                                                
                                         if(Ung.Util.handleException(exception2)){
                                             return;
@@ -233,7 +199,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                                         Ext.MessageBox.hide();
                                         return;
                                     }
-                                    this.getRpcNode().getBaseSettings(Ext.bind(function(result2,exception2){
+                                    this.getRpcNode().getSettings(Ext.bind(function(result2,exception2){
                                         Ext.MessageBox.hide();                                                
                                         if(Ung.Util.handleException(exception2)){
                                             return;
@@ -435,51 +401,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         boxLabel : this.i18n._('Scan FTP'),
                         hideLabel : true,
                         name : 'Scan FTP',
-                        checked : this.getBaseSettings().ftpConfig.scan,
+                        checked : this.getSettings().scanFtp,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, checked) {
-                                    this.getBaseSettings().ftpConfig.scan = checked;
-                                },this)
-                            }
-                        }
-                    }]
-                }, {
-                    title: this.i18n._('Advanced Settings'),
-                    collapsible: true,
-                    collapsed: true,
-                    labelWidth: 170,
-                    items : [{
-                        xtype : 'checkbox',
-                        boxLabel : this.i18n._('Disable FTP Resume'),
-                        hideLabel : true,
-                        name : 'Disable FTP Resume',
-                        checked : this.getBaseSettings().ftpDisableResume,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, checked) {
-                                    this.getBaseSettings().ftpDisableResume = checked;
-                                },this)
-                            }
-                        }
-                    },{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Scan trickle rate'),
-                        name : 'Scan trickle rate (1-99)',
-                        id: 'virus_ftp_trickle_percent',
-                        value : this.getBaseSettings().tricklePercent,
-                        width: 130,
-						hideTrigger:true,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        minValue: 1,                        
-                        maxValue: 99,
-                        listeners : {
-                            "change" : {
-                                fn : Ext.bind(function(elem, newValue) {
-                                    var tricklePercentHttpCmp = Ext.getCmp('virus_http_trickle_percent');
-                                    tricklePercentHttpCmp.setValue(newValue);
-                                    this.getBaseSettings().tricklePercent = newValue;
+                                    this.getSettings().scanFtp = checked;
                                 },this)
                             }
                         }
@@ -487,8 +413,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 }, {
                     cls: 'description',
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
-                            this.i18n._("Unknown"))
+                            + ((this.getSettings().lastUpdate != null) ? i18n.timestampFormat(this.getSettings().lastUpdate) : this.i18n._("Unknown"))
                 }]
 
             });
@@ -523,11 +448,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             boxLabel : this.i18n._('Scan SMTP'),
                             hideLabel : true,
                             name : 'Scan SMTP',
-                            checked : this.getBaseSettings().smtpConfig.scan,
+                            checked : this.getSettings().scanSmtp,
                             listeners : {
                                 "change" : {
                                     fn : Ext.bind(function(elem, checked) {
-                                        this.getBaseSettings().smtpConfig.scan = checked;
+                                        this.getSettings().scanSmtp = checked;
                                     },this)
                                 }
                             }
@@ -536,11 +461,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             boxLabel : this.i18n._('Scan POP3'),
                             hideLabel : true,
                             name : 'Scan POP3',
-                            checked : this.getBaseSettings().popConfig.scan,
+                            checked : this.getSettings().scanPop,
                             listeners : {
                                 "change" : {
                                     fn : Ext.bind(function(elem, checked) {
-                                        this.getBaseSettings().popConfig.scan = checked;
+                                        this.getSettings().scanPop = checked;
                                     },this)
                                 }
                             }
@@ -549,11 +474,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             boxLabel : this.i18n._('Scan IMAP'),
                             hideLabel : true,
                             name : 'Scan IMAP',
-                            checked : this.getBaseSettings().imapConfig.scan,
+                            checked : this.getSettings().scanImap,
                             listeners : {
                                 "change" : {
                                     fn : Ext.bind(function(elem, checked) {
-                                        this.getBaseSettings().imapConfig.scan = checked;
+                                        this.getSettings().scanImap = checked;
                                     },this)
                                 }
                             }
@@ -570,16 +495,16 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             mode : 'local',
                             triggerAction : 'all',
                             listClass : 'x-combo-list-small',
-                            store: [["PASS", this.i18n._("pass message")], 
-                                    ["REMOVE", this.i18n._("remove infection")],
-                                    ["BLOCK", this.i18n._("block message")]],
+                            store: [["pass", this.i18n._("pass message")], 
+                                    ["remove", this.i18n._("remove infection")],
+                                    ["block", this.i18n._("block message")]],
                             displayField : 'name',
                             valueField : 'key',
-                            value : this.getBaseSettings().smtpConfig.msgAction,
+                            value : this.getSettings().smtpAction,
                             listeners : {
                                 "change" : {
                                     fn : Ext.bind(function(elem, newValue) {
-                                        this.getBaseSettings().smtpConfig.msgAction = newValue;
+                                        this.getSettings().smtpAction = newValue;
                                     },this)
                                 }
                             }
@@ -591,15 +516,15 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             mode : 'local',
                             triggerAction : 'all',
                             listClass : 'x-combo-list-small',
-                            store : [["PASS", this.i18n._("pass message")], 
-									["REMOVE", this.i18n._("remove infection")]],
+                            store : [["pass", this.i18n._("pass message")], 
+									["remove", this.i18n._("remove infection")]],
                             displayField : 'name',
                             valueField : 'key',
-                            value : this.getBaseSettings().popConfig.msgAction,
+                            value : this.getSettings().popAction,
                             listeners : {
                                 "change" : {
                                     fn : Ext.bind(function(elem, newValue) {
-                                        this.getBaseSettings().popConfig.msgAction = newValue;
+                                        this.getSettings().popAction = newValue;
                                     },this)
                                 }
                             }
@@ -615,11 +540,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                                    ["REMOVE", this.i18n._("remove infection")]],
                             displayField : 'name',
                             valueField : 'key',
-                            value : this.getBaseSettings().imapConfig.msgAction,
+                            value : this.getSettings().imapAction,
                             listeners : {
                                 "change" : {
                                     fn : Ext.bind(function(elem, newValue) {
-                                        this.getBaseSettings().imapConfig.msgAction = newValue;
+                                        this.getSettings().imapAction = newValue;
                                     },this)
                                 }
                             }
@@ -628,8 +553,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 }, {
                     cls: 'description',
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : 
-                            this.i18n._("Unknown"))
+                            + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : this.i18n._("Unknown"))
                 }]
 
             });
@@ -805,14 +729,13 @@ if (!Ung.hasResource["Ung.Virus"]) {
         saveAction : function() {
             if (this.validate()) {
                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.getRpcNode().updateAll(Ext.bind(function(result, exception) {
-                    Ext.MessageBox.hide();
-                    if(Ung.Util.handleException(exception)) return;
-                    // exit settings screen
-                    this.closeWindow();
-                },this), this.getBaseSettings(), 
-                        this.gridMimeTypes ? this.gridMimeTypes.getSaveList() : null,
-                        this.gridExtensions ? this.gridExtensions.getSaveList() : null);
+                this.getRpcNode().setSettings(
+                    Ext.bind(function(result, exception) {
+                        Ext.MessageBox.hide();
+                        if(Ung.Util.handleException(exception)) return;
+                        // exit settings screen
+                        this.closeWindow();
+                    },this.getSettings()));
             }
         },
         isDirty : function() {

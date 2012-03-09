@@ -14,6 +14,9 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Type;
 
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.node.http.RequestLine;
 import com.untangle.uvm.node.SessionEvent;
 
@@ -24,7 +27,7 @@ import com.untangle.uvm.node.SessionEvent;
 @org.hibernate.annotations.Entity(mutable=false)
 @Table(name="n_virus_evt_http", schema="events")
 @SuppressWarnings("serial")
-public class VirusHttpEvent extends VirusEvent
+public class VirusHttpEvent extends LogEvent
 {
     private Long requestId;
     private RequestLine requestLine;
@@ -64,33 +67,6 @@ public class VirusHttpEvent extends VirusEvent
     }
 
     @Transient
-    public int getActionType()
-    {
-        if (true == result.isClean()) {
-            return PASSED;
-        } else if (true == result.isVirusCleaned()) {
-            return CLEANED;
-        } else {
-            return BLOCKED;
-        }
-    }
-
-    @Transient
-    public String getActionName()
-    {
-        switch(getActionType())
-            {
-            case PASSED:
-                return "clean";
-            case CLEANED:
-                return "cleaned";
-            default:
-            case BLOCKED:
-                return "blocked";
-            }
-    }
-
-    @Transient
     public String getVirusName()
     {
         String n = result.getVirusName();
@@ -121,21 +97,6 @@ public class VirusHttpEvent extends VirusEvent
     {
         this.requestId = requestId;
     }
-
-    /**
-     * Corresponding request line.
-     *
-     * @return the request line.
-     */
-//     public RequestLine getRequestLine()
-//     {
-//         return requestLine;
-//     }
-
-//     public void setRequestLine(RequestLine requestLine)
-//     {
-//         this.requestLine = requestLine;
-//     }
 
     /**
      * Virus scan result.
@@ -171,5 +132,18 @@ public class VirusHttpEvent extends VirusEvent
     public void setVendorName(String vendorName)
     {
         this.vendorName = vendorName;
+    }
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        SessionEvent pe = getSessionEvent();
+        if (null != pe) {
+            pe.appendSyslog(sb);
+        }
+
+        sb.startSection("info");
+        sb.addField("location", getLocation());
+        sb.addField("infected", isInfected());
+        sb.addField("virus-name", getVirusName());
     }
 }

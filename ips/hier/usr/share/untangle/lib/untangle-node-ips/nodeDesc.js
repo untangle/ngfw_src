@@ -18,7 +18,6 @@
             "list": [
                 "com.untangle.node.http.HttpSettings",
                 "com.untangle.node.http.HttpRequestEvent",
-                "com.untangle.node.http.RequestLine",
                 "com.untangle.node.http.HttpResponseEvent",
                 "com.untangle.node.ips.IpsRule",
                 "com.untangle.node.ips.IpsSettings",
