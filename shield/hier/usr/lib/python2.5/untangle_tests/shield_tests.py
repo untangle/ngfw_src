@@ -49,6 +49,7 @@ class ShieldTests(unittest.TestCase):
     def test_012_shieldDetectsNmap(self):
         result = clientControl.runCommand("nmap -sT -TInsane -p10000-11000 metaloft.com 2>&1 >/dev/null")
         assert (result == 0)
+        time.sleep(20) # sleep 20 seconds, the daemon logs its events directly so flush events won't work
         flushEvents()
         query = None;
         for q in node.getEventQueries():
