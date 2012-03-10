@@ -19,19 +19,20 @@ node = None
 
 def createCaptureRule():
     return {
-        "alert": False, 
-        "capture": True, 
-        "category": "[no category]", 
-        "clientAddress": "any", 
-        "clientInterface": "any", 
-        "days": "mon,tue,wed,thu,fri,sat,sun", 
-        "description": "Any Interface", 
-        "endTime": "23:59", 
-        "javaClass": "com.untangle.node.cpd.CaptureRule", 
-        "live": True, 
-        "log": False, 
-        "name": "[no name]", 
-        "serverAddress": "any", 
+        "alert": False,
+        "capture": True,
+        "category": "[no category]",
+        "clientAddress": "any",
+        "clientInterface": "any",
+        "days": "mon,tue,wed,thu,fri,sat,sun",
+        "description": "Any Interface",
+        "endTime": "23:59",
+        "javaClass": "com.untangle.node.cpd.CaptureRule",
+        "live": True,
+        "log": False,
+        "name": "[no name]",
+        "serverAddress": "any",
+        "startTime": "00:00"
         };
 
 class CpdTests(unittest.TestCase):
@@ -55,24 +56,30 @@ class CpdTests(unittest.TestCase):
             nodeData = node.getSettings()
 
     def test_010_clientIsOnline(self):
-        result = clientControl.runCommand("wget -4 -a /tmp/cpd_test_010.log -O /tmp/cpd_test_010.out -t 2 --timeout=5 http://www.untangle.com/")
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/cpd_test_010.log -O /tmp/cpd_test_010.out http://www.untangle.com/")
         assert (result == 0)
 
-    def test_011_daemonIsRunning(self):
-        result = os.system("ps aux | grep cpd | grep -v grep >/dev/null 2>&1")
+    def test_020_daemonNotRunning_TrafficCheck(self):
+        result = clientControl.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/cpd_test_020.log -O /tmp/cpd_test_020.out http://www.google.com/")
         assert (result == 0)
 
-    def test_020_nodeSettings_Default_Google(self):
-        result = clientControl.runCommand("wget -4 -a /tmp/cpd_test_020.log -O /tmp/cpd_test_020.out -t 2 --timeout=5 http://www.google.com/")
-        assert (result == 0)
-
-    def test_021_nodeSettings_Capture_Google(self):
+    def test_021_daemonConfig_and_Startup(self):
         global node, nodeData
         nodeData['captureRules']['list'].append(createCaptureRule())
         node.setSettings(nodeData)
         node.start()
-        result = clientControl.runCommand("wget -4 -a /tmp/cpd_test_021.log -O /tmp/cpd_test_021.out -t 2 --timeout=5 http://www.google.com/")        
-        assert (result != 0)
+        result = os.system("ps aux | grep monitor\.cpd | grep -v grep >/dev/null 2>&1")
+        assert (result == 0)
+
+    def test_022_basicCaptureRule(self):
+        for i in range(10):
+            msg = "Test waiting : waiting %d seconds for process to settle  \r" % (10 - i)
+            sys.stdout.write(msg)
+            sys.stdout.flush()
+            time.sleep(1)
+        print "Test waiting : waiting 0 seconds for process to settle"
+        result = clientControl.runCommand("wget -4 -t2 --timeout=5 -a /tmp/cpd_test_021.log -O - http://www.google.com/ | grep -q captive-portal")
+        assert (result == 0)
 
     def test_999_finalTearDown(self):
         global nodeDesc
