@@ -416,6 +416,9 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
                 readSettings = settingsManager.load( VirusSettings.class, settingsFileName );
                 if (readSettings != null) {
                     logger.warn("Found settings imported from database");
+                    /* reinitialize the lists from scratch */
+                    initMimeTypes(readSettings);
+                    initFileExtensions(readSettings);
                 }
             } catch (SettingsManager.SettingsException e) {
                 logger.warn("Failed to load settings:",e);

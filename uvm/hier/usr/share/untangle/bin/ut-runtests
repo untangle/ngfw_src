@@ -14,6 +14,8 @@ from   untangle_tests.classd_tests import ClassdTests
 from   untangle_tests.spyware_tests import SpywareTests
 from   untangle_tests.cpd_tests import CpdTests
 from   untangle_tests.shield_tests import ShieldTests
+from   untangle_tests.clam_tests import ClamTests
+from   untangle_tests.commtouchav_tests import CommtouchAvTests
 
 class ArgumentParser(object):
     def __init__(self):
@@ -196,6 +198,14 @@ while True:
         total += subTotal
     if ("shield" in parser.nodesToTest or "all" in parser.nodesToTest):
         errors, subTotal = runTestSuite(ShieldTests)
+        rc += errors
+        total += subTotal
+    if ("clam" in parser.nodesToTest or "all" in parser.nodesToTest):
+        errors, subTotal = runTestSuite(ClamTests)
+        rc += errors
+        total += subTotal
+    if ("commtouchav" in parser.nodesToTest or "all" in parser.nodesToTest):
+        errors, subTotal = runTestSuite(CommtouchAvTests)
         rc += errors
         total += subTotal
     if not parser.repeat:
