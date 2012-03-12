@@ -9,22 +9,10 @@ if (!Ung.hasResource["Ung.Virus"]) {
         panelFtp: null,
         gridWebEventLog : null,
         gridMailEventLog : null,
-        // override get base settings object to reload the signature information.
-        getSettings : function(forceReload) {
-            if (forceReload || this.rpc.baseSettings === undefined) {
-                try {
-                    this.rpc.settings = this.getRpcNode().getSettings(true);
-                } catch (e) {
-                    Ung.Util.rpcExHandler(e);
-                }
-            }
-            return this.rpc.settings;
-        },
         // called when the component is rendered
         initComponent : function() {
-            // keep initial base settings
-            this.initialBaseSettings = Ung.Util.clone(this.getSettings());
-            
+            this.getSettings();
+            this.vendor=this.getRpcNode().getVendor();
             this.buildWeb();
             this.buildEmail();
             this.buildFtp();
@@ -60,11 +48,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         boxLabel : this.i18n._('Scan HTTP'),
                         hideLabel : true,
                         name : 'Scan HTTP',
-                        checked : this.getSettings().scanHttp,
+                        checked : this.settings.scanHttp,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, checked) {
-                                    this.getSettings().scanHttp = checked;
+                                    this.settings.scanHttp = checked;
                                 },this)
                             }
                         }
@@ -102,7 +90,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 }, {
                     cls: 'description',
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + ((this.getSettings().lastUpdate != null) ? i18n.timestampFormat(this.getSettings().lastUpdate) : 
+                            + ((this.settings.lastUpdate != null) ? i18n.timestampFormat(this.settings.lastUpdate) : 
                             this.i18n._("Unknown"))
                 }],
 
@@ -137,26 +125,15 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             }],
                             grid : settingsCmp.gridExtensions,
                             applyAction : function(callback){
-                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = settingsCmp.gridExtensions.getSaveList();
-                                settingsCmp.getRpcNode().updateExtensions(Ext.bind(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)){
-                                        Ext.MessageBox.hide();
-                                        return;
+                                Ext.MessageBox.wait(i18n._("Appling..."), i18n._("Please wait"));
+                                settingsCmp.gridExtensions.getGridSaveList(Ext.bind(function(saveList) {
+                                    Ext.MessageBox.hide();                                                
+                                	this.settings.httpFileExtensions=saveList;
+                                    if(callback != null) {
+                                        callback();
                                     }
-                                    this.getRpcNode().getSettings(Ext.bind(function(result2,exception2){
-                                        Ext.MessageBox.hide();                                                
-                                        if(Ung.Util.handleException(exception2)){
-                                            return;
-                                        }
-                                        this.gridExtensions.setTotalRecords(result2.extensionsLength);
-                                        this.gridExtensions.reloadGrid();
-                                        if(callback != null) {
-                                            callback();
-                                        }
-                                    },this));
-                                },settingsCmp), saveList[0],saveList[1],saveList[2]);
-                            }    
+                                },settingsCmp));
+                            } 
                         });
                     }
                     this.winExtensions.show();
@@ -192,25 +169,14 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             }],
                             grid : settingsCmp.gridMimeTypes,
                             applyAction : function(callback){
-                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                                var saveList = settingsCmp.gridMimeTypes.getSaveList();
-                                settingsCmp.getRpcNode().updateHttpMimeTypes(Ext.bind(function(result, exception) {
-                                    if(Ung.Util.handleException(exception)){
-                                        Ext.MessageBox.hide();
-                                        return;
+                                Ext.MessageBox.wait(i18n._("Appling..."), i18n._("Please wait"));
+                                settingsCmp.gridMimeTypes.getGridSaveList(Ext.bind(function(saveList) {
+                                    Ext.MessageBox.hide();                                                
+                                	this.settings.httpMimeTypes=saveList;
+                                    if(callback != null) {
+                                        callback();
                                     }
-                                    this.getRpcNode().getSettings(Ext.bind(function(result2,exception2){
-                                        Ext.MessageBox.hide();                                                
-                                        if(Ung.Util.handleException(exception2)){
-                                            return;
-                                        }
-                                        this.gridMimeTypes.setTotalRecords(result2.httpMimeTypesLength);
-                                        this.gridMimeTypes.reloadGrid();
-                                        if(callback != null) {
-                                            callback();
-                                        }
-                                    },this));
-                                },settingsCmp), saveList[0],saveList[1],saveList[2]);
+                                },settingsCmp));
                             } 
                         });
                     }
@@ -230,25 +196,13 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 settingsCmp : this,
                 emptyRow : {
                     "string" : "undefined type",
-                    "live" : true,
+                    "enabled" : true,
                     "name" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("File Extensions"),
-                recordJavaClass : "com.untangle.uvm.node.StringRule",
-                dataFn : Ext.bind(function(){
-                	return this.getRpcNode().getExtensions(0, Ung.Util.maxRowCount,[]);
-                }, this),
-                fields : [{
-                    name : 'id'
-                }, {
-                    name : 'string',
-                    type : 'string'
-                }, {
-                    name : 'live'
-                }, {
-                    name : 'name',
-                    type : 'string'
-                }],
+                recordJavaClass : "com.untangle.uvm.node.GenericRule",
+                dataProperty : "httpFileExtensions",
+                fields : Ung.Util.getGenericRuleFields(this),
                 columns : [{
                     header : this.i18n._("file type"),
                     width : 200,
@@ -261,7 +215,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
 				{
 					xtype:'checkcolumn',
 					header : this.i18n._("scan"),
-					dataIndex : 'live',
+					dataIndex : 'enabled',
 					fixed : true,
 					width:55
 				}, {
@@ -288,7 +242,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
 				{
 					xtype:'checkbox',
                     name : "Scan",
-                    dataIndex : "live",
+                    dataIndex : "enabled",
                     fieldLabel : this.i18n._("Scan")
                 },
 				{
@@ -308,30 +262,18 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 name : 'MIME Types',
                 settingsCmp : this,
                 emptyRow : {
-                    "mimeType" : "undefined type",
-                    "live" : true,
+                    "string" : "undefined type",
+                    "enabled" : true,
                     "name" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("MIME Types"),
                 recordJavaClass : "com.untangle.uvm.node.MimeTypeRule",
-                dataFn : Ext.bind(function(){
-                	return this.getRpcNode().getHttpMimeTypes(0, Ung.Util.maxRowCount,[]);
-                }, this),
-                fields : [{
-                    name : 'id'
-                }, {
-                    name : 'mimeType',
-                    type : 'string'
-                }, {
-                    name : 'live'
-                }, {
-                    name : 'name',
-                    type : 'string'
-                }],
+                dataProperty : "httpMimeTypes",
+                fields : Ung.Util.getGenericRuleFields(this),
                 columns : [{
                     header : this.i18n._("MIME type"),
                     width : 200,
-                    dataIndex : 'mimeType',
+                    dataIndex : 'string',
 					field:{
 						xtype:'textfield',
 						allowBlank:false
@@ -339,7 +281,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 }, {
 					xtype:'checkcolumn',
 					header : this.i18n._("scan"),
-					dataIndex : 'live',
+					dataIndex : 'enabled',
 					fixed : true,
 					width:55
 				}, {
@@ -352,20 +294,20 @@ if (!Ung.hasResource["Ung.Virus"]) {
 						allowBlank:false
 					}
                 }],
-                sortField : 'mimeType',
+                sortField : 'string',
                 columnsDefaultSortable : true,
                 rowEditorInputLines : [
 				{
 					xtype:'textfield',
                     name : "MIME Type",
-                    dataIndex : "mimeType",
+                    dataIndex : "string",
                     fieldLabel : this.i18n._("MIME Type"),
                     allowBlank : false,
                     width : 400
                 },
 				{	xtype:'checkbox',
                     name : "Scan",
-                    dataIndex : "live",
+                    dataIndex : "enabled",
                     fieldLabel : this.i18n._("Scan")
                 },
 				{
@@ -401,11 +343,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         boxLabel : this.i18n._('Scan FTP'),
                         hideLabel : true,
                         name : 'Scan FTP',
-                        checked : this.getSettings().scanFtp,
+                        checked : this.settings.scanFtp,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, checked) {
-                                    this.getSettings().scanFtp = checked;
+                                    this.settings.scanFtp = checked;
                                 },this)
                             }
                         }
@@ -413,7 +355,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 }, {
                     cls: 'description',
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + ((this.getSettings().lastUpdate != null) ? i18n.timestampFormat(this.getSettings().lastUpdate) : this.i18n._("Unknown"))
+                            + ((this.settings.lastUpdate != null) ? i18n.timestampFormat(this.settings.lastUpdate) : this.i18n._("Unknown"))
                 }]
 
             });
@@ -448,11 +390,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             boxLabel : this.i18n._('Scan SMTP'),
                             hideLabel : true,
                             name : 'Scan SMTP',
-                            checked : this.getSettings().scanSmtp,
+                            checked : this.settings.scanSmtp,
                             listeners : {
                                 "change" : {
                                     fn : Ext.bind(function(elem, checked) {
-                                        this.getSettings().scanSmtp = checked;
+                                        this.settings.scanSmtp = checked;
                                     },this)
                                 }
                             }
@@ -461,11 +403,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             boxLabel : this.i18n._('Scan POP3'),
                             hideLabel : true,
                             name : 'Scan POP3',
-                            checked : this.getSettings().scanPop,
+                            checked : this.settings.scanPop,
                             listeners : {
                                 "change" : {
                                     fn : Ext.bind(function(elem, checked) {
-                                        this.getSettings().scanPop = checked;
+                                        this.settings.scanPop = checked;
                                     },this)
                                 }
                             }
@@ -474,11 +416,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             boxLabel : this.i18n._('Scan IMAP'),
                             hideLabel : true,
                             name : 'Scan IMAP',
-                            checked : this.getSettings().scanImap,
+                            checked : this.settings.scanImap,
                             listeners : {
                                 "change" : {
                                     fn : Ext.bind(function(elem, checked) {
-                                        this.getSettings().scanImap = checked;
+                                        this.settings.scanImap = checked;
                                     },this)
                                 }
                             }
@@ -500,11 +442,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                                     ["block", this.i18n._("block message")]],
                             displayField : 'name',
                             valueField : 'key',
-                            value : this.getSettings().smtpAction,
+                            value : this.settings.smtpAction,
                             listeners : {
                                 "change" : {
                                     fn : Ext.bind(function(elem, newValue) {
-                                        this.getSettings().smtpAction = newValue;
+                                        this.settings.smtpAction = newValue;
                                     },this)
                                 }
                             }
@@ -520,11 +462,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
 									["remove", this.i18n._("remove infection")]],
                             displayField : 'name',
                             valueField : 'key',
-                            value : this.getSettings().popAction,
+                            value : this.settings.popAction,
                             listeners : {
                                 "change" : {
                                     fn : Ext.bind(function(elem, newValue) {
-                                        this.getSettings().popAction = newValue;
+                                        this.settings.popAction = newValue;
                                     },this)
                                 }
                             }
@@ -540,11 +482,11 @@ if (!Ung.hasResource["Ung.Virus"]) {
                                    ["REMOVE", this.i18n._("remove infection")]],
                             displayField : 'name',
                             valueField : 'key',
-                            value : this.getSettings().imapAction,
+                            value : this.settings.imapAction,
                             listeners : {
                                 "change" : {
                                     fn : Ext.bind(function(elem, newValue) {
-                                        this.getSettings().imapAction = newValue;
+                                        this.settings.imapAction = newValue;
                                     },this)
                                 }
                             }
@@ -553,7 +495,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 }, {
                     cls: 'description',
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + ((this.getBaseSettings().lastUpdate != null) ? i18n.timestampFormat(this.getBaseSettings().lastUpdate) : this.i18n._("Unknown"))
+                            + ((this.settings.lastUpdate != null) ? i18n.timestampFormat(this.settings.lastUpdate) : this.i18n._("Unknown"))
                 }]
 
             });
@@ -589,7 +531,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     name : 'location'
                 }, {
                     name : 'reason',
-                    mapping : 'virus' + main.capitalize(this.getRpcNode().getVendor()) + 'Name'
+                    mapping : 'virus' + main.capitalize(this.vendor) + 'Name'
                 }],
                 // the list of columns
                 columns : [{
@@ -664,7 +606,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     type : 'string'
                 }, {
                     name : 'reason',
-                    mapping : 'virus' + main.capitalize(this.getRpcNode().getVendor()) + 'Name'
+                    mapping : 'virus' + main.capitalize(this.vendor) + 'Name'
                 }],
                 // the list of columns
                 columns : [{
@@ -708,40 +650,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     dataIndex : 'server'
                 }]
             });
-        },
-        // validation function
-        validateClient : function() {
-            //validate trickle rate
-            var tricklePercentCmp = Ext.getCmp('virus_http_trickle_percent');
-            if (tricklePercentCmp.isValid()) {
-                return true;
-            } else {
-                Ext.MessageBox.alert(this.i18n._('Warning'), this.i18n._("Scan trickle rate should be between 1 and 99!"),
-                    Ext.bind(function () {
-                        this.tabs.activate(this.panelWeb);
-                        tricklePercentCmp.focus(true);
-                    },this) 
-                );
-                return false;
-            }
-        },
-        // save function
-        saveAction : function() {
-            if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.getRpcNode().setSettings(
-                    Ext.bind(function(result, exception) {
-                        Ext.MessageBox.hide();
-                        if(Ung.Util.handleException(exception)) return;
-                        // exit settings screen
-                        this.closeWindow();
-                    },this.getSettings()));
-            }
-        },
-        isDirty : function() {
-            return !Ung.Util.equals(this.getBaseSettings(), this.initialBaseSettings)
-                || (this.gridMimeTypes ? this.gridMimeTypes.isDirty() : false)
-                || (this.gridExtensions ? this.gridExtensions.isDirty() : false);
         }
     });
 }
