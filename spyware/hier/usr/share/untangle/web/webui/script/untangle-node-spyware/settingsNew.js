@@ -13,10 +13,8 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         gridSuspiciousEventLog : null,
         gridUrlEventLog : null,
         initComponent : function() {
+            this.getSettings();
             this.genericRuleFields = Ung.Util.getGenericRuleFields(this);
-            Ung.Util.generateListIds(this.getSettings().cookies.list);
-            Ung.Util.generateListIds(this.getSettings().subnets.list);
-            Ung.Util.generateListIds(this.getSettings().passedUrls.list);
             this.buildBlockLists();
             this.buildPassList();
             this.buildUrlEventLog();
@@ -28,8 +26,6 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                                 this.gridCookieEventLog,
                                 this.gridSuspiciousEventLog]);
 
-            // keep initial  settings
-            this.initialSettings = Ung.Util.clone(this.getSettings());
             Ung.Spyware.superclass.initComponent.call(this);
         },
         // Block lists panel
@@ -58,9 +54,9 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         boxLabel : this.i18n._('Block Malware URLs (Community List)'),
                         hideLabel : true,
                         name : 'Block Malware URLs (Community List)',
-                        checked : this.getSettings().scanUrls,
+                        checked : this.settings.scanUrls,
 						handler:Ext.bind(function(elem, checked) {
-                                    this.getSettings().scanUrls = checked;
+                                    this.settings.scanUrls = checked;
                                 },this)
                        }
                     ,  {
@@ -68,9 +64,9 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         boxLabel : this.i18n._('Block Malware URLs (Google List)'),
                         hideLabel : true,
                         name : 'Block Malware URLs (Google List)',
-                        checked : this.getSettings().scanGoogleSafeBrowsing,
+                        checked : this.settings.scanGoogleSafeBrowsing,
 						handler: Ext.bind(function(elem, checked) {
-                                    this.getSettings().scanGoogleSafeBrowsing = checked;
+                                    this.settings.scanGoogleSafeBrowsing = checked;
                                 },this)
                         }
                      ,  {
@@ -83,13 +79,13 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                                     ["Global", this.i18n._("Permanent and Global")]],
                         displayField : 'unblockModeName',
                         valueField : 'unblockModeValue',
-                        value : this.getSettings().unblockMode,
+                        value : this.settings.unblockMode,
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getSettings().unblockMode = newValue;
+                                    this.settings.unblockMode = newValue;
                                 },this)
                             }
                         }
@@ -101,9 +97,9 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         boxLabel : this.i18n._('Block Tracking & Ad Cookies'),
                         hideLabel : true,
                         name : 'Block Tracking & Ad Cookies',
-                        checked : this.getSettings().scanCookies,
+                        checked : this.settings.scanCookies,
 						handler:Ext.bind(function(elem, checked) {
-                                    this.getSettings().scanCookies = checked;
+                                    this.settings.scanCookies = checked;
                                 },this)
                     },
                     {
@@ -121,9 +117,9 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         boxLabel : this.i18n._('Monitor Suspicious Traffic'),
                         hideLabel : true,
                         name : 'Monitor Suspicious Traffic',
-                        checked : this.getSettings().scanSubnets,
+                        checked : this.settings.scanSubnets,
                         handler : Ext.bind(function(elem, checked) {
-                                    this.getSettings().scanSubnets = checked;
+                                    this.settings.scanSubnets = checked;
                                 },this)
                     },
                     {
@@ -180,9 +176,8 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                                         this.getRpcNode().getCookies(Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
                                             if(Ung.Util.handleException(exception)) return;
-                                            this.gridCookiesList.reloadGrid({data:result.list});
-                                            this.getSettings().cookies = result;
-                                            this.initialSettings.cookies = result;
+                                            this.settings.cookies = result;
+                                            this.gridCookiesList.clearDirty();
                                             if(callback != null) {
                                                 callback();
                                             }
@@ -233,9 +228,8 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                                         this.getRpcNode().getSubnets(Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
                                             if(Ung.Util.handleException(exception)) return;
-                                            this.gridSubnetList.reloadGrid({data:result.list});
-                                            this.getSettings().subnets = result;
-                                            this.initialSettings.subnets = result;
+                                            this.settings.subnets = result;
+                                            this.gridSubnetList.clearDirty();
                                             if(callback != null) {
                                                 callback();
                                             }
@@ -268,7 +262,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Cookies List"),
-                data: this.getSettings().cookies.list,
+                dataProperty:'cookies',
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
@@ -316,7 +310,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     description : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Subnet List"),
-                data: this.getSettings().subnets.list,
+                dataProperty:'subnets',
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
                 columns : [{
@@ -400,7 +394,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     "description" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("Pass List"),
-                data: this.getSettings().passedUrls.list,
+                dataProperty: 'passedUrls',
                 recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 fields : this.genericRuleFields,
 				sortField : 'string',
@@ -668,7 +662,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             return value.trim();
         },
         // validation
-        validateServer : function() {
+        validate: function() {
             // ipMaskedAddress list must be validated server side
             var subnetSaveList = this.gridSubnetList ? this.gridSubnetList.getSaveList() : null;
             if (subnetSaveList != null) {
@@ -719,47 +713,14 @@ if (!Ung.hasResource["Ung.Spyware"]) {
             }
             return true;
         },
-        validate : function() {
-            // reverse the order because valdate client alters the data
-            return this.validateServer() && this.validateClient();
-        },
-        //apply function 
-        applyAction : function(){
-            this.saveAction(true);
-        },        
-        // save function
-        saveAction : function(keepWindowOpen) {
-            // validate first
-            if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.gridPassList.getGridSaveList(Ext.bind(function(saveList) {
-                    this.alterUrls(saveList.list);
-                    this.getSettings().passedUrls = saveList;
-                    this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        // exit settings screen
-                        if(keepWindowOpen!== true){
-                            Ext.MessageBox.hide();                    
-                            this.closeWindow();
-                        }else{
-                            //refresh the settings
-                            this.getSettings(true);
-                            Ung.Util.generateListIds(this.getSettings().cookies.list);
-                            Ung.Util.generateListIds(this.getSettings().subnets.list);
-                            Ung.Util.generateListIds(this.getSettings().passedUrls.list);
-                            
-                            this.gridPassList.reloadGrid({data:this.getSettings().passedUrls.list});
-                            // keep initial  settings
-                            this.initialSettings = Ung.Util.clone(this.getSettings());
-                            Ext.MessageBox.hide();
-                        }
-                    },this), this.getSettings());
-                },this));                  
-            }
-        },
-        isDirty : function() {
-            return !Ung.Util.equals(this.getSettings(), this.initialSettings) || this.gridPassList.isDirty();
-            
+        
+        beforeSave: function(isApply, handler) {
+            this.gridPassList.getGridSaveList(Ext.bind(function(saveList) {
+                this.alterUrls(saveList.list);
+                this.settings.passedUrls = saveList;
+                handler.call(this, isApply);
+            },this));
         }
+        
     });
 }

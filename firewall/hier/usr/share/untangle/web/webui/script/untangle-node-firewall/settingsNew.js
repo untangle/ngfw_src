@@ -25,8 +25,8 @@ if (!Ung.hasResource["Ung.Firewall"]) {
         gridEventLog : null,
         initComponent : function() {
             //Ung.Util.clearInterfaceStore();
-            Ung.Util.generateListIds(this.getSettings().rules.list);
-            
+            this.getSettings();
+         
             // builds the tabs
             this.buildRules();
             this.buildEventLog();
@@ -78,7 +78,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                     },
                     title : this.i18n._("Rules"),
                     recordJavaClass : "com.untangle.node.firewall.FirewallRule",
-                    data:this.getRpcNode().getSettings().rules.list,
+                    dataProperty:'rules',
                     fields : [{
                         name : 'id'
                     }, {
@@ -340,33 +340,11 @@ if (!Ung.hasResource["Ung.Firewall"]) {
             });
         },
 
-        //apply function 
-        applyAction : function(){
-            this.saveAction(true);
-        },         
-        // save function
-        saveAction : function(keepWindowOpen) {
-            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+         beforeSave: function(isApply, handler) {
             this.gridRules.getGridSaveList(Ext.bind(function(saveList) {
-                this.getSettings().rules = saveList;
-                this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    // exit settings screen
-                    if(!keepWindowOpen) {
-                        Ext.MessageBox.hide();                    
-                        this.closeWindow();
-                    } else {
-                        //refresh the settings
-                        this.getRpcNode().getSettings(Ext.bind(function(result,exception){
-                            Ext.MessageBox.hide();
-                            this.gridRules.reloadGrid({data:result.rules.list});
-                        },this));                       
-                    }
-                },this), this.getSettings());
-            },this));                       
-        },
-        isDirty : function() {
-            return this.gridRules.isDirty();
+                this.settings.rules = saveList;
+                handler.call(this, isApply);
+            },this));
         }
     });
 }

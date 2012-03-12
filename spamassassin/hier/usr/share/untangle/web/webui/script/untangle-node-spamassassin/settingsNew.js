@@ -13,30 +13,18 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         emailPanel : null,
         gridEventLog : null,
         gridDnsblEventLog : null,
-        // override get node settings object to reload the signature information.
-        getNodeSettings : function(forceReload) {
-            if (forceReload || this.rpc.nodeSettings === undefined) {
-                try {
-                    this.rpc.nodeSettings = this.getRpcNode().getSettings();
-                    this.lastUpdate = this.getRpcNode().getLastUpdate();
-                    this.lastCheck = this.getRpcNode().getLastUpdateCheck();
-                    this.signatureVer = this.getRpcNode().getSignatureVersion();
-                } catch (e) {
-                    Ung.Util.rpcExHandler(e);
-                }
-            }
-            return this.rpc.nodeSettings;
-        },
+
         initComponent : function() {
-            // keep initial node settings
-            this.initialNodeSettings = Ung.Util.clone(this.getNodeSettings());
+            this.getSettings();
+            this.lastUpdate = this.getRpcNode().getLastUpdate();
+            this.lastCheck = this.getRpcNode().getLastUpdateCheck();
+            this.signatureVer = this.getRpcNode().getSignatureVersion();
 
             this.buildEmail();
             this.buildEventLog();
             this.buildDnsblEventLog();
             // builds the tab panel with the tabs
             this.buildTabPanel([this.emailPanel, this.gridEventLog, this.gridDnsblEventLog]);
-            //this.tabs.activate(this.emailPanel);
             Ung.SpamAssassin.superclass.initComponent.call(this);
         },
         // called when the component is rendered
@@ -47,16 +35,16 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             this.enableSuperSpam(Ext.getCmp('spamassassin_smtpAction'));
         },
         initSubCmps : function() {
-            Ext.getCmp('spamassassin_smtpStrengthValue').setVisible(this.isCustomStrength(this.getNodeSettings().smtpConfig.strength));
-            Ext.getCmp('spamassassin_pop3StrengthValue').setVisible(this.isCustomStrength(this.getNodeSettings().popConfig.strength));
-            Ext.getCmp('spamassassin_imapStrengthValue').setVisible(this.isCustomStrength(this.getNodeSettings().imapConfig.strength));
-            if(!this.getNodeSettings().smtpConfig.scan) {
+            Ext.getCmp('spamassassin_smtpStrengthValue').setVisible(this.isCustomStrength(this.settings.smtpConfig.strength));
+            Ext.getCmp('spamassassin_pop3StrengthValue').setVisible(this.isCustomStrength(this.settings.popConfig.strength));
+            Ext.getCmp('spamassassin_imapStrengthValue').setVisible(this.isCustomStrength(this.settings.imapConfig.strength));
+            if(!this.settings.smtpConfig.scan) {
                 Ext.getCmp('spamassassin_smtpStrengthValue').disable();
             }
-            if(!this.getNodeSettings().popConfig.scan) {
+            if(!this.settings.popConfig.scan) {
                 Ext.getCmp('spamassassin_pop3StrengthValue').disable();
             }
-            if(!this.getNodeSettings().imapConfig.scan) {
+            if(!this.settings.imapConfig.scan) {
                 Ext.getCmp('spamassassin_imapStrengthValue').disable();
             }
         },
@@ -135,7 +123,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         name : 'Scan SMTP',
                         boxLabel : this.i18n._('Scan SMTP'),
                         hideLabel : true,
-                        checked : this.getNodeSettings().smtpConfig.scan,
+                        checked : this.settings.smtpConfig.scan,
                         listeners : {
                             "render":{
                                 fn : Ext.bind(function(elem) {
@@ -152,7 +140,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             },
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getNodeSettings().smtpConfig.scan = newValue;
+                                    this.settings.smtpConfig.scan = newValue;
                                     if(elem.getValue()){
                                         Ext.getCmp('spamassassin_smtpStrength').enable();
                                         Ext.getCmp('spamassassin_smtpAction').enable();
@@ -189,7 +177,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 mode : 'local',
                                 triggerAction : 'all',
                                 listClass : 'x-combo-list-small',
-                                value : this.getStrengthSelectionValue(this.getNodeSettings().smtpConfig.strength),
+                                value : this.getStrengthSelectionValue(this.settings.smtpConfig.strength),
                                 listeners : {
                                     select : Ext.bind(function(elem, record,index) {
                                             var customCmp = Ext.getCmp('spamassassin_smtpStrengthValue');
@@ -197,9 +185,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                                 customCmp.setVisible(true);
                                             } else {
                                                 customCmp.setVisible(false);
-                                                this.getNodeSettings().smtpConfig.strength = record[0].data.field1;
+                                                this.settings.smtpConfig.strength = record[0].data.field1;
                                             }
-                                            customCmp.setValue(this.getNodeSettings().smtpConfig.strength / 10.0);
+                                            customCmp.setValue(this.settings.smtpConfig.strength / 10.0);
                                         },this)
 								}
                             }]
@@ -213,7 +201,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 name : 'SMTP Strength Value',
                                 id: 'spamassassin_smtpStrengthValue',
                                 itemCls : 'left-indent-1',
-                                value : this.getNodeSettings().smtpConfig.strength / 10.0,
+                                value : this.settings.smtpConfig.strength / 10.0,
                                 width : 200,
                                 allowDecimals: true,
                                 allowBlank : false,
@@ -224,7 +212,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 listeners : {
                                     "change" : {
                                         fn : Ext.bind(function(elem, newValue) {
-                                            this.getNodeSettings().smtpConfig.strength = Math.round(newValue * 10);
+                                            this.settings.smtpConfig.strength = Math.round(newValue * 10);
                                         },this)
                                     }
                                 }
@@ -244,11 +232,11 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : this.getNodeSettings().smtpConfig.msgAction,
+                        value : this.settings.smtpConfig.msgAction,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getNodeSettings().smtpConfig.msgAction = newValue;
+                                    this.settings.smtpConfig.msgAction = newValue;
                                 },this)
                             },
                             "render" : {
@@ -269,7 +257,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         boxLabel : this.i18n._('Drop Super Spam'),
                         hideLabel : true,
                         itemCls : 'left-indent-4',
-                        checked : this.getNodeSettings().smtpConfig.blockSuperSpam,
+                        checked : this.settings.smtpConfig.blockSuperSpam,
                         listeners : {
                             "render" : {
                                 fn : Ext.bind(function(elem) {
@@ -282,7 +270,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             },
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getNodeSettings().smtpConfig.blockSuperSpam = newValue;
+                                    this.settings.smtpConfig.blockSuperSpam = newValue;
                                     if(newValue){
                                         Ext.getCmp('spamassassin_smtpSuperStrengthValue').enable();
                                     }else{
@@ -298,7 +286,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                  fieldLabel : this.i18n._('Super Spam Threshold'),
                                  name : 'Super Spam Level',
                                  id: 'spamassassin_smtpSuperStrengthValue',
-                                 value : this.getNodeSettings().smtpConfig.superSpamStrength / 10.0,
+                                 value : this.settings.smtpConfig.superSpamStrength / 10.0,
                                  allowDecimals: false,
                                  allowNegative: false,
                                  minValue: 0,
@@ -308,7 +296,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                  listeners : {
                                      "change" : {
                                          fn : Ext.bind(function(elem, newValue) {
-                                             this.getNodeSettings().smtpConfig.superSpamStrength = Math.round(newValue * 10);
+                                             this.settings.smtpConfig.superSpamStrength = Math.round(newValue * 10);
                                          },this)
                                      },
                                      "disable" :{
@@ -347,11 +335,11 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                      name : 'Enable tarpitting',
                                      boxLabel : this.i18n._('Enable tarpitting'),
                                      hideLabel : true,
-                                     checked : this.getNodeSettings().smtpConfig.tarpit,
+                                     checked : this.settings.smtpConfig.tarpit,
                                      listeners : {
                                          "change" : {
                                              fn : Ext.bind(function(elem, checked) {
-                                                 this.getNodeSettings().smtpConfig.tarpit = checked;
+                                                 this.settings.smtpConfig.tarpit = checked;
                                              },this)
                                          }
                                      }
@@ -360,11 +348,11 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                      name : 'SMTP Add Email Headers',
                                      boxLabel : this.i18n._('Add email headers'),
                                      hideLabel : true,
-                                     checked : this.getNodeSettings().smtpConfig.addSpamHeaders,
+                                     checked : this.settings.smtpConfig.addSpamHeaders,
                                      listeners : {
                                          "change" : {
                                              fn : Ext.bind(function(elem, newValue) {
-                                                 this.getNodeSettings().smtpConfig.addSpamHeaders = newValue;
+                                                 this.settings.smtpConfig.addSpamHeaders = newValue;
                                              },this)
                                          }
                                      }
@@ -373,11 +361,11 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                      name : 'SMTP Fail Closed',
                                      boxLabel : this.i18n._('Close connection on scan failure'),
                                      hideLabel : true,
-                                     checked : this.getNodeSettings().smtpConfig.failClosed,
+                                     checked : this.settings.smtpConfig.failClosed,
                                      listeners : {
                                          "change" : {
                                              fn : Ext.bind(function(elem, newValue) {
-                                                 this.getNodeSettings().smtpConfig.failClosed = newValue;
+                                                 this.settings.smtpConfig.failClosed = newValue;
                                              },this)
                                          }
                                      }
@@ -386,11 +374,11 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                      name : 'Scan outbound (WAN) SMTP',
                                      boxLabel : this.i18n._('Scan outbound (WAN) SMTP'),
                                      hideLabel : true,
-                                     checked : this.getNodeSettings().smtpConfig.scanWanMail,
+                                     checked : this.settings.smtpConfig.scanWanMail,
                                      listeners : {
                                          "change" : {
                                              fn : Ext.bind(function(elem, newValue) {
-                                                 this.getNodeSettings().smtpConfig.scanWanMail = newValue;
+                                                 this.settings.smtpConfig.scanWanMail = newValue;
                                              },this)
                                          }
                                      }
@@ -399,7 +387,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                      fieldLabel : this.i18n._('CPU Load Limit'),
                                      labelStyle : 'width:130px',
                                      name : 'SMTP CPU Load Limit',
-                                     value : this.getNodeSettings().smtpConfig.loadLimit,
+                                     value : this.settings.smtpConfig.loadLimit,
                                      allowDecimals: true,
                                      allowBlank : false,
                                      blankText : this.i18n._('Value must be a float.'),
@@ -409,7 +397,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                      listeners : {
                                          "change" : {
                                              fn : Ext.bind(function(elem, newValue) {
-                                                 this.getNodeSettings().smtpConfig.loadLimit = newValue;
+                                                 this.settings.smtpConfig.loadLimit = newValue;
                                              },this)
                                          }
                                      }
@@ -418,7 +406,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                      fieldLabel : this.i18n._('Concurrent Scan Limit'),
                                      labelStyle : 'width:130px',
                                      name : 'SMTP Concurrent Scan Limit',
-                                     value : this.getNodeSettings().smtpConfig.scanLimit,
+                                     value : this.settings.smtpConfig.scanLimit,
                                      allowDecimals: false,
                                      allowBlank : false,
                                      blankText : this.i18n._('Value must be a integer.'),
@@ -428,7 +416,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                      listeners : {
                                          "change" : {
                                              fn : Ext.bind(function(elem, newValue) {
-                                                 this.getNodeSettings().smtpConfig.scanLimit = newValue;
+                                                 this.settings.smtpConfig.scanLimit = newValue;
                                              },this)
                                          }
                                      }
@@ -437,7 +425,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                      fieldLabel : this.i18n._('Message Size Limit'),
                                      labelStyle : 'width:130px',
                                      name : 'SMTP Message Size Limit',
-                                     value : this.getNodeSettings().smtpConfig.msgSizeLimit,
+                                     value : this.settings.smtpConfig.msgSizeLimit,
                                      allowDecimals: false,
                                      allowBlank : false,
                                      blankText : this.i18n._('Value must be a integer.'),
@@ -447,7 +435,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                      listeners : {
                                          "change" : {
                                              fn : Ext.bind(function(elem, newValue) {
-                                                 this.getNodeSettings().smtpConfig.msgSizeLimit = newValue;
+                                                 this.settings.smtpConfig.msgSizeLimit = newValue;
                                              },this)
                                          }
                                      }
@@ -463,7 +451,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         name : 'Scan POP3',
                         boxLabel : this.i18n._('Scan POP3'),
                         hideLabel : true,
-                        checked : this.getNodeSettings().popConfig.scan,
+                        checked : this.settings.popConfig.scan,
                         listeners : {
                             "render" : {
                                 fn : Ext.bind(function(elem) {
@@ -478,7 +466,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             },
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getNodeSettings().popConfig.scan = newValue;
+                                    this.settings.popConfig.scan = newValue;
                                     if(newValue){
                                         Ext.getCmp('spamassassin_pop3Strength').enable();
                                         Ext.getCmp('spamassassin_pop3Action').enable();
@@ -514,7 +502,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 mode : 'local',
                                 triggerAction : 'all',
                                 listClass : 'x-combo-list-small',
-                                value : this.getStrengthSelectionValue(this.getNodeSettings().popConfig.strength),
+                                value : this.getStrengthSelectionValue(this.settings.popConfig.strength),
                                 listeners : {
                                     select : Ext.bind(function(elem, record,index) {
 												var customCmp = Ext.getCmp('spamassassin_pop3StrengthValue');
@@ -522,9 +510,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
 													customCmp.setVisible(true);
 												} else {
 													customCmp.setVisible(false);
-													this.getNodeSettings().popConfig.strength = record[0].data.field1;
+													this.settings.popConfig.strength = record[0].data.field1;
 												}
-												customCmp.setValue(this.getNodeSettings().popConfig.strength / 10.0);
+												customCmp.setValue(this.settings.popConfig.strength / 10.0);
 											},this)
                                 }
                             }]
@@ -538,7 +526,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 name : 'POP3 Strength Value',
                                 id: 'spamassassin_pop3StrengthValue',
                                 itemCls : 'left-indent-1',
-                                value : this.getNodeSettings().popConfig.strength / 10.0,
+                                value : this.settings.popConfig.strength / 10.0,
                                 width: 200,
                                 allowDecimals: true,
                                 allowBlank : false,
@@ -549,7 +537,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 listeners : {
                                     "change" : {
                                         fn : Ext.bind(function(elem, newValue) {
-                                            this.getNodeSettings().popConfig.strength = Math.round(newValue * 10);
+                                            this.settings.popConfig.strength = Math.round(newValue * 10);
                                         },this)
                                     }
                                 }
@@ -569,11 +557,11 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         itemCls : 'left-indent-1',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : this.getNodeSettings().popConfig.msgAction,
+                        value : this.settings.popConfig.msgAction,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getNodeSettings().popConfig.msgAction = newValue;
+                                    this.settings.popConfig.msgAction = newValue;
                                 },this)
                             }
                         }
@@ -593,11 +581,11 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             name : 'POP Add Email Headers',
                             boxLabel : this.i18n._('Add email headers'),
                             hideLabel : true,
-                            checked : this.getNodeSettings().popConfig.addSpamHeaders,
+                            checked : this.settings.popConfig.addSpamHeaders,
                             listeners : {
                                 "change" : {
                                     fn : Ext.bind(function(elem, newValue) {
-                                        this.getNodeSettings().popConfig.addSpamHeaders = newValue;
+                                        this.settings.popConfig.addSpamHeaders = newValue;
                                     },this)
                                 }
                             }
@@ -606,7 +594,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             fieldLabel : this.i18n._('Message Size Limit'),
                             labelStyle : 'width:130px',
                             name : 'POP Message Size Limit',
-                            value : this.getNodeSettings().popConfig.msgSizeLimit,
+                            value : this.settings.popConfig.msgSizeLimit,
                             allowDecimals: false,
                             allowBlank : false,
                             blankText : this.i18n._('Value must be a integer.'),
@@ -616,7 +604,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             listeners : {
                                 "change" : {
                                     fn : Ext.bind(function(elem, newValue) {
-                                        this.getNodeSettings().popConfig.msgSizeLimit = newValue;
+                                        this.settings.popConfig.msgSizeLimit = newValue;
                                     },this)
                                 }
                             }
@@ -633,7 +621,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         boxLabel : this.i18n._('Scan IMAP'),
                         name : 'imapScan',
                         hideLabel : true,
-                        checked : this.getNodeSettings().imapConfig.scan,
+                        checked : this.settings.imapConfig.scan,
                         listeners : {
                             "render" : {
                                 fn : Ext.bind(function(elem) {
@@ -648,7 +636,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             },
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getNodeSettings().imapConfig.scan = newValue;
+                                    this.settings.imapConfig.scan = newValue;
                                     if(newValue){
                                         Ext.getCmp('spamassassin_imapStrength').enable();
                                         Ext.getCmp('spamassassin_imapAction').enable();
@@ -685,7 +673,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 mode : 'local',
                                 triggerAction : 'all',
                                 listClass : 'x-combo-list-small',
-                                value : this.getStrengthSelectionValue(this.getNodeSettings().imapConfig.strength),
+                                value : this.getStrengthSelectionValue(this.settings.imapConfig.strength),
                                 listeners : {
                                     select :Ext.bind(function(elem, record, index) {
                                             var customCmp = Ext.getCmp('spamassassin_imapStrengthValue');
@@ -693,9 +681,9 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                                 customCmp.setVisible(true);
                                             } else {
                                                 customCmp.setVisible(false);
-                                                this.getNodeSettings().imapConfig.strength = record[0].data.field1;
+                                                this.settings.imapConfig.strength = record[0].data.field1;
                                             }
-                                            customCmp.setValue(this.getNodeSettings().imapConfig.strength / 10.0);
+                                            customCmp.setValue(this.settings.imapConfig.strength / 10.0);
                                         },this)
                                 }
                             }]
@@ -709,7 +697,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 name : 'IMAP Strength Value',
                                 id: 'spamassassin_imapStrengthValue',
                                 itemCls : 'left-indent-1',
-                                value : this.getNodeSettings().imapConfig.strength / 10.0,
+                                value : this.settings.imapConfig.strength / 10.0,
                                 width: 200,
                                 allowDecimals: true,
                                 allowBlank : false,
@@ -720,7 +708,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                                 listeners : {
                                     "change" : {
                                         fn : Ext.bind(function(elem, newValue) {
-                                            this.getNodeSettings().imapConfig.strength = Math.round(newValue * 10);
+                                            this.settings.imapConfig.strength = Math.round(newValue * 10);
                                         },this)
                                     }
                                 }
@@ -740,11 +728,11 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : this.getNodeSettings().imapConfig.msgAction,
+                        value : this.settings.imapConfig.msgAction,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getNodeSettings().imapConfig.msgAction = newValue;
+                                    this.settings.imapConfig.msgAction = newValue;
                                 },this)
                             }
                         }
@@ -764,11 +752,11 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             name : 'IMAP Add Email Headers',
                             boxLabel : this.i18n._('Add email headers'),
                             hideLabel : true,
-                            checked : this.getNodeSettings().imapConfig.addSpamHeaders,
+                            checked : this.settings.imapConfig.addSpamHeaders,
                             listeners : {
                                 "change" : {
                                     fn : Ext.bind(function(elem, newValue) {
-                                        this.getNodeSettings().imapConfig.addSpamHeaders = newValue;
+                                        this.settings.imapConfig.addSpamHeaders = newValue;
                                     },this)
                                 }
                             }
@@ -777,7 +765,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             fieldLabel : this.i18n._('Message Size Limit'),
                             labelStyle : 'width:130px',
                             name : 'IMAP Message Size Limit',
-                            value : this.getNodeSettings().imapConfig.msgSizeLimit,
+                            value : this.settings.imapConfig.msgSizeLimit,
                             allowDecimals: false,
                             allowBlank : false,
                             blankText : this.i18n._('Value must be a integer.'),
@@ -787,7 +775,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                             listeners : {
                                 "change" : {
                                     fn : Ext.bind(function(elem, newValue) {
-                                        this.getNodeSettings().imapConfig.msgSizeLimit = newValue;
+                                        this.settings.imapConfig.msgSizeLimit = newValue;
                                     },this)
                                 }
                             }
@@ -967,7 +955,7 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
                 }]
             });
         },
-        validateClient : function() {
+        validate: function() {
             var cmp = null;
             var valid =
                 ((cmp = Ext.getCmp('spamassassin_smtpStrengthValue')).isValid() &&
@@ -976,40 +964,12 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
             if (!valid) {
                 Ext.MessageBox.alert(i18n._("Failed"), this.i18n._('The value of Strength Value field is invalid.'),
                                      Ext.bind(function () {
-                                         this.tabs.activate(this.emailPanel);
+                                         this.tabs.setActiveTab(this.emailPanel);
                                          cmp.focus(true);
                                      },this)
                                     );
             }
             return valid;
-        },
-        //apply function
-        applyAction : function(){
-            this.saveAction(true);
-        },
-        // save function
-        saveAction : function(keepWindowOpen) {
-             if (this.isDirty() === false) {
-                 if (!keepWindowOpen) { this.closeWindow(); }
-                 return;
-             }
-            if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
-                    Ext.MessageBox.hide();
-                    if(Ung.Util.handleException(exception)) return;
-                    // exit settings screen
-                    if(!keepWindowOpen) {
-                        this.closeWindow();
-                    } else {
-                        this.initialNodeSettings = Ung.Util.clone(this.getNodeSettings());
-                    }
-                },this), this.getNodeSettings());
-            }
-        },
-        isDirty : function() {
-            return !Ung.Util.equals(this.getNodeSettings(), this.initialNodeSettings);
         }
-
     });
 }

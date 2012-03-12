@@ -13,23 +13,12 @@ if (!Ung.hasResource["Ung.Phish"]) {
         webPanel : null,
         gridWebEventLog : null,
         gridEmailEventLog : null,
-        // override get base settings object
-        getNodeSettings : function(forceReload) {
-            if (forceReload || this.rpc.nodeSettings === undefined) {
-                try {
-                   this.rpc.nodeSettings = this.getRpcNode().getSettings();
-                   this.lastUpdate = this.getRpcNode().getLastUpdate();
-                   this.lastCheck = this.getRpcNode().getLastUpdateCheck();
-                   this.signatureVer = this.getRpcNode().getSignatureVersion();
-                } catch (e) {
-                Ung.Util.rpcExHandler(e);
-            }
-            }
-            return this.rpc.nodeSettings;
-        },
+
         initComponent : function() {
-            // keep initial node settings
-            this.initialNodeSettings = Ung.Util.clone(this.getNodeSettings());
+            this.getSettings();
+            this.lastUpdate = this.getRpcNode().getLastUpdate();
+            this.lastCheck = this.getRpcNode().getLastUpdateCheck();
+            this.signatureVer = this.getRpcNode().getSignatureVersion();
             // build tabs
             this.buildEmail();
             this.buildWeb();
@@ -75,9 +64,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         boxLabel : this.i18n._('Scan SMTP'),
                         name : 'Scan SMTP',
                         hideLabel : true,
-                        checked : this.getNodeSettings().smtpConfig.scan,
+                        checked : this.settings.smtpConfig.scan,
                         handler : Ext.bind(function(elem, newValue) {
-                                    this.getNodeSettings().smtpConfig.scan = newValue;
+                                    this.settings.smtpConfig.scan = newValue;
                                 },this)
 						}
                      , {
@@ -91,11 +80,11 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : this.getNodeSettings().smtpConfig.msgAction,
+                        value : this.settings.smtpConfig.msgAction,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getNodeSettings().smtpConfig.msgAction = newValue;
+                                    this.settings.smtpConfig.msgAction = newValue;
                                 },this)
                             }
                         }
@@ -112,9 +101,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         boxLabel : this.i18n._('Scan POP3'),
                         name : 'Scan POP3',
                         hideLabel : true,
-                        checked : this.getNodeSettings().popConfig.scan,
+                        checked : this.settings.popConfig.scan,
                         handler : Ext.bind(function(elem, newValue) {
-                                    this.getNodeSettings().popConfig.scan = newValue;
+                                    this.settings.popConfig.scan = newValue;
                                 },this)
 					}, 
 					{
@@ -128,11 +117,11 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : this.getNodeSettings().popConfig.msgAction,
+                        value : this.settings.popConfig.msgAction,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getNodeSettings().popConfig.msgAction = newValue;
+                                    this.settings.popConfig.msgAction = newValue;
                                 },this)
                             }
                         }
@@ -149,9 +138,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         boxLabel : this.i18n._('Scan IMAP'),
                         name : 'Scan IMAP',
                         hideLabel : true,
-                        checked : this.getNodeSettings().imapConfig.scan,
+                        checked : this.settings.imapConfig.scan,
                         handler : Ext.bind(function(elem, newValue) {
-                                  this.getNodeSettings().imapConfig.scan = newValue;
+                                  this.settings.imapConfig.scan = newValue;
                                 },this)
                         }
                      , {
@@ -165,11 +154,11 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small',
-                        value : this.getNodeSettings().imapConfig.msgAction,
+                        value : this.settings.imapConfig.msgAction,
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    this.getNodeSettings().imapConfig.msgAction = newValue;
+                                    this.settings.imapConfig.msgAction = newValue;
                                 },this)
                             }
                         }
@@ -205,9 +194,9 @@ if (!Ung.hasResource["Ung.Phish"]) {
                         boxLabel : this.i18n._('Enable Phish web filtering'),
                         name : 'Enable Phish web filtering',
                         hideLabel : true,
-                        checked : this.getNodeSettings().enableGooglePhishList,
+                        checked : this.settings.enableGooglePhishList,
 						handler:Ext.bind(function(elem, checked) {
-                                    this.getNodeSettings().enableGooglePhishList = checked;
+                                    this.settings.enableGooglePhishList = checked;
                                 },this)
                         }]
                     }
@@ -409,43 +398,12 @@ if (!Ung.hasResource["Ung.Phish"]) {
                 }]
             });
         },
-
-        // apply action
-        applyAction : function()
-        {
-            this.commitSettings(Ext.bind(this.reloadSettings,this));
-        },
-
-        reloadSettings : function()
-        {
-            this.initialNodeSettings = Ung.Util.clone(this.getNodeSettings(true));
-
-            Ext.MessageBox.hide();
-        },
-
-        saveAction : function()
-        {
-            this.commitSettings(Ext.bind(this.completeSaveAction,this));
-        },
-
-        completeSaveAction : function()
-        {
-            Ext.MessageBox.hide();
-            this.closeWindow();
-        },
-
-        // save function
-        commitSettings : function(callback)
-        {
-            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-            this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
-
-                if(Ung.Util.handleException(exception)) return;
-                callback();
-            },this), this.getNodeSettings());
-        },
-        isDirty : function() {
-            return !Ung.Util.equals(this.getNodeSettings(), this.initialNodeSettings);
+        
+        afterSave : function()  {
+            this.lastUpdate = this.getRpcNode().getLastUpdate();
+            this.lastCheck = this.getRpcNode().getLastUpdateCheck();
+            this.signatureVer = this.getRpcNode().getSignatureVersion();
         }
+
     });
 }

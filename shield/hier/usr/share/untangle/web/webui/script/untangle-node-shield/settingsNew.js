@@ -7,7 +7,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
         gridExceptions : null,
         gridEventLog : null,
         initComponent : function(container, position) {
-            Ung.Util.generateListIds(this.getSettings().rules.list);
+            this.getSettings();
             // builds the 3 tabs
             this.buildStatus();
             this.buildExceptions();
@@ -68,8 +68,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 title : this.i18n._("Exceptions"),
                 // the column is autoexpanded if the grid width permits
                 recordJavaClass : "com.untangle.node.shield.ShieldRule",
-                data:this.getSettings().rules.list,
-
+                dataProperty:'rules',
                 // the list of fields
                 fields : [{
                     name : 'id'
@@ -260,35 +259,13 @@ if (!Ung.hasResource["Ung.Shield"]) {
                 }]
             });
         },
-        //apply function 
-        applyAction : function(){
-            this.saveAction(true);
-        },            
-        // save function
-        saveAction : function(keepWindowOpen) {
-            Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+        
+        beforeSave: function(isApply, handler) {
             this.gridExceptions.getGridSaveList(Ext.bind(function(saveList) {
-                this.getSettings().rules = saveList;
-                this.getRpcNode().setSettings(Ext.bind(function(result, exception) {
-                    Ext.MessageBox.hide();
-                    if(Ung.Util.handleException(exception)) return;
-                    // exit settings screen
-                    if(!keepWindowOpen) {
-                        Ext.MessageBox.hide();                    
-                        this.closeWindow();
-                    } else {
-                        //refresh the settings
-                        this.getRpcNode().getSettings(Ext.bind(function(result,exception) {
-                            Ext.MessageBox.hide();
-                            if(Ung.Util.handleException(exception)) return;
-                            this.gridExceptions.reloadGrid({data:result.rules.list});                        
-                        },this));                        
-                    }
-                },this), this.getSettings());
-            },this));                        
-        },
-        isDirty : function() {
-            return this.gridExceptions.isDirty();
+                this.settings.rules = saveList;
+                handler.call(this, isApply);
+            },this));
         }
+     
     });
 }

@@ -171,7 +171,7 @@ Ext.define("Ung.Main", {
                     buttons: Ext.Msg.OKCANCEL,
                     fn: function (btn, text) {
                         if (btn == 'ok'){
-                            main.leftTabs.activate('leftTabConfig');
+                            main.leftTabs.setActiveTab('leftTabConfig');
                             Ext.getCmp("configItem_upgrade").onClick();
                         }
                     },
