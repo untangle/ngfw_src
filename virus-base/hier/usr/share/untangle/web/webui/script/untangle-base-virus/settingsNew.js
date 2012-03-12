@@ -133,7 +133,27 @@ if (!Ung.hasResource["Ung.Virus"]) {
                                         callback();
                                     }
                                 },settingsCmp));
-                            } 
+                            },
+                            /*
+                             * TODO: this is the desired version, to be used after setHttpFileExtensions is implemented, and delete the applyAction above 
+                            applyAction : function(callback){
+                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                settingsCmp.gridExtensions.getGridSaveList(Ext.bind(function(saveList) {
+                                    this.getRpcNode().setHttpFileExtensions(Ext.bind(function(result, exception) {
+                                        Ext.MessageBox.hide();
+                                        if(Ung.Util.handleException(exception)) return;
+                                        this.getRpcNode().getSettings(Ext.bind(function(result, exception) {
+                                            Ext.MessageBox.hide();
+                                            if(Ung.Util.handleException(exception)) return;
+                                            this.settings.httpFileExtensions = result.httpFileExtensions;
+                                            this.gridExtensions.clearDirty();
+                                            if(callback != null) {
+                                                callback();
+                                            }
+                                        },this));
+                                    }),this, saveList);
+                                },settingsCmp));
+                            }*/
                         });
                     }
                     this.winExtensions.show();
@@ -177,7 +197,27 @@ if (!Ung.hasResource["Ung.Virus"]) {
                                         callback();
                                     }
                                 },settingsCmp));
-                            } 
+                            },
+                            /*
+                             * TODO: this is the desired version, to be used after setHttpMimeTypes is implemented, and delete the applyAction above 
+                            applyAction : function(callback){
+                                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
+                                settingsCmp.gridMimeTypes.getGridSaveList(Ext.bind(function(saveList) {
+                                    this.getRpcNode().setHttpMimeTypes(Ext.bind(function(result, exception) {
+                                        Ext.MessageBox.hide();
+                                        if(Ung.Util.handleException(exception)) return;
+                                        this.getRpcNode().getSettings(Ext.bind(function(result, exception) {
+                                            Ext.MessageBox.hide();
+                                            if(Ung.Util.handleException(exception)) return;
+                                            this.settings.httpMimeTypes = result.httpMimeTypes;
+                                            this.gridMimeTypes.clearDirty();
+                                            if(callback != null) {
+                                                callback();
+                                            }
+                                        },this));
+                                    }),this, saveList);
+                                },settingsCmp));
+                            }*/
                         });
                     }
                     this.winMimeTypes.show();
