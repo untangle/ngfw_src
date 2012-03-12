@@ -24,6 +24,12 @@ class TestEnvironmentTests(unittest.TestCase):
         global uvmContext
         assert (uvmContext.nodeManager().isInstantiated('untangle-node-reporting'))
 
+    # verify reports flush events works
+    def test_03_reportsFlushEvents(self):
+        reports = uvmContext.nodeManager().node("untangle-node-reporting")
+        assert (reports != None)
+        reports.flushEvents()
+
     # verify connectivity to client
     def test_10_clientConnectivity(self):
         result = clientControl.runCommand("/bin/true")

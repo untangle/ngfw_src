@@ -87,7 +87,7 @@ public class VirusHttpEvent extends LogEvent
      *
      * @return the request line.
      */
-    @Column(name="request_id")
+    @Column(name="request_line")
     public Long getRequestId()
     {
         return requestId;

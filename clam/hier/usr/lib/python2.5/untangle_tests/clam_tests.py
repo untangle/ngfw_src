@@ -1,6 +1,7 @@
 import unittest
 import time
 import sys
+import os
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
@@ -20,3 +21,8 @@ class ClamTests(VirusTests):
     @staticmethod
     def vendorName():
         return "Clam"
+
+    # verify daemon is running
+    def test_009_clamdIsRunning(self):
+        result = os.system("ps aux | grep clamd | grep -v grep >/dev/null 2>&1")
+        assert (result == 0)
