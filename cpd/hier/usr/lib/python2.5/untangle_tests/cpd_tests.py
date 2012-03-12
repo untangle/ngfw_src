@@ -68,16 +68,13 @@ class CpdTests(unittest.TestCase):
         nodeData['captureRules']['list'].append(createCaptureRule())
         node.setSettings(nodeData)
         node.start()
+        # cpd start seems to return pre-maturely
+        # sleep to allow extra time for CPD to initialize - this should be fixed
+        time.sleep(10)
         result = os.system("ps aux | grep monitor\.cpd | grep -v grep >/dev/null 2>&1")
         assert (result == 0)
 
     def test_022_basicCaptureRule(self):
-        for i in range(10):
-            msg = "Test waiting : waiting %d seconds for process to settle  \r" % (10 - i)
-            sys.stdout.write(msg)
-            sys.stdout.flush()
-            time.sleep(1)
-        print "Test waiting : waiting 0 seconds for process to settle"
         result = clientControl.runCommand("wget -4 -t2 --timeout=5 -a /tmp/cpd_test_021.log -O - http://www.google.com/ | grep -q captive-portal")
         assert (result == 0)
 
