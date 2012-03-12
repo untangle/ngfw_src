@@ -48,7 +48,6 @@ class VirusBaseNode(Node):
 
     @sql_helper.print_timing
     def setup(self, start_date, end_date, start_time):
-        self.__update_n_http_events(start_date, end_date)
         self.__update_n_mail_table('n_mail_msgs', start_date, end_date)
         self.__update_n_mail_table('n_mail_addrs', start_date, end_date)
 
@@ -127,23 +126,6 @@ count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table('n_virus_http_totals', cutoff)
         sql_helper.drop_fact_table('n_virus_mail_totals', cutoff)        
-
-    @sql_helper.print_timing
-    def __update_n_http_events(self, start_date, end_date):
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-UPDATE reports.n_http_events
-SET virus_"""+self.__vendor_name+"""_clean = clean,
-  virus_"""+self.__vendor_name+"""_name = virus_name
-FROM events.n_virus_evt_http
-WHERE reports.n_http_events.request_id = events.n_virus_evt_http.request_line 
-AND events.n_virus_evt_http.vendor_name = %s""",
-                               (string.capwords(self.__vendor_name),), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
 
     @sql_helper.print_timing
     def __update_n_mail_table(self, tablename, start_date, end_date):

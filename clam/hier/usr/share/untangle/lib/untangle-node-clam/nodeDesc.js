@@ -19,8 +19,6 @@
             "javaClass": "java.util.LinkedList",
             "list": [
                 "com.untangle.node.http.HttpSettings",
-                "com.untangle.node.http.HttpRequestEvent",
-                "com.untangle.node.http.HttpResponseEvent",
                 "com.untangle.node.mail.papi.EmailAddressPairRule",
                 "com.untangle.node.mail.papi.EmailAddressRule",
                 "com.untangle.node.mail.papi.MailNodeSettings",
@@ -32,7 +30,6 @@
                 "com.untangle.node.mail.papi.safelist.SafelistSettings",
                 "com.untangle.node.ftp.FtpSettings",
                 "com.untangle.node.virus.VirusMailEvent",
-                "com.untangle.node.virus.VirusHttpEvent",
                 "com.untangle.node.virus.VirusLogEvent",
                 "com.untangle.node.virus.VirusSmtpEvent"
             ]

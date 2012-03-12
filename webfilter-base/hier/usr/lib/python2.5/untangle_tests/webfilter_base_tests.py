@@ -80,7 +80,7 @@ class WebFilterBaseTests(unittest.TestCase):
                 raise Exception('node %s already instantiated' % self.nodeName())
             nodeDesc = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), uvmContext.policyManager().getDefaultPolicy())
             node = uvmContext.nodeManager().nodeContext(nodeDesc['nodeId']).node()
-        flushEvents()
+            flushEvents()
 
     # verify client is online
     def test_010_clientIsOnline(self):

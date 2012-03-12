@@ -3,17 +3,6 @@
  */
 package com.untangle.node.virus;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Column;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Columns;
-import org.hibernate.annotations.Type;
-
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
@@ -23,9 +12,6 @@ import com.untangle.uvm.node.SessionEvent;
 /**
  * Log for HTTP Virus events.
  */
-@Entity
-@org.hibernate.annotations.Entity(mutable=false)
-@Table(name="n_virus_evt_http", schema="events")
 @SuppressWarnings("serial")
 public class VirusHttpEvent extends LogEvent
 {
@@ -48,38 +34,6 @@ public class VirusHttpEvent extends LogEvent
 
     // VirusEvent methods -------------------------------------------------
 
-    @Transient
-    public String getType()
-    {
-        return "HTTP";
-    }
-
-    @Transient
-    public String getLocation()
-    {
-        return null == requestLine ? "" : requestLine.getUrl().toString();
-    }
-
-    @Transient
-    public boolean isInfected()
-    {
-        return !result.isClean();
-    }
-
-    @Transient
-    public String getVirusName()
-    {
-        String n = result.getVirusName();
-
-        return null == n ? "" : n;
-    }
-
-    @Transient
-    public SessionEvent getSessionEvent()
-    {
-        return null == requestLine ? null : requestLine.getSessionEvent();
-    }
-
     // accessors ----------------------------------------------------------
 
     /**
@@ -87,7 +41,6 @@ public class VirusHttpEvent extends LogEvent
      *
      * @return the request line.
      */
-    @Column(name="request_line")
     public Long getRequestId()
     {
         return requestId;
@@ -103,11 +56,6 @@ public class VirusHttpEvent extends LogEvent
      *
      * @return the scan result.
      */
-    @Columns(columns = {
-    @Column(name="clean"),
-    @Column(name="virus_name"),
-    @Column(name="virus_cleaned")})
-    @Type(type="com.untangle.node.virus.VirusScannerResultUserType")
     public VirusScannerResult getResult()
     {
         return result;
@@ -123,7 +71,6 @@ public class VirusHttpEvent extends LogEvent
      *
      * @return the vendor
      */
-    @Column(name="vendor_name")
     public String getVendorName()
     {
         return vendorName;
@@ -134,16 +81,36 @@ public class VirusHttpEvent extends LogEvent
         this.vendorName = vendorName;
     }
 
+    @Override
+    public boolean isDirectEvent()
+    {
+        return true;
+    }
+
+    @Override
+    public String getDirectEventSql()
+    {
+        String sql =
+            "UPDATE reports.n_http_events " +
+            "SET " +
+            "virus_" + getVendorName().toLowerCase() + "_clean = " + "'" + getResult().isClean() + "'" + ", " +
+            "virus_" + getVendorName().toLowerCase() + "_name = "  + "'" + getResult().getVirusName() + "'" + " " +
+            "WHERE " +
+            "request_id = " + getRequestId() +
+            ";";
+        return sql;
+    }
+
     public void appendSyslog(SyslogBuilder sb)
     {
-        SessionEvent pe = getSessionEvent();
+        SessionEvent pe = requestLine.getSessionEvent();
         if (null != pe) {
             pe.appendSyslog(sb);
         }
 
         sb.startSection("info");
-        sb.addField("location", getLocation());
-        sb.addField("infected", isInfected());
-        sb.addField("virus-name", getVirusName());
+        sb.addField("location", (null == requestLine ? "" : requestLine.getUrl().toString()));
+        sb.addField("infected", !result.isClean());
+        sb.addField("virus-name", (null == result.getVirusName() ? "" : result.getVirusName()));
     }
 }

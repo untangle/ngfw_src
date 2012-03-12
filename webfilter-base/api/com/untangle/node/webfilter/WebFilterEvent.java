@@ -3,17 +3,6 @@
  */
 package com.untangle.node.webfilter;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Type;
-
 import com.untangle.node.http.RequestLine;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
@@ -22,9 +11,6 @@ import com.untangle.uvm.logging.SyslogPriority;
 /**
  * Log event for a web filter cation
  */
-@Entity
-@org.hibernate.annotations.Entity(mutable=false)
-@Table(name="n_webfilter_evt", schema="events")
 @SuppressWarnings("serial")
 public class WebFilterEvent extends LogEvent
 {
@@ -52,7 +38,6 @@ public class WebFilterEvent extends LogEvent
      *
      * @return the request line.
      */
-    @Column(name="request_id")
     public Long getRequestId()
     {
         return requestId;
@@ -94,7 +79,6 @@ public class WebFilterEvent extends LogEvent
      *
      * @return the reason.
      */
-    @Type(type="com.untangle.node.webfilter.ReasonUserType")
     public Reason getReason()
     {
         return reason;
@@ -123,7 +107,6 @@ public class WebFilterEvent extends LogEvent
      *
      * @return the vendor
      */
-    @Column(name="vendor_name")
     public String getVendorName()
     {
         return vendorName;
@@ -135,12 +118,28 @@ public class WebFilterEvent extends LogEvent
     }
 
 
-    // LogEvent methods ----------------------------------------------------
-
-    @Transient
-    public boolean isPersistent()
+    @Override
+    public boolean isDirectEvent()
     {
         return true;
+    }
+
+    @Override
+    public String getDirectEventSql()
+    {
+        String reasonKey = ((getReason() == null) ? "" : Character.toString(getReason().getKey()));
+        
+        String sql =
+            "UPDATE reports.n_http_events " +
+            "SET " +
+            "wf_" + getVendorName().toLowerCase() + "_blocked = " + "'" + getBlocked() + "'" + ", " +
+            "wf_" + getVendorName().toLowerCase() + "_flagged = "  + "'" + getFlagged() + "'" + " " + ", " +
+            "wf_" + getVendorName().toLowerCase() + "_reason = "  + "'" + reasonKey + "'" + " " + ", " +
+            "wf_" + getVendorName().toLowerCase() + "_category = "  + "'" + getCategory() + "'" + " " +
+            "WHERE " +
+            "request_id = " + getRequestId() +
+            ";";
+        return sql;
     }
 
     // Syslog methods ------------------------------------------------------
@@ -155,13 +154,11 @@ public class WebFilterEvent extends LogEvent
         sb.addField("category", null == category ? "none" : category);
     }
 
-    @Transient
     public String getSyslogId()
     {
         return "Block";
     }
 
-    @Transient
     public SyslogPriority getSyslogPriority()
     {
         return SyslogPriority.WARNING; 
