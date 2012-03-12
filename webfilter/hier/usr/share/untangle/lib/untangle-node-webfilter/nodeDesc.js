@@ -17,8 +17,7 @@
             "javaClass": "java.util.LinkedList",
             "list": [
                 "com.untangle.node.http.HttpSettings",
-                "com.untangle.node.webfilter.BlockTemplate",
-                "com.untangle.node.webfilter.UnblockEvent"
+                "com.untangle.node.webfilter.BlockTemplate"
             ]
         }
 }

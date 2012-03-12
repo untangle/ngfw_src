@@ -169,8 +169,6 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 settings.getPassedUrls().add(sr);
                 _setSettings(settings);
 
-                UnblockEvent ue = new UnblockEvent(bd.getClientAddress(), true, bd.getFormattedUrl(), getVendor(), getNodeId().getPolicy(), bd.getUid());
-                this.logEvent(ue);
                 return true;
             }
         } else {
@@ -185,8 +183,6 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
                 unblockedSitesMonitor.addUnblockedSite(addr, site);
                 getDecisionEngine().addUnblockedSite(addr, site);
 
-                UnblockEvent ue = new UnblockEvent(addr, false, bd.getFormattedUrl(), getVendor(), getNodeId().getPolicy(), bd.getUid());
-                this.logEvent(ue);
                 return true;
             }
         }
