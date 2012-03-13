@@ -118,7 +118,6 @@ count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
 
     @sql_helper.print_timing
     def events_cleanup(self, cutoff):
-        sql_helper.clean_table("events", "n_virus_evt_http", cutoff);
         sql_helper.clean_table("events", "n_virus_evt_mail ", cutoff);
         sql_helper.clean_table("events", "n_virus_evt_smtp", cutoff);
         sql_helper.clean_table("events", "n_virus_evt ", cutoff);
