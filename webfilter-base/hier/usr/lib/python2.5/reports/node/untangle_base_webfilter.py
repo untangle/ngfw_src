@@ -101,7 +101,7 @@ class WebFilterBaseNode(Node):
 
     @sql_helper.print_timing
     def events_cleanup(self, cutoff):
-        sql_helper.clean_table("events", "n_webfilter_evt ", cutoff);
+        pass
 
     def reports_cleanup(self, cutoff):
         pass
