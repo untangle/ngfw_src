@@ -341,7 +341,7 @@ public class LogWorkerImpl implements Runnable, LogWorker
                      * If fails, just move on
                      */
                     try {
-                        session.saveOrUpdate(event);
+                        session.save(event);
                     } catch (Exception exc) {
                         logger.error("could not log event: ", exc);
                     }

@@ -893,24 +893,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         logger.info("getEvents( query: " + query + " policyId: " + policyId + " limit: " + limit + " ) took " + elapsed + " ms");
         
         Collections.sort(list);
-        String last = null;
-        // XXX what is this?
-        // it looks like code to remove dupes?
-        // why would we have dupes here?
-        for (Iterator i = list.iterator(); i.hasNext(); ) {
-            LogEvent e = (LogEvent)i.next();
-            String id = e.getId();
-            if (id == null) {
-                id = Integer.toString(System.identityHashCode(e));
-            }
-
-            if (last == null ? last == id : last.equals(id)) {
-                i.remove();
-            } else {
-                last = id;
-            }
-        }
-
         return new ArrayList(list);
     }
 

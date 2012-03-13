@@ -3,10 +3,11 @@
  */
 package com.untangle.uvm.engine;
 
-import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.DriverManager;
 
+import java.beans.PropertyVetoException;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 /**
@@ -31,7 +32,7 @@ public class DataSourceFactory
         dataSource.setPassword("foo");
         dataSource.setMaxStatements(180);
         dataSource.setMinPoolSize(5);
-        dataSource.setMaxPoolSize(50);
+        dataSource.setMaxPoolSize(5);
         dataSource.setMaxIdleTime(300);
         dataSource.setTestConnectionOnCheckout(true);
         dataSource.setPreferredTestQuery("SELECT 1");
@@ -55,6 +56,12 @@ public class DataSourceFactory
     public Connection getConnection() throws SQLException
     {
         return dataSource.getConnection();
+        //         String url = "jdbc:postgresql://localhost/uvm?charset=unicode";
+        //         Properties props = new Properties();
+        //         props.setProperty("user","postgres");
+        //         props.setProperty("password","foo");
+        //         Connection conn = DriverManager.getConnection(url, props);
+        //         return conn;
     }
 
     /**

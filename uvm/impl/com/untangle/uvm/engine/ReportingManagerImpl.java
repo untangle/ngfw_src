@@ -115,7 +115,7 @@ class ReportingManagerImpl implements ReportingManager
 
         Connection conn = null;
         try {
-            conn = DataSourceFactory.factory().getConnection();
+            conn = UvmContextFactory.context().getDBConnection();
 
             PreparedStatement ps = conn.prepareStatement("SELECT last_cutoff FROM reports.reports_state");
             ResultSet rs = ps.executeQuery();
@@ -129,7 +129,7 @@ class ReportingManagerImpl implements ReportingManager
         } finally {
             if (conn != null) {
                 try {
-                    DataSourceFactory.factory().closeConnection(conn);
+                    conn.close();
                 } catch (Exception x) { }
                 conn = null;
             }
@@ -281,7 +281,7 @@ class ReportingManagerImpl implements ReportingManager
                     logger.info("** sql='" + sql + "'");
                     Connection conn = null;
                     try {
-                        conn = DataSourceFactory.factory().getConnection();
+                        conn = UvmContextFactory.context().getDBConnection();
                         Statement stmt = conn.createStatement();
                         if (limitResultSet) {
                             stmt.setMaxRows(1000);
@@ -302,7 +302,7 @@ class ReportingManagerImpl implements ReportingManager
                     } finally {
                         if (conn != null) {
                             try {
-                                DataSourceFactory.factory().closeConnection(conn);
+                                conn.close();
                             } catch (Exception x) { }
                             conn = null;
                         }

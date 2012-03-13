@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
-import com.untangle.uvm.engine.DataSourceFactory;
 import com.untangle.uvm.reports.ApplicationData;
 import com.untangle.uvm.reports.ColumnDesc;
 import com.untangle.uvm.reports.DetailSection;
@@ -130,7 +129,7 @@ public class CsvServlet extends HttpServlet
 
         Connection conn = null;
         try {
-            conn = DataSourceFactory.factory().getConnection();
+            conn = UvmContextFactory.context().getDBConnection();
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             int columnCount = rs.getMetaData().getColumnCount();
@@ -148,7 +147,7 @@ public class CsvServlet extends HttpServlet
         } finally {
             if (conn != null) {
                 try {
-                    DataSourceFactory.factory().closeConnection(conn);
+                    conn.close();
                 } catch (Exception x) { }
                 conn = null;
             }
