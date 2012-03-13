@@ -206,7 +206,6 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
 
     public void setSettings( VirusSettings newSettings )
     {
-        logger.warn("SETSETTINGS: " + newSettings.toJSONString());
         _setSettings(newSettings);
     }
 
@@ -580,8 +579,6 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
      */
     protected void _setSettings( VirusSettings newSettings )
     {
-        logger.warn("SAVE: " + newSettings.toJSONString());
-
         /**
          * Save the settings
          */
