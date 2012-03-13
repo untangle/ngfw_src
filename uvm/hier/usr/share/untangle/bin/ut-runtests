@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import sys
-sys.path.insert(0, '@PREFIX@/usr/lib/python2.5/')
 import getopt
+import signal
+sys.path.insert(0, '@PREFIX@/usr/lib/python2.5/')
 
 import unittest
 import uvm
@@ -16,6 +17,8 @@ from   untangle_tests.cpd_tests import CpdTests
 from   untangle_tests.shield_tests import ShieldTests
 from   untangle_tests.clam_tests import ClamTests
 from   untangle_tests.commtouchav_tests import CommtouchAvTests
+
+
 
 class ArgumentParser(object):
     def __init__(self):
@@ -100,6 +103,9 @@ def printUsage():
     -r         : repeat test indefinitely (or until failure if -q is specified)
 """ % sys.argv[0] )
 
+def signal_handler(signal, frame):
+        sys.exit(0)
+
 def exit(code):
     global parser
     if (code != 0):
@@ -143,6 +149,8 @@ def runTestEnvironmentTests():
         else:
             print "Test success : %s " % test._testMethodName
     print "== Testing Test Environment =="
+
+signal.signal(signal.SIGINT, signal_handler)
 
 parser = ArgumentParser()
 script_args = parser.parse_args()
