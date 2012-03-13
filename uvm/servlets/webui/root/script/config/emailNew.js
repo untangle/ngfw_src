@@ -25,11 +25,10 @@ if (!Ung.hasResource["Ung.Email"]) {
                 title : i18n._('Email')
             }];
             // keep initial mail settings
-            this.initialMailSettings = Ung.Util.clone(this.getMailSettings());
+            this.getMailSettings();
             this.buildOutgoingServer();
             if( this.isMailLoaded() ) {
-                // keep initial mail node settings
-                this.initialMailNodeSettings = Ung.Util.clone(this.getMailNodeSettings());
+                this.getMailNodeSettings();
                 this.buildFromSafeList();
                 this.buildQuarantine();
             }
@@ -413,14 +412,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         iconCls : 'test-icon',
                         name: "emailTestButton",
                         handler : Ext.bind(function() {
-                            var mailSettingsChanged = this.initialMailSettings.useMxRecords != this.getMailSettings().useMxRecords 
-                                        || this.initialMailSettings.smtpHost != this.getMailSettings().smtpHost
-                                        || this.initialMailSettings.smtpPort != this.getMailSettings().smtpPort
-                                        || this.initialMailSettings.authUser != this.getMailSettings().authUser
-                                        || this.initialMailSettings.authPass != this.getMailSettings().authPass
-                                        || this.initialMailSettings.fromAddress != this.getMailSettings().fromAddress;
-                                    
-                            if (mailSettingsChanged) {
+                            if (Ung.Util.isDirty(this.panelOutgoingServer)) {
                                 Ext.Msg.show({
                                    title:this.i18n._('Save Changes?'),
                                    msg: Ext.String.format(this.i18n._("Your current settings have not been saved yet.{0}Would you like to save your settings before executing the test?"), '<br>'),
@@ -430,14 +422,13 @@ if (!Ung.hasResource["Ung.Email"]) {
                                                if (this.validateOutgoingServer()) {
                                                 Ext.MessageBox.wait(this.i18n._('Saving...'), this.i18n._('Please wait'));
                                                 // save mail settings
-                                                main.getMailSender().setMailSettings(function(result, exception) {
+                                                main.getMailSender().setMailSettings(Ext.bind(function(result, exception) {
                                                     if(Ung.Util.handleException(exception)) return;
                                                     Ext.MessageBox.hide();
-                                                    // update original value for mail settings
-                                                    this.initialMailSettings = Ung.Util.clone(this.getMailSettings());
+                                                    Ung.Util.clearDirty(this.panelOutgoingServer);
                                                     // send test mail
                                                     this.panelOutgoingServer.onEmailTest();
-                                                }.createDelegate(this), this.getMailSettings());
+                                                },this), this.getMailSettings());
                                                }
                                            }
                                    },this),
@@ -469,6 +460,7 @@ if (!Ung.hasResource["Ung.Email"]) {
             });
             
             
+            this.loadedGlobalSafelist = true;
             this.gridSafelistGlobal = Ext.create('Ung.EditorGrid',{
                         name : 'Global',
                         title : this.i18n._('Global'),
@@ -481,10 +473,11 @@ if (!Ung.hasResource["Ung.Email"]) {
                         emptyRow : {
                             "emailAddress" : this.i18n._("[no email address]")
                         },
-                        //autoExpandColumn : 'emailAddress',
-                        fields : [{
-                            name : 'id'
-                        }, {
+                        fields:[ 
+                        {
+                            name: 'id'
+                        },
+                        {
                             name : 'emailAddress'
                         }],
                         columns : [{
@@ -504,23 +497,19 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 allowBlank : false,
                                 width : 300
                             }],
-/*                        store : new Ext.data.Store({
-                            proxy : new Ung.RpcProxy(this.getSafelistAdminView().getSafelistContents, ['GLOBAL'], false), 
-                            reader : new Ung.JsonListReader({
-                                root : null,
-                                fields : ['emailAddress']
-                            }),
-                            listeners : {
-                                "load" : {
-                                    fn : function( store, records, options ) 
-                                    {
-                                        this.loadedGlobalSafelist = true;
-                                    }.createDelegate( this )
+                        dataRoot:'',
+                        dataFn:Ext.bind(function() { 
+                            var safeListContents = this.getSafelistAdminView().getSafelistContents('GLOBAL');
+                            var results=[]
+                            if ( safeListContents && safeListContents.length > 0) {
+                                for ( var i = 0; i < safeListContents.length; i++) {
+                                    results.push({emailAddress:safeListContents[i]});
                                 }
                             }
-                        }) */
+                            this.loadedGlobalSafelist = true;
+                            return results;
+                        }, this)
                 })
-                
                 
         this.gridSafelistUser = Ext.create('Ung.EditorGrid',{
                         name : 'Per User',
@@ -534,7 +523,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         anchor : "100% 50%",
                         height : 250,
                         autoScroll : true,
-                        proxyRpcFn : this.getSafelistAdminView().getUserSafelistCounts,
+                        dataFn: this.getSafelistAdminView().getUserSafelistCounts,
                         tbar : [{
                             xtype:'button',
                             text : this.i18n._('Purge Selected'),
@@ -572,7 +561,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                             {
                                 header : this.i18n._("account address"),
                                 width : 350,
-                                dataIndex : 'emailAddress'
+                                dataIndex : 'emailAddress',
+                                flex:1
                             }, 
                             {
                                 header : this.i18n._("safe list size"),
@@ -580,7 +570,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 dataIndex : 'count'
                             }, 
                             showDetailColumn],
-                        //autoExpandColumn : 'emailAddress',
                         sortField : 'emailAddress',
                         columnsDefaultSortable : true,
                         
@@ -600,11 +589,11 @@ if (!Ung.hasResource["Ung.Email"]) {
                                     
                                     Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
                                     this.settingsCmp.getSafelistAdminView().getSafelistContents(
-                                        function(result, exception) {
+                                        Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
                                             if(Ung.Util.handleException(exception)) return;
                                             this.settingsCmp.gridSafelistUserDetails.store.loadData(result);
-                                        }.createDelegate(this), emailAddress); 
+                                        },this), emailAddress); 
                                 }          
                             });
 
@@ -666,7 +655,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                 }],
                 fields:['sender'],
                 columns : [smUserSafelistDetails, {
-                    id : 'sender',
                     header : this.i18n._("email address"),
                     width : 200,
                     dataIndex : 'sender'
@@ -806,7 +794,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                         settingsCmp : this,
                         height : 250,
                         autoScroll: true,
-                        proxyRpcFn : this.getQuarantineMaintenenceView().listInboxes,
+                        dataFn : this.getQuarantineMaintenenceView().listInboxes,
  
                         tbar : [{
                             text : this.i18n._('Purge Selected'),
@@ -825,10 +813,10 @@ if (!Ung.hasResource["Ung.Email"]) {
                                 }
                                 
                                 Ext.MessageBox.wait(this.i18n._("Purging..."), this.i18n._("Please wait"));
-                                this.getQuarantineMaintenenceView().deleteInboxes(function(result, exception) {
+                                this.getQuarantineMaintenenceView().deleteInboxes(Ext.bind(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
                                     Ext.MessageBox.hide();
-                                }.createDelegate(this), accounts);
+                                },this), accounts);
                                 
                                 this.userQuarantinesGrid.store.load();
                                 
@@ -873,17 +861,16 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }],
                         columns : [//sm,
                         {
-                            id : 'address',
                             header : this.i18n._("account address"),
                             width : 200,
-                            dataIndex : 'address'
+                            dataIndex : 'address',
+                            flex:1
+                            
                         }, {
-                            id : 'numMails',
                             header : this.i18n._("message count"),
                             width : 185,
                             dataIndex : 'numMails'
                         }, {
-                            id : 'totalSz',
                             header : this.i18n._("data size (kB)"),
                             width : 185,
                             dataIndex : 'totalSz',
@@ -892,7 +879,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                             }
                         }, showDetailColumn],
                         sortField : 'address',
-                        autoExpandColumn : 'address',
                         columnsDefaultSortable : true,
                         
                         onShowDetail : Ext.bind(function(record) {
@@ -940,8 +926,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                             "javaClass" : "com.untangle.node.mail.papi.EmailAddressRule"
                         },
                         recordJavaClass : "com.untangle.node.mail.papi.EmailAddressRule",
-                        data : this.getMailNodeSettings().quarantineSettings.allowedAddressPatterns,
-                        dataRoot : 'list',
+                        dataFn : Ext.bind(function() { 
+                            return this.getMailNodeSettings().quarantineSettings.allowedAddressPatterns;
+                        },this),
                         fields : [{
                             name : 'id'
                         }, {
@@ -956,7 +943,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }],
                         columns : [
                         {
-                            id : 'address',
                             header : this.i18n._("quarantinable address"),
                             width : 200,
                             dataIndex : 'address',
@@ -965,7 +951,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                             }
                         }, 
                         {
-                            id : 'description',
                             header : this.i18n._("description"),
                             flex:1,
                             width : 200,
@@ -1020,8 +1005,9 @@ if (!Ung.hasResource["Ung.Email"]) {
                             "javaClass" : "com.untangle.node.mail.papi.EmailAddressPairRule"
                         },
                         recordJavaClass : "com.untangle.node.mail.papi.EmailAddressPairRule",
-                        data : this.getMailNodeSettings().quarantineSettings.addressRemaps,
-                        dataRoot : 'list',
+                        dataFn : Ext.bind( function() { 
+                            return this.getMailNodeSettings().quarantineSettings.addressRemaps;
+                        },this),
                         fields : [{
                             name : 'id'
                         }, {
@@ -1035,19 +1021,18 @@ if (!Ung.hasResource["Ung.Email"]) {
                         }],
                         columns : [
                         {
-                            id : 'address1',
                             header : this.i18n._("distribution list address"),
-                            width : 200,
+                            width : 250,
                             dataIndex : 'address1',
                             field: {
                                 xtype:'textfield'
                             }
                         }, 
                         {
-                            id : 'address2',
                             header : this.i18n._("send to address"),
-                            width : 200,
+                            width : 250,
                             dataIndex : 'address2',
+                            flex:1,
                             field: {
                                 xtype:'textfield'
                             }
@@ -1151,7 +1136,8 @@ if (!Ung.hasResource["Ung.Email"]) {
                         this.userQuarantinesGrid.store.load();
                     },this)
                 }],
-                proxyRpcFn : this.getQuarantineMaintenenceView().getInboxRecords,
+                //proxyRpcFn : this.getQuarantineMaintenenceView().getInboxRecords,
+                dataFn: this.getQuarantineMaintenenceView().getInboxRecords,
                 initialLoad : function() {}, //do nothing here
                 fields : [{
                     name : 'mailID'
@@ -1174,13 +1160,11 @@ if (!Ung.hasResource["Ung.Email"]) {
                     mapping : 'mailSummary'
                 }],
                 columns : [smUserQuarantinesDetails, {
-                    id : 'mailID',
                     header : this.i18n._("MailID"),
                     width : 150,
                     dataIndex : 'mailID',
                     sortable : false
                 }, {
-                    id : 'quarantinedDate',
                     header : this.i18n._("Date"),
                     width : 150,
                     dataIndex : 'quarantinedDate',
@@ -1188,7 +1172,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                         return i18n.timestampFormat(value);
                     }
                 }, {
-                    id : 'sender',
                     header : this.i18n._("Sender"),
                     width : 150,
                     dataIndex : 'sender',
@@ -1196,15 +1179,14 @@ if (!Ung.hasResource["Ung.Email"]) {
                         return value.sender;
                     }
                 }, {
-                    id : 'subject',
                     header : this.i18n._("Subject"),
                     width : 150,
+                    flex:1,
                     dataIndex : 'subject',
                     renderer : function(value) {
                         return value.subject;
                     }
                 }, {
-                    id : 'size',
                     header : this.i18n._("Size (KB)"),
                     width : 85,
                     dataIndex : 'size',
@@ -1213,7 +1195,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }
                     
                 }, {
-                    id : 'category',
                     header : this.i18n._("Category"),
                     width : 85,
                     dataIndex : 'category',
@@ -1222,7 +1203,6 @@ if (!Ung.hasResource["Ung.Email"]) {
                         return value.quarantineCategory;
                     }
                 }, {
-                    id : 'detail',
                     header : this.i18n._("Detail"),
                     width : 85,
                     dataIndex : 'quarantineDetail',
@@ -1239,8 +1219,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     }
                 }],
                 sortField : 'quarantinedDate',
-                columnsDefaultSortable : true,
-                autoExpandColumn : 'subject'
+                columnsDefaultSortable : true
             });
         },
         
@@ -1327,17 +1306,18 @@ if (!Ung.hasResource["Ung.Email"]) {
         
         applyAction : function()
         {
-            this.commitSettings(this.reloadSettings.createDelegate(this));
+            this.commitSettings(Ext.bind(this.reloadSettings,this));
         },
         reloadSettings : function()
         {
-            this.initialMailSettings = Ung.Util.clone(this.getMailSettings(true));
+            this.getMailSettings(true);
+            this.clearDirty();
             Ext.MessageBox.hide();
         },
         // save function
         saveAction : function()
         {
-            this.commitSettings(this.completeSaveAction.createDelegate(this));
+            this.commitSettings(Ext.bind(this.completeSaveAction,this));
         },
         completeSaveAction : function()
         {
@@ -1400,23 +1380,6 @@ if (!Ung.hasResource["Ung.Email"]) {
             if (this.saveSemaphore == 0) {
                 callback();
             }
-        },
-        isDirty : function() {
-            return !Ung.Util.equals(this.getMailSettings(), this.initialMailSettings)
-               || Ext.getCmp('email_fromAddress').getValue() != this.initialMailSettings.fromAddress
-               || !this.getMailSettings().useMxRecords && 
-                    (Ext.getCmp('email_smtpHost').getValue() != this.initialMailSettings.smtpHost
-                    || Ext.getCmp('email_smtpPort').getValue() != this.initialMailSettings.smtpPort
-                    || Ext.getCmp('email_smtpLogin').getValue() != this.initialMailSettings.authUser
-                    || Ext.getCmp('email_smtpPassword').getValue() != this.initialMailSettings.authPass
-                    )
-               || this.isMailLoaded() &&
-                   (this.getMailNodeSettings().quarantineSettings.maxMailIntern != this.initialMailNodeSettings.quarantineSettings.maxMailIntern
-                   || this.getMailNodeSettings().quarantineSettings.digestHourOfDay != this.initialMailNodeSettings.quarantineSettings.digestHourOfDay
-                   || this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay != this.initialMailNodeSettings.quarantineSettings.digestMinuteOfDay
-                   || this.gridSafelistGlobal.isDirty()
-                   || this.quarantinableAddressesGrid.isDirty()
-                   || this.quarantineForwardsGrid.isDirty());
         }
     });
     
