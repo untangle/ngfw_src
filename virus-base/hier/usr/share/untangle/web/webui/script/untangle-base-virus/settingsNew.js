@@ -90,8 +90,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 }, {
                     cls: 'description',
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + ((this.settings.lastUpdate != null) ? i18n.timestampFormat(this.settings.lastUpdate) : 
-                            this.i18n._("Unknown"))
+                        + ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()) : this.i18n._("Unknown"))
                 }],
 
                 onManageExtensions : function() {
@@ -395,7 +394,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 }, {
                     cls: 'description',
                     html : this.i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + ((this.settings.lastUpdate != null) ? i18n.timestampFormat(this.settings.lastUpdate) : this.i18n._("Unknown"))
+                        + ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()) : this.i18n._("Unknown"))
                 }]
 
             });

@@ -119,8 +119,7 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
                                    com.untangle.uvm.node.IPSessionDesc server)
             {
                 /* Don't kill any UDP Sessions */
-                if (client.protocol()
-                    == com.untangle.uvm.node.IPSessionDesc.PROTO_UDP) {
+                if (client.protocol() == com.untangle.uvm.node.IPSessionDesc.PROTO_UDP) {
                     return false;
                 }
 
@@ -175,7 +174,6 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
                                                      " WHERE evt.virus" + vendor + "Clean IS TRUE" + 
                                                      " AND evt.policyId = :policyId" + 
                                                      " ORDER BY evt.timeStamp DESC");
-
         this.mailInfectedEventQuery = new EventLogQuery(I18nUtil.marktr("Infected Email Events"),
                                                         "FROM MailLogEventFromReports evt" + 
                                                         " WHERE evt.addrKind IN ('T', 'C')" +
@@ -206,8 +204,31 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
         return this.settings;
     }
 
-    public void setSettings( VirusSettings settings )
+    public void setSettings( VirusSettings newSettings )
     {
+        logger.warn("SETSETTINGS: " + newSettings.toJSONString());
+        _setSettings(newSettings);
+    }
+
+    public List<GenericRule> getHttpFileExtensions()
+    {
+        return settings.getHttpFileExtensions();
+    }
+    
+    public void getHttpFileExtensions(List<GenericRule> fileExtensions)
+    {
+        settings.setHttpFileExtensions(fileExtensions);
+        _setSettings(settings);
+    }
+
+    public List<GenericRule> getHttpMimeTypes()
+    {
+        return settings.getHttpMimeTypes();
+    }
+    
+    public void getHttpMimeTypes(List<GenericRule> fileExtensions)
+    {
+        settings.setHttpMimeTypes(fileExtensions);
         _setSettings(settings);
     }
 
@@ -226,16 +247,19 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
         return replacementGenerator.getNonceData(nonce);
     }
 
-    String generateNonce( VirusBlockDetails details )
+    public String generateNonce( VirusBlockDetails details )
     {
         return replacementGenerator.generateNonce(details);
     }
 
-    Token[] generateResponse( String nonce, TCPSession session, String uri, boolean persistent )
+    public Token[] generateResponse( String nonce, TCPSession session, String uri, boolean persistent )
     {
-        return replacementGenerator.generateResponse(nonce, session, uri,
-                                                     null, persistent);
+        return replacementGenerator.generateResponse(nonce, session, uri, null, persistent);
+    }
 
+    public Date getLastSignatureUpdate()
+    {
+        return scanner.getLastSignatureUpdate();
     }
 
     abstract protected int getStrength();
@@ -248,21 +272,11 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
     {
         int strength = getStrength();
         PipeSpec[] result = new PipeSpec[] {
-            new SoloPipeSpec("virus-ftp", this,
-                             new TokenAdaptor(this, new VirusFtpFactory(this)),
-                             Fitting.FTP_TOKENS, Affinity.SERVER, strength),
-            new SoloPipeSpec("virus-http", this,
-                             new TokenAdaptor(this, new VirusHttpFactory(this)),
-                             Fitting.HTTP_TOKENS, Affinity.SERVER, strength),
-            new SoloPipeSpec("virus-smtp", this,
-                             new TokenAdaptor(this, new VirusSmtpFactory(this)),
-                             Fitting.SMTP_TOKENS, Affinity.CLIENT, strength),
-            new SoloPipeSpec("virus-pop", this,
-                             new TokenAdaptor(this, new VirusPopFactory(this)),
-                             Fitting.POP_TOKENS, Affinity.SERVER, strength),
-            new SoloPipeSpec("virus-imap", this,
-                             new TokenAdaptor(this, new VirusImapFactory(this)),
-                             Fitting.IMAP_TOKENS, Affinity.SERVER, strength)
+            new SoloPipeSpec("virus-ftp", this, new TokenAdaptor(this, new VirusFtpFactory(this)), Fitting.FTP_TOKENS, Affinity.SERVER, strength),
+            new SoloPipeSpec("virus-http", this, new TokenAdaptor(this, new VirusHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER, strength),
+            new SoloPipeSpec("virus-smtp", this, new TokenAdaptor(this, new VirusSmtpFactory(this)), Fitting.SMTP_TOKENS, Affinity.CLIENT, strength),
+            new SoloPipeSpec("virus-pop", this, new TokenAdaptor(this, new VirusPopFactory(this)), Fitting.POP_TOKENS, Affinity.SERVER, strength),
+            new SoloPipeSpec("virus-imap", this, new TokenAdaptor(this, new VirusImapFactory(this)), Fitting.IMAP_TOKENS, Affinity.SERVER, strength)
         };
         return result;
     }
@@ -310,7 +324,7 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
     // AbstractNode methods ----------------------------------------------
 
     @Override
-        protected PipeSpec[] getPipeSpecs()
+    protected PipeSpec[] getPipeSpecs()
     {
         return pipeSpecs;
     }
@@ -566,6 +580,8 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
      */
     protected void _setSettings( VirusSettings newSettings )
     {
+        logger.warn("SAVE: " + newSettings.toJSONString());
+
         /**
          * Save the settings
          */

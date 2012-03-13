@@ -40,19 +40,19 @@ public class VirusSettings implements Serializable
     // accessors --------------------------------------------------------------
 
     public boolean getScanHttp() { return scanHttp; }
-    public void setScatHttp(boolean scanHttp) { this.scanHttp = scanHttp; }
+    public void setScanHttp(boolean scanHttp) { this.scanHttp = scanHttp; }
 
     public boolean getScanFtp() { return scanFtp; }
-    public void setScatFtp(boolean scanFtp) { this.scanFtp = scanFtp; }
+    public void setScanFtp(boolean scanFtp) { this.scanFtp = scanFtp; }
 
     public boolean getScanSmtp() { return scanSmtp; }
-    public void setScatSmtp(boolean scanSmtp) { this.scanSmtp = scanSmtp; }
+    public void setScanSmtp(boolean scanSmtp) { this.scanSmtp = scanSmtp; }
 
     public boolean getScanPop() { return scanPop; }
-    public void setScatPop(boolean scanPop) { this.scanPop = scanPop; }
+    public void setScanPop(boolean scanPop) { this.scanPop = scanPop; }
 
     public boolean getScanImap() { return scanImap; }
-    public void setScatImap(boolean scanImap) { this.scanImap = scanImap; }
+    public void setScanImap(boolean scanImap) { this.scanImap = scanImap; }
 
     public String getSmtpAction() { return smtpAction; }
     public void setSmtpAction(String smtpAction) { this.smtpAction = smtpAction; }
