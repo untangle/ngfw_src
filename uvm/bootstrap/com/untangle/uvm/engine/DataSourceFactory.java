@@ -1,27 +1,14 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
 package com.untangle.uvm.engine;
 
-import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.DriverManager;
 
+import java.beans.PropertyVetoException;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 /**
@@ -49,7 +36,7 @@ public class DataSourceFactory
         dataSource.setPassword("foo");
         dataSource.setMaxStatements(180);
         dataSource.setMinPoolSize(5);
-        dataSource.setMaxPoolSize(50);
+        dataSource.setMaxPoolSize(5);
         dataSource.setMaxIdleTime(300);
         dataSource.setTestConnectionOnCheckout(true);
         dataSource.setPreferredTestQuery("SELECT 1");
@@ -73,6 +60,12 @@ public class DataSourceFactory
     public Connection getConnection() throws SQLException
     {
         return dataSource.getConnection();
+        //         String url = "jdbc:postgresql://localhost/uvm?charset=unicode";
+        //         Properties props = new Properties();
+        //         props.setProperty("user","postgres");
+        //         props.setProperty("password","foo");
+        //         Connection conn = DriverManager.getConnection(url, props);
+        //         return conn;
     }
 
     /**
