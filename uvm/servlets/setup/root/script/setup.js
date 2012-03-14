@@ -1256,7 +1256,6 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
         }
         _invalidate(ar);
     },
-
     validateInternalNetwork : function()
     {
         var rv = true;
@@ -1303,6 +1302,112 @@ Ung.SetupWizard.InternalNetwork = Ext.extend( Object, {
     {
         if(exception) {
             Ext.MessageBox.alert(i18n._( "Local Network" ), i18n._( "Unable to save Local Network Settings" ) + exception.message );
+            return;
+        }
+
+        Ext.MessageBox.hide();
+        handler();
+    }
+});
+
+Ung.SetupWizard.AutoUpgrades = Ext.extend( Object, {
+    constructor : function( config )
+    {
+        this.panel = new Ext.FormPanel({
+            defaultType : 'fieldset',
+            defaults : {
+                autoHeight : true,
+                labelWidth : Ung.SetupWizard.LabelWidth3
+            },
+            items : [{
+                xtype : 'label',
+                html : '<h2 class="wizard-title">'+i18n._( "Configure Automatic Upgrades Settings" )+'</h2>'
+            },{
+                cls : 'noborder  wizard-auto-upgrades',
+                items : [{
+                    xtype : 'radio',
+                    name : 'autoUpgradesRadio',
+                    inputValue : 'yes',
+                    boxLabel : i18n._( 'Install Upgrades Automatically' ),
+                    ctCls : 'large-option',
+                    hideLabel : 'true',
+                    checked : true
+                },{
+                    xtype : 'label',
+                    html : String.format( i18n._('Automatically install new versions of {0} software. '), oemName) + '<br/>' +
+                         i18n._('This is the recommended setting.')
+                }]
+            }, {
+                cls : 'noborder wizard-auto-upgrades',
+                items : [{
+                    xtype : 'radio',
+                    name : 'autoUpgradesRadio',
+                    inputValue : 'no',
+                    boxLabel : i18n._('Do Not Install Upgrades Automatically.'),
+                    ctCls : 'large-option',
+                    hideLabel : 'true'
+                },{
+                    xtype : 'label',
+                    html : String.format( i18n._('Do not automatically install new versions of {0} software.'), oemName) + '<br/>' +
+                        i18n._('This is the recommended for large sites, sensitive sites, and complex or modified configurations.') + '<br/>' +
+                        i18n._('Software Upgrades can be applied manually at any time.') 
+                },{
+                    xtype : 'label',
+                    html : '<br/><br/>' + '<b>' + i18n._('Note:') + '</b>' + '<br/>' +
+                        i18n._('Signatures for Virus Blocker, Spam Blocker, Web Filter, etc are still updated automatically.') + '<br/>'
+                }]
+            }]
+        });
+
+        this.card = {
+            title : i18n._( "Automatic Upgrades" ),
+            panel : this.panel,
+            onLoad : this.onLoadAutoSuggestion.createDelegate(this),
+            onNext : this.saveAutoUpgrades.createDelegate( this ),
+            onValidate : this.validateAutoUpgrades.createDelegate(this)
+        };
+    },
+    onLoadAutoSuggestion : function( complete )
+    {
+        var autoUpgradesEnabled = rpc.toolboxManager.getUpgradeSettings().autoUpgrade;
+        if (!autoUpgradesEnabled) {
+            this.panel.find( "name", "autoUpgradesRadio" )[0].setValue(false);
+            this.panel.find( "name", "autoUpgradesRadio" )[1].setValue(true);
+        } 
+        complete();
+    },
+    validateAutoUpgrades : function()
+    {
+        return true;
+    },
+    saveAutoUpgrades : function( handler )
+    {
+        var value = this.panel.find( "name", "autoUpgradesRadio" )[0].getGroupValue();
+        if ( value == null ) {
+            Ext.MessageBox.alert(i18n._( "Select a value" ), i18n._( "Please choose Yes or No." ));
+            return;
+        }
+        Ext.MessageBox.wait( i18n._( "Saving Automatic Upgrades Settings" ), i18n._( "Please Wait" ));
+
+        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
+    },
+    afterReauthenticate : function( handler )
+    {
+        var delegate = this.complete.createDelegate( this, [ handler ], true );
+        var value = this.panel.find( "name", "autoUpgradesRadio" )[0].getGroupValue();
+        var upgradeSettings = rpc.toolboxManager.getUpgradeSettings();
+        if ( value == "yes" ) {
+            upgradeSettings.autoUpgrade = true;
+            rpc.toolboxManager.setUpgradeSettings( delegate, upgradeSettings );
+        } else {
+            upgradeSettings.autoUpgrade = false;
+            rpc.toolboxManager.setUpgradeSettings( delegate, upgradeSettings );
+        }
+    },
+    complete : function( result, exception, foo, handler )
+    {
+        if(exception) {
+            Ext.MessageBox.alert(i18n._( "Local Network" ), i18n._( "Unable to save Automatic Upgrade Settings" ) + exception.message );
             return;
         }
 
@@ -1390,6 +1495,8 @@ Ung.Setup = {
         var settings = new Ung.SetupWizard.Settings();
         var interfaces = new Ung.SetupWizard.Interfaces();
         var internet = new Ung.SetupWizard.Internet();
+        var internal = new Ung.SetupWizard.InternalNetwork();
+        var upgrades = new Ung.SetupWizard.AutoUpgrades();
         var complete = new Ung.SetupWizard.Complete();
 
         var cards = [];
@@ -1397,8 +1504,8 @@ Ung.Setup = {
         cards.push( settings.card );
         cards.push( interfaces.card );
         cards.push( internet.card );
-        var internal = new Ung.SetupWizard.InternalNetwork();
         cards.push( internal.card );
+        cards.push( upgrades.card );
         cards.push( complete.card );
 
         this.wizard = new Ung.Wizard({
