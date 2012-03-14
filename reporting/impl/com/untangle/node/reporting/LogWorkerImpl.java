@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.TreeMap;
+import java.util.Collections;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -355,36 +355,48 @@ public class LogWorkerImpl implements Runnable, LogWorker
         }
 
         /**
-         * Output the countMap
+         * Sort the list
+         */
+        LinkedList<EventTypeMap> eventTypeMapList = new LinkedList<EventTypeMap>();
+        for ( String key : countMap.keySet() ) {
+            eventTypeMapList.add(new EventTypeMap(key, countMap.get(key)));
+        }
+        Collections.sort(eventTypeMapList, new EventTypeMapComparator());
+
+        /**
+         * Build the output string
          */
         String mapOutput = "";
-        TreeMap<String,Integer> sortedCountMap = new TreeMap<String, Integer>(new ValueComparator<String>(countMap));
-        sortedCountMap.putAll(countMap);
-        for ( String key : sortedCountMap.keySet() ) {
-            mapOutput += " " + key + "[" + sortedCountMap.get(key) + "]";
+        for ( EventTypeMap item : eventTypeMapList ) {
+            mapOutput += " " + item.name + "[" + item.count + "]";
         }
         
         return mapOutput;
     }
     
-    class ValueComparator<T> implements Comparator<T>
+    class EventTypeMap
     {
-        Map base;
-        public ValueComparator(Map base)
+        public String name;
+        public int count;
+        
+        public EventTypeMap(String name, int count)
         {
-            this.base = base;
+            this.name = name;
+            this.count = count;
         }
-
-        public int compare(T a, T b)
+    }
+    
+    class EventTypeMapComparator implements Comparator<EventTypeMap>
+    {
+        public int compare( EventTypeMap a, EventTypeMap b )
         {
-            if((Integer)base.get(a) < (Integer)base.get(b)) {
+            if (a.count < b.count) {
                 return 1;
-            } else if((Integer)base.get(a) == (Integer)base.get(b)) {
+            } else if (a.count == b.count) {
                 return 0;
             } else {
                 return -1;
             }
         }
     }
-
 }
