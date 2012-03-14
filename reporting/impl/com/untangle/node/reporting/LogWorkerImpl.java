@@ -144,10 +144,10 @@ public class LogWorkerImpl implements Runnable, LogWorker
                 lastSync = System.currentTimeMillis();
                 nextSync = lastSync + getSyncTime();
                 synchronized( this ) {
-                    forceFlush = false;
                     if (wasForced) {
-                        notifyAll(); /* notify any waiting threads that the flush is done */
+                        forceFlush = false;
                         wasForced = false;
+                        notifyAll(); /* notify any waiting threads that the flush is done */
                     }
                 }
             }
@@ -350,17 +350,17 @@ public class LogWorkerImpl implements Runnable, LogWorker
 
             i.remove();
         }
+
         if (session != null) {
-            session.flush();
-            session.close();
+            try { session.flush(); } catch (Exception e) { logger.warn("Exception during session flush",e); }
+            try { session.close(); } catch (Exception e) { logger.warn("Exception during session close",e); }
         }
         if (conn != null) {
-            try {conn.close();} catch (SQLException e) {}
+            try {conn.close();} catch (SQLException e) { logger.warn("Exception during conn close",e); }
         }
-        logger.debug("Writing events to database... Complete");
-        
-        long t1 = System.currentTimeMillis();
 
+        logger.debug("Writing events to database... Complete");
+        long t1 = System.currentTimeMillis();
         logger.info("persist(): " + String.format("%5d",count) + " events [" + String.format("%5d",(t1-t0)) + " ms]" + eventTypeDebugOuput);
     }
 
