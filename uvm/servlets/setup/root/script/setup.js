@@ -1321,7 +1321,7 @@ Ung.SetupWizard.AutoUpgrades = Ext.extend( Object, {
             },
             items : [{
                 xtype : 'label',
-                html : '<h2 class="wizard-title">'+i18n._( "Configure Automatic Upgrades Settings" )+'</h2>'
+                html : '<h2 class="wizard-title">'+i18n._( "Configure Automatic Upgrade Settings" )+'</h2>'
             },{
                 cls : 'noborder  wizard-auto-upgrades',
                 items : [{
@@ -1335,7 +1335,7 @@ Ung.SetupWizard.AutoUpgrades = Ext.extend( Object, {
                 },{
                     xtype : 'label',
                     html : String.format( i18n._('Automatically install new versions of {0} software. '), oemName) + '<br/>' +
-                         i18n._('This is the recommended setting.')
+                         i18n._('This is the recommended for most sites.')
                 }]
             }, {
                 cls : 'noborder wizard-auto-upgrades',
@@ -1349,12 +1349,14 @@ Ung.SetupWizard.AutoUpgrades = Ext.extend( Object, {
                 },{
                     xtype : 'label',
                     html : String.format( i18n._('Do not automatically install new versions of {0} software.'), oemName) + '<br/>' +
-                        i18n._('This is the recommended for large sites, sensitive sites, and complex or modified configurations.') + '<br/>' +
-                        i18n._('Software Upgrades can be applied manually at any time.') 
+                        i18n._('This is the recommended setting for large, complex, or sensitive sites.') + '<br/>' +
+                        i18n._('Software Upgrades can be applied manually at any time when available.') 
                 },{
                     xtype : 'label',
                     html : '<br/><br/>' + '<b>' + i18n._('Note:') + '</b>' + '<br/>' +
-                        i18n._('Signatures for Virus Blocker, Spam Blocker, Web Filter, etc are still updated automatically.') + '<br/>'
+                        i18n._('Signatures for Virus Blocker, Spam Blocker, Web Filter, etc are still updated automatically.') + '<br/>' +
+                        i18n._('If desired, a custom upgrade schedule can be configured after installation in the Upgrade Settings.') + '<br/>'
+                    
                 }]
             }]
         });
@@ -1523,7 +1525,7 @@ Ung.Setup = {
         this.wizard.render();
         Ext.QuickTips.init();
 
-        if ( false ) {
+        if ( true ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = function() {
                 this.wizard.goToPage( 5 );
