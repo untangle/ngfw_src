@@ -139,6 +139,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                 enableColumnMove: false,
                 disableSelection: true, //TODO: find extjs4 solution
                 tbar: [{xtype: 'tbtext', text: i18n._("Checking for upgrades...")}],
+                isDirty: function() { return false;},
                 store : Ext.create('Ext.data.Store', {
                 	data:[],
                 	proxy: {
@@ -215,9 +216,7 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
 
         },
         buildSettings : function() {
-            // keep initial upgrade settings
-            this.initialUpgradeSettings = Ung.Util.clone(this.getUpgradeSettings());
-            
+           
             var upgradeTime=new Date();
             upgradeTime.setTime(0);
             upgradeTime.setHours(this.getUpgradeSettings().period.hour);
@@ -378,11 +377,10 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
                         hideLabel : true,
                         // format : "H:i",
                         value : upgradeTime,
+                        isDirty:function() { return this.originalValue.getHours() != this.getValue().getHours() || this.originalValue.getMinutes() != this.getValue().getMinutes();},
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    // this.getUpgradeSettings().period.monday =
-                                    // newValue;
                                     if (newValue != "") {
                                         var v = elem.parseDate(newValue);
                                         this.getUpgradeSettings().period.minute = Ext.Date.format( v,"i");
@@ -402,8 +400,8 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
         },
         reloadSettings : function()
         {
-            this.initialUpgradeSettings = Ung.Util.clone(this.getUpgradeSettings(true));
             this.loadGridUpgrade();
+            this.clearDirty();
         },
         saveAction : function()
         {
@@ -435,9 +433,6 @@ if (!Ung.hasResource["Ung.Upgrade"]) {
             if (this.saveSemaphore == 0) {
                 callback();
             }
-        },
-        isDirty : function() {
-            return !Ung.Util.equals(this.getUpgradeSettings(), this.initialUpgradeSettings);
         }
     });
 }

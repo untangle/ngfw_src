@@ -23,11 +23,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
         },
         
         buildLocalDirectory : function() {
-            var storeData=main.getLocalDirectory().getUsers().list;
-            for(var i=0; i<storeData.length; i++) {
-                storeData[i].password = "***UNCHANGED***";
-            }
-            
+                        
             this.gridUsers = Ext.create('Ung.EditorGrid',{
                 name : 'Local Users',
                 helpSource : 'local_directory',
@@ -45,7 +41,13 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     "javaClass" : "com.untangle.uvm.LocalDirectoryUser"
                 },
                 recordJavaClass : "com.untangle.uvm.LocalDirectoryUser",
-                data : storeData,
+                dataFn :Ext.bind( function() {
+                    var storeData=main.getLocalDirectory().getUsers().list;
+                    for(var i=0; i<storeData.length; i++) {
+                        storeData[i].password = "***UNCHANGED***";
+                    }
+                    return storeData;
+                },this),            
                 dataRoot: null,
                 autoGenerateId: true,
                 fields : [{
@@ -235,23 +237,11 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
 
         applyAction : function()
         {
-            this.commitSettings(Ext.bind(this.reloadSettings,this));
-        },
-        reloadSettings : function()
-        {
-            var storeData=main.getLocalDirectory().getUsers().list;
-            for(var i=0; i<storeData.length; i++) {
-                storeData[i].password = "***UNCHANGED***";
-            }
-
-            this.gridUsers.clearChangedData();
-            this.gridUsers.store.loadData(storeData);
-
-            Ext.MessageBox.hide();
+            this.commitSettings(Ext.bind(function(){ this.gridUsers.clearDirty();},this));
         },
         saveAction : function()
         {
-            this.commitSettings(this.completeSaveAction.createDelegate(this));
+            this.commitSettings(Ext.bind(this.completeSaveAction,this));
         },
 
         completeSaveAction : function()
@@ -284,13 +274,8 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                 if(Ung.Util.handleException(exception)) return;
                 callback();
             },this), this.gridUsers ? {javaClass:"java.util.LinkedList",list:this.gridUsers.getFullSaveList()} : null);
-        },
-        
-        isDirty : function()
-        {
-            return this.gridUsers.isDirty();
         }
-        
+       
     });
 
 }

@@ -85,6 +85,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 title : i18n._('Administration')
             }];
             this.skinManager = Ext.create('Ung.Config.Administration.SkinManager',{ 'i18n' :  i18n });
+            this.initialSkin = this.getSkinSettings().administrationClientSkin;
             this.buildAdministration();
             this.buildPublicAddress();
             this.buildCertificates();
@@ -207,8 +208,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                 }
             });
 
-            var storeData = this.buildUserList(false);
-            
+          
             /* getID returns the same value, and this causes the password
              * field to not be rendered the second time around since it has an
              * existing ID. */
@@ -240,15 +240,17 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         "name" : this.i18n._("[no description]"),
                         "hasWriteAccess" : true,
                         "hasReportsAccess" : true,
+                        "sendAlerts":false,
+                        "notes":this.i18n._("[no description]"),
                         "email" : this.i18n._("[no email]"),
                         "clearPassword" : "",
                         "javaClass" : "com.untangle.uvm.User"
                     },
-                    // the column is autoexpanded if the grid width permits
-                    autoExpandColumn : 'name',
-
-                    data : storeData,
-                    //dataRoot: null,
+                    ignoreServerIds:false,
+                    dataFn : Ext.bind(function() { 
+                        return this.buildUserList(false);
+                    }, this),
+                    dataRoot:'',
                     // the list of fields; we need all as we get/set all records once
                     fields : [{
                         name : 'id'
@@ -271,31 +273,31 @@ if (!Ung.hasResource["Ung.Administration"]) {
                     }],
                     // the list of columns for the column model
                     columns : [{
-                        id : 'login',
                         header : this.i18n._("login"),
                         width : 200,
                         dataIndex : 'login',
-                        editor : new Ext.form.TextField({
+                        field :{
+                            xtype:'textfield',
                             allowBlank : false,
                             blankText : this.i18n._("The login name cannot be blank.")
-                        })
+                        }
                     }, {
-                        id : 'name',
                         header : this.i18n._("description"),
                         width : 200,
                         dataIndex : 'name',
                         flex: 1,
-                        editor : new Ext.form.TextField({
+                        field:{
+                            xtype:'textfield',
                             allowBlank : false
-                        })
+                        }
                     },{
-                        id : 'email',
                         header : this.i18n._("email"),
                         width : 200,
                         dataIndex : 'email',
-                        editor : new Ext.form.TextField({
+                        field: {
+                            xtype:'textfield',
                             allowBlank : false
-                        })
+                        }
                     }, changePasswordColumn
                     ],
                     sortField : 'login',
@@ -1896,11 +1898,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
             this.initialLoggingSettings = Ung.Util.clone(this.getLoggingSettings(true));
             this.getCurrentServerCertInfo(true);
             this.getHostname(true);
-            
-            var storeData = this.buildUserList(false);
-
-            this.gridAdminAccounts.clearChangedData();
-            this.gridAdminAccounts.store.loadData(storeData);
+            this.gridAdminAccounts.clearDirty();
 
             Ext.MessageBox.hide();
         },
@@ -1999,7 +1997,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
         },
         finalizeSave : function(callback)
         {
-            this.needRefresh = this.initialSkinSettings.administrationClientSkin != this.getSkinSettings().administrationClientSkin;
+            this.needRefresh = this.initialSkin != this.getSkinSettings().administrationClientSkin;
             callback();
         },
 
@@ -2010,33 +2008,6 @@ if (!Ung.hasResource["Ung.Administration"]) {
             }
         },
 
-        isDirty : function() {
-            return Ext.getCmp('administration_outsideNetwork').getValue() !=  this.initialAccessSettings.outsideNetwork
-                || Ext.getCmp('administration_outsideNetmask').getValue() !=  this.initialAccessSettings.outsideNetmask
-                || this.getAddressSettings().isPublicAddressEnabled &&
-                    (Ext.getCmp('administration_publicIPAddress').getValue() !=  this.initialAddressSettings.publicIPAddress
-                    || Ext.getCmp('administration_publicPort').getValue() !=  this.initialAddressSettings.publicPort)
-                || this.getSnmpSettings().enabled &&
-                    (Ext.getCmp('administration_snmp_communityString').getValue() !=  this.initialSnmpSettings.communityString
-                    || Ext.getCmp('administration_snmp_sysContact').getValue() !=  this.initialSnmpSettings.sysContact
-                    || Ext.getCmp('administration_snmp_sysLocation').getValue() !=  this.initialSnmpSettings.sysLocation
-                    || this.getSnmpSettings().sendTraps &&
-                        (Ext.getCmp('administration_snmp_trapCommunity').getValue() !=  this.initialSnmpSettings.trapCommunity
-                        || Ext.getCmp('administration_snmp_trapHost').getValue() !=  this.initialSnmpSettings.trapHost
-                        || Ext.getCmp('administration_snmp_trapPort').getValue() !=  this.initialSnmpSettings.trapPort))
-                || this.getLoggingSettings().syslogEnabled &&
-                    (Ext.getCmp('administration_syslog_host').getValue() !=  this.initialLoggingSettings.syslogHost
-                    || Ext.getCmp('administration_syslog_port').getValue() !=  this.initialLoggingSettings.syslogPort
-                    || Ext.getCmp('administration_syslog_facility').getValue() !=  this.initialLoggingSettings.syslogFacility
-                    || Ext.getCmp('administration_syslog_threshold').getValue() !=  this.initialLoggingSettings.syslogThreshold
-                    || Ext.getCmp('administration_syslog_protocol').getValue() !=  this.initialLoggingSettings.syslogProtocol)
-                || this.gridAdminAccounts.isDirty()
-                || !Ung.Util.equals(this.getAddressSettings(), this.initialAddressSettings)
-                || !Ung.Util.equals(this.getAccessSettings(), this.initialAccessSettings)
-                || !Ung.Util.equals(this.getSnmpSettings(), this.initialSnmpSettings)
-                || !Ung.Util.equals(this.getLoggingSettings(), this.initialLoggingSettings)
-                || !Ung.Util.equals(this.getSkinSettings(), this.initialSkinSettings);
-        },
 
         buildUserList : function(forceReload)
         {
