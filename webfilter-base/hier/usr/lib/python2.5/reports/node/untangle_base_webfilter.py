@@ -46,7 +46,6 @@ class WebFilterBaseNode(Node):
 
     @print_timing
     def setup(self, start_date, end_date, start_time):
-        self.__update_n_http_events(start_date, end_date)
 
         ft = reports.engine.get_fact_table('reports.n_http_totals')
 
@@ -105,27 +104,6 @@ class WebFilterBaseNode(Node):
 
     def reports_cleanup(self, cutoff):
         pass
-
-    @print_timing
-    def __update_n_http_events(self, start_date, end_date):
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-UPDATE reports.n_http_events
-SET wf_%s_blocked = blocked,
-    wf_%s_flagged = flagged,
-    wf_%s_reason = reason,
-    wf_%s_category = category
-FROM events.n_webfilter_evt
-WHERE events.n_webfilter_evt.vendor_name = %%s
-AND reports.n_http_events.request_id = events.n_webfilter_evt.request_id"""
-                               % (4 * (self.__vendor_name,)),
-                               (self.__vendor_name,), connection=conn,
-                               auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
 
 class WebHighlight(Highlight):
     def __init__(self, name, vendor_name):
