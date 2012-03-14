@@ -476,14 +476,14 @@ if (!Ung.hasResource["Ung.CPD"]) {
             this.gridPassedClients =
                 this.buildGridPassedList( "gridPassedClients",
                                           this.i18n._( "Pass Listed Client Addresses"),
-                                          "com.untangle.node.cpd.PassedClient",
+                                          "com.untangle.node.cpd.PassedAddress",
                                           "passedClients",
                                           "Pass Listed Client Addresses is a list of Client IPs that are not subjected to the Captive Portal.");
 
                 this.gridPassedServers =
                 this.buildGridPassedList( "gridPassedServers",
                                           this.i18n._( "Pass Listed Server Addresses"),
-                                          "com.untangle.node.cpd.PassedServer",
+                                          "com.untangle.node.cpd.PassedAddress",
                                           "passedServers",
                                           "Pass Listed Server Addresses is a list of Server IPs that unauthenticated clients can access without authentication.");
 
@@ -568,7 +568,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         }
                     }
                 ],
-                columnsDefaultSortable : false,
+                columnsDefaultSortable : false
             });
         },
 

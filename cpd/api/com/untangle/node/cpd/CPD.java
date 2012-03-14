@@ -23,11 +23,11 @@ public interface CPD extends Node
     List<CaptureRule> getCaptureRules();
     void setCaptureRules( List<CaptureRule> captureRules ) throws Exception;
 
-    List<PassedClient> getPassedClients();
-    void setPassedClients( List<PassedClient> newValue ) throws Exception;
+    List<PassedAddress> getPassedClients();
+    void setPassedClients( List<PassedAddress> newValue ) throws Exception;
 
-    List<PassedServer> getPassedServers();
-    void setPassedServers( List<PassedServer> newValue ) throws Exception;
+    List<PassedAddress> getPassedServers();
+    void setPassedServers( List<PassedAddress> newValue ) throws Exception;
 
     /**
      * Return true iff the username and password can be authenticated in the current parameters.

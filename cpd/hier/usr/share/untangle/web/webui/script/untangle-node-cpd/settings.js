@@ -475,14 +475,14 @@ if (!Ung.hasResource["Ung.CPD"]) {
             this.gridPassedClients =
                 this.buildGridPassedList( "gridPassedClients",
                                           this.i18n._( "Pass Listed Client Addresses"),
-                                          "com.untangle.node.cpd.PassedClient",
+                                          "com.untangle.node.cpd.PassedAddress",
                                           this.getRpcNode().getPassedClients,
                                           "Pass Listed Client Addresses is a list of Client IPs that are not subjected to the Captive Portal.");
 
             this.gridPassedServers =
                 this.buildGridPassedList( "gridPassedServers",
                                           this.i18n._( "Pass Listed Server Addresses"),
-                                          "com.untangle.node.cpd.PassedServer",
+                                          "com.untangle.node.cpd.PassedAddress",
                                           this.getRpcNode().getPassedServers,
                                           "Pass Listed Server Addresses is a list of Server IPs that unauthenticated clients can access without authentication.");
 

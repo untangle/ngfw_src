@@ -294,13 +294,13 @@ public class CPDManager
         JSONArray captureRules = new JSONArray();
 
         /* Add the passed clients and addresses first, and then add the capture rules */
-        for ( PassedClient client : settings.getPassedClients()) {
+        for ( PassedAddress client : settings.getPassedClients()) {
             if (client.isLive()) {
                 serializePassedAddress(captureRules, client.getAddress(), IPMatcher.getAnyMatcher());
             }
         }
 
-        for ( PassedServer server : settings.getPassedServers()) {
+        for ( PassedAddress server : settings.getPassedServers()) {
             if (server.isLive()) {
                 serializePassedAddress(captureRules, IPMatcher.getAnyMatcher(), server.getAddress());
             }

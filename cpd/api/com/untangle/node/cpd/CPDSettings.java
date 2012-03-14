@@ -53,8 +53,8 @@ public class CPDSettings implements Serializable
 
     private List<CaptureRule> captureRules = new LinkedList<CaptureRule>();
 
-    private List<PassedClient> passedClients = new LinkedList<PassedClient>();
-    private List<PassedServer> passedServers = new LinkedList<PassedServer>();
+    private List<PassedAddress> passedClients = new LinkedList<PassedAddress>();
+    private List<PassedAddress> passedServers = new LinkedList<PassedAddress>();
 
     private boolean captureBypassedTraffic = false;
     private AuthenticationType authenticationType = AuthenticationType.NONE;
@@ -126,22 +126,22 @@ public class CPDSettings implements Serializable
         this.captureRules = newValue;
     }
 
-    public List<PassedClient> getPassedClients()
+    public List<PassedAddress> getPassedClients()
     {
         return this.passedClients;
     }
 
-    public void setPassedClients(List<PassedClient> newValue)
+    public void setPassedClients(List<PassedAddress> newValue)
     {
         this.passedClients = newValue;
     }
 
-    public List<PassedServer> getPassedServers()
+    public List<PassedAddress> getPassedServers()
     {
         return this.passedServers;
     }
 
-    public void setPassedServers(List<PassedServer> newValue)
+    public void setPassedServers(List<PassedAddress> newValue)
     {
         this.passedServers = newValue;
     }

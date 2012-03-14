@@ -3,7 +3,7 @@ package com.untangle.node.cpd;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.IPMatcher;
 
-public abstract class PassedAddress extends Rule
+public class PassedAddress extends Rule
 {
     private IPMatcher address = IPMatcher.getNilMatcher();
     

@@ -196,26 +196,26 @@ public class CPDImpl extends AbstractNode implements CPD
     }
 
     @Override
-    public List<PassedClient> getPassedClients()
+    public List<PassedAddress> getPassedClients()
     {
         return this.settings.getPassedClients();
     }
 
     @Override
-    public void setPassedClients( final List<PassedClient> newValue ) throws Exception
+    public void setPassedClients( final List<PassedAddress> newValue ) throws Exception
     {
         this.settings.setPassedClients( newValue );
         reconfigure();
     }
 
     @Override
-    public List<PassedServer> getPassedServers()
+    public List<PassedAddress> getPassedServers()
     {
         return this.settings.getPassedServers();
     }
 
     @Override
-    public void setPassedServers( final List<PassedServer> newValue ) throws Exception
+    public void setPassedServers( final List<PassedAddress> newValue ) throws Exception
     {
         this.settings.setPassedServers( newValue );
         reconfigure();
