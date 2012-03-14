@@ -52,6 +52,8 @@ class TestEnvironmentTests(unittest.TestCase):
         assert (result == 0)
         result = clientControl.runCommand("which nmap >/dev/null")
         assert (result == 0)
+        result = clientControl.runCommand("which mime-construct >/dev/null")
+        assert (result == 0)
 
     # verify client is online
     def test_13_clientIsOnline(self):

@@ -28,10 +28,7 @@
                 "com.untangle.node.mail.papi.safelist.SafelistRecipient",
                 "com.untangle.node.mail.papi.safelist.SafelistSender",
                 "com.untangle.node.mail.papi.safelist.SafelistSettings",
-                "com.untangle.node.ftp.FtpSettings",
-                "com.untangle.node.virus.VirusMailEvent",
-                "com.untangle.node.virus.VirusLogEvent",
-                "com.untangle.node.virus.VirusSmtpEvent"
+                "com.untangle.node.ftp.FtpSettings"
             ]
         }
 }

@@ -133,13 +133,7 @@ CREATE TABLE reports.n_mail_addrs (
         # we used to create event_id as serial instead of bigserial - convert if necessary
         sql_helper.convert_column("reports","n_mail_addrs","event_id","integer","bigint");
         sql_helper.convert_column("reports","n_mail_addrs","session_id","integer","bigint");
-
-        # If the new index does not exist, create it
-        if not sql_helper.index_exists("reports","n_mail_addrs","msg_id", unique=True):
-            sql_helper.create_index("reports","n_mail_addrs","msg_id", unique=True);
-        # If the new index does exist, delete the old one
-        if sql_helper.index_exists("reports","n_mail_addrs","msg_id", unique=True):
-            sql_helper.drop_index("reports","n_mail_addrs","msg_id", unique=False);
+        sql_helper.convert_column("reports","n_mail_addrs","msg_id","integer","bigint");
 
         # If the new index does not exist, create it
         if not sql_helper.index_exists("reports","n_mail_addrs","event_id", unique=True):

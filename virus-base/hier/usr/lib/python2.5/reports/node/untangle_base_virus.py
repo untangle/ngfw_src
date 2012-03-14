@@ -48,8 +48,6 @@ class VirusBaseNode(Node):
 
     @sql_helper.print_timing
     def setup(self, start_date, end_date, start_time):
-        self.__update_n_mail_table('n_mail_msgs', start_date, end_date)
-        self.__update_n_mail_table('n_mail_addrs', start_date, end_date)
 
         ft = reports.engine.get_fact_table('reports.n_http_totals')
 
@@ -116,50 +114,9 @@ count(CASE WHEN virus_%s_clean IS NULL OR virus_%s_clean THEN null ELSE 1 END)
 
         return Report(self, sections)
 
-    @sql_helper.print_timing
-    def events_cleanup(self, cutoff):
-        sql_helper.clean_table("events", "n_virus_evt_mail ", cutoff);
-        sql_helper.clean_table("events", "n_virus_evt_smtp", cutoff);
-        sql_helper.clean_table("events", "n_virus_evt ", cutoff);
-
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table('n_virus_http_totals', cutoff)
         sql_helper.drop_fact_table('n_virus_mail_totals', cutoff)        
-
-    @sql_helper.print_timing
-    def __update_n_mail_table(self, tablename, start_date, end_date):
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-UPDATE reports.%s
-SET virus_%s_clean = clean,
-  virus_%s_name = virus_name
-FROM events.n_virus_evt_mail
-WHERE reports.%s.msg_id = events.n_virus_evt_mail.msg_id
-AND events.n_virus_evt_mail.vendor_name = %%s""" %
-                               (tablename, self.__vendor_name, self.__vendor_name, tablename),
-                               (string.capwords(self.__vendor_name),),
-                               connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
-
-        try:
-            sql_helper.run_sql("""\
-UPDATE reports.%s
-SET virus_%s_clean = clean,
-  virus_%s_name = virus_name
-FROM events.n_virus_evt_smtp
-WHERE reports.%s.msg_id = events.n_virus_evt_smtp.msg_id
-AND events.n_virus_evt_smtp.vendor_name = %%s""" %
-                               (tablename, self.__vendor_name, self.__vendor_name, tablename),
-                               (string.capwords(self.__vendor_name),),
-                               connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
 
 class VirusHighlight(Highlight):
     def __init__(self, name, vendor_name):

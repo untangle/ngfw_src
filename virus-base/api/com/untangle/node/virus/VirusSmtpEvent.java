@@ -3,17 +3,8 @@
  */
 package com.untangle.node.virus;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Columns;
-import org.hibernate.annotations.Type;
+import java.util.List;
+import java.util.LinkedList;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
@@ -24,9 +15,6 @@ import com.untangle.node.mail.papi.MessageInfo;
 /**
  * Log for SMTP Virus events.
  */
-@Entity
-@org.hibernate.annotations.Entity(mutable=false)
-@Table(name="n_virus_evt_smtp", schema="events")
 @SuppressWarnings("serial")
 public class VirusSmtpEvent extends LogEvent
 {
@@ -35,8 +23,6 @@ public class VirusSmtpEvent extends LogEvent
     private VirusScannerResult result;
     private String action;
     private String vendorName;
-
-    // constructors -----------------------------------------------------------
 
     public VirusSmtpEvent() { }
 
@@ -49,48 +35,11 @@ public class VirusSmtpEvent extends LogEvent
         this.vendorName = vendorName;
     }
 
-    // VirusEvent methods -----------------------------------------------------
-
-    @Transient
-    public String getType()
-    {
-        return "SMTP";
-    }
-
-    @Transient
-    public String getLocation()
-    {
-        return null == messageInfo ? "" : messageInfo.getSubject();
-    }
-
-    @Transient
-    public boolean isInfected()
-    {
-        return !result.isClean();
-    }
-
-    @Transient
-    public String getVirusName()
-    {
-        String n = result.getVirusName();
-
-        return null == n ? "" : n;
-    }
-
-    @Transient
-    public SessionEvent getSessionEvent()
-    {
-        return null == messageInfo ? null : messageInfo.getSessionEvent();
-    }
-
-    // accessors --------------------------------------------------------------
-
     /**
      * Associate e-mail message info with event.
      *
      * @return e-mail message info.
      */
-    @Column(name="msg_id")
     public Long getMessageId()
     {
         return messageId;
@@ -106,11 +55,6 @@ public class VirusSmtpEvent extends LogEvent
      *
      * @return the scan result.
      */
-    @Columns(columns = {
-    @Column(name="clean"),
-    @Column(name="virus_name"),
-    @Column(name="virus_cleaned")})
-    @Type(type="com.untangle.node.virus.VirusScannerResultUserType")
     public VirusScannerResult getResult()
     {
         return result;
@@ -126,7 +70,6 @@ public class VirusSmtpEvent extends LogEvent
      *
      * @return action.
      */
-    @Column(name="action")
     public String getAction()
     {
         return action;
@@ -142,7 +85,6 @@ public class VirusSmtpEvent extends LogEvent
      *
      * @return the vendor
      */
-    @Column(name="vendor_name")
     public String getVendorName()
     {
         return vendorName;
@@ -153,16 +95,49 @@ public class VirusSmtpEvent extends LogEvent
         this.vendorName = vendorName;
     }
 
+    @Override
+    public boolean isDirectEvent()
+    {
+        return true;
+    }
+
+    @Override
+    public List<String> getDirectEventSqls()
+    {
+        List<String> sqlList = new LinkedList<String>();
+        String sql;
+        
+        sql = "UPDATE reports.n_mail_msgs " +
+            "SET " +
+            "virus_" + getVendorName().toLowerCase() + "_clean = " + "'" + getResult().isClean() + "'" + ", " +
+            "virus_" + getVendorName().toLowerCase() + "_name = "  + "'" + getResult().getVirusName() + "'" + " " +
+            "WHERE " +
+            "msg_id = " + getMessageId() +
+            ";";
+        sqlList.add(sql);
+        
+        sql = "UPDATE reports.n_mail_addrs " +
+            "SET " +
+            "virus_" + getVendorName().toLowerCase() + "_clean = " + "'" + getResult().isClean() + "'" + ", " +
+            "virus_" + getVendorName().toLowerCase() + "_name = "  + "'" + getResult().getVirusName() + "'" + " " +
+            "WHERE " +
+            "msg_id = " + getMessageId() +
+            ";";
+        sqlList.add(sql);
+
+        return sqlList;
+    }
+    
     public void appendSyslog(SyslogBuilder sb)
     {
-        SessionEvent pe = getSessionEvent();
-        if (null != pe) {
+        SessionEvent pe = (null == messageInfo ? null : messageInfo.getSessionEvent());
+        if (pe != null) {
             pe.appendSyslog(sb);
         }
 
         sb.startSection("info");
-        sb.addField("location", getLocation());
-        sb.addField("infected", isInfected());
-        sb.addField("virus-name", getVirusName());
+        sb.addField("location", (null == messageInfo ? "" : messageInfo.getSubject()));
+        sb.addField("infected", !result.isClean());
+        sb.addField("virus-name", result.getVirusName());
     }
 }

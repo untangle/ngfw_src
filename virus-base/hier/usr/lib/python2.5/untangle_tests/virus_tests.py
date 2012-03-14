@@ -32,6 +32,10 @@ class VirusTests(unittest.TestCase):
     def setUp(self):
         global nodeDesc, node
         if nodeDesc == None:
+            # download eicar before installing virus blocker
+            result = clientControl.runCommand("wget http://metaloft.com/virus/00_eicar.com -O /tmp/eicar -o /dev/null 2>&1")
+            assert (result == 0)
+
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName();
                 raise Exception('node %s already instantiated' % self.nodeName())
@@ -87,6 +91,44 @@ class VirusTests(unittest.TestCase):
         assert(len(events['list']) > 0)
         assert(events['list'][0]['host'] == "metaloft.com")
         assert(events['list'][0]['uri'] == ("/test/test.zip?arg=%s" % fname))
+        assert(events['list'][0]['virus' + self.vendorName() + 'Clean'] == True)
+
+    def test_102_eventlog_smtpVirus(self):
+        fname = sys._getframe().f_code.co_name
+        result = clientControl.runCommand("mime-construct --to junk@metaloft.com --subject '%s' --string 'body' --file-attach /tmp/eicar" % (fname))
+        assert (result == 0)
+        time.sleep(5) # this is needed because mime-construct doesnt block (it just hands it off to exim)
+        flushEvents()
+        query = None;
+        for q in node.getMailEventQueries():
+            if q['name'] == 'Infected Email Events': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        assert(events != None)
+        assert(events['list'] != None)
+        assert(len(events['list']) > 0)
+        assert(events['list'][0]['addr'] == "junk@metaloft.com")
+        assert(events['list'][0]['subject'] == str(fname))
+        assert(events['list'][0]['virus' + self.vendorName() + 'Clean'] == False)
+
+    def test_103_eventlog_smtpNonVirus(self):
+        fname = sys._getframe().f_code.co_name
+        result = clientControl.runCommand("echo '%s' > /tmp/attachment-%s" % (fname, fname))
+        assert (result == 0)
+        result = clientControl.runCommand("mime-construct --to junk@metaloft.com --subject '%s' --string 'body' --file-attach /tmp/attachment-%s" % (fname, fname))
+        assert (result == 0)
+        time.sleep(5) # this is needed because mime-construct doesnt block (it just hands it off to exim)
+        flushEvents()
+        query = None;
+        for q in node.getMailEventQueries():
+            if q['name'] == 'Clean Email Events': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        assert(events != None)
+        assert(events['list'] != None)
+        assert(len(events['list']) > 0)
+        assert(events['list'][0]['addr'] == "junk@metaloft.com")
+        assert(events['list'][0]['subject'] == str(fname))
         assert(events['list'][0]['virus' + self.vendorName() + 'Clean'] == True)
 
     def test_999_finalTearDown(self):
