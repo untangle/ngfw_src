@@ -10,7 +10,7 @@ NAME="$0"
 UID_TEMPLATE=__UID__
 REPOSITORY=lenny
 CURRENT_STABLE=stable-9
-DEFAULT_UNTANGLE_SOURCE="deb http://${UID_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} ${CURRENT_STABLE} main premium upstream\ndeb http://${UID_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} cruiser main premium upstream"
+DEFAULT_UNTANGLE_SOURCE="deb http://${UID_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} ${CURRENT_STABLE} main premium upstream\ndeb http://${UID_TEMPLATE}:untangle@updates.untangle.com/public/${REPOSITORY} cruiser-1 main premium upstream"
 
 if [ ! -f $UID_FILE ]; then
     # we need a UID
