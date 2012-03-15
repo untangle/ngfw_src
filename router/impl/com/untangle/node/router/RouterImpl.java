@@ -32,8 +32,8 @@ public class RouterImpl extends AbstractNode implements Router
 
     /* Indicate whether or not the node is starting */
 
-    private final SoloPipeSpec natPipeSpec;
-    private final SoloPipeSpec natFtpPipeSpec;
+    private final SoloPipeSpec routerPipeSpec;
+    private final SoloPipeSpec routerFtpPipeSpec;
 
     private final PipeSpec[] pipeSpecs;
 
@@ -50,12 +50,12 @@ public class RouterImpl extends AbstractNode implements Router
         /**
          * Have to figure out pipeline ordering, this should always towards the server
          */
-        natPipeSpec = new SoloPipeSpec("nat", this, this.handler, Fitting.OCTET_STREAM, Affinity.SERVER, SoloPipeSpec.MAX_STRENGTH - 1);
+        routerPipeSpec = new SoloPipeSpec("router", this, this.handler, Fitting.OCTET_STREAM, Affinity.SERVER, SoloPipeSpec.MAX_STRENGTH - 1);
 
         /* This subscription has to evaluate after NAT */
-        natFtpPipeSpec = new SoloPipeSpec("nat-ftp", this, new TokenAdaptor(this, new RouterFtpFactory(this)), Fitting.FTP_TOKENS, Affinity.SERVER, 0);
+        routerFtpPipeSpec = new SoloPipeSpec("router-ftp", this, new TokenAdaptor(this, new RouterFtpFactory(this)), Fitting.FTP_TOKENS, Affinity.SERVER, 0);
 
-        pipeSpecs = new SoloPipeSpec[] { natPipeSpec, natFtpPipeSpec };
+        pipeSpecs = new SoloPipeSpec[] { routerPipeSpec, routerFtpPipeSpec };
     }
 
     // package protected methods ----------------------------------------------
@@ -67,12 +67,12 @@ public class RouterImpl extends AbstractNode implements Router
 
     ArgonConnector getRouterArgonConnector()
     {
-        return natPipeSpec.getArgonConnector();
+        return routerPipeSpec.getArgonConnector();
     }
 
     ArgonConnector getRouterFtpPipeSpec()
     {
-        return natFtpPipeSpec.getArgonConnector();
+        return routerFtpPipeSpec.getArgonConnector();
     }
 
     // AbstractNode methods ----------------------------------------------
