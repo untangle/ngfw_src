@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 
 class ClientControl:
 
@@ -25,7 +26,7 @@ class ClientControl:
 
     # runs a given command
     # returns 0 if the process returned 0, 1 otherwise
-    def runCommand(self, command):
+    def runCommand(self, command, com_stdout=0):
 
         if (ClientControl.verbosity <= 0):
             shellRedirect = " >/dev/null 2>&1 "
@@ -42,12 +43,17 @@ class ClientControl:
                 print "\nRunning command          : %s" % sshCommand
             if (ClientControl.verbosity > 0):
                 print "\nRunning command on client: %s" % command
-            result = os.system(sshCommand)
-            #child_stdin, child_stdout, child_stderr = os.popen3(sshCommand)
-            #child_stdin.close()
-            #print child_stdout.read()
-            #print child_stderr.read()
-            #result = os.wait()
+            if (com_stdout == 0):
+                result = os.system(sshCommand)
+                #print child_stdout.read()
+                #print child_stdout.read()
+                #print child_stderr.read()
+                #result = os.wait()
+            else:
+                # send command and read stdout
+                rtn_cmd = subprocess.Popen(sshCommand, shell=True, stdout=subprocess.PIPE)
+                rtn_stdout = rtn_cmd.communicate()[0]
+                # print rtn_stdout 
         finally:
             if (ClientControl.logfile != None):
                 self.restoreOutput()
