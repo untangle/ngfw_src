@@ -3,6 +3,7 @@ package com.untangle.node.cpd;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.IPMatcher;
 
+@SuppressWarnings("serial")
 public class PassedAddress extends Rule
 {
     private IPMatcher address = IPMatcher.getNilMatcher();
