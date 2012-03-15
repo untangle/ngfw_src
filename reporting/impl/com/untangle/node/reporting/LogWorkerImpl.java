@@ -300,8 +300,17 @@ public class LogWorkerImpl implements Runnable, LogWorker
 
             i.remove();
         }
-        s.flush();
-        s.close();
+        try {
+            s.flush();
+        } catch (Exception exc) {
+            logger.error("could not flush session: ", exc);
+        }
+        try {
+            s.close();
+        } catch (Exception exc) {
+            logger.error("could not close session: ", exc);
+        }
+        
         logger.debug("Writing events to database... Complete");
         
         long t1 = System.currentTimeMillis();
