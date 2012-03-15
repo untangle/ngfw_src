@@ -1024,7 +1024,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.addAnnotatedClass("com.untangle.uvm.User");
         this.addAnnotatedClass("com.untangle.uvm.message.ActiveStat");
         this.addAnnotatedClass("com.untangle.uvm.logging.LoggingSettings");
-        this.addAnnotatedClass("com.untangle.uvm.logging.SystemStatEvent");
         this.addAnnotatedClass("com.untangle.uvm.logging.SessionLogEventFromReports");
         this.addAnnotatedClass("com.untangle.uvm.logging.HttpLogEventFromReports");
         this.addAnnotatedClass("com.untangle.uvm.logging.MailLogEventFromReports");

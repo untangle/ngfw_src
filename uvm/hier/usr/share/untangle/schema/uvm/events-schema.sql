@@ -32,24 +32,6 @@ CREATE TABLE events.n_login_evt (
     client_addr inet,
     PRIMARY KEY (event_id));
 
--- SystemStatEvent
-CREATE TABLE events.n_server_evt (
-    event_id    INT8 NOT NULL,
-    time_stamp  TIMESTAMP,
-    mem_free 	INT8,
-    mem_cache 	INT8,
-    mem_buffers INT8,
-    load_1 	DECIMAL(6, 2),
-    load_5 	DECIMAL(6, 2),
-    load_15	DECIMAL(6, 2),
-    cpu_user 	DECIMAL(6, 3),
-    cpu_system 	DECIMAL(6, 3),
-    disk_total 	INT8,
-    disk_free 	INT8,
-    swap_total 	INT8,
-    swap_free 	INT8,
-    PRIMARY KEY (event_id));
-
 CREATE TABLE events.event_data_days (
         day_name text NOT NULL,
         day_begin date NOT NULL);

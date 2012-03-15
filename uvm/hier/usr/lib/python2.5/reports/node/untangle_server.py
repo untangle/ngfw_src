@@ -79,10 +79,6 @@ class ServerNode(Node):
                                   "avg(swap_free)"))
         reports.engine.register_fact_table(ft)
 
-    @print_timing
-    def events_cleanup(self, cutoff):
-        sql_helper.clean_table("events", "n_server_evt ", cutoff);
-
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_server_events", cutoff)
         sql_helper.drop_fact_table("n_server_totals", cutoff)        
@@ -113,29 +109,6 @@ CREATE TABLE reports.n_server_events (
     disk_free 	INT8,
     swap_total 	INT8,
     swap_free 	INT8)""", 'time_stamp', start_date, end_date)
-
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-INSERT INTO reports.n_server_events
-      (time_stamp, mem_free,
-      mem_cache, mem_buffers,
-      load_1, load_5, load_15,
-      cpu_user, cpu_system,
-      disk_total, disk_free,
-      swap_total, swap_free)
-SELECT time_stamp, mem_free,
-      mem_cache, mem_buffers,
-      load_1, load_5, load_15,
-      cpu_user, cpu_system,
-      disk_total, disk_free,
-      swap_total, swap_free
-FROM events.n_server_evt""",
-                               (), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
 
     def teardown(self):
         pass
