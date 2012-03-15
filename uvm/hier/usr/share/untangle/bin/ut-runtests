@@ -121,7 +121,17 @@ def runTestSuite(suite):
     rc = 0
     total = len([t for t in tests])
     for test in tests:
+
+        orig_stdout = sys.stdout
+        orig_stderr = sys.stderr
+        sys.stdout = logfile
+        sys.stderr = logfile
+
         results = unittest.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
+
+        sys.stdout = orig_stdout
+        sys.stderr = orig_stderr
+
         if (len(results.failures) > 0 or len(results.errors) > 0):
             print "Test FAILED  : %s " % test._testMethodName
             if (parser.fastfail):

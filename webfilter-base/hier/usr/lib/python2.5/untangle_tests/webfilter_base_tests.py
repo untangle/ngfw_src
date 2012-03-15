@@ -326,6 +326,11 @@ class WebFilterBaseTests(unittest.TestCase):
         assert(events != None)
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
+        print ("Event:" + 
+               " host: " + str(events['list'][0]['host']) + 
+               " uri: " + str(events['list'][0]['uri']) + 
+               " blocked: " + str(events['list'][0]['wf' + self.vendorName() + 'Blocked']) + 
+               " flagged: " + str(events['list'][0]['wf' + self.vendorName() + 'Flagged'])) 
         assert(events['list'][0]['host'] == "metaloft.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
         assert(events['list'][0]['wf' + self.vendorName() + 'Blocked'] == True)
