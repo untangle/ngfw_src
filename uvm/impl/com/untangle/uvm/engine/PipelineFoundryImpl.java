@@ -131,7 +131,8 @@ public class PipelineFoundryImpl implements PipelineFoundry
         List<ArgonConnectorFitting> acFittingList = new ArrayList<ArgonConnectorFitting>(chain.size());
 
         ArgonConnector end = null;
-                       
+
+        String nodeList = "nodes: [";
         for (Iterator<ArgonConnectorFitting> i = chain.iterator(); i.hasNext();) {
             ArgonConnectorFitting acFitting = i.next();
 
@@ -149,11 +150,13 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 if (pipeSpec.matches(sessionDesc)) {
                     acFittingList.add(acFitting);
                     argonAgentList.add(((ArgonConnectorImpl) argonConnector).getArgonAgent());
+                    nodeList += pipeSpec.getName() + " ";
                 } else {
                     end = acFitting.end;
                 }
             }
         }
+        nodeList += "]";
 
         long ft1 = System.nanoTime();
 
@@ -162,10 +165,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
         Long t1 = System.nanoTime();
         if (logger.isDebugEnabled()) {
-            logger.debug("sid: " + sessionDesc.id() +
-                         " policy " + policy +
-                         " policyManager " + UvmContextImpl.getInstance().policyManager().getClass().getName());
-            logger.debug("sid: " + sessionDesc.id() +
+            logger.debug("session_id: " + sessionDesc.id() +
+                         " policy: " + policy + " " +
+                         nodeList );
+            logger.debug("session_id: " + sessionDesc.id() +
                          " pipe in " + (t1 - t0) +
                          " made: " + (ct1 - ct0) +
                          " filtered: " + (ft1 - ft0) +
