@@ -1,29 +1,9 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
 package com.untangle.node.protofilter;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 
 /**
  * Rule for proto filter patterns
@@ -31,19 +11,10 @@ import javax.persistence.Transient;
  * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
  * @version 1.0
  */
-@Entity
-@Table(name="n_protofilter_pattern", schema="settings")
 @SuppressWarnings("serial")
 public class ProtoFilterPattern implements Serializable
 {
-    // Converter sets all old patterns to this mid
-    public static final int NEEDS_CONVERSION_METAVIZE_ID = -27;
-
-    // All user owned rules should have this value
-    public static final int USER_CREATED_METAVIZE_ID = 0;
-
     private Long id;
-    private int mvid = USER_CREATED_METAVIZE_ID;
     private String protocol = "none";
     private String description = "None";
     private String category = "None";
@@ -59,7 +30,7 @@ public class ProtoFilterPattern implements Serializable
                        String description, String definition,  String quality,
                        boolean blocked, boolean alert, boolean log)
     {
-        this.mvid = mvid;
+        //this.mvid = mvid;
         this.protocol = protocol;
         this.category = category;
         this.description = description;
@@ -70,28 +41,8 @@ public class ProtoFilterPattern implements Serializable
         this.log = log;
     }
 
-    @Transient
-    public boolean isReadOnly() {
-        return (mvid == USER_CREATED_METAVIZE_ID);
-    }
-
-    @Id
-    @Column(name="rule_id")
-    @GeneratedValue
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
-    /**
-     *
-     * Note that metavize id should not be set by the user.  It is
-     * only ever set for Metavize built-in patterns.
-     */
-    @Column(name="metavize_id")
-    public int getMetavizeId() { return mvid; }
-    public void setMetavizeId(int mvid) { this.mvid = mvid; }
-
-    @Transient
-    public void setMetavizeId(Integer mvid) { this.mvid = mvid.intValue(); }
 
     /**
      * Protocol name

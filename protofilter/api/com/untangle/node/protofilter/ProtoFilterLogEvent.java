@@ -3,11 +3,6 @@
  */
 package com.untangle.node.protofilter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
@@ -15,13 +10,7 @@ import com.untangle.uvm.node.SessionEvent;
 
 /**
  * Log event for a proto filter match.
- *
- * @author
- * @version 1.0
  */
-@Entity
-@org.hibernate.annotations.Entity(mutable=false)
-@Table(name="n_protofilter_evt", schema="events")
 @SuppressWarnings("serial")
 public class ProtoFilterLogEvent extends LogEvent
 {
@@ -62,8 +51,7 @@ public class ProtoFilterLogEvent extends LogEvent
      *
      * @return whether or not the session was blocked (closed)
      */
-    @Column(nullable=false)
-    public boolean isBlocked()
+    public boolean getBlocked()
     {
         return blocked;
     }
@@ -73,7 +61,6 @@ public class ProtoFilterLogEvent extends LogEvent
         this.blocked = blocked;
     }
 
-    @Column(name="session_id", nullable=false)
     public Long getSessionId()
     {
         return sessionEvent.getSessionId();
@@ -84,39 +71,41 @@ public class ProtoFilterLogEvent extends LogEvent
         this.sessionEvent.setSessionId(sessionId);
     }
 
-    @Transient
-    public SessionEvent getSessionEvent()
+    @Override
+    public boolean isDirectEvent()
     {
-        return sessionEvent;
+        return true;
     }
 
-    public void setSessionEvent(SessionEvent sessionEvent)
+    @Override
+    public String getDirectEventSql()
     {
-        this.sessionEvent = sessionEvent;
+        String sql =
+            "UPDATE reports.sessions " + 
+            "SET pf_protocol = '" + getProtocol() + "', " +
+            "    pf_blocked = '" + getBlocked() + "' " + 
+            "WHERE session_id = '" + sessionEvent.getSessionId() + "'";
+        return sql;
     }
-
-    // Syslog methods ---------------------------------------------------------
 
     public void appendSyslog(SyslogBuilder sb)
     {
-        getSessionEvent().appendSyslog(sb);
+        sessionEvent.appendSyslog(sb);
 
         sb.startSection("info");
         sb.addField("protocol", getProtocol());
-        sb.addField("blocked", isBlocked());
+        sb.addField("blocked", getBlocked());
     }
 
-    @Transient
     public String getSyslogId()
     {
         return ""; // XXX
     }
 
-    @Transient
     public SyslogPriority getSyslogPriority()
     {
         // WARNING = traffic altered
         // INFORMATIONAL = statistics or normal operation
-        return true == isBlocked() ? SyslogPriority.WARNING : SyslogPriority.INFORMATIONAL;
+        return true == getBlocked() ? SyslogPriority.WARNING : SyslogPriority.INFORMATIONAL;
     }
 }

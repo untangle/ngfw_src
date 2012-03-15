@@ -39,8 +39,6 @@ class Protofilter(Node):
         Node.__init__(self, 'untangle-node-protofilter')
 
     def setup(self, start_date, end_date, start_time):
-        self.__update_sessions(start_date, end_date)
-
         ft = reports.engine.get_fact_table('reports.session_totals')
 
         ft.measures.append(Column('pf_blocks', 'integer',
@@ -72,28 +70,8 @@ class Protofilter(Node):
 
         return reports.Report(self, sections)
 
-    @sql_helper.print_timing
-    def events_cleanup(self, cutoff):
-        sql_helper.clean_table("events", "n_protofilter_evt ", cutoff);
-
     def reports_cleanup(self, cutoff):
         pass
-
-    @print_timing
-    def __update_sessions(self, start_date, end_date):
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-UPDATE reports.sessions
-SET pf_protocol = protocol,
-    pf_blocked = blocked
-FROM events.n_protofilter_evt
-WHERE reports.sessions.session_id = events.n_protofilter_evt.session_id""",
-                               (), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
 
 class ProtocolsHighlight(Highlight):
     def __init__(self, name):
