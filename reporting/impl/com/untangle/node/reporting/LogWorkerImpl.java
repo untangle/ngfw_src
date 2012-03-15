@@ -284,9 +284,27 @@ public class LogWorkerImpl implements Runnable, LogWorker
      */
     private void persist()
     {
-        String eventTypeDebugOuput = "";
-        if (logger.isInfoEnabled())
-            eventTypeDebugOuput = buildEventTypeDebugOutputString();
+        /**
+         * These map stores the type of objects being written and stats purely for debugging output
+         */
+        Map<String,Integer> countMap = new HashMap<String, Integer>(); // Map from Event type to count of this type of event
+        Map<String,Long> timeMap     = new HashMap<String, Long>();    // Map from Event type to culumalite time to write these events
+        if (logger.isInfoEnabled()) {
+            for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
+                LogEvent event = i.next();
+
+                /**
+                 * Update the stats
+                 */
+                String eventTypeName = event.getClass().getSimpleName();
+                Integer currentCount = countMap.get(eventTypeName);
+                if (currentCount == null)
+                    currentCount = 1;
+                else
+                    currentCount = currentCount+1;
+                countMap.put(eventTypeName, currentCount);
+            }
+        }
 
         int count = logQueue.size();
         long t0 = System.currentTimeMillis();
@@ -317,7 +335,21 @@ public class LogWorkerImpl implements Runnable, LogWorker
                     if (sqlStr != null) {
                         logger.debug("Write direct event: " + sqlStr);
                         try {
+                            long write_t0 = System.currentTimeMillis();
                             statement.execute(sqlStr);
+                            long write_t1 = System.currentTimeMillis();
+
+                            if (logger.isInfoEnabled()) {
+                                /**
+                                 * Update the stats
+                                 */
+                                String eventTypeName = event.getClass().getSimpleName();
+                                Long currentTime = timeMap.get(eventTypeName);
+                                if (currentTime == null)
+                                    currentTime = 0L;
+                                currentTime = currentTime+(write_t1-write_t0); //add time to write this instances
+                                timeMap.put(eventTypeName, currentTime);
+                            }
                         } catch (SQLException e) {
                             logger.warn("Failed SQL query: \"" + sqlStr + "\": ",e);
                         }
@@ -360,8 +392,36 @@ public class LogWorkerImpl implements Runnable, LogWorker
         }
 
         logger.debug("Writing events to database... Complete");
-        long t1 = System.currentTimeMillis();
-        logger.info("persist(): " + String.format("%5d",count) + " events [" + String.format("%5d",(t1-t0)) + " ms]" + eventTypeDebugOuput);
+
+        /**
+         * This looks at the event queue to be written and builds a summary string of the type of objects about to be written
+         * Example: "SessionEvent[45,10ms] WebFilterEvent[10,20ms]
+         */
+        if (logger.isInfoEnabled()) {
+            /**
+             * Sort the list
+             */
+            LinkedList<EventTypeMap> eventTypeMapList = new LinkedList<EventTypeMap>();
+            for ( String key : countMap.keySet() ) {
+                eventTypeMapList.add(new EventTypeMap(key, countMap.get(key)));
+            }
+            Collections.sort(eventTypeMapList, new EventTypeMapComparator());
+
+            /**
+             * Build the output string
+             */
+            String mapOutput = "";
+            for ( EventTypeMap item : eventTypeMapList ) {
+                Long totalTimeMs = timeMap.get(item.name);
+                if (totalTimeMs == null)
+                    mapOutput += " " + item.name + "[" + item.count + "]";
+                else
+                    mapOutput += " " + item.name + "[" + item.count + "," + totalTimeMs + "ms]";
+            }
+
+            long t1 = System.currentTimeMillis();
+            logger.info("persist(): " + String.format("%5d",count) + " events [" + String.format("%5d",(t1-t0)) + " ms]" + mapOutput);
+        }
     }
 
     // package protected methods ------------------------------------------
@@ -382,51 +442,6 @@ public class LogWorkerImpl implements Runnable, LogWorker
                 t.interrupt();
             }
         }
-    }
-
-    /**
-     * This looks at the event queue to be written and builds a summary string of the type of objects about to be written
-     * Example: "SessionEvent[45] WebFilterEvent[10]
-     */
-    private String buildEventTypeDebugOutputString()
-    {
-        /**
-         * This map stores the type of objects being written purely for debugging output
-         */
-        Map<String,Integer> countMap = new HashMap<String, Integer>();
-        for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
-            LogEvent event = i.next();
-
-            /**
-             * Update the stats
-             */
-            String eventTypeName = event.getClass().getSimpleName();
-            Integer currentCount = countMap.get(eventTypeName);
-            if (currentCount == null)
-                currentCount = 1;
-            else
-                currentCount = currentCount+1;
-            countMap.put(eventTypeName, currentCount);
-        }
-
-        /**
-         * Sort the list
-         */
-        LinkedList<EventTypeMap> eventTypeMapList = new LinkedList<EventTypeMap>();
-        for ( String key : countMap.keySet() ) {
-            eventTypeMapList.add(new EventTypeMap(key, countMap.get(key)));
-        }
-        Collections.sort(eventTypeMapList, new EventTypeMapComparator());
-
-        /**
-         * Build the output string
-         */
-        String mapOutput = "";
-        for ( EventTypeMap item : eventTypeMapList ) {
-            mapOutput += " " + item.name + "[" + item.count + "]";
-        }
-        
-        return mapOutput;
     }
 
     class EventTypeMap
