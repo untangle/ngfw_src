@@ -198,7 +198,7 @@ class EventHandler extends AbstractEventHandler
                 continue;
             }
 
-            for ( ClientSiteNetwork siteNetwork : site.getExportedAddressList()) {
+            for ( SiteNetwork siteNetwork : site.getExportedAddressList()) {
                 if ( !siteNetwork.isLive()) continue;
                 IPMatcher matcher =
                     IPMatcher.makeSubnetMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask());
@@ -210,7 +210,7 @@ class EventHandler extends AbstractEventHandler
             }
         }
 
-        for ( ServerSiteNetwork siteNetwork : settings.getExportedAddressList()) {
+        for ( SiteNetwork siteNetwork : settings.getExportedAddressList()) {
             if ( !siteNetwork.isLive()) continue;
             IPMatcher matcher =
                 IPMatcher.makeSubnetMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask());

@@ -30,24 +30,24 @@ import com.untangle.uvm.node.ValidateException;
 public class ExportList implements Serializable, Validatable
 { 
     
-    List<ServerSiteNetwork> exportList;
+    List<SiteNetwork> exportList;
 
     public ExportList()
     {
-        this( new LinkedList<ServerSiteNetwork>());
+        this( new LinkedList<SiteNetwork>());
     }
 
-    public ExportList( List<ServerSiteNetwork> exportList )
+    public ExportList( List<SiteNetwork> exportList )
     {
         this.exportList = exportList;
     }
 
-    public List<ServerSiteNetwork> getExportList()
+    public List<SiteNetwork> getExportList()
     {
         return this.exportList;
     }
     
-    public void setExportList( List<ServerSiteNetwork> exportList )
+    public void setExportList( List<SiteNetwork> exportList )
     {
         this.exportList = exportList;
     }
@@ -56,7 +56,7 @@ public class ExportList implements Serializable, Validatable
     {
         List<AddressRange> checkList = new LinkedList<AddressRange>();
 
-        for ( ServerSiteNetwork export : this.exportList ) {
+        for ( SiteNetwork export : this.exportList ) {
             checkList.add( AddressRange.makeNetwork( export.getNetwork().getAddr(), 
                                                      export.getNetmask().getAddr()));
         }
@@ -69,7 +69,7 @@ public class ExportList implements Serializable, Validatable
      * Validate the object, throw an exception if it is not valid */
     public void validate() throws ValidateException
     {
-        for ( ServerSiteNetwork export : this.exportList ) export.validate();
+        for ( SiteNetwork export : this.exportList ) export.validate();
         
         /* Determine if all of the addresses are unique */
         AddressValidator.getInstance().validateOverlap( buildAddressRange());

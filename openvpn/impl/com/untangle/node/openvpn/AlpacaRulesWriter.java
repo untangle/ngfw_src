@@ -32,9 +32,9 @@ class AlpacaRulesWriter extends ScriptWriter
         super();
     }
 
-    void appendExportedAddresses( List<ServerSiteNetwork> exportedAddressList )
+    void appendExportedAddresses( List<SiteNetwork> exportedAddressList )
     {
-        for ( ServerSiteNetwork n : exportedAddressList ) {
+        for ( SiteNetwork n : exportedAddressList ) {
             appendLine( "insert_vpn_export " + n.getNetwork() + " " + n.getNetmask());
         }
     }

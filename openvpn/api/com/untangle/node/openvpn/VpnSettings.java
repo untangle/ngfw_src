@@ -24,22 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
-import org.hibernate.annotations.Type;
-
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.Validatable;
@@ -52,12 +36,9 @@ import com.untangle.uvm.security.NodeId;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-@Entity
-@Table(name="n_openvpn_settings", schema="settings")
 @SuppressWarnings("serial")
 public class VpnSettings implements Serializable, Validatable
 {
-
     private static final String INVALID_CHARACTERS_STRING = "[^-a-zA-Z0-9- ]";
     private static final Pattern INVALID_CHARACTERS_PATTERN;
 
@@ -86,7 +67,7 @@ public class VpnSettings implements Serializable, Validatable
     private HostAddress serverAddress;
 
     /* List of addresses that should be visible to the VPN */
-    private List<ServerSiteNetwork> exportedAddressList;
+    private List<SiteNetwork> exportedAddressList;
 
     private boolean keepAlive;
 
@@ -101,9 +82,6 @@ public class VpnSettings implements Serializable, Validatable
     private boolean isDnsOverrideEnabled = false;
     private IPAddress dns1;
     private IPAddress dns2;
-
-    /* This is the port to put into config files */
-    private int publicPort = DEFAULT_PUBLIC_PORT;
 
     /* Certificate information */
     private String  domain = "";
@@ -159,9 +137,6 @@ public class VpnSettings implements Serializable, Validatable
 
     /* Typically private, but package access so the ID can be reused */
 
-    @Id
-    @Column(name="id")
-    @GeneratedValue
     Long getId()
     {
         return id;
@@ -177,8 +152,6 @@ public class VpnSettings implements Serializable, Validatable
      *
      * @return tid for these settings
      */
-    @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="tid", nullable=false)
     public NodeId getNodeId()
     {
         return tid;
@@ -191,11 +164,9 @@ public class VpnSettings implements Serializable, Validatable
 
     /** Network settings for the VPN */
 
-
     /**
      * @return whether the vpn is in bridge mode.
      */
-    @Column(name="is_bridge", nullable=false)
     public boolean isBridgeMode()
     {
         return this.isBridgeMode;
@@ -209,7 +180,6 @@ public class VpnSettings implements Serializable, Validatable
     /**
      * @return whether this is an openvpn of another edgeguard client.
      */
-    @Column(name="is_edgeguard_client", nullable=false)
     public boolean isUntanglePlatformClient()
     {
         return this.isUntanglePlatformClient;
@@ -227,11 +197,6 @@ public class VpnSettings implements Serializable, Validatable
      *
      * @return the list of vpn address groups.
      */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinColumn(name="settings_id")
-    @IndexColumn(name="position")
     public List<VpnGroup> getGroupList()
     {
         if ( this.groupList == null ) this.groupList = new LinkedList<VpnGroup>();
@@ -250,11 +215,6 @@ public class VpnSettings implements Serializable, Validatable
      *
      * @return the list of Patterns
      */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinColumn(name="settings_id")
-    @IndexColumn(name="position")
     public List<VpnClient> getClientList()
     {
         if ( this.clientList == null ) this.clientList = new LinkedList<VpnClient>();
@@ -273,11 +233,6 @@ public class VpnSettings implements Serializable, Validatable
      *
      * @return the list of Patterns
      */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinColumn(name="settings_id")
-    @IndexColumn(name="position")
     public List<VpnSite> getSiteList()
     {
         if ( this.siteList == null ) this.siteList = new LinkedList<VpnSite>();
@@ -297,7 +252,6 @@ public class VpnSettings implements Serializable, Validatable
      * default ones from the UVM.
      * @return whether or not to override DNS
      */
-    @Column(name="is_dns_override", nullable=false)
     public boolean getIsDnsOverrideEnabled()
     {
         return this.isDnsOverrideEnabled;
@@ -308,8 +262,6 @@ public class VpnSettings implements Serializable, Validatable
         this.isDnsOverrideEnabled = newValue;
     }
 
-    @Column(name="dns_1")
-    @Type(type="com.untangle.uvm.type.IPAddressUserType")
     public IPAddress getDns1()
     {
         return this.dns1;
@@ -320,8 +272,6 @@ public class VpnSettings implements Serializable, Validatable
         this.dns1 = newValue;
     }
 
-    @Column(name="dns_2")
-    @Type(type="com.untangle.uvm.type.IPAddressUserType")
     public IPAddress getDns2()
     {
         return this.dns2;
@@ -332,7 +282,6 @@ public class VpnSettings implements Serializable, Validatable
         this.dns2 = newValue;
     }
 
-    @Transient
     public List<IPAddress> getDnsServerList()
     {
         List<IPAddress> dnsServerList = new LinkedList<IPAddress>();
@@ -347,13 +296,12 @@ public class VpnSettings implements Serializable, Validatable
      * @return a new list containing all of the clients and the
      * sites. A VpnSite is a subclass of a VpnClient.
      */
-    @Transient
-    public List<VpnClientBase> getCompleteClientList()
+    public List<VpnClient> getCompleteClientList()
     {
         List<VpnClient> clientList = getClientList();
         List<VpnSite> siteList = getSiteList();
-        List<VpnClientBase> completeList = 
-            new ArrayList<VpnClientBase>( clientList.size() + siteList.size());
+        List<VpnClient> completeList =
+            new ArrayList<VpnClient>( clientList.size() + siteList.size());
         completeList.addAll( clientList );
         completeList.addAll( siteList );
         return completeList;
@@ -364,8 +312,6 @@ public class VpnSettings implements Serializable, Validatable
      *
      * @return virtual address of the open vpn server.
      */
-    @Column(name="server_address")
-    @Type(type="com.untangle.uvm.type.HostAddressUserType")
     public HostAddress getServerAddress()
     {
         return this.serverAddress;
@@ -381,19 +327,15 @@ public class VpnSettings implements Serializable, Validatable
      *
      * @return the list of exported networks for this site.
      */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinColumn(name="settings_id")
-    @IndexColumn(name="position")
-    public List<ServerSiteNetwork> getExportedAddressList()
+    public List<SiteNetwork> getExportedAddressList()
     {
-        if ( this.exportedAddressList == null ) this.exportedAddressList = new LinkedList<ServerSiteNetwork>();
+        if ( this.exportedAddressList == null ) this.exportedAddressList = new LinkedList<SiteNetwork>();
 
         if (this.exportedAddressList != null) this.exportedAddressList.removeAll(java.util.Collections.singleton(null));
         return this.exportedAddressList;
     }
-    public void setExportedAddressList( List<ServerSiteNetwork> exportedAddressList )
+
+    public void setExportedAddressList( List<SiteNetwork> exportedAddressList )
     {
         this.exportedAddressList = exportedAddressList;
     }
@@ -402,7 +344,6 @@ public class VpnSettings implements Serializable, Validatable
      * True if clients should be allowed to see other clients
      * @return whether the vpn is in bridge mode.
      */
-    @Column(name="expose_clients", nullable=false)
     public boolean getExposeClients()
     {
         return this.exposeClients;
@@ -417,7 +358,6 @@ public class VpnSettings implements Serializable, Validatable
      * True if clients should keep the connection alive with pings. (may want to hide this from the user)
      * @return keep alive
      */
-    @Column(name="keep_alive", nullable=false)
     public boolean getKeepAlive()
     {
         return this.keepAlive;
@@ -431,7 +371,6 @@ public class VpnSettings implements Serializable, Validatable
     /**
      * @return Maximum number of concurrent clients.(probably not exposed)
      */
-    @Column(name="max_clients", nullable=false)
     public int getMaxClients()
     {
         return this.maxClients;
@@ -440,23 +379,6 @@ public class VpnSettings implements Serializable, Validatable
     public void setMaxClients( int maxClients )
     {
         this.maxClients = maxClients;
-    }
-
-    /**
-     * @return Public port where the user can connect to OpenVPN from,
-     *         defaults to 1194.
-     */
-    @Column(name="public_port", nullable=false)
-    public int getPublicPort()
-    {
-        if ( this.publicPort < 0 || this.publicPort > 0xFFFF ) this.publicPort = DEFAULT_PUBLIC_PORT;
-        return this.publicPort;
-    }
-
-    public void setPublicPort( int newValue )
-    {
-        if ( newValue < 0 || newValue > 0xFFFF ) newValue = DEFAULT_PUBLIC_PORT;
-        this.publicPort = newValue;
     }
 
     /* Certificate information */
@@ -477,7 +399,6 @@ public class VpnSettings implements Serializable, Validatable
     /**
      * @return key size.
      */
-    @Column(name="key_size", nullable=false)
     public int getKeySize()
     {
         return this.keySize;
@@ -540,7 +461,6 @@ public class VpnSettings implements Serializable, Validatable
     /**
      * @return organization.
      */
-    @Column(name="org")
     public String getOrganization()
     {
         return this.organization;
@@ -554,7 +474,6 @@ public class VpnSettings implements Serializable, Validatable
     /**
      * @return organizationUnit.
      */
-    @Column(name="org_unit")
     public String getOrganizationUnit()
     {
         return organizationUnit;
@@ -568,7 +487,6 @@ public class VpnSettings implements Serializable, Validatable
     /**
      * @return true if the settings have been configured
      */
-    @Transient
     boolean isConfigured()
     {
         if ( isUntanglePlatformClient ) return true;
@@ -591,7 +509,6 @@ public class VpnSettings implements Serializable, Validatable
     /**
      * @return true if the CA private key is on a USB key.
      */
-    @Column(name="is_ca_on_usb", nullable=false)
     public boolean getCaKeyOnUsb()
     {
         return this.caKeyOnUsb;
@@ -602,7 +519,6 @@ public class VpnSettings implements Serializable, Validatable
         this.caKeyOnUsb = caKeyOnUsb;
     }
 
-    @Column(name="site_name")
     public String getSiteName()
     {
         if ( this.siteName == null ) this.siteName = DEFAULT_SITE_NAME;
@@ -625,7 +541,6 @@ public class VpnSettings implements Serializable, Validatable
     /**
      * Name of this VPN site.  This is the value that identifies this
      * office in the config file */
-    @Transient
     public String getInternalSiteName()
     {
         String site = getSiteName();

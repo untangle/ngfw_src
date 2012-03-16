@@ -18,13 +18,6 @@
 
 package com.untangle.node.openvpn;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Type;
-
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.Validatable;
@@ -36,8 +29,6 @@ import com.untangle.uvm.node.ValidateException;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-@Entity
-@Table(name="n_openvpn_group", schema="settings")
 @SuppressWarnings("serial")
 public class VpnGroup extends Rule implements Validatable
 {
@@ -54,7 +45,6 @@ public class VpnGroup extends Rule implements Validatable
     /**
      * Should clients use DNS from the server
      */
-    @Column(name="use_dns", nullable=false)
     public boolean getUseDNS()
     {
         return useDNS;
@@ -71,7 +61,6 @@ public class VpnGroup extends Rule implements Validatable
      * @return the pool address to send to the client, don't use in
      * bridging mode.
      */
-    @Type(type="com.untangle.uvm.type.IPAddressUserType")
     public IPAddress getAddress()
     {
         return this.address;
@@ -89,7 +78,6 @@ public class VpnGroup extends Rule implements Validatable
      *
      * @return the pool netmask to send to the client
      */
-    @Type(type="com.untangle.uvm.type.IPAddressUserType")
     public IPAddress getNetmask()
     {
         return this.netmask;
@@ -104,7 +92,6 @@ public class VpnGroup extends Rule implements Validatable
     /**
      * @return Default interface to associate VPN traffic with.
      */
-    @Transient
     public int getIntf()
     {
         return this.intf;
@@ -119,7 +106,6 @@ public class VpnGroup extends Rule implements Validatable
      * This is the name that is used as the common name in the
      * certificate
      */
-    @Transient
     public String getInternalName()
     {
         return getName().trim().toLowerCase();

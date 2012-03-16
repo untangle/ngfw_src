@@ -18,10 +18,6 @@
 
 package com.untangle.node.openvpn;
 
-import javax.persistence.MappedSuperclass;
-
-import org.hibernate.annotations.Type;
-
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.Validatable;
@@ -34,8 +30,7 @@ import com.untangle.uvm.node.ValidateException;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-@MappedSuperclass
-public abstract class SiteNetwork extends Rule implements Validatable
+public class SiteNetwork extends Rule implements Validatable
 {
 
     private IPAddress network;
@@ -50,7 +45,6 @@ public abstract class SiteNetwork extends Rule implements Validatable
     /**
      * @return network exported by this client or server.
      */
-    @Type(type="com.untangle.uvm.type.IPAddressUserType")
     public IPAddress getNetwork()
     {
         return this.network;
@@ -66,7 +60,6 @@ public abstract class SiteNetwork extends Rule implements Validatable
      *
      * @return This is the network that is reachable when this client connects.
      */
-    @Type(type="com.untangle.uvm.type.IPAddressUserType")
     public IPAddress getNetmask()
     {
         return this.netmask;

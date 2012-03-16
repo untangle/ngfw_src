@@ -22,10 +22,10 @@ public interface VpnNode extends Node
 
     /* Create a client certificate, if the client already has a certificate
      * this will automatically revoke their old one */
-    public VpnClientBase generateClientCertificate( VpnSettings settings, VpnClientBase client );
+    public VpnClient generateClientCertificate( VpnSettings settings, VpnClient client );
 
     /* Revoke a client license */
-    public VpnClientBase revokeClientCertificate( VpnSettings settings, VpnClientBase client );
+    public VpnClient revokeClientCertificate( VpnSettings settings, VpnClient client );
 
     /* Need the address to log where the request came from */
     public String lookupClientDistributionKey( String key, IPAddress address );
@@ -39,7 +39,7 @@ public interface VpnNode extends Node
     public boolean isAdminKey( String key );
 
     /* Send out the client distribution */
-    public void distributeClientConfig( VpnClientBase client ) throws Exception;
+    public void distributeClientConfig( VpnClient client ) throws Exception;
 
     public enum ConfigState { UNCONFIGURED, CLIENT, SERVER_BRIDGE, SERVER_ROUTE }
     public ConfigState getConfigState();

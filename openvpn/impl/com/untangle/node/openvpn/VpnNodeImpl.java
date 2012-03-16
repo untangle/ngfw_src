@@ -13,15 +13,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.MailSender;
+import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -42,9 +39,10 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 
-
 public class VpnNodeImpl extends AbstractNode implements VpnNode
 {
+    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-convert-settings.py";
+
     private static final String TRAN_NAME    = "openvpn";
     private static final String WEB_APP      = TRAN_NAME;
     private static final String WEB_APP_PATH = "/" + WEB_APP;
@@ -85,7 +83,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     private final BlingBlinger passBlinger;
     private final BlingBlinger blockBlinger;
     private final BlingBlinger connectBlinger;
-    
+
     private String adminDownloadClientKey = null;
     private long   adminDownloadClientExpiration = 0l;
 
@@ -116,6 +114,79 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
                                                    "FROM OpenvpnLogEventFromReports evt ORDER BY evt.timeStamp DESC");
     }
 
+    private void readNodeSettings()
+    {
+        SettingsManager setman = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeId().getId().toString();
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/settings_" + nodeID;
+        String settingsFile = settingsName + ".js";
+        VpnSettings readSettings = null;
+
+        logger.info("Loading settings from " + settingsFile);
+
+        try {
+            readSettings =  setman.load( VpnSettings.class, settingsName);
+        }
+
+        catch (Exception exn) {
+            logger.error("Could not read node settings", exn);
+        }
+
+        // if no settings found try getting them from the database
+        if (readSettings == null) {
+            logger.warn("No json settings found... attempting to import from database");
+
+            try {
+                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + settingsFile;
+                logger.warn("Running: " + convertCmd);
+                UvmContextFactory.context().execManager().exec( convertCmd );
+            }
+
+            catch (Exception exn) {
+                logger.error("Conversion script failed", exn);
+            }
+
+            try {
+                readSettings = setman.load( VpnSettings.class, settingsName);
+            }
+
+            catch (Exception exn) {
+                logger.error("Could not read node settings", exn);
+            }
+
+            if (readSettings != null) logger.warn("Database settings successfully imported");
+        }
+
+        try {
+            if (readSettings == null) {
+                logger.warn("No database or json settings found... initializing with defaults");
+                initializeSettings();
+                writeNodeSettings(getVpnSettings());
+            }
+            else {
+                setVpnSettings(readSettings);
+            }
+        }
+        catch (Exception exn) {
+            logger.error("Could not apply node settings", exn);
+        }
+    }
+
+    private void writeNodeSettings(VpnSettings argSettings)
+    {
+        SettingsManager setman = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeId().getId().toString();
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/settings_" + nodeID;
+
+        try {
+            setman.save( VpnSettings.class, settingsName, argSettings);
+        }
+
+        catch (Exception exn) {
+            logger.error("Could not save OpenVPN settings", exn);
+        }
+    }
+
     @Override public void initializeSettings()
     {
         VpnSettings settings = new VpnSettings( this.getNodeId());
@@ -136,8 +207,8 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     public void setVpnSettings( final VpnSettings newSettings ) throws ValidateException
     {
         /* Verify that all of the client names are valid. */
-        for ( VpnClientBase client : newSettings.getCompleteClientList()) {
-            VpnClientBase.validateName( client.getName());
+        for ( VpnClient client : newSettings.getCompleteClientList()) {
+            VpnClient.validateName( client.getName());
         }
 
         /* Attempt to assign all of the clients addresses only if in server mode */
@@ -156,36 +227,8 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
         /* Copy in the old keys that were distributed over email */
         saveDistributedKeys(newSettings);
-
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork( Session s )
-                {
-                    if (null != newSettings.getId()) {
-                        s.update(newSettings);
-                    }
-
-                    /* Delete all of the old settings */
-                    Query q = null;
-                    Long newSettingsId = newSettings.getId();
-                    if ( newSettingsId == null ) {
-                        q = s.createQuery( "from VpnSettings ts where ts.nodeId = :nodeId" );
-                    } else {
-                        q = s.createQuery( "from VpnSettings ts where ts.nodeId = :nodeId and ts.id != :id" );
-                        q.setParameter( "id", newSettingsId );
-                    }
-
-                    q.setParameter( "nodeId", getNodeId());
-
-                    for ( Object o : q.list()) s.delete(o );
-
-                    /* Save the new settings */
-                    VpnNodeImpl.this.settings = (VpnSettings)s.merge( newSettings );
-                    return true;
-                }
-            };
-
-        getNodeContext().runTransaction( tw );
+        writeNodeSettings(newSettings);
+        this.settings = newSettings;
 
         try {
             if ( getRunState() == NodeState.RUNNING ) {
@@ -209,7 +252,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
             logger.error( "Could not save VPN settings", exn );
         }
     }
-    
+
     private void saveDistributedKeys(VpnSettings newSettings)
     {
         if ( this.settings == null ) return;
@@ -218,13 +261,13 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         if ( this.settings == newSettings ) return;
 
         Map<String,String> clientMap = new HashMap<String,String>();
-        for ( VpnClientBase client : this.settings.getCompleteClientList()) {
+        for ( VpnClient client : this.settings.getCompleteClientList()) {
             clientMap.put( client.getInternalName(), client.getDistributionKey());
         }
 
-        for ( VpnClientBase client : newSettings.getCompleteClientList()) {
+        for ( VpnClient client : newSettings.getCompleteClientList()) {
             String key = client.getDistributionKey();
-            /* If the key is in the settings object, then do not replace it with what is on the box. 
+            /* If the key is in the settings object, then do not replace it with what is on the box.
              * (bulk update) */
             if ( key != null && key.length() > 0 ) {
                 continue;
@@ -236,7 +279,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
             if ( key == null || key.length() == 0 ) {
                 continue;
             }
-            
+
             client.setDistributionKey(key);
         }
     }
@@ -250,7 +293,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         return this.settings;
     }
 
-    public VpnClientBase generateClientCertificate( VpnSettings settings, VpnClientBase client )
+    public VpnClient generateClientCertificate( VpnSettings settings, VpnClient client )
     {
         try {
             certificateManager.createClient( client );
@@ -261,7 +304,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         return client;
     }
 
-    public VpnClientBase revokeClientCertificate( VpnSettings settings, VpnClientBase client )
+    public VpnClient revokeClientCertificate( VpnSettings settings, VpnClient client )
     {
         try {
             certificateManager.revokeClient( client );
@@ -274,18 +317,18 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
     private void distributeAllClientFiles( VpnSettings settings ) throws Exception
     {
-        for ( VpnClientBase client : settings.getCompleteClientList()) {
+        for ( VpnClient client : settings.getCompleteClientList()) {
             if ( !client.getDistributeClient()) continue;
             distributeRealClientConfig( client );
         }
     }
 
-    public void distributeClientConfig( VpnClientBase client )
+    public void distributeClientConfig( VpnClient client )
         throws Exception
     {
         /* Retrieve the client configuration object from the settings */
         boolean foundRealClient = false;
-        for ( VpnClientBase realClient : settings.getCompleteClientList()) {
+        for ( VpnClient realClient : settings.getCompleteClientList()) {
             if ( client.getInternalName().equals( realClient.getInternalName())) {
                 realClient.setDistributionEmail( client.getDistributionEmail());
                 client = realClient;
@@ -299,12 +342,11 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     }
 
     /** The client config is the same client configuration object that is in settings */
-    private void distributeRealClientConfig( final VpnClientBase client )
+    private void distributeRealClientConfig( final VpnClient client )
         throws Exception
     {
         /* this client may already have a key, the key may have
          * already been created. */
-
 
         this.certificateManager.createClient( client );
 
@@ -330,23 +372,12 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
             method = "email";
         }
 
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork( Session s )
-                {
-                    s.merge( client );
-                    return true;
-                }
-            };
-
-        getNodeContext().runTransaction( tw );
-
         this.openVpnManager.writeClientConfigurationFiles( settings, client, method );
 
         if ( email != null ) distributeClientConfigEmail( client, email );
     }
 
-    private void distributeClientConfigEmail( VpnClientBase client, String email )
+    private void distributeClientConfigEmail( VpnClient client, String email )
         throws Exception
     {
         try {
@@ -406,7 +437,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         }
 
         /* Could use a hash map, but why bother ? */
-        for ( final VpnClientBase client : this.settings.getCompleteClientList()) {
+        for ( final VpnClient client : this.settings.getCompleteClientList()) {
             if ( lookupClientDistributionKey( key, clientAddress, client )) return client.getInternalName();
         }
 
@@ -418,12 +449,12 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         throws Exception
     {
         boolean foundClient = false;
-        for ( final VpnClientBase client : this.settings.getCompleteClientList()) {
+        for ( final VpnClient client : this.settings.getCompleteClientList()) {
             if ( !client.getInternalName().equals( clientName ) &&
                  !client.getName().equals( clientName )) continue;
 
             clientName = client.getInternalName();
-            
+
             /* Clear out the distribution email */
             client.setDistributionEmail( null );
             distributeRealClientConfig( client );
@@ -446,14 +477,14 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         String key = "";
         String client = "";
         try {
-        	key = URLEncoder.encode( this.adminDownloadClientKey , "UTF-8");
-        	client = URLEncoder.encode( clientName , "UTF-8");
+            key = URLEncoder.encode( this.adminDownloadClientKey , "UTF-8");
+            client = URLEncoder.encode( clientName , "UTF-8");
         } catch(java.io.UnsupportedEncodingException e) {
-        	logger.warn("Unsupported Encoding:",e);
+            logger.warn("Unsupported Encoding:",e);
         }
-        
-        return WEB_APP_PATH + "/" + fileName + 
-            "?" + Constants.ADMIN_DOWNLOAD_CLIENT_KEY + "=" + key + 
+
+        return WEB_APP_PATH + "/" + fileName +
+            "?" + Constants.ADMIN_DOWNLOAD_CLIENT_KEY + "=" + key +
             "&" + Constants.ADMIN_DOWNLOAD_CLIENT_PARAM + "=" + client;
     }
 
@@ -462,22 +493,22 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     public boolean isAdminKey( String key )
     {
         long now = System.currentTimeMillis();
-        
+
         /* This is designed to protect against clock changes and keys create way in the future */
         if (( this.adminDownloadClientExpiration < now ) ||
             ( this.adminDownloadClientExpiration > ( now + ( ADMIN_DOWNLOAD_CLIENT_TIMEOUT * 2 )))) {
             this.adminDownloadClientExpiration = 0;
             this.adminDownloadClientKey = null;
         }
-            
+
         if (( this.adminDownloadClientKey == null ) || !this.adminDownloadClientKey.equals( key )) {
             return false;
         }
-    
+
         return true;
     }
 
-    private boolean lookupClientDistributionKey( String key, IPAddress clientAddress, final VpnClientBase client )
+    private boolean lookupClientDistributionKey( String key, IPAddress clientAddress, final VpnClient client )
     {
         String clientKey = client.getDistributionKey();
 
@@ -495,17 +526,6 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
         long expiration = System.nanoTime() + DISTRIBUTION_CACHE_NS;
         this.distributionMap.put( key, new DistributionCache( expiration, client.getInternalName(), key ));
-
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork( Session s )
-                {
-                    s.merge( client );
-                    return true;
-                }
-            };
-
-        getNodeContext().runTransaction( tw );
 
         return true;
     }
@@ -570,21 +590,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     @Override protected void postInit(final String[] args) throws Exception
     {
         super.postInit( args );
-
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork( Session s )
-                {
-                    Query q = s.createQuery( "from VpnSettings ts where ts.nodeId = :nodeId" );
-
-                    q.setParameter( "nodeId", getNodeId());
-
-                    settings = (VpnSettings)q.uniqueResult();
-                    return true;
-                }
-            };
-        getNodeContext().runTransaction( tw );
-
+        readNodeSettings();
         deployWebApp();
     }
 
@@ -754,14 +760,14 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     public String getAdminClientUploadLink()
     {
         generateAdminClientKey();
-        
+
         String key = "";
         try {
-        	key = URLEncoder.encode( this.adminDownloadClientKey , "UTF-8");
+            key = URLEncoder.encode( this.adminDownloadClientKey , "UTF-8");
         } catch(java.io.UnsupportedEncodingException e) {
-        	logger.warn("Unsupported Encoding:",e);
+            logger.warn("Unsupported Encoding:",e);
         }
-        
+
         return WEB_APP_PATH + "/clientSetup?" + Constants.ADMIN_DOWNLOAD_CLIENT_KEY + "=" + key;
     }
 
@@ -797,7 +803,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     {
         this.sandbox.installClientConfig( path );
     }
-    
+
     public void generateCertificate( CertificateParameters parameters ) throws Exception
     {
         this.sandbox.generateCertificate( parameters );
@@ -842,7 +848,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     {
         return new EventLogQuery[] { this.connectEventsQuery };
     }
-    
+
     public void incrementBlockCount()
     {
         blockBlinger.increment();
@@ -873,14 +879,13 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
             this.adminDownloadClientExpiration = 0;
             this.adminDownloadClientKey = null;
         }
-        
+
         if ( this.adminDownloadClientKey == null ) {
-            this.adminDownloadClientKey = String.format( "%08x%08x", 
+            this.adminDownloadClientKey = String.format( "%08x%08x",
                                                          this.random.nextInt(), this.random.nextInt());
             this.adminDownloadClientExpiration = now + ADMIN_DOWNLOAD_CLIENT_TIMEOUT;
         }
     }
-
 
     class GenerateRules implements Runnable
     {
@@ -900,7 +905,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
             }
 
             if ( this.callback != null ) this.callback.run();
-        }        
+        }
     }
 
     class DistributionCache

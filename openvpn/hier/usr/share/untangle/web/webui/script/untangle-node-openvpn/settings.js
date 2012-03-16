@@ -924,7 +924,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     "exportedAddressList" : {
                         javaClass: "java.util.ArrayList",
                         list:[{
-                            javaClass:"com.untangle.node.openvpn.ClientSiteNetwork",
+                            javaClass:"com.untangle.node.openvpn.SiteNetwork",
                             "network" : "1.2.3.4",
                             "netmask" : "255.255.255.0"
                         }]
@@ -1103,7 +1103,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 title : this.i18n._("Exported Hosts and Networks"),
                 // the column is autoexpanded if the grid width permits
                 // autoExpandColumn : 'name',
-                recordJavaClass : "com.untangle.node.openvpn.ServerSiteNetwork",
+                recordJavaClass : "com.untangle.node.openvpn.SiteNetwork",
                 data : exportedAddressList,
                 // the list of fields
                 autoGenerateId: true,
@@ -1335,25 +1335,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     xtype : 'fieldset',
                     labelWidth: 160,
                     items : [{
-                        xtype : 'numberfield',
-                        fieldLabel : this.i18n._('Server Port (UDP)'),
-                        width : 80,
-                        name : 'Server Port (UDP)',
-                        id : 'openvpn_advanced_publicPort',
-                        value : this.getVpnSettings().publicPort,
-                        allowDecimals: false,
-                        allowNegative: false,
-                        allowBlank : false,
-                        blankText : this.i18n._("You must provide a valid port."),
-                        vtype : 'port',
-                        listeners : {
-                            "change" : {
-                                fn : function(elem, newValue) {
-                                    this.getVpnSettings().publicPort = newValue;
-                                }.createDelegate(this)
-                            }
-                        }
-                    }, {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Site Name'),
                         name : 'Site Name',
@@ -1453,18 +1434,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
         //validate OpenVPN Advanced settings
         validateAdvanced : function() {
-            //validate port
-            var portCmp = Ext.getCmp("openvpn_advanced_publicPort");
-            if(!portCmp.validate()) {
-                Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("You must provide a valid port."),
-                    function () {
-                        this.tabs.activate(this.panelAdvanced);
-                        portCmp.focus(true);
-                    }.createDelegate(this)
-                );
-                return false;
-            };
-
             //validate site name
             var siteCmp = Ext.getCmp("openvpn_advanced_siteName");
             if(!siteCmp.validate()) {
@@ -1793,7 +1762,6 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 this.gridExports.clearChangedData();
                 this.gridExports.store.loadData( settings.exportedAddressList.list );
                 
-                Ext.getCmp( "openvpn_advanced_publicPort" ).setValue( settings.publicPort );
                 Ext.getCmp( "openvpn_advanced_siteName" ).setValue( settings.siteName );
                 
                 /* Assuming radio box is intact */

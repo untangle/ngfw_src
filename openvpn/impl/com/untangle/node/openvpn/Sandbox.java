@@ -257,7 +257,7 @@ public class Sandbox
         /* Load the list of networks. */
         NetworkConfiguration networkSettings = UvmContextFactory.context().networkManager().getNetworkConfiguration();
         
-        List<ServerSiteNetwork> networkList = new LinkedList<ServerSiteNetwork>();
+        List<SiteNetwork> networkList = new LinkedList<SiteNetwork>();
         LinkedList<AddressRange> rangeList = new LinkedList<AddressRange>();
         
         AddressValidator av = AddressValidator.getInstance();
@@ -278,7 +278,7 @@ public class Sandbox
                     continue;
                 }
 
-                ServerSiteNetwork ssn = new ServerSiteNetwork();
+                SiteNetwork ssn = new SiteNetwork();
                 ssn.setNetwork( network.getNetwork());
                 ssn.setNetmask( network.getNetmask());
                 ssn.setLive( true );
@@ -311,7 +311,7 @@ public class Sandbox
     private void fixGroups( List newClientList )
         throws ValidateException
     {
-        for ( VpnClientBase client : (List<VpnClientBase>)newClientList ) {
+        for ( VpnClient client : (List<VpnClient>)newClientList ) {
             String name = client.getGroupName();
             VpnGroup newGroup = resolveGroupMap.get( name );
             if ( newGroup == null ) {

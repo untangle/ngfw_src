@@ -96,6 +96,8 @@ public class OpenVpnManager
      * 6 to 11 -- Debug info range (see errlevel.h for additional information on debug levels). */
     private static final int DEFAULT_VERBOSITY   = 1;
 
+    static final int OPENVPN_PORT        = 1194;
+
     /* XXX Just pick one that is unused (this is openvpn + 1) */
     static final int MANAGEMENT_PORT     = 1195;
 
@@ -131,7 +133,7 @@ public class OpenVpnManager
         "mute 20",
 
         /* Allow management from localhost */
-        "management 127.0.0.1 " + MANAGEMENT_PORT        
+        "management 127.0.0.1 " + MANAGEMENT_PORT
     };
 
     private static final String CLIENT_DEFAULTS[] = new String[] {
@@ -154,7 +156,6 @@ public class OpenVpnManager
 
     private static final String WIN_CLIENT_DEFAULTS[]  = new String[] {};
     private static final String WIN_EXTENSION          = "ovpn";
-
 
     private static final String UNIX_CLIENT_DEFAULTS[] = new String[] {
         // ??? Questionable because not all installs will have these users and groups.
@@ -257,23 +258,23 @@ public class OpenVpnManager
          * traffic
          * not sure about this comment, the entries seem to get
          * pushed automatically. */
-        for ( ServerSiteNetwork siteNetwork : settings.getExportedAddressList()) {
+        for ( SiteNetwork siteNetwork : settings.getExportedAddressList()) {
             if ( !siteNetwork.isLive()) continue;
 
             writePushRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
         }
-        
+
         Map<String,VpnGroup> groupMap = buildGroupMap(settings);
 
         /* The client configuration file is written in writeClientFiles */
         for ( VpnSite site : settings.getSiteList()) {
             VpnGroup group = groupMap.get(site.getGroupName());
-            
+
             if ( !site.isEnabled() || ( group == null ) || !group.isLive()) {
                 continue;
             }
 
-            for ( ClientSiteNetwork siteNetwork : site.getExportedAddressList()) {
+            for ( SiteNetwork siteNetwork : site.getExportedAddressList()) {
                 if ( !siteNetwork.isLive()) continue;
 
                 IPAddress network = siteNetwork.getNetwork();
@@ -307,7 +308,7 @@ public class OpenVpnManager
     /**
      * Create all of the client configuration files
      */
-    void writeClientConfigurationFiles( VpnSettings settings, VpnClientBase client, String method )
+    void writeClientConfigurationFiles( VpnSettings settings, VpnClient client, String method )
         throws Exception
     {
         UvmContext uvm = UvmContextFactory.context();
@@ -325,7 +326,7 @@ public class OpenVpnManager
             msgBody1 = i18nUtil.tr("Click here to download the OpenVPN client.");
             msgBody2 = i18nUtil.tr("Or copy and paste the following link into your Web Browser.");
         }
-        
+
         String publicAddress = nm.getPublicAddress();
         writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
         writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
@@ -349,7 +350,6 @@ public class OpenVpnManager
                 "\"" + msgBody1 + "\"" + " " +
                 "\"" + msgBody2 + "\"" + " " +
                 "\"" + msgBody3 + "\"";
-                
 
             UvmContextFactory.context().execManager().exec(cmdStr);
             //             ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName(),
@@ -366,7 +366,7 @@ public class OpenVpnManager
     /*
      * Write a client configuration file (unix or windows)
      */
-    private void writeClientConfigurationFile( VpnSettings settings, VpnClientBase client, String[] defaults, String extension )
+    private void writeClientConfigurationFile( VpnSettings settings, VpnClient client, String[] defaults, String extension )
         throws Exception
     {
         ScriptWriter sw = new VpnScriptWriter();
@@ -400,7 +400,7 @@ public class OpenVpnManager
 
         publicAddress = publicAddress.trim();
 
-        sw.appendVariable( FLAG_REMOTE, publicAddress + " " + settings.getPublicPort());
+        sw.appendVariable( FLAG_REMOTE, publicAddress + " " + OPENVPN_PORT );
 
         sw.writeFile( CLIENT_CONF_FILE_BASE + name + "." + extension );
     }
@@ -424,12 +424,12 @@ public class OpenVpnManager
             logger.error( "Unable to delete the previous client configuration files." );
         }
         NetworkConfiguration networkSettings = UvmContextFactory.context().networkManager().getNetworkConfiguration();
-        
+
         Map<String,VpnGroup> groupMap = buildGroupMap(settings);
 
         for ( VpnClient client : settings.getClientList()) {
             VpnGroup group = groupMap.get(client.getGroupName());
-            
+
             if ( !client.isEnabled() || ( group == null ) || !group.isLive()) {
                 continue;
             }
@@ -473,13 +473,12 @@ public class OpenVpnManager
                 }
             }
 
-
             sw.writeFile( OPENVPN_CCD_DIR + "/" + name );
         }
 
         for ( VpnSite site : settings.getSiteList()) {
             VpnGroup group = groupMap.get(site.getGroupName());
-            
+
             if ( !site.isEnabled() || ( group == null ) || !group.isLive()) {
                 continue;
             }
@@ -495,7 +494,7 @@ public class OpenVpnManager
             /* XXXX This won't work for a bridge configuration */
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
 
-            for ( ClientSiteNetwork siteNetwork : site.getExportedAddressList()) {
+            for ( SiteNetwork siteNetwork : site.getExportedAddressList()) {
                 if ( !siteNetwork.isLive()) continue;
 
                 writeClientRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
@@ -568,10 +567,10 @@ public class OpenVpnManager
     private void writePacketFilterRules( VpnSettings settings )
     {
         AlpacaRulesWriter arw = new AlpacaRulesWriter();
-        
+
         /* Append all of the exported addresses */
         arw.appendExportedAddresses( settings.getExportedAddressList());
-        
+
         arw.writeFile( PACKET_FILTER_RULES_FILE );
     }
 

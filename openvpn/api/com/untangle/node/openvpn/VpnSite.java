@@ -20,17 +20,6 @@ package com.untangle.node.openvpn;
 
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
-
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ValidateException;
 
@@ -41,16 +30,14 @@ import com.untangle.uvm.node.ValidateException;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-@Entity
-@Table(name="n_openvpn_site_2", schema="settings")
 @SuppressWarnings("serial")
-public class VpnSite extends VpnClientBase
+public class VpnSite extends VpnClient
 {
     private static final IPAddress EMPTY_ADDR = new IPAddress( null );
 
     // List of addresses at this site,
     // initially, may not be supported, just use one address.
-    private List<ClientSiteNetwork>     exportedAddressList;
+    private List<SiteNetwork>     exportedAddressList;
 
     public VpnSite()
     {
@@ -64,20 +51,15 @@ public class VpnSite extends VpnClientBase
      *
      * @return the list of exported networks for this site.
      */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinColumn(name="client_id")
-    @IndexColumn(name="position")
-    public List<ClientSiteNetwork> getExportedAddressList()
+    public List<SiteNetwork> getExportedAddressList()
     {
-        if ( this.exportedAddressList == null ) this.exportedAddressList = new LinkedList<ClientSiteNetwork>();
+        if ( this.exportedAddressList == null ) this.exportedAddressList = new LinkedList<SiteNetwork>();
 
         if (this.exportedAddressList != null) this.exportedAddressList.removeAll(java.util.Collections.singleton(null));
         return this.exportedAddressList;
     }
 
-    public void setExportedAddressList( List<ClientSiteNetwork> exportedAddressList )
+    public void setExportedAddressList( List<SiteNetwork> exportedAddressList )
     {
         this.exportedAddressList = exportedAddressList;
     }
@@ -86,14 +68,13 @@ public class VpnSite extends VpnClientBase
      * XXXX This is a convenience method that doesn't scale if there are
      * multiple networks and netmasks
      */
-    @Transient
-    public ClientSiteNetwork getSiteNetwork()
+    public SiteNetwork getSiteNetwork()
     {
-        List<ClientSiteNetwork> list = getExportedAddressList();
+        List<SiteNetwork> list = getExportedAddressList();
 
-        ClientSiteNetwork site;
+        SiteNetwork site;
         if ( list.size() < 1 ) {
-            site = new ClientSiteNetwork();
+            site = new SiteNetwork();
             site.setNetwork( EMPTY_ADDR );
             site.setNetmask( EMPTY_ADDR );
             site.setLive( true );
@@ -107,11 +88,11 @@ public class VpnSite extends VpnClientBase
 
     public void setSiteNetwork( IPAddress network, IPAddress netmask )
     {
-    	List<ClientSiteNetwork>  list = getExportedAddressList();
+    	List<SiteNetwork>  list = getExportedAddressList();
 
-        ClientSiteNetwork site;
+        SiteNetwork site;
         if ( list.size() < 1 ) {
-            site = new ClientSiteNetwork();
+            site = new SiteNetwork();
             list.add( site );
         } else {
             site = list.get( 0 );
@@ -131,5 +112,3 @@ public class VpnSite extends VpnClientBase
         }
     }
 }
-
-
