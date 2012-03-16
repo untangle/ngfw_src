@@ -127,14 +127,6 @@ class WebFilterTests(unittest.TestCase):
         nukeBlockedUrls()
         assert (result == 0)
 
-    # verify that a block list entry correctly appends "(/.*)?" to the rigth side anchor
-    def test_018_blockedUrlRightSideAnchor(self):
-        addBlockedUrl("metaloft.com/test")
-        # this test URL should NOT be blocked (testPage1 vs testPage2)
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/testPage1.html 2>&1 | grep -q text123")
-        nukeBlockedUrls()
-        assert (result == 0)
-
     # verify that a block list entry does not match when the URI capitalization is different
     def test_019_blockedUrlCapitalization(self):
         addBlockedUrl("metaloft.com/test/testPage1.html")
