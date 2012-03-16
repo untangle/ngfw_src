@@ -110,20 +110,9 @@ public abstract class DecisionEngine
         if (sess != null)
             username = (String) sess.globalAttachment(Session.KEY_PLATFORM_ADCONNECTOR_USERNAME);
 
-        // depending on the context, the uri can be either a full
-        // hierarchical one, or just the path relative to the host; if
-        // we fail here, no biggie, we can totally move on.
-        try {
-            uri = new URI(uri.getPath());
-        } catch(Exception e) {
-            logger.debug("Could not parse URI for " + uri.getPath(), e);
-        }
-
-        logger.debug("checkRequest: " + host + uri);
-
         // check client IP address pass list
         // If a client is on the pass list is is passed regardless of any other settings
-        String description = checkClientPassList(clientIp);
+        String description = checkClientPassList( clientIp );
         if (null != description) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_CLIENT, description, node.getVendor());
             node.logEvent(hbe);
@@ -132,8 +121,8 @@ public abstract class DecisionEngine
 
         // check passlisted rules
         // If a site/URL is on the pass list is is passed regardless of any other settings
-        description = checkSitePassList(host,uri);
-        if (null != description) {
+        description = checkSitePassList( host, uri );
+        if ( description != null ) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_URL, description, node.getVendor());
             logger.debug("LOG: in pass list: " + requestLine.getRequestLine());
             node.logEvent(hbe, host, port, event);
@@ -142,7 +131,7 @@ public abstract class DecisionEngine
 
         // check unblocks
         // if a site/URL is unblocked already for this specific IP it is passed regardless of any other settings
-        if (checkUnblockedSites(host, uri, clientIp)) {
+        if ( checkUnblockedSites( host, uri, clientIp ) ) {
             WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, "unblocked", node.getVendor());
             logger.debug("LOG: in unblock list: " + requestLine.getRequestLine());
             node.logEvent(hbe, host, port, event);
@@ -150,8 +139,8 @@ public abstract class DecisionEngine
         }
 
         // if this is HTTP traffic and the request is IP-based and block IP-based browsing is enabled, block this traffic
-        if (80 == port && node.getSettings().getBlockAllIpHosts()) {
-            if (null == host || IP_PATTERN.matcher(host).matches()) {
+        if ( port == 80 && node.getSettings().getBlockAllIpHosts() ) {
+            if ( host == null || IP_PATTERN.matcher(host).matches() ) {
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_IP_HOST, host, node.getVendor());
                 logger.debug("LOG: block all IPs: " + requestLine.getRequestLine());
                 node.logEvent(hbe, host, port, event);
@@ -168,9 +157,9 @@ public abstract class DecisionEngine
         Reason reason = Reason.DEFAULT; /* this stores the corresponding reason for the flag/block */
             
         // Check Block lists
-        GenericRule urlRule = checkUrlList(host, uri.toString(), port, requestLine, event);
-        if (urlRule != null) {
-            if (urlRule.getBlocked()) {
+        GenericRule urlRule = checkUrlList( host, uri.toString(), port, requestLine, event );
+        if ( urlRule != null ) {
+            if ( urlRule.getBlocked() ) {
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, node.getNodeTitle(), username);
                 return node.generateNonce(bd);
             }
@@ -183,7 +172,7 @@ public abstract class DecisionEngine
         
         // Check Extensions
         // If this extension is blocked, block the request
-        GenericRule extRule = checkExtensionList(host, uri.toString(), port, requestLine, event);
+        GenericRule extRule = checkExtensionList(host, uri, port, requestLine, event);
         if (extRule != null) {
             if ( extRule.getBlocked() ) {
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), extRule.getDescription(), clientIp, node.getNodeTitle(), username);
@@ -476,8 +465,11 @@ public abstract class DecisionEngine
      * Checks the given URL against the file extension rules
      * Returns the given rule if a rule matches, otherwise null
      */
-    private GenericRule checkExtensionList( String host, String uri, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event )
+    private GenericRule checkExtensionList( String host, URI fullUri, int port, RequestLineToken requestLine, TCPNewSessionRequestEvent event )
     {
+        String uri = fullUri.toString();
+        try { uri = (new URI(fullUri.getPath())).toString(); /*ignore everything after ?*/ } catch (URISyntaxException e) {}
+                
         for ( GenericRule rule : node.getSettings().getBlockedExtensions()) {
             String exn = "." + rule.getString().toLowerCase();
             
@@ -570,7 +562,7 @@ public abstract class DecisionEngine
     {
         String value = normalizeDomain(domain) + uri;
         
-        logger.debug("findMatchRule: rules = '" + rules +"', value = '" + value + "' (normalized from '" + domain + uri + ";");
+        logger.debug("findMatchRule: rules = '" + rules +"', value = '" + value + "' (normalized from '" + domain + uri + ")");
 
         for (GenericRule rule : rules) {
             if (rule.getEnabled() != null && !rule.getEnabled()) 

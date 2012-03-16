@@ -130,11 +130,13 @@ class WebFilterBaseTests(unittest.TestCase):
 
     # verify that a block list entry correctly appends "(/.*)?" to the rigth side anchor
     def test_018_blockedUrlRightSideAnchor(self):
-        addBlockedUrl("metaloft.com/test")
+        addBlockedUrl("metaloft.com/test([\\\?/]\.\*)\?$")
         # this test URL should NOT be blocked (testPage1 vs testPage2)
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/testPage1.html 2>&1 | grep -q text123")
+        result0 = clientControl.runCommand("wget -q -O - http://metaloft.com/testPage1.html 2>&1 | grep -q text123")
+        result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/ 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
-        assert (result == 0)
+        assert (result0 == 0)
+        assert (result1 == 0)
 
     # verify that a block list entry does not match when the URI capitalization is different
     def test_019_blockedUrlCapitalization(self):
@@ -205,6 +207,14 @@ class WebFilterBaseTests(unittest.TestCase):
         addBlockedUrl("metalo?t.com/test/testP?.html")
         # this test URL should NOT be blocked 
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q text123")
+        nukeBlockedUrls()
+        assert (result == 0)
+
+    # verify that the full URI is included in the match (even things after argument) bug #10067
+    def test_038_blockedUrlGlobArgument(self):
+        addBlockedUrl("metaloft.com/*foo*")
+        # this test URL should NOT be blocked 
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=foobar 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -284,7 +294,7 @@ class WebFilterBaseTests(unittest.TestCase):
         nukeBlockedMimeTypes()
         assert (result == 0)
 
-    # verify that an entry in the mime type block list functions
+    # verify that an entry in the file extension block list functions
     def test_070_blockedExtension(self):
         nukeBlockedExtensions()
         addBlockedExtension("txt")
@@ -293,7 +303,7 @@ class WebFilterBaseTests(unittest.TestCase):
         nukeBlockedExtensions()
         assert (result == 0)
 
-    # verify that an entry in the mime type block list doesn't overmatch
+    # verify that an entry in the file extension block list doesn't overmatch
     def test_071_blockedExtension(self):
         nukeBlockedExtensions()
         addBlockedExtension("txt")
@@ -302,7 +312,7 @@ class WebFilterBaseTests(unittest.TestCase):
         nukeBlockedExtensions()
         assert (result == 0)
 
-    # verify that an entry in the mime type block list doesn't overmatch
+    # verify that an entry in the file extension block list doesn't overmatch
     def test_072_blockedExtension(self):
         nukeBlockedExtensions()
         addBlockedExtension("tml") # not this should only block ".tml" not ".html"
@@ -310,13 +320,23 @@ class WebFilterBaseTests(unittest.TestCase):
         result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.html 2>&1 | grep -q text123")
         nukeBlockedExtensions()
         assert (result == 0)
-        
+
+    # verify that an entry in the file extension block list functions
+    def test_073_blockedExtensionWithArgument(self):
+        nukeBlockedExtensions()
+        addBlockedExtension("txt")
+        # this test URL should be blocked
+        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.txt?argument 2>&1 | grep -q blockpage")
+        nukeBlockedExtensions()
+        assert (result == 0)
+
     def test_100_eventlog_blockedUrl(self):
         fname = sys._getframe().f_code.co_name
         nukeBlockedUrls();
         addBlockedUrl("metaloft.com/test/testPage1.html", blocked=True, flagged=True)
         # specify an argument so it isn't confused with other events
         result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
+        time.sleep(1);
         flushEvents()
         query = None;
         for q in node.getEventQueries():
@@ -342,6 +362,7 @@ class WebFilterBaseTests(unittest.TestCase):
         addBlockedUrl("metaloft.com/test/testPage1.html", blocked=False, flagged=True)
         # specify an argument so it isn't confused with other events
         result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
+        time.sleep(1);
         flushEvents()
         query = None;
         for q in node.getEventQueries():
@@ -361,6 +382,7 @@ class WebFilterBaseTests(unittest.TestCase):
         nukeBlockedUrls();
         # specify an argument so it isn't confused with other events
         result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
+        time.sleep(1);
         flushEvents()
         for q in node.getEventQueries():
             if q['name'] == 'All Web Events': query = q;

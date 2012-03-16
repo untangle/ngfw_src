@@ -9,13 +9,12 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 /**
- * Utilities for escaping URIs.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
+ * Utilities for transforming globs to regexs
  */
 public class GlobUtil
 {
+    private static final Logger logger = Logger.getLogger(GlobUtil.class);
+
     public static String globToRegex(String glob)
     {
         if (glob == null)
@@ -41,7 +40,6 @@ public class GlobUtil
     {
         if (glob == null)
             return null;
-        
         if ("".equals(glob))
             return "^$";
 
@@ -49,32 +47,33 @@ public class GlobUtil
 
         /**
          * remove potential '\*\.?' or 'www.' at the beginning
-         * for examlpe "*.foo.com" becomes just "foo.com" because "foo.com" matches "*.foo.com" AND "foo.com"
+         * for example "*.foo.com" becomes just "foo.com" because "foo.com" matches "*.foo.com" AND "foo.com"
          */
         re = re.replaceAll("^"+Pattern.quote("*."), "");
         re = re.replaceAll("^"+Pattern.quote("www."), "");
 
         /**
-         * transform globbing operators into regex ones
+         * transform unescaped globbing operators into regex ones
          */
-        re = re.replaceAll(Pattern.quote("."), "\\.");
-        re = re.replaceAll(Pattern.quote("*"), ".*");
-        re = re.replaceAll(Pattern.quote("?"), ".");
+        re = re.replaceAll("(?<!\\\\)" + Pattern.quote("."), "\\.");
+        re = re.replaceAll("(?<!\\\\)" + Pattern.quote("*"), ".*");
+        re = re.replaceAll("(?<!\\\\)" + Pattern.quote("?"), ".");
 
         /**
-         * possibly some path after a domain name... People
-         * specifying 'google.com' certainly want to block
-         * '"google.com/whatever"
-         *
-         * if the URL already ends in '/' just add .*
-         * if it does not end in '/' add /.*
-         * we do this because "foo.com/test" should match foo.com/test/bar and foo.com/test BUT NOT foo.com/testbar
+         * transform escaped globbing operators into regex ones
          */
-        if ( re.charAt(re.length()-1) == '/' )
-            re = re + "(.*)?";
-        else
-            re = re + "(/.*)?";
+        re = re.replaceAll("\\\\" + Pattern.quote("."), ".");
+        re = re.replaceAll("\\\\" + Pattern.quote("*"), "*");
+        re = re.replaceAll("\\\\" + Pattern.quote("?"), "?");
 
+        /**
+         * Add the right side anchor (if not explicitly denied with $)
+         * This is so google.com blocks google.com/whatever
+         */
+        if (re.charAt(re.length()-1) != '$')  {
+            re = re + ".*";
+        }
+        
         return re;
     }
 }
