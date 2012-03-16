@@ -98,7 +98,7 @@ public class LogWorkerImpl implements Runnable, LogWorker
 
         long lastSync = System.currentTimeMillis();
         long nextSync = lastSync + getSyncTime();
-        boolean wasForced = false;
+        boolean force = false;
 
         do {
             try {Thread.sleep(1000);} catch (Exception e) {}
@@ -126,6 +126,11 @@ public class LogWorkerImpl implements Runnable, LogWorker
                     }
                 } catch (InterruptedException exn) {}
 
+                if (forceFlush) {
+                    force = true; //set flag to force the flush
+                    forceFlush = false; //reset global flag
+                }
+                
                 synchronized (this) {
                     interruptable = false;
                 }
@@ -134,19 +139,15 @@ public class LogWorkerImpl implements Runnable, LogWorker
                     accept(event);
             }
 
-            if (logQueue.size() >= BATCH_SIZE || t >= nextSync || forceFlush) {
-                if (forceFlush) {
-                    wasForced = true;
-                }
+            if (logQueue.size() >= BATCH_SIZE || t >= nextSync || force) {
 
                 persist();
 
                 lastSync = System.currentTimeMillis();
                 nextSync = lastSync + getSyncTime();
                 synchronized( this ) {
-                    if (wasForced) {
-                        forceFlush = false;
-                        wasForced = false;
+                    if (force) {
+                        force = false;
                         notifyAll(); /* notify any waiting threads that the flush is done */
                     }
                 }
@@ -155,7 +156,7 @@ public class LogWorkerImpl implements Runnable, LogWorker
 
         while (accept(inputQueue.poll()));
 
-        if (0 < logQueue.size()) {
+        if ( logQueue.size() > 0 ) {
             persist();
         }
     }
