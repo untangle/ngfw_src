@@ -47,7 +47,7 @@ class CurlRequestHandler(object):
     
 
 class Uvm:
-    def getUvmContext( self, hostname="127.0.0.1", username=None, password=None, timeout=30 ):
+    def getUvmContext( self, hostname="127.0.0.1", username=None, password=None, timeout=60 ):
         handler = CurlRequestHandler( timeout )
 
         try:
