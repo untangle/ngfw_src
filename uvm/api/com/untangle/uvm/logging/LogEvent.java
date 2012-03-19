@@ -72,18 +72,6 @@ public abstract class LogEvent implements Comparable<LogEvent>, Serializable
     }
 
     /**
-     * LogEvents inserted into the database and syslog when this method
-     * returns true.
-     *
-     * @return true when this event is saved to the database.
-     */
-    @Transient
-    public boolean isPersistent()
-    {
-        return true;
-    }
-
-    /**
      * This returns true if this is a special event that is written directly to the reports schema.
      * This is almost always false except for special cases
      *

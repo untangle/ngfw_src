@@ -39,28 +39,7 @@ public class PhishHttpEvent extends LogEvent
     private Action action;
     private String category;
 
-    // non-persistent fields --------------------------------------------------
-    private boolean nonEvent = false;
-
-    // constructors -----------------------------------------------------------
     public PhishHttpEvent() { }
-
-    public PhishHttpEvent(RequestLine requestLine, Action action, String category, boolean nonEvent)
-    {
-        this.requestId = requestLine.getRequestId();
-        this.requestLine = requestLine;
-        this.action = action;
-        this.category = category;
-
-        this.nonEvent = nonEvent;
-
-        if (true == nonEvent && null != requestLine) {
-            // to present consistent times for the same fake events
-            // in different event filters,
-            // amread suggested using timestamps of request line events
-            setTimeStamp(requestLine.getHttpRequestEvent().getTimeStamp());
-        }
-    }
 
     public PhishHttpEvent(RequestLine requestLine, Action action, String category)
     {
@@ -69,22 +48,6 @@ public class PhishHttpEvent extends LogEvent
         this.action = action;
         this.category = category;
     }
-
-    // public methods ---------------------------------------------------------
-
-    @Transient
-    public boolean isNonEvent()
-    {
-        return nonEvent;
-    }
-
-    // accessors --------------------------------------------------------------
-
-    /**
-     * Request line for this Phish HTTP response pair.
-     *
-     * @return the request line.
-     */
 
     @Column(name="request_id")
     public Long getRequestId()
@@ -126,8 +89,6 @@ public class PhishHttpEvent extends LogEvent
         this.category = category;
     }
 
-    // PhishHttpEvent methods -------------------------------------------------
-
     @Transient
     public int getActionType()
     {
@@ -137,16 +98,6 @@ public class PhishHttpEvent extends LogEvent
             return BLOCKED;
         }
     }
-
-    // LogEvent methods -------------------------------------------------------
-
-    @Transient
-    public boolean isPersistent()
-    {
-        return !nonEvent;
-    }
-
-    // Syslog methods ---------------------------------------------------------
 
     public void appendSyslog(SyslogBuilder sb)
     {
@@ -178,8 +129,6 @@ public class PhishHttpEvent extends LogEvent
                 return SyslogPriority.WARNING; // traffic altered
             }
     }
-
-    // Object methods ---------------------------------------------------------
 
     public String toString()
     {

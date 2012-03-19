@@ -59,11 +59,6 @@ public class LogWorkerImpl implements Runnable, LogWorker
     }
 
     /**
-     * The queue of events waiting to be written to the database
-     */
-    private final List<LogEvent> logQueue = new LinkedList<LogEvent>();
-
-    /**
      * This is a queue of incoming events
      */
     private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
@@ -96,9 +91,11 @@ public class LogWorkerImpl implements Runnable, LogWorker
     {
         thread = Thread.currentThread();
 
+        List<LogEvent> logQueue = new LinkedList<LogEvent>();
         long lastSync = System.currentTimeMillis();
         long nextSync = lastSync + getSyncTime();
         boolean force = false;
+        LogEvent event = null;
 
         do {
             try {Thread.sleep(1000);} catch (Exception e) {}
@@ -108,12 +105,9 @@ public class LogWorkerImpl implements Runnable, LogWorker
             long t = System.currentTimeMillis();
 
             if (t < nextSync) {
-                LogEvent event = null;
-
-                synchronized (this) {
-                    interruptable = true;
-                }
-
+                event = null;
+                
+                synchronized (this) { interruptable = true; }
                 try {
                     /**
                      * If there are events waiting to be written only wait a certain amount of time
@@ -125,23 +119,26 @@ public class LogWorkerImpl implements Runnable, LogWorker
                         event = inputQueue.take();
                     }
                 } catch (InterruptedException exn) {}
+                synchronized (this) { interruptable = false; }
 
+                if (event != null)
+                    logQueue.add(event);
+                
                 if (forceFlush) {
                     force = true; //set flag to force the flush
                     forceFlush = false; //reset global flag
+
+                    // grab all the events available
+                    while ((event = inputQueue.poll()) != null) {
+                        logQueue.add(event);
+                    }
                 }
                 
-                synchronized (this) {
-                    interruptable = false;
-                }
-
-                if (event != null)
-                    accept(event);
             }
 
             if (logQueue.size() >= BATCH_SIZE || t >= nextSync || force) {
 
-                persist();
+                persist(logQueue);
 
                 lastSync = System.currentTimeMillis();
                 nextSync = lastSync + getSyncTime();
@@ -154,10 +151,12 @@ public class LogWorkerImpl implements Runnable, LogWorker
             }
         }
 
-        while (accept(inputQueue.poll()));
+        while ((event = inputQueue.poll()) != null) {
+            logQueue.add(event);
+        }
 
         if ( logQueue.size() > 0 ) {
-            persist();
+            persist(logQueue);
         }
     }
 
@@ -188,7 +187,7 @@ public class LogWorkerImpl implements Runnable, LogWorker
         }
     }
     
-    public void logEvent(LogEvent evt)
+    public void logEvent(LogEvent event)
     {
         if (!running) {
             if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
@@ -199,10 +198,22 @@ public class LogWorkerImpl implements Runnable, LogWorker
         }
         
         String tag = "uvm[0]: ";
-        evt.setTag(tag);
+        event.setTag(tag);
         
-        if (!inputQueue.offer(evt)) {
-            logger.warn("dropping logevent: " + evt);
+        /**
+         * Send to queue for database logging
+         */
+        if (!inputQueue.offer(event)) {
+            logger.warn("dropping logevent: " + event);
+        }
+
+        /**
+         * Send it to syslog (make best attempt - ignore errors)
+         */
+        try {
+            syslogManager.sendSyslog(event, event.getTag());
+        } catch (Exception exn) { 
+            logger.warn("failed to send syslog", exn);
         }
     }
 
@@ -257,33 +268,10 @@ public class LogWorkerImpl implements Runnable, LogWorker
         return syncTime;
     }
 
-    private boolean accept(LogEvent event)
-    {
-        if (null == event) { return false; }
-
-        if (event.isPersistent()) {
-            /**
-             * Add it to the queue to be written to database
-             */
-            logQueue.add(event);
-
-            /**
-             * Send it to syslog (make best attempt - ignore errors)
-             */
-            try {
-                syslogManager.sendSyslog(event, event.getTag());
-            } catch (Exception exn) { 
-                logger.warn("failed to send syslog", exn);
-            }
-        }
-
-        return true;
-    }
-
     /**
      * write the logQueue to the database
      */
-    private void persist()
+    private void persist(List<LogEvent> logQueue)
     {
         /**
          * These map stores the type of objects being written and stats purely for debugging output
