@@ -5,6 +5,7 @@ import pdb
 import os
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
+from datetime import datetime
 from uvm import Manager
 from uvm import Uvm
 from untangle_tests import ClientControl
@@ -47,7 +48,8 @@ class ShieldTests(unittest.TestCase):
         assert (result == 0)
 
     def test_012_shieldDetectsNmap(self):
-        result = clientControl.runCommand("nmap -sT -TInsane -p10000-11000 metaloft.com 2>&1 >/dev/null")
+        startTime = datetime.now()
+        result = clientControl.runCommand("nmap -PN -sT -TInsane -p10000-12000 1.2.3.4 2>&1 >/dev/null")
         assert (result == 0)
         time.sleep(20) # sleep 20 seconds, the daemon logs its events directly so flush events won't work
         flushEvents()
@@ -60,6 +62,8 @@ class ShieldTests(unittest.TestCase):
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
         assert(events['list'][0]['clientAddr'] == ClientControl.hostIP)
+        assert(datetime.fromtimestamp((events['list'][0]['timeStamp']['time'])/1000) > startTime)
+
 
     def test_999_finalTearDown(self):
         global nodeDesc

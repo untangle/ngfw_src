@@ -107,7 +107,7 @@ public class ShieldManager
         {
             Thread.sleep( SLEEP_DELAY_MS );
 
-            logger.debug( "Fetching the logs." );
+            logger.debug( "Fetching the untangle-shield logs..." );
 
             /* xxx This should use the key to determine the data
              * mappping, right now it is hardcoded. */
