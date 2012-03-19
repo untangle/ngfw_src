@@ -1,6 +1,7 @@
 import unittest
 import time
 import sys
+import datetime
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
 from uvm import Manager
@@ -335,6 +336,7 @@ class WebFilterBaseTests(unittest.TestCase):
         nukeBlockedUrls();
         addBlockedUrl("metaloft.com/test/testPage1.html", blocked=True, flagged=True)
         # specify an argument so it isn't confused with other events
+        eventTime = datetime.datetime.now()
         result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1);
         flushEvents()
@@ -347,10 +349,12 @@ class WebFilterBaseTests(unittest.TestCase):
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
         print ("Event:" + 
+               " time_stamp: " + str(time.strftime("%Y-%m-%d %H:%M:%S",time.localtime((events['list'][0]['timeStamp']['time'])/1000))) + 
                " host: " + str(events['list'][0]['host']) + 
                " uri: " + str(events['list'][0]['uri']) + 
                " blocked: " + str(events['list'][0]['wf' + self.vendorName() + 'Blocked']) + 
-               " flagged: " + str(events['list'][0]['wf' + self.vendorName() + 'Flagged'])) 
+               " flagged: " + str(events['list'][0]['wf' + self.vendorName() + 'Flagged']) +
+               " now: " + str(datetime.datetime.now())) 
         assert(events['list'][0]['host'] == "metaloft.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
         assert(events['list'][0]['wf' + self.vendorName() + 'Blocked'] == True)
