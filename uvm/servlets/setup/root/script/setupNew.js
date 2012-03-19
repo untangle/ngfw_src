@@ -411,39 +411,24 @@ Ext.define('Ung.SetupWizard.Interfaces', {
 
     onDrop : function(node,data,overModel,dropPosition,dropFunction, options)
     {
-        console.log("onDrop");
-/*        var sm = this.interfaceGrid.getSelectionModel();
+        var sm = this.interfaceGrid.getSelectionModel();
         var rows=sm.getSelection();
-        console.log("rows.length=" + rows.length);
-        console.log(rows);
 
         if ( rows.length != 1 ) {
             return false;
         }
-
-        var status = rows[0].get( "status" );
-
-        var c = 0;
-        var rowData = [];
-        var index = -1;
+        var status = rows[0].get("status");
+        var origStatus = overModel.get("status");
 
         this.interfaceStore.each( function( currentRow ) {
-            if ( currentRow == rows[0] ) {
-                index = c;
+            if ( currentRow == overModel) {
+                currentRow.set("status", status);
             }
-            rowData.push( currentRow.get( "status" ));
-            c++;
+            if ( currentRow == rows[0]) {
+                currentRow.set("status", origStatus);
+            }
         });
-
-        rowData.splice( index, 1 );
-        this.interfaceStore.each( function( currentRow ) {
-            currentRow.set( "status", rowData.shift());
-        });
-
         sm.clearSelections();
-        console.log("returning...");*/
-
-        return true;
     },
 
     /* Given a list of interfaces, this takes out the ones that are not used */
