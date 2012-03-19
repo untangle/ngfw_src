@@ -39,7 +39,6 @@ class Firewall(Node):
 
     @sql_helper.print_timing
     def setup(self, start_date, end_date, start_time):
-        self.__update_sessions(start_date, end_date)
 
         ft = reports.engine.get_fact_table('reports.session_totals')
 
@@ -68,29 +67,8 @@ class Firewall(Node):
 
         return reports.Report(self, sections)
 
-    @sql_helper.print_timing
-    def events_cleanup(self, cutoff):
-        sql_helper.clean_table("events", "n_firewall_evt", cutoff);
-        sql_helper.clean_table("events", "n_firewall_statistic_evt ", cutoff);
-
     def reports_cleanup(self, cutoff):
         pass
-
-    @sql_helper.print_timing
-    def __update_sessions(self, start_date, end_date):
-        conn = sql_helper.get_connection()
-        try:
-            sql_helper.run_sql("""\
-UPDATE reports.sessions
-SET firewall_was_blocked = was_blocked,
-    firewall_rule_index = rule_index
-FROM events.n_firewall_evt
-WHERE reports.sessions.session_id = events.n_firewall_evt.session_id""",
-                               (), connection=conn, auto_commit=False)
-            conn.commit()
-        except Exception, e:
-            conn.rollback()
-            raise e
 
 class FirewallHighlight(Highlight):
     def __init__(self, name):

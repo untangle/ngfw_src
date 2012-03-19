@@ -117,14 +117,10 @@ class EventHandler extends AbstractEventHandler
             /* If necessary log the event */
             if (log) {
                 FirewallEvent fwe = new FirewallEvent(request.sessionEvent(), block, ruleIndex);
-                fwe.setRuleId(ruleIndex);
                 request.attach(fwe);
                 node.incrementLogCount();
             }
         }
-
-        /* Track the statistics */
-        node.statisticManager.incrRequest(protocol, request, block, (matchedRule == null));
     }
 
     @Override

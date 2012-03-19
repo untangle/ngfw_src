@@ -8,6 +8,7 @@ from uvm import Uvm
 from untangle_tests import ClientControl
 
 uvmContext = Uvm().getUvmContext()
+defaultRackId = uvmContext.policyManager().getDefaultPolicy()['id']
 clientControl = ClientControl()
 nodeDesc = None
 node = None
@@ -347,6 +348,46 @@ class FirewallTests(unittest.TestCase):
         appendRule( createSingleMatcherRule("SRC_ADDR", ClientControl.hostIP, blocked=False) );
         result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
         assert (result != 0)
+
+    # verify a block port 80 rule works
+    def test_100_blockDstPort80EventLog(self):
+        nukeRules();
+        appendRule(createSingleMatcherRule("DST_PORT","80"));
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
+        assert (result != 0)
+        flushEvents()
+        query = None;
+        for q in node.getEventQueries():
+            if q['name'] == 'Blocked Events': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        assert(events != None)
+        assert(events['list'] != None)
+        assert(len(events['list']) > 0)
+        assert(events['list'][0]['CClientAddr'] == ClientControl.hostIP)
+        assert(events['list'][0]['SServerPort'] == 80)
+        assert(events['list'][0]['firewallRuleIndex'] != 0 and events['list'][0]['firewallRuleIndex'] != None)
+        assert(events['list'][0]['firewallWasBlocked'] == True)
+
+    # verify a log port 80 rule works
+    def test_101_logDstPort80EventLog(self):
+        nukeRules();
+        appendRule(createSingleMatcherRule("DST_PORT","80",blocked=False));
+        result = clientControl.runCommand("wget -o /dev/null -t 1 --timeout=3 http://metaloft.com/")
+        assert (result == 0)
+        flushEvents()
+        query = None;
+        for q in node.getEventQueries():
+            if q['name'] == 'All Events': query = q;
+        assert(query != None)
+        events = uvmContext.getEvents(query['query'],defaultRackId,1)
+        assert(events != None)
+        assert(events['list'] != None)
+        assert(len(events['list']) > 0)
+        assert(events['list'][0]['CClientAddr'] == ClientControl.hostIP)
+        assert(events['list'][0]['SServerPort'] == 80)
+        assert(events['list'][0]['firewallRuleIndex'] != 0 and events['list'][0]['firewallRuleIndex'] != None)
+        assert(events['list'][0]['firewallWasBlocked'] == False)
 
     def test_999_finalTearDown(self):
         global nodeDesc

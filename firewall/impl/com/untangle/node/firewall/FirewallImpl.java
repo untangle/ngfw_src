@@ -90,8 +90,6 @@ public class FirewallImpl extends AbstractNode implements Firewall
             }
         };
 
-    protected final FirewallStatisticManager statisticManager;
-
     /**
      * nodeInstanceCount stores the number of this node type initialized thus far
      * nodeInstanceNum stores the number of this given node type
@@ -105,7 +103,6 @@ public class FirewallImpl extends AbstractNode implements Firewall
         synchronized(getClass()) { this.nodeInstanceNum = nodeInstanceCount++; };
 
         this.handler = new EventHandler(this);
-        this.statisticManager = new FirewallStatisticManager();
 
         /* Have to figure out pipeline ordering, this should always
          * next to towards the outside, then there is OpenVpn and then Nat */
@@ -180,8 +177,6 @@ public class FirewallImpl extends AbstractNode implements Firewall
         FirewallSettings settings = getDefaultSettings();
 
         this.setSettings(settings);
-
-        statisticManager.stop();
     }
 
 
@@ -213,8 +208,6 @@ public class FirewallImpl extends AbstractNode implements Firewall
         } catch (Exception e) {
             throw new Exception(e);
         }
-
-        statisticManager.start();
     }
 
     protected void postStart()
@@ -227,8 +220,6 @@ public class FirewallImpl extends AbstractNode implements Firewall
     {
         /* Kill all active sessions */
         this.killMatchingSessions(SessionMatcherFactory.makePolicyInstance(getPolicy()));
-
-        statisticManager.stop();
     }
 
     protected void postInit(String[] args)

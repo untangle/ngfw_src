@@ -6,13 +6,6 @@
         "syslogName" : "Firewall",
         "type" : "NODE",
         "viewPosition" : 110,
-        "singleInstance" : "true",
-        "annotatedClasses" : {
-            "javaClass": "java.util.LinkedList",
-            "list": [
-                "com.untangle.node.firewall.FirewallEvent",
-                "com.untangle.node.firewall.FirewallStatisticEvent"
-            ]
-        }
+        "singleInstance" : "true"
 }
 
