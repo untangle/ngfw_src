@@ -1,0 +1,83 @@
+<!--
+ * $HeadURL: svn://chef/branch/prod/web-ui/work/src/mail-casing/servlets/quarantine/root/InvalidPortalEmail.jsp $
+ * Copyright (c) 2003-2007 Untangle, Inc. 
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License, version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
+ * NONINFRINGEMENT.  See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+-->
+
+<jsp:root version="2.0" 
+          xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:c="http://java.sun.com/jsp/jstl/core"
+          xmlns:uvm="http://java.untangle.com/jsp/uvm"
+          xmlns:q="urn:jsptld:/WEB-INF/taglibs/quarantine_euv.tld">
+
+  <jsp:output omit-xml-declaration="true"/>
+
+  <jsp:scriptlet>
+    <![CDATA[
+             request.setAttribute( "i18n_map", com.untangle.uvm.UvmContextFactory.context().languageManager().getTranslations("untangle-casing-mail")); 
+    ]]>
+  </jsp:scriptlet>  
+
+  <c:set var="title" scope="request">
+    <uvm:i18n p0="${currentAddress}">Quarantine Digest for: {0}</uvm:i18n>
+  </c:set>
+  <br/><span style="font-weight: bold;">${currentAddress}</span>
+
+  <c:set var="pageTitle" scope="request">
+    <uvm:i18n p0="${bs.companyName}" p1="${currentAddress}">{0} | Quarantine Digest for: {1}</uvm:i18n>
+  </c:set>
+	
+  <uvm:script src="/ext4/builds/ext-core-debug.js"/>
+  <uvm:script src="/ext4/ext-all-debug.js"/>
+  <uvm:script src="/ext4/examples/ux/data/PagingMemoryProxy.js"/>
+  <uvm:script src="/ext4/examples/ux/CheckColumn.js"/>
+
+
+
+  <c:set var="javascript" scope="request">
+    <uvm:inlineScript>
+      <![CDATA[
+		 console.log("inboxNew.jspx");
+               var inboxDetails = {
+                   token : '${currentAuthToken}',
+                   totalCount: ${q:totalMessageCount(pageContext)},
+                   address : '${currentAddress}',
+
+                   /* This is the address the message is remapped to */
+                   forwardAddress : '${q:remappedTo(pageContext, false )}',
+                   
+                   /* This is the number of days a message will be saved in the quarantine for */
+                   quarantineDays : ${q:maxDaysToIntern( pageContext )},
+
+                   safelistData : ${q:jsonSafelist(pageContext)},
+               
+                   remapsData : ${q:jsonReceivingRemaps(pageContext)}
+               }
+      ]]>
+    </uvm:inlineScript>
+
+    <!-- Libraries for the quarantine application -->
+    <uvm:script src="quarantineNew.js"/>
+    <uvm:script src="safelistNew.js"/>
+    <uvm:script src="remapsNew.js"/>
+    <uvm:script src="/script/i18n.js"/>
+  </c:set>
+  
+  <c:set var="content" scope="request">
+    <div id="quarantine-tab-panel"><!-- jspx --></div>
+  </c:set>
+  
+  <jsp:forward page="/templateNew.jspx"/>
+</jsp:root>

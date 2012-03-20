@@ -46,4 +46,11 @@ public final class Constants extends WebConstants {
     public static final String INBOX_VIEW = "/inbox.jspx";
 
     public static final String INBOX_MAINTENENCE_CTL = "/manageuser";
+    
+    public static final String REQ_DIGEST_VIEW_NEW = "/requestNew.jspx";
+
+    public static final String INBOX_VIEW_NEW = "/inboxNew.jspx";
+
+    public static final String INBOX_MAINTENENCE_CTL_NEW = "/manageuserNew";
+
 }

@@ -37,6 +37,13 @@
   </servlet>
 
   <servlet>
+    <servlet-name>InboxMaintenenceControlerNew</servlet-name>
+    <servlet-class>com.untangle.node.mail.web.euv.InboxMaintenenceControlerNew</servlet-class>
+    <load-on-startup>3</load-on-startup>
+  </servlet>
+
+
+  <servlet>
     <servlet-name>JSONRPCServlet</servlet-name>
     <servlet-class>com.untangle.node.mail.web.euv.UtJsonRpcServlet</servlet-class>
     <init-param>
@@ -51,12 +58,41 @@
   </servlet>
   
 
-  @JSP_PRE_COMPILED_SERVLETS@
+  
+<!--
+Automatically created by Apache Jakarta Tomcat JspC.
+Place this fragment in the web.xml before all icon, display-name,
+description, distributable, and context-param elements.
+-->
+
+    <servlet>
+        <servlet-name>com.untangle.node.mail.quarantine.jsp.TryLater_jsp</servlet-name>
+        <servlet-class>com.untangle.node.mail.quarantine.jsp.TryLater_jsp</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>com.untangle.node.mail.quarantine.jsp.TryLater_jsp</servlet-name>
+        <url-pattern>/TryLater.jsp</url-pattern>
+    </servlet-mapping>
+
+<!--
+All session-config, mime-mapping, welcome-file-list, error-page, taglib,
+resource-ref, security-constraint, login-config, security-role,
+env-entry, and ejb-ref elements should follow this fragment.
+-->
+
 
   <servlet-mapping>
     <servlet-name>InboxMaintenenceControler</servlet-name>
     <url-pattern>/manageuser</url-pattern>
   </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>InboxMaintenenceControlerNew</servlet-name>
+    <url-pattern>/manageuserNew</url-pattern>
+  </servlet-mapping>
+
+
 
   <welcome-file-list>
     <welcome-file>/request.jspx</welcome-file>

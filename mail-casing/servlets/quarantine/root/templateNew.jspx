@@ -1,0 +1,86 @@
+<!--
+ * $HeadURL: svn://chef/branch/prod/web-ui/work/src/mail-casing/servlets/quarantine/root/InvalidPortalEmail.jsp $
+ * Copyright (c) 2003-2007 Untangle, Inc. 
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License, version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
+ * NONINFRINGEMENT.  See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+-->
+
+<html xmlns:jsp="http://java.sun.com/JSP/Page"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:uvm="http://java.untangle.com/jsp/uvm"
+      xmlns="http://www.w3.org/1999/xhtml">
+  
+  <jsp:output omit-xml-declaration="true"
+      doctype-root-element="html"      
+      doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
+      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
+   
+  <!-- This will have to change for internationalization -->
+  <jsp:directive.page contentType="text/html"/>
+
+  <head>
+    <title><c:out value="${pageTitle}"/></title>
+    <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>
+    <style type="text/css">
+        @import "/ext4/resources/css/ext-all-gray.css";
+        @import "/ext4/examples/ux/css/CheckHeader.css";
+    </style>
+
+    <uvm:skin src="ext-skin.css"  name="${ss.userPagesSkin}"/>
+    <uvm:skin src="user.css" name="${ss.userPagesSkin}"/>
+
+    <!-- extjs, json and i18n libraries, this should be consolidated into a helper tag. -->
+
+	<uvm:script src="/ext4/builds/ext-core-debug.js"/>
+	<uvm:script src="/ext4/ext-all-debug.js"/>
+	<uvm:script src="/ext4/examples/ux/data/PagingMemoryProxy.js"/>
+	<uvm:script src="/ext4/examples/ux/CheckColumn.js"/>
+	<uvm:script src="/jsonrpc/jsonrpc.js"/>
+
+
+
+    
+    <c:out escapeXml="false" value="${javascript}"/>
+  </head>
+  
+  
+  <body class="quarantine">
+    <div id="content">
+      <div id="header">
+        <a href="${bs.companyUrl}"><img src="/images/BrandingLogo.gif" alt=""/></a>
+        <div class="title"><c:out value="${title}" escapeXml="false"/></div>
+      </div>
+
+      <div id="main">
+        <c:out escapeXml="false" value="${requestScope.content}"/>
+      </div>
+
+      <div id="footer">
+        <!-- jspx -->
+      </div>
+
+    </div>
+
+    <!-- This is used in the CSS Zen Garden -->
+    <!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
+    <div id="extra-div-1"><span><!-- jspx --></span></div>
+    <div id="extra-div-2"><span><!-- jspx --></span></div>
+    <div id="extra-div-3"><span><!-- jspx --></span></div>
+    <div id="extra-div-4"><span><!-- jspx --></span></div>
+    <div id="extra-div-5"><span><!-- jspx --></span></div>
+    <div id="extra-div-6"><span><!-- jspx --></span></div>
+  </body>
+
+
+</html>
