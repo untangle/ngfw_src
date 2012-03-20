@@ -25,9 +25,7 @@ public interface VirusNode extends Node
 
     Date getLastSignatureUpdate();
 
-    List<GenericRule> getHttpFileExtensions();
-    void getHttpFileExtensions(List<GenericRule> fileExtensions);
+    void setHttpFileExtensions(List<GenericRule> fileExtensions);
 
-    List<GenericRule> getHttpMimeTypes();
-    void getHttpMimeTypes(List<GenericRule> fileExtensions);
+    void setHttpMimeTypes(List<GenericRule> fileExtensions);
 }

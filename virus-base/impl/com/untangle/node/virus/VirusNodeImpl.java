@@ -209,23 +209,13 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
         _setSettings(newSettings);
     }
 
-    public List<GenericRule> getHttpFileExtensions()
-    {
-        return settings.getHttpFileExtensions();
-    }
-    
-    public void getHttpFileExtensions(List<GenericRule> fileExtensions)
+    public void setHttpFileExtensions(List<GenericRule> fileExtensions)
     {
         settings.setHttpFileExtensions(fileExtensions);
         _setSettings(settings);
     }
 
-    public List<GenericRule> getHttpMimeTypes()
-    {
-        return settings.getHttpMimeTypes();
-    }
-    
-    public void getHttpMimeTypes(List<GenericRule> fileExtensions)
+    public void setHttpMimeTypes(List<GenericRule> fileExtensions)
     {
         settings.setHttpMimeTypes(fileExtensions);
         _setSettings(settings);

@@ -34,7 +34,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 parentId : this.getId(),
 
                 title : this.i18n._('Web'),
-                //layout : "form",
                 cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
@@ -124,18 +123,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                             }],
                             grid : settingsCmp.gridExtensions,
                             applyAction : function(callback){
-                                Ext.MessageBox.wait(i18n._("Appling..."), i18n._("Please wait"));
-                                settingsCmp.gridExtensions.getGridSaveList(Ext.bind(function(saveList) {
-                                    Ext.MessageBox.hide();                                                
-                                	this.settings.httpFileExtensions=saveList;
-                                    if(callback != null) {
-                                        callback();
-                                    }
-                                },settingsCmp));
-                            },
-                            /*
-                             * TODO: this is the desired version, to be used after setHttpFileExtensions is implemented, and delete the applyAction above 
-                            applyAction : function(callback){
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 settingsCmp.gridExtensions.getGridSaveList(Ext.bind(function(saveList) {
                                     this.getRpcNode().setHttpFileExtensions(Ext.bind(function(result, exception) {
@@ -150,9 +137,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
                                                 callback();
                                             }
                                         },this));
-                                    }),this, saveList);
+                                    },this), saveList);
                                 },settingsCmp));
-                            }*/
+                            }
                         });
                     }
                     this.winExtensions.show();
@@ -187,23 +174,10 @@ if (!Ung.hasResource["Ung.Virus"]) {
                                 title : settingsCmp.i18n._("MIME Types")
                             }],
                             grid : settingsCmp.gridMimeTypes,
-                            applyAction : function(callback){
-                                Ext.MessageBox.wait(i18n._("Appling..."), i18n._("Please wait"));
-                                settingsCmp.gridMimeTypes.getGridSaveList(Ext.bind(function(saveList) {
-                                    Ext.MessageBox.hide();                                                
-                                	this.settings.httpMimeTypes=saveList;
-                                    if(callback != null) {
-                                        callback();
-                                    }
-                                },settingsCmp));
-                            },
-                            /*
-                             * TODO: this is the desired version, to be used after setHttpMimeTypes is implemented, and delete the applyAction above 
-                            applyAction : function(callback){
+                            applyAction : function(callback) {
                                 Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
                                 settingsCmp.gridMimeTypes.getGridSaveList(Ext.bind(function(saveList) {
                                     this.getRpcNode().setHttpMimeTypes(Ext.bind(function(result, exception) {
-                                        Ext.MessageBox.hide();
                                         if(Ung.Util.handleException(exception)) return;
                                         this.getRpcNode().getSettings(Ext.bind(function(result, exception) {
                                             Ext.MessageBox.hide();
@@ -214,9 +188,9 @@ if (!Ung.hasResource["Ung.Virus"]) {
                                                 callback();
                                             }
                                         },this));
-                                    }),this, saveList);
+                                    },this), saveList);
                                 },settingsCmp));
-                            }*/
+                            }
                         });
                     }
                     this.winMimeTypes.show();
@@ -306,7 +280,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     "name" : this.i18n._("[no description]")
                 },
                 title : this.i18n._("MIME Types"),
-                recordJavaClass : "com.untangle.uvm.node.MimeTypeRule",
+                recordJavaClass : "com.untangle.uvm.node.GenericRule",
                 dataProperty : "httpMimeTypes",
                 fields : Ung.Util.getGenericRuleFields(this),
                 columns : [{
@@ -368,7 +342,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                 parentId : this.getId(),
 
                 title : this.i18n._('FTP'),
-                //layout : "form",
                 cls: 'ung-panel',
                 autoScroll : true,
                 defaults : {
@@ -422,7 +395,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     layout:'column',
                     items:[{
                         columnWidth:.3,
-                        //layout: 'form',
                         border:false,
                         items: [{
                             xtype : 'checkbox',
@@ -466,7 +438,6 @@ if (!Ung.hasResource["Ung.Virus"]) {
                         }]
                     },{
                         columnWidth:.7,
-                        //layout: 'form',
                         border:false,
                         items: [{
                             xtype : 'combo',
