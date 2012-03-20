@@ -1,5 +1,6 @@
 import unittest
 import time
+from datetime import datetime
 import sys
 import os
 from jsonrpc import ServiceProxy
@@ -71,6 +72,7 @@ class VirusTests(unittest.TestCase):
         assert(events != None)
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
+        print "Event:" + str(events['list'][0])
         assert(events['list'][0]['host'] == "metaloft.com")
         assert(events['list'][0]['uri'] == ("/test/eicar.zip?arg=%s" % fname))
         assert(events['list'][0]['virus' + self.vendorName() + 'Name'] != None)
@@ -89,15 +91,17 @@ class VirusTests(unittest.TestCase):
         assert(events != None)
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
+        print "Event:" + str(events['list'][0])
         assert(events['list'][0]['host'] == "metaloft.com")
         assert(events['list'][0]['uri'] == ("/test/test.zip?arg=%s" % fname))
         assert(events['list'][0]['virus' + self.vendorName() + 'Clean'] == True)
 
     def test_102_eventlog_smtpVirus(self):
+        startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         result = clientControl.runCommand("mime-construct --to junk@metaloft.com --subject '%s' --string 'body' --file-attach /tmp/eicar" % (fname))
         assert (result == 0)
-        time.sleep(5) # this is needed because mime-construct doesnt block (it just hands it off to exim)
+        time.sleep(20) # this is needed because mime-construct doesnt block (it just hands it off to exim)
         flushEvents()
         query = None;
         for q in node.getMailEventQueries():
@@ -106,18 +110,22 @@ class VirusTests(unittest.TestCase):
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         assert(events['list'] != None)
+        print "startTime: " + str(startTime)
         assert(len(events['list']) > 0)
+        print "Event:" + str(events['list'][0])
         assert(events['list'][0]['addr'] == "junk@metaloft.com")
         assert(events['list'][0]['subject'] == str(fname))
         assert(events['list'][0]['virus' + self.vendorName() + 'Clean'] == False)
+        assert(datetime.fromtimestamp((events['list'][0]['timeStamp']['time'])/1000) > startTime)
 
     def test_103_eventlog_smtpNonVirus(self):
+        startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         result = clientControl.runCommand("echo '%s' > /tmp/attachment-%s" % (fname, fname))
         assert (result == 0)
         result = clientControl.runCommand("mime-construct --to junk@metaloft.com --subject '%s' --string 'body' --file-attach /tmp/attachment-%s" % (fname, fname))
         assert (result == 0)
-        time.sleep(5) # this is needed because mime-construct doesnt block (it just hands it off to exim)
+        time.sleep(20) # this is needed because mime-construct doesnt block (it just hands it off to exim)
         flushEvents()
         query = None;
         for q in node.getMailEventQueries():
@@ -126,10 +134,13 @@ class VirusTests(unittest.TestCase):
         events = uvmContext.getEvents(query['query'],defaultRackId,1)
         assert(events != None)
         assert(events['list'] != None)
+        print "startTime: " + str(startTime)
         assert(len(events['list']) > 0)
+        print "Event:" + str(events['list'][0])
         assert(events['list'][0]['addr'] == "junk@metaloft.com")
         assert(events['list'][0]['subject'] == str(fname))
         assert(events['list'][0]['virus' + self.vendorName() + 'Clean'] == True)
+        assert(datetime.fromtimestamp((events['list'][0]['timeStamp']['time'])/1000) > startTime)
 
     def test_999_finalTearDown(self):
         global nodeDesc
