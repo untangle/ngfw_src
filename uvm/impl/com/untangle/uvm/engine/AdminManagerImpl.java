@@ -54,6 +54,7 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
 
     private static final String SET_TIMEZONE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-timezone";
     private static final String UVM_VERSION_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-uvm-version.sh";
+    private static final String KERNEL_VERSION_SCRIPT = "/bin/uname -r";
     private static final String REBOOT_COUNT_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-reboot-count.sh";
     private static final String TIMEZONE_FILE = "/etc/timezone";
     
@@ -308,4 +309,19 @@ public class AdminManagerImpl implements AdminManager, HasConfigFiles
         return "Unknown";
     }
     
+    public String getKernelVersion()
+    {
+        try {
+            String version = uvmContext.execManager().execOutput(KERNEL_VERSION_SCRIPT);
+	    
+            if (version == null)
+                return "";
+            else
+                return version.replaceAll("(\\r|\\n)", "");
+        } catch (Exception e) {
+            logger.warn("Unable to fetch version",e);
+        }
+
+        return "Unknown";
+    }
 }

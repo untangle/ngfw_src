@@ -2146,11 +2146,25 @@ Ext.define("Ung.SystemStats", {
         this.sessionsToolTip= Ext.create('Ext.tip.ToolTip',{
             target: this.getEl().down("div[class=sessions]"),
             dismissDelay:0,
-            hideDelay :400,
+            hideDelay :1000,
             width: 330,
             cls: 'extended-stats',
             renderTo: Ext.getBody(),
-            html: sessionsArr.join('')
+            html: sessionsArr.join(''),
+            items: {
+                xtype : 'button',
+                name: 'Sessions',
+                text: i18n._('Show Sessions'),
+                handler: function() {
+                    Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+                    Ext.Function.defer(Ung.Util.loadResourceAndExecute,1,this,["Ung.SessionMonitor",Ung.Util.getScriptSrc("script/config/sessionMonitorNew.js"), function() {
+                        main.sessionMonitorWin=new Ung.SessionMonitor({"name":"sessionMonitor", "helpSource":"session_viewer"});
+                        main.sessionMonitorWin.show();
+                        Ext.MessageBox.hide();
+                    }]);
+                }
+            }
+            
         });
 
         // cpu tooltip

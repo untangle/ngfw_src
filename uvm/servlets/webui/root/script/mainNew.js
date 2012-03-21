@@ -105,6 +105,9 @@ Ext.define("Ung.Main", {
         // get toolbox manager
         rpc.toolboxManager=rpc.jsonrpc.UvmContext.toolboxManager();
 
+        // get toolbox manager
+        rpc.alertManager=rpc.jsonrpc.UvmContext.alertManager();
+        
         // get admin manager
         rpc.adminManager=rpc.jsonrpc.UvmContext.adminManager();
 
@@ -202,7 +205,7 @@ Ext.define("Ung.Main", {
         var contentRightArr=[
             '<div id="content-right">',
                 '<div id="racks" style="">',
-                    '<div id="rack-list"><div id="rack-select-container"></div><div id="parent-rack-container"></div>',
+                    '<div id="rack-list"><div id="rack-select-container"></div><div id="parent-rack-container"></div><div id="alert-container" style="display:none;"></div>',
                     '</div>',
                     '<div id="rack-nodes">',
                         '<div id="filter_nodes"></div>',
@@ -867,6 +870,43 @@ Ext.define("Ung.Main", {
             });
         }
     },
+    checkForAlerts: function (handler) {
+        //check for upgrades
+        rpc.alertManager.getAlerts(Ext.bind(function( result, exception, opt, handler ) {
+            var alertDisplay = Ext.get('alert-container');
+            var alertArr=[];
+
+            if (result != null && result.list.length > 0) {
+                alertDisplay.show();
+                alertArr.push('<div class="title">'+i18n._("Alerts:")+'</div>');
+                for (var i = 0; i < result.list.length; i++) {
+                    alertArr.push('<div class="values">&middot;&nbsp;'+i18n._(result.list[i])+'</div>');
+                }
+            } else {
+                alertDisplay.hide();
+            }
+
+            this.alertToolTip= new Ext.ToolTip({
+                target: document.getElementById("alert-container"),
+                dismissDelay:0,
+                hideDelay :1500,
+                width: 500,
+                cls: 'extended-stats',
+                html: alertArr.join(''),
+                items: {
+                    xtype : 'button',
+                    name: 'Help',
+                    iconCls: 'icon-help',
+                    text: i18n._('Help with Administration Alerts'),
+                    handler: function() {
+                        main.openHelp('admin_alerts');
+                    }
+                }
+            });
+            this.alertToolTip.render(Ext.getBody());
+            
+        },this,[handler],true));
+    },
     checkForUpgrades: function (handler) {
         //check for upgrades
         rpc.toolboxManager.getUpgradeStatus(Ext.bind(function(result, exception,opt,handler) {
@@ -1071,6 +1111,8 @@ Ext.define("Ung.Main", {
                 items: items
             })
         });
+        this.checkForAlerts();
+
         if(this.firstTimeRun) {
             this.checkForUpgrades(main.loadRackView);
         } else {

@@ -58,6 +58,7 @@ if (!Ung.hasResource["Ung.SystemInfo"]) {
                         width : 600,
                         height : 400,
                         value : this.i18n._('Build') + ": " + rpc.adminManager.getFullVersionAndRevision() + "\n" + 
+                            this.i18n._('Kernel') + ": " + rpc.adminManager.getKernelVersion() + "\n" +
                             this.i18n._('History') + ": " + rpc.adminManager.getModificationState() + "\n" +
                             this.i18n._('Reboots') + ": " + rpc.adminManager.getRebootCount()
                     }]
