@@ -633,7 +633,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                     xtype : 'button',
                     text : i18n._( 'Test Connectivity' ),
                     //cls : 'test-connectivity',
-                    handler : Ext.bind(this.testConnectivity,this ),
+                    handler : Ext.bind( this.testConnectivity, this, [null] ),
                     disabled : false
                 }]
             }]}));
@@ -689,7 +689,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                     xtype : 'button',
                     text : i18n._( 'Test Connectivity' ),
                     cls : 'test-connectivity-2',
-                    handler : Ext.bind(this.testConnectivity,this ),
+                    handler : Ext.bind( this.testConnectivity, this, [null] ),
                     disabled : false
                 }]
             }]}));
@@ -772,7 +772,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                     xtype : 'button',
                     text : i18n._( 'Test Connectivity' ),
                     cls : 'test-connectivity',
-                    handler : Ext.bind(this.testConnectivity, this ),
+                    handler : Ext.bind( this.testConnectivity, this, [null] ),
                     disabled : false
                 }]
             }]});
@@ -848,7 +848,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                 this.isInitialized = true;
                 complete();
             },this),
-            onNext : Ext.bind(this.saveSettings,this ),
+            onNext : Ext.bind(this.testConnectivity,this ),
             onValidate : Ext.bind(this.validateInternetConnection,this)
         };
     },
@@ -861,13 +861,6 @@ Ext.define('Ung.SetupWizard.Internet', {
     onSelectConfig : function( combo, record, index )
     {
         this.cardPanel.layout.setActiveItem( index );
-    },
-
-    saveSettings : function( handler )
-    {
-        Ext.MessageBox.wait( i18n._( "Saving Internet Connection Settings" ), i18n._( "Please Wait" ));
-
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.afterReauthenticate,this, [ handler ] ));
     },
 
     afterReauthenticate : function( handler )
@@ -973,7 +966,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.saveData,this, [ handler, false ] ));
     },
 
-    testConnectivity : function()
+    testConnectivity : function( afterFn )
     {
         if ( !( this.validateInternetConnection() === true )) {
             Ext.MessageBox.show({
@@ -988,7 +981,7 @@ Ext.define('Ung.SetupWizard.Internet', {
 
         Ext.MessageBox.wait(i18n._("Saving Settings..."), i18n._("Please Wait"));
 
-        var handler = Ext.bind(this.execConnectivityTest,this );
+        var handler = Ext.bind( this.execConnectivityTest, this, [afterFn] );
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.saveData, this, [ handler, false ] ));
     },
 
@@ -997,7 +990,7 @@ Ext.define('Ung.SetupWizard.Internet', {
         this.cardPanel.layout.activeItem.saveData( handler, hideWindow );
     },
 
-    completeConnectivityTest : function( result, exception )
+    completeConnectivityTest : function( result, exception, foo, handler )
     {
         if ( exception ) {
             Ext.MessageBox.show({
@@ -1008,33 +1001,70 @@ Ext.define('Ung.SetupWizard.Internet', {
                 icon:Ext.MessageBox.INFO
             });
             return;
+        } else {
+            Ext.MessageBox.hide();
         }
 
         var message = "";
 
-        if (( result.tcpWorking == false )  && ( result.dnsWorking == false )) {
-            message = i18n._( "Warning! Internet and DNS failed." );
-        } else if ( result.tcpWorking == false ) {
-            message = i18n._( "Warning! DNS succeeded, but Internet failed." );
-        } else if ( result.dnsWorking == false ) {
-            message = i18n._( "Warning! Internet succeeded, but DNS failed." );
-        } else {
-            message = i18n._( "Success!" );
+        /**
+         * If handler is null then this is just a manual connectivity test, so just show a pop-up
+         */
+        if (handler == null) {
+            if (( result.tcpWorking == false )  && ( result.dnsWorking == false )) {
+                message = i18n._( "Warning! Internet and DNS tests failed." );
+            } else if ( result.tcpWorking == false ) {
+                message = i18n._( "Warning! DNS tests succeeded, but Internet tests failed." );
+            } else if ( result.dnsWorking == false ) {
+                message = i18n._( "Warning! Internet tests succeeded, but DNS tests failed." );
+            } else {
+                message = i18n._( "Success!" );
+            }
+            Ext.MessageBox.show({
+                title:i18n._( "Internet Status" ),
+                msg:message,
+                width:300,
+                buttons:Ext.MessageBox.OK,
+                icon:Ext.MessageBox.INFO
+            });
         }
-        Ext.MessageBox.show({
-            title:i18n._( "Internet Status" ),
-            msg:message,
-            width:300,
-            buttons:Ext.MessageBox.OK,
-            icon:Ext.MessageBox.INFO
-        });
-        //Ext.MessageBox.alert( i18n._( "Internet Status" ), message );
+        /**
+         * If handler is not null, then "Next" has been pushed.
+         * If connectivity is not valid, then display a warning, otherwise just continue
+         */
+        else {
+            if (( result.tcpWorking == false )  && ( result.dnsWorking == false )) {
+                message = i18n._( "Warning! Internet tests and DNS tests failed." );
+            } else if ( result.tcpWorking == false ) {
+                message = i18n._( "Warning! DNS tests succeeded, but Internet tests failed." );
+            } else if ( result.dnsWorking == false ) {
+                message = i18n._( "Warning! Internet tests succeeded, but DNS tests failed." );
+            } else {
+                message = null;
+            }
+
+            // if the test passed, just continue
+            if (message == null) {
+                handler();
+                return;
+            }
+
+            var warningText = message + "<br/><br/>" +i18n._("It is recommended to configure valid internet settings before continuing. Try again?");
+            Ext.Msg.confirm(i18n._("Warning:"), warningText, Ext.bind(function(btn, text) {
+                if (btn == 'yes') {
+                    return;
+                } else {
+                    handler();
+                    return;
+                }
+            }, this));
+        }
     },
 
-    execConnectivityTest : function()
+    execConnectivityTest : function( handler )
     {
         Ext.MessageBox.wait(i18n._("Testing Connectivity..."), i18n._("Please Wait"));
-        rpc.connectivityTester.getStatus( Ext.bind(this.completeConnectivityTest,this ));
+        rpc.connectivityTester.getStatus( Ext.bind( this.completeConnectivityTest, this, [handler], true ));
     },
 
     /* This does not reload the settings, it just updates what is
@@ -1518,10 +1548,10 @@ Ung.Setup = {
         this.wizard.render();
         Ext.QuickTips.init();
 
-        if ( false ) {
+        if ( true ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = Ext.bind(function() {
-                this.wizard.goToPage( 5 );
+                this.wizard.goToPage( 3 );
             }, this );
             var ss = Ext.create('Ung.SetupWizard.SettingsSaver', null, debugHandler );
 
