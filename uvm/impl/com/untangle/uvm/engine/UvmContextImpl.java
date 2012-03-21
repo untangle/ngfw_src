@@ -38,6 +38,7 @@ import com.untangle.uvm.LocalDirectory;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.OemManager;
+import com.untangle.uvm.AlertManager;
 import com.untangle.uvm.AppServerManager;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.ExecManager;
@@ -121,6 +122,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private UploadManagerImpl uploadManager;
     private SettingsManagerImpl settingsManager;
     private OemManagerImpl oemManager;
+    private AlertManagerImpl alertManager;
     private SessionMonitorImpl sessionMonitor;
     private BackupManager backupManager;
     private LocalDirectoryImpl localDirectory;
@@ -643,6 +645,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.appServerManager = new AppServerManagerImpl(this);
 
+        this.alertManager = new AlertManagerImpl();
+        
         // start vectoring:
         Argon.getInstance().run( networkManager );
 
@@ -855,6 +859,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.oemManager;
     }
 
+    @Override
+    public AlertManager alertManager()
+    {
+        return this.alertManager;
+    }
+    
     @SuppressWarnings("unchecked")
     public ArrayList getEvents( final String query, final Long policyId, final int limit )
     {

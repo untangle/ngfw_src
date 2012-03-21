@@ -84,35 +84,9 @@ class ConnectivityTesterImpl implements ConnectivityTester
     }
 
     /**
-     * Wait until a bridge comes up
-     */
-    private void waitForBridges()
-    {
-        try {
-            Thread  bridge = new Thread( new Runnable() {
-                    public void run()
-                    {
-                        try {
-                            ScriptRunner.getInstance().exec( BRIDGE_WAIT_SCRIPT, String.valueOf( BRIDGE_WAIT_TIMEOUT ));
-                        } catch ( Exception e ) {
-                            logger.info( "Exception executing bridge wait script", e );
-                        }
-                    }
-                } );
-
-            bridge.start();
-
-            bridge.join( BRIDGE_WAIT_TIMEOUT + 1000 );
-            if ( bridge.isAlive()) bridge.interrupt();
-        } catch ( Exception e ) {
-            logger.warn( "unable to determine bridge status" );
-        }
-    }
-
-    /**
      * Test that DNS is working
      */
-    private boolean isDnsWorking( InetAddress dnsPrimaryServer, InetAddress dnsSecondaryServer )
+    public boolean isDnsWorking( InetAddress dnsPrimaryServer, InetAddress dnsSecondaryServer )
     {
         boolean isWorking = false;
         String primaryServer = null;
@@ -142,6 +116,32 @@ class ConnectivityTesterImpl implements ConnectivityTester
         this.address = dnsLookup.address;
 
         return isWorking;
+    }
+
+    /**
+     * Wait until a bridge comes up
+     */
+    private void waitForBridges()
+    {
+        try {
+            Thread  bridge = new Thread( new Runnable() {
+                    public void run()
+                    {
+                        try {
+                            ScriptRunner.getInstance().exec( BRIDGE_WAIT_SCRIPT, String.valueOf( BRIDGE_WAIT_TIMEOUT ));
+                        } catch ( Exception e ) {
+                            logger.info( "Exception executing bridge wait script", e );
+                        }
+                    }
+                } );
+
+            bridge.start();
+
+            bridge.join( BRIDGE_WAIT_TIMEOUT + 1000 );
+            if ( bridge.isAlive()) bridge.interrupt();
+        } catch ( Exception e ) {
+            logger.warn( "unable to determine bridge status" );
+        }
     }
 
     /**

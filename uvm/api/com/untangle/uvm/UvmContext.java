@@ -169,6 +169,13 @@ public interface UvmContext
     OemManager oemManager();
 
     /**
+     * Get the <code>AlertManager</code> singleton.
+     *
+     * @return the AlertManager.
+     */
+    AlertManager alertManager();
+    
+    /**
      * Get the SyslogManager
      *
      * @return the SyslogManager

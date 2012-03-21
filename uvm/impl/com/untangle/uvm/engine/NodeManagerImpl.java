@@ -275,7 +275,6 @@ class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
                 throw new DeployException("Node " + packageDesc.getName() + " already exists in Policy " + p + ".");
             }
         }
-
         
         NodeContextImpl tc;
         NodeDesc nodeDesc;

@@ -71,5 +71,7 @@ public interface AdminManager
     String getRebootCount();
 
     String getFullVersionAndRevision();
+
+    String getKernelVersion();
     
 }
