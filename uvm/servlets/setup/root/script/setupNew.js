@@ -1548,7 +1548,7 @@ Ung.Setup = {
         this.wizard.render();
         Ext.QuickTips.init();
 
-        if ( true ) {
+        if ( false ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = Ext.bind(function() {
                 this.wizard.goToPage( 3 );

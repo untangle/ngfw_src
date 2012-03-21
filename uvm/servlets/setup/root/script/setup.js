@@ -873,13 +873,6 @@ Ung.SetupWizard.Internet = Ext.extend( Object, {
         this.cardPanel.layout.setActiveItem( index );
     },
 
-    saveSettings : function( handler )
-    {
-        Ext.MessageBox.wait( i18n._( "Saving Internet Connection Settings" ), i18n._( "Please Wait" ));
-
-        Ung.SetupWizard.ReauthenticateHandler.reauthenticate( this.afterReauthenticate.createDelegate( this, [ handler ] ));
-    },
-
     afterReauthenticate : function( handler )
     {
         this.cardPanel.layout.activeItem.saveData( handler );
@@ -1562,7 +1555,7 @@ Ung.Setup = {
         this.wizard.render();
         Ext.QuickTips.init();
 
-        if ( true ) {
+        if ( false ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = function() {
                 this.wizard.goToPage( 3 );
