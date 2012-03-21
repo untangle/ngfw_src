@@ -332,7 +332,7 @@ public class OpenSSLWrapper
         File temp = File.createTempFile("apache", ".tmp");
         byte[] fullCertBytes;
         try {
-            ExecManagerResult result = UvmContextFactory.context().execManager().exec( "openssl rsa -i " + keyFile.getAbsolutePath());
+            ExecManagerResult result = UvmContextFactory.context().execManager().exec( "openssl rsa -in " + keyFile.getAbsolutePath());
 
             byte[] outputBytes = result.getOutput().getBytes();
             
