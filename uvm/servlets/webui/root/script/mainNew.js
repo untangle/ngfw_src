@@ -319,23 +319,6 @@ Ext.define("Ung.Main", {
         });
 
         Ext.getCmp("west").fireEvent("resize");
-        buttonCmp=new Ext.Button({
-            id: "my_account_button",
-            name: "My Account",
-            height: '42px',
-            renderTo: 'appsItems',
-            text: i18n._("My Account"),
-            show : function() {
-                Ext.Button.prototype.show.call(this);
-                this.getEl().alignTo("appsItems","c-c",[0,10]);
-            },
-            handler: function() {
-                main.warnOnUpgrades(Ext.bind(function() {
-                     main.openStore("my_account",i18n._("My Account"));
-                },this));
-            }
-        });
-        buttonCmp.hide();
         this.loadConfig();
         this.loadPolicies();
     },
@@ -680,11 +663,6 @@ Ext.define("Ung.Main", {
             if(appCmp.isValid) {
                 this.apps.push(appCmp);
             }
-        }
-        if(this.apps.length>0) {
-            Ext.getCmp("my_account_button").hide();
-        } else {
-            Ext.getCmp("my_account_button").show();
         }
     },
     findLibItemDisplayName: function(libItemName) {
