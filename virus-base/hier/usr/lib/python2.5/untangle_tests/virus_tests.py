@@ -34,7 +34,7 @@ class VirusTests(unittest.TestCase):
         global nodeDesc, node
         if nodeDesc == None:
             # download eicar before installing virus blocker
-            result = clientControl.runCommand("wget http://metaloft.com/virus/00_eicar.com -O /tmp/eicar -o /dev/null 2>&1")
+            result = clientControl.runCommand("wget http://test.untangle.com/virus/00_eicar.com -O /tmp/eicar -o /dev/null 2>&1")
             assert (result == 0)
 
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
@@ -51,17 +51,17 @@ class VirusTests(unittest.TestCase):
 
     # test that client can download zip
     def test_011_httpNonVirusNotBlocked(self):
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.zip 2>&1 | grep -q text123")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.zip 2>&1 | grep -q text123")
         assert (result == 0)
 
     # test that client can download zip
     def test_012_httpVirusBlocked(self):
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/eicar.zip 2>&1 | grep -q blocked")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/eicar.zip 2>&1 | grep -q blocked")
         assert (result == 0)
 
     def test_100_eventlog_httpVirus(self):
         fname = sys._getframe().f_code.co_name
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/eicar.zip?arg=%s 2>&1 | grep -q blocked" % fname)
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/eicar.zip?arg=%s 2>&1 | grep -q blocked" % fname)
         assert (result == 0)
         flushEvents()
         query = None;
@@ -73,14 +73,14 @@ class VirusTests(unittest.TestCase):
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
         print "Event:" + str(events['list'][0])
-        assert(events['list'][0]['host'] == "metaloft.com")
+        assert(events['list'][0]['host'] == "test.untangle.com")
         assert(events['list'][0]['uri'] == ("/test/eicar.zip?arg=%s" % fname))
         assert(events['list'][0]['virus' + self.vendorName() + 'Name'] != None)
         assert(events['list'][0]['virus' + self.vendorName() + 'Clean'] == False)
 
     def test_101_eventlog_httpNonVirus(self):
         fname = sys._getframe().f_code.co_name
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.zip?arg=%s 2>&1 | grep -q text123" % fname)
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.zip?arg=%s 2>&1 | grep -q text123" % fname)
         assert (result == 0)
         flushEvents()
         query = None;
@@ -92,14 +92,14 @@ class VirusTests(unittest.TestCase):
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
         print "Event:" + str(events['list'][0])
-        assert(events['list'][0]['host'] == "metaloft.com")
+        assert(events['list'][0]['host'] == "test.untangle.com")
         assert(events['list'][0]['uri'] == ("/test/test.zip?arg=%s" % fname))
         assert(events['list'][0]['virus' + self.vendorName() + 'Clean'] == True)
 
     def test_102_eventlog_smtpVirus(self):
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
-        result = clientControl.runCommand("mime-construct --to junk@metaloft.com --subject '%s' --string 'body' --file-attach /tmp/eicar" % (fname))
+        result = clientControl.runCommand("mime-construct --to junk@test.untangle.com --subject '%s' --string 'body' --file-attach /tmp/eicar" % (fname))
         assert (result == 0)
         time.sleep(20) # this is needed because mime-construct doesnt block (it just hands it off to exim)
         flushEvents()
@@ -113,7 +113,7 @@ class VirusTests(unittest.TestCase):
         print "startTime: " + str(startTime)
         assert(len(events['list']) > 0)
         print "Event:" + str(events['list'][0])
-        assert(events['list'][0]['addr'] == "junk@metaloft.com")
+        assert(events['list'][0]['addr'] == "junk@test.untangle.com")
         assert(events['list'][0]['subject'] == str(fname))
         assert(events['list'][0]['virus' + self.vendorName() + 'Clean'] == False)
         assert(datetime.fromtimestamp((events['list'][0]['timeStamp']['time'])/1000) > startTime)
@@ -123,7 +123,7 @@ class VirusTests(unittest.TestCase):
         fname = sys._getframe().f_code.co_name
         result = clientControl.runCommand("echo '%s' > /tmp/attachment-%s" % (fname, fname))
         assert (result == 0)
-        result = clientControl.runCommand("mime-construct --to junk@metaloft.com --subject '%s' --string 'body' --file-attach /tmp/attachment-%s" % (fname, fname))
+        result = clientControl.runCommand("mime-construct --to junk@test.untangle.com --subject '%s' --string 'body' --file-attach /tmp/attachment-%s" % (fname, fname))
         assert (result == 0)
         time.sleep(20) # this is needed because mime-construct doesnt block (it just hands it off to exim)
         flushEvents()
@@ -137,7 +137,7 @@ class VirusTests(unittest.TestCase):
         print "startTime: " + str(startTime)
         assert(len(events['list']) > 0)
         print "Event:" + str(events['list'][0])
-        assert(events['list'][0]['addr'] == "junk@metaloft.com")
+        assert(events['list'][0]['addr'] == "junk@test.untangle.com")
         assert(events['list'][0]['subject'] == str(fname))
         assert(events['list'][0]['virus' + self.vendorName() + 'Clean'] == True)
         assert(datetime.fromtimestamp((events['list'][0]['timeStamp']['time'])/1000) > startTime)

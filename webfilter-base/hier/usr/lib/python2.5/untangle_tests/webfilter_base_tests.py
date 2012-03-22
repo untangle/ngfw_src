@@ -108,98 +108,98 @@ class WebFilterBaseTests(unittest.TestCase):
         result = clientControl.runCommand("wget -q -O - http://www.penthouse.com/index.html 2>&1 | grep -q blockpage")
         assert (result == 0)
 
-    # verify metaloft site is not blocked in default config
-    def test_015_defaultMetaloftIsNotBlocked(self):
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q text123")
+    # verify test site is not blocked in default config
+    def test_015_defaultTestSiteIsNotBlocked(self):
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         assert (result == 0)
 
     # verify blocked site url list works
     def test_016_blockedUrl(self):
-        addBlockedUrl("metaloft.com/test/testPage1.html")
+        addBlockedUrl("test.untangle.com/test/testPage1.html")
         # this test URL should now be blocked
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list entry does not match when the URI doesnt match exactly
     def test_017_blockedUrl(self):
-        addBlockedUrl("metaloft.com/test/testPage1.html")
+        addBlockedUrl("test.untangle.com/test/testPage1.html")
         # this test URL should NOT be blocked (testPage1 vs testPage2)
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage2.html 2>&1 | grep -q text123")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage2.html 2>&1 | grep -q text123")
         nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list entry correctly appends "(/.*)?" to the rigth side anchor
     def test_018_blockedUrlRightSideAnchor(self):
-        addBlockedUrl("metaloft.com/test([\\\?/]\.\*)\?$")
+        addBlockedUrl("test.untangle.com/test([\\\?/]\.\*)\?$")
         # this test URL should NOT be blocked (testPage1 vs testPage2)
-        result0 = clientControl.runCommand("wget -q -O - http://metaloft.com/testPage1.html 2>&1 | grep -q text123")
-        result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/ 2>&1 | grep -q blockpage")
+        result0 = clientControl.runCommand("wget -q -O - http://test.untangle.com/testPage1.html 2>&1 | grep -q text123")
+        result1 = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/ 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result0 == 0)
         assert (result1 == 0)
 
     # verify that a block list entry does not match when the URI capitalization is different
     def test_019_blockedUrlCapitalization(self):
-        addBlockedUrl("metaloft.com/test/testPage1.html")
+        addBlockedUrl("test.untangle.com/test/testPage1.html")
         # this test URL should NOT be blocked (capitalization is different)
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testpage1.html 2>&1 | grep -q text123")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testpage1.html 2>&1 | grep -q text123")
         nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list glob functions with * at the end
     def test_030_blockedUrlGlobStar(self):
-        addBlockedUrl("metaloft.com/test/test*")
+        addBlockedUrl("test.untangle.com/test/test*")
         # this test URL should be blocked 
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list glob functions with * at the end and at the beginning
     def test_031_blockedUrlGlobStar(self):
-        addBlockedUrl("*loft.com/test/test*")
+        addBlockedUrl("tes*tangle.com/test/test*")
         # this test URL should be blocked 
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list glob functions with * at the end and at the beginning and in the middle
     def test_032_blockedUrlGlobStar(self):
-        addBlockedUrl("*et*loft.com/test/test*")
+        addBlockedUrl("*est*angle.com/test/test*")
         # this test URL should be blocked 
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list glob matches the whole URL
     def test_033_blockedUrlGlobStar(self):
-        addBlockedUrl("metaloft.com*")
+        addBlockedUrl("test.untangle.com*")
         # this test URL should be blocked 
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list glob * matches zero characters
     def test_034_blockedUrlGlobStar(self):
-        addBlockedUrl("meta*loft.com*")
+        addBlockedUrl("te*st.untangle.com*")
         # this test URL should NOT be blocked 
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list glob * doesnt overmatch
     def test_035_blockedUrlGlobStar(self):
-        addBlockedUrl("metaloft.com/test/testP*.html")
+        addBlockedUrl("test.untangle.com/test/testP*.html")
         # this test URL should NOT be blocked (uri is different)
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.html 2>&1 | grep -q text123")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
         nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a block list glob ? matches a single character
     def test_036_blockedUrlGlobQuestionMark(self):
-        addBlockedUrl("metalo?t.com/test/testP?ge1.html")
+        addBlockedUrl("te?t.untangle.com/test/testP?ge1.html")
         # this test URL should be blocked 
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -207,33 +207,33 @@ class WebFilterBaseTests(unittest.TestCase):
     def test_037_blockedUrlGlobQuestionMark(self):
         addBlockedUrl("metalo?t.com/test/testP?.html")
         # this test URL should NOT be blocked 
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q text123")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         nukeBlockedUrls()
         assert (result == 0)
 
     # verify that the full URI is included in the match (even things after argument) bug #10067
     def test_038_blockedUrlGlobArgument(self):
-        addBlockedUrl("metaloft.com/*foo*")
+        addBlockedUrl("test.untangle.com/*foo*")
         # this test URL should NOT be blocked 
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=foobar 2>&1 | grep -q blockpage")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=foobar 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a the action in taken from the first rule
     def test_038_blockedUrlRuleOrder(self):
-        addBlockedUrl("metaloft.com/test/testPage1.html", blocked=False, flagged=True)
-        addBlockedUrl("metaloft.com", blocked=True, flagged=True)
+        addBlockedUrl("test.untangle.com/test/testPage1.html", blocked=False, flagged=True)
+        addBlockedUrl("test.untangle.com", blocked=True, flagged=True)
         # this test URL should NOT be blocked 
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q text123")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         nukeBlockedUrls()
         assert (result == 0)
 
     # verify that a the action in taken from the second rule (first rule doesn't match)
     def test_039_blockedUrlRuleOrder(self):
-        addBlockedUrl("metaloft.com/test/testPage1.html", blocked=False, flagged=True)
-        addBlockedUrl("metaloft.com", blocked=True, flagged=True)
+        addBlockedUrl("test.untangle.com/test/testPage1.html", blocked=False, flagged=True)
+        addBlockedUrl("test.untangle.com", blocked=True, flagged=True)
         # this test URL should NOT be blocked 
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage2.html 2>&1 | grep -q blockpage")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage2.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
 
@@ -247,10 +247,10 @@ class WebFilterBaseTests(unittest.TestCase):
 
     # verify that an entry in the pass list overrides a blocked category
     def test_051_passedUrlOverridesBlockedUrl(self):
-        addBlockedUrl("metaloft.com")
-        addPassedUrl("metaloft.com/test/")
+        addBlockedUrl("test.untangle.com")
+        addPassedUrl("test.untangle.com/test/")
         # this test URL should NOT be blocked
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html 2>&1 | grep -q text123")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         nukeBlockedUrls()
         nukePassedUrls()
         assert (result == 0)
@@ -259,9 +259,9 @@ class WebFilterBaseTests(unittest.TestCase):
     def test_052_passedUrlOverridesBlockedMimeType(self):
         nukeBlockedMimeTypes()
         addBlockedMimeType("text/plain")
-        addPassedUrl("metaloft.com/test/")
+        addPassedUrl("test.untangle.com/test/")
         # this test URL should NOT be blocked 
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.txt 2>&1 | grep -q text123")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
         nukeBlockedUrls()
         nukePassedUrls()
         assert (result == 0)
@@ -270,9 +270,9 @@ class WebFilterBaseTests(unittest.TestCase):
     def test_053_passedUrlOverridesBlockedExtension(self):
         nukeBlockedExtensions()
         addBlockedExtension("txt")
-        addPassedUrl("metaloft.com/test/")
+        addPassedUrl("test.untangle.com/test/")
         # this test URL should NOT be blocked 
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.txt 2>&1 | grep -q text123")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
         nukeBlockedUrls()
         nukePassedUrls()
         assert (result == 0)
@@ -282,7 +282,7 @@ class WebFilterBaseTests(unittest.TestCase):
         nukeBlockedMimeTypes()
         addBlockedMimeType("text/plain")
         # this test URL should be blocked
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.txt 2>&1 | grep -q blockpage")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q blockpage")
         nukeBlockedMimeTypes()
         assert (result == 0)
 
@@ -291,7 +291,7 @@ class WebFilterBaseTests(unittest.TestCase):
         nukeBlockedMimeTypes()
         addBlockedMimeType("text/plain")
         # this test URL should NOT be blocked (its text/html not text/plain)
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.html 2>&1 | grep -q text123")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
         nukeBlockedMimeTypes()
         assert (result == 0)
 
@@ -300,7 +300,7 @@ class WebFilterBaseTests(unittest.TestCase):
         nukeBlockedExtensions()
         addBlockedExtension("txt")
         # this test URL should be blocked
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.txt 2>&1 | grep -q blockpage")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q blockpage")
         nukeBlockedExtensions()
         assert (result == 0)
 
@@ -309,7 +309,7 @@ class WebFilterBaseTests(unittest.TestCase):
         nukeBlockedExtensions()
         addBlockedExtension("txt")
         # this test URL should NOT be blocked (its text/html not text/plain)
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.html 2>&1 | grep -q text123")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
         nukeBlockedExtensions()
         assert (result == 0)
 
@@ -318,7 +318,7 @@ class WebFilterBaseTests(unittest.TestCase):
         nukeBlockedExtensions()
         addBlockedExtension("tml") # not this should only block ".tml" not ".html"
         # this test URL should NOT be blocked (its text/html not text/plain)
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.html 2>&1 | grep -q text123")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
         nukeBlockedExtensions()
         assert (result == 0)
 
@@ -327,17 +327,17 @@ class WebFilterBaseTests(unittest.TestCase):
         nukeBlockedExtensions()
         addBlockedExtension("txt")
         # this test URL should be blocked
-        result = clientControl.runCommand("wget -q -O - http://metaloft.com/test/test.txt?argument 2>&1 | grep -q blockpage")
+        result = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/test.txt?argument 2>&1 | grep -q blockpage")
         nukeBlockedExtensions()
         assert (result == 0)
 
     def test_100_eventlog_blockedUrl(self):
         fname = sys._getframe().f_code.co_name
         nukeBlockedUrls();
-        addBlockedUrl("metaloft.com/test/testPage1.html", blocked=True, flagged=True)
+        addBlockedUrl("test.untangle.com/test/testPage1.html", blocked=True, flagged=True)
         # specify an argument so it isn't confused with other events
         eventTime = datetime.datetime.now()
-        result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
+        result1 = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1);
         flushEvents()
         query = None;
@@ -355,7 +355,7 @@ class WebFilterBaseTests(unittest.TestCase):
                " blocked: " + str(events['list'][0]['wf' + self.vendorName() + 'Blocked']) + 
                " flagged: " + str(events['list'][0]['wf' + self.vendorName() + 'Flagged']) +
                " now: " + str(datetime.datetime.now())) 
-        assert(events['list'][0]['host'] == "metaloft.com")
+        assert(events['list'][0]['host'] == "test.untangle.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
         assert(events['list'][0]['wf' + self.vendorName() + 'Blocked'] == True)
         assert(events['list'][0]['wf' + self.vendorName() + 'Flagged'] == True)
@@ -363,9 +363,9 @@ class WebFilterBaseTests(unittest.TestCase):
     def test_101_eventlog_flaggedUrl(self):
         fname = sys._getframe().f_code.co_name
         nukeBlockedUrls();
-        addBlockedUrl("metaloft.com/test/testPage1.html", blocked=False, flagged=True)
+        addBlockedUrl("test.untangle.com/test/testPage1.html", blocked=False, flagged=True)
         # specify an argument so it isn't confused with other events
-        result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
+        result1 = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1);
         flushEvents()
         query = None;
@@ -376,7 +376,7 @@ class WebFilterBaseTests(unittest.TestCase):
         assert(events != None)
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
-        assert(events['list'][0]['host'] == "metaloft.com")
+        assert(events['list'][0]['host'] == "test.untangle.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
         assert(events['list'][0]['wf' + self.vendorName() + 'Blocked'] == False)
         assert(events['list'][0]['wf' + self.vendorName() + 'Flagged'] == True)
@@ -385,7 +385,7 @@ class WebFilterBaseTests(unittest.TestCase):
         fname = sys._getframe().f_code.co_name
         nukeBlockedUrls();
         # specify an argument so it isn't confused with other events
-        result1 = clientControl.runCommand("wget -q -O - http://metaloft.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
+        result1 = clientControl.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         time.sleep(1);
         flushEvents()
         for q in node.getEventQueries():
@@ -395,7 +395,7 @@ class WebFilterBaseTests(unittest.TestCase):
         assert(events != None)
         assert(events['list'] != None)
         assert(len(events['list']) > 0)
-        assert(events['list'][0]['host'] == "metaloft.com")
+        assert(events['list'][0]['host'] == "test.untangle.com")
         assert(events['list'][0]['uri'] == ("/test/testPage1.html?arg=%s" % fname))
         assert(events['list'][0]['wf' + self.vendorName() + 'Blocked'] == False)
         assert(events['list'][0]['wf' + self.vendorName() + 'Flagged'] == False)
