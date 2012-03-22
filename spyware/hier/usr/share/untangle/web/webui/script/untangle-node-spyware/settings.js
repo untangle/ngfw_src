@@ -88,7 +88,8 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                         name : "User Bypass",
                         store : new Ext.data.SimpleStore({
                             fields : ['unblockModeValue', 'unblockModeName'],
-                            data : [["None", this.i18n._("None")], ["Host", this.i18n._("Host")],
+                            data : [["None", this.i18n._("None")],
+                                    ["Host", this.i18n._("Temporary")],
                                     ["Global", this.i18n._("Permanent and Global")]]
                         }),
                         displayField : 'unblockModeName',
