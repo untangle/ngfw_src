@@ -7,7 +7,6 @@
 	lib/        - the build directory
 	src/        - the source
 	test/       - testing / sample applications
-	patches/    - kernel patches to support libnetcap
 
 2) Overview
 	
@@ -41,12 +40,6 @@
 	kernel patches
 	libssl-dev (for test)
 
-6) Notes for iptables
-	libnetcap requires an iptable extenstion, bitmark match, to add
-	--bitexact <value>/<mask>, --anyone <mask>, and --anyzed <mask>
-	matches. The required kernel enhancements are incorporated in the
-	kernel patches dated 091204 and after. To enhance iptables, copy
-	libipt_bitmark.*o to /usr/local/lib/iptables.
 
 
 
