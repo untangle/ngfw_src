@@ -1165,8 +1165,7 @@ Ung.Main=Ext.extend(Object, {
     /**
      *  Prepares the uvm to display the welcome screen
      **/      
-    showInitialScreen : function (){
-      
+    showInitialScreen : function () {
         try{
             Ext.MessageBox.wait.defer(40,Ext.MessageBox,[i18n._("Determining Connectivity..."), i18n._("Please wait")]);        
             rpc.toolboxManager.isUpgradeServerAvailable(function (result, exception) {

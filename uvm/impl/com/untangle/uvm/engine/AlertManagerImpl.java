@@ -34,6 +34,9 @@ import com.untangle.uvm.networking.InterfaceConfiguration;
  * modified sources.list?
  * high reports data retention time?
  * ping 8.8.8.8 for wan failover test?
+ * change ifconfig to check percentage of errors
+ * test RBL instead of checking 6 DNSs
+ * have you messed with your casing settings
  */
 class AlertManagerImpl implements AlertManager
 {
@@ -108,6 +111,10 @@ class AlertManagerImpl implements AlertManager
         }
     }
 
+    /**
+     * This test for multiple instances of the same application in a given rack
+     * This is never a good idea
+     */
     private void testDupeApps(List<String> alertList)
     {
         Policy[] policyList = UvmContextFactory.context().policyManager().getPolicies();
