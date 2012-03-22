@@ -33,8 +33,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.uvm.security.NodeId;
-
 /**
  * Settings for the Captive Portal Node.
  *
@@ -49,7 +47,6 @@ public class CPDSettings implements Serializable
     public static enum PageType { BASIC_LOGIN, BASIC_MESSAGE, CUSTOM };
 
     private Long id;
-    private NodeId tid;
 
     private List<CaptureRule> captureRules = new LinkedList<CaptureRule>();
 
@@ -83,11 +80,6 @@ public class CPDSettings implements Serializable
     {
     }
 
-    public CPDSettings( NodeId tid)
-    {
-        this.tid = tid;
-    }
-
     public Long getId()
     {
         return id;
@@ -96,21 +88,6 @@ public class CPDSettings implements Serializable
     public void setId(Long id)
     {
         this.id = id;
-    }
-
-    /**
-     * Node id for these settings.
-     *
-     * @return tid for these settings
-     */
-    public NodeId getNodeId()
-    {
-        return tid;
-    }
-
-    public void setNodeId(NodeId tid)
-    {
-        this.tid = tid;
     }
 
     public List<CaptureRule> getCaptureRules()
@@ -263,7 +240,7 @@ public class CPDSettings implements Serializable
     public boolean getBasicMessageAgreeBox()    { return this.basicMessageAgreeBox; }
     public String getBasicMessageAgreeText()    { return this.basicMessageAgreeText; }
     public String getBasicMessageFooter()       { return this.basicMessageFooter; }
-    
+
     public void setBasicLoginPageTitle( String newValue )       { this.basicLoginPageTitle = newValue; }
     public void setBasicLoginPageWelcome( String newValue )     { this.basicLoginPageWelcome = newValue; }
     public void setBasicLoginUsername( String newValue )        { this.basicLoginUsername = newValue; }

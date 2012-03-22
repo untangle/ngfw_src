@@ -97,7 +97,7 @@ public class CPDImpl extends AbstractNode implements CPD
     {
         logger.info("Initializing Settings...");
 
-        CPDSettings settings = new CPDSettings(this.getNodeId());
+        CPDSettings settings = new CPDSettings();
         /* Create a set of default capture rules */
         List<CaptureRule> rules = new LinkedList<CaptureRule>();
         rules.add(new CaptureRule(false, true,
