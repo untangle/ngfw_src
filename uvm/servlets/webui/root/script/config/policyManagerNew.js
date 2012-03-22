@@ -42,7 +42,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     iconCls : 'save-icon',
                     text : i18n._("OK"),
                     handler : Ext.bind(function() {
-                        this.saveAction.defer(1, this);
+                        Ext.defer(this.saveAction,1, this);
                     },this)
                 },"-",{
                     name : 'Cancel',
@@ -185,6 +185,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     "notes" : this.i18n._("[no description]"),
                     "parentId" : null
                 },
+                ignoreServerIds:false,
                 data : this.getPolicyConfiguration().policies.list,
                 paginated : false,
                 fields : [{
@@ -372,7 +373,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
         buildPolicies : function() {
             this.policyStoreData = [];
             this.policyStoreData.push({
-                key : null,
+                key :null,
                 name : this.i18n._("> No rack"),
                 policy : null
             });
@@ -405,10 +406,9 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     policy : policiesList[i]
                 });
             }
-            this.policyStore = Ext.create('Ext.data.ArrayStore',{
-                idIndex:0,
+            this.policyStore = Ext.create('Ext.data.Store',{
                 fields : ['key', 'name', 'policy'],
-                data : this.policyStoreData
+                data :this.policyStoreData
             });
           /*  var usersColumn=new Ext.grid.ButtonColumn({
                 width: 80,
@@ -428,6 +428,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                 hasReorder : true,
                 hasDelete:true,
                 hasEdit:true,
+                ignoreServerIds:false,
                 configReorder:{width:35,fixed:false,tooltip:this.i18n._("Reorder")},
                 configDelete:{width:30,fixed:false,tooltip:this.i18n._("Delete")},
                 configEdit:{width:25,fixed:false,tooltip:this.i18n._("Edit")},
@@ -460,7 +461,11 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     name : 'policyName',
                     mapping : 'policy',
                     convert : function(val, rec) {
-                        return val==null?null:val.name;
+                        if (typeof val == "object") {
+                            return val==null?null:val.name;
+                        } else {
+                            return val;
+                        }
                     }
                 }, {
                     name : 'clientIntf'
@@ -506,13 +511,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         var result = "";
                         var store = this.policyStore;
                         if (store) {
-                            var index = store.findBy(function(record, id) {
-                                if (record.data.key == value) {
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            });
+                            var index = store.findExact("key",value);
                             if (index >= 0) {
                                 result = store.getAt(index).get("name");
                                 record.data.policy = store.getAt(index).get("policy");
@@ -520,7 +519,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         }
                         return result;
                     },this)
-                 /*   editor : Ext.create('Ext.form.ComboBox',{
+                   /*editor : Ext.create('Ext.form.ComboBox',{
                         store : this.policyStore,
                         displayField : 'name',
                         valueField : 'key',
@@ -1006,7 +1005,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                         store : this.policyStore,
                         displayField : 'name',
                         valueField : 'key',
-                        width : 200,
+                        width : 220,
                         mode : 'local',
                         triggerAction : 'all',
                         listClass : 'x-combo-list-small'
@@ -1146,10 +1145,10 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
             this.getPolicyConfiguration(true);
 
             this.rackDatabase = this.buildRackDatabase( this.getPolicyConfiguration().policies.list );
-            this.gridRacks.clearChangedData();
+            this.gridRacks.clearDirty();
             this.gridRacks.store.loadData(this.getPolicyConfiguration().policies,false);
             
-            this.gridRules.clearChangedData();
+            this.gridRules.clearDirty();
             this.gridRules.store.loadData(this.getPolicyConfiguration().userPolicyRules,false);
 
             this.policyStoreData = [];
