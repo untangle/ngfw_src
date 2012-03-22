@@ -323,7 +323,7 @@ public class Sandbox
     VpnSettings completeConfig( NodeId tid ) throws Exception
     {
         /* Create new settings */
-        VpnSettings settings = new VpnSettings( tid );
+        VpnSettings settings = new VpnSettings();
 
         switch ( configState ) {
         case SERVER_BRIDGE:

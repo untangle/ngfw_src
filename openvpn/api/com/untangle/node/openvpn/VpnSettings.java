@@ -58,7 +58,7 @@ public class VpnSettings implements Serializable, Validatable
     public static final int DEFAULT_PUBLIC_PORT = 1194;
 
     private Long id;
-    private NodeId tid;
+//    private NodeId tid;
 
     private boolean isBridgeMode = false;
     private boolean isUntanglePlatformClient = false;
@@ -98,11 +98,6 @@ public class VpnSettings implements Serializable, Validatable
     private String siteName = "";
 
     public VpnSettings() { }
-
-    public VpnSettings( NodeId tid )
-    {
-        this.tid = tid;
-    }
 
     public void validate() throws ValidateException
     {
@@ -145,21 +140,6 @@ public class VpnSettings implements Serializable, Validatable
     void setId( Long id )
     {
         this.id = id;
-    }
-
-    /**
-     * Node id for these settings.
-     *
-     * @return tid for these settings
-     */
-    public NodeId getNodeId()
-    {
-        return tid;
-    }
-
-    public void setNodeId( NodeId tid )
-    {
-        this.tid = tid;
     }
 
     /** Network settings for the VPN */
@@ -296,12 +276,11 @@ public class VpnSettings implements Serializable, Validatable
      * @return a new list containing all of the clients and the
      * sites. A VpnSite is a subclass of a VpnClient.
      */
-    public List<VpnClient> getCompleteClientList()
+    public List<VpnClient> buildCompleteClientList()
     {
         List<VpnClient> clientList = getClientList();
         List<VpnSite> siteList = getSiteList();
-        List<VpnClient> completeList =
-            new ArrayList<VpnClient>( clientList.size() + siteList.size());
+        List<VpnClient> completeList = new ArrayList<VpnClient>( clientList.size() + siteList.size());
         completeList.addAll( clientList );
         completeList.addAll( siteList );
         return completeList;

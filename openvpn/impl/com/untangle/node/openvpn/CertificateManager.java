@@ -130,7 +130,7 @@ class CertificateManager
         Map<String,Boolean> certificateStatusMap = generateCertificateStatusMap();
         Set<String> usedNameSet = new HashSet<String>();
 
-        for ( VpnClient client : settings.getCompleteClientList()) {
+        for ( VpnClient client : settings.buildCompleteClientList()) {
             updateClientCertificateStatus( settings, client, certificateStatusMap, usedNameSet );
         }
         
@@ -235,7 +235,7 @@ class CertificateManager
 
     void createAllClientCertificates( VpnSettings settings ) throws Exception
     {
-        for ( VpnClient client : settings.getCompleteClientList()) createClient( client );
+        for ( VpnClient client : settings.buildCompleteClientList()) createClient( client );
     }
 
     void createClient( VpnClient client ) throws Exception

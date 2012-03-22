@@ -189,7 +189,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
     @Override public void initializeSettings()
     {
-        VpnSettings settings = new VpnSettings( this.getNodeId());
+        VpnSettings settings = new VpnSettings();
         logger.info( "Initializing Settings... to unconfigured" );
 
         try {
@@ -207,7 +207,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     public void setVpnSettings( final VpnSettings newSettings ) throws ValidateException
     {
         /* Verify that all of the client names are valid. */
-        for ( VpnClient client : newSettings.getCompleteClientList()) {
+        for ( VpnClient client : newSettings.buildCompleteClientList()) {
             VpnClient.validateName( client.getName());
         }
 
@@ -261,11 +261,11 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         if ( this.settings == newSettings ) return;
 
         Map<String,String> clientMap = new HashMap<String,String>();
-        for ( VpnClient client : this.settings.getCompleteClientList()) {
+        for ( VpnClient client : this.settings.buildCompleteClientList()) {
             clientMap.put( client.getInternalName(), client.getDistributionKey());
         }
 
-        for ( VpnClient client : newSettings.getCompleteClientList()) {
+        for ( VpnClient client : newSettings.buildCompleteClientList()) {
             String key = client.getDistributionKey();
             /* If the key is in the settings object, then do not replace it with what is on the box.
              * (bulk update) */
@@ -288,7 +288,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     {
         /* XXXXXXXXXXXXXXXXXXXX This is not really legit, done so the schema doesn't have to be
          * written for a little while */
-        if ( this.settings == null ) this.settings = new VpnSettings( this.getNodeId());
+        if ( this.settings == null ) this.settings = new VpnSettings();
 
         return this.settings;
     }
@@ -317,7 +317,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
     private void distributeAllClientFiles( VpnSettings settings ) throws Exception
     {
-        for ( VpnClient client : settings.getCompleteClientList()) {
+        for ( VpnClient client : settings.buildCompleteClientList()) {
             if ( !client.getDistributeClient()) continue;
             distributeRealClientConfig( client );
         }
@@ -328,7 +328,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     {
         /* Retrieve the client configuration object from the settings */
         boolean foundRealClient = false;
-        for ( VpnClient realClient : settings.getCompleteClientList()) {
+        for ( VpnClient realClient : settings.buildCompleteClientList()) {
             if ( client.getInternalName().equals( realClient.getInternalName())) {
                 realClient.setDistributionEmail( client.getDistributionEmail());
                 client = realClient;
@@ -437,7 +437,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         }
 
         /* Could use a hash map, but why bother ? */
-        for ( final VpnClient client : this.settings.getCompleteClientList()) {
+        for ( final VpnClient client : this.settings.buildCompleteClientList()) {
             if ( lookupClientDistributionKey( key, clientAddress, client )) return client.getInternalName();
         }
 
@@ -449,7 +449,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         throws Exception
     {
         boolean foundClient = false;
-        for ( final VpnClient client : this.settings.getCompleteClientList()) {
+        for ( final VpnClient client : this.settings.buildCompleteClientList()) {
             if ( !client.getInternalName().equals( clientName ) &&
                  !client.getName().equals( clientName )) continue;
 
