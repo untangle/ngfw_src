@@ -237,6 +237,7 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
         /* Cache the password to reauthenticate later */
         Ung.SetupWizard.ReauthenticateHandler.password = this.password;
 
+        console.log("About to authenticate");
         Ext.Ajax.request({
             params : {
                 username : 'admin',
@@ -264,7 +265,9 @@ Ext.define('Ung.SetupWizard.SettingsSaver', {
             rpc.toolboxManager = rpc.jsonrpc.UvmContext.toolboxManager();
             rpc.mailSender = rpc.jsonrpc.UvmContext.mailSender();
 
-            Ext.MessageBox.hide();
+            if (Ext.MessageBox.rendered) {
+                Ext.MessageBox.hide();
+            }
             this.handler();
         } else {
             Ext.MessageBox.alert( i18n._( "Unable to save password." ));
@@ -475,7 +478,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         /* disable auto refresh */
         this.enableAutoRefresh = false;
         
-        console.log("before refresh network config");
         
         /* do this before the next step */
         rpc.setup.refreshNetworkConfig();
@@ -483,7 +485,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
 
     afterReauthenticate : function( handler )
     {
-        console.log("afterReauthenticate");
         /* Commit the store to get rid of the change marks */
         this.interfaceStore.sync();
 
@@ -496,13 +497,11 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             osArray.push( status[0] );
         });
 
-        console.log("Remapping interfaces....");
         rpc.networkManager.remapInterfaces( Ext.bind(this.errorHandler, this, [ handler ], true ), osArray, userArray );
     },
 
     errorHandler : function( result, exception, foo, handler )
     {
-        console.log("Error handler");
         if(exception) {
             Ext.MessageBox.alert(i18n._( "Unable to remap the interfaces." ), exception.message );
             return;
@@ -579,7 +578,9 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             currentRow.set( "status", statusHash[status[0]]);
         });
 
-        Ext.MessageBox.hide();
+        if (Ext.MessageBox.rendered) {
+            Ext.MessageBox.hide();
+        }
     }
 });
 
@@ -668,7 +669,7 @@ Ext.define('Ung.SetupWizard.Internet', {
                     store : Ung.SetupWizard.NetmaskData,
                     mode : 'local',
                     triggerAction : 'all',
-                    width : 120,
+                    width : 255,
                     listWidth : 125,
                     value : "255.255.255.0",
                     editable : false,
@@ -719,7 +720,6 @@ Ext.define('Ung.SetupWizard.Internet', {
                     disabled : false,
                     readOnly : false,
                     fieldClass : '',
-                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px'
                 },{
                     name : "password",
                     inputType : 'password',
@@ -727,7 +727,6 @@ Ext.define('Ung.SetupWizard.Internet', {
                     disabled : false,
                     readOnly : false,
                     fieldClass : '',
-                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px'
                 }]
             }, {
                 xtype : 'fieldset',
@@ -739,28 +738,23 @@ Ext.define('Ung.SetupWizard.Internet', {
                 autoHeight : true,
                 items : [{
                     fieldLabel : i18n._( "IP Address" ),
-                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
                     name : "ip",
                     fieldClass : 'noborder'
                 },{
                     fieldLabel : i18n._( "Netmask" ),
                     name : "netmask",
-                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
                     fieldClass : 'noborder'
                 },{
                     name : "gateway",
                     fieldLabel : i18n._( "Gateway" ),
-                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
                     fieldClass : 'noborder'
                 },{
                     name : "dns1",
                     fieldLabel : i18n._( "Primary DNS" ),
-                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
                     fieldClass : 'noborder'
                 },{
                     name : "dns2",
                     fieldLabel : i18n._( "Secondary DNS" ),
-                    labelStyle : 'width : '+Ung.SetupWizard.LabelWidth+'px',
                     fieldClass : 'noborder'
                 },{
                     xtype : 'button',
@@ -860,14 +854,12 @@ Ext.define('Ung.SetupWizard.Internet', {
 
     onSelectConfig : function( combo, record, index )
     {
-        this.cardPanel.layout.setActiveItem( index );
+        this.cardPanel.layout.setActiveItem( record[0].index );
     },
 
     afterReauthenticate : function( handler )
     {
-        console.log("afterReauth(1)");
         this.cardPanel.layout.activeItem.saveData( handler );
-        console.log("afterReauth(2)");
     },
 
     saveDHCP : function( handler, hideWindow )
@@ -980,7 +972,6 @@ Ext.define('Ung.SetupWizard.Internet', {
         }
 
         Ext.MessageBox.wait(i18n._("Saving Settings..."), i18n._("Please Wait"));
-
         var handler = Ext.bind( this.execConnectivityTest, this, [afterFn] );
         Ung.SetupWizard.ReauthenticateHandler.reauthenticate( Ext.bind(this.saveData, this, [ handler, false ] ));
     },
@@ -1002,7 +993,9 @@ Ext.define('Ung.SetupWizard.Internet', {
             });
             return;
         } else {
-            Ext.MessageBox.hide();
+            if ( Ext.MessageBox.rendered) {
+                Ext.MessageBox.hide();
+            }
         }
 
         var message = "";
@@ -1064,7 +1057,7 @@ Ext.define('Ung.SetupWizard.Internet', {
     execConnectivityTest : function( handler )
     {
         Ext.MessageBox.wait(i18n._("Testing Connectivity..."), i18n._("Please Wait"));
-        rpc.connectivityTester.getStatus( Ext.bind( this.completeConnectivityTest, this, [handler], true ));
+        rpc.connectivityTester.getStatus(Ext.bind( this.completeConnectivityTest,this, [handler], true ));
     },
 
     /* This does not reload the settings, it just updates what is
@@ -1483,7 +1476,6 @@ Ung.Setup = {
     isInitialized : false,
     init : function()
     {
-        console.log("Setup init");
         if ( this.isInitialized == true ) {
             return;
         }
@@ -1548,7 +1540,7 @@ Ung.Setup = {
         this.wizard.render();
         Ext.QuickTips.init();
 
-        if ( false ) {
+        if ( false) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = Ext.bind(function() {
                 this.wizard.goToPage( 3 );
@@ -1571,7 +1563,7 @@ Ung.SetupWizard.ReauthenticateHandler = {
     /* Must reauthenticate in order to refresh the managers */
     reauthenticate : function( handler )
     {
-        console.log("reauthenticate");
+        console.log("About to authenticate");
         Ext.Ajax.request({
             params : {
                 username : this.username,
@@ -1589,7 +1581,6 @@ Ung.SetupWizard.ReauthenticateHandler = {
 
     reloadManagers : function( options, success, response, handler )
     {
-        console.log("reloadManagers");
         if ( success ) {
             /* It is very wrong to do this all synchronously */
             rpc.jsonrpc = new JSONRpcClient( "/webui/JSON-RPC" );
