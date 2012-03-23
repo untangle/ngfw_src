@@ -4,6 +4,7 @@ size 500k
 compress
 notifempty
 copytruncate
+missingok
 }
 
 /var/log/uvm/console.log {
@@ -12,6 +13,7 @@ size 500k
 compress
 notifempty
 copytruncate
+missingok
 }
 
 /var/log/uvm/gc.log {
@@ -20,6 +22,7 @@ size 500k
 compress
 notifempty
 copytruncate
+missingok
 }
 
 /var/log/uvm/events.log {
@@ -28,6 +31,7 @@ size 500k
 compress
 notifempty
 copytruncate
+missingok
 }
 
 /var/log/uvm/node*.log {
@@ -36,6 +40,7 @@ size 500k
 compress
 notifempty
 copytruncate
+missingok
 }
 
 /var/log/uvm/apt.log {
@@ -44,6 +49,7 @@ size 500k
 compress
 notifempty
 copytruncate
+missingok
 }
 
 /var/log/uvm/schema.log {
@@ -52,6 +58,7 @@ size 500k
 compress
 notifempty
 copytruncate
+missingok
 }
 
 /var/log/uvm/wrapper.log {
@@ -60,6 +67,7 @@ size 500k
 compress
 notifempty
 copytruncate
+missingok
 }
 
 /var/log/uvm/reporter.log {
