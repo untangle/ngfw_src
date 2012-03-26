@@ -22,6 +22,8 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <errno.h>
+#include <sys/utsname.h>
 
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
@@ -65,11 +67,12 @@ static struct {
 static int _netcap_init();
 static int _tls_init   ( void* buf, size_t size );
 
+static int ip_nonlocal = 30; 
 
 int netcap_init()
 {
     int ret;
-
+        
     if ( pthread_mutex_lock( &_init.mutex ) < 0 ) {
         return perrlog( "pthread_mutex_lock" );
     }
@@ -83,7 +86,7 @@ int netcap_init()
     if ( pthread_mutex_unlock( &_init.mutex ) < 0 ) {
         return perrlog( "pthread_mutex_lock" );
     }
-    
+
     return ret;
     
 }
@@ -93,6 +96,7 @@ int netcap_init()
  */
 static int _netcap_init()
 {
+    struct utsname utsn;
     int num_handles = 15;
     char *val = getenv("CONNTRACK_NUM_HANDLES");
     if ( val == NULL || (( num_handles = atoi( val )) < 1 )) num_handles = 15;
@@ -125,7 +129,19 @@ static int _netcap_init()
     if (netcap_virtual_interface_init( NETCAP_TUN_DEVICE_NAME ) < 0 )
         return errlog( ERR_CRITICAL, "netcap_virtual_interface_init\n" );
     
-    debug(1,"NETCAP %s Initialized\n",netcap_version());
+    if (uname(&utsn) < 0) {
+        return perrlog("uname");
+    }
+    if ( strstr(utsn.release,"2.6.26") != NULL) {
+        ip_nonlocal = 19;
+    }
+    else {
+        /* 2.6.32 or later */ 
+        ip_nonlocal = 30;
+    }
+    debug(2,"Kernel Version: %s IP_NONLOCAL: %i\n",utsn.release, ip_nonlocal);
+
+    debug(1,"NETCAP %s Initialized (kernel: %s)\n",netcap_version(), utsn.release);
 
     return 0;
 }
@@ -209,6 +225,11 @@ netcap_tls_t* netcap_tls_get( void )
     }
     
     return tls;
+}
+
+int IP_NONLOCAL ( )
+{
+    return ip_nonlocal;
 }
 
 static int _tls_init( void* buf, size_t size )

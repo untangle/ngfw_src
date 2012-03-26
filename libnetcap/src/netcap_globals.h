@@ -59,14 +59,14 @@
  */
 #define MAX_MB_SIZE    16
 
-/**
- * XXX should be in kernel config 
- * if not, make good guesses
- */
 
-#ifndef IP_NONLOCAL
-#define IP_NONLOCAL 19
-#endif
+/**
+ * This is no longer a constant because it changes depending on kernel version
+ * 19 - 2.6.26
+ * 30 - 2.6.32
+ */
+int IP_NONLOCAL ( );
+
 #ifndef IP_SADDR
 #define IP_SADDR	20
 #endif
