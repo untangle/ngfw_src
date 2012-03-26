@@ -740,7 +740,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                                     }
                                 },this)
                             },
-                            "check" : {
+                            "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
                                     this.getMailNodeSettings().quarantineSettings.sendDailyDigests = newValue;
                                     if(newValue){

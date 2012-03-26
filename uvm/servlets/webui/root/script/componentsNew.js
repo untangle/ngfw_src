@@ -2481,7 +2481,7 @@ Ext.define("Ung.SystemBlinger", {
                     dataIndex: metric.name,
                     checked : false,
                     listeners : {
-                        "check" : {
+                        "change" : {
                             fn : Ext.bind(function(elem, checked) {
                                 if(checked && this.tempMetrics.length>=4) {
                                     Ext.MessageBox.alert(i18n._("Warning"),i18n._("Please set up to four items."));

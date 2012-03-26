@@ -1021,7 +1021,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         hideLabel : true,
                         checked : this.settings.useHttpsPage,
                         listeners : {
-                            "check" : Ext.bind(function(elem, checked) {
+                            "change" : Ext.bind(function(elem, checked) {
                                 this.settings.useHttpsPage = checked;
                             },this)
                         }
@@ -1032,7 +1032,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         hideLabel : true,
                         checked : this.settings.redirectHttpsEnabled,
                         listeners : {
-                            "check" : Ext.bind(function(elem, checked) {
+                            "change" : Ext.bind(function(elem, checked) {
                                 this.settings.redirectHttpsEnabled = checked;
                             },this)
                         }
