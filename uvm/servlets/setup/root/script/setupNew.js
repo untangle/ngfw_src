@@ -4,7 +4,7 @@ Ext.namespace('Ung.SetupWizard');
 Ung.SetupWizard.BOGUS_ADDRESS = "192.0.2.1";
 
 // The location of the blank pixel image
-Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
+Ext.BLANK_IMAGE_URL = '/ext4/resources/themes/images/default/tree/s.gif'; // The location of the blank pixel image
 // the main internationalization object
 var i18n=null;
 // the main json rpc object
@@ -91,6 +91,7 @@ Ext.define('Ung.SetupWizard.Welcome', {
     constructor : function( config )
     {
         var panel = Ext.create('Ext.form.Panel',{
+        	border: false,
             items : [{
                 xtype : 'label',
                 html : '<h2 class="wizard-title">' + Ext.String.format(i18n._( "Thanks for choosing {0}!" ),oemName) + '</h2>'
@@ -115,6 +116,7 @@ Ext.define('Ung.SetupWizard.Settings', {
     {
         this.panel = Ext.create('Ext.form.Panel',{
             defaultType : 'fieldset',
+            border: false,
             defaults : {
                 autoHeight : true,
                 cls : 'noborder'
@@ -289,16 +291,14 @@ Ext.define('Ung.SetupWizard.Interfaces', {
             store : this.interfaceStore,
             loadMask : true,
             stripeRows : true,
-            baseCls : 'small-top-margin',
+            //baseCls : 'small-top-margin',
             enableColumnResize : false,
-            autoResizeColumn : 2,
-            disableSelection : false,
+            enableColumnHide : false,
+            enableColumnMove : false,
             selModel : Ext.create('Ext.selection.RowModel',{singleSelect : true}),
-            enableDragDrop : true,
-            ddGroup : 'interfaceDND',
-            ddText : '',
             viewConfig:{
                forceFit : true,
+               disableSelection : false,
                plugins:{
                     ptype: 'gridviewdragdrop',
                     dragText: '',
@@ -326,6 +326,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 header : i18n._( "Status" ),
                 dataIndex : 'status',
                 sortable : false,
+                flex:1,
                 renderer : function( value ) {
                     var divClass = "draggable-disabled-interface";
                     var status = i18n._( "unknown" );
@@ -370,6 +371,12 @@ Ext.define('Ung.SetupWizard.Interfaces', {
         
         var panel = Ext.create('Ext.panel.Panel',{
             defaults : { cls : 'noborder' },
+            border: false,
+            layout: {
+                type: 'vbox',
+                align:'left'
+            },
+            border: false,
             items : [{
                 html : '<h2 class=" wizard-title">'+panelTitle+'<h2>',
                 border : false
@@ -377,7 +384,11 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 xtype : 'label',
                 html : panelText,
                 border : false
-            }, this.interfaceGrid ]
+            }, { xtype: "panel",
+            	layout:'fit',
+            	border : false,
+            	items: this.interfaceGrid
+            }]
         });
 
         this.isDragAndDropInitialized = false;
@@ -783,7 +794,7 @@ Ext.define('Ung.SetupWizard.Internet', {
             defaults : {
                 autoHeight : true,
                 border : false
-                }
+            }
         });
 
         var configureText = i18n._("Configure the Internet Connection");
@@ -819,6 +830,7 @@ Ext.define('Ung.SetupWizard.Internet', {
 
         var panel = Ext.create('Ext.panel.Panel',{
             cls : null,
+            border: false,
             defaults : {
                 cls : null
             },
@@ -1128,6 +1140,7 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
     {
         this.panel = Ext.create('Ext.form.Panel',{
             defaultType : 'fieldset',
+            border: false,
             defaults : {
                 autoHeight : true,
                 labelWidth : Ung.SetupWizard.LabelWidth3
@@ -1330,6 +1343,7 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
     {
         this.panel = Ext.create('Ext.form.Panel',{
             defaultType : 'fieldset',
+            border: false,
             defaults : {
                 autoHeight : true,
                 labelWidth : Ung.SetupWizard.LabelWidth3
@@ -1437,6 +1451,7 @@ Ext.define('Ung.SetupWizard.Complete', {
     constructor : function( config )
     {
         var panel = Ext.create('Ext.form.Panel',{
+        	border: false,
             items : [{
                 xtype : 'label',
                 html : '<h2 class="wizard-title">'+i18n._( "Congratulations!" )+'</h2>'
@@ -1540,14 +1555,14 @@ Ung.Setup = {
         this.wizard.render();
         Ext.QuickTips.init();
 
-        if ( false) {
+        if ( true) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = Ext.bind(function() {
-                this.wizard.goToPage( 3 );
+                this.wizard.goToPage( 4 );
             }, this );
             var ss = Ext.create('Ung.SetupWizard.SettingsSaver', null, debugHandler );
 
-            ss.password = "passwd";
+            ss.password = "aaa";
             ss.authenticate( null, null );
             /* DEBUGGING CODE */
         } else {

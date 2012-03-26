@@ -9,23 +9,23 @@
     <title>Setup Wizard</title>
     <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>    
     <style type="text/css">
-        @import "/ext4/resources/css/ext-all-gray.css";
-        @import "/ext4/examples/ux/css/CheckHeader.css";
+        @import "/ext4/resources/css/ext-all-gray.css?s=${buildStamp}";
+        @import "/ext4/examples/ux/css/CheckHeader.css?s=${buildStamp}";
     </style>
     
-    <uvm:skin src="ext-skin.css"  name="${ss.administrationClientSkin}"/>
-    <uvm:skin src="adminNew.css"     name="${ss.administrationClientSkin}"/>
+<!--     <uvm:skin src="ext-skin.css"  name="${ss.administrationClientSkin}"/> -->
+    <uvm:skin src="adminNew.css?s=${buildStamp}"  name="${ss.administrationClientSkin}"/>
 
     <script type="text/javascript" src="/ext4/builds/ext-core-debug.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
 	<script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
 	<script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
     
-    <script type="text/javascript" src="/jsonrpc/jsonrpc.js"></script>
-    <script type="text/javascript" src="/script/i18n.js"></script>
+    <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
 
-    <script type="text/javascript" src="/script/wizardNew.js"></script>
-    <script type="text/javascript" src="script/languageNew.js"></script>
+    <script type="text/javascript" src="/script/wizardNew.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/languageNew.js?s=${buildStamp}"></script>
 
 <c:if test="${param['console']==1}">
     <script type="text/javascript">
@@ -38,12 +38,12 @@
             top.window.outerWidth = top.screen.availWidth-5;
         }
     }
-     </script>
+    </script>
 </c:if>
     
     <script type="text/javascript">
       Ung.SetupWizard.currentSkin = "${ss.administrationClientSkin}";
-
+      console.log("start");
       Ung.SetupWizard.CurrentValues = {
         languageList : ${languageList},
         language : "${language}"

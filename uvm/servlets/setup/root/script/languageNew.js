@@ -28,6 +28,7 @@ Ext.define('Ung.SetupWizard.Language', {
 
         this.panel = Ext.create('Ext.form.Panel', {
             defaultType : 'fieldset',
+            border: false,
             defaults : {
                 autoHeight : true,
                 cls : 'noborder'
