@@ -175,7 +175,7 @@ Ext.define('Ung.SetupWizard.Settings', {
                     value : Ung.SetupWizard.CurrentValues.timezone,
                     triggerAction : 'all',
                     listClass : 'x-combo-list-small',
-                    ctCls : 'small-top-margin'
+                    cls : 'small-top-margin'
                 }]
             }]
         });
@@ -312,7 +312,7 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                 }
             },
             height : 200,
-            width : 470,
+            width : 585,
             columns : [{
                 header : i18n._( "Name" ),
                 dataIndex : 'name',
@@ -346,7 +346,6 @@ Ext.define('Ung.SetupWizard.Interfaces', {
                     
                     return "<div class='" + divClass + "'>" + status + "</div>";
                 },
-                width : 475
             }]
         });
 
@@ -1149,13 +1148,13 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                 xtype : 'label',
                 html : '<h2 class="wizard-title">'+i18n._( "Configure the Internal Network Interface" )+'</h2>'
             },{
-                cls : 'noborder  wizard-internal-network',
+                cls : 'noborder wizard-internal-network',
                 items : [{
                     xtype : 'radio',
                     name : 'bridgeOrRouter',
                     inputValue : 'router',
                     boxLabel : i18n._( 'Router' ),
-                    ctCls : 'large-option',
+                    cls : 'large-option',
                     hideLabel : 'true',
                     listeners : {
                         change : {
@@ -1166,11 +1165,12 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                     }
                 },{
                     xtype : 'label',
+                    style:'font-weight:normal',
                     html : "<div class='wizard-network-image-description'>" + i18n._('This is recommended if the external port is plugged into the internet connection. This enables NAT on the Internal Interface and DHCP.') + "</div>"
                 },{
                     name : 'network',
                     xtype : 'textfield',
-                    itemCls : 'wizard-internal-network-address spacing-margin-1',
+                    cls : 'wizard-internal-network-address spacing-margin-1',
                     fieldLabel : i18n._('Internal Address'),
                     vText : i18n._('Please enter a valid Network  Address'),
                     vtype : 'ipCheck',
@@ -1182,15 +1182,15 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                     validationEvent : 'blur'
                 },{
                     name : "netmask",
-                    itemCls : 'wizard-internal-network-address',
+                    cls : 'wizard-internal-network-address',
                     fieldLabel : i18n._( "Internal Netmask" ),
                     xtype : 'combo',
                     store : Ung.SetupWizard.NetmaskData,
                     mode : 'local',
                     triggerAction : 'all',
                     value : "255.255.255.0",
-                    width : 255,
-                    listWidth : 125,
+                  //  width : 255,
+                    //listWidth : 125,
                     disabled : true,
                     editable : false
                 },{
@@ -1199,11 +1199,11 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                     checked : true,
                     disabled : true,
                     name : 'enableDhcpServer',
-                    itemCls : 'wizard-label-margin-9',
+                    cls : 'wizard-label-margin-5',
                     boxLabel : i18n._("Enable DHCP Server (default)")
                 },{
                     xtype : 'label',
-                    cls : 'wizard-network-image',
+                    componentCls : 'wizard-network-image',
                     html : '<img src="/skins/' + Ung.SetupWizard.currentSkin + '/images/admin/wizard/router.png"/>'
                 }]
             }, {
@@ -1213,11 +1213,12 @@ Ext.define('Ung.SetupWizard.InternalNetwork', {
                     name : 'bridgeOrRouter',
                     inputValue : 'bridge',
                     boxLabel : i18n._('Transparent Bridge'),
-                    ctCls : 'large-option',
+                    cls : 'large-option',
                     hideLabel : 'true',
                     checked : true
                 },{
                     xtype : 'label',
+                    style:'font-weight:normal',
                     html : "<div class='wizard-network-image-description'>" + i18n._('This is recommended if the external port is plugged into a firewall/router. This bridges Internal and External and disables DHCP.') + "</div>"
                 },{
                     xtype : 'label',
@@ -1358,11 +1359,12 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
                     name : 'autoUpgradesRadio',
                     inputValue : 'yes',
                     boxLabel : i18n._( 'Install Upgrades Automatically' ),
-                    ctCls : 'large-option',
+                    cls : 'large-option',
                     hideLabel : 'true',
                     checked : true
                 },{
                     xtype : 'label',
+                    style:'font-weight:normal',
                     html : Ext.String.format( i18n._('Automatically install new versions of {0} software. '), oemName) + '<br/>' +
                          i18n._('This is the recommended for most sites.')
                 }]
@@ -1373,15 +1375,17 @@ Ext.define('Ung.SetupWizard.AutoUpgrades', {
                     name : 'autoUpgradesRadio',
                     inputValue : 'no',
                     boxLabel : i18n._('Do Not Install Upgrades Automatically.'),
-                    ctCls : 'large-option',
+                    cls : 'large-option',
                     hideLabel : 'true'
                 },{
                     xtype : 'label',
+                    style:'font-weight:normal',
                     html : Ext.String.format( i18n._('Do not automatically install new versions of {0} software.'), oemName) + '<br/>' +
                         i18n._('This is the recommended setting for large, complex, or sensitive sites.') + '<br/>' +
                         i18n._('Software Upgrades can be applied manually at any time when available.') 
                 },{
                     xtype : 'label',
+                    style:'font-weight:normal',                    
                     html : '<br/><br/>' + '<b>' + i18n._('Note:') + '</b>' + '<br/>' +
                         i18n._('Signatures for Virus Blocker, Spam Blocker, Web Filter, etc are still updated automatically.') + '<br/>' +
                         i18n._('If desired, a custom upgrade schedule can be configured after installation in the Upgrade Settings.') + '<br/>'
@@ -1555,10 +1559,10 @@ Ung.Setup = {
         this.wizard.render();
         Ext.QuickTips.init();
 
-        if ( false) {
+        if ( false ) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = Ext.bind(function() {
-                this.wizard.goToPage( 2 );
+                this.wizard.goToPage( 3 );
             }, this );
             var ss = Ext.create('Ung.SetupWizard.SettingsSaver', null, debugHandler );
 
