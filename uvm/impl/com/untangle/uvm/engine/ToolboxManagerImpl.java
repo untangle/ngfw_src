@@ -35,6 +35,7 @@ import com.untangle.uvm.CronJob;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.Period;
 import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.message.Counters;
@@ -109,10 +110,15 @@ class ToolboxManagerImpl implements ToolboxManager
     private volatile boolean installing = false;
     private volatile boolean removing = false;
 
+    protected static ExecManager execManager = null;
+    
     private long lastTailKey = System.currentTimeMillis();
 
     private ToolboxManagerImpl()
     {
+        if (this.execManager == null)
+            this.execManager = UvmContextFactory.context().createExecManager();
+
         packageState = loadPackageState();
 
         refreshLists();
@@ -854,7 +860,7 @@ class ToolboxManagerImpl implements ToolboxManager
         synchronized(this) {
             try {
                 String cmd = System.getProperty("uvm.bin.dir") + "/ut-apt available";
-                String availableList = UvmContextFactory.context().execManager().execOutput(cmd);
+                String availableList = this.execManager.execOutput(cmd);
                 pkgs = readPkgList(availableList, instList);
             } catch (Exception exn) {
                 logger.fatal("Unable to parse ut-apt available list, proceeding with empty list", exn);
@@ -952,7 +958,7 @@ class ToolboxManagerImpl implements ToolboxManager
         synchronized(this) {
             try {
                 String cmd = System.getProperty("uvm.bin.dir") + "/ut-apt installed";
-                String list = UvmContextFactory.context().execManager().execOutput(cmd);
+                String list = this.execManager.execOutput(cmd);
                 instList = readInstalledList(list);
             } catch (IOException exn) {
                 throw new RuntimeException(exn); 
@@ -993,7 +999,7 @@ class ToolboxManagerImpl implements ToolboxManager
         String cmdStr = System.getProperty("uvm.bin.dir") + "/ut-apt " + (0 > key ? "" : "-k " + key + " ") + command;
 
         synchronized(this) {
-            Integer exitCode = UvmContextFactory.context().execManager().execResult(cmdStr);
+            Integer exitCode = this.execManager.execResult(cmdStr);
             if (exitCode != 0) {
                 throw new PackageException("ut-apt " + command + " exited with: " + exitCode);
             }
@@ -1018,7 +1024,7 @@ class ToolboxManagerImpl implements ToolboxManager
         String cmd = System.getProperty("uvm.bin.dir") + "/ut-apt predictInstall " + pkg;
 
         synchronized(this) {
-            ExecManagerResult result = UvmContextFactory.context().execManager().exec(cmd);
+            ExecManagerResult result = this.execManager.exec(cmd);
 
             for (String line : result.getOutput().split("\\n", -1)) {
                 PackageDesc md = packageMap.get(line);
