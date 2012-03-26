@@ -127,6 +127,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private BackupManager backupManager;
     private LocalDirectoryImpl localDirectory;
     private ExecManagerImpl execManager;
+    private JSONSerializer serializer;
     
     private volatile boolean sessionFactoryNeedsRebuild = true;
     private volatile SessionFactory sessionFactory;
@@ -279,7 +280,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     public ExecManager createExecManager()
     {
-        return this.execManager;
+        ExecManagerImpl execManager = new ExecManagerImpl();
+        execManager.setSerializer(serializer);
+        return execManager;
     }
     
     public void waitForStartup()
@@ -570,7 +573,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         
         this.sessionMonitor = new SessionMonitorImpl();
         
-        JSONSerializer serializer = new JSONSerializer();
+        this.serializer = new JSONSerializer();
         serializer.setFixupDuplicates(false);
         serializer.setMarshallNullAttributes(false);
         try {
