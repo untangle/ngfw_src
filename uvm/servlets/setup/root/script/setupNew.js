@@ -1555,14 +1555,14 @@ Ung.Setup = {
         this.wizard.render();
         Ext.QuickTips.init();
 
-        if ( true) {
+        if ( false) {
             /* DEBUGGING CODE (Change to true to dynamically go to any page you want on load.) */
             var debugHandler = Ext.bind(function() {
-                this.wizard.goToPage( 4 );
+                this.wizard.goToPage( 2 );
             }, this );
             var ss = Ext.create('Ung.SetupWizard.SettingsSaver', null, debugHandler );
 
-            ss.password = "aaa";
+            ss.password = "passwd";
             ss.authenticate( null, null );
             /* DEBUGGING CODE */
         } else {
