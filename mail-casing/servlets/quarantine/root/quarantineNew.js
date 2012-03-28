@@ -217,7 +217,7 @@ Ung.Quarantine.prototype = {
         /* Clear the current action items */
         this.actionItems.clearAll();
         this.addresses.clearAll();
-        this.selectionModel.clearSelections();
+        this.selectionModel.deselectAll();
         this.grid.setDisabled( true );
         /*if ( Ext.fly(this.grid.getView().getHeaderCell(0)).first().hasClass('x-grid3-hd-checker-on')){
             Ext.fly(this.grid.getView().getHeaderCell(0)).first().removeClass('x-grid3-hd-checker-on');
@@ -227,7 +227,10 @@ Ung.Quarantine.prototype = {
 
     releaseOrDelete : function( action ) {
         var mids = [];
-        for ( var key in this.actionItems.data ) mids.push( key );
+        for ( var key in this.actionItems.data )   {
+            mids.push( key );
+        }
+        this.store.remove(this.selectionModel.getSelection());
 
         this.clearSelections();
 
@@ -240,6 +243,8 @@ Ung.Quarantine.prototype = {
             addresses = [];
             for ( var key in this.addresses.data ) addresses.push( key );
         }
+        this.selectionModel.selectAll()
+        this.store.remove(this.selectionModel.getSelection());
 
         this.clearSelections();
         this.rpc.safelist( Ext.bind(this.refreshTable,this ), inboxDetails.token, addresses );
@@ -260,6 +265,8 @@ Ung.Quarantine.prototype = {
         try {
             /* Update the new total number of records */
            // this.store.proxy.setTotalRecords( result.totalRecords );
+           
+            this.store.sync();
 
             /* to refresh the buttons at the bottom */
             this.updateActionItem( null, null, false );
