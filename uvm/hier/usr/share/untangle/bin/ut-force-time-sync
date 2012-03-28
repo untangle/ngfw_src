@@ -7,7 +7,7 @@ fi
 
 # force time sync now
 echo "Syncing time..."
-ntpd -q
+ntpd -q -g
 CODE=$?
 
 # stop the daemon first
