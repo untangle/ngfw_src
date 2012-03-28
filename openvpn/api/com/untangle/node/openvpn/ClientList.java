@@ -59,7 +59,7 @@ public class ClientList implements Serializable, Validatable
         Set<String> nameSet = new HashSet<String>();
         for ( VpnClient client : this.clientList ) {
             client.validate();
-            String name = client.getInternalName();
+            String name = client.trans_getInternalName();
             if ( !nameSet.add( name )) {
                 throw new ValidateException( "Client and site names must all be unique: '" + name + "'" );
             }

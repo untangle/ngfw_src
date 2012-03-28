@@ -122,7 +122,7 @@ public class VpnSettings implements Serializable, Validatable
 
         /* If DNS override is enabled, either DNS 1 or DNS 2 must be set */
         if ( this.isDnsOverrideEnabled ) {
-            if ( getDnsServerList().isEmpty()) {
+            if ( trans_getDnsServerList().isEmpty()) {
                 throw new ValidateException( "A DNS server is required when overriding DNS list." );
             }
         }
@@ -262,7 +262,7 @@ public class VpnSettings implements Serializable, Validatable
         this.dns2 = newValue;
     }
 
-    public List<IPAddress> getDnsServerList()
+    public List<IPAddress> trans_getDnsServerList()
     {
         List<IPAddress> dnsServerList = new LinkedList<IPAddress>();
 
@@ -276,7 +276,7 @@ public class VpnSettings implements Serializable, Validatable
      * @return a new list containing all of the clients and the
      * sites. A VpnSite is a subclass of a VpnClient.
      */
-    public List<VpnClient> buildCompleteClientList()
+    public List<VpnClient> trans_getCompleteClientList()
     {
         List<VpnClient> clientList = getClientList();
         List<VpnSite> siteList = getSiteList();
@@ -466,7 +466,7 @@ public class VpnSettings implements Serializable, Validatable
     /**
      * @return true if the settings have been configured
      */
-    boolean isConfigured()
+    boolean trans_isConfigured()
     {
         if ( isUntanglePlatformClient ) return true;
         return ( !( this.organizationUnit == null ) && ( this.organizationUnit.length() > 0 ));
@@ -520,7 +520,7 @@ public class VpnSettings implements Serializable, Validatable
     /**
      * Name of this VPN site.  This is the value that identifies this
      * office in the config file */
-    public String getInternalSiteName()
+    public String trans_getInternalSiteName()
     {
         String site = getSiteName();
 

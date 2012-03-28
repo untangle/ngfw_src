@@ -92,12 +92,12 @@ public class VpnGroup extends Rule implements Validatable
     /**
      * @return Default interface to associate VPN traffic with.
      */
-    public int getIntf()
+    public int trans_getIntf()
     {
         return this.intf;
     }
 
-    public void setIntf( int intf )
+    public void trans_setIntf( int intf )
     {
         this.intf = intf;
     }
@@ -106,7 +106,7 @@ public class VpnGroup extends Rule implements Validatable
      * This is the name that is used as the common name in the
      * certificate
      */
-    public String getInternalName()
+    public String trans_getInternalName()
     {
         return getName().trim().toLowerCase();
     }

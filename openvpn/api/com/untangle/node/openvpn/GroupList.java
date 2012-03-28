@@ -74,7 +74,7 @@ public class GroupList implements Serializable, Validatable
         
         /* XXXXXXXX What else belongs in here */
         for ( VpnGroup group : this.groupList ) {
-            String name = group.getInternalName();
+            String name = group.trans_getInternalName();
             if ( !nameSet.add( name )) {
                 throw new ValidateException( "Group names must be unique: '" + name + "'" );
             }

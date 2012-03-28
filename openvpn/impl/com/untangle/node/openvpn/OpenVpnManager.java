@@ -270,7 +270,7 @@ public class OpenVpnManager
         for ( VpnSite site : settings.getSiteList()) {
             VpnGroup group = groupMap.get(site.getGroupName());
 
-            if ( !site.isEnabled() || ( group == null ) || !group.isLive()) {
+            if ( !site.trans_isEnabled() || ( group == null ) || !group.isLive()) {
                 continue;
             }
 
@@ -318,7 +318,7 @@ public class OpenVpnManager
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
         String title = "OpenVPN";
         String msgBody1 = "", msgBody2 = "", msgBody3 = "";
-        if (client.isUntanglePlatform()) {
+        if (client.trans_isUntanglePlatform()) {
             msgBody1 = i18nUtil.tr("Please input the following information into the \"VPN Client\" wizard.");
             msgBody2 = i18nUtil.tr("Server Address:");
             msgBody3 = i18nUtil.tr("Passphrase:");
@@ -340,22 +340,22 @@ public class OpenVpnManager
             if ( key == null ) key = "";
 
             String cmdStr = GENERATE_DISTRO_SCRIPT + " " +
-                "\"" + client.getInternalName() + "\"" + " " +
+                "\"" + client.trans_getInternalName() + "\"" + " " +
                 "\"" + key + "\"" + " " +
                 "\"" + publicAddress + "\"" + " " +
                 "\"" + method + "\"" + " " +
-                "\"" + String.valueOf( client.isUntanglePlatform()) + "\"" + " " +
-                "\"" + settings.getInternalSiteName() + "\"" + " " +
+                "\"" + String.valueOf( client.trans_isUntanglePlatform()) + "\"" + " " +
+                "\"" + settings.trans_getInternalSiteName() + "\"" + " " +
                 "\"" + title + "\"" + " " +
                 "\"" + msgBody1 + "\"" + " " +
                 "\"" + msgBody2 + "\"" + " " +
                 "\"" + msgBody3 + "\"";
 
             UvmContextFactory.context().execManager().exec(cmdStr);
-            //             ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName(),
+            //             ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.trans_getInternalName(),
             //                                              key, publicAddress, method,
-            //                                              String.valueOf( client.isUntanglePlatform()),
-            //                                              settings.getInternalSiteName(),
+            //                                              String.valueOf( client.trans_isUntanglePlatform()),
+            //                                              settings.trans_getInternalSiteName(),
             //                                              title, msgBody1, msgBody2, msgBody3);
         } catch ( Exception e ) {
             logger.warn( "Unable to execute distribution script", e );
@@ -381,8 +381,8 @@ public class OpenVpnManager
             sw.appendVariable( FLAG_DEVICE, DEVICE_ROUTING );
         }
 
-        String name = client.getInternalName();
-        String siteName = settings.getInternalSiteName();
+        String name = client.trans_getInternalName();
+        String siteName = settings.trans_getInternalSiteName();
 
         sw.appendVariable( FLAG_CERT, CLI_KEY_DIR + "/" + siteName + "-" + name + ".crt" );
         sw.appendVariable( FLAG_KEY,  CLI_KEY_DIR + "/" + siteName + "-" + name + ".key" );
@@ -430,7 +430,7 @@ public class OpenVpnManager
         for ( VpnClient client : settings.getClientList()) {
             VpnGroup group = groupMap.get(client.getGroupName());
 
-            if ( !client.isEnabled() || ( group == null ) || !group.isLive()) {
+            if ( !client.trans_isEnabled() || ( group == null ) || !group.isLive()) {
                 continue;
             }
 
@@ -438,7 +438,7 @@ public class OpenVpnManager
 
             IPAddress localEndpoint  = client.getAddress();
             IPAddress remoteEndpoint = getRemoteEndpoint( localEndpoint );
-            String name           = client.getInternalName();
+            String name           = client.trans_getInternalName();
 
             logger.info( "Writing client configuration file for [" + name + "]" );
 
@@ -449,7 +449,7 @@ public class OpenVpnManager
                 List<IPAddress> dnsServers = null;
 
                 if ( settings.getIsDnsOverrideEnabled()) {
-                    dnsServers = settings.getDnsServerList();
+                    dnsServers = settings.trans_getDnsServerList();
                 } else {
                     dnsServers = new LinkedList<IPAddress>();
                     for (InterfaceConfiguration intf : networkSettings.getInterfaceList()) {
@@ -479,7 +479,7 @@ public class OpenVpnManager
         for ( VpnSite site : settings.getSiteList()) {
             VpnGroup group = groupMap.get(site.getGroupName());
 
-            if ( !site.isEnabled() || ( group == null ) || !group.isLive()) {
+            if ( !site.trans_isEnabled() || ( group == null ) || !group.isLive()) {
                 continue;
             }
 
@@ -487,7 +487,7 @@ public class OpenVpnManager
 
             IPAddress localEndpoint  = site.getAddress();
             IPAddress remoteEndpoint = getRemoteEndpoint( localEndpoint );
-            String name           = site.getInternalName();
+            String name           = site.trans_getInternalName();
 
             logger.info( "Writing site configuration file for [" + name + "]" );
 

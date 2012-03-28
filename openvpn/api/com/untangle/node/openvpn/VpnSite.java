@@ -68,7 +68,7 @@ public class VpnSite extends VpnClient
      * XXXX This is a convenience method that doesn't scale if there are
      * multiple networks and netmasks
      */
-    public SiteNetwork getSiteNetwork()
+    public SiteNetwork trans_getSiteNetwork()
     {
         List<SiteNetwork> list = getExportedAddressList();
 
@@ -86,7 +86,7 @@ public class VpnSite extends VpnClient
         return site;
     }
 
-    public void setSiteNetwork( IPAddress network, IPAddress netmask )
+    public void trans_setSiteNetwork( IPAddress network, IPAddress netmask )
     {
     	List<SiteNetwork>  list = getExportedAddressList();
 

@@ -130,7 +130,7 @@ class CertificateManager
         Map<String,Boolean> certificateStatusMap = generateCertificateStatusMap();
         Set<String> usedNameSet = new HashSet<String>();
 
-        for ( VpnClient client : settings.buildCompleteClientList()) {
+        for ( VpnClient client : settings.trans_getCompleteClientList()) {
             updateClientCertificateStatus( settings, client, certificateStatusMap, usedNameSet );
         }
         
@@ -155,7 +155,7 @@ class CertificateManager
                                                 Map<String,Boolean> certificateStatusMap,
                                                 Set<String> usedNameSet )
     {
-        String name = client.getInternalName();
+        String name = client.trans_getInternalName();
         Boolean status = certificateStatusMap.remove( name );
         
         /* Cert doesn't exist for this client, create a new one */
@@ -170,14 +170,14 @@ class CertificateManager
                 
                 logger.info( "Creating a certificate for [" + name + "]" );
                 /* Indicate that the client has a valid certificate */
-                client.setCertificateStatusValid();
+                client.trans_setCertificateStatusValid();
             } catch ( Exception e ) {
                 logger.error( "Unable to create a certificate for '" + name + "'", e );
-                client.setCertificateStatusRevoked();
+                client.trans_setCertificateStatusRevoked();
             }
         } else {
-            if ( status ) client.setCertificateStatusValid();
-            else          client.setCertificateStatusRevoked();                
+            if ( status ) client.trans_setCertificateStatusValid();
+            else          client.trans_setCertificateStatusRevoked();                
         }
         
         if ( !usedNameSet.add( name )) logger.warn( "Used name set already contained [" + name + "]" );
@@ -235,17 +235,17 @@ class CertificateManager
 
     void createAllClientCertificates( VpnSettings settings ) throws Exception
     {
-        for ( VpnClient client : settings.buildCompleteClientList()) createClient( client );
+        for ( VpnClient client : settings.trans_getCompleteClientList()) createClient( client );
     }
 
     void createClient( VpnClient client ) throws Exception
     {
-        callCreateClientScript( client.getInternalName());
+        callCreateClientScript( client.trans_getInternalName());
     }
 
     void revokeClient( VpnClient client ) throws Exception
     {
-        callRevokeClientScript( client.getInternalName());
+        callRevokeClientScript( client.trans_getInternalName());
     }
 
     private void setDefaults( VpnSettings settings )

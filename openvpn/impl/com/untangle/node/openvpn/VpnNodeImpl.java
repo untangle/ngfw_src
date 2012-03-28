@@ -41,7 +41,7 @@ import com.untangle.uvm.vnet.SoloPipeSpec;
 
 public class VpnNodeImpl extends AbstractNode implements VpnNode
 {
-    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-convert-settings.py";
+    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-convert-settings-TODO.py";
 
     private static final String TRAN_NAME    = "openvpn";
     private static final String WEB_APP      = TRAN_NAME;
@@ -207,13 +207,13 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     public void setVpnSettings( final VpnSettings newSettings ) throws ValidateException
     {
         /* Verify that all of the client names are valid. */
-        for ( VpnClient client : newSettings.buildCompleteClientList()) {
+        for ( VpnClient client : newSettings.trans_getCompleteClientList()) {
             VpnClient.validateName( client.getName());
         }
 
         /* Attempt to assign all of the clients addresses only if in server mode */
         try {
-            if ( !newSettings.isUntanglePlatformClient() && newSettings.isConfigured()) {
+            if ( !newSettings.isUntanglePlatformClient() && newSettings.trans_isConfigured()) {
                 addressMapper.assignAddresses( newSettings );
             }
         } catch ( Exception exn ) {
@@ -261,11 +261,11 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         if ( this.settings == newSettings ) return;
 
         Map<String,String> clientMap = new HashMap<String,String>();
-        for ( VpnClient client : this.settings.buildCompleteClientList()) {
-            clientMap.put( client.getInternalName(), client.getDistributionKey());
+        for ( VpnClient client : this.settings.trans_getCompleteClientList()) {
+            clientMap.put( client.trans_getInternalName(), client.getDistributionKey());
         }
 
-        for ( VpnClient client : newSettings.buildCompleteClientList()) {
+        for ( VpnClient client : newSettings.trans_getCompleteClientList()) {
             String key = client.getDistributionKey();
             /* If the key is in the settings object, then do not replace it with what is on the box.
              * (bulk update) */
@@ -273,7 +273,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
                 continue;
             }
 
-            key = clientMap.get(client.getInternalName());
+            key = clientMap.get(client.trans_getInternalName());
 
             /* If the previous settings do not have a value, then do not use it. */
             if ( key == null || key.length() == 0 ) {
@@ -317,8 +317,8 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
     private void distributeAllClientFiles( VpnSettings settings ) throws Exception
     {
-        for ( VpnClient client : settings.buildCompleteClientList()) {
-            if ( !client.getDistributeClient()) continue;
+        for ( VpnClient client : settings.trans_getCompleteClientList()) {
+            if ( !client.trans_getDistributeClient()) continue;
             distributeRealClientConfig( client );
         }
     }
@@ -328,9 +328,9 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     {
         /* Retrieve the client configuration object from the settings */
         boolean foundRealClient = false;
-        for ( VpnClient realClient : settings.buildCompleteClientList()) {
-            if ( client.getInternalName().equals( realClient.getInternalName())) {
-                realClient.setDistributionEmail( client.getDistributionEmail());
+        for ( VpnClient realClient : settings.trans_getCompleteClientList()) {
+            if ( client.trans_getInternalName().equals( realClient.trans_getInternalName())) {
+                realClient.trans_setDistributionEmail( client.trans_getDistributionEmail());
                 client = realClient;
                 foundRealClient = true;
                 break;
@@ -350,7 +350,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
         this.certificateManager.createClient( client );
 
-        final String email = client.getDistributionEmail();
+        final String email = client.trans_getDistributionEmail();
         String method = "download";
 
         if ( email != null ) {
@@ -359,7 +359,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
             /* Only generate a new key if the key has been modified */
             if ( key == null || key.length() == 0 ) {
-                if ( client.isUntanglePlatform()) {
+                if ( client.trans_isUntanglePlatform()) {
                     /* Use a shorter key for edge guard clients since they have to be
                      * typed in manually */
                     key = String.format( "%08x", random.nextInt());
@@ -388,7 +388,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
             /* Read in the contents of the file */
             FileReader fileReader = new FileReader( Constants.PACKAGES_DIR + "/mail-" +
-                                                    client.getInternalName() + ".eml" );
+                                                    client.trans_getInternalName() + ".eml" );
             StringBuilder sb = new StringBuilder();
             char[] buf = new char[1024];
             int rs;
@@ -437,8 +437,8 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         }
 
         /* Could use a hash map, but why bother ? */
-        for ( final VpnClient client : this.settings.buildCompleteClientList()) {
-            if ( lookupClientDistributionKey( key, clientAddress, client )) return client.getInternalName();
+        for ( final VpnClient client : this.settings.trans_getCompleteClientList()) {
+            if ( lookupClientDistributionKey( key, clientAddress, client )) return client.trans_getInternalName();
         }
 
         return null;
@@ -449,14 +449,14 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         throws Exception
     {
         boolean foundClient = false;
-        for ( final VpnClient client : this.settings.buildCompleteClientList()) {
-            if ( !client.getInternalName().equals( clientName ) &&
+        for ( final VpnClient client : this.settings.trans_getCompleteClientList()) {
+            if ( !client.trans_getInternalName().equals( clientName ) &&
                  !client.getName().equals( clientName )) continue;
 
-            clientName = client.getInternalName();
+            clientName = client.trans_getInternalName();
 
             /* Clear out the distribution email */
-            client.setDistributionEmail( null );
+            client.trans_setDistributionEmail( null );
             distributeRealClientConfig( client );
             foundClient = true;
             break;
@@ -525,7 +525,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         client.setDistributionKey( null );
 
         long expiration = System.nanoTime() + DISTRIBUTION_CACHE_NS;
-        this.distributionMap.put( key, new DistributionCache( expiration, client.getInternalName(), key ));
+        this.distributionMap.put( key, new DistributionCache( expiration, client.trans_getInternalName(), key ));
 
         return true;
     }
@@ -613,7 +613,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         }
 
         /* Don't start if openvpn cannot be configured */
-        if ( !settings.isConfigured()) {
+        if ( !settings.trans_isConfigured()) {
             throw new Exception( i18nUtil.tr( "You must configure OpenVPN as either a VPN Routing Server or a VPN Client before you can turn it on.  You may do this through its Setup Wizard (in its settings)." ));
         }
 
@@ -718,7 +718,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
     public ConfigState getConfigState()
     {
-        if ( settings == null || !settings.isConfigured()) return ConfigState.UNCONFIGURED;
+        if ( settings == null || !settings.trans_isConfigured()) return ConfigState.UNCONFIGURED;
 
         if ( settings.isUntanglePlatformClient()) return ConfigState.CLIENT;
 

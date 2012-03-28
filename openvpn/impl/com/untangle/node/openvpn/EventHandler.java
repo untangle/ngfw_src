@@ -194,7 +194,7 @@ class EventHandler extends AbstractEventHandler
         for ( VpnSite site : settings.getSiteList()) {
             VpnGroup group = groupMap.get(site.getGroupName());
             /* Continue if the client isn't live or the group the client is in isn't live */
-            if ( !site.isEnabled() || ( group == null ) || !group.isLive()) {
+            if ( !site.trans_isEnabled() || ( group == null ) || !group.isLive()) {
                 continue;
             }
 

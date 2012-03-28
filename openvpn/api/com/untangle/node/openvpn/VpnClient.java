@@ -126,33 +126,33 @@ public class VpnClient extends Rule implements Validatable
     }
 
     /* Indicates whether or not the server should distribute a config for this client */
-    public boolean getDistributeClient()
+    public boolean trans_getDistributeClient()
     {
         return this.distributeClient;
     }
 
-    public void setDistributeClient( boolean distributeClient )
+    public void trans_setDistributeClient( boolean distributeClient )
     {
         this.distributeClient = distributeClient;
     }
 
-    public String getDistributionEmail()
+    public String trans_getDistributionEmail()
     {
         return this.distributionEmail;
     }
 
-    public void setDistributionEmail( String email )
+    public void trans_setDistributionEmail( String email )
     {
         this.distributionEmail = email;
     }
 
-    public boolean hasDistributionEmail()
+    public boolean trans_hasDistributionEmail()
     {
         return this.distributionEmail != null;
     }
 
     /* This is the name that is used as the common name in the certificate */
-    public String getInternalName()
+    public String trans_getInternalName()
     {
         return getName().trim().toLowerCase().replace( " ", "_" );
     }
@@ -164,27 +164,27 @@ public class VpnClient extends Rule implements Validatable
         validateName( name );
     }
 
-    public String getCertificateStatus()
+    public String trans_getCertificateStatus()
     {
         return this.certificateStatus;
     }
 
-    public void setCertificateStatusUnknown( )
+    public void trans_setCertificateStatusUnknown( )
     {
         this.certificateStatus = "unknown";
     }
 
-    public void setCertificateStatusValid( )
+    public void trans_setCertificateStatusValid( )
     {
         this.certificateStatus = "valid";
     }
 
-    public void setCertificateStatusRevoked( )
+    public void trans_setCertificateStatusRevoked( )
     {
         this.certificateStatus = "revoked";
     }
 
-    public boolean isUntanglePlatform()
+    public boolean trans_isUntanglePlatform()
     {
         /* A single client can never be an edgeguard */
         return false;
@@ -192,7 +192,7 @@ public class VpnClient extends Rule implements Validatable
 
     /* If the client is alive and the group it is in is enabled, and it has been\
      * assigned an address. */
-    public boolean isEnabled()
+    public boolean trans_isEnabled()
     {
         return isLive() && ( this.address != null );
     }

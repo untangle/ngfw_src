@@ -81,7 +81,7 @@ public class SiteList implements Serializable, Validatable
 
         for ( VpnSite site : getSiteList()) {
             site.validate();
-            String name = site.getInternalName();
+            String name = site.trans_getInternalName();
             if ( !nameSet.add( name )) {
                 throw new ValidateException( "Client and site names must all be unique: '" + name + "'" );
             }
@@ -90,7 +90,7 @@ public class SiteList implements Serializable, Validatable
         /* XXX This assumes that the client list is saved before the site list */
         if ( clientList != null ) {
             for ( VpnClient client : clientList.getClientList()) {
-                String name = client.getInternalName();
+                String name = client.trans_getInternalName();
                 if ( !nameSet.add( name )) {
                     throw new ValidateException( "Client and site names must all be unique: '" + name + "'");
                 }

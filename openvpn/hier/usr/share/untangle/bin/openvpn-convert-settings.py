@@ -26,54 +26,143 @@ def escape(arg):
 
 #------------------------------------------------------------------------------
 
-def get_capture_rules(sid, debug=False):
+def get_client_list(sid, debug=False):
     if (debug):
-        print "Getting n_cpd_capture_rule list for SID: ",sid
+        print "Getting n_openvpn_client_2 list for SID: ",sid
 
-    list = sql_helper.run_sql("select name, category, description, live, alert, log, capture_enabled, client_interface, client_address, server_address, start_time, end_time, days from n_cpd_capture_rule where settings_id = '%s'" % sid, debug=debug)
+    list = sql_helper.run_sql("select address, group_name, name, category, description, live, alert, log from n_openvpn_client_2 where settings_id = '%s'" % sid, debug=debug)
     
     if (len(list) == 0):
-        return '{\n' + pad(8) + '"javaClass": "java.util.ArrayList",\n' + pad(8) + '"list": []\n' + pad(4) + '},'
+        return '{\n' + pad(8) + '"javaClass": "java.util.LinkedList",\n' + pad(8) + '"list": []\n' + pad(4) + '},'
 
     str = '{\n'
-    str += pad(8) + '"javaClass": "java.util.ArrayList",\n'
+    str += pad(8) + '"javaClass": "java.util.LinkedList",\n'
     str += pad(8) + '"list": [\n'
 
     first = True
 
     for settings in list:
-        name = settings[0]
-        category = settings[1]
-        description = settings[2]
-        live = settings[3]
-        alert = settings[4]
-        log = settings[5]
-        capture_enabled = settings[6]
-        client_interface = settings[7]
-        client_address = settings[8]
-        server_address = settings[9]
-        start_time = settings[10]
-        end_time = settings[11]
-        days = settings[12]
+        address = settings[0]
+        group_name = settings[1]
+        name = settings[2]
+        category = settings[3]
+        description = settings[4]
+        live = settings[5]
+        alert = settings[6]
+        log = settings[7]
 
         if not first:
             str += ',\n'
         str += pad(12) + '{\n'
 
+        str += pad(16) + '"address: "%s",\n' % address
         str += pad(16) + '"alert": %s,\n' % alert
-        str += pad(16) + '"capture": %s,\n' % capture_enabled
         str += pad(16) + '"category": "%s",\n' % category
-        str += pad(16) + '"clientAddress": "%s",\n' % client_address
-        str += pad(16) + '"clientInterface": "%s",\n' % client_interface
-        str += pad(16) + '"days": "%s",\n' % days
-        str += pad(16) + '"description": "%s",\n' % escape(description)
-        str += pad(16) + '"endTime": "%s",\n' % end_time
-        str += pad(16) + '"javaClass": "com.untangle.node.cpd.CaptureRule",\n'
+        str += pad(16) + '"description": "%s",\n' % description
+        str += pad(16) + '"groupName": "%s",\n' % group_name
+        str += pad(16) + '"javaClass": "com.untangle.node.openvpn.VpnClient",\n'
+        str += pad(16) + '"live": %s,\n' % live
+        str += pad(16) + '"log": %s,\n' % log
+        str += pad(16) + '"name": "%s"\n' % name
+
+        str += pad(12) + '}'
+
+        first = False
+
+    str += '\n' + pad(8) + ']\n' + pad(4) + '},'
+
+    return str
+
+#------------------------------------------------------------------------------
+
+def get_exported_address_list(sid, debug=False):
+    if (debug):
+        print "Getting n_openvpn_s_site_network list for SID: ",sid
+
+    list = sql_helper.run_sql("select network, netmask, name, category, description, live, alert, log from n_openvpn_s_site_network where settings_id = '%s'" % sid, debug=debug)
+    
+    if (len(list) == 0):
+        return '{\n' + pad(8) + '"javaClass": "java.util.LinkedList",\n' + pad(8) + '"list": []\n' + pad(4) + '},'
+
+    str = '{\n'
+    str += pad(8) + '"javaClass": "java.util.LinkedList",\n'
+    str += pad(8) + '"list": [\n'
+
+    counter = 1
+
+    for settings in list:
+        network = settings[0]
+        netmask = settings[1]
+        name = settings[2]
+        category = settings[3]
+        description = settings[4]
+        live = settings[5]
+        alert = settings[6]
+        log = settings[7]
+
+        if (counter != 1):
+            str += ',\n'
+        str += pad(12) + '{\n'
+
+        str += pad(16) + '"alert": %s,\n' % alert
+        str += pad(16) + '"category": "%s",\n' % category
+        str += pad(16) + '"description": "%s",\n' % description
+        str += pad(16) + '"id": %d,\n' % counter
+        str += pad(16) + '"javaClass": "com.untangle.node.openvpn.SiteNetwork",\n'
         str += pad(16) + '"live": %s,\n' % live
         str += pad(16) + '"log": %s,\n' % log
         str += pad(16) + '"name": "%s",\n' % name
-        str += pad(16) + '"serverAddress": "%s",\n' % server_address
-        str += pad(16) + '"startTime": "%s"\n' % start_time
+        str += pad(16) + '"netmask": "%s",\n' % netmask
+        str += pad(16) + '"network": "%s"\n' % network
+
+        str += pad(12) + '}'
+
+        counter = (counter + 1)
+
+    str += '\n' + pad(8) + ']\n' + pad(4) + '},'
+
+    return str
+
+#------------------------------------------------------------------------------
+
+def get_group_list(sid, debug=False):
+    if (debug):
+        print "Getting n_openvpn_client_2 list for SID: ",sid
+
+    list = sql_helper.run_sql("select address, group_name, name, category, description, live, alert, log from n_openvpn_client_2 where settings_id = '%s'" % sid, debug=debug)
+    
+    if (len(list) == 0):
+        return '{\n' + pad(8) + '"javaClass": "java.util.LinkedList",\n' + pad(8) + '"list": []\n' + pad(4) + '},'
+
+    str = '{\n'
+    str += pad(8) + '"javaClass": "java.util.LinkedList",\n'
+    str += pad(8) + '"list": [\n'
+
+    first = True
+
+    for settings in list:
+        address = settings[0]
+        group_name = settings[1]
+        name = settings[2]
+        category = settings[3]
+        description = settings[4]
+        live = settings[5]
+        alert = settings[6]
+        log = settings[7]
+
+        if not first:
+            str += ',\n'
+        str += pad(12) + '{\n'
+
+        str += pad(16) + '"address: "%s",\n' % address
+        str += pad(16) + '"alert": %s,\n' % alert
+        str += pad(16) + '"category": "%s",\n' % category
+        str += pad(16) + '"description": "%s",\n' % description
+        str += pad(16) + '"groupName": "%s",\n' % group_name
+        str += pad(16) + '"javaClass": "com.untangle.node.openvpn.VpnClient",\n'
+        str += pad(16) + '"live": %s,\n' % live
+        str += pad(16) + '"log": %s,\n' % log
+        str += pad(16) + '"name": "%s",\n' % name
 
         str += pad(12) + '}'
 
@@ -85,89 +174,44 @@ def get_capture_rules(sid, debug=False):
 
 #------------------------------------------------------------------------------
 
-def get_passed_clients(sid, debug = False):
+def get_site_list(sid, debug=False):
     if (debug):
-        print "Getting n_cpd_passed_client list for SID: ",sid
+        print "Getting n_openvpn_client_2 list for SID: ",sid
 
-    list = sql_helper.run_sql("select name, category, description, live, alert, log, address from n_cpd_passed_client where settings_id = '%s'" % sid, debug=debug)
-
+    list = sql_helper.run_sql("select address, group_name, name, category, description, live, alert, log from n_openvpn_client_2 where settings_id = '%s'" % sid, debug=debug)
+    
     if (len(list) == 0):
-        return '{\n' + pad(8) + '"javaClass": "java.util.ArrayList",\n' + pad(8) + '"list": []\n' + pad(4) + '},'
+        return '{\n' + pad(8) + '"javaClass": "java.util.LinkedList",\n' + pad(8) + '"list": []\n' + pad(4) + '},'
 
     str = '{\n'
-    str += pad(8) + '"javaClass": "java.util.ArrayList",\n'
+    str += pad(8) + '"javaClass": "java.util.LinkedList",\n'
     str += pad(8) + '"list": [\n'
 
     first = True
 
     for settings in list:
-        name = settings[0]
-        category = settings[1]
-        description = settings[2]
-        live = settings[3]
-        alert = settings[4]
-        log = settings[5]
-        address = settings[6]
+        address = settings[0]
+        group_name = settings[1]
+        name = settings[2]
+        category = settings[3]
+        description = settings[4]
+        live = settings[5]
+        alert = settings[6]
+        log = settings[7]
 
         if not first:
             str += ',\n'
         str += pad(12) + '{\n'
 
-        str += pad(16) + '"address": "%s",\n' % address
+        str += pad(16) + '"address: "%s",\n' % address
         str += pad(16) + '"alert": %s,\n' % alert
         str += pad(16) + '"category": "%s",\n' % category
-        str += pad(16) + '"description": "%s",\n' % escape(description)
-        str += pad(16) + '"javaClass": "com.untangle.node.cpd.PassedAddress",\n'
+        str += pad(16) + '"description": "%s",\n' % description
+        str += pad(16) + '"groupName": "%s",\n' % group_name
+        str += pad(16) + '"javaClass": "com.untangle.node.openvpn.VpnClient",\n'
         str += pad(16) + '"live": %s,\n' % live
         str += pad(16) + '"log": %s,\n' % log
-        str += pad(16) + '"name": "%s"\n' % name
-
-        str += pad(12) + '}'
-
-        first = False
-
-    str += '\n' + pad(8) + ']\n' + pad(4) + '},'
-
-    return str
-
-#------------------------------------------------------------------------------
-
-def get_passed_servers(sid, debug = False):
-    if (debug):
-        print "Getting n_cpd_passed_server list for SID: ",sid
-
-    list = sql_helper.run_sql("select name, category, description, live, alert, log, address from n_cpd_passed_server where settings_id = '%s'" % sid, debug=debug)
-
-    if (len(list) == 0):
-        return '{\n' + pad(8) + '"javaClass": "java.util.ArrayList",\n' + pad(8) + '"list": []\n' + pad(4) + '},'
-
-    str = '{\n'
-    str += pad(8) + '"javaClass": "java.util.ArrayList",\n'
-    str += pad(8) + '"list": [\n'
-
-    first = True
-
-    for settings in list:
-        name = settings[0]
-        category = settings[1]
-        description = settings[2]
-        live = settings[3]
-        alert = settings[4]
-        log = settings[5]
-        address = settings[6]
-
-        if not first:
-            str += ',\n'
-        str += pad(12) + '{\n'
-
-        str += pad(16) + '"address": "%s",\n' % address
-        str += pad(16) + '"alert": %s,\n' % alert
-        str += pad(16) + '"category": "%s",\n' % category
-        str += pad(16) + '"description": "%s",\n' % escape(description)
-        str += pad(16) + '"javaClass": "com.untangle.node.cpd.PassedAddress",\n'
-        str += pad(16) + '"live": %s,\n' % live
-        str += pad(16) + '"log": %s,\n' % log
-        str += pad(16) + '"name": "%s"\n' % name
+        str += pad(16) + '"name": "%s",\n' % name
 
         str += pad(12) + '}'
 
@@ -216,31 +260,21 @@ def get_settings(tid, debug=False):
     str = '{\n'
     str += pad(4) + '"bridgeMode": %s,\n' % is_bridge
     str += pad(4) + '"caKeyOnUsb": %s,\n' % is_ca_on_bridge
-# clientList
-# completeClientList
+
+    str += pad(4) + '"clientList": %s\n' % get_client_list(settings_id, debug=debug)
+
     str += pad(4) + '"country": "%s",\n' % escape(country)
-    
-# Create a LinkedList from the two dns entries.  Note that we anticipate
-# that either one (or both) may contain values, and handle accordingly
-
-    str += pad(4) + '"dnsServerList": {\n'
-    str += pad(8) + '"javaClass": "java.util.LinkedList",\n'
-    str += pad(8) + '"list": [\n'
-    if dns_1 and dns_2:
-        str += pad(12) + '"%s",\n' % dns_1
-        str += pad(12) + '"%s"\n' % dns_2
-    elif dns_1:
-        str += pad(12) + '"%s"\n' % dns_1
-    elif dns_2:
-        str += pad(12) + '"%s"\n' % dns_2
-    str += pad(8) + ']\n'
-    str += pad(4) + '},\n'
-
+    str += pad(4) + '"dns1": "%s",\n' % escape(dns_1)
+    str += pad(4) + '"dns2": "%s",\n' % escape(dns_2)
     str += pad(4) + '"domain": "%s",\n' % escape(domain)
     str += pad(4) + '"email": "%s",\n' % escape(email)
-# exportedAddressList
+
+    str += pad(4) + '"exportedAddressList": %s\n' % get_exported_address_list(settings_id, debug=debug)
+
     str += pad(4) + '"exposeClients": %s,\n' % expose_clients
-# groupList
+
+#    str += pad(4) + '"groupList": %s\n' % get_group_list(settings_id, debug=debug)
+
     str += pad(4) + '"isDnsOverrideEnabled": %s,\n' % is_dns_override
     str += pad(4) + '"javaClass": "com.untangle.node.openvpn.VpnSettings",\n'
     str += pad(4) + '"keepAlive": %s,\n' % keep_alive
@@ -251,7 +285,9 @@ def get_settings(tid, debug=False):
     str += pad(4) + '"organizationUnit": "%s",\n' % escape(org_unit)
     str += pad(4) + '"province": "%s",\n' % escape(province)
     str += pad(4) + '"serverAddress": "%s",\n' % escape(server_address)
-# siteList
+
+#    str += pad(4) + '"siteList": %s\n' % get_site_list(settings_id, debug=debug)
+
     str += pad(4) + '"siteName": "%s",\n' % escape(site_name)
     str += pad(4) + '"untanglePlatformClient": %s,\n' % is_edgeguard_client
     str += pad(4) + '"version": 1\n'
