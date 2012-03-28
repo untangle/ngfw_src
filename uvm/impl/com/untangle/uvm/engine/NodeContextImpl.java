@@ -34,15 +34,10 @@ import com.untangle.uvm.toolbox.PackageDesc;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.vnet.NodeListener;
-import com.untangle.uvm.vnet.NodeStateChangeEvent;
 
 /**
  * Implements <code>NodeContext</code>. Contains code to load and set
  * up a <code>Node</code>.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 class NodeContextImpl implements NodeContext
 {
@@ -146,30 +141,6 @@ class NodeContextImpl implements NodeContext
                 node.addParent((NodeBase)parentCtx.node());
             }
 
-            node.addNodeListener(new NodeListener()
-                {
-                    public void stateChange(NodeStateChangeEvent te) {
-                        {
-                            final NodeState ts = te.getNodeState();
-
-                            TransactionWork<Object> tw = new TransactionWork<Object>()
-                                {
-                                    public boolean doWork(Session s)
-                                    {
-                                        persistentState.setTargetState(ts);
-                                        s.merge(persistentState);
-                                        return true;
-                                    }
-
-                                    public Object getResult() { return null; }
-                                };
-                            mctx.runTransaction(tw);
-
-                            node.logEvent(new NodeStateChange(nodeId, ts));
-                        }
-                    }
-                });
-
             if (isNew) {
                 node.initializeSettings();
                 node.init(args);
@@ -206,7 +177,7 @@ class NodeContextImpl implements NodeContext
 
                         public Object getResult() { return null; }
                     };
-                mctx.runTransaction(tw);
+                UvmContextFactory.context().runTransaction(tw);
             }
         }
     }
@@ -251,9 +222,22 @@ class NodeContextImpl implements NodeContext
             : node.getRunState();
     }
 
-    // XXX should be LocalNodeContext ------------------------------------
+    public void saveNodeState(final NodeState nodeState)
+    {
+        TransactionWork<Object> tw = new TransactionWork<Object>()
+            {
+                public boolean doWork(Session s)
+                {
+                    persistentState.setTargetState(nodeState);
+                    s.merge(persistentState);
+                    return true;
+                }
 
-    // XXX remove this method...
+                public Object getResult() { return null; }
+            };
+        UvmContextFactory.context().runTransaction(tw);
+    }
+
     @Deprecated
     public boolean runTransaction(TransactionWork<?> tw)
     {

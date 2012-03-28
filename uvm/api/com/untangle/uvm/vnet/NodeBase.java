@@ -18,12 +18,12 @@ import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SessionMatcherFactory;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
+import com.untangle.uvm.message.NodeStateChange;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
 import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.node.NodeStateChange;
 import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.security.NodeId;
 import com.untangle.uvm.util.I18nUtil;
@@ -43,7 +43,6 @@ public abstract class NodeBase implements Node
     private final Set<NodeBase> parents = new HashSet<NodeBase>();
     private final Set<Node> children = new HashSet<Node>();
     private final NodeManager nodeManager;
-    private final List<NodeListener> nodeListeners = new LinkedList<NodeListener>();
 
     private final Object stateChangeLock = new Object();
 
@@ -117,20 +116,6 @@ public abstract class NodeBase implements Node
     }
 
     // NodeBase methods ---------------------------------------------------
-
-    public void addNodeListener(NodeListener tl)
-    {
-        synchronized (nodeListeners) {
-            nodeListeners.add(tl);
-        }
-    }
-
-    public void removeNodeListener(NodeListener tl)
-    {
-        synchronized (nodeListeners) {
-            nodeListeners.remove(tl);
-        }
-    }
 
     public void addParent(NodeBase parent)
     {
@@ -353,12 +338,7 @@ public abstract class NodeBase implements Node
             NodeStateChange nsc = new NodeStateChange(nodeContext.getNodeDesc(), ts);
             mm.submitMessage(nsc);
 
-            NodeStateChangeEvent te = new NodeStateChangeEvent(this, ts, args);
-            synchronized (nodeListeners) {
-                for (NodeListener tl : nodeListeners) {
-                    tl.stateChange(te);
-                }
-            }
+            nodeContext.saveNodeState(nsc.getNodeState());
             
             UvmContextFactory.context().nodeManager().flushNodeStateCache();
             UvmContextFactory.context().pipelineFoundry().clearChains();

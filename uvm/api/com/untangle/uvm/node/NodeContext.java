@@ -68,9 +68,9 @@ public interface NodeContext
      */
     boolean resourceExists(String resource);
 
-    // call-through methods ---------------------------------------------------
-
     List<VnetSessionDesc> liveSessionDescs();
 
     NodeState getRunState();
+
+    void saveNodeState(NodeState nodeState);
 }
