@@ -38,7 +38,7 @@
     </style>
 
     <uvm:skin src="ext-skin.css"  name="${ss.userPagesSkin}"/>
-    <uvm:skin src="user.css" name="${ss.userPagesSkin}"/>
+    <uvm:skin src="userNew.css" name="${ss.userPagesSkin}"/>
 
     <!-- extjs, json and i18n libraries, this should be consolidated into a helper tag. -->
 

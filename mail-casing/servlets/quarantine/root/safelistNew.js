@@ -5,21 +5,15 @@ Ext.BLANK_IMAGE_URL = '/ext/resources/images/default/s.gif';
 
 Ext.define('Ung.SafelistSelectionModel', {
     extend:'Ext.selection.CheckboxModel',
-    onRowSelect : function( sm, rowIndex, record ) {
-        this.safelist.updateActionItems();
-    },
 
-    onRowDeselect : function( sm, rowIndex, record ) {
+    onSelectionChange:function(model, selected, options) {
         this.safelist.updateActionItems();
     },
 
     constructor : function( config ) {
         Ung.SafelistSelectionModel.superclass.constructor.apply(this, arguments);
-
         this.safelist = config.safelist;
-
-        this.addListener('rowselect',this.onRowSelect, this );
-        this.addListener('rowdeselect',this.onRowDeselect, this );
+        this.addListener('selectionchange',this.onSelectionChange, this );
     }
 });
 
@@ -69,14 +63,12 @@ Ung.Safelist.prototype = {
             iconCls:'icon-delete-row',
             handler : function() {
                 var addresses = [];
-                this.selectionModel.each( function( record ) {
-                    addresses.push( record.data.emailAddress );
-                    return true;
-                });
-
+                var selectedRecords = this.selectionModel.getSelection();
+                for ( var i =0; i < selectedRecords.length;i++) {
+                    addresses.push( selectedRecords[i].data.emailAddress );
+                }
                 this.grid.setDisabled( true );
-                this.selectionModel.clearSelections();
-                quarantine.selectionModel.clearSelections();
+                this.selectionModel.deselect(selectedRecords);;
                 this.deleteButton.setText( i18n._( "Delete Addresses" ));
                 this.deleteButton.setDisabled( true );
 
