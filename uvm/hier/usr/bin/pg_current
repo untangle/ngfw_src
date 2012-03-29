@@ -1,2 +1,7 @@
 #!/bin/sh
-/usr/bin/psql -U postgres uvm -c'SELECT datname as db,usename as user,procpid as pid,waiting as wait,round(extract('epoch' from (now() - query_start))) as sec,current_query FROM pg_stat_activity'
+
+#
+# This is a simple helper script because I got tired of launching psql and querying to see what the current active queries were
+#
+
+/usr/bin/psql -U postgres uvm -c"SELECT datname as db,usename as user,procpid as pid,waiting as wait,round(extract('epoch' from (now() - query_start))) as sec,current_query FROM pg_stat_activity WHERE current_query not like '%pg_stat_activity%'"
