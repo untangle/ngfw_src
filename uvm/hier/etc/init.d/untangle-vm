@@ -197,10 +197,12 @@ case "$1" in
         for i in `seq 1 10` ; do
             echo -n "."
             sleep 1
-            if grep -qi 'shutdown complete' $UVM_CONSOLE_LOG 2>/dev/null ; then
+            # If the log contains "shutdown complete" and the PID is gone - it was a clean shutdown
+            if grep -qi 'shutdown complete' $UVM_CONSOLE_LOG 2>/dev/null && [ -z "`uvmJavaPid`" ] ; then
 		        unmonitorAll
                 updateStatusExit "]\n" "Stopped"
             fi
+            # If the log does not contain "shutdown complete" but the PID is gone - it was not clean
             if [ -z "`uvmJavaPid`" ] ; then
                 break
             fi
