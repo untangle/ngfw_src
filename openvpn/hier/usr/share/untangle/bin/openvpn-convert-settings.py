@@ -15,7 +15,6 @@ def pad(arg):
 #------------------------------------------------------------------------------
 
 def escape(arg):
-
     # first we escape backslash characters
     one = arg.replace('\\', '\\\\')
 
@@ -31,7 +30,7 @@ def get_client_list(sid, indent, debug=False):
         print "Getting n_openvpn_client_2 list for SID: ",sid
 
     list = sql_helper.run_sql("select address, group_name, name, category, description, live, alert, log from n_openvpn_client_2 where settings_id = '%s'" % sid, debug=debug)
-    
+
     if (len(list) == 0):
         return '{\n' + pad(indent+4) + '"javaClass": "java.util.LinkedList",\n' + pad(indent+4) + '"list": []\n' + pad(indent) + '},'
 
@@ -55,15 +54,15 @@ def get_client_list(sid, indent, debug=False):
             str += ',\n'
         str += pad(indent+8) + '{\n'
 
-        str += pad(indent+12) + '"address": "%s",\n' % address
+        str += pad(indent+12) + '"address": "%s",\n' % escape(address) if (address != None) else ''
         str += pad(indent+12) + '"alert": %s,\n' % alert
-        str += pad(indent+12) + '"category": "%s",\n' % category
-        str += pad(indent+12) + '"description": "%s",\n' % description
-        str += pad(indent+12) + '"groupName": "%s",\n' % group_name
+        str += pad(indent+12) + '"category": "%s",\n' % escape(category) if (category != None) else ''
+        str += pad(indent+12) + '"description": "%s",\n' % escape(description) if (description != None) else ''
+        str += pad(indent+12) + '"groupName": "%s",\n' % escape(group_name) if (group_name != None) else ''
         str += pad(indent+12) + '"javaClass": "com.untangle.node.openvpn.VpnClient",\n'
         str += pad(indent+12) + '"live": %s,\n' % live
         str += pad(indent+12) + '"log": %s,\n' % log
-        str += pad(indent+12) + '"name": "%s"\n' % name
+        str += pad(indent+12) + '"name": "%s"\n' % escape(name) if (name != None) else ''
 
         str += pad(indent+8) + '}'
 
@@ -80,7 +79,7 @@ def get_exported_address_list(sid, indent, debug=False):
         print "Getting n_openvpn_s_site_network list for SID: ",sid
 
     list = sql_helper.run_sql("select network, netmask, name, category, description, live, alert, log from n_openvpn_s_site_network where settings_id = '%s'" % sid, debug=debug)
-    
+
     if (len(list) == 0):
         return '{\n' + pad(indent+4) + '"javaClass": "java.util.LinkedList",\n' + pad(indent+4) + '"list": []\n' + pad(indent) + '},'
 
@@ -105,15 +104,15 @@ def get_exported_address_list(sid, indent, debug=False):
         str += pad(indent+8) + '{\n'
 
         str += pad(indent+12) + '"alert": %s,\n' % alert
-        str += pad(indent+12) + '"category": "%s",\n' % category
-        str += pad(indent+12) + '"description": "%s",\n' % description
+        str += pad(indent+12) + '"category": "%s",\n' % escape(category) if (category != None) else ''
+        str += pad(indent+12) + '"description": "%s",\n' % escape(description) if (description != None) else ''
         str += pad(indent+12) + '"id": %d,\n' % counter
         str += pad(indent+12) + '"javaClass": "com.untangle.node.openvpn.SiteNetwork",\n'
         str += pad(indent+12) + '"live": %s,\n' % live
         str += pad(indent+12) + '"log": %s,\n' % log
-        str += pad(indent+12) + '"name": "%s",\n' % name
-        str += pad(indent+12) + '"netmask": "%s",\n' % netmask
-        str += pad(indent+12) + '"network": "%s"\n' % network
+        str += pad(indent+12) + '"name": "%s",\n' % escape(name) if (name != None) else ''
+        str += pad(indent+12) + '"netmask": "%s",\n' % escape(netmask) if (netmask != None) else ''
+        str += pad(indent+12) + '"network": "%s"\n' % escape(network) if (network != None) else ''
 
         str += pad(indent+8) + '}'
 
@@ -130,7 +129,7 @@ def get_group_list(sid, indent, debug=False):
         print "Getting n_openvpn_group list for SID: ",sid
 
     list = sql_helper.run_sql("select address, netmask, name, category, description, live, alert, log, use_dns from n_openvpn_group where settings_id = '%s'" % sid, debug=debug)
-    
+
     if (len(list) == 0):
         return '{\n' + pad(indent+4) + '"javaClass": "java.util.LinkedList",\n' + pad(indent+4) + '"list": []\n' + pad(indent) + '},'
 
@@ -155,15 +154,15 @@ def get_group_list(sid, indent, debug=False):
             str += ',\n'
         str += pad(indent+8) + '{\n'
 
-        str += pad(indent+12) + '"address": "%s",\n' % address
+        str += pad(indent+12) + '"address": "%s",\n' % escape(address) if (address != None) else ''
         str += pad(indent+12) + '"alert": %s,\n' % alert
-        str += pad(indent+12) + '"category": "%s",\n' % category
-        str += pad(indent+12) + '"description": "%s",\n' % description
+        str += pad(indent+12) + '"category": "%s",\n' % escape(category) if (category != None) else ''
+        str += pad(indent+12) + '"description": "%s",\n' % escape(description) if (description != None) else''
         str += pad(indent+12) + '"javaClass": "com.untangle.node.openvpn.VpnGroup",\n'
         str += pad(indent+12) + '"live": %s,\n' % live
         str += pad(indent+12) + '"log": %s,\n' % log
-        str += pad(indent+12) + '"name": "%s",\n' % name
-        str += pad(indent+12) + '"netmask": "%s",\n' % netmask
+        str += pad(indent+12) + '"name": "%s",\n' % escape(name) if (name != None) else''
+        str += pad(indent+12) + '"netmask": "%s",\n' % escape(netmask) if (netmask != None) else''
         str += pad(indent+12) + '"useDNS": %s\n' % use_dns
 
         str += pad(indent+8) + '}'
@@ -181,7 +180,7 @@ def get_site_list(sid, indent, debug=False):
         print "Getting n_openvpn_site_2 list for SID: ",sid
 
     list = sql_helper.run_sql("select rule_id, address, group_name, name, category, description, live, alert, log from n_openvpn_site_2 where settings_id = '%s'" % sid, debug=debug)
-    
+
     if (len(list) == 0):
         return '{\n' + pad(indent+4) + '"javaClass": "java.util.LinkedList",\n' + pad(indent+4) + '"list": []\n' + pad(indent) + '},'
 
@@ -206,18 +205,18 @@ def get_site_list(sid, indent, debug=False):
             str += ',\n'
         str += pad(indent+8) + '{\n'
 
-        str += pad(indent+12) + '"address": "%s",\n' % address
+        str += pad(indent+12) + '"address": "%s",\n' % escape(address) if (address != None) else ''
         str += pad(indent+12) + '"alert": %s,\n' % alert
-        str += pad(indent+12) + '"category": "%s",\n' % category
-        str += pad(indent+12) + '"description": "%s",\n' % description
+        str += pad(indent+12) + '"category": "%s",\n' % escape(category) if (category != None) else ''
+        str += pad(indent+12) + '"description": "%s",\n' % escape(description) if (description != None) else ''
 
         str += pad(indent+12) + '"exportedAddressList": %s\n' % get_site_networks(rule_id, 16, debug=debug)
 
-        str += pad(indent+12) + '"groupName": "%s",\n' % group_name
+        str += pad(indent+12) + '"groupName": "%s",\n' % escape(group_name) if (group_name != None) else ''
         str += pad(indent+12) + '"javaClass": "com.untangle.node.openvpn.VpnSite",\n'
         str += pad(indent+12) + '"live": %s,\n' % live
         str += pad(indent+12) + '"log": %s,\n' % log
-        str += pad(indent+12) + '"name": "%s"\n' % name
+        str += pad(indent+12) + '"name": "%s"\n' % escape(name) if (name != None) else ''
 
         str += pad(indent+8) + '}'
 
@@ -234,7 +233,7 @@ def get_site_networks(rid, indent, debug=False):
         print "Getting n_openvpn_c_site_network list for RID: ",rid
 
     list = sql_helper.run_sql("select network, netmask, name, category, description, live, alert, log from n_openvpn_c_site_network where client_id = '%s'" % rid, debug=debug)
-    
+
     if (len(list) == 0):
         return '{\n' + pad(indent+4) + '"javaClass": "java.util.ArrayList",\n' + pad(indent+4) + '"list": []\n' + pad(indent) + '},'
 
@@ -259,15 +258,15 @@ def get_site_networks(rid, indent, debug=False):
         str += pad(indent+8) + '{\n'
 
         str += pad(indent+12) + '"alert": %s,\n' % alert
-        str += pad(indent+12) + '"category": "%s",\n' % category
-        str += pad(indent+12) + '"description": "%s",\n' % description
+        str += pad(indent+12) + '"category": "%s",\n' % escape(category) if (category != None) else ''
+        str += pad(indent+12) + '"description": "%s",\n' % escape(description) if (description != None) else ''
         str += pad(indent+12) + '"id": %d,\n' % counter
         str += pad(indent+12) + '"javaClass": "com.untangle.node.openvpn.SiteNetwork",\n'
         str += pad(indent+12) + '"live": %s,\n' % live
         str += pad(indent+12) + '"log": %s,\n' % log
-        str += pad(indent+12) + '"name": "%s",\n' % name
-        str += pad(indent+12) + '"netmask": "%s",\n' % netmask
-        str += pad(indent+12) + '"network": "%s"\n' % network
+        str += pad(indent+12) + '"name": "%s",\n' % escape(name) if (name != None) else ''
+        str += pad(indent+12) + '"netmask": "%s",\n' % escape(netmask) if (netmask != None) else ''
+        str += pad(indent+12) + '"network": "%s"\n' % escape(network) if (network != None) else''
 
         str += pad(indent+8) + '}'
 
@@ -280,7 +279,6 @@ def get_site_networks(rid, indent, debug=False):
 #------------------------------------------------------------------------------
 
 def get_settings(tid, debug=False):
-
     if (debug):
         print "Getting n_openvpn_settings for TID: ",tid
 
@@ -319,11 +317,11 @@ def get_settings(tid, debug=False):
 
     str += pad(4) + '"clientList": %s\n' % get_client_list(settings_id, 4, debug=debug)
 
-    str += pad(4) + '"country": "%s",\n' % escape(country)
-    str += pad(4) + '"dns1": "%s",\n' % escape(dns_1)
-    str += pad(4) + '"dns2": "%s",\n' % escape(dns_2)
-    str += pad(4) + '"domain": "%s",\n' % escape(domain)
-    str += pad(4) + '"email": "%s",\n' % escape(email)
+    str += pad(4) + '"country": "%s",\n' % escape(country) if (country != None) else ''
+    str += pad(4) + '"dns1": "%s",\n' % escape(dns_1) if (dns_1 != None) else ''
+    str += pad(4) + '"dns2": "%s",\n' % escape(dns_2) if (dns_2 != None) else ''
+    str += pad(4) + '"domain": "%s",\n' % escape(domain) if (domain != None) else ''
+    str += pad(4) + '"email": "%s",\n' % escape(email) if (email != None) else ''
 
     str += pad(4) + '"exportedAddressList": %s\n' % get_exported_address_list(settings_id, 4, debug=debug)
 
@@ -335,16 +333,16 @@ def get_settings(tid, debug=False):
     str += pad(4) + '"javaClass": "com.untangle.node.openvpn.VpnSettings",\n'
     str += pad(4) + '"keepAlive": %s,\n' % keep_alive
     str += pad(4) + '"keySize": %s,\n' % key_size
-    str += pad(4) + '"locality": "%s",\n' % escape(locality)
+    str += pad(4) + '"locality": "%s",\n' % escape(locality) if (locality != None) else ''
     str += pad(4) + '"maxClients": %s,\n' % max_clients
-    str += pad(4) + '"organization": "%s",\n' % escape(org)
-    str += pad(4) + '"organizationUnit": "%s",\n' % escape(org_unit)
-    str += pad(4) + '"province": "%s",\n' % escape(province)
-    str += pad(4) + '"serverAddress": "%s",\n' % escape(server_address)
+    str += pad(4) + '"organization": "%s",\n' % escape(org) if (org != None) else ''
+    str += pad(4) + '"organizationUnit": "%s",\n' % escape(org_unit) if (org_unit != None) else ''
+    str += pad(4) + '"province": "%s",\n' % escape(province) if (province != None) else ''
+    str += pad(4) + '"serverAddress": "%s",\n' % escape(server_address) if (server_address != None) else ''
 
     str += pad(4) + '"siteList": %s\n' % get_site_list(settings_id, 4, debug=debug)
 
-    str += pad(4) + '"siteName": "%s",\n' % escape(site_name)
+    str += pad(4) + '"siteName": "%s",\n' % escape(site_name) if (site_name != None) else ''
     str += pad(4) + '"untanglePlatformClient": %s,\n' % is_edgeguard_client
     str += pad(4) + '"version": 1\n'
     str += '}\n'
@@ -361,6 +359,7 @@ if len(sys.argv) < 3:
 nodeid = sys.argv[1]
 target = sys.argv[2]
 debug = False
+#debug = True
 
 try:
     (pathname, filename) = os.path.split(target)
