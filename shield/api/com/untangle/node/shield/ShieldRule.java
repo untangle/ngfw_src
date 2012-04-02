@@ -7,18 +7,20 @@ import java.util.Map;
 import java.util.HashMap;
 import java.net.UnknownHostException;
 
-import com.untangle.uvm.node.IpMaskedAddressRule;
-import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.BaseRule;
+import com.untangle.uvm.node.IPMaskedAddress;
 
 /**
  * Rule for the shield
  */
 @SuppressWarnings("serial")
-public class ShieldRule extends IpMaskedAddressRule implements java.io.Serializable
+public class ShieldRule extends BaseRule implements java.io.Serializable
 {
     /* divider for this rule (between0 and whatever, not inclusive) */
     private Float divider = DIVIDER_VALUES[0];
 
+    private IPMaskedAddress address = null;
+    
     /* Enumeration of all of the possible dividers */
     private static final String DIVIDER_ENUMERATION[];
     private static final Float  DIVIDER_VALUES[];
@@ -81,6 +83,26 @@ public class ShieldRule extends IpMaskedAddressRule implements java.io.Serializa
         return DIVIDER_ENUMERATION[0];
     }
 
+    public IPMaskedAddress getIpMaskedAddress()
+    {
+        return this.address;
+    }
+
+    public void setAddress(IPMaskedAddress Address)
+    {
+        this.address = address;
+    }
+
+    public void setAddress(String addrStr)
+    {
+        this.address = new IPMaskedAddress(addrStr);
+    }
+
+    public String getAddress()
+    {
+        return this.address.toString();
+    }
+    
     static
     {
         DIVIDER_ENUMERATION = new String[] {
