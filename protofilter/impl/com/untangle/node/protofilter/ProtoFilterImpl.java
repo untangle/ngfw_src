@@ -64,28 +64,28 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
                                                    "ORDER BY evt.timeStamp DESC");
 
         MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeId());
+        Counters c = lmm.getCounters(getSettings());
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Chunks scanned"), null, I18nUtil.marktr("SCAN"));
         detectBlinger = c.addActivity("detect", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("LOG"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Sessions blocked"), null, I18nUtil.marktr("BLOCK"));
-        lmm.setActiveMetricsIfNotSet(getNodeId(), scanBlinger, detectBlinger, blockBlinger);
+        lmm.setActiveMetricsIfNotSet(getSettings(), scanBlinger, detectBlinger, blockBlinger);
     }
 
     // ProtoFilter methods ----------------------------------------------------
 
-    public ProtoFilterSettings getNodeSettings()
+    public ProtoFilterSettings getSettings()
     {
         if( this.nodeSettings == null )
             logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
         return this.nodeSettings;
     }
 
-    public void setNodeSettings(final ProtoFilterSettings settings)
+    public void setSettings(final ProtoFilterSettings settings)
     {
         this.nodeSettings = settings;
         
         SettingsManager setman = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getSettings().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-protofilter/settings_" + nodeID;
 
         try {
@@ -162,13 +162,13 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
                 pfp.setLog(true);
         }
         settings.setPatterns(new LinkedList<ProtoFilterPattern>(pats));
-        setNodeSettings(settings);
+        setSettings(settings);
     }
 
     protected void postInit(String[] args)
     {
         SettingsManager setman = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getSettings().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-protofilter/settings_" + nodeID;
         String settingsFile = settingsBase + ".js";
         ProtoFilterSettings readSettings = null;

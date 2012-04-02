@@ -10,7 +10,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
         gridEventLog : null,
         nodeData : null,
         initComponent : function() {
-            this.nodeData = this.getRpcNode().getNodeSettings();
+            this.nodeData = this.getRpcNode().getSettings();
             this.buildStatus();
             this.buildProtocolList();
             this.buildEventLog();
@@ -297,7 +297,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
             Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
             this.nodeData.patterns.list = this.gridProtocolList.getFullSaveList();
 
-            this.getRpcNode().setNodeSettings(Ext.bind(function(result, exception)
+            this.getRpcNode().setSettings(Ext.bind(function(result, exception)
             {
                 Ext.MessageBox.hide();
                     if (!keepWindowOpen)

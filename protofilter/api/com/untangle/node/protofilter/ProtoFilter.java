@@ -24,8 +24,8 @@ import java.util.List;
 
 public interface ProtoFilter extends Node
 {
-    ProtoFilterSettings getNodeSettings();
-    void setNodeSettings(ProtoFilterSettings settings);
+    ProtoFilterSettings getSettings();
+    void setSettings(ProtoFilterSettings settings);
 
     int getPatternsTotal();
     int getPatternsLogged();
