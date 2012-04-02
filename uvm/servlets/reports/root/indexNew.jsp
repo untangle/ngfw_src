@@ -95,7 +95,7 @@ if (!reportsAvailable || !reportingEnabled) {
         String numDays = request.getParameter("duration");
         String args = "";
         if(selectedApplication != null && reportsDate != null && numDays != null){
-            args = "selectedNode:{attributes:{name:'"+selectedApplication+"',text:'Summary'}},printView:true,selectedApplication:'"+selectedApplication+ "',reportsDate:{javaclass:'java.util.Date',time:"+reportsDate +"},numDays:"+numDays+"";
+            args = "selectedNode:{data:{id:'"+selectedApplication+"',text:'Summary'}},printView:true,selectedApplication:'"+selectedApplication+ "',reportsDate:{javaclass:'java.util.Date',time:"+reportsDate +"},numDays:"+numDays+"";
         }
         %>
         Ext.onReady(function(){

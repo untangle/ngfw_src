@@ -184,6 +184,7 @@ Ext.define('Ung.Reports',{
         }
     },
     startApplicationPrintView : function(){
+        console.log("create print view...");
         var panel = Ext.create('Ext.panel.Panel',{
             renderTo : 'base',
             cls : "base-container",
@@ -197,19 +198,17 @@ Ext.define('Ung.Reports',{
                     title : 'Report Details&nbsp;<span id="breadcrumbs" class="breadcrumbs"></span>',
                     id : 'report-details',
                     layout:"fit",
-                    region : "center",
+                    region:'center',
                     autoScroll : true,
                     collapsible : false,
                     split : false,
-                    margins : '2 2 0 2',
-                    cmargins : '2 2 2 2',
+                    margin: '2 2 0 2',
                     width : 700,
                     border: false,
                     cls:'full-height',                     
                     items : [{ html:"" }],
                     listeners : {
                         'render' : function(){
-
                         }
                     }
             }]
@@ -219,6 +218,7 @@ Ext.define('Ung.Reports',{
         reports.breadcrumbs=[];
         rpc.drilldownType = null;
         rpc.drilldownValue = null;
+        console.log("get application data");
         reports.getApplicationData(reports.selectedApplication, reports.numDays);                    
     },
     startApplication : function()
@@ -258,12 +258,12 @@ Ext.define('Ung.Reports',{
                 xtype:'panel',
                 region : 'north',
                 layout:'border',
-                style : 'padding: 7px 5px 7px 7px;',
+                style : 'padding: 10px 8px 10px 10px;',
                 height : 100,
                 width : 960,
-                border:false,
+                border:0,
                 defaults : {
-                    border : false,
+                    border : 0,
                     bodyStyle : 'background-color: transparent;'
                 },
                 items : [
@@ -271,30 +271,35 @@ Ext.define('Ung.Reports',{
                     xtype:'panel',
                     html: '<img src="/images/BrandingLogo.gif?'+(new Date()).getTime()+'" border="0" height="50"/>',
                     region : 'west',
-                    border:false,
+                    border:0,
                     width : 100,
-                    height:100
+                    height:60
                 },
                 {
                     xtype:'panel',
                     html : '<h1>'+i18n._('Reports')+'</h1>',
                     region : 'center',
-                    border:false
+                    border:0
                 },
                 {
                     xtype:'panel',
-                    border:false,
+                    border:0,
+                    defaults: {
+                        border:0
+                    },
                     region : 'east',
-                    width : 500,
+                    width : 480,
                     height: 60,
-                    style : 'height:60px;',
+                    //style : 'height:60px;',
                     cls   : 'dateRange',
                     items : [
                     {
-                        xtype : "fieldset",
-                        border : false,
+                        xtype:"fieldset",
+                        border:0,
+                        padding:0,
                         cls : 'dateContainer',
                         id : 'rangeFieldSet',
+                        style:'border:0',
                         items : [
                         {
                             xtype : 'label',
@@ -398,11 +403,11 @@ Ext.define('Ung.Reports',{
                     id : 'report-details',
                     layout:"anchor",
                     width:700,
+                    height : getWinHeight() - 30,
                     autoScroll : false,
                     collapsible : false,
                     split : true,
-                    margins : '2 2 0 2',
-                    cmargins : '3 3 3 3',
+                    margin : '2 2 0 2',
                     border: false,
                     defaults: {
                         border:false
@@ -440,11 +445,13 @@ Ext.define('Ung.Reports',{
         }
     },
     showAvailableReports : function(){
+        console.log("showAvailableReports");
         if(!this.availableReportsWindow){
             this.datesGrid =Ext.create('Ung.EditorGrid',{
                 paginated : false,
                 hasReorder : false,
                 hasEdit : false,
+                ignoreServerIds:false,
                 hasDelete : false,
                 width : 950,
                 height : getWinHeight()-60,                
@@ -666,6 +673,7 @@ Ext.define('Ung.Reports',{
                 Ext.getCmp('tree-panel').getSelectionModel().clearSelections();
                 var root= Ext.getCmp('tree-panel').getRootNode();
                 root.appendChild(treeNodes);
+                Ext.getCmp('tree-panel').getSelectionModel().select(0);
             },this), this.reportsDate, this.numDays);        
         }
     },
@@ -685,6 +693,7 @@ Ext.define('Ung.Reports',{
     },
 
     getApplicationData: function(nodeName, numDays) {
+        console.log("get application data:",nodeName,numDays);
         reports.progressBar.wait(i18n._("Please Wait"));        
 
         if(nodeName == 'untangle-pnode-summary'){
@@ -700,6 +709,7 @@ Ext.define('Ung.Reports',{
         
     },
     processHiglightsData : function(result,exception,nodeName,numDays){
+        console.log("processHiglightsData...result=", result);
         if (exception) {
             if (!handleTimeout(exception)) {
                 Ext.MessageBox.alert("Failed",exception.message);
@@ -736,12 +746,15 @@ Ext.define('Ung.Reports',{
                                        drilldownType : rpc.drilldownType,
                                        drilldownValue : rpc.drilldownValue                                   
                                      });
-        }                                
+        }                  
+        console.log("processHiglightsData...result=", result);        
         Ung.Util.loadModuleTranslations( nodeName, i18n,
              function(){
                  try{
                      reports.reportDetails = new Ung.ReportDetails({reportType: nodeName});
-                     reports.progressBar.hide();
+                     if ( reports.progressBar.rendered) {
+                        reports.progressBar.hide();
+                     }
                      if(reports.printView){
                          //hack but close enough , could not find a reliable event that would fire after template is displayed.
                          window.setTimeout(function(){window.print();},1000);
