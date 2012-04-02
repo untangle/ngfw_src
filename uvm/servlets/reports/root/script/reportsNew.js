@@ -693,7 +693,6 @@ Ext.define('Ung.Reports',{
     },
 
     getApplicationData: function(nodeName, numDays) {
-        console.log("get application data:",nodeName,numDays);
         reports.progressBar.wait(i18n._("Please Wait"));        
 
         if(nodeName == 'untangle-pnode-summary'){
@@ -709,7 +708,6 @@ Ext.define('Ung.Reports',{
         
     },
     processHiglightsData : function(result,exception,nodeName,numDays){
-        console.log("processHiglightsData...result=", result);
         if (exception) {
             if (!handleTimeout(exception)) {
                 Ext.MessageBox.alert("Failed",exception.message);
@@ -747,7 +745,6 @@ Ext.define('Ung.Reports',{
                                        drilldownValue : rpc.drilldownValue                                   
                                      });
         }                  
-        console.log("processHiglightsData...result=", result);        
         Ung.Util.loadModuleTranslations( nodeName, i18n,
              function(){
                  try{
