@@ -92,7 +92,7 @@ public class HttpNodeImpl extends AbstractNode implements HttpNode
 
             try
             {
-                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + settingsFile;
+                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + settingsFile;
                 logger.info("Running: " + convertCmd);
                 UvmContextFactory.context().execManager().exec( convertCmd );
             }
