@@ -205,7 +205,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     sortable : true,
                     dataIndex : 'name',
                     flex:1,
-                    field: {
+                    editor: {
                         xtype:'textfield',
                         allowBlank:false
                     }
@@ -215,7 +215,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     width : 200,
                     sortable : true,
                     dataIndex : "notes",
-                    field :  {
+                    editor:  {
                         xtype:'textfield',
                         allowBlank : false
                     }
@@ -259,7 +259,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     allowBlank : false,
                     blankText : this.i18n._("The policy name cannot be blank."),
                     width : 300,
-                    field : {
+                    editor: {
                         xtype:'textfield',
                         allowBlank : false
                     }
@@ -271,7 +271,7 @@ if (!Ung.hasResource["Ung.PolicyManager"]) {
                     fieldLabel : this.i18n._("Description"),
                     allowBlank : false,
                     width : 200,
-                    field: {
+                    editor: {
                         xtype:'textfield',
                         allowBlank : true
                     }

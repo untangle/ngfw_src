@@ -946,7 +946,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             header : this.i18n._("quarantinable address"),
                             width : 200,
                             dataIndex : 'address',
-                            field: {
+                            editor: {
                                 xtype:'textfield'
                             }
                         }, 
@@ -955,7 +955,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             flex:1,
                             width : 200,
                             dataIndex : 'description',
-                            field: {
+                            editor: {
                                 xtype:'textfield'
                             }
                         }],
@@ -1024,7 +1024,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             header : this.i18n._("distribution list address"),
                             width : 250,
                             dataIndex : 'address1',
-                            field: {
+                            editor: {
                                 xtype:'textfield'
                             }
                         }, 
@@ -1033,7 +1033,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                             width : 250,
                             dataIndex : 'address2',
                             flex:1,
-                            field: {
+                            editor: {
                                 xtype:'textfield'
                             }
                         }],

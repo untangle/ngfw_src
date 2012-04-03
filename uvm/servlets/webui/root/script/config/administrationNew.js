@@ -286,7 +286,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         width : 200,
                         dataIndex : 'name',
                         flex: 1,
-                        field:{
+                        editor:{
                             xtype:'textfield',
                             allowBlank : false
                         }
@@ -294,7 +294,7 @@ if (!Ung.hasResource["Ung.Administration"]) {
                         header : this.i18n._("email"),
                         width : 200,
                         dataIndex : 'email',
-                        field: {
+                        editor: {
                             xtype:'textfield',
                             allowBlank : false
                         }

@@ -67,7 +67,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     header : this.i18n._("user/login ID"),
                     width : 140,
                     dataIndex : 'username',
-                    field: {
+                    editor: {
                         xtype:'textfield',
                         allowBlank : false,
                         regex: /^[\w ]+$/,
@@ -78,7 +78,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     header : this.i18n._("first name"),
                     width : 120,
                     dataIndex : 'firstName',
-                    field: {
+                    editor: {
                         xtype:'textfield',
                         allowBlank : false
                     }
@@ -87,7 +87,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     header : this.i18n._("last name"),
                     width : 120,
                     dataIndex : 'lastName',
-                    field: {
+                    editor: {
                         xtype:'textfield'
                     }                    
                 }
@@ -97,7 +97,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     width : 250,
                     dataIndex : 'email',
                     flex:1,
-                    field: {
+                    editor: {
                         xtype:'textfield'
                     }
                 }, 
@@ -105,7 +105,7 @@ if (!Ung.hasResource["Ung.LocalDirectory"]) {
                     header : this.i18n._("password"),
                     width : 150,
                     dataIndex : 'password',
-                    field: {
+                    editor: {
                         xtype:'textfield',
                         inputType:'password'
                     },
