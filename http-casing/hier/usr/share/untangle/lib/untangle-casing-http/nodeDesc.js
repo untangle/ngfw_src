@@ -7,9 +7,7 @@
         "type" : "CASING",
         "annotatedClasses" : {
             "javaClass": "java.util.LinkedList",
-            "list": [
-                "com.untangle.node.http.HttpSettings"
-            ]
+            "list": []
         }
 }
 

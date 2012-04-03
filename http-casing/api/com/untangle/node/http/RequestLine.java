@@ -13,7 +13,6 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
-import org.hibernate.annotations.Type;
 
 import com.untangle.node.util.UriUtil;
 import com.untangle.uvm.node.SessionEvent;
@@ -31,9 +30,9 @@ public class RequestLine implements Serializable
     private HttpRequestEvent httpRequestEvent; // Filled in after creation time.
     private Date timeStamp = new Date();
     private long requestId = 0;
-    
+
     private static long nextId = 0;
-    
+
     // constructors -----------------------------------------------------------
 
     public RequestLine(SessionEvent pe, HttpMethod method, byte[] requestUriBytes)
@@ -46,7 +45,7 @@ public class RequestLine implements Serializable
         this.requestUri = getUri(requestUriBytes);
 
         synchronized(this) {
-            if (this.nextId == 0) 
+            if (this.nextId == 0)
                 this.nextId = sessionEvent.getSessionId(); /* borrow the session Id as a starting point */
             this.requestId = ++this.nextId;
         }
@@ -111,7 +110,7 @@ public class RequestLine implements Serializable
     {
         this.requestId = requestId;
     }
-    
+
     /**
      * Request method.
      *

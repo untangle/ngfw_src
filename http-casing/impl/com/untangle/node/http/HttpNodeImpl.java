@@ -3,15 +3,15 @@
  */
 package com.untangle.node.http;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.SettingsManager;
+import org.apache.log4j.Logger;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 
 /**
  * An HTTP casing node.
@@ -19,12 +19,14 @@ import com.untangle.uvm.vnet.PipeSpec;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class HttpNodeImpl extends AbstractNode
-    implements HttpNode
+public class HttpNodeImpl extends AbstractNode implements HttpNode
 {
+    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/http-casing-convert-settings.py";
     private final CasingPipeSpec pipeSpec = new CasingPipeSpec("http", this, new HttpCasingFactory(this), Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
+    private final Logger logger = Logger.getLogger(HttpNodeImpl.class);
 
+    private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     private HttpSettings settings;
 
     public HttpNodeImpl() {}
@@ -36,18 +38,21 @@ public class HttpNodeImpl extends AbstractNode
 
     public void setHttpSettings(final HttpSettings settings)
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    s.merge(settings);
-                    HttpNodeImpl.this.settings = settings;
-                    return true;
-                }
+        String nodeID = this.getNodeId().getId().toString();
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-http/settings_" + nodeID;
+        String settingsFile = settingsName + ".js";
 
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
+        this.settings = settings;
+
+        try
+        {
+            settingsManager.save(HttpSettings.class, settingsName, settings);
+        }
+
+        catch(Exception exn)
+        {
+            logger.error("setHttpSettings()",exn);
+        }
 
         reconfigure();
     }
@@ -62,25 +67,76 @@ public class HttpNodeImpl extends AbstractNode
 
     protected void postInit(String[] args)
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
+        String nodeID = this.getNodeId().getId().toString();
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-http/settings_" + nodeID;
+        String settingsFile = settingsName + ".js";
+
+        HttpSettings readSettings = null;
+        logger.info("Loading settings from " + settingsFile );
+
+        try
+        {
+            // first we try to read our json settings
+            readSettings = settingsManager.load( HttpSettings.class, settingsName );
+        }
+
+        catch (Exception exn)
+        {
+            logger.error("postInit()",exn);
+        }
+
+        // if no settings found try importing from the database
+        if (readSettings == null)
+        {
+            logger.info("No json settings found... attempting to import from database");
+
+            try
             {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery("from HttpSettings hbs");
-                    settings = (HttpSettings)q.uniqueResult();
+                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + settingsFile;
+                logger.info("Running: " + convertCmd);
+                UvmContextFactory.context().execManager().exec( convertCmd );
+            }
 
-                    if (null == settings) {
-                        settings = new HttpSettings();
-                        s.save(settings);
-                    }
+            catch (Exception exn)
+            {
+                logger.error("Conversion script failed", exn);
+            }
 
-                    reconfigure();
-                    return true;
-                }
+            try
+            {
+                // try to read the settings created by the conversion script
+                readSettings = settingsManager.load( HttpSettings.class, settingsName );
+            }
 
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
+            catch (Exception exn)
+            {
+                logger.error("Could not read node settings", exn);
+            }
+        }
+
+        try
+        {
+            // still no settings found so init with defaults
+            if (readSettings == null)
+            {
+                logger.warn("No database or json settings found... initializing with defaults");
+                setHttpSettings(new HttpSettings());
+            }
+
+            // otherwise apply the loaded or imported settings from the file
+            else
+            {
+                logger.info("Loaded settings from " + settingsFile);
+                setSettings(readSettings);
+                reconfigure();
+            }
+        }
+
+        catch (Exception exn)
+        {
+            logger.error("Could not apply node settings",exn);
+        }
+
     }
 
     @Override

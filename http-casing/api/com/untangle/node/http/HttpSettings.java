@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -35,28 +35,17 @@ package com.untangle.node.http;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 /**
  * Http casing settings.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-@Entity
-@Table(name="n_http_settings", schema="settings")
 @SuppressWarnings("serial")
 public class HttpSettings implements Serializable
 {
     public static final int MIN_URI_LENGTH = 1024;
     public static final int MAX_URI_LENGTH = 4096;
-
-
-    private Long id;
 
     private boolean enabled = true;
     private boolean nonHttpBlocked = false;
@@ -70,25 +59,11 @@ public class HttpSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    @Id
-    @Column(name="settings_id")
-    @GeneratedValue
-    public Long getId()
-    {
-        return id;
-    }
-
-    public void setId(Long id)
-    {
-        this.id = id;
-    }
-
     /**
      * Enabled status for casing.
      *
      * @return true when casing is enabled, false otherwise.
      */
-    @Column(nullable=false)
     public boolean isEnabled()
     {
         return enabled;
@@ -104,7 +79,6 @@ public class HttpSettings implements Serializable
      *
      * @return a <code>boolean</code> value
      */
-    @Column(name="non_http_blocked", nullable=false)
     public boolean isNonHttpBlocked()
     {
         return nonHttpBlocked;
@@ -120,7 +94,6 @@ public class HttpSettings implements Serializable
      *
      * @return maximum characters allowed in a HTTP header.
      */
-    @Column(name="max_header_length", nullable=false)
     public int getMaxHeaderLength()
     {
         return 8192;
@@ -138,7 +111,6 @@ public class HttpSettings implements Serializable
      *
      * @return true if connections containing long headers are blocked.
      */
-    @Column(name="block_long_headers", nullable=false)
     public boolean getBlockLongHeaders()
     {
         return blockLongHeaders;
@@ -154,7 +126,6 @@ public class HttpSettings implements Serializable
      *
      * @return maximum characters allowed in the request-line URI.
      */
-    @Column(name="max_uri_length", nullable=false)
     public int getMaxUriLength()
     {
         return maxUriLength;
@@ -177,7 +148,6 @@ public class HttpSettings implements Serializable
      *
      * @return true if connections containing long URIs are blocked.
      */
-    @Column(name="block_long_uris", nullable=false)
     public boolean getBlockLongUris()
     {
         return blockLongUris;
