@@ -1669,6 +1669,9 @@ Ext.define("Ung.Node", {
                 }]
             });
         }
+        this.settingsWin.addListener("hide",Ext.bind(function() { 
+                                                this.destroy();
+                                            }, this.settingsWin));
         this.settingsWin.show();
         Ext.MessageBox.hide();
     },
@@ -4021,7 +4024,7 @@ Ext.define('Ung.EditorGrid', {
     initComponent : function() {
         if(this.hasInlineEditor) {
         	this.plugins.push(Ext.create('Ext.grid.plugin.CellEditing', {
-                clicksToEdit: 2
+                clicksToEdit: 1
             }))
         }
         if (this.hasReorder) {
