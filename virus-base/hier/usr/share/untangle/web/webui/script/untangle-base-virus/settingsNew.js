@@ -220,7 +220,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     header : this.i18n._("file type"),
                     width : 200,
                     dataIndex : 'string',
-					field: {
+					editor: {
 						xtype:'textfield',
 						allowBlank:false
 					}
@@ -236,7 +236,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     width : 200,
                     dataIndex : 'name',
                     flex: 1,
-					field: {
+					editor: {
 						xtype:'textfield',
 						allowBlank:false
 					}
@@ -271,7 +271,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
         // MIME Types
         buildMimeTypes : function() {
 
-            this.gridMimeTypes = new Ung.EditorGrid({
+            this.gridMimeTypes = Ext.create('Ung.EditorGrid', {
                 name : 'MIME Types',
                 settingsCmp : this,
                 emptyRow : {
@@ -287,7 +287,7 @@ if (!Ung.hasResource["Ung.Virus"]) {
                     header : this.i18n._("MIME type"),
                     width : 200,
                     dataIndex : 'string',
-					field:{
+					editor:{
 						xtype:'textfield',
 						allowBlank:false
 					}

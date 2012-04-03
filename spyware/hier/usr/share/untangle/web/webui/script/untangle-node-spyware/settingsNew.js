@@ -271,7 +271,9 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     width : 140,
                     dataIndex : 'string',
                     flex: 1,
-                    field:'textfield'
+                    editor:{
+                        xtype:'textfield'
+                    }
 				}, 
 				{
                 	xtype: 'checkcolumn',
@@ -319,7 +321,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
 						width : 250,
 						dataIndex : 'name',
 						flex: 1,
-						field: {
+						editor: {
 							xtype: 'textfield',
 							allowBlank: false
 						}
@@ -328,7 +330,7 @@ if (!Ung.hasResource["Ung.Spyware"]) {
 						header : this.i18n._("subnet"),
 						width : 300,
 						dataIndex : 'string',
-						field: {
+						editor: {
 							xtype: 'textfield',
 							allowBlank: false
 						}
@@ -404,7 +406,9 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     header : this.i18n._("site"),
                     width : 200,
                     dataIndex : 'string',
-					field:'textfield'
+					editor:{
+                        xtype:'textfield'
+                    }
                 }, {
                 	xtype: "checkcolumn",
                     header : "<b>" + this.i18n._("pass") + "</b>",
@@ -417,7 +421,9 @@ if (!Ung.hasResource["Ung.Spyware"]) {
                     width : 200,
                     flex: 1,
                     dataIndex : 'description',
-					field:'textfield'
+					editor: { 
+                        xtype:'textfield'
+                    }
                 }],
                 sortField : 'string',
                 columnsDefaultSortable : true,

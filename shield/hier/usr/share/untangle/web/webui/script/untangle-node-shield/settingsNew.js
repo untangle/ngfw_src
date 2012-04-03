@@ -95,7 +95,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     width : 200,
                     dataIndex : 'address',
                     // this is a simple text editor
-                    field: {
+                    editor: {
                         xtype:'textfield',
                         allowBlank : false,
                         vtype : 'ipAddress'
@@ -130,7 +130,7 @@ if (!Ung.hasResource["Ung.Shield"]) {
                     width : 200,
                     flex : 1,
                     dataIndex : 'description',
-                    field: {
+                    editor: {
                         xtype:'textfield',
                         allowBlank:false
                     }

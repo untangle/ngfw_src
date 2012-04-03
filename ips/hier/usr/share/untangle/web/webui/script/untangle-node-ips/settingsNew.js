@@ -135,7 +135,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                             header : this.i18n._("category"),
                             width : 180,
                             dataIndex : 'category',
-                            field: {
+                            editor: {
                                 xtype:'texfield',
                                 allowBlank : false
                             }
@@ -273,7 +273,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                             header : this.i18n._("name"),
                             width : 170,
                             dataIndex : 'variable',
-                            field: {
+                            editor: {
                                 xtype:'textfield',
                                 allowBlank : false
                                 }
@@ -283,7 +283,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                             header : this.i18n._("pass"),
                             width : 300,
                             dataIndex : 'definition',
-                            field: {
+                            editor: {
                                 xtype:'textfield',
                                 allowBlank : false
                             }
@@ -292,7 +292,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                             width : 300,
                             dataIndex : 'description',
                             flex:1,
-                            field: {
+                            editor: {
                                 xtype:'textfield',
                                 allowBlank : false
                             }

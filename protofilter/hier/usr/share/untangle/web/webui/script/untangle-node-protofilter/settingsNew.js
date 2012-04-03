@@ -131,7 +131,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     header : this.i18n._("protocol"),
                     width : 200,
                     dataIndex : 'protocol',
-					field: {
+					editor: {
 						xtype:'textfield',
 						allowBlank:false
 					}
@@ -140,7 +140,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     header : this.i18n._("category"),
                     width : 200,
                     dataIndex : 'category',
-					field: {
+					editor: {
 						xtype:'textfield',
 						allowBlank:false
 					}
@@ -164,7 +164,7 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
                     width : 200,
                     dataIndex : 'description',
                     flex: 1,
-					field:{
+					editor:{
 						xtype:'textfield',
                         allowBlank : false
 						}

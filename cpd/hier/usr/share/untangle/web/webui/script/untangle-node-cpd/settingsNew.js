@@ -288,7 +288,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         width : 200,
                         dataIndex : "description",
                         flex:1,
-                        field : {
+                        editor : {
                             xtype:'textfield',
                             allowBlank : false
                         }
@@ -552,7 +552,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         header : this.i18n._("Description"),
                         width : 200,
                         dataIndex : "description",
-                        field: {
+                        editor: {
                             xtype:'textfield',
                             allowBlank:false
                         }
@@ -562,7 +562,7 @@ if (!Ung.hasResource["Ung.CPD"]) {
                         width : 200,
                         dataIndex : "address",
                         flex:1,
-                        field :{
+                        editor :{
                             xtype:'textfield',
                             allowBlank : false
                         }

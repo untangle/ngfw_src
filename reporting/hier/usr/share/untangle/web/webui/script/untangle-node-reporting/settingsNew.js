@@ -246,7 +246,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             header: this.i18n._("Email Address (username)"),
                             dataIndex: "emailAddress",
                             width : 200,
-                            field: {
+                            editor: {
                                 xtype:'textfield',
                                 vtype: "email",
                                 allowBlank: false,
@@ -709,7 +709,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     header: this.i18n._("Name Map"),
                     width: 200,
                     dataIndex: 'ipMaskedAddress',
-                    field: {
+                    editor: {
                         xtype:'textfield'
                     }
                 }, {
@@ -717,7 +717,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                     width: 200,
                     dataIndex: 'name',
                     flex:1,
-                    field: {
+                    editor: {
                         xtype:'textfield'
                     }
                 }],

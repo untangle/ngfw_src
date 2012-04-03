@@ -849,7 +849,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         width : 130,
                         dataIndex : 'name',
                         flex:1,
-                        field: {
+                        editor: {
                             xtype:'textfield',
                             allowBlank : false,
                             vtype : 'openvpnClientName'
@@ -978,7 +978,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         width : 130,
                         dataIndex : 'name',
                         flex:1,
-                        field: {
+                        editor: {
                             xtype:'textfield',
                             allowBlank : false,
                             vtype : 'openvpnClientName'
@@ -994,7 +994,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                         record.data.exportedAddressList.list[0].network=value;
                                         return value;
                                     }, this ),
-                        field: {
+                        editor: {
                             xtype:'textfield',
                             allowBlank : false,
                             vtype : 'ipAddress'
@@ -1008,7 +1008,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                                         record.data.exportedAddressList.list[0].netmask=value;
                                         return value;
                         }, this ),
-                        field: {
+                        editor: {
                             xtype:'textfield',
                             allowBlank : false,
                             vtype : 'ipAddress'
@@ -1139,13 +1139,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         width : 250,
                         dataIndex : 'name',
                         flex:1,
-                        field: { xtype:'textfield'}
+                        editor: { xtype:'textfield'}
                     }, 
                     {
                         header : this.i18n._("IP address"),
                         width : inWizard?100:130,
                         dataIndex : 'network',
-                        field: { 
+                        editor: { 
                             xtype:'textfield',
                             allowBlank : false,
                             vtype : 'ipAddress'
@@ -1155,7 +1155,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         header : this.i18n._("netmask"),
                         width : 130,
                         dataIndex : 'netmask',
-                        field: {
+                        editor: {
                             xtype:'textfield',
                             allowBlank : false,
                             vtype : 'ipAddress'
@@ -1250,7 +1250,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     width : 160,
                     dataIndex : 'name',
                     flex:1,
-                    field: {
+                    editor: {
                         xtype:'textfield',
                         allowBlank:false
                     }
@@ -1259,7 +1259,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     header : this.i18n._("IP address"),
                     width : 130,
                     dataIndex : 'address',
-                    field: {
+                    editor: {
                         xtype:'textfield',
                         allowBlank:false,
                         vtype : 'ipAddress'
@@ -1269,7 +1269,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     header : this.i18n._("netmask"),
                     width : 130,
                     dataIndex : 'netmask',
-                    field: {
+                    editor: {
                         xtype:'textfield',
                         allowBlank : false,
                         vtype : 'ipAddress'

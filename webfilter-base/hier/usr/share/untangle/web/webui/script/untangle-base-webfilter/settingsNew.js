@@ -352,7 +352,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     flex:1,
                     width : 400,
                     dataIndex : 'description',
-					field:{
+					editor:{
 						xtype:'textfield',
                         allowBlank : false
                     }
@@ -448,7 +448,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     header : this.i18n._("site"),
                     width : 200,
                     dataIndex : 'string',
-					field: {
+					editor: {
 						xtype:'textfield',
 						allowBlank : false,
                         validator : urlValidator,
@@ -475,7 +475,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     width : 200,
                     flex:1,
                     dataIndex : 'description',
-					field: {
+					editor: {
 						xtype:'textfield',
 						allowBlank:false
 					}
@@ -537,7 +537,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     header : this.i18n._("file type"),
                     width : 200,
                     dataIndex : 'string',
-					field: {
+					editor: {
 						xtype:'textfield',
 						allowBlank:false
 					}
@@ -561,7 +561,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     header : this.i18n._("category"),
                     width : 200,
                     dataIndex : 'category',
-					field: {
+					editor: {
 						xtype:'textfield',
 						allowBlank:false
 					}
@@ -571,7 +571,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     width : 200,
                     dataIndex : 'description',
                     flex:1,
-					field: {
+					editor: {
 						xtype:'textfield',
 						allowBlank:false
 					}
@@ -638,7 +638,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     header : this.i18n._("MIME type"),
                     width : 200,
                     dataIndex : 'string',
-					field: {
+					editor: {
 						xtype:'textfield',
 						allowBlank:false
 					}
@@ -662,7 +662,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     header : this.i18n._("category"),
                     width : 100,
                     dataIndex : 'category',
-					field: {
+					editor: {
 						xtype:'textfield',
 						allowBlank:true
 					}
@@ -672,7 +672,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     width : 200,
                     flex:1,
                     dataIndex : 'description',
-                    field: {
+                    editor: {
 						xtype:'textfield',
 						allowBlank:false
                     }
@@ -911,7 +911,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     header : this.i18n._("site"),
                     width : 200,
                     dataIndex : 'string',
-					field: {
+					editor: {
 						xtype:'textfield',
 						allowBlank : false,
                         validator : urlValidator,
@@ -930,7 +930,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     flex:1,
                     width : 200,
                     dataIndex : 'description',
-					field: {
+					editor: {
 						xtype:'textfield',
 						allowBlank:false
 					}
@@ -983,7 +983,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     header : this.i18n._("IP address/range"),
                     width : 200,
                     dataIndex : 'string',
-					field: {
+					editor: {
 						xtype:'textfield',
 						allowBlank:false
 					}
@@ -1000,7 +1000,7 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
                     flex:1,
                     width : 200,
                     dataIndex : 'description',
-					field: {
+					editor: {
 						xtype:'textfield',
 						allowBlank:false
 					}
