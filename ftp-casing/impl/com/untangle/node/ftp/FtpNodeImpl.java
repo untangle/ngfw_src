@@ -17,14 +17,15 @@
  */
 package com.untangle.node.ftp;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.SettingsManager;
+import org.apache.log4j.Logger;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 
 /**
  * FTP node implementation.
@@ -35,17 +36,12 @@ import com.untangle.uvm.vnet.PipeSpec;
 public class FtpNodeImpl extends AbstractNode
     implements FtpNode
 {
-    private final PipeSpec ctlPipeSpec = new CasingPipeSpec
-        ("ftp", this, FtpCasingFactory.factory(),
-         Fitting.FTP_CTL_STREAM, Fitting.FTP_CTL_TOKENS);
-
-    private final PipeSpec dataPipeSpec = new CasingPipeSpec
-        ("ftp", this, FtpCasingFactory.factory(),
-         Fitting.FTP_DATA_STREAM, Fitting.FTP_DATA_TOKENS);
-
-    private final PipeSpec[] pipeSpecs = new PipeSpec[]
-        { ctlPipeSpec, dataPipeSpec };
-
+    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/ftp-casing-convert-settings.py";
+    private final PipeSpec ctlPipeSpec = new CasingPipeSpec("ftp", this, FtpCasingFactory.factory(),Fitting.FTP_CTL_STREAM, Fitting.FTP_CTL_TOKENS);
+    private final PipeSpec dataPipeSpec = new CasingPipeSpec("ftp", this, FtpCasingFactory.factory(),Fitting.FTP_DATA_STREAM, Fitting.FTP_DATA_TOKENS);
+    private final PipeSpec[] pipeSpecs = new PipeSpec[] { ctlPipeSpec, dataPipeSpec };
+    private final Logger logger = Logger.getLogger(FtpNodeImpl.class);
+    private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     private FtpSettings settings;
 
     // constructors -----------------------------------------------------------
@@ -61,18 +57,21 @@ public class FtpNodeImpl extends AbstractNode
 
     public void setFtpSettings(final FtpSettings settings)
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    s.merge(settings);
-                    FtpNodeImpl.this.settings = settings;
-                    return true;
-                }
+        String nodeID = this.getNodeId().getId().toString();
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-ftp/settings_" + nodeID;
+        String settingsFile = settingsName + ".js";
 
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
+        this.settings = settings;
+
+        try
+        {
+            settingsManager.save(FtpSettings.class, settingsName, settings);
+        }
+
+        catch(Exception exn)
+        {
+            logger.error("setFtpSettings()",exn);
+        }
 
         reconfigure();
     }
@@ -91,25 +90,75 @@ public class FtpNodeImpl extends AbstractNode
 
     protected void postInit(String[] args)
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
+        String nodeID = this.getNodeId().getId().toString();
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-ftp/settings_" + nodeID;
+        String settingsFile = settingsName + ".js";
+
+        FtpSettings readSettings = null;
+        logger.info("Loading settings from " + settingsFile );
+
+        try
+        {
+            // first we try to read our json settings
+            readSettings = settingsManager.load( FtpSettings.class, settingsName );
+        }
+
+        catch (Exception exn)
+        {
+            logger.error("postInit()",exn);
+        }
+
+        // if no settings found try importing from the database
+        if (readSettings == null)
+        {
+            logger.info("No json settings found... attempting to import from database");
+
+            try
             {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery("from FtpSettings fs");
-                    settings = (FtpSettings)q.uniqueResult();
+                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + settingsFile;
+                logger.info("Running: " + convertCmd);
+                UvmContextFactory.context().execManager().exec( convertCmd );
+            }
 
-                    if (null == settings) {
-                        settings = new FtpSettings();
-                        s.save(settings);
-                    }
+            catch (Exception exn)
+            {
+                logger.error("Conversion script failed", exn);
+            }
 
-                    reconfigure();
-                    return true;
-                }
+            try
+            {
+                // try to read the settings created by the conversion script
+                readSettings = settingsManager.load( FtpSettings.class, settingsName );
+            }
 
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
+            catch (Exception exn)
+            {
+                logger.error("Could not read node settings", exn);
+            }
+        }
+
+        try
+        {
+            // still no settings found so init with defaults
+            if (readSettings == null)
+            {
+                logger.warn("No database or json settings found... initializing with defaults");
+                setFtpSettings(new FtpSettings());
+            }
+
+            // otherwise apply the loaded or imported settings from the file
+            else
+            {
+                logger.info("Loaded settings from " + settingsFile);
+                setSettings(readSettings);
+                reconfigure();
+            }
+        }
+
+        catch (Exception exn)
+        {
+            logger.error("Could not apply node settings",exn);
+        }
     }
 
     // AbstractNode methods ----------------------------------------------
