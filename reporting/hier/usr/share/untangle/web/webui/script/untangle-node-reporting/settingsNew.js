@@ -23,6 +23,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 try {
                     this.rpc.reportingSettings = this.getRpcNode().getReportingSettings();
                 } catch (e) {
+                    console.log("rpc.getReportingSettings error");
                     Ung.Util.rpcExHandler(e);
                 }
             }
@@ -34,6 +35,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 try {
                     this.rpc.mailSettings = rpc.adminManager.getMailSettings();
                 } catch (e) {
+                    console.log("rpc.getMailSettings error");
                     Ung.Util.rpcExHandler(e);
                 }
             }
@@ -44,6 +46,7 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                 try {
                     this.rpc.adminSettings = rpc.adminManager.getAdminSettings();
                 } catch (e) {
+                    console.log("rpc.getAdminSettings error");
                     Ung.Util.rpcExHandler(e);
                 }
 
@@ -996,14 +999,15 @@ if (!Ung.hasResource["Ung.Reporting"]) {
 
             values = reportEmail.split(",");
             for ( c = 0 ; c < values.length ; c++ ) {
-                temp[values[c].trim()] = true;
+                var trimmedValue = Ext.String.trim(values[c]);
+                temp[trimmedValue] = true;
             }
             reportEmail = temp;
 
             values = reportingUsers.split(",");
 
             for ( c = 0 ; c < values.length ; c++ ) {
-                values[c] = values[c].trim();
+                values[c] = Ext.String.trim(values[c]);
             }
             reportingUsers = values;
 
