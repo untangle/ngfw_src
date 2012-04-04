@@ -520,7 +520,7 @@ Ext.define('Ung.QuarantineGrid', {
             store: this.quarantine.store,
             displayInfo: true,
             displayMsg: i18n._( 'Showing items {0} - {1} of {2}' ),
-            emptyMsg: i18n._( 'No messages to display' ),
+            emptyMsg: i18n._( 'No messages to display' )
         });
         config.bbar.addListener('pagesizeselect',Ext.bind(this.onPageSizeSelect,this));
         config.dockedItems= [{

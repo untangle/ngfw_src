@@ -493,21 +493,21 @@ if (!Ung.hasResource["Ung.Reporting"]) {
                             id : 'reporting_monthlyNone',
                             checked : monthlyNoneCurrent,
                             labelWidth:150,
-                            labelAlign:'right',
+                            labelAlign:'right'
                         },{
                             boxLabel : this.i18n._('First Day of Month'),
                             name: 'rb-col',
                             id : 'reporting_monthlyFirst',
                             checked : monthlyFirstCurrent,
                             labelWidth:150,
-                            labelAlign:'right',
+                            labelAlign:'right'
                         },{
                             boxLabel : this.i18n._('Everyday'),
                             name: 'rb-col',
                             id : 'reporting_monthlyEveryday',
                             checked : monthlyEverydayCurrent,
                             labelWidth:150,
-                            labelAlign:'right',
+                            labelAlign:'right'
                         },{
                             boxLabel : this.i18n._('Once Per Week'),
                             name: 'rb-col',

@@ -571,7 +571,7 @@ Ext.define('Ung.Reports',{
         if (tableOfContents.applications != null) {
             var tn = {
                 text : i18n._("Applications"),
-                id : "applications",
+                id : "applications"
             };
             var tc = tableOfContents.applications;
             if (tc.list != null && tc.list.length > 0) {

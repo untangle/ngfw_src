@@ -451,7 +451,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             if (this.groupsStore == null ) {
                 this.groupsStore = Ext.create('Ext.data.Store',{
                     fields : ['id', 'name','javaClass'],
-                    data : this.getVpnSettings().groupList.list,
+                    data : this.getVpnSettings().groupList.list
                 });
                 force = false;
             }

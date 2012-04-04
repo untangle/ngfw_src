@@ -4904,7 +4904,7 @@ Ext.define('Ung.UsersWindow', {
                         reader: {
                             type:'json',
                             totalProperty : 'totalRecords',
-                            root : 'list',
+                            root : 'list'
                         }
                     },
                      fields : [{
@@ -4988,7 +4988,7 @@ Ext.define('Ung.UsersWindow', {
                     field: this.sortField,
                     direction : this.sortOrder ? this.sortOrder : "ASC"
                 }: null,
-                remoteSort : false,
+                remoteSort : false
             }),
             selModel : selectionModel,
             columns: [

@@ -660,8 +660,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     dataIndex : 'sender'
                 }],
                 sortField : 'sender',
-                columnsDefaultSortable : true,
-                
+                columnsDefaultSortable : true
                 /*store : new Ext.data.Store({
                     proxy : new Ext.data.MemoryProxy(),
                     reader : new Ung.JsonListReader({
@@ -699,7 +698,7 @@ if (!Ung.hasResource["Ung.Email"]) {
                     anchor: "98% 25%",
                     autoHeight : true,
                     autoScroll: true,
-                    buttonAlign : 'left',
+                    buttonAlign : 'left'
                 },
                 items : [{
                     items: [{
