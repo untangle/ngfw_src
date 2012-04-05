@@ -12,9 +12,6 @@ import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.ResetCrumb;
 import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.message.BlingBlinger;
-import com.untangle.uvm.message.Counters;
-import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.argon.ArgonTCPSession;
@@ -46,15 +43,6 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     protected boolean[] lineBuffering = new boolean[] { false, false };
     protected ByteBuffer[] readBuf = new ByteBuffer[] { null, null };
 
-    private final BlingBlinger s2nChunks;
-    private final BlingBlinger c2nChunks;
-    private final BlingBlinger n2sChunks;
-    private final BlingBlinger n2cChunks;
-    private final BlingBlinger s2nBytes;
-    private final BlingBlinger c2nBytes;
-    private final BlingBlinger n2sBytes;
-    private final BlingBlinger n2cBytes;
-    
     protected TCPSessionImpl(Dispatcher disp,
                              ArgonTCPSession argonSession,
                              SessionEvent pe,
@@ -75,17 +63,6 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         ArgonConnectorImpl argonConnector = disp.argonConnector();
 
         logger = argonConnector.sessionLoggerTCP();
-
-        MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(argonConnector.node().getNodeId());
-        s2nChunks = c.getBlingBlinger("s2nChunks");
-        c2nChunks = c.getBlingBlinger("c2nChunks");
-        n2sChunks = c.getBlingBlinger("n2sChunks");
-        n2cChunks = c.getBlingBlinger("n2cChunks");
-        s2nBytes = c.getBlingBlinger("s2nBytes");
-        c2nBytes = c.getBlingBlinger("c2nBytes");
-        n2sBytes = c.getBlingBlinger("n2sBytes");
-        n2cBytes = c.getBlingBlinger("n2cBytes");
     }
 
     public int serverReadBufferSize()
@@ -350,14 +327,6 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             argonConnector.lastSessionWriteFailed(false);
             stats.wroteData(side, numWritten);
 
-            if (SERVER == side) {
-                n2sChunks.increment();
-                n2sBytes.increment(numWritten);
-            } else {
-                n2cChunks.increment();
-                n2cBytes.increment(numWritten);
-            }
-
             if (logger.isDebugEnabled())
                 logger.debug("wrote " + numWritten + " to " + sideName);
         }
@@ -620,14 +589,6 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             logger.debug("read " + numRead + " size chunk from " + sideName);
 
         stats.readData(side, numRead);
-
-        if (CLIENT == side) {
-            c2nChunks.increment();
-            c2nBytes.increment(numRead);
-        } else {
-            s2nChunks.increment();
-            s2nBytes.increment(numRead);
-        }
 
         // We have received bytes.  Give them to the user.
 

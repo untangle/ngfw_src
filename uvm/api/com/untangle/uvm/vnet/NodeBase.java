@@ -16,7 +16,6 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SessionMatcherFactory;
-import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.NodeStateChange;
 import com.untangle.uvm.node.NodeManager;
@@ -55,16 +54,6 @@ public abstract class NodeBase implements Node
         nodeManager = uvm.nodeManager();
         nodeContext = nodeManager.threadContext();
         tid = nodeContext.getNodeId();
-            
-        Counters c = uvm.messageManager().getCounters(tid);
-        c.addMetric("s2nChunks", I18nUtil.marktr("Server to node chunks"), null, false);
-        c.addMetric("c2nChunks", I18nUtil.marktr("Client to node chunks"), null, false);
-        c.addMetric("n2sChunks", I18nUtil.marktr("Node to server chunks"), null, false);
-        c.addMetric("n2cChunks", I18nUtil.marktr("Server to node chunks"), null, false);
-        c.addMetric("s2nBytes", I18nUtil.marktr("Server to node bytes"), "byte", false);
-        c.addMetric("c2nBytes", I18nUtil.marktr("Client to node bytes"), "byte", false);
-        c.addMetric("n2sBytes", I18nUtil.marktr("Node to server bytes"), "byte", false);
-        c.addMetric("n2cBytes", I18nUtil.marktr("Node to client bytes"), "byte", false);
 
         runState = NodeState.LOADED;
     }
