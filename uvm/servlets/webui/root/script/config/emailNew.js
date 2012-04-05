@@ -165,6 +165,8 @@ if (!Ung.hasResource["Ung.Email"]) {
             },this), emailAddress);                
         },        
         buildOutgoingServer : function() {
+            console.log(Ext.getCmp('email_fromAddress'));
+            console.log(Ext.getCmp('email_smtpUseAuthentication'));
             this.panelOutgoingServer = Ext.create('Ext.panel.Panel',{
                 // private fields
                 name : 'Outgoing Server',
@@ -177,24 +179,24 @@ if (!Ung.hasResource["Ung.Email"]) {
                 listeners: {
                     'activate': {
                         fn : function (){
-                            (Ext.create('Ext.tip.ToolTip',{
-                            html : 'It is recommended to use a valid email address. (example: untangle@mydomain.com)',
-                            target :Ext.getCmp('email_fromAddress').container.id,
-                            autoWidth : true,
-                            autoHeight : true,
-                            showDelay : 200,
-                            dismissDelay : 0,
-                            hideDelay : 0
-                            }));
-                            (Ext.create('Ext.tip.ToolTip',{
-                                html : 'Some servers may require this but other servers may not support it.',
-                                target :Ext.getCmp('email_smtpUseAuthentication').container.id,
+                            Ext.create('Ext.tip.ToolTip',{
+                                html: 'It is recommended to use a valid email address. (example: untangle@mydomain.com)',
+                                target :'email_fromAddress',
                                 autoWidth : true,
                                 autoHeight : true,
                                 showDelay : 200,
                                 dismissDelay : 0,
                                 hideDelay : 0
-                            }));
+                                });
+                            Ext.create('Ext.tip.ToolTip',{
+                                html: 'Some servers may require this but other servers may not support it.',
+                                target:'email_smtpUseAuthentication',
+                                autoWidth : true,
+                                autoHeight : true,
+                                showDelay : 200,
+                                dismissDelay : 0,
+                                hideDelay : 0
+                            })
                         }
                     }
                 },
@@ -766,9 +768,11 @@ if (!Ung.hasResource["Ung.Email"]) {
                         listeners : {
                             "change" : {
                                 fn : Ext.bind(function(elem, newValue) {
-                                    var dt = Date.parseDate(newValue, "H:i");
-                                    this.getMailNodeSettings().quarantineSettings.digestHourOfDay = dt.getHours();
-                                    this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay = dt.getMinutes();
+                                    var dt = Ext.Date.parse(newValue, "H:i");
+                                    if (dt) { 
+                                        this.getMailNodeSettings().quarantineSettings.digestHourOfDay = dt.getHours();
+                                        this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay = dt.getMinutes();
+                                    }
                                 },this)
                             }
                         }

@@ -3,18 +3,16 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <c:set var="isDebug" value="true"/>
-<c:set var="isCompat" value="false"/>
 <head>
 
     <title>${companyName}</title>
-    <META content="IE=7.0000" http-equiv="X-UA-Compatible"/>
+    <META content="IE=9.0000" http-equiv="X-UA-Compatible"/>
     <style type="text/css">
-        @import "/ext4/resources/css/ext-all-gray.css?s=${buildStamp}";
+     @import "/ext4/resources/css/ext-all-gray.css?s=${buildStamp}";
 	 @import "/ext4/examples/ux/css/CheckHeader.css?s=${buildStamp}";
     </style>
 <c:if test="${isDebug==false}">
-    <script type="text/javascript" src="/ext4/builds/ext-core-debug.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/ext4/ext-all.js?s=${buildStamp}"></script>
 	<script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
 	<script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
 
@@ -32,35 +30,22 @@
     <script type="text/javascript" src="/script/wizardNew.js?s=${buildStamp}"></script>
 </c:if>
 <c:if test="${isDebug==true}">
-    <script type="text/javascript" src="/ext4/builds/ext-core-debug.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/ext4/ext-all-debug.js?s=${buildStamp}"></script>
-	<c:if test="${isCompat==true}">
-		    <script type="text/javascript" src="/ext4/ext3-compat.js?s=${buildStamp}"></script>
-			<script type="text/javascript" src="/ext4/ext3-core-compat.js?s=${buildStamp}"></script>
-    </c:if>				
-
 	<script type="text/javascript" src="/ext4/examples/ux/data/PagingMemoryProxy.js?s=${buildStamp}"></script>
 	<script type="text/javascript" src="/ext4/examples/ux/CheckColumn.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/i18nNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/componentsNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/mainNew.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/rulebuilder.js?s=${buildStamp}"></script>
+    
+   <script type="text/javascript" src="script/rulebuilder.js?s=${buildStamp}"></script>
  
     <!-- todo, move this to a place where it is loaded dynamically. -->
     <script type="text/javascript" src="/script/timezone.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/country.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/wizardNew.js?s=${buildStamp}"></script>
-    
-    <script type="text/javascript" src="script/config/administrationNew.js?s=${buildStamp}"></script>    
-    <script type="text/javascript" src="script/config/systemNew.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/config/systemInfoNew.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/config/upgradeNew.js?s=${buildStamp}"></script>
-	
-    <script type="text/javascript" src="script/untangle-node-spyware/settingsNew.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-classd/settingsNew.js?s=${buildStamp}"></script>
-    
+  
 </c:if>
 
 <c:if test="${param['console']==1}">
@@ -75,10 +60,12 @@
 		</c:if>
         var isWizardComplete = ${isWizardComplete};
         function init() {
+            console.log("init(2)");
             main=new Ung.Main({debugMode:${isDebug}});
             main.buildStamp='${buildStamp}';
             main.init();
         }
+        console.log("init(1)");
         Ext.onReady(init);
     </script>
  </head>
