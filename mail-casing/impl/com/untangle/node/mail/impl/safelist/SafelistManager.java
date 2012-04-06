@@ -42,8 +42,6 @@ import com.untangle.node.mail.papi.safelist.SafelistAdminView;
 import com.untangle.node.mail.papi.safelist.SafelistCount;
 import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;
-import com.untangle.node.mail.papi.safelist.SafelistRecipient;
-import com.untangle.node.mail.papi.safelist.SafelistSender;
 import com.untangle.node.mail.papi.safelist.SafelistSettings;
 import com.untangle.node.mime.EmailAddress;
 import com.untangle.uvm.util.TransactionWork;
@@ -401,13 +399,13 @@ public class SafelistManager
         }
 
         HashMap<String, ArrayList<SafelistSettings>> allHMSafelistsByRcpnt = new HashMap<String, ArrayList<SafelistSettings>>();
-        HashMap<String, SafelistSender> allHMSndrs = new HashMap<String, SafelistSender>();
+        HashMap<String, String> allHMSndrs = new HashMap<String, String>();
         // cast list because xdoclet does not support java 1.5
         List<SafelistSettings> safelists = mlSettings.getSafelistSettings();
 
         ArrayList<SafelistSettings> rcpntHMSafelists;
-        SafelistRecipient slRcpnt;
-        SafelistSender slSndr;
+        String slRcpnt;
+        String slSndr;
         String tmpRcpnt;
         String tmpSndr;
 
@@ -416,12 +414,12 @@ public class SafelistManager
             // recipient may exist in multiple safelists
             // but we only use one copy of recipient
             slRcpnt = safelist.getRecipient();
-            tmpRcpnt = slRcpnt.getAddr();
+            tmpRcpnt = slRcpnt;
 
             // sender may exist in multiple safelists
             // but we only use one copy of sender
             slSndr = safelist.getSender();
-            tmpSndr = slSndr.getAddr();
+            tmpSndr = slSndr;
 
             allHMSndrs.put(tmpSndr, slSndr); // cache sender
 
@@ -460,7 +458,7 @@ public class SafelistManager
             rcpntHMSafelists = allHMSafelistsByRcpnt.get(curRcpnt);
             if (null == rcpntHMSafelists) {
                 // create new recipient
-                slRcpnt = new SafelistRecipient(curRcpnt);
+                slRcpnt = new String(curRcpnt);
                 m_logger.debug("adding recipient: " + curRcpnt);
 
                 // create safelist cache for new recipient
@@ -494,7 +492,7 @@ public class SafelistManager
                 slSndr = allHMSndrs.get(curSndr);
                 if (null == slSndr) {
                     // create new sender
-                    slSndr = new SafelistSender(curSndr);
+                    slSndr = new String(curSndr);
                     // cache new sender
                     allHMSndrs.put(curSndr, slSndr);
                     m_logger.debug("adding sender: " + curSndr);
@@ -540,7 +538,7 @@ public class SafelistManager
         }
 
         for (SafelistSettings safelist : safelists) {
-            if (true == sndr.equals(safelist.getSender().getAddr())) {
+            if (true == sndr.equals(safelist.getSender())) {
                 return safelist;
             }
         }
@@ -597,8 +595,8 @@ public class SafelistManager
         Map<String, List<String>> sndrsByRcpnt = new HashMap<String, List<String>>();
         Map<String, Map<String, Pattern>> allSndrs = new HashMap<String, Map<String, Pattern>>();
 
-        SafelistRecipient slRcpnt;
-        SafelistSender slSndr;
+        String slRcpnt;
+        String slSndr;
         List<String> sndrs;
         String rcpnt;
         String sndr;
@@ -606,10 +604,10 @@ public class SafelistManager
         for (SafelistSettings safelist : safelists) {
             // we implicitly ignore duplicates w/ HashMap
             slRcpnt = safelist.getRecipient();
-            rcpnt = slRcpnt.getAddr().toLowerCase();
+            rcpnt = slRcpnt.toLowerCase();
 
             slSndr = safelist.getSender();
-            sndr = slSndr.getAddr().toLowerCase();
+            sndr = slSndr.toLowerCase();
 
             //m_logger.debug("using safelist: " + safelist + ", recipient: " + rcpnt + ", sender: " + sndr);
 

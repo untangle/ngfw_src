@@ -1,6 +1,6 @@
 /*
  * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
+ * Copyright (c) 2003-2007 Untangle, Inc.
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2,
@@ -34,21 +34,14 @@
 package com.untangle.node.mail.papi;
 
 import java.io.Serializable;
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
 import com.untangle.uvm.node.Rule;
 
 /**
  * Class used to hold an email address (needed for
  * hibernate stuff).
  */
-@Entity
-@Table(name="n_mail_email_addr_rule", schema="settings")
 @SuppressWarnings("serial")
 public class EmailAddressRule extends Rule implements Serializable {
-
 
     private String m_addr;
 

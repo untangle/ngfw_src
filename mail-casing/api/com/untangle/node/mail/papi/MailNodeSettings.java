@@ -35,21 +35,6 @@ package com.untangle.node.mail.papi;
 
 import java.io.Serializable;
 import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.IndexColumn;
-
 import com.untangle.node.mail.papi.quarantine.QuarantineSettings;
 import com.untangle.node.mail.papi.safelist.SafelistSettings;
 
@@ -59,14 +44,9 @@ import com.untangle.node.mail.papi.safelist.SafelistSettings;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-@Entity
-@Table(name="n_mail_settings", schema="settings")
 @SuppressWarnings("serial")
 public class MailNodeSettings implements Serializable
 {
-
-    private Long id;
-
     private boolean smtpEnabled = true;
     private boolean popEnabled = true;
     private boolean imapEnabled = true;
@@ -87,25 +67,11 @@ public class MailNodeSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    @Id
-    @Column(name="settings_id")
-    @GeneratedValue
-    public Long getId()
-    {
-        return id;
-    }
-
-    public void setId(Long id)
-    {
-        this.id = id;
-    }
-
     /**
      * Enabled status of SMTP casing.
      *
      * @return true if SMTP casing is enabled, false otherwise.
      */
-    @Column(name="smtp_enabled", nullable=false)
     public boolean isSmtpEnabled()
     {
         return smtpEnabled;
@@ -121,7 +87,6 @@ public class MailNodeSettings implements Serializable
      *
      * @return true of POP casing is enabled, false otherwise.
      */
-    @Column(name="pop_enabled", nullable=false)
     public boolean isPopEnabled()
     {
         return popEnabled;
@@ -137,7 +102,6 @@ public class MailNodeSettings implements Serializable
      *
      * @return true of IMAP casing is enabled, false otherwise.
      */
-    @Column(name="imap_enabled", nullable=false)
     public boolean isImapEnabled()
     {
         return imapEnabled;
@@ -153,7 +117,6 @@ public class MailNodeSettings implements Serializable
      *
      * @return for SMTP in millis.
      */
-    @Column(name="smtp_timeout", nullable=false)
     public long getSmtpTimeout()
     {
         return smtpTimeout;
@@ -170,7 +133,6 @@ public class MailNodeSettings implements Serializable
      *
      * @return true if TLS is allowed, false if not allowed
      */
-    @Column(name="smtp_allow_tls", nullable=false)
     public boolean getSmtpAllowTLS()
     {
         return smtpAllowTLS;
@@ -186,7 +148,6 @@ public class MailNodeSettings implements Serializable
      *
      * @return timeout for POP in millis.
      */
-    @Column(name="pop_timeout", nullable=false)
     public long getPopTimeout()
     {
         return popTimeout;
@@ -202,7 +163,6 @@ public class MailNodeSettings implements Serializable
      *
      * @return timeout for IMAP in millis.
      */
-    @Column(name="imap_timeout", nullable=false)
     public long getImapTimeout()
     {
         return imapTimeout;
@@ -216,8 +176,6 @@ public class MailNodeSettings implements Serializable
     /**
      * Quarantine properties associated with this casing.
      */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="quarantine_settings", nullable=false)
     public QuarantineSettings getQuarantineSettings() {
         return quarantineSettings;
     }
@@ -232,11 +190,6 @@ public class MailNodeSettings implements Serializable
      *
      * @return the list of Safelist settings
      */
-    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
-    @JoinTable(name="n_mail_safelists",
-               joinColumns=@JoinColumn(name="setting_id"),
-               inverseJoinColumns=@JoinColumn(name="safels_id"))
-    @IndexColumn(name="position")
     public List<SafelistSettings> getSafelistSettings()
     {
         if (safelistSettings != null) safelistSettings.removeAll(java.util.Collections.singleton(null));

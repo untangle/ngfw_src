@@ -7,15 +7,7 @@
         "type" : "CASING",
         "annotatedClasses" : {
             "javaClass": "java.util.LinkedList",
-            "list": [
-                "com.untangle.node.mail.papi.EmailAddressPairRule",
-                "com.untangle.node.mail.papi.EmailAddressRule",
-                "com.untangle.node.mail.papi.MailNodeSettings",
-                "com.untangle.node.mail.papi.quarantine.QuarantineSettings",
-                "com.untangle.node.mail.papi.safelist.SafelistRecipient",
-                "com.untangle.node.mail.papi.safelist.SafelistSender",
-                "com.untangle.node.mail.papi.safelist.SafelistSettings"
-            ]
+            "list": []
         }
 
 }

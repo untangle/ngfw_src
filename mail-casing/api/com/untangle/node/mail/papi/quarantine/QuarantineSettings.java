@@ -39,28 +39,12 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
-
 import com.untangle.node.mail.papi.EmailAddressPairRule;
 import com.untangle.node.mail.papi.EmailAddressRule;
 
 /**
  * Settings for the quarantine stuff
  */
-@Entity
-@Table(name="n_mail_quarantine_settings", schema="settings")
 @SuppressWarnings("serial")
 public class QuarantineSettings implements Serializable {
 
@@ -68,7 +52,6 @@ public class QuarantineSettings implements Serializable {
     public static final long DAY = HOUR*24L; // millisecs per day
     public static final long WEEK = DAY*7L; // millisecs per week
 
-    private Long id;
     private long maxMailIntern = 2L*WEEK;
     private long maxIdleInbox = 4L*WEEK;
     private byte[] secretKey;
@@ -78,19 +61,6 @@ public class QuarantineSettings implements Serializable {
     private List<EmailAddressPairRule> addressRemaps;
     private List<EmailAddressRule> allowedAddressPatterns;
     private boolean sendDailyDigests = true;
-
-    @Id
-    @Column(name="settings_id")
-    @GeneratedValue
-    public Long getId() 
-    {
-        return id;
-    }
-
-    public void setId(Long id) 
-    {
-        this.id = id;
-    }
 
     /**
      * Get the list of {@link EmailAddressRule} objects, defining the
@@ -102,11 +72,6 @@ public class QuarantineSettings implements Serializable {
      * not supported.  Only glob.  <br>
      * @return a List of EmailAddressRule objects.
      */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinColumn(name="settings_id", nullable=false)
-    @IndexColumn(name="position")
     public List<EmailAddressRule> getAllowedAddressPatterns() {
         if (allowedAddressPatterns == null) {
             setAllowedAddressPatterns(null);
@@ -141,11 +106,6 @@ public class QuarantineSettings implements Serializable {
      *
      * @return a List of EmailAddressPairRule objects.
      */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinColumn(name="settings_id", nullable=false)
-    @IndexColumn(name="position")
     public List<EmailAddressPairRule> getAddressRemaps() {
         if(addressRemaps == null) {
             setAddressRemaps(null);
@@ -171,7 +131,6 @@ public class QuarantineSettings implements Serializable {
         addressRemaps = remaps;
     }
 
-    @Column(name="max_quarantine_sz", nullable=false)
     public long getMaxQuarantineTotalSz() {
         return maxQuarantineSz;
     }
@@ -186,11 +145,9 @@ public class QuarantineSettings implements Serializable {
         maxQuarantineSz = max;
     }
 
-
     /**
      * @return the Hour of the day when digest emails should be sent.
      */
-    @Column(name="hour_in_day")
     public int getDigestHourOfDay() {
         return digestHOD;
     }
@@ -210,7 +167,6 @@ public class QuarantineSettings implements Serializable {
      *
      * @return the Minute of the day when digest emails should be sent.
      */
-    @Column(name="minute_in_day")
     public int getDigestMinuteOfDay() {
         return digestMOD;
     }
@@ -231,7 +187,6 @@ public class QuarantineSettings implements Serializable {
      *
      * @return encrypted password bytes.
      */
-    @Column(name="secret_key", length=32, nullable=false)
     public byte[] getSecretKey() {
         return secretKey;
     }
@@ -245,8 +200,7 @@ public class QuarantineSettings implements Serializable {
         secretKey = key;
     }
 
-    @Transient
-    public String getSecretKeyString()
+    public String trans_getSecretKeyString()
     {
         try {
             return URLEncoder.encode(new String(this.secretKey),"UTF-8");
@@ -255,7 +209,7 @@ public class QuarantineSettings implements Serializable {
         }
     }
 
-    public void setSecretKeyString(String newValue)
+    public void trans_setSecretKeyString(String newValue)
     {
         if (newValue==null) {
             return;
@@ -268,7 +222,6 @@ public class QuarantineSettings implements Serializable {
         }
     }
 
-    @Column(name="max_intern_time", nullable=false)
     public long getMaxMailIntern() {
         return maxMailIntern;
     }
@@ -281,7 +234,6 @@ public class QuarantineSettings implements Serializable {
         maxMailIntern = max;
     }
 
-    @Column(name="max_idle_inbox_time", nullable=false)
     public long getMaxIdleInbox() {
         return maxIdleInbox;
     }
@@ -294,12 +246,11 @@ public class QuarantineSettings implements Serializable {
     public void setMaxIdleInbox(long max) {
         maxIdleInbox = max;
     }
-    
+
     /**
      *
      * @return a boolean to determine whether to send daily digests
      */
-    @Column(name="send_daily_digests")
     public boolean getSendDailyDigests() {
         return this.sendDailyDigests;
     }
@@ -310,5 +261,4 @@ public class QuarantineSettings implements Serializable {
     public void setSendDailyDigests(boolean sendDailyDigests) {
         this.sendDailyDigests = sendDailyDigests;
     }
-
 }

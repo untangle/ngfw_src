@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 import com.untangle.node.mail.impl.imap.ImapCasingFactory;
 import com.untangle.node.mail.impl.quarantine.Quarantine;
@@ -59,31 +57,25 @@ import com.untangle.node.mail.papi.safelist.SafelistSettings;
 import com.untangle.node.mime.EmailAddress;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
 import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
+import com.untangle.uvm.SettingsManager;
 
-public class MailNodeImpl extends AbstractNode
-    implements MailNode, MailExport
+public class MailNodeImpl extends AbstractNode implements MailNode, MailExport
 {
+    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/mail-casing-convert-settings.py";
     private static final String QUARANTINE_JS_URL = "/quarantine/app.js";
 
+    private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     private final Logger logger = Logger.getLogger(MailNodeImpl.class);
 
-    private final CasingPipeSpec SMTP_PIPE_SPEC = new CasingPipeSpec
-        ("smtp", this, SmtpCasingFactory.factory(),
-         Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS);
-    private final CasingPipeSpec POP_PIPE_SPEC = new CasingPipeSpec
-        ("pop", this, PopCasingFactory.factory(),
-         Fitting.POP_STREAM, Fitting.POP_TOKENS);
-    private final CasingPipeSpec IMAP_PIPE_SPEC = new CasingPipeSpec
-        ("imap", this, ImapCasingFactory.factory(),
-         Fitting.IMAP_STREAM, Fitting.IMAP_TOKENS);
+    private final CasingPipeSpec SMTP_PIPE_SPEC = new CasingPipeSpec("smtp", this, SmtpCasingFactory.factory(),Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS);
+    private final CasingPipeSpec POP_PIPE_SPEC = new CasingPipeSpec("pop", this, PopCasingFactory.factory(),Fitting.POP_STREAM, Fitting.POP_TOKENS);
+    private final CasingPipeSpec IMAP_PIPE_SPEC = new CasingPipeSpec("imap", this, ImapCasingFactory.factory(),Fitting.IMAP_STREAM, Fitting.IMAP_TOKENS);
 
-    private final PipeSpec[] pipeSpecs = new PipeSpec[]
-        { SMTP_PIPE_SPEC, POP_PIPE_SPEC, IMAP_PIPE_SPEC };
+    private final PipeSpec[] pipeSpecs = new PipeSpec[] { SMTP_PIPE_SPEC, POP_PIPE_SPEC, IMAP_PIPE_SPEC };
 
     private MailNodeSettings settings;
     private static Quarantine s_quarantine;//This will never be null for *instances* of
@@ -147,6 +139,39 @@ public class MailNodeImpl extends AbstractNode
         }
     }
 
+    private MailNodeSettings initializeMailNodeSettings()
+    {
+        MailNodeSettings local = new MailNodeSettings();
+        local.setSmtpEnabled(true);
+        local.setPopEnabled(true);
+        local.setImapEnabled(true);
+        local.setSmtpTimeout(1000*60*4);
+        local.setPopTimeout(1000*30);
+        local.setImapTimeout(1000*30);
+        local.setSmtpAllowTLS(false);
+
+        QuarantineSettings qs = new QuarantineSettings();
+        qs.setMaxQuarantineTotalSz(10 * ONE_GB);            // 10GB
+        qs.setDigestHourOfDay(6);                           // 6 am
+        qs.setDigestMinuteOfDay(0);                         // 6 am
+        byte[] secretKey = new byte[4];
+        new java.util.Random().nextBytes(secretKey);
+        qs.setSecretKey(secretKey);
+        qs.setMaxMailIntern(QuarantineSettings.WEEK * 2);
+        qs.setMaxIdleInbox(QuarantineSettings.WEEK * 4);
+        local.setQuarantineSettings(qs);
+
+        ArrayList<SafelistSettings> ss = new ArrayList<SafelistSettings>();
+        //TODO Set defaults here - DEFAULT TO WHAT?????
+        local.setSafelistSettings(ss);
+
+        logger.debug("Initialize SafeList/Quarantine...");
+        s_quarantine.setSettings(this, local.getQuarantineSettings());
+        s_safelistMngr.setSettings(this, local);
+
+        return(local);
+    }
+
     // MailNode methods --------------------------------------------------------
 
     public MailNodeSettings getMailNodeSettings()
@@ -156,17 +181,21 @@ public class MailNodeImpl extends AbstractNode
 
     public void setMailNodeSettings(final MailNodeSettings settings)
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    MailNodeImpl.this.settings = (MailNodeSettings)s.merge(settings);
-                    return true;
-                }
+        String nodeID = this.getNodeId().getId().toString();
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-mail/settings_" + nodeID;
+        String settingsFile = settingsName + ".js";
 
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
+        this.settings = settings;
+
+        try
+        {
+            settingsManager.save(MailNodeSettings.class, settingsName, settings);
+        }
+
+        catch(Exception exn)
+        {
+            logger.error("setMailNodeSettings()",exn);
+        }
 
         reconfigure();
 
@@ -260,76 +289,87 @@ public class MailNodeImpl extends AbstractNode
 
     protected void postInit(String[] args)
     {
-        logger.debug("postInit()");
-        TransactionWork<Object> tw = new TransactionWork<Object>()
+        String nodeID = this.getNodeId().getId().toString();
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-mail/settings_" + nodeID;
+        String settingsFile = settingsName + ".js";
+
+        MailNodeSettings readSettings = null;
+        logger.info("Loading settings from " + settingsFile );
+
+        try
+        {
+            // first we try to read our json settings
+            readSettings = settingsManager.load( MailNodeSettings.class, settingsName );
+        }
+
+        catch (Exception exn)
+        {
+            logger.error("postInit()",exn);
+        }
+
+        // if no settings found try importing from the database
+        if (readSettings == null)
+        {
+            logger.info("No json settings found... attempting to import from database");
+
+            try
             {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery
-                        ("from MailNodeSettings ms");
-                    settings = (MailNodeSettings)q.uniqueResult();
+                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + settingsFile;
+                logger.info("Running: " + convertCmd);
+                UvmContextFactory.context().execManager().exec( convertCmd );
+            }
 
-                    boolean shouldSave = false;
+            catch (Exception exn)
+            {
+                logger.error("Conversion script failed", exn);
+            }
 
-                    if (null == settings) {
-                        settings = new MailNodeSettings();
-                        //Set the defaults
-                        settings.setSmtpEnabled(true);
-                        settings.setPopEnabled(true);
-                        settings.setImapEnabled(true);
-                        settings.setSmtpTimeout(1000*60*4);
-                        settings.setPopTimeout(1000*30);
-                        settings.setImapTimeout(1000*30);
-            settings.setSmtpAllowTLS(false);
-                        shouldSave = true;
-                    }
+            try
+            {
+                // try to read the settings created by the conversion script
+                readSettings = settingsManager.load( MailNodeSettings.class, settingsName );
+            }
 
-                    if(settings.getQuarantineSettings() == null) {
-                        QuarantineSettings qs = new QuarantineSettings();
+            catch (Exception exn)
+            {
+                logger.error("Could not read node settings", exn);
+            }
+        }
 
-                        qs.setMaxQuarantineTotalSz(10 * ONE_GB);//10GB
-                        qs.setDigestHourOfDay(6);//6 am
-                        qs.setDigestMinuteOfDay(0);//6 am
-                        byte[] secretKey = new byte[4];
-                        new java.util.Random().nextBytes(secretKey);
-                        qs.setSecretKey(secretKey);
-                        qs.setMaxMailIntern(QuarantineSettings.WEEK * 2);
-                        qs.setMaxIdleInbox(QuarantineSettings.WEEK * 4);
+        try
+        {
+            // still no settings found so init with defaults
+            if (readSettings == null)
+            {
+                logger.warn("No database or json settings found... initializing with defaults");
+                readSettings = initializeMailNodeSettings();
+                setSettings(readSettings);
+            }
 
-                        settings.setQuarantineSettings(qs);
-                        shouldSave = true;
-                    }
+            // otherwise apply the loaded or imported settings from the file
+            else
+            {
+                logger.info("Loaded settings from " + settingsFile);
+                setSettings(readSettings);
+            }
+        }
 
-                    if(settings.getSafelistSettings() == null) {
-                        ArrayList<SafelistSettings> ss = new ArrayList<SafelistSettings>();
+        catch (Exception exn)
+        {
+            logger.error("Could not apply node settings",exn);
+        }
 
-                        //TODO Set defaults here - DEFAULT TO WHAT?????
-
-                        settings.setSafelistSettings(ss);
-                        shouldSave = true;
-                    }
-
-                    if(true == shouldSave) {
-                        s.save(settings);
-                    }
-
-                    reconfigure();
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
-
-        logger.debug("Initialize SafeList/Quarantine...");
-        s_quarantine.setSettings(this, settings.getQuarantineSettings());
-        s_safelistMngr.setSettings(this, settings);
-
-        try {
+        try
+        {
             // create GLOBAL safelist for admin to manage POP/IMAP accounts
             // (GLOBAL safelist is created only if it doesn't exist yet)
             s_safelistMngr.createSafelist("GLOBAL");
-        } catch (Exception ignore) {} //nothing can be done
+        }
+
+        catch (Exception exn)
+        {
+            logger.error("Could not create global safelist",exn);
+        }
 
         deployWebAppIfRequired(logger);
         s_quarantine.open();
@@ -354,7 +394,6 @@ public class MailNodeImpl extends AbstractNode
     {
         setMailNodeSettings((MailNodeSettings)settings);
     }
-
 
     //================================================================
     //Hacks to work around issues w/ the implicit RMI proxy stuff
