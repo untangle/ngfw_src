@@ -21,9 +21,7 @@ package com.untangle.node.mail;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Logger;
-
 import com.untangle.node.mail.impl.imap.ImapCasingFactory;
 import com.untangle.node.mail.impl.quarantine.Quarantine;
 import com.untangle.node.mail.impl.safelist.SafelistManager;
@@ -78,8 +76,7 @@ public class MailNodeImpl extends AbstractNode implements MailNode, MailExport
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { SMTP_PIPE_SPEC, POP_PIPE_SPEC, IMAP_PIPE_SPEC };
 
     private MailNodeSettings settings;
-    private static Quarantine s_quarantine;//This will never be null for *instances* of
-                                           //MailNodeImpl
+    private static Quarantine s_quarantine;//This will never be null for *instances* of MailNodeImpl
     private static final long ONE_GB = (1024L * 1024L * 1024L);
 
     //HAck instances for RMI issues
@@ -139,37 +136,33 @@ public class MailNodeImpl extends AbstractNode implements MailNode, MailExport
         }
     }
 
-    private MailNodeSettings initializeMailNodeSettings()
+    private void initializeMailNodeSettings()
     {
-        MailNodeSettings local = new MailNodeSettings();
-        local.setSmtpEnabled(true);
-        local.setPopEnabled(true);
-        local.setImapEnabled(true);
-        local.setSmtpTimeout(1000*60*4);
-        local.setPopTimeout(1000*30);
-        local.setImapTimeout(1000*30);
-        local.setSmtpAllowTLS(false);
+        MailNodeSettings ns = new MailNodeSettings();
+        ns.setSmtpEnabled(true);
+        ns.setPopEnabled(true);
+        ns.setImapEnabled(true);
+        ns.setSmtpTimeout(1000*60*4);
+        ns.setPopTimeout(1000*30);
+        ns.setImapTimeout(1000*30);
+        ns.setSmtpAllowTLS(false);
 
         QuarantineSettings qs = new QuarantineSettings();
         qs.setMaxQuarantineTotalSz(10 * ONE_GB);            // 10GB
         qs.setDigestHourOfDay(6);                           // 6 am
         qs.setDigestMinuteOfDay(0);                         // 6 am
-        byte[] secretKey = new byte[4];
-        new java.util.Random().nextBytes(secretKey);
-        qs.setSecretKey(secretKey);
+        byte[] binaryKey = new byte[4];
+        new java.util.Random().nextBytes(binaryKey);
+        qs.initBinaryKey(binaryKey);
         qs.setMaxMailIntern(QuarantineSettings.WEEK * 2);
         qs.setMaxIdleInbox(QuarantineSettings.WEEK * 4);
-        local.setQuarantineSettings(qs);
+        ns.setQuarantineSettings(qs);
 
         ArrayList<SafelistSettings> ss = new ArrayList<SafelistSettings>();
         //TODO Set defaults here - DEFAULT TO WHAT?????
-        local.setSafelistSettings(ss);
+        ns.setSafelistSettings(ss);
 
-        logger.debug("Initialize SafeList/Quarantine...");
-        s_quarantine.setSettings(this, local.getQuarantineSettings());
-        s_safelistMngr.setSettings(this, local);
-
-        return(local);
+        setMailNodeSettings(ns);
     }
 
     // MailNode methods --------------------------------------------------------
@@ -198,13 +191,17 @@ public class MailNodeImpl extends AbstractNode implements MailNode, MailExport
         }
 
         reconfigure();
-
         s_quarantine.setSettings(this, settings.getQuarantineSettings());
         s_safelistMngr.setSettings(this, settings);
     }
 
     public void setMailNodeSettingsWithoutSafelists(final MailNodeSettings settings)
     {
+        // if the settings object being passed does not have a valid secret
+        // key then we copy the key from the existing settings
+        if (settings.getQuarantineSettings().getSecretKey() == null)
+            settings.getQuarantineSettings().initBinaryKey(this.settings.getQuarantineSettings().grabBinaryKey());
+
         //get initial safelists
         settings.setSafelistSettings(this.settings.getSafelistSettings());
         setMailNodeSettings(settings);
@@ -342,15 +339,18 @@ public class MailNodeImpl extends AbstractNode implements MailNode, MailExport
             if (readSettings == null)
             {
                 logger.warn("No database or json settings found... initializing with defaults");
-                readSettings = initializeMailNodeSettings();
-                setSettings(readSettings);
+                initializeMailNodeSettings();
             }
 
             // otherwise apply the loaded or imported settings from the file
             else
             {
                 logger.info("Loaded settings from " + settingsFile);
-                setSettings(readSettings);
+
+                settings = readSettings;
+                s_quarantine.setSettings(this, settings.getQuarantineSettings());
+                s_safelistMngr.setSettings(this, settings);
+                reconfigure();
             }
         }
 
@@ -358,6 +358,9 @@ public class MailNodeImpl extends AbstractNode implements MailNode, MailExport
         {
             logger.error("Could not apply node settings",exn);
         }
+
+        // At this point the settings have either been loaded from disk
+        // or initialized to defaults so now we do all the other setup
 
         try
         {

@@ -35,6 +35,7 @@ package com.untangle.node.mail.papi.quarantine;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -46,15 +47,16 @@ import com.untangle.node.mail.papi.EmailAddressRule;
  * Settings for the quarantine stuff
  */
 @SuppressWarnings("serial")
-public class QuarantineSettings implements Serializable {
-
+public class QuarantineSettings implements Serializable
+{
     public static final long HOUR = 1000L*60L*60L; // millisecs per hour
     public static final long DAY = HOUR*24L; // millisecs per day
     public static final long WEEK = DAY*7L; // millisecs per week
 
     private long maxMailIntern = 2L*WEEK;
     private long maxIdleInbox = 4L*WEEK;
-    private byte[] secretKey;
+    private String secretKey;
+    private byte[] binaryKey;
     private int digestHOD;//Hour Of Day
     private int digestMOD;//Minute Of Day
     private long maxQuarantineSz;
@@ -183,43 +185,83 @@ public class QuarantineSettings implements Serializable {
     }
 
     /**
+     * Here are the original comments from the xxxSecretKey() functions:
+     *
      * Password, encrypted with password utils.
      *
      * @return encrypted password bytes.
-     */
-    public byte[] getSecretKey() {
-        return secretKey;
-    }
-
-    /**
+     *
      * Set the key used to create authentication "tokens".  This should
      * really only ever be set once for a given deployment (or else
      * folks with older emails won't be able to use the links).
      */
-    public void setSecretKey(byte[] key) {
-        secretKey = key;
+
+    /**
+     * Previously this all worked fine since the byte[] array mapped nicely
+     * to a bytea column in postgres.  The SettingsManager doesn't handle
+     * the byte array properly, so I had to get creative.
+     *
+     * Now we maintain a copy of the key in two different formats:
+     *   binaryKey = byte[]
+     *   secretKey = String
+     *
+     * The String version will always be twice as long as the byte version,
+     * and is represented as a series of eight 4-bit nibbles, the value of
+     * each added to the ASCII value of 'A', which allows the key to be
+     * stored in the json file as a simple 8 byte string like "ABCDEFGH".
+     *
+     * The getSecretKey() and setSecretKey() functions are the ones that get
+     * and set the String version, and are so named so they will be picked up
+     * by the SettingsManager magic.  I used the names initBinaryKey() and
+     * grabBinaryKey() to manipulate the key in byte[] format which keeps
+     * the byte[] version from ending up in the settings file.
+     */
+
+    public String getSecretKey()
+    {
+        return(secretKey);
     }
 
-    public String trans_getSecretKeyString()
+    public byte[] grabBinaryKey()
     {
-        try {
-            return URLEncoder.encode(new String(this.secretKey),"UTF-8");
-        } catch ( UnsupportedEncodingException e ) {
-            return null;
+        return(binaryKey);
+    }
+
+    public void setSecretKey(String key)
+    {
+    // first we save the argumented key in our string version
+    secretKey = key;
+
+    // now we generate the binary version from the string version
+    int rawlen = (key.length() / 2);
+    binaryKey = new byte[rawlen];
+
+        for(int x = 0;x < rawlen;x++)
+        {
+        int lo_nib = (key.charAt((x * 2) + 0) - 'A');
+        int hi_nib = (key.charAt((x * 2) + 1) - 'A');
+        int value = (((hi_nib << 4) & 0xF0) | lo_nib);
+        binaryKey[x] = (byte)value;
         }
     }
 
-    public void trans_setSecretKeyString(String newValue)
+    public void initBinaryKey(byte[] key)
     {
-        if (newValue==null) {
-            return;
+    // first we save the argumented key in our binary version
+    binaryKey = key;
+
+    // now we generate the string version from the binary version
+    StringBuilder local = new StringBuilder();
+
+        for(int x = 0;x < key.length;x++)
+        {
+        char lo_nib = (char)((key[x] & 0x0F) + 'A');
+        char hi_nib = (char)(((key[x] >> 4) & 0x0F) + 'A');
+        local.append(lo_nib);
+        local.append(hi_nib);
         }
 
-        try {
-            this.secretKey = URLDecoder.decode(new String(newValue),"UTF-8").getBytes();
-        } catch ( UnsupportedEncodingException e ) {
-            /* nothing to do */
-        }
+    secretKey = local.toString();
     }
 
     public long getMaxMailIntern() {

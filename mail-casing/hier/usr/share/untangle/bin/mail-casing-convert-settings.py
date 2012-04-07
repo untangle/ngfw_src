@@ -25,6 +25,23 @@ def escape(arg):
 
 #------------------------------------------------------------------------------
 
+def nibble_encode(arg):
+    str = ""
+
+    # Take each byte of a binary array and split it into the low and
+    # high nibbles.  Add the value 'A' to each and append to a string.
+    # Thus a 4 btyte array is converted to an 8 byte string of
+    # characters between A and P
+    for x in range(0,len(arg)):
+        loval = ((ord(arg[x]) & 0x0F) + ord('A'))
+        hival = (((ord(arg[x]) >> 4) & 0x0F) + ord('A'))
+        str = (str + chr(loval))
+        str = (str + chr(hival))
+        
+    return str
+
+#------------------------------------------------------------------------------
+
 def get_quarantine_settings(sid, indent, debug=False):
     if (debug):
         print "Getting n_mail_quarantine_settings list for SID: ",sid
@@ -54,7 +71,7 @@ def get_quarantine_settings(sid, indent, debug=False):
     str += pad(indent+4) + '"maxIdleInbox": %s,\n' % max_idle_inbox_time
     str += pad(indent+4) + '"maxMailIntern": %s,\n' % max_intern_time
     str += pad(indent+4) + '"maxQuarantineTotalSz": %s,\n' % max_quarantine_sz
-#        str += pad(indent+4) + '"secretKey": "%s",\n' % escape(secret_key) if (secret_key != None) else ''
+    str += pad(indent+4) + '"secretKey": "%s",\n' % nibble_encode(secret_key) if (secret_key != None) else ''
     str += pad(indent+4) + '"sendDailyDigests": %s\n' % send_daily_digests
 
     str += pad(indent) + '},'

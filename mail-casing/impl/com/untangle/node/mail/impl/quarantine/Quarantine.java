@@ -121,7 +121,7 @@ public class Quarantine
         m_impl = impl;
         m_settings = settings;
 
-        m_atm.setKey(m_settings.getSecretKey());
+        m_atm.setKey(m_settings.grabBinaryKey());
 
         //Handle nulls (defaults)
         if(settings.getAllowedAddressPatterns() == null ||

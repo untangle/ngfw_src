@@ -28,8 +28,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 import com.untangle.node.mail.MailNodeImpl;
 import com.untangle.node.mail.impl.GlobEmailAddressMapper;
@@ -44,7 +42,6 @@ import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
 import com.untangle.node.mail.papi.safelist.SafelistNodeView;
 import com.untangle.node.mail.papi.safelist.SafelistSettings;
 import com.untangle.node.mime.EmailAddress;
-import com.untangle.uvm.util.TransactionWork;
 
 /**
  * Implementation of the safelist stuff
@@ -570,20 +567,6 @@ public class SafelistManager
 
     private List<SafelistSettings> getHMSafelists()
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery("from MailNodeSettings");
-                    mlSettings = (MailNodeSettings)q.uniqueResult();
-
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        mlImpl.getNodeContext().runTransaction(tw);
-
         // cast list because xdoclet does not support java 1.5
         return mlSettings.getSafelistSettings();
     }
