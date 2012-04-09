@@ -184,28 +184,22 @@ Ext.define('Ung.Reports',{
         }
     },
     startApplicationPrintView : function(){
-        console.log("create print view...");
         var panel = Ext.create('Ext.panel.Panel',{
             renderTo : 'base',
             cls : "base-container",
-            layout : 'fit',
             id : 'report-details-container',
-            height : getWinHeight()-80,
             width:740,
-            cls:'full-height', 
             autoScroll : true,
             items : [{
+                    xtype:'panel',
                     title : 'Report Details&nbsp;<span id="breadcrumbs" class="breadcrumbs"></span>',
                     id : 'report-details',
-                    layout:"fit",
                     region:'center',
                     autoScroll : true,
                     collapsible : false,
                     split : false,
                     margin: '2 2 0 2',
-                    width : 700,
-                    border: false,
-                    cls:'full-height',                     
+                    border: 0,
                     items : [{ html:"" }],
                     listeners : {
                         'render' : function(){
@@ -218,7 +212,6 @@ Ext.define('Ung.Reports',{
         reports.breadcrumbs=[];
         rpc.drilldownType = null;
         rpc.drilldownValue = null;
-        console.log("get application data");
         reports.getApplicationData(reports.selectedApplication, reports.numDays);                    
     },
     startApplication : function()
@@ -247,24 +240,23 @@ Ext.define('Ung.Reports',{
             renderTo : 'base',
             cls : "base-container",
             layout : 'border',
-            height : 700, //getWinHeight()-80,
+            height : getWinHeight()-80,
             width : 960,
-            border:false,
             defaults : { border : false,
-                         bodyStyle : 'background-color: transparent;'
+                        bodyStyle : 'background-color:#F0F0F0;'
                        },
             items : [ 
             {
                 xtype:'panel',
                 region : 'north',
                 layout:'border',
-                style : 'padding: 10px 8px 10px 10px;',
-                height : 100,
+                style : 'padding: 7px 5px 7px 7px;background-color:#F0F0F0',
+                height : 70,
                 width : 960,
                 border:0,
                 defaults : {
                     border : 0,
-                    bodyStyle : 'background-color: transparent;'
+                    bodyStyle : 'background-color: #F0F0F0;'
                 },
                 items : [
                 {
@@ -273,11 +265,12 @@ Ext.define('Ung.Reports',{
                     region : 'west',
                     border:0,
                     width : 100,
-                    height:60
                 },
                 {
-                    xtype:'panel',
-                    html : '<h1>'+i18n._('Reports')+'</h1>',
+                    xtype:'label',
+                    height:60,
+                    style:'font-family:serif;font-weight:bold;font-size:37px;margin-left:15px;',
+                    text:i18n._('Reports'),
                     region : 'center',
                     border:0
                 },
@@ -288,9 +281,8 @@ Ext.define('Ung.Reports',{
                         border:0
                     },
                     region : 'east',
-                    width : 480,
+                    width : 490,
                     height: 60,
-                    //style : 'height:60px;',
                     cls   : 'dateRange',
                     items : [
                     {
@@ -344,15 +336,13 @@ Ext.define('Ung.Reports',{
                     xtype :'treepanel',
                     id : 'tree-panel',
                     region : 'west',
-                    margins : '2 2 0 2',
-                    border:false,
+                    margin : '1 1 0 1',
                     autoScroll : true,
                     rootVisible : false,
-                    title : "TreePanel", //i18n._('Reports'),
+                    title : i18n._('Reports'),
                     enableDD: false,
                     enableDrag: false,
-                    width:170,
-                    height:400,
+                    width:180,
                     store: treeStore,
                     listeners : {
                         'load' : function(node) {
@@ -407,8 +397,7 @@ Ext.define('Ung.Reports',{
                     autoScroll : false,
                     collapsible : false,
                     split : true,
-                    margin : '2 2 0 2',
-                    border: false,
+                    margin :'1 1 0 3',
                     defaults: {
                         border:false
                     },
@@ -419,7 +408,7 @@ Ext.define('Ung.Reports',{
                 xtype:'panel',
                 border: false,
                 region:'south',
-                height:5
+                height:3
             }]
         });
     },
@@ -894,6 +883,10 @@ Ext.define('Ung.ReportDetails', {
                 ],
                 data: data
             }),
+            border:0,
+            defaults:{
+                border:0
+            },
             columns: [{
                 header: "Application Name",
                 width: 500,
@@ -941,6 +934,10 @@ Ext.define('Ung.ReportDetails', {
         }
 
         return Ext.create('Ext.grid.Panel',{
+            border:0,
+            defaults: {
+                border:0
+            },
             store: Ext.create('Ext.data.Store',{
                 fields: [
                     {name: 'javaClass'},
@@ -1025,13 +1022,11 @@ Ext.define('Ung.ReportDetails', {
                 border: false,
                 defaults: {
                     anchor: '100% 100%',
+                    border:false,
                     autoWidth : true,
                     autoScroll: true
                 },
-
-                height : 400,
                 activeTab : 0,
-                frame : true,
                 items : itemsArray,
                 layoutOnTabChange : true
             });
@@ -1098,7 +1093,7 @@ Ext.define('Ung.ReportDetails', {
                 border:false
             },
             columnWidth: 0.5,
-            items : items
+            items:items
         });
         
     },
@@ -1228,11 +1223,11 @@ Ext.define('Ung.ReportDetails', {
                 }, this)
             });
             items.push(Ext.create('Ext.grid.Panel',{
-                style : 'margin-top:20px;',
+                style : 'margin-top:10px;',
                 autoScroll : true,
                 width: 330,
                 height: 243,
-                border:false,
+                border:0,
                 store: Ext.create('Ext.data.ArrayStore',{
                     fields: [
                         {name: 'label'},
@@ -1260,7 +1255,6 @@ Ext.define('Ung.ReportDetails', {
                     text : i18n._('Export Data'),
                     handler : new Function("window.open('" + summaryItem.csvUrl + "');")
                 }],
-                title:this.i18n._('Key Statistics'),
                 header: false,
                 stripeRows: true,
                 hideHeaders: true,
@@ -1273,14 +1267,12 @@ Ext.define('Ung.ReportDetails', {
             title : section.title,
             layout:{ type:'table',columns:2},
             autoWidth : true,
-            border: false,
-            //autoScroll: true,
+            border: 0,
             defaults: {
-                border: false,
-                //columnWidth: 0.5 ,
-                ctCls : 'top-align'
+                border: 0,
+                cls : 'top-align'
             },
-            items : items
+            items:items
 
         });
     },
