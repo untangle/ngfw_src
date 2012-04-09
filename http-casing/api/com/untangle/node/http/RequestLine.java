@@ -44,10 +44,10 @@ public class RequestLine implements Serializable
 
         this.requestUri = getUri(requestUriBytes);
 
-        synchronized(this) {
+        synchronized(RequestLine.class) {
             if (this.nextId == 0)
                 this.nextId = sessionEvent.getSessionId(); /* borrow the session Id as a starting point */
-            this.requestId = ++this.nextId;
+            this.requestId = this.nextId++;
         }
     }
 
