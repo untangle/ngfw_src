@@ -241,7 +241,7 @@ public class LogWorkerImpl implements Runnable, LogWorker
                                 timeMap.put(eventTypeName, currentTime);
                             }
                         } catch (SQLException e) {
-                            logger.warn("Failed SQL query: \"" + sqlStr + "\": ",e);
+                            logger.warn("Failed SQL query: \"" + sqlStr + "\": " + e.getMessage());
                         }
                     }
                     List<String> sqls = event.getDirectEventSqls();
