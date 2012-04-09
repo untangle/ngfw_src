@@ -2,6 +2,7 @@
 package com.untangle.uvm;
 
 import java.net.InetAddress;
+import java.util.Map;
 
 /**
  * This class is an object that represents a conntrack session
@@ -71,6 +72,8 @@ public class SessionMonitorEntry
     private Boolean natted;
     private Integer priority;
 
+    private Map<String,Object> attachments;
+    
     public String getPolicy() {return policy;}
     public void   setPolicy( String policy ) {this.policy = policy;}
 
@@ -88,6 +91,9 @@ public class SessionMonitorEntry
     public Integer getPriority() {return priority;}
     public void    setPriority( Integer priority ) {this.priority = priority;}
 
+    public Map<String,Object> getAttachments() {return attachments;}
+    public void               setAttachments( Map<String,Object> attachments ) {this.attachments = attachments;}
+    
     /**
      * The following properties come from jnettop
      */

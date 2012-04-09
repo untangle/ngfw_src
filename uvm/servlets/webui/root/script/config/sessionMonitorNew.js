@@ -29,6 +29,19 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
         applyAction : function(){
             this.cancelAction();
         },
+        getSessions : function(){
+            var sessions = rpc.jsonrpc.UvmContext.sessionMonitor().getMergedSessions();
+            // iterate through each session and change its attachments map to properties
+            for (var i = 0; i < sessions.list.length ; i++) {
+                var session = sessions.list[i];
+                if (session.attachments != null) {
+                    for (var prop in session.attachments.map) {
+                        session[prop] = session.attachments.map[prop];
+                    }
+                }
+            }
+            return sessions;
+        },
         // Current Sessions Grid
         buildGridCurrentSessions : function() {
             this.gridCurrentSessions = Ext.create('Ung.EditorGrid',{
@@ -48,7 +61,7 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                 qtip : this.i18n._("This shows all current sessions."),
                 paginated : false,
                 recordJavaClass : "com.untangle.uvm.SessionMonitorEntry",
-                dataFn : rpc.jsonrpc.UvmContext.sessionMonitor().getMergedSessions,
+                dataFn : this.getSessions,
                 fields : [{
                     name : "id"
                 },{
@@ -83,6 +96,8 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     name : "natted"
                 },{
                     name : "portForwarded"
+                },{
+                    name : "classd-protochain"
                 }],
                 columns : [{
                     header : this.i18n._("Protocol"),
@@ -170,6 +185,10 @@ if (!Ung.hasResource["Ung.SessionMonitor"]) {
                     header : this.i18n._("Port Forwarded"),
                     dataIndex: "portForwarded",
                     width : 50
+                },{
+                    header : this.i18n._("Protochain"),
+                    dataIndex: "classd-protochain",
+                    width : 150
                 }],
                 initComponent : function() {
                     this.bbar = ['-',

@@ -152,6 +152,8 @@ class SessionMonitorImpl implements SessionMonitor
                          */
                         if (priority != 0)
                             session.setPriority(priority);
+
+                        session.setAttachments(argonSession.getAttachments());
                         
                         foundUvmSession = true;
                         break;
