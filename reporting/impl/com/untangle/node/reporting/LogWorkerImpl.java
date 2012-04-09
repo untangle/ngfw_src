@@ -34,127 +34,79 @@ import com.untangle.uvm.util.TransactionWork;
  */
 public class LogWorkerImpl implements Runnable, LogWorker
 {
-    private static final int MAX_LOAD = 2;
+    private static final int SYNC_TIME = 60*1000; /* 60 seconds */
 
-    private static final int QUEUE_SIZE = 10000;
-    private static final int BATCH_SIZE = QUEUE_SIZE;
-    private static final int LONG_SYNC_TIME = (int)Integer.getInteger("uvm.events.long_sync");
-    private static final int SHORT_SYNC_TIME = (int)Integer.getInteger("uvm.events.short_sync");
-    private static int RUNTIME_SYNC_TIME;
+    private final Logger logger = Logger.getLogger(getClass());
+
     private static boolean forceFlush = false;
+
     private static boolean running = false;
-    private long lastLoggedWarningTime = System.currentTimeMillis();
+
+    private volatile Thread thread;
     
-    static { // initialize RUNTIME_SYNC_TIME
-        String p = System.getProperty("uvm.logging.synctime");
-        int i = -1;
-        if (null != p) {
-            try {
-                i = Integer.parseInt(p);
-            } catch (NumberFormatException exn) {
-                Logger.getLogger(LogWorker.class).warn("ignoring invalid sync time: " + p);
-            }
-        }
-        RUNTIME_SYNC_TIME = i < 0 ? 0 : i;
-    }
+    private long lastLoggedWarningTime = System.currentTimeMillis();
 
     /**
      * This is a queue of incoming events
      */
     private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
 
-    private final SyslogManager syslogManager = UvmContextFactory.context().syslogManager();
-
-    private final Logger logger = Logger.getLogger(getClass());
-
-    private final ReportingNode node;
-    
-    private volatile Thread thread;
-    private boolean interruptable;
-
-    private Double lastLoad;
-    private long lastLoadGet;
-    private long syncTime;
-
-    // constructors -------------------------------------------------------
-
-    public LogWorkerImpl(ReportingNode node)
-    {
-        this.lastLoadGet = 0;
-        this.syncTime = 0;
-        this.node = node;
-    }
-
-    // Runnable methods ---------------------------------------------------
+    public LogWorkerImpl(ReportingNode node) { }
 
     public void run()
     {
         thread = Thread.currentThread();
 
         List<LogEvent> logQueue = new LinkedList<LogEvent>();
-        long lastSync = System.currentTimeMillis();
-        long nextSync = lastSync + getSyncTime();
-        boolean force = false;
         LogEvent event = null;
-
+        
+        /**
+         * Wait for all SQL conversions to complete
+         */
         do {
             try {Thread.sleep(1000);} catch (Exception e) {}
         } while (!UvmContextFactory.context().loggingManager().isConversionComplete());
         
+        /**
+         * Loop indefinitely and continue logging events
+         */
         while (thread != null) {
-            long t = System.currentTimeMillis();
+            /**
+             * Sleep until next log time
+             */
+            if (!forceFlush)
+                try {Thread.sleep(SYNC_TIME);} catch (Exception e) {}
 
-            if (t < nextSync) {
-                event = null;
-                
-                synchronized (this) { interruptable = true; }
-                try {
-                    /**
-                     * If there are events waiting to be written only wait a certain amount of time
-                     * Otherwise wait indefinitely because no reason to wake up
-                     */
-                    if (logQueue.size() > 0) {
-                        event = inputQueue.poll(nextSync - t, TimeUnit.MILLISECONDS);
-                    } else {
-                        event = inputQueue.take();
-                    }
-                } catch (InterruptedException exn) {}
-                synchronized (this) { interruptable = false; }
-
-                if (event != null)
-                    logQueue.add(event);
-                
-                if (forceFlush) {
-                    force = true; //set flag to force the flush
-                    forceFlush = false; //reset global flag
-
-                    // grab all the events available
-                    while ((event = inputQueue.poll()) != null) {
-                        logQueue.add(event);
-                    }
-                }
-                
+            /**
+             * Copy all events out of the queue
+             */
+            while ((event = inputQueue.poll()) != null) {
+                logQueue.add(event);
             }
-
-            if (logQueue.size() >= BATCH_SIZE || t >= nextSync || force) {
-
+                
+            /**
+             * If there is anything to log, log it to the database
+             */
+            if (logQueue.size() > 0)
                 persist(logQueue);
 
-                lastSync = System.currentTimeMillis();
-                nextSync = lastSync + getSyncTime();
-                synchronized( this ) {
-                    if (force) {
-                        force = false;
-                        notifyAll(); /* notify any waiting threads that the flush is done */
-                    }
+            /**
+             * If the forceFlush flag was set, reset it and wake any interested parties
+             */
+            synchronized( this ) {
+                if (forceFlush) {
+                    forceFlush = false; //reset global flag
+                    notifyAll(); /* notify any waiting threads that the flush is done */
                 }
             }
         }
 
+        /**
+         * Log remaining events and exit
+         */
         while ((event = inputQueue.poll()) != null) {
             logQueue.add(event);
         }
-
         if ( logQueue.size() > 0 ) {
             persist(logQueue);
         }
@@ -170,17 +122,17 @@ public class LogWorkerImpl implements Runnable, LogWorker
             return;
         }
 
-        forceFlush = true;
-        logger.info("forceFlush()");
-        thread.interrupt();
-
         /**
          * Wait on the flush to finish - we will get notified)
          */
         synchronized( this ) {
+            forceFlush = true;
+            logger.info("forceFlush()");
+            thread.interrupt();
+
             while (true) {
                 try {wait();} catch (java.lang.InterruptedException e) {}
-            
+
                 if (!forceFlush)
                     return;
             }
@@ -211,61 +163,10 @@ public class LogWorkerImpl implements Runnable, LogWorker
          * Send it to syslog (make best attempt - ignore errors)
          */
         try {
-            syslogManager.sendSyslog(event, event.getTag());
+            UvmContextFactory.context().syslogManager().sendSyslog(event, event.getTag());
         } catch (Exception exn) { 
             logger.warn("failed to send syslog", exn);
         }
-    }
-
-    /*
-     * Only calculate the load every LONG_SYNC_TIME
-     */
-    private Double getLoad()
-    {
-        if ((lastLoadGet == 0)
-            || ((System.currentTimeMillis() - lastLoadGet) > LONG_SYNC_TIME)) {
-            Double load =  Double.parseDouble("0");
-
-            BufferedReader br = null;
-            try {
-                br = new BufferedReader(new FileReader("/proc/loadavg"));
-                String l = br.readLine();
-                if (null != l)
-                    load = Double.parseDouble(l.split(" ")[0]);
-            } catch (Exception e) {
-                logger.warn("could not get loadavg", e);
-            }
-            lastLoadGet = System.currentTimeMillis();
-            lastLoad = load;
-            return load;
-        } else {
-            return lastLoad;
-        }
-    }
-
-    private long getSyncTime()
-    {
-        if (RUNTIME_SYNC_TIME != 0)
-            return RUNTIME_SYNC_TIME;
-
-        long oldSyncTime = syncTime;
-
-        Double load = getLoad();
-        if (load > MAX_LOAD) {
-            syncTime = LONG_SYNC_TIME;
-            if (syncTime != oldSyncTime)
-                logger.info("Current load (" + load + ") is higher than " +
-                            MAX_LOAD + ", logging events only every " +
-                            syncTime/1000 + " seconds");
-        } else {
-            syncTime = SHORT_SYNC_TIME;
-            if (syncTime != oldSyncTime)
-                logger.info("Current load (" + load + ") is lower than " +
-                            MAX_LOAD + ", now logging events every " +
-                            syncTime/1000 + " seconds");
-        }
-        
-        return syncTime;
     }
 
     /**
@@ -413,8 +314,6 @@ public class LogWorkerImpl implements Runnable, LogWorker
         }
     }
 
-    // package protected methods ------------------------------------------
-
     protected void start()
     {
         this.running = true;
@@ -426,10 +325,8 @@ public class LogWorkerImpl implements Runnable, LogWorker
         this.running = false;
         Thread t = thread;
         thread = null; /* thread will exit if thread is null */
-        synchronized (this) {
-            if (interruptable && null != t) {
-                t.interrupt();
-            }
+        if (t != null) {
+            t.interrupt();
         }
     }
 

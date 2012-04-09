@@ -20,8 +20,6 @@ if [ $MEM -gt 4900000 ] ; then
     MAX_VIRTUAL_SIZE=`echo $MEM | awk '{printf int($1 * 1.5  / 1000) "m"}'`
     GC_SAFETY_FACTOR=10
     GC_MIN_CYCLE=1
-    EVENTS_LONG_SYNC=40 # seconds
-    EVENTS_SHORT_SYNC=5 # seconds
     REPORTS_INTERVAL_MIN=5 # minutes
     REPORTS_INTERVAL_HOUR=1 # hour
 elif [ $MEM -gt 3900000 ] ; then
@@ -29,8 +27,6 @@ elif [ $MEM -gt 3900000 ] ; then
     MAX_VIRTUAL_SIZE=6000m
     GC_SAFETY_FACTOR=10
     GC_MIN_CYCLE=2
-    EVENTS_LONG_SYNC=50 # seconds
-    EVENTS_SHORT_SYNC=7 # seconds
     REPORTS_INTERVAL_MIN=10 # minutes
     REPORTS_INTERVAL_HOUR=1 # hour
 elif [ $MEM -gt 2900000 ] ; then
@@ -38,8 +34,6 @@ elif [ $MEM -gt 2900000 ] ; then
     MAX_VIRTUAL_SIZE=4500m
     GC_SAFETY_FACTOR=20
     GC_MIN_CYCLE=5
-    EVENTS_LONG_SYNC=60 # seconds
-    EVENTS_SHORT_SYNC=9 # seconds
     REPORTS_INTERVAL_MIN=10 # minutes
     REPORTS_INTERVAL_HOUR=1 # hour
 elif [ $MEM -gt 1900000 ] ; then
@@ -47,8 +41,6 @@ elif [ $MEM -gt 1900000 ] ; then
     MAX_VIRTUAL_SIZE=3000m
     GC_SAFETY_FACTOR=50
     GC_MIN_CYCLE=10
-    EVENTS_LONG_SYNC=90 # seconds
-    EVENTS_SHORT_SYNC=12 # seconds
     REPORTS_INTERVAL_MIN=15 # minutes
     REPORTS_INTERVAL_HOUR=1 # hour
 elif [ $MEM -gt 900000 ] ; then
@@ -61,8 +53,6 @@ elif [ $MEM -gt 900000 ] ; then
     fi
     GC_SAFETY_FACTOR=90
     GC_MIN_CYCLE=10
-    EVENTS_LONG_SYNC=110 # seconds
-    EVENTS_SHORT_SYNC=14 # seconds
     REPORTS_INTERVAL_MIN=30 # minutes
     REPORTS_INTERVAL_HOUR=1 # hour
 else
@@ -75,15 +65,11 @@ else
     fi
     GC_SAFETY_FACTOR=90
     GC_MIN_CYCLE=10
-    EVENTS_LONG_SYNC=120 # seconds
-    EVENTS_SHORT_SYNC=15 # seconds
     REPORTS_INTERVAL_MIN=60 # minutes
     REPORTS_INTERVAL_HOUR=1 # hour
 fi
 
 MAX_VIRTUAL_SIZE=$(( ${MAX_VIRTUAL_SIZE/m} * 1000 ))
-EVENTS_SHORT_SYNC=$(( ${EVENTS_SHORT_SYNC} * 1000 ))
-EVENTS_LONG_SYNC=$(( ${EVENTS_LONG_SYNC} * 1000 ))
 
 echo "    Maximum heap size        -> ${MAX_HEAP_SIZE}"
 echo "    Maximum virtual size     -> ${MAX_VIRTUAL_SIZE}"
@@ -92,8 +78,6 @@ echo "    GC minimum cycle         -> ${GC_MIN_CYCLE}"
 echo "    Reports interval (hour)  -> ${REPORTS_INTERVAL_HOUR}"
 echo "    Reports interval (min)   -> ${REPORTS_INTERVAL_MIN}"
 echo "    Max load for reports     -> ${REPORTS_MAX_LOAD}"
-echo "    Events short sync        -> ${EVENTS_SHORT_SYNC}"
-echo "    Events long  sync        -> ${EVENTS_LONG_SYNC}"
 
 
 #
@@ -108,6 +92,4 @@ max_heap_size="$MAX_HEAP_SIZE"
 max_virtual_size="$MAX_VIRTUAL_SIZE"
 gc_safety_factor="$GC_SAFETY_FACTOR"
 gc_min_cycle="$GC_MIN_CYCLE"
-events_long_sync = "$EVENTS_LONG_SYNC"
-events_short_sync = "$EVENTS_SHORT_SYNC"
 EOF
