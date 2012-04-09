@@ -55,7 +55,7 @@ public class SafelistManager
     private MailNodeImpl mlImpl;
     private MailNodeSettings mlSettings;
 
-    // caches of values held by persistent hibernate mapping objects
+    // caches of values
     private Map<String, List<String>> m_sndrsByRcpnt = new HashMap<String, List<String>>();
     private Map<String, Map<String, Pattern>> m_allSndrs = new HashMap<String, Map<String, Pattern>>();
     private Object allSndrsLock = new Object ();
@@ -384,8 +384,7 @@ public class SafelistManager
         return false;
     }
 
-    // refresh (add/delete/update) safelists for this recipient and
-    // make these changes visible as persistent hibernate mapping objects
+    // refresh (add/delete/update) safelists for this recipient
     private synchronized void setSndrs(String rcpnt, List<String> sndrs)
     {
         if (null == rcpnt) {

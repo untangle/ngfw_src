@@ -37,8 +37,7 @@ import java.io.Serializable;
 import com.untangle.uvm.node.Rule;
 
 /**
- * Class used to hold an email address (needed for
- * hibernate stuff).
+ * Class used to hold an email address
  */
 @SuppressWarnings("serial")
 public class EmailAddressRule extends Rule implements Serializable {
