@@ -18,8 +18,7 @@ from   untangle_tests.shield_tests import ShieldTests
 from   untangle_tests.clam_tests import ClamTests
 from   untangle_tests.commtouchav_tests import CommtouchAvTests
 from   untangle_tests.adconnector_tests import DirectoryConnectorTests
-
-
+from   untangle_tests.openvpn_tests import OpenVPNTests
 
 class ArgumentParser(object):
     def __init__(self):
@@ -229,6 +228,10 @@ while True:
         total += subTotal
     if ("adconnector" in parser.nodesToTest or "all" in parser.nodesToTest):
         errors, subTotal = runTestSuite(DirectoryConnectorTests)
+        rc += errors
+        total += subTotal
+    if ("openvpn" in parser.nodesToTest or "all" in parser.nodesToTest):
+        errors, subTotal = runTestSuite(OpenVPNTests)
         rc += errors
         total += subTotal
     if not parser.repeat:
