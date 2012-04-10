@@ -127,7 +127,7 @@ public class HttpNodeImpl extends AbstractNode implements HttpNode
             else
             {
                 logger.info("Loaded settings from " + settingsFile);
-                setSettings(readSettings);
+                this.settings = readSettings;
                 reconfigure();
             }
         }

@@ -150,7 +150,7 @@ public class FtpNodeImpl extends AbstractNode
             else
             {
                 logger.info("Loaded settings from " + settingsFile);
-                setSettings(readSettings);
+                this.settings = readSettings;
                 reconfigure();
             }
         }
