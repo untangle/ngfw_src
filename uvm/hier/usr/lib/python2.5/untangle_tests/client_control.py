@@ -53,7 +53,7 @@ class ClientControl:
                 # send command and read stdout
                 rtn_cmd = subprocess.Popen(sshCommand, shell=True, stdout=subprocess.PIPE)
                 rtn_stdout = rtn_cmd.communicate()[0]
-                # print rtn_stdout 
+                return rtn_stdout 
         finally:
             if (ClientControl.logfile != None):
                 self.restoreOutput()
