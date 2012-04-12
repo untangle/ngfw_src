@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.NodeManagerSettings;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
@@ -253,8 +252,6 @@ public class NodeContextImpl implements NodeContext
         } finally {
             nodeManager.deregisterThreadContext();
         }
-
-        logger.error("FIXME REMOVE SETTINGS FROM NODE MANAGER");
     }
 
     protected void unload()

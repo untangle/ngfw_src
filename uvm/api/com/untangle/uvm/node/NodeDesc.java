@@ -15,7 +15,7 @@ import com.untangle.uvm.NodeSettings;
 @SuppressWarnings("serial")
 public class NodeDesc implements Serializable
 {
-    private NodeSettings nodeId = null; 
+    private NodeSettings nodeSettings = null; 
 
     private String name = null;
     private String displayName = null;
@@ -38,16 +38,16 @@ public class NodeDesc implements Serializable
     /**
      * Node id.
      *
-     * @return nodeId for this instance.
+     * @return nodeSettings for this instance.
      */
     public NodeSettings getNodeSettings()
     {
-        return nodeId;
+        return nodeSettings;
     }
 
-    public void setNodeSettings(NodeSettings nodeId)
+    public void setNodeSettings(NodeSettings nodeSettings)
     {
-        this.nodeId = nodeId;
+        this.nodeSettings = nodeSettings;
     }
     
     /**
@@ -237,7 +237,7 @@ public class NodeDesc implements Serializable
     // Object methods ---------------------------------------------------------
 
     /**
-     * Equality based on the business key (nodeId).
+     * Equality based on the business key (nodeSettings).
      *
      * @param o the object to compare to.
      * @return true if equal.
@@ -250,7 +250,7 @@ public class NodeDesc implements Serializable
 
         NodeDesc td = (NodeDesc)o;
 
-        return nodeId.equals(td.getNodeSettings());
+        return nodeSettings.equals(td.getNodeSettings());
     }
 
     @Override

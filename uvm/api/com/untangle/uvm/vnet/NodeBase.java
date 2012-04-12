@@ -396,10 +396,6 @@ public abstract class NodeBase implements Node
             logger.warn("Ignoring destroy(): Already in state DESTROYED");
             return;
         }
-        if (currentState != NodeState.RUNNING) {
-            logger.warn("Igroning destroy(): Invalid state: " + currentState);
-            return;
-        }
 
         try {
             UvmContextFactory.context().nodeManager().registerThreadContext(nodeContext);
