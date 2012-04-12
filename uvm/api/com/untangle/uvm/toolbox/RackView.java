@@ -9,27 +9,30 @@ import java.util.List;
 import java.util.Map;
 
 import com.untangle.uvm.message.StatDescs;
-import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.NodeProperties;
+import com.untangle.uvm.node.License;
 import com.untangle.uvm.NodeSettings;
 
 @SuppressWarnings("serial")
 public class RackView implements Serializable
 {
     private List<Application> applications;
-    private List<NodeProperties> instances;
+    private List<NodeSettings> instances;
+    private List<NodeProperties> nodeProperties;
     private Map<NodeSettings, StatDescs> statDescs;
     private Map<String, License> licenseMap;
     private Map<NodeSettings, NodeSettings.NodeState> runStates;
 
     public RackView(List<Application> applications,
-                    List<NodeProperties> instances,
+                    List<NodeSettings> instances,
+                    List<NodeProperties> nodeProperties,
                     Map<NodeSettings, StatDescs> statDescs,
                     Map<String, License> license,
                     Map<NodeSettings, NodeSettings.NodeState> runStates)
     {
         this.applications = Collections.unmodifiableList(applications);
         this.instances = Collections.unmodifiableList(instances);
+        this.nodeProperties = Collections.unmodifiableList(nodeProperties);
         this.statDescs = Collections.unmodifiableMap(statDescs);
         this.licenseMap = Collections.unmodifiableMap(license);
         this.runStates = Collections.unmodifiableMap(runStates);
@@ -40,11 +43,16 @@ public class RackView implements Serializable
         return applications;
     }
 
-    public List<NodeProperties> getInstances()
+    public List<NodeSettings> getInstances()
     {
         return instances;
     }
 
+    public List<NodeProperties> getNodeProperties()
+    {
+        return nodeProperties;
+    }
+    
     public Map<NodeSettings, StatDescs> getStatDescs()
     {
         return statDescs;

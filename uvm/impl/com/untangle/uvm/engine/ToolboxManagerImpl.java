@@ -206,12 +206,11 @@ class ToolboxManagerImpl implements ToolboxManager
             } 
         }
 
-        NodeManager nm = UvmContextFactory.context().nodeManager();
-        List<NodeProperties> instances = nm.visibleNodes(policyId);
+        NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
+        List<NodeSettings> instances = nm.visibleNodes(policyId);
 
         Map<NodeSettings, StatDescs> statDescs = new HashMap<NodeSettings, StatDescs>(instances.size());
-        for (NodeProperties nd : instances) {
-            NodeSettings nodeSettings = nd.getNodeSettings();
+        for (NodeSettings nodeSettings : instances) {
             MessageManager lmm = UvmContextFactory.context().messageManager();
             Counters c = lmm.getCounters(nodeSettings.getId());
             StatDescs sd = c.getStatDescs();
@@ -219,7 +218,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
             Long nodePolicyId = nodeSettings.getPolicyId();
             if (nodePolicyId == null || nodePolicyId.equals(policyId)) {
-                nodes.remove(nd.getDisplayName());
+                nodes.remove(nm.nodeContext(nodeSettings).getNodeProperties().getDisplayName());
             }
         }
 
@@ -241,12 +240,18 @@ class ToolboxManagerImpl implements ToolboxManager
 
         Map<String, License> licenseMap = new HashMap<String, License>();
         LicenseManager lm = UvmContextFactory.context().licenseManager();
-        for (NodeProperties nd : instances) {
-            String n = nd.getName();
+        for (NodeSettings nodeSettings : instances) {
+            String n = nm.nodeContext(nodeSettings).getNodeProperties().getName();
             licenseMap.put(n, lm.getLicense(n));
         }
         Map<NodeSettings, NodeSettings.NodeState> runStates=nm.allNodeStates();
-        return new RackView(apps, instances, statDescs, licenseMap, runStates);
+
+        List<NodeProperties> nodeProperties = new LinkedList<NodeProperties>();
+        for (NodeSettings nodeSettings : instances) {
+            nodeProperties.add(nm.nodeContext(nodeSettings).getNodeProperties());
+        }
+        
+        return new RackView(apps, instances, nodeProperties, statDescs, licenseMap, runStates);
     }
 
     public UpgradeStatus getUpgradeStatus(boolean doUpdate) throws PackageException, InterruptedException
@@ -461,9 +466,10 @@ class ToolboxManagerImpl implements ToolboxManager
                 try {
                     logger.info("instantiate( " + node + ")");
                     register(node);
-                    NodeProperties nd = nm.instantiate(node, policyId);
-                    if (nd != null && nd.getAutoStart()) {
-                        NodeContext nc = nm.nodeContext(nd.getNodeSettings());
+                    NodeSettings nodeSettings = nm.instantiate(node, policyId);
+                    NodeProperties nd = nm.nodeContext(nodeSettings).getNodeProperties();
+                    if (nodeSettings != null && nd != null && nd.getAutoStart()) {
+                        NodeContext nc = nm.nodeContext(nodeSettings);
                         nc.node().start();
                     }
                 } catch (DeployException exn) {

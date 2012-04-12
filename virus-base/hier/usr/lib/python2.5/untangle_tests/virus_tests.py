@@ -12,7 +12,7 @@ from untangle_tests import ClientControl
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 clientControl = ClientControl()
-nodeProperties = None
+nodeSettings = None
 node = None
 
 def flushEvents():
@@ -31,8 +31,8 @@ class VirusTests(unittest.TestCase):
         return "Untangle"
 
     def setUp(self):
-        global nodeProperties, node
-        if nodeProperties == None:
+        global nodeSettings, node
+        if nodeSettings == None:
             # download eicar before installing virus blocker
             result = clientControl.runCommand("wget http://test.untangle.com/virus/00_eicar.com -O /tmp/eicar -o /dev/null 2>&1")
             assert (result == 0)
@@ -40,8 +40,8 @@ class VirusTests(unittest.TestCase):
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName();
                 raise Exception('node %s already instantiated' % self.nodeName())
-            nodeProperties = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), defaultRackId)
-            node = uvmContext.nodeManager().nodeContext(nodeProperties['nodeSettings']).node()
+            nodeSettings = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), defaultRackId)
+            node = uvmContext.nodeManager().nodeContext(nodeSettings).node()
             flushEvents()
 
     # verify client is online
@@ -143,11 +143,11 @@ class VirusTests(unittest.TestCase):
         assert(datetime.fromtimestamp((events['list'][0]['timeStamp']['time'])/1000) > startTime)
 
     def test_999_finalTearDown(self):
-        global nodeProperties
+        global nodeSettings
         global node
-        uvmContext.nodeManager().destroy(nodeProperties['nodeSettings']['id']);
+        uvmContext.nodeManager().destroy(nodeSettings['id']);
         node = None
-        nodeProperties = None
+        nodeSettings = None
         
 
 

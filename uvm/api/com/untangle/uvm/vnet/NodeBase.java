@@ -19,7 +19,7 @@ import com.untangle.uvm.SessionMatcherFactory;
 import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.NodeSettings.NodeState;
 import com.untangle.uvm.message.MessageManager;
-import com.untangle.uvm.message.NodeStateChange;
+import com.untangle.uvm.message.NodeStateChangeMessage;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
@@ -288,7 +288,7 @@ public abstract class NodeBase implements Node
             }
 
             MessageManager mm = UvmContextFactory.context().messageManager();
-            NodeStateChange nsc = new NodeStateChange(nodeContext.getNodeProperties(), nodeState);
+            NodeStateChangeMessage nsc = new NodeStateChangeMessage(nodeContext.getNodeProperties(), nodeContext.getNodeSettings(), nodeState);
             mm.submitMessage(nsc);
 
             UvmContextFactory.context().nodeManager().saveTargetState(this.nodeSettings.getId(), nodeState);
@@ -339,14 +339,14 @@ public abstract class NodeBase implements Node
 
         try {
             UvmContextFactory.context().nodeManager().registerThreadContext(nodeContext);
-            logger.info("Starting   node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getNodeSettings() + ")" + " ...");
+            logger.info("Starting   node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getName() + ")" + " ...");
             preStart();
 
             connectArgonConnector();
 
             changeState(NodeState.RUNNING, saveNewTargetState);
             postStart(); // XXX if exception, state == ?
-            logger.info("Started    node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getNodeSettings() + ")" + " ...");
+            logger.info("Started    node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getName() + ")" + " ...");
         } finally {
             UvmContextFactory.context().nodeManager().deregisterThreadContext();
         }
@@ -361,7 +361,7 @@ public abstract class NodeBase implements Node
 
         try {
             UvmContextFactory.context().nodeManager().registerThreadContext(nodeContext);
-            logger.info("Stopping   node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getNodeSettings() + ")" + " ...");
+            logger.info("Stopping   node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getName() + ")" + " ...");
             preStop();
             disconnectArgonConnector();
             changeState(NodeState.INITIALIZED, saveNewTargetState);
@@ -384,7 +384,7 @@ public abstract class NodeBase implements Node
         try {
             UvmContextFactory.context().nodeManager().registerThreadContext(nodeContext);
             postStop(); // XXX if exception, state == ?
-            logger.info("Stopped    node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getNodeSettings() + ")" + " ...");
+            logger.info("Stopped    node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getName() + ")" + " ...");
         } finally {
             UvmContextFactory.context().nodeManager().deregisterThreadContext();
         }
@@ -399,7 +399,7 @@ public abstract class NodeBase implements Node
 
         try {
             UvmContextFactory.context().nodeManager().registerThreadContext(nodeContext);
-            logger.info("Destroying node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getNodeSettings() + ")" + " ...");
+            logger.info("Destroying node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getName() + ")" + " ...");
             preDestroy();
             for (NodeBase p : parents) {
                 p.removeChild(this);
@@ -408,7 +408,7 @@ public abstract class NodeBase implements Node
             changeState(NodeState.DESTROYED, saveNewTargetState);
 
             postDestroy(); // XXX if exception, state == ?
-            logger.info("Destroyed  node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getNodeSettings() + ")" + " ...");
+            logger.info("Destroyed  node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getName() + ")" + " ...");
         } finally {
             UvmContextFactory.context().nodeManager().deregisterThreadContext();
         }

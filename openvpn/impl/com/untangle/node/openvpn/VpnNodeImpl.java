@@ -161,10 +161,10 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
             if (readSettings == null) {
                 logger.warn("No database or json settings found... initializing with defaults");
                 initializeSettings();
-                writeNodeSettings(getVpnSettings());
+                writeNodeSettings(getSettings());
             }
             else {
-                setVpnSettings(readSettings);
+                setSettings(readSettings);
             }
         }
         catch (Exception exn) {
@@ -193,7 +193,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         logger.info( "Initializing Settings... to unconfigured" );
 
         try {
-            setVpnSettings( settings );
+            setSettings( settings );
         } catch ( ValidateException e ) {
             logger.error( "Unable to initialize VPN settings.", e );
         }
@@ -204,7 +204,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     }
 
     // VpnNode methods --------------------------------------------------
-    public void setVpnSettings( final VpnSettings newSettings ) throws ValidateException
+    public void setSettings( final VpnSettings newSettings ) throws ValidateException
     {
         /* Verify that all of the client names are valid. */
         for ( VpnClient client : newSettings.trans_getCompleteClientList()) {
@@ -284,7 +284,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         }
     }
 
-    public VpnSettings getVpnSettings()
+    public VpnSettings getSettings()
     {
         /* XXXXXXXXXXXXXXXXXXXX This is not really legit, done so the schema doesn't have to be
          * written for a little while */
@@ -693,16 +693,6 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         }
     }
 
-    public Object getSettings()
-    {
-        return getVpnSettings();
-    }
-
-    public void setSettings( Object settings ) throws ValidateException
-    {
-        setVpnSettings((VpnSettings)settings);
-    }
-
     public ConfigState getConfigState()
     {
         if ( settings == null || !settings.trans_isConfigured()) return ConfigState.UNCONFIGURED;
@@ -780,7 +770,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
             distributeAllClientFiles( newSettings );
         }
 
-        setVpnSettings( newSettings );
+        setSettings( newSettings );
 
         /* No reusing the sanbox */
         this.sandbox = null;

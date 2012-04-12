@@ -17,8 +17,8 @@ public interface VpnNode extends Node
         ZIP;
     };
     
-    public void setVpnSettings( VpnSettings settings ) throws ValidateException;
-    public VpnSettings getVpnSettings();
+    public void setSettings( VpnSettings settings ) throws ValidateException;
+    public VpnSettings getSettings();
 
     /* Create a client certificate, if the client already has a certificate
      * this will automatically revoke their old one */

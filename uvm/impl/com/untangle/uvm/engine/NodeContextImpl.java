@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,7 +47,7 @@ public class NodeContextImpl implements NodeContext
     private final NodeManager nodeManager;
     private final ToolboxManagerImpl toolboxManager;
 
-    public NodeContextImpl(URLClassLoader classLoader, NodeProperties nodeProperties, String packageName, boolean isNew) throws DeployException
+    public NodeContextImpl(NodeProperties nodeProperties, NodeSettings nodeSettings, String packageName, boolean isNew) throws DeployException
     {
         UvmContextImpl mctx = UvmContextImpl.getInstance();
 
@@ -67,7 +66,7 @@ public class NodeContextImpl implements NodeContext
         lm.initSchema(nodeProperties.getName());
 
         this.nodeProperties = nodeProperties;
-        this.nodeSettings = nodeProperties.getNodeSettings();
+        this.nodeSettings = nodeSettings;
         this.packageName = packageName;
         this.isNew = isNew;
 
@@ -273,7 +272,7 @@ public class NodeContextImpl implements NodeContext
     {
         if (nodeProperties.isSingleInstance()) {
             String nodeName = nodeProperties.getName();
-            Long policyId = nodeProperties.getNodeSettings().getPolicyId();
+            Long policyId = nodeSettings.getPolicyId();
             List<NodeSettings> l = nodeManager.nodeInstances( nodeName, policyId, false );
 
             if (1 == l.size()) {
@@ -312,7 +311,7 @@ public class NodeContextImpl implements NodeContext
             logger.debug("Parent does not exist, instantiating");
 
             try {
-                NodeSettings parentNodeSettings = nodeManager.instantiate(parent, policyId).getNodeSettings();
+                NodeSettings parentNodeSettings = nodeManager.instantiate(parent, policyId);
                 pctx = nodeManager.nodeContext(parentNodeSettings);
             } catch (Exception exn) {
                 pctx = getParentContext(parent);

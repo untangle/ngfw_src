@@ -15,12 +15,12 @@ CREATE TABLE events.u_login_evt (
     PRIMARY KEY (event_id));
 
 -- com.untangle.uvm.node.NodeStateChange
-CREATE TABLE events.u_node_state_change (
-    event_id int8 NOT NULL,
-    time_stamp timestamp,
-    tid int8 NOT NULL,
-    state text NOT NULL,
-    PRIMARY KEY (event_id));
+-- CREATE TABLE events.u_node_state_change (
+--    event_id int8 NOT NULL,
+--    time_stamp timestamp,
+--    tid int8 NOT NULL,
+--    state text NOT NULL,
+--    PRIMARY KEY (event_id));
 
 -- LoginEvent
 CREATE TABLE events.n_login_evt (
@@ -40,7 +40,7 @@ CREATE TABLE events.event_data_days (
 -- constraints |
 ----------------
 
-CREATE INDEX pl_stats_session_id_idx ON events.pl_stats (session_id);
+-- CREATE INDEX pl_stats_session_id_idx ON events.pl_stats (session_id);
 
 CREATE INDEX u_login_evt_time_stamp_idx ON events.u_login_evt (time_stamp);
 

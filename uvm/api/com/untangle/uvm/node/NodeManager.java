@@ -45,14 +45,6 @@ public interface NodeManager
     List<NodeSettings> nodeInstances(Long policyId);
 
     /**
-     * Node instances by policy, the visible ones only, for the GUI.
-     *
-     * @param policy policy of node.
-     * @return <code>NodeProperties</code>s of corresponding nodes.
-     */
-    List<NodeProperties> visibleNodes(Long policyId);
-
-    /**
      * Node instances by name policy, this gets the nodes in the parents to.
      *
      * @param name name of node.
@@ -81,7 +73,7 @@ public interface NodeManager
      * @return the <code>tid</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
-    NodeProperties instantiate(String name, Long policyId) throws DeployException;
+    NodeSettings instantiate(String name, Long policyId) throws DeployException;
 
     /**
      * Create a new node instance under the default policy, or in
@@ -91,7 +83,7 @@ public interface NodeManager
      * @return the <code>tid</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
-    NodeProperties instantiate(String name) throws DeployException;
+    NodeSettings instantiate(String name) throws DeployException;
 
     /**
      * Create a new node instance under the given policy and then start it.
@@ -104,7 +96,7 @@ public interface NodeManager
      * @exception DeployException if the instance cannot be created.
      * @exception NodeStartException if the instance cannot be started.
      */
-    NodeProperties instantiateAndStart(String nodeName, Long policyId) throws DeployException;
+    NodeSettings instantiateAndStart(String nodeName, Long policyId) throws DeployException;
 
     /**
      * Remove node instance from the pipeline.

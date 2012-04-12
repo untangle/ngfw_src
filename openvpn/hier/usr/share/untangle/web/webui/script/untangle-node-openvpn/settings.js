@@ -397,7 +397,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
 
             if (this.configState == "SERVER_ROUTE") {
                 // keep initial settings
-                this.initialVpnSettings = Ung.Util.clone(this.getVpnSettings());
+                this.initialVpnSettings = Ung.Util.clone(this.getSettings());
                 
                 this.buildClients();
                 this.buildExports();
@@ -414,9 +414,9 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             this.buildTabPanel(tabs);
             Ung.OpenVPN.superclass.initComponent.call(this);
         },
-        getVpnSettings : function(forceReload) {
+        getSettings : function(forceReload) {
             if (forceReload || this.rpc.vpnSettings === undefined) {
-                this.rpc.vpnSettings = this.getRpcNode().getVpnSettings();
+                this.rpc.vpnSettings = this.getRpcNode().getSettings();
             }
             return this.rpc.vpnSettings;
         },
@@ -443,13 +443,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
             if (this.groupsStore == null ) {
                 this.groupsStore = new Ext.data.JsonStore({
                     fields : ['id', 'name','javaClass'],
-                    data : this.getVpnSettings().groupList.list
+                    data : this.getSettings().groupList.list
                 });
                 force = false;
             }
 
             if(force) {
-                this.groupsStore.loadData( this.getVpnSettings().groupList.list );
+                this.groupsStore.loadData( this.getSettings().groupList.list );
             }
 
             return this.groupsStore;
@@ -776,7 +776,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         },
         generateGridClients : function() {
             // live is a check column
-            var clientList=this.getVpnSettings().clientList.list;
+            var clientList=this.getSettings().clientList.list;
 
             var liveColumn = new Ext.grid.CheckColumn({
                 id : "live",
@@ -886,7 +886,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         },
         generateGridSites : function() {
             // live is a check column
-            var siteList=this.getVpnSettings().siteList.list;
+            var siteList=this.getSettings().siteList.list;
 
             var liveColumn = new Ext.grid.CheckColumn({
                 id : "live",
@@ -1076,7 +1076,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                     exportedAddressList=this.getExportedAddressList().exportList.list;
                 }
             } else {
-                exportedAddressList=this.getVpnSettings().exportedAddressList.list;
+                exportedAddressList=this.getSettings().exportedAddressList.list;
             }
             // live is a check column
             var liveColumn = new Ext.grid.CheckColumn({
@@ -1219,7 +1219,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 // the column is autoexpanded if the grid width permits
                 // autoExpandColumn : 'name',
                 recordJavaClass : "com.untangle.node.openvpn.VpnGroup",
-                data : this.getVpnSettings().groupList,
+                data : this.getSettings().groupList,
                 dataRoot : 'list',
                 // the list of fields
                 fields : [{
@@ -1338,14 +1338,14 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                         xtype : 'textfield',
                         fieldLabel : this.i18n._('Site Name'),
                         name : 'Site Name',
-                        value : this.getVpnSettings().siteName,
+                        value : this.getSettings().siteName,
                         id : 'openvpn_advanced_siteName',
                         allowBlank : false,
                         blankText : this.i18n._("You must enter a site name."),
                         listeners : {
                             "change" : {
                                 fn : function(elem, newValue) {
-                                    this.getVpnSettings().siteName = newValue;
+                                    this.getSettings().siteName = newValue;
                                 }.createDelegate(this)
                             }
                         }
@@ -1358,11 +1358,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             boxLabel : this.i18n._('Enabled'),
                             name : 'DNSOverride',
                             inputValue : true,
-                            checked : this.getVpnSettings().isDnsOverrideEnabled,
+                            checked : this.getSettings().isDnsOverrideEnabled,
                             listeners : {
                                 "check" : {
                                     fn : function(elem, checked) {
-                                        this.getVpnSettings().isDnsOverrideEnabled = checked;
+                                        this.getSettings().isDnsOverrideEnabled = checked;
                                         if (checked) {
                                             Ext.getCmp("openvpn_advanced_dns1").enable();
                                             Ext.getCmp("openvpn_advanced_dns2").enable();
@@ -1378,11 +1378,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             boxLabel : this.i18n._('Disabled'),
                             name : 'DNSOverride',
                             inputValue : false,
-                            checked : !this.getVpnSettings().isDnsOverrideEnabled,
+                            checked : !this.getSettings().isDnsOverrideEnabled,
                             listeners : {
                                 "check" : {
                                     fn : function(elem, checked) {
-                                        this.getVpnSettings().isDnsOverrideEnabled = !checked;
+                                        this.getSettings().isDnsOverrideEnabled = !checked;
                                         if (!checked) {
                                             Ext.getCmp("openvpn_advanced_dns1").enable();
                                             Ext.getCmp("openvpn_advanced_dns2").enable();
@@ -1407,8 +1407,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             fieldLabel : this.i18n._('Primary IP'),
                             name : 'outsideNetwork',
                             id : 'openvpn_advanced_dns1',
-                            value : this.getVpnSettings().dns1,
-                            disabled : !this.getVpnSettings().isDnsOverrideEnabled,
+                            value : this.getSettings().dns1,
+                            disabled : !this.getSettings().isDnsOverrideEnabled,
                             allowBlank : false,
                             blankText : this.i18n._('A Valid Primary IP Address must be specified.'),
                             vtype : 'ipAddress'
@@ -1417,8 +1417,8 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                             fieldLabel : this.i18n._('Secondary IP (optional)'),
                             name : 'outsideNetwork',
                             id : 'openvpn_advanced_dns2',
-                            disabled : !this.getVpnSettings().isDnsOverrideEnabled,
-                            value : this.getVpnSettings().dns2,
+                            disabled : !this.getSettings().isDnsOverrideEnabled,
+                            value : this.getSettings().dns2,
                             vtype : 'ipAddress'
                         }]
                     }]
@@ -1446,7 +1446,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 return false;
             };
 
-            if (this.getVpnSettings().isDnsOverrideEnabled) {
+            if (this.getSettings().isDnsOverrideEnabled) {
                 var dns1Cmp = Ext.getCmp("openvpn_advanced_dns1");
                 if(!dns1Cmp.validate()) {
                     Ext.MessageBox.alert(this.i18n._("Failed"), this.i18n._("A valid Primary IP Address must be specified."),
@@ -1470,11 +1470,11 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 };
 
                 //prepare for save
-                this.getVpnSettings().dns1 = dns1Cmp.getValue();
-                this.getVpnSettings().dns2 = dns2Cmp.getValue() == "" ? null : dns2Cmp.getValue();
+                this.getSettings().dns1 = dns1Cmp.getValue();
+                this.getSettings().dns2 = dns2Cmp.getValue() == "" ? null : dns2Cmp.getValue();
             }  else {
-                this.getVpnSettings().dns1 = null;
-                this.getVpnSettings().dns2 = null;
+                this.getSettings().dns1 = null;
+                this.getSettings().dns2 = null;
             }
 
             return true;
@@ -1722,13 +1722,13 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
                 if (this.validate()) {
                     Ext.MessageBox.wait(this.i18n._("Saving..."), this.i18n._("Please wait"));
 
-                    var vpnSettings = this.getVpnSettings();
+                    var vpnSettings = this.getSettings();
                     vpnSettings.groupList.list = this.gridGroups.getFullSaveList();
                     vpnSettings.exportedAddressList.list = this.gridExports.getFullSaveList();
                     vpnSettings.clientList.list = this.gridClients.getFullSaveList();
                     vpnSettings.siteList.list = this.gridSites.getFullSaveList();
                     
-                    this.getRpcNode().setVpnSettings(function(result, exception) {
+                    this.getRpcNode().setSettings(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;                        
                         callback();
                     }.createDelegate(this), vpnSettings);
@@ -1741,7 +1741,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         reloadSettings : function()
         {
             /* Reload the VPN Settings */
-            var settings = this.getVpnSettings( true );
+            var settings = this.getSettings( true );
             this.initialVpnSettings = Ung.Util.clone(settings);
             /* Assume the config state hasn't changed */
             if (this.configState == "SERVER_ROUTE") {
@@ -1776,7 +1776,7 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         
         isDirty : function() {
             if(this.configState == "SERVER_ROUTE") {
-                return !Ung.Util.equals(this.getVpnSettings(), this.initialVpnSettings)
+                return !Ung.Util.equals(this.getSettings(), this.initialVpnSettings)
                     || this.gridGroups.isDirty()
                     || this.gridExports.isDirty()
                     || this.gridClients.isDirty()

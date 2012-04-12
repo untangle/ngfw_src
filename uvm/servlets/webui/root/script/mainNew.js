@@ -642,10 +642,10 @@ Ext.define("Ung.Main", {
         }
         return null;
     },
-    createNode: function (nodeProperties, statDesc, license, runState) {
+    createNode: function (nodeProperties, nodeSettings, statDesc, license, runState) {
         var node={};
-        node.nodeId=nodeProperties.nodeSettings.id;
-        node.nodeSettings=nodeProperties.nodeSettings;
+        node.nodeId=nodeSettings.id;
+        node.nodeSettings=nodeSettings;
         node.type=nodeProperties.type;
         node.hasPowerButton=nodeProperties.hasPowerButton;
         node.name=nodeProperties.name;
@@ -692,11 +692,14 @@ Ext.define("Ung.Main", {
         this.destoyNodes();
         this.nodes=[];
         for(var i=0;i<rpc.rackView.instances.list.length;i++) {
-            var nodeProperties=rpc.rackView.instances.list[i];
+            var nodeSettings=rpc.rackView.instances.list[i];
+            var nodeProperties=rpc.rackView.nodeProperties.list[i];
+
             var node=this.createNode(nodeProperties,
-                rpc.rackView.statDescs.map[nodeProperties.nodeSettings.id],
-                rpc.rackView.licenseMap.map[nodeProperties.name],
-                rpc.rackView.runStates.map[nodeProperties.nodeSettings.id]);
+                                     nodeSettings,
+                                     rpc.rackView.statDescs.map[nodeSettings.id],
+                                     rpc.rackView.licenseMap.map[nodeProperties.name],
+                                     rpc.rackView.runStates.map[nodeSettings.id]);
             this.nodes.push(node);
         }
         if (this.nodes.length == 0) {

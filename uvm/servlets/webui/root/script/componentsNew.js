@@ -1347,14 +1347,14 @@ Ext.define("Ung.Node", {
     //can the node be edited on the gui
     isNodeEditable : true,
     constructor : function(config) {
-        this.id = "node_" + config.nodeId;
+        this.id = "node_" + config.nodeSettings.id;
         config.helpSource=config.displayName.toLowerCase().replace(/ /g,"_");
         if(config.runState==null) {
             config.runState="INITIALIZED";
         }
         this.subCmps = [];
         if(config.nodeSettings.policy!=null){
-            this.isNodeEditable = config.nodeSettings.policy.id == rpc.currentPolicy.id ? true : false;
+            this.isNodeEditable = config.nodeSettings.policyId == rpc.currentPolicy.id ? true : false;
         }
         Ung.Node.superclass.constructor.apply(this, arguments);
     },
@@ -1921,9 +1921,9 @@ Ung.MessageManager = {
                     var lastUpgradeDownloadProgressMsg=null;
                     for(var i=0;i<messageQueue.messages.list.length;i++) {
                         var msg=messageQueue.messages.list[i];
-                        if(msg.javaClass.indexOf("NodeStateChange") >= 0) {
-                            var node=Ung.Node.getCmp(msg.nodeProperties.nodeSettings.id);
-                            if(node!=null) {
+                        if(msg.javaClass.indexOf("NodeStateChangeMessage") >= 0) {
+                            var node=Ung.Node.getCmp(msg.nodeSettings.id);
+                            if( node !== undefined && node != null) {
                                 node.updateRunState(msg.nodeState);
                             }
                         } else if (msg.javaClass.indexOf("PackageInstallRequest") >= 0) {
@@ -1962,15 +1962,15 @@ Ung.MessageManager = {
                                     }
                                 },this),msg.packageDesc.name);
                             }
-                        } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
-                            if(msg.policy==null || msg.policy.id == rpc.currentPolicy.id) {
+                        } else if(msg.javaClass.indexOf("NodeInstantiatedMessage") != -1) {
+                            if( msg.policyId == null || msg.policyId == rpc.currentPolicy.id ) {
                                 refreshApps=true;
-                                var node=main.getNode(msg.nodeProperties.name,msg.nodeProperties.nodeSettings.policyId);
+                                var node=main.getNode( msg.nodeProperties.name, msg.policyId );
                                 if(!node) {
-                                    node=main.createNode(msg.nodeProperties, msg.statDescs, msg.license,"INITIALIZED");
+                                    node=main.createNode(msg.nodeProperties, msg.nodeSettings, msg.statDescs, msg.license,"INITIALIZED");
                                     main.nodes.push(node);
                                     main.addNode(node,true);
-                                    main.removeParentNode(node,msg.nodeProperties.nodeSettings.policyId);
+                                    main.removeParentNode( node, msg.policyId );
                                 } else {
                                     main.loadLicenses();
                                 }

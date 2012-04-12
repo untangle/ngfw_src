@@ -10,13 +10,11 @@ import java.util.List;
 import com.untangle.uvm.NodeSettings;
 
 /**
- * Node settings and properties.
+ * The immutable properties of a Node
  */
 @SuppressWarnings("serial")
 public class NodeProperties implements Serializable
 {
-    private NodeSettings nodeSettings = null; 
-
     private String name = null;
     private String displayName = null;
     private String className = null;
@@ -34,21 +32,6 @@ public class NodeProperties implements Serializable
     private Integer viewPosition = null;
 
     public NodeProperties() {}
-    
-    /**
-     * Node id.
-     *
-     * @return nodeSettings for this instance.
-     */
-    public NodeSettings getNodeSettings()
-    {
-        return nodeSettings;
-    }
-
-    public void setNodeSettings(NodeSettings nodeSettings)
-    {
-        this.nodeSettings = nodeSettings;
-    }
     
     /**
      * Internal name of the node.
@@ -237,7 +220,7 @@ public class NodeProperties implements Serializable
     // Object methods ---------------------------------------------------------
 
     /**
-     * Equality based on the business key (nodeSettings).
+     * Equality based.
      *
      * @param o the object to compare to.
      * @return true if equal.
@@ -250,7 +233,7 @@ public class NodeProperties implements Serializable
 
         NodeProperties td = (NodeProperties)o;
 
-        return nodeSettings.equals(td.getNodeSettings());
+        return getClassName().equals(td.getClassName());
     }
 
     @Override

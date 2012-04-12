@@ -8,14 +8,16 @@ import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.NodeSettings;
 
 @SuppressWarnings("serial")
-public class NodeStateChange extends Message
+public class NodeStateChangeMessage extends Message
 {
     private final NodeProperties nodeProperties;
+    private final NodeSettings nodeSettings;
     private final NodeSettings.NodeState nodeState;
 
-    public NodeStateChange(NodeProperties nodeProperties, NodeSettings.NodeState nodeState)
+    public NodeStateChangeMessage(NodeProperties nodeProperties, NodeSettings nodeSettings, NodeSettings.NodeState nodeState)
     {
         this.nodeProperties = nodeProperties;
+        this.nodeSettings = nodeSettings;
         this.nodeState = nodeState;
     }
 
@@ -24,6 +26,11 @@ public class NodeStateChange extends Message
         return nodeProperties;
     }
 
+    public NodeSettings getNodeSettings()
+    {
+        return nodeSettings;
+    }
+    
     public NodeSettings.NodeState getNodeState()
     {
         return nodeState;
