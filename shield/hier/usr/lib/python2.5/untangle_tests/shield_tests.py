@@ -14,7 +14,7 @@ uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 clientControl = ClientControl()
 nodeData = None
-nodeDesc = None
+nodeProperties = None
 node = None
 
 def flushEvents():
@@ -30,13 +30,13 @@ class ShieldTests(unittest.TestCase):
         return "untangle-node-shield"
 
     def setUp(self):
-        global nodeDesc, nodeData, node
-        if nodeDesc == None:
+        global nodeProperties, nodeData, node
+        if nodeProperties == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName();
                 raise Exception('node %s already instantiated' % self.nodeName())
-            nodeDesc = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), 1)
-            node = uvmContext.nodeManager().nodeContext(nodeDesc['nodeSettings']).node()
+            nodeProperties = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), 1)
+            node = uvmContext.nodeManager().nodeContext(nodeProperties['nodeSettings']).node()
             nodeData = node.getSettings()
 
     def test_010_clientIsOnline(self):
@@ -66,9 +66,9 @@ class ShieldTests(unittest.TestCase):
 
 
     def test_999_finalTearDown(self):
-        global nodeDesc
+        global nodeProperties
         global node
-        uvmContext.nodeManager().destroy(nodeDesc['nodeSettings']['id']);
+        uvmContext.nodeManager().destroy(nodeProperties['nodeSettings']['id']);
         node = None
-        nodeDesc = None
+        nodeProperties = None
         

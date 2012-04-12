@@ -11,7 +11,7 @@ from untangle_tests import ClientControl
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 clientControl = ClientControl()
-nodeDesc = None
+nodeProperties = None
 node = None
 
 def addBlockedUrl(url, blocked=True, flagged=True, description="description"):
@@ -74,13 +74,13 @@ class WebFilterBaseTests(unittest.TestCase):
         return "Untangle"
 
     def setUp(self):
-        global nodeDesc, node
-        if nodeDesc == None:
+        global nodeProperties, node
+        if nodeProperties == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName();
                 raise Exception('node %s already instantiated' % self.nodeName())
-            nodeDesc = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), defaultRackId)
-            node = uvmContext.nodeManager().nodeContext(nodeDesc['nodeSettings']).node()
+            nodeProperties = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), defaultRackId)
+            node = uvmContext.nodeManager().nodeContext(nodeProperties['nodeSettings']).node()
             flushEvents()
 
     # verify client is online
@@ -401,11 +401,11 @@ class WebFilterBaseTests(unittest.TestCase):
         assert(events['list'][0]['wf' + self.vendorName() + 'Flagged'] == False)
 
     def test_999_finalTearDown(self):
-        global nodeDesc
+        global nodeProperties
         global node
-        uvmContext.nodeManager().destroy(nodeDesc['nodeSettings']['id']);
+        uvmContext.nodeManager().destroy(nodeProperties['nodeSettings']['id']);
         node = None
-        nodeDesc = None
+        nodeProperties = None
         
 
 

@@ -1,5 +1,5 @@
 {
-        "javaClass": "com.untangle.uvm.node.NodeDesc",
+        "javaClass": "com.untangle.uvm.node.NodeProperties",
         "className" : "com.untangle.node.phish.PhishNode",
         "nodeBase" : "untangle-base-spam",
         "name" : "untangle-node-phish",

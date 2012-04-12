@@ -1,5 +1,5 @@
 {
-        "javaClass": "com.untangle.uvm.node.NodeDesc",
+        "javaClass": "com.untangle.uvm.node.NodeProperties",
         "className" : "com.untangle.node.ips.IpsNodeImpl",
         "name" : "untangle-node-ips",
         "displayName" : "Intrusion Prevention",

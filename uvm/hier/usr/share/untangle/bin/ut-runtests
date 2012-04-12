@@ -182,7 +182,7 @@ reportsAdded = False;
 if (not uvm.Uvm().getUvmContext().nodeManager().isInstantiated('untangle-node-reporting')):
     print "== Installing untangle-node-reporting =="
     reportsAdded = True;
-    reportsNodeDesc = uvm.Uvm().getUvmContext().nodeManager().instantiateAndStart('untangle-node-reporting', None)
+    reportsNodeProperties = uvm.Uvm().getUvmContext().nodeManager().instantiateAndStart('untangle-node-reporting', None)
 
 if ("environment" in parser.nodesToTest or "all" in parser.nodesToTest):
     runTestEnvironmentTests()
@@ -240,7 +240,7 @@ while True:
 # if reports was added earlier, revert to original settings
 if reportsAdded:
     print "== UnInstalling untangle-node-reporting =="
-    uvm.Uvm().getUvmContext().nodeManager().destroy(reportsNodeDesc['nodeId']);
+    uvm.Uvm().getUvmContext().nodeManager().destroy(reportsNodeProperties['nodeId']);
 
 print ""
 print "%s passed, %s failed" % (total-rc, rc)

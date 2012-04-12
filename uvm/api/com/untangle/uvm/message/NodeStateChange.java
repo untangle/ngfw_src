@@ -4,24 +4,24 @@
 package com.untangle.uvm.message;
 
 import com.untangle.uvm.message.Message;
-import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.NodeSettings;
 
 @SuppressWarnings("serial")
 public class NodeStateChange extends Message
 {
-    private final NodeDesc nodeDesc;
+    private final NodeProperties nodeProperties;
     private final NodeSettings.NodeState nodeState;
 
-    public NodeStateChange(NodeDesc nodeDesc, NodeSettings.NodeState nodeState)
+    public NodeStateChange(NodeProperties nodeProperties, NodeSettings.NodeState nodeState)
     {
-        this.nodeDesc = nodeDesc;
+        this.nodeProperties = nodeProperties;
         this.nodeState = nodeState;
     }
 
-    public NodeDesc getNodeDesc()
+    public NodeProperties getNodeProperties()
     {
-        return nodeDesc;
+        return nodeProperties;
     }
 
     public NodeSettings.NodeState getNodeState()

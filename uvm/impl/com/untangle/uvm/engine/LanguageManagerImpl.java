@@ -41,7 +41,7 @@ import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.JsonClient;
@@ -389,9 +389,9 @@ public class LanguageManagerImpl implements LanguageManager
         if (nm != null) {
             Node node = nm.node(module);
             if (node != null) {
-                NodeDesc nodeDesc = node.getNodeDesc();
-                if (nodeDesc != null) {
-                    String nodeBase = nodeDesc.getNodeBase();
+                NodeProperties nodeProperties = node.getNodeProperties();
+                if (nodeProperties != null) {
+                    String nodeBase = nodeProperties.getNodeBase();
                     if (nodeBase != null) {
                         Map<String, String> mapBase = getTranslations(nodeBase);
                         if (mapBase != null) {

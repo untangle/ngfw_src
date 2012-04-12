@@ -462,7 +462,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 continue;
             }
 
-            String nodeName = acFitting.argonConnector.node().getNodeDesc().getName();
+            String nodeName = acFitting.argonConnector.node().getNodeProperties().getName();
             /* Remove the items that are not enabled in this policy */
             if (!enabledNodes.contains(nodeName)) {
                 i.remove();
@@ -511,7 +511,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 continue;
             }
 
-            String nodeName = acFitting.argonConnector.node().getNodeDesc().getName();
+            String nodeName = acFitting.argonConnector.node().getNodeProperties().getName();
 
             Integer n = numParents.get(nodeName);
 

@@ -10,25 +10,25 @@ import com.untangle.uvm.message.StatDescs;
 @SuppressWarnings("serial")
 public class NodeInstantiated extends Message
 {
-    private final NodeDesc nodeDesc;
+    private final NodeProperties nodeProperties;
     private final StatDescs statDescs;
     private final License license;
 
-    public NodeInstantiated(NodeDesc nodeDesc, StatDescs statDescs, License license)
+    public NodeInstantiated(NodeProperties nodeProperties, StatDescs statDescs, License license)
     {
-        this.nodeDesc = nodeDesc;
+        this.nodeProperties = nodeProperties;
         this.statDescs = statDescs;
         this.license = license;
     }
 
     public Long getPolicyId()
     {
-        return nodeDesc.getNodeSettings().getPolicyId();
+        return nodeProperties.getNodeSettings().getPolicyId();
     }
 
-    public NodeDesc getNodeDesc()
+    public NodeProperties getNodeProperties()
     {
-        return nodeDesc;
+        return nodeProperties;
     }
 
     public StatDescs getStatDescs()

@@ -45,7 +45,7 @@ import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeInstantiated;
 import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.toolbox.PackageDesc;
@@ -116,7 +116,7 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         for (NodeSettings nodeSettings : loadedNodesMap.keySet()) {
             NodeContext tc = loadedNodesMap.get(nodeSettings);
             if (null != tc) {
-                if (tc.getNodeDesc().getName().equals(packageName)) {
+                if (tc.getNodeProperties().getName().equals(packageName)) {
                     l.add(nodeSettings);
                 }
             }
@@ -161,7 +161,7 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         for ( NodeSettings nodeSettings : getNodesForPolicy( policyId, parents ) ) {
             NodeContext tc = loadedNodesMap.get(nodeSettings);
             if (null != tc) {
-                String n = tc.getNodeDesc().getName();
+                String n = tc.getNodeProperties().getName();
 
                 if (n.equals(name)) {
                     l.add(nodeSettings);
@@ -177,17 +177,17 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         return getNodesForPolicy( policyId );
     }
 
-    public List<NodeDesc> visibleNodes( Long policyId )
+    public List<NodeProperties> visibleNodes( Long policyId )
     {
         List<NodeSettings> loadedNodesMap = nodeInstances();
-        List<NodeDesc> l = new ArrayList<NodeDesc>(loadedNodesMap.size());
+        List<NodeProperties> l = new ArrayList<NodeProperties>(loadedNodesMap.size());
 
         for (NodeSettings nodeSettings : getNodesForPolicy( policyId )) {
             NodeContext nc = nodeContext(nodeSettings);
             PackageDesc md = nc.getPackageDesc();
 
             if (!md.isInvisible()) {
-                NodeDesc nd = nc.getNodeDesc();
+                NodeProperties nd = nc.getNodeProperties();
                 l.add(nd);
             }
         }
@@ -198,7 +198,7 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
             PackageDesc.Type type = md.getType();
             if (!md.isInvisible() && PackageDesc.Type.SERVICE == type) {
-                NodeDesc nd = nc.getNodeDesc();
+                NodeProperties nd = nc.getNodeProperties();
                 l.add(nd);
             }
         }
@@ -233,13 +233,13 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         return node;
     }
 
-    public NodeDesc instantiate(String nodeName) throws DeployException
+    public NodeProperties instantiate(String nodeName) throws DeployException
     {
         Long policyId = getDefaultPolicyForNode( nodeName );
         return instantiate( nodeName, policyId );
     }
 
-    public NodeDesc instantiate(String nodeName, Long policyId) throws DeployException
+    public NodeProperties instantiate(String nodeName, Long policyId) throws DeployException
     {
         UvmContextImpl uvmContext = UvmContextImpl.getInstance();
         ToolboxManagerImpl tbm = uvmContext.toolboxManager();
@@ -263,7 +263,7 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         }
         
         NodeContextImpl tc;
-        NodeDesc nodeDesc;
+        NodeProperties nodeProperties;
         synchronized (this) {
             //test if not duplicated
             List<NodeSettings> instancesList=this.nodeInstances( nodeName, policyId, false );
@@ -276,15 +276,15 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             URL[] resUrls = new URL[] { tbm.getResourceDir(packageDesc) };
 
             logger.info("initializing node desc for: " + nodeName);
-            nodeDesc = initNodeDesc(packageDesc, resUrls, nodeSettings);
+            nodeProperties = initNodeProperties(packageDesc, resUrls, nodeSettings);
 
             if (!live) {
                 throw new DeployException("NodeManager is shut down");
             }
 
             /* load annotated classes */
-            if (nodeDesc != null) {
-                List<String> annotatedClasses = nodeDesc.getAnnotatedClasses();
+            if (nodeProperties != null) {
+                List<String> annotatedClasses = nodeProperties.getAnnotatedClasses();
                 boolean classAdded = false;
                 if (annotatedClasses != null) {
                     for (String clz : annotatedClasses) {
@@ -295,7 +295,7 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
                     UvmContextImpl.getInstance().refreshSessionFactory();
             }
 
-            tc = new NodeContextImpl((URLClassLoader)getClass().getClassLoader(), nodeDesc, packageDesc.getName(), true);
+            tc = new NodeContextImpl((URLClassLoader)getClass().getClassLoader(), nodeProperties, packageDesc.getName(), true);
             loadedNodesMap.put(nodeSettings, tc);
             try {
                 tc.init();
@@ -313,19 +313,19 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             MessageManager lmm = uvmContext.messageManager();
             Counters c = lmm.getCounters(node.getNodeSettings().getId());
 
-            NodeInstantiated ne = new NodeInstantiated(nodeDesc, c.getStatDescs(), uvmContext.licenseManager().getLicense(packageDesc.getName()));
+            NodeInstantiated ne = new NodeInstantiated(nodeProperties, c.getStatDescs(), uvmContext.licenseManager().getLicense(packageDesc.getName()));
             MessageManager mm = uvmContext.messageManager();
             mm.submitMessage(ne);
         }
 
         clearEnabledNodes();
         
-        return nodeDesc;
+        return nodeProperties;
     }
 
-    public NodeDesc instantiateAndStart(String nodeName, Long policyId) throws DeployException
+    public NodeProperties instantiateAndStart(String nodeName, Long policyId) throws DeployException
     {
-        NodeDesc nd = instantiate( nodeName, policyId );
+        NodeProperties nd = instantiate( nodeName, policyId );
         if (nd.getAutoStart()) {
             NodeContext nc = nodeContext(nd.getNodeSettings());
             try {
@@ -513,7 +513,7 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
     {
         synchronized (this) {
             NodeContextImpl tc = loadedNodesMap.get(nodeSettings);
-            logger.info("Unloading: " + nodeSettings + " (" + tc.getNodeDesc().getName() + ")");
+            logger.info("Unloading: " + nodeSettings + " (" + tc.getNodeProperties().getName() + ")");
 
             tc.unload();
             loadedNodesMap.remove(nodeSettings);
@@ -628,22 +628,22 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         logger.info("Restarting unloaded nodes...");
 
         List<NodeSettings> unloaded = getUnloaded();
-        Map<NodeSettings, NodeDesc> nodeDescs = loadNodeDescs(unloaded);
+        Map<NodeSettings, NodeProperties> nodePropertiess = loadNodePropertiess(unloaded);
         Set<String> loadedParents = new HashSet<String>(unloaded.size());
 
         while (0 < unloaded.size()) {
-            List<NodeSettings> startQueue = getLoadable(unloaded, nodeDescs, loadedParents);
+            List<NodeSettings> startQueue = getLoadable(unloaded, nodePropertiess, loadedParents);
             logger.info("loadable in this pass: " + startQueue);
             if (0 == startQueue.size()) {
                 logger.info("not all parents loaded, proceeding");
                 for (NodeSettings n : unloaded) {
                     List<NodeSettings> l = Collections.singletonList(n);
-                    startUnloaded(l, nodeDescs, loadedParents);
+                    startUnloaded(l, nodePropertiess, loadedParents);
                 }
                 break;
             }
 
-            startUnloaded(startQueue, nodeDescs, loadedParents);
+            startUnloaded(startQueue, nodePropertiess, loadedParents);
         }
 
         long t1 = System.currentTimeMillis();
@@ -656,20 +656,20 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
     private static int startThreadNum = 0;
 
-    private void startUnloaded(List<NodeSettings> startQueue, Map<NodeSettings, NodeDesc> nodeDescs, Set<String> loadedParents)
+    private void startUnloaded(List<NodeSettings> startQueue, Map<NodeSettings, NodeProperties> nodePropertiess, Set<String> loadedParents)
     {
         ToolboxManager tbm = UvmContextFactory.context().toolboxManager();
 
         List<Runnable> restarters = new ArrayList<Runnable>(startQueue.size());
 
         for (final NodeSettings nodeSettings : startQueue) {
-            final NodeDesc nodeDesc = nodeDescs.get(nodeSettings);
+            final NodeProperties nodeProperties = nodePropertiess.get(nodeSettings);
             final String name = nodeSettings.getNodeName();
             final PackageDesc packageDesc = tbm.packageDesc(name);
             loadedParents.add(name);
 
-            if (nodeDesc != null) {
-                List<String> annotatedClasses = nodeDesc.getAnnotatedClasses();
+            if (nodeProperties != null) {
+                List<String> annotatedClasses = nodeProperties.getAnnotatedClasses();
                 if (annotatedClasses != null) {
                     for (String clz : annotatedClasses) {
                         UvmContextImpl.getInstance().addAnnotatedClass(clz);
@@ -686,7 +686,7 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
                             logger.info("Restarting: " + nodeSettings + " (" + name + ")");
                             NodeContextImpl tc = null;
                             try {
-                                tc = new NodeContextImpl((URLClassLoader)getClass().getClassLoader(),nodeDesc,packageDesc.getName(),false);
+                                tc = new NodeContextImpl((URLClassLoader)getClass().getClassLoader(),nodeProperties,packageDesc.getName(),false);
                                 loadedNodesMap.put(nodeSettings, tc);
                                 tc.init();
                                 logger.info("Restarted: " + nodeSettings);
@@ -746,20 +746,20 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         return result;
     }
 
-    private List<NodeSettings> getLoadable(List<NodeSettings> unloaded, Map<NodeSettings, NodeDesc> nodeDescs, Set<String> loadedParents)
+    private List<NodeSettings> getLoadable(List<NodeSettings> unloaded, Map<NodeSettings, NodeProperties> nodePropertiess, Set<String> loadedParents)
     {
         List<NodeSettings> l = new ArrayList<NodeSettings>(unloaded.size());
         Set<String> thisPass = new HashSet<String>(unloaded.size());
 
         for (Iterator<NodeSettings> i = unloaded.iterator(); i.hasNext(); ) {
             NodeSettings nodeSettings = i.next();
-            NodeDesc nodeDesc = nodeDescs.get(nodeSettings);
-            if (null == nodeDesc) {
-                logger.warn("Missing NodeDesc for: " + nodeSettings);
+            NodeProperties nodeProperties = nodePropertiess.get(nodeSettings);
+            if (null == nodeProperties) {
+                logger.warn("Missing NodeProperties for: " + nodeSettings);
                 continue;
             }
 
-            List<String> parents = nodeDesc.getParents();
+            List<String> parents = nodeProperties.getParents();
 
             boolean parentsLoaded = true;
             for (String parent : parents) {
@@ -769,7 +769,7 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
                 if (false == parentsLoaded) { break; }
             }
 
-            String name = nodeDesc.getName();
+            String name = nodeProperties.getName();
 
             // all parents loaded and another instance of this
             // node not loading this pass or already loaded in
@@ -784,11 +784,11 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
         return l;
     }
 
-    private Map<NodeSettings, NodeDesc> loadNodeDescs(List<NodeSettings> unloaded)
+    private Map<NodeSettings, NodeProperties> loadNodePropertiess(List<NodeSettings> unloaded)
     {
         ToolboxManagerImpl tbm = (ToolboxManagerImpl)UvmContextFactory.context().toolboxManager();
 
-        Map<NodeSettings, NodeDesc> nodeDescs = new HashMap<NodeSettings, NodeDesc>(unloaded.size());
+        Map<NodeSettings, NodeProperties> nodePropertiess = new HashMap<NodeSettings, NodeProperties>(unloaded.size());
 
         for (NodeSettings nodeSettings : unloaded) {
             String name = nodeSettings.getNodeName();
@@ -804,14 +804,14 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
             try {
                 logger.info("initializing node desc for: " + name);
-                NodeDesc nodeDesc = initNodeDesc(md, urls, nodeSettings);
-                nodeDescs.put(nodeSettings, nodeDesc);
+                NodeProperties nodeProperties = initNodeProperties(md, urls, nodeSettings);
+                nodePropertiess.put(nodeSettings, nodeProperties);
             } catch (DeployException exn) {
-                logger.warn("NodeDesc could not be parsed", exn);
+                logger.warn("NodeProperties could not be parsed", exn);
             }
         }
 
-        return nodeDescs;
+        return nodePropertiess;
     }
 
     private NodeManagerSettings loadSettings()
@@ -897,27 +897,27 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
     }
 
     /**
-     * Initialize NodeDesc
+     * Initialize NodeProperties
      *
      * @param urls urls to find node descriptor.
      * @exception DeployException the descriptor does not parse or
      * parent cannot be loaded.
      */
-    private NodeDesc initNodeDesc(PackageDesc packageDesc, URL[] urls, NodeSettings nodeSettings) throws DeployException
+    private NodeProperties initNodeProperties(PackageDesc packageDesc, URL[] urls, NodeSettings nodeSettings) throws DeployException
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        NodeDesc nodeDesc = null;
+        NodeProperties nodeProperties = null;
         try {
-            String fileName = System.getProperty("uvm.lib.dir") + "/" + packageDesc.getName() + "/" + "nodeDesc";
-            nodeDesc = settingsManager.load( NodeDesc.class, fileName );
+            String fileName = System.getProperty("uvm.lib.dir") + "/" + packageDesc.getName() + "/" + "nodeProperties";
+            nodeProperties = settingsManager.load( NodeProperties.class, fileName );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
         }
 
-        if (nodeDesc != null) {
-            nodeDesc.setNodeSettings(nodeSettings);
+        if (nodeProperties != null) {
+            nodeProperties.setNodeSettings(nodeSettings);
 
-            //             List<String> annotatedClasses = nodeDesc.getAnnotatedClasses();
+            //             List<String> annotatedClasses = nodeProperties.getAnnotatedClasses();
             //             if (annotatedClasses != null) {
             //                 for (String clz : annotatedClasses) {
             //                     UvmContextImpl.getInstance().addAnnotatedClass(clz);
@@ -925,7 +925,7 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
             //             }
             //UvmContextImpl.getInstance().refreshSessionFactory();
 
-            return nodeDesc;
+            return nodeProperties;
         }
 
         return null;

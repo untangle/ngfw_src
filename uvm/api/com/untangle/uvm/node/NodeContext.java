@@ -31,11 +31,11 @@ public interface NodeContext
     Node node();
 
     /**
-     * Returns the NodeDesc
+     * Returns the NodeProperties
      *
-     * @return the NodeDesc.
+     * @return the NodeProperties.
      */
-    NodeDesc getNodeDesc();
+    NodeProperties getNodeProperties();
 
     /**
      * Get the {@link PackageDesc} corresponding to this instance.

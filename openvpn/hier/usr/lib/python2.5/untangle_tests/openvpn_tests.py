@@ -13,7 +13,7 @@ uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 clientControl = ClientControl()
 nodeData = None
-nodeDesc = None
+nodeProperties = None
 node = None
 
 #pdb.set_trace()
@@ -29,18 +29,18 @@ class OpenVPNTests(unittest.TestCase):
         return "Untangle"
 
     def setUp(self):
-        global nodeDesc, nodeData, node
-        if nodeDesc == None:
+        global nodeProperties, nodeData, node
+        if nodeProperties == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName()
                 raise Exception('node %s already instantiated' % self.nodeName())
-            nodeDesc = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-            node = uvmContext.nodeManager().nodeContext(nodeDesc['nodeSettings']).node()
+            nodeProperties = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+            node = uvmContext.nodeManager().nodeContext(nodeProperties['nodeSettings']).node()
             nodeData = node.getSettings()
 
     def test_999_finalTearDown(self):
-        global nodeDesc
+        global nodeProperties
         global node
-        uvmContext.nodeManager().destroy(nodeDesc['nodeSettings']['id']);
+        uvmContext.nodeManager().destroy(nodeProperties['nodeSettings']['id']);
         node = None
-        nodeDesc = None
+        nodeProperties = None

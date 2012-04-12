@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.argon.ArgonAgentImpl;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.vnet.ArgonConnector;
@@ -129,9 +129,9 @@ class ArgonConnectorImpl implements ArgonConnector
         return sessionLoggerUDP;
     }
 
-    public NodeDesc nodeDesc()
+    public NodeProperties nodeProperties()
     {
-        return node().getNodeDesc();
+        return node().getNodeProperties();
     }
 
     public int state()

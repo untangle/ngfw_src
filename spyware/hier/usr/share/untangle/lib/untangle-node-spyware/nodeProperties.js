@@ -1,5 +1,5 @@
 {
-        "javaClass": "com.untangle.uvm.node.NodeDesc",
+        "javaClass": "com.untangle.uvm.node.NodeProperties",
         "className" : "com.untangle.node.spyware.SpywareImpl",
         "name" : "untangle-node-spyware",
         "displayName" : "Spyware Blocker",

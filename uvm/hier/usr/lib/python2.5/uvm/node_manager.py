@@ -6,10 +6,10 @@ class NodeManager(Manager):
         self.__nodeManager = self.__uvmContext.nodeManager()
 
     def api_instantiate(self,packageName,*args):
-        nodeDesc = None
-        if ( Manager.policyId == None ): nodeDesc = self.__nodeManager.instantiate( packageName,args )
-        else: nodeDesc = self.__nodeManager.instantiate( packageName, Manager.policyId, args )
-        nodeSettings = nodeDesc["nodeSettings"]
+        nodeProperties = None
+        if ( Manager.policyId == None ): nodeProperties = self.__nodeManager.instantiate( packageName,args )
+        else: nodeProperties = self.__nodeManager.instantiate( packageName, Manager.policyId, args )
+        nodeSettings = nodeProperties["nodeSettings"]
         print nodeSettings["id"]
         return nodeSettings
 
@@ -38,7 +38,7 @@ class NodeManager(Manager):
             else: 
                 policy = self.getPolicyString( policyId )
             
-            nodes.append( (nodeSettings['id'], nodeContext.getNodeDesc()["name"], policy, node.getRunState()) )
+            nodes.append( (nodeSettings['id'], nodeContext.getNodeProperties()["name"], policy, node.getRunState()) )
         
         nodes =  sorted( nodes, key=lambda v: v[2]) # sort by rack/policy
         return nodes
@@ -61,7 +61,7 @@ class NodeManager(Manager):
             print "NULL Session Desc (nodeId:%i)" % ( nodeId )
             return
 
-        print "Live sessions for %s" % ( nodeContext.getNodeDesc()["name"])
+        print "Live sessions for %s" % ( nodeContext.getNodeProperties()["name"])
         print "Protocol CState SState Client:Client_Port -> Server:Server_Port Created Last Activity"
         for session in sessions: self.__print_session(session)
 

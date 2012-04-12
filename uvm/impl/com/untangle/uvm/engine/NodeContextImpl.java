@@ -22,7 +22,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.toolbox.PackageDesc;
@@ -38,7 +38,7 @@ public class NodeContextImpl implements NodeContext
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final NodeDesc nodeDesc;
+    private final NodeProperties nodeProperties;
     private final NodeSettings nodeSettings;
     private final boolean isNew;
 
@@ -48,42 +48,42 @@ public class NodeContextImpl implements NodeContext
     private final NodeManager nodeManager;
     private final ToolboxManagerImpl toolboxManager;
 
-    public NodeContextImpl(URLClassLoader classLoader, NodeDesc nodeDesc, String packageName, boolean isNew) throws DeployException
+    public NodeContextImpl(URLClassLoader classLoader, NodeProperties nodeProperties, String packageName, boolean isNew) throws DeployException
     {
         UvmContextImpl mctx = UvmContextImpl.getInstance();
 
-        if (null != nodeDesc.getNodeBase()) {
-            mctx.schemaUtil().initSchema("settings", nodeDesc.getNodeBase());
+        if (null != nodeProperties.getNodeBase()) {
+            mctx.schemaUtil().initSchema("settings", nodeProperties.getNodeBase());
         }
-        mctx.schemaUtil().initSchema("settings", nodeDesc.getName());
+        mctx.schemaUtil().initSchema("settings", nodeProperties.getName());
 
         nodeManager = mctx.nodeManager();
         toolboxManager = mctx.toolboxManager();
 
         LoggingManagerImpl lm = mctx.loggingManager();
-        if (null != nodeDesc.getNodeBase()) {
-            lm.initSchema(nodeDesc.getNodeBase());
+        if (null != nodeProperties.getNodeBase()) {
+            lm.initSchema(nodeProperties.getNodeBase());
         }
-        lm.initSchema(nodeDesc.getName());
+        lm.initSchema(nodeProperties.getName());
 
-        this.nodeDesc = nodeDesc;
-        this.nodeSettings = nodeDesc.getNodeSettings();
+        this.nodeProperties = nodeProperties;
+        this.nodeSettings = nodeProperties.getNodeSettings();
         this.packageName = packageName;
         this.isNew = isNew;
 
         try {
-            checkInstanceCount(nodeDesc);
+            checkInstanceCount(nodeProperties);
         } catch (TooManyInstancesException exn) {
             throw new DeployException(exn);
         }
 
-        logger.info("Creating node context for: " + nodeSettings + " (" + nodeDesc.getName() + ")");
+        logger.info("Creating node context for: " + nodeSettings + " (" + nodeProperties.getName() + ")");
     }
 
     void init() throws DeployException
     {
         Set<NodeContext>parentCtxs = new HashSet<NodeContext>();
-        List<String> parents = nodeDesc.getParents();
+        List<String> parents = nodeProperties.getParents();
         for (String parent : parents) {
             parentCtxs.add(startParent(parent, nodeSettings.getPolicyId()));
         }
@@ -97,7 +97,7 @@ public class NodeContextImpl implements NodeContext
             String nodeSettingsName = nodeSettings.getNodeName();
             logger.debug("setting node " + nodeSettingsName + " log4j repository");
 
-            String className = nodeDesc.getClassName();
+            String className = nodeProperties.getClassName();
             node = (NodeBase)Class.forName(className).newInstance();
 
             for (NodeContext parentCtx : parentCtxs) {
@@ -134,9 +134,9 @@ public class NodeContextImpl implements NodeContext
         return nodeSettings;
     }
 
-    public NodeDesc getNodeDesc()
+    public NodeProperties getNodeProperties()
     {
-        return nodeDesc;
+        return nodeProperties;
     }
 
     public PackageDesc getPackageDesc()
@@ -169,13 +169,13 @@ public class NodeContextImpl implements NodeContext
 
     public boolean resourceExists(String res)
     {
-        String baseNodeName = nodeDesc.getNodeBase();
+        String baseNodeName = nodeProperties.getNodeBase();
         return resourceExistsInt(res, getPackageDesc(), baseNodeName);
     }
 
     public InputStream getResourceAsStream(String res)
     {
-        String baseNodeName = nodeDesc.getNodeBase();
+        String baseNodeName = nodeProperties.getNodeBase();
         return getResourceAsStreamInt(res, getPackageDesc(), baseNodeName);
     }
 
@@ -268,12 +268,12 @@ public class NodeContextImpl implements NodeContext
 
     // private methods --------------------------------------------------------
 
-    private void checkInstanceCount(NodeDesc nodeDesc) 
+    private void checkInstanceCount(NodeProperties nodeProperties) 
         throws TooManyInstancesException
     {
-        if (nodeDesc.isSingleInstance()) {
-            String nodeName = nodeDesc.getName();
-            Long policyId = nodeDesc.getNodeSettings().getPolicyId();
+        if (nodeProperties.isSingleInstance()) {
+            String nodeName = nodeProperties.getName();
+            Long policyId = nodeProperties.getNodeSettings().getPolicyId();
             List<NodeSettings> l = nodeManager.nodeInstances( nodeName, policyId, false );
 
             if (1 == l.size()) {
@@ -343,7 +343,7 @@ public class NodeContextImpl implements NodeContext
 
     public String toString()
     {
-        return "NodeContext nodeSettings: " + nodeSettings + " (" + nodeDesc.getName() + ")";
+        return "NodeContext nodeSettings: " + nodeSettings + " (" + nodeProperties.getName() + ")";
     }
 
     @SuppressWarnings("serial")

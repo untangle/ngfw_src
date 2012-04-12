@@ -1,5 +1,5 @@
 {
-        "javaClass": "com.untangle.uvm.node.NodeDesc",
+        "javaClass": "com.untangle.uvm.node.NodeProperties",
         "className" : "com.untangle.node.webfilter.WebFilterImpl",
         "nodeBase" : "untangle-base-webfilter",
         "name" : "untangle-node-webfilter",

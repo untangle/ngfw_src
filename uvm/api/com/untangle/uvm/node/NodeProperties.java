@@ -13,7 +13,7 @@ import com.untangle.uvm.NodeSettings;
  * Node settings and properties.
  */
 @SuppressWarnings("serial")
-public class NodeDesc implements Serializable
+public class NodeProperties implements Serializable
 {
     private NodeSettings nodeSettings = null; 
 
@@ -33,7 +33,7 @@ public class NodeDesc implements Serializable
 
     private Integer viewPosition = null;
 
-    public NodeDesc() {}
+    public NodeProperties() {}
     
     /**
      * Node id.
@@ -244,11 +244,11 @@ public class NodeDesc implements Serializable
      */
     public boolean equals(Object o)
     {
-        if (!(o instanceof NodeDesc)) {
+        if (!(o instanceof NodeProperties)) {
             return false;
         }
 
-        NodeDesc td = (NodeDesc)o;
+        NodeProperties td = (NodeProperties)o;
 
         return nodeSettings.equals(td.getNodeSettings());
     }
@@ -256,6 +256,6 @@ public class NodeDesc implements Serializable
     @Override
     public String toString()
     {
-        return "[NodeDesc name:" + getName() + "]";
+        return "[NodeProperties name:" + getName() + "]";
     }
 }

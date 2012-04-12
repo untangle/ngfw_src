@@ -63,7 +63,7 @@ public class BlockPageServlet extends HttpServlet
             return;
         }
         request.setAttribute( "reason", blockDetails.getReason());
-        VirusBlockPageParameters params = new VirusBlockPageParameters( nodeContext.getNodeDesc().getDisplayName(), blockDetails );
+        VirusBlockPageParameters params = new VirusBlockPageParameters( nodeContext.getNodeProperties().getDisplayName(), blockDetails );
                                                          
         BlockPageUtil.getInstance().handle( request, response, this, params );        
     }

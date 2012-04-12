@@ -1614,15 +1614,15 @@ Ext.define("Ung.Node", {
         } 
         handler.call(this);
     },
-    getNodeDesc: function(handler) {
+    getNodeProperties: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
         if(this.nodeContext==null) {
             return;
         }
-        if (this.nodeContext.nodeDesc === undefined) {
-            this.nodeContext.getNodeDesc(Ext.Function.createSequence(Ext.bind(function(result, exception) {
+        if (this.nodeContext.nodeProperties === undefined) {
+            this.nodeContext.getNodeProperties(Ext.Function.createSequence(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                this.nodeContext.nodeDesc = result;
+                this.nodeContext.nodeProperties = result;
             }, this), handler));
         } else {
             handler.call(this);
@@ -1631,7 +1631,7 @@ Ext.define("Ung.Node", {
     // load Node Context
     loadNodeContext : function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
-        Ext.bind(this.getNodeContext,this,[Ext.bind(this.getRpcNode,this,[Ext.bind(this.getNodeDesc,this,[handler])])]).call(this);
+        Ext.bind(this.getNodeContext,this,[Ext.bind(this.getRpcNode,this,[Ext.bind(this.getNodeProperties,this,[handler])])]).call(this);
     },
     loadSettings : function() {
         Ext.MessageBox.wait(i18n._("Loading Settings..."), i18n._("Please wait"));
@@ -1922,7 +1922,7 @@ Ung.MessageManager = {
                     for(var i=0;i<messageQueue.messages.list.length;i++) {
                         var msg=messageQueue.messages.list[i];
                         if(msg.javaClass.indexOf("NodeStateChange") >= 0) {
-                            var node=Ung.Node.getCmp(msg.nodeDesc.nodeSettings.id);
+                            var node=Ung.Node.getCmp(msg.nodeProperties.nodeSettings.id);
                             if(node!=null) {
                                 node.updateRunState(msg.nodeState);
                             }
@@ -1965,17 +1965,17 @@ Ung.MessageManager = {
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
                             if(msg.policy==null || msg.policy.id == rpc.currentPolicy.id) {
                                 refreshApps=true;
-                                var node=main.getNode(msg.nodeDesc.name,msg.nodeDesc.nodeSettings.policyId);
+                                var node=main.getNode(msg.nodeProperties.name,msg.nodeProperties.nodeSettings.policyId);
                                 if(!node) {
-                                    node=main.createNode(msg.nodeDesc, msg.statDescs, msg.license,"INITIALIZED");
+                                    node=main.createNode(msg.nodeProperties, msg.statDescs, msg.license,"INITIALIZED");
                                     main.nodes.push(node);
                                     main.addNode(node,true);
-                                    main.removeParentNode(node,msg.nodeDesc.nodeSettings.policyId);
+                                    main.removeParentNode(node,msg.nodeProperties.nodeSettings.policyId);
                                 } else {
                                     main.loadLicenses();
                                 }
                             } else {
-                                Ung.AppItem.updateState(msg.nodeDesc.displayName, null);
+                                Ung.AppItem.updateState(msg.nodeProperties.displayName, null);
                             }
                         } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
                             refreshApps=true;
@@ -2868,7 +2868,7 @@ Ext.define("Ung.GridEventLog", {
             
 
             displayStyle="";
-            if (this.settingsCmp.node.nodeContext.nodeDesc.type == "SERVICE") displayStyle = "display:none;"; //hide rack selector for services
+            if (this.settingsCmp.node.nodeContext.nodeProperties.type == "SERVICE") displayStyle = "display:none;"; //hide rack selector for services
             out = [];
             out.push('<select name="Rack" id="selectPolicy_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '" style="'+displayStyle+'">');
             out.push('<option value="-1" ' + selOpt + '>' + i18n._('All Racks') + '</option>');

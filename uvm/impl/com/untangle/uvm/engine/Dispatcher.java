@@ -44,7 +44,7 @@ import com.untangle.uvm.message.LoadCounter;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.MetaEnv;
@@ -187,7 +187,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         this.nodeContext = argonConnector.node().getNodeContext();
         this.nodeManager = UvmContextImpl.getInstance().nodeManager();
         sessionEventListener = null;
-        NodeDesc td = node.getNodeDesc();
+        NodeProperties td = node.getNodeProperties();
 
         sessionEventLogger = argonConnector.sessionEventLogger();
         releasedHandler = new ReleasedEventHandler(node);
@@ -289,7 +289,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             if (RWSessionStats.DoDetailedTimes)
                 firstRequestHandleTime = MetaEnv.currentTimeMillis();
 
-            NodeDesc td = node.getNodeDesc();
+            NodeProperties td = node.getNodeProperties();
             sessionId = request.id();
 
             TCPNewSessionRequestImpl treq = new TCPNewSessionRequestImpl(this, request);
@@ -404,7 +404,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             if (RWSessionStats.DoDetailedTimes)
                 firstRequestHandleTime = MetaEnv.currentTimeMillis();
 
-            NodeDesc td = node.getNodeDesc();
+            NodeProperties td = node.getNodeProperties();
             sessionId = request.id();
 
             UDPNewSessionRequestImpl ureq = new UDPNewSessionRequestImpl(this, request);

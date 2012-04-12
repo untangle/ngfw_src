@@ -1540,15 +1540,15 @@ Ung.Node = Ext.extend(Ext.Component, {
         } 
         handler.call(this);
     },
-    getNodeDesc: function(handler) {
+    getNodeProperties: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
         if(this.nodeContext==null) {
             return;
         }
-        if (this.nodeContext.nodeDesc === undefined) {
-            this.nodeContext.getNodeDesc(function(result, exception) {
+        if (this.nodeContext.nodeProperties === undefined) {
+            this.nodeContext.getNodeProperties(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                this.nodeContext.nodeDesc = result;
+                this.nodeContext.nodeProperties = result;
             }.createSequence(handler).createDelegate(this));
         } else {
             handler.call(this);
@@ -1557,7 +1557,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     // load Node Context
     loadNodeContext : function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
-        this.getNodeContext.createDelegate(this,[this.getRpcNode.createDelegate(this,[this.getNodeDesc.createDelegate(this,[handler])])]).call(this);
+        this.getNodeContext.createDelegate(this,[this.getRpcNode.createDelegate(this,[this.getNodeProperties.createDelegate(this,[handler])])]).call(this);
     },
     loadSettings : function() {
         Ext.MessageBox.wait(i18n._("Loading Settings..."), i18n._("Please wait"));
@@ -1874,7 +1874,7 @@ Ung.MessageManager = {
                     for(var i=0;i<messageQueue.messages.list.length;i++) {
                         var msg=messageQueue.messages.list[i];
                         if(msg.javaClass.indexOf("NodeStateChange") >= 0) {
-                            var node=Ung.Node.getCmp(msg.nodeDesc.nodeSettings.id);
+                            var node=Ung.Node.getCmp(msg.nodeProperties.nodeSettings.id);
                             if(node!=null) {
                                 node.updateRunState(msg.nodeState);
                             }
@@ -1918,17 +1918,17 @@ Ung.MessageManager = {
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
                             if(msg.policy==null || msg.policy.id == rpc.currentPolicy.id) {
                                 refreshApps=true;
-                                var node=main.getNode(msg.nodeDesc.name,msg.nodeDesc.nodeSettings.policy);
+                                var node=main.getNode(msg.nodeProperties.name,msg.nodeProperties.nodeSettings.policy);
                                 if(!node) {
-                                    node=main.createNode(msg.nodeDesc, msg.statDescs, msg.license,"INITIALIZED");
+                                    node=main.createNode(msg.nodeProperties, msg.statDescs, msg.license,"INITIALIZED");
                                     main.nodes.push(node);
                                     main.addNode(node,true);
-                                    main.removeParentNode(node,msg.nodeDesc.nodeSettings.policy);
+                                    main.removeParentNode(node,msg.nodeProperties.nodeSettings.policy);
                                 } else {
                                     main.loadLicenses();
                                 }
                             } else {
-                                Ung.AppItem.updateState(msg.nodeDesc.displayName, null);
+                                Ung.AppItem.updateState(msg.nodeProperties.displayName, null);
                             }
                         } else if(msg.javaClass.indexOf("InstallAndInstantiateComplete") != -1) {
                             refreshApps=true;
@@ -2813,7 +2813,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             querySelector.innerHTML = out.join("");
 
             displayStyle="";
-            if (this.settingsCmp.node.nodeContext.nodeDesc.type == "SERVICE") displayStyle = "display:none;"; //hide rack selector for services
+            if (this.settingsCmp.node.nodeContext.nodeProperties.type == "SERVICE") displayStyle = "display:none;"; //hide rack selector for services
             out = [];
             out.push('<select name="Rack" id="selectPolicy_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '" style="'+displayStyle+'">');
             out.push('<option value="-1" ' + selOpt + '>' + i18n._('All Racks') + '</option>');

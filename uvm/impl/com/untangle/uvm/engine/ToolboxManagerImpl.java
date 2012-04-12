@@ -44,7 +44,7 @@ import com.untangle.uvm.message.Message;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.NodeSettings;
@@ -207,10 +207,10 @@ class ToolboxManagerImpl implements ToolboxManager
         }
 
         NodeManager nm = UvmContextFactory.context().nodeManager();
-        List<NodeDesc> instances = nm.visibleNodes(policyId);
+        List<NodeProperties> instances = nm.visibleNodes(policyId);
 
         Map<NodeSettings, StatDescs> statDescs = new HashMap<NodeSettings, StatDescs>(instances.size());
-        for (NodeDesc nd : instances) {
+        for (NodeProperties nd : instances) {
             NodeSettings nodeSettings = nd.getNodeSettings();
             MessageManager lmm = UvmContextFactory.context().messageManager();
             Counters c = lmm.getCounters(nodeSettings.getId());
@@ -241,7 +241,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
         Map<String, License> licenseMap = new HashMap<String, License>();
         LicenseManager lm = UvmContextFactory.context().licenseManager();
-        for (NodeDesc nd : instances) {
+        for (NodeProperties nd : instances) {
             String n = nd.getName();
             licenseMap.put(n, lm.getLicense(n));
         }
@@ -461,7 +461,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 try {
                     logger.info("instantiate( " + node + ")");
                     register(node);
-                    NodeDesc nd = nm.instantiate(node, policyId);
+                    NodeProperties nd = nm.instantiate(node, policyId);
                     if (nd != null && nd.getAutoStart()) {
                         NodeContext nc = nm.nodeContext(nd.getNodeSettings());
                         nc.node().start();

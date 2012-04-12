@@ -10,20 +10,20 @@ import java.util.Map;
 
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.node.License;
-import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.NodeSettings;
 
 @SuppressWarnings("serial")
 public class RackView implements Serializable
 {
     private List<Application> applications;
-    private List<NodeDesc> instances;
+    private List<NodeProperties> instances;
     private Map<NodeSettings, StatDescs> statDescs;
     private Map<String, License> licenseMap;
     private Map<NodeSettings, NodeSettings.NodeState> runStates;
 
     public RackView(List<Application> applications,
-                    List<NodeDesc> instances,
+                    List<NodeProperties> instances,
                     Map<NodeSettings, StatDescs> statDescs,
                     Map<String, License> license,
                     Map<NodeSettings, NodeSettings.NodeState> runStates)
@@ -40,7 +40,7 @@ public class RackView implements Serializable
         return applications;
     }
 
-    public List<NodeDesc> getInstances()
+    public List<NodeProperties> getInstances()
     {
         return instances;
     }

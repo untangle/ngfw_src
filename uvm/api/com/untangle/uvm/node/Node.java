@@ -45,7 +45,7 @@ public interface Node
 
     NodeContext getNodeContext();
 
-    NodeDesc getNodeDesc();
+    NodeProperties getNodeProperties();
 
     List<VnetSessionDesc> liveSessionDescs();
 
