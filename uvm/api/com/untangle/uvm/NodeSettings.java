@@ -20,7 +20,6 @@ public class NodeSettings implements Serializable, Comparable<NodeSettings>
         LOADED,
         INITIALIZED,
         RUNNING, 
-        DISABLED, 
         DESTROYED
     }
     

@@ -68,7 +68,6 @@ CREATE TABLE settings.u_logging_settings (
     syslog_protocol text NOT NULL,
     PRIMARY KEY (settings_id));
 
-
 -- com.untangle.uvm.tran.NodePreferences
 -- CREATE TABLE settings.u_node_preferences (
 --    id int8 NOT NULL,
@@ -147,7 +146,6 @@ CREATE TABLE settings.u_logging_settings (
 --    position int4 NOT NULL,
 --    PRIMARY KEY (tps_id, position));
 
-
 -- com.untangle.uvm.addrbook.ActiveDirectorySettings
 --CREATE TABLE settings.u_ab_repository_settings (
 --    settings_id int8 NOT NULL,
@@ -173,12 +171,22 @@ CREATE TABLE settings.u_logging_settings (
 --    PRIMARY KEY       (settings_id));
 
 -- com.untangle.uvm.engine.PackageState
-CREATE TABLE settings.u_mackage_state (
-    id int8 NOT NULL,
-    mackage_name text NOT NULL,
-    extra_name text,
-    enabled bool NOT NULL,
-    PRIMARY KEY (id));
+-- CREATE TABLE settings.u_mackage_state (
+--     id int8 NOT NULL,
+--     mackage_name text NOT NULL,
+--     extra_name text,
+--     enabled bool NOT NULL,
+--     PRIMARY KEY (id));
+
+-- com.untangle.uvm.RadiusSettings -- 7.2
+-- CREATE TABLE settings.u_radius_server_settings (
+--     enabled           BOOL NOT NULL,
+--     settings_id       INT8 NOT NULL,
+--     server	      TEXT NOT NULL,
+--     port	      INT4 NOT NULL,
+--     shared_secret     TEXT NOT NULL,
+--     auth_method       TEXT NOT NULL,
+--     PRIMARY KEY      (settings_id));
 
 -- com.untangle.uvm.Period
 CREATE TABLE settings.u_period (
@@ -291,16 +299,6 @@ CREATE TABLE settings.u_active_stat (
     name                 text NOT NULL,
     interval             text NOT NULL,
     PRIMARY KEY (id));
-
--- com.untangle.uvm.RadiusSettings -- 7.2
-CREATE TABLE settings.u_radius_server_settings (
-    enabled           BOOL NOT NULL,
-    settings_id       INT8 NOT NULL,
-    server	      TEXT NOT NULL,
-    port	      INT4 NOT NULL,
-    shared_secret     TEXT NOT NULL,
-    auth_method       TEXT NOT NULL,
-    PRIMARY KEY      (settings_id));
 
 ----------------
 -- constraints |

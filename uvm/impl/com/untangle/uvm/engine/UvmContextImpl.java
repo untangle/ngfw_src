@@ -1032,7 +1032,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.addAnnotatedClass("com.untangle.uvm.toolbox.UpgradeSettings");
         /* impl */
         this.addAnnotatedClass("com.untangle.uvm.engine.LoginEvent");
-        this.addAnnotatedClass("com.untangle.uvm.engine.PackageState");
     }
     
     /**

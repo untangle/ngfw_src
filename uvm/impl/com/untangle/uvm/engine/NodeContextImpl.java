@@ -108,10 +108,6 @@ public class NodeContextImpl implements NodeContext
             if (isNew) {
                 node.initializeSettings();
                 node.init();
-                boolean enabled = toolboxManager.isEnabled(packageName);
-                if (!enabled) {
-                    node.disable();
-                }
             } else {
                 node.resumeState(nodeSettings.getTargetState());
             }

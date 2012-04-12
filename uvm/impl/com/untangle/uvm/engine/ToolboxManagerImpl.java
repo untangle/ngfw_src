@@ -91,7 +91,6 @@ class ToolboxManagerImpl implements ToolboxManager
         }
     }
 
-    private final Map<String, PackageState> packageState;
     private CronJob cronJob;
     private final UpdateTask updateTask = new UpdateTask();
     private final Map<Long, AptLogTail> tails = new HashMap<Long, AptLogTail>();
@@ -116,8 +115,6 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         if (this.execManager == null)
             this.execManager = UvmContextFactory.context().createExecManager();
-
-        packageState = loadPackageState();
 
         refreshLists();
     }
@@ -696,12 +693,6 @@ class ToolboxManagerImpl implements ToolboxManager
         }
     }
 
-    protected  boolean isEnabled(String packageName)
-    {
-        PackageState ms = packageState.get(packageName);
-        return null == ms ? true : ms.isEnabled();
-    }
-
     protected List<PackageDesc> getInstalledAndAutoStart()
     {
         List<PackageDesc> mds = new ArrayList<PackageDesc>();
@@ -737,28 +728,6 @@ class ToolboxManagerImpl implements ToolboxManager
                 }
             }
         }
-    }
-
-    // private methods --------------------------------------------------------
-    @SuppressWarnings("unchecked") //Query
-    private Map<String, PackageState> loadPackageState()
-    {
-        final Map<String, PackageState> m = new HashMap<String, PackageState>();
-
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(org.hibernate.Session s)
-                {
-                    Query q = s.createQuery("from PackageState ms");
-                    for (PackageState ms : (List<PackageState>)q.list()) {
-                        m.put(ms.getPackageName(), ms);
-                    }
-                    return true;
-                }
-            };
-        UvmContextFactory.context().runTransaction(tw);
-
-        return m;
     }
 
     // package list functions -------------------------------------------------
