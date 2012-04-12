@@ -92,14 +92,14 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
     }
 
     @Override
-    protected void preStop() throws Exception
+    protected void preStop()
     {
         super.preStop();
         logger.debug("preStop()");
     }
 
     @Override
-    protected void postStart() throws Exception
+    protected void postStart()
     {
         logger.debug("postStart()");
 
