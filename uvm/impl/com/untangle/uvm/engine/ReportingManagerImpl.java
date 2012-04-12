@@ -52,7 +52,7 @@ import com.untangle.uvm.reports.Section;
 import com.untangle.uvm.reports.SummarySection;
 import com.untangle.uvm.reports.TableOfContents;
 import com.untangle.uvm.reports.User;
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.toolbox.PackageDesc;
 
 class ReportingManagerImpl implements ReportingManager
@@ -593,7 +593,7 @@ class ReportingManagerImpl implements ReportingManager
     {
         UvmContext uvm = UvmContextFactory.context();
         NodeManager nodeManager = uvm.nodeManager();
-        List<NodeId> tids = nodeManager.nodeInstances("untangle-node-reporting");
+        List<NodeSettings> tids = nodeManager.nodeInstances("untangle-node-reporting");
         if(tids == null || tids.size() == 0)
             return false;
         // What if more than one? Shouldn't happen. XX

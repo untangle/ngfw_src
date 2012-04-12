@@ -14,8 +14,6 @@ import com.untangle.uvm.vnet.event.SessionEventListener;
  */
 public interface PipelineFoundry
 {
-    SessionEvent createInitialEndpoints( IPSessionDesc start, String username, String hostname );
-
     void registerEndpoints( SessionEvent pe );
 
     ArgonConnector createArgonConnector( PipeSpec spec, SessionEventListener listener );

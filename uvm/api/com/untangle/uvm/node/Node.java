@@ -5,23 +5,19 @@ package com.untangle.uvm.node;
 
 import java.util.List;
 
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.vnet.VnetSessionDesc;
-import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.logging.LogEvent;
 
 /**
  * Interface for a node instance, provides public runtime control
  * methods for manipulating the instance's state.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public interface Node
 {
-    public NodeId getNodeId();
+    public NodeSettings getNodeSettings();
 
-    NodeState getRunState();
+    NodeSettings.NodeState getRunState();
 
     /**
      * Connects to ArgonConnector and starts. The node instance reads its
@@ -53,7 +49,7 @@ public interface Node
 
     List<VnetSessionDesc> liveSessionDescs();
 
-    Policy getPolicy();
+    Long getPolicyId();
     
     void logEvent(LogEvent evt);
 }

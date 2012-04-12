@@ -127,7 +127,7 @@ public class ArgonSessionTable
 
             ArgonHook argonHook = session.argonHook();
 
-            isMatch = matcher.isMatch( argonHook.policy, argonHook.clientSide, argonHook.serverSide );
+            isMatch = matcher.isMatch( argonHook.policyId, argonHook.clientSide, argonHook.serverSide );
 
             if ( isDebugEnabled )
                 logger.debug( "Tested session: " + session + " id: " + session.id() +

@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: Policy.java 31312 2012-03-02 02:07:49Z dmorris $
  */
 package com.untangle.uvm.policy;
 
@@ -12,30 +12,23 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * Policy.
+ * The settings for a given policy. or Rack.
  */
-@Entity
-@Table(name="u_policy", schema="settings")
 @SuppressWarnings("serial")
-public class Policy implements Serializable
+public class PolicySettings implements Serializable
 {
-
-    public static final String NO_NOTES = "no description";
-
     private Long id;
     private boolean isDefault;
     private String name;
-    //    private boolean live;
-    private String notes = NO_NOTES;
-
+    private String notes = "";
     private Long parentId = null;
 
     // Constructors -----------------------------------------------------------
 
-    public Policy() { }
+    public PolicySettings() { }
 
     // Internal use only
-    public Policy(boolean isDefault, String name, String notes)
+    public PolicySettings(boolean isDefault, String name, String notes)
     {
         this.isDefault = isDefault;
         this.name = name;
@@ -43,25 +36,22 @@ public class Policy implements Serializable
     }
 
     // UI uses this one.
-    public Policy(String name, String notes)
+    public PolicySettings(String name, String notes)
     {
         this.isDefault = false;
         this.name = name;
         this.notes = notes;
     }
 
-    public Policy(String name)
+    public PolicySettings(String name)
     {
         this.isDefault = false;
         this.name = name;
-        this.notes = NO_NOTES;
+        this.notes = "";
     }
 
     // accessors --------------------------------------------------------------
 
-    @Id
-    @Column(name="id")
-    @GeneratedValue
     public Long getId()
     {
         return id;
@@ -75,10 +65,7 @@ public class Policy implements Serializable
     /**
      * Returns true if this policy is the default policy.  The default
      * policy is the one selected when a new interface is added.
-     *
-     * @return true for the default policy
      */
-    @Column(name="is_default", nullable=false)
     public boolean isDefault()
     {
         return isDefault;
@@ -93,7 +80,6 @@ public class Policy implements Serializable
      * The name of the policy.  This is a short name used in the UI
      * main policy selector.
      */
-    @Column(nullable=false)
     public String getName()
     {
         return name;
@@ -119,14 +105,19 @@ public class Policy implements Serializable
         this.notes = notes;
     }
 
-    @Column(name="parent_id")
+
+    /**
+     * Returns the ID for the parent, or null if there is no parent
+     */
     public Long getParentId()
     {
         return parentId;
     }
 
+    /**
+     * Returns the ID for the parent, or null if there is no parent
+     */
     public void setParentId(Long parentId)
-        throws PolicyException
     {
         this.parentId = parentId;
     }
@@ -135,11 +126,11 @@ public class Policy implements Serializable
 
     public boolean equals(Object o)
     {
-        if (!(o instanceof Policy)) {
+        if (!(o instanceof PolicySettings)) {
             return false;
         } else {
 
-            Policy p = (Policy)o;
+            PolicySettings p = (PolicySettings)o;
 
             if (p == null) {
                 return false;
@@ -156,7 +147,7 @@ public class Policy implements Serializable
 
     public String toString()
     {
-        return "Policy(" + (isDefault ? "default" : "non-default")
+        return "PolicySettings(" + (isDefault ? "default" : "non-default")
             + ": " + name + " id:" + id + " parentId: " + parentId + ")";
     }
 }

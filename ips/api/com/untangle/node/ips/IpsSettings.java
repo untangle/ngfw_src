@@ -37,7 +37,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 
 /**
  * Hibernate object to store Ips settings.
@@ -52,7 +52,7 @@ public class IpsSettings implements Serializable
 {
 
     private Long id;
-    private NodeId tid;
+    private NodeSettings tid;
 
     private IpsBaseSettings baseSettings = new IpsBaseSettings();
 
@@ -62,7 +62,7 @@ public class IpsSettings implements Serializable
 
     public IpsSettings() {}
 
-    public IpsSettings(NodeId tid)
+    public IpsSettings(NodeSettings tid)
     {
         this.tid = tid;
     }
@@ -110,12 +110,12 @@ public class IpsSettings implements Serializable
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    public NodeId getNodeId()
+    public NodeSettings getNodeSettings()
     {
         return tid;
     }
 
-    public void setNodeId(NodeId tid)
+    public void setNodeSettings(NodeSettings tid)
     {
         this.tid = tid;
     }

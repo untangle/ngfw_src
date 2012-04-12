@@ -28,7 +28,7 @@ import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.Validatable;
 import com.untangle.uvm.node.ValidateException;
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 
 /**
  * Settings for the open vpn node.
@@ -58,7 +58,7 @@ public class VpnSettings implements Serializable, Validatable
     public static final int DEFAULT_PUBLIC_PORT = 1194;
 
     private Long id;
-//    private NodeId tid;
+//    private NodeSettings tid;
 
     private boolean isBridgeMode = false;
     private boolean isUntanglePlatformClient = false;

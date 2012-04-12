@@ -18,7 +18,7 @@ import com.untangle.uvm.UvmContextFactory;
 import  com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
 
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.util.I18nUtil;
 
 import com.untangle.node.http.BlockPageUtil;  
@@ -39,9 +39,7 @@ public class BlockPageServlet extends HttpServlet
         Map<String,String> i18n_map = UvmContextFactory.context().
             languageManager().getTranslations( "untangle-base-virus" );
         
-        NodeId tid = new NodeId(Long.parseLong(request.getParameter( "tid" )));
-        
-        NodeContext nodeContext = nm.nodeContext( tid );
+        NodeContext nodeContext = nm.nodeContext( Long.parseLong(request.getParameter( "tid" )) );
         if ( nodeContext == null ) {
             response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
                                 I18nUtil.tr( "Feature is not installed.", i18n_map ));

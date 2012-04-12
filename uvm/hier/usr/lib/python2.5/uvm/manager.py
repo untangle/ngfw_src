@@ -6,7 +6,7 @@ class Manager(object):
 
     managers = []
 
-    policy = None
+    policyId = None
     verbosity = 0
     
     def shortNameToPackageName(self,shortName):
@@ -18,14 +18,17 @@ class Manager(object):
 
     def buildNodeId(self, nodeIdStr ):
         nodeId = int( nodeIdStr )
-        return {'javaClass': 'com.untangle.uvm.security.NodeId', 'id': nodeId, 'name': "%d" % ( nodeId ) }
+        return {'javaClass': 'com.untangle.uvm.NodeSettings', 'id': nodeId, 'name': "%d" % ( nodeId ) }
 
     def buildDate(self,seconds):
         return { 'javaClass' : 'java.util.Date', 'time' : ( seconds * 1000 ) }
 
-    def getPolicyString(self,policy):
+    def getPolicyString(self,policyId):
         #return "Policy (%s: %s)" % ( [ "non-default", "default" ][policy["default"]], policy["name"] )
-        return "%s" % ( policy["name"] )
+        #return "%s" % ( policy["name"] )
+        if (policyId == 1):
+            return "Default Rack"
+        return "Policy-%i" % policyId
 
     def formatProtocol(self,protocol):
         return Manager.__protocols[int(protocol)]

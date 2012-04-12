@@ -1353,8 +1353,8 @@ Ext.define("Ung.Node", {
             config.runState="INITIALIZED";
         }
         this.subCmps = [];
-        if(config.Tid.policy!=null){
-            this.isNodeEditable = config.Tid.policy.id == rpc.currentPolicy.id ? true : false;
+        if(config.nodeSettings.policy!=null){
+            this.isNodeEditable = config.nodeSettings.policy.id == rpc.currentPolicy.id ? true : false;
         }
         Ung.Node.superclass.constructor.apply(this, arguments);
     },
@@ -1587,8 +1587,8 @@ Ext.define("Ung.Node", {
             //            rpc.nodeManager.nodeContext(Ext.bind(function(result, exception) {
             //                if(Ung.Util.handleException(exception)) return;
             //                this.nodeContext = result;
-            //            }.createSequence(handler),this), this.Tid);
-            this.nodeContext = rpc.nodeManager.nodeContext(this.Tid);
+            //            }.createSequence(handler),this), this.nodeSettings);
+            this.nodeContext = rpc.nodeManager.nodeContext(this.nodeSettings);
             handler.call(this);
         } else {
             handler.call(this);
@@ -1722,7 +1722,7 @@ Ext.define("Ung.Node", {
                         main.loadApps();
                         main.loadRackView();
                     }
-                },this), this.Tid);
+                },this), this.nodeId);
             }
         },this));
     },
@@ -1922,14 +1922,12 @@ Ung.MessageManager = {
                     for(var i=0;i<messageQueue.messages.list.length;i++) {
                         var msg=messageQueue.messages.list[i];
                         if(msg.javaClass.indexOf("NodeStateChange") >= 0) {
-                            var node=Ung.Node.getCmp(msg.nodeDesc.nodeId.id);
+                            var node=Ung.Node.getCmp(msg.nodeDesc.nodeSettings.id);
                             if(node!=null) {
                                 node.updateRunState(msg.nodeState);
                             }
                         } else if (msg.javaClass.indexOf("PackageInstallRequest") >= 0) {
                             if(!msg.installed) {
-                                var policy=null;
-                                policy = rpc.currentPolicy;
                                 var appItemDisplayName=msg.packageDesc.type=="TRIAL"?main.findLibItemDisplayName(msg.packageDesc.fullVersion):msg.packageDesc.displayName;
                                 Ung.AppItem.updateState(appItemDisplayName, "download");
                                 if ( main.isIframeWinVisible()) {
@@ -1942,12 +1940,11 @@ Ung.MessageManager = {
 
                                 //already checked for upgrades
                                 //main.warnOnUpgrades(Ext.bind(function() {
-
                                 rpc.toolboxManager.installAndInstantiate(Ext.bind(function(result, exception) {
                                     if (exception)
                                         Ung.AppItem.updateState(appItemDisplayName, null);
                                     if(Ung.Util.handleException(exception)) return;
-                                },this),msg.packageDesc.name, policy);
+                                },this),msg.packageDesc.name, rpc.currentPolicy.id);
 
                                 //},this));
                             }
@@ -1968,12 +1965,12 @@ Ung.MessageManager = {
                         } else if(msg.javaClass.indexOf("NodeInstantiated") != -1) {
                             if(msg.policy==null || msg.policy.id == rpc.currentPolicy.id) {
                                 refreshApps=true;
-                                var node=main.getNode(msg.nodeDesc.name,msg.nodeDesc.nodeId.policy);
+                                var node=main.getNode(msg.nodeDesc.name,msg.nodeDesc.nodeSettings.policyId);
                                 if(!node) {
                                     node=main.createNode(msg.nodeDesc, msg.statDescs, msg.license,"INITIALIZED");
                                     main.nodes.push(node);
                                     main.addNode(node,true);
-                                    main.removeParentNode(node,msg.nodeDesc.nodeId.policy);
+                                    main.removeParentNode(node,msg.nodeDesc.nodeSettings.policyId);
                                 } else {
                                     main.loadLicenses();
                                 }
@@ -2092,7 +2089,7 @@ Ung.MessageManager = {
             } catch (err) {
                 Ext.MessageBox.alert("Exception in MessageManager", err.message);
             }
-        },this), rpc.messageKey, rpc.currentPolicy);
+        },this), rpc.messageKey, rpc.currentPolicy.id);
     }
 };
 Ext.define("Ung.SystemStats", {
@@ -2575,20 +2572,19 @@ Ext.define("Ung.SystemBlinger", {
                 var metric=nodeCmp.blingers.dispMetricDescs[j];
                 if(this.tempMetrics[i]==metric.name) {
                     activeMetrics.push({
-                       javaClass : "com.untangle.uvm.message.ActiveStat",
+                       javaClass : "com.untangle.uvm.message.NodeMetric",
                        name : metric.name,
                        interval: "SINCE_MIDNIGHT"
                     });
                 }
             }
         }
-        rpc.messageManager.setActiveMetrics(Ext.bind(function(result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            var nodeCmp = Ext.getCmp(this.parentId);
-            nodeCmp.blingers.activeMetrics.list=activeMetrics;
-            this.buildActiveMetrics();
-        },this),nodeCmp.Tid,{javaClass:"java.util.List", list:activeMetrics});
-
+        //         rpc.messageManager.setActiveMetrics(Ext.bind(function(result, exception) {
+        //             if(Ung.Util.handleException(exception)) return;
+        //             var nodeCmp = Ext.getCmp(this.parentId);
+        //             nodeCmp.blingers.activeMetrics.list=activeMetrics;
+        //             this.buildActiveMetrics();
+        //         },this),nodeCmp.nodeSettings,{javaClass:"java.util.List", list:activeMetrics});
     },
     update : function(stats) {
         // UPDATE COUNTS

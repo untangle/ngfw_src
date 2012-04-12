@@ -64,11 +64,13 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
                                                    "ORDER BY evt.timeStamp DESC");
 
         MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeId());
+        Counters c = lmm.getCounters(getNodeSettings().getId());
+
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Chunks scanned"), null, I18nUtil.marktr("SCAN"));
         detectBlinger = c.addActivity("detect", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("LOG"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Sessions blocked"), null, I18nUtil.marktr("BLOCK"));
-        lmm.setActiveMetricsIfNotSet(getNodeId(), scanBlinger, detectBlinger, blockBlinger);
+
+        lmm.setActiveMetrics(getNodeSettings().getId(), scanBlinger, detectBlinger, blockBlinger);
     }
 
     // ProtoFilter methods ----------------------------------------------------
@@ -85,7 +87,9 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         this.nodeSettings = settings;
         
         SettingsManager setman = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+
+        String nodeID = this.getNodeSettings().getId().toString();
+
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-protofilter/settings_" + nodeID;
 
         try {
@@ -165,10 +169,12 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         setSettings(settings);
     }
 
-    protected void postInit(String[] args)
+    protected void postInit()
     {
         SettingsManager setman = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+
+        String nodeID = this.getNodeSettings().getId().toString();
+
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-protofilter/settings_" + nodeID;
         String settingsFile = settingsBase + ".js";
         ProtoFilterSettings readSettings = null;

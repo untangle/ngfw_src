@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.node.StringRule;
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.node.GenericRule;
 
 /**

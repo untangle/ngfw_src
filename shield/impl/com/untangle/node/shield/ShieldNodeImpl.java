@@ -18,8 +18,8 @@ import org.hibernate.Session;
 
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
@@ -97,10 +97,10 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
         return new EventLogQuery[] { this.eventQuery };
     }
     
-    protected void postInit(String[] args)
+    protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         ShieldSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-shield/" + "settings_" + nodeID;
 
@@ -185,7 +185,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         try {
             settingsManager.save(ShieldSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-shield/" + "settings_"  + nodeID, newSettings);
         } catch (SettingsManager.SettingsException e) {
@@ -208,7 +208,7 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
             return;
         }
 
-        if ( getRunState() == NodeState.RUNNING ) {
+        if ( getRunState() == NodeSettings.NodeState.RUNNING ) {
             try {
                 this.shieldManager.start();
                 this.shieldManager.blessUsers( this.settings );

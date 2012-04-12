@@ -24,9 +24,8 @@ import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.argon.SessionGlobalState;
 import com.untangle.uvm.argon.ArgonHook;
 import com.untangle.uvm.argon.ArgonSessionTable;
-import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.SessionMonitorEntry;
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 
 /**
@@ -51,7 +50,7 @@ class SessionMonitorImpl implements SessionMonitor
     /**
      * This returns a list of descriptors for a certain node
      */
-    public List<com.untangle.uvm.vnet.VnetSessionDesc> getNodeSessions(NodeId id)
+    public List<com.untangle.uvm.vnet.VnetSessionDesc> getNodeSessions(NodeSettings id)
     {
         NodeManager nodeManager = uvmContext.nodeManager();
 
@@ -126,11 +125,11 @@ class SessionMonitorImpl implements SessionMonitor
                         if (hook == null)
                             continue;
                         
-                        Policy policy = hook.getPolicy();
-                        if (policy == null)
+                        Long policyId = hook.getPolicyId();
+                        if (policyId == null)
                             session.setPolicy("");
                         else
-                            session.setPolicy(argonSession.argonHook().getPolicy().getName());
+                            session.setPolicy(policyId.toString()); /* FIXME getName */
 
                         session.setBypassed(Boolean.FALSE);
                         session.setLocalTraffic(Boolean.FALSE);

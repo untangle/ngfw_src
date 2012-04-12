@@ -28,13 +28,13 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.BrandingManager;
+import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.node.EventLogQuery;
@@ -87,10 +87,10 @@ public class CPDImpl extends AbstractNode implements CPD
         this.pipeSpecs = new PipeSpec[0];
 
         MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeId());
+        Counters c = lmm.getCounters(getNodeSettings().getId());
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Blocked Sessions"), null, I18nUtil.marktr("BLOCK"));
         authorizeBlinger = c.addActivity("authorize", I18nUtil.marktr("Authorized Clients"), null, I18nUtil.marktr("AUTHORIZE"));
-        lmm.setActiveMetricsIfNotSet(getNodeId(), blockBlinger, authorizeBlinger);
+        lmm.setActiveMetrics(getNodeSettings().getId(), blockBlinger, authorizeBlinger);
     }
 
     public void initializeSettings()
@@ -140,9 +140,9 @@ public class CPDImpl extends AbstractNode implements CPD
     // CPDNode methods --------------------------------------------------
 
     @Override
-    public void setSettings(final CPDSettings settings) throws Exception
+    public void setSettings(final CPDSettings settings) 
     {
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-cpd/settings_" + nodeID;
         String settingsFile = settingsBase + ".js";
 
@@ -152,7 +152,11 @@ public class CPDImpl extends AbstractNode implements CPD
         }
 
         this.settings = settings;
-        settingsManager.save(CPDSettings.class, settingsBase, settings);
+        try {
+            settingsManager.save(CPDSettings.class, settingsBase, settings);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Unable to save settings: ", e);
+        }
 
         reconfigure();
     }
@@ -189,7 +193,7 @@ public class CPDImpl extends AbstractNode implements CPD
     }
 
     @Override
-    public void setCaptureRules( final List<CaptureRule> captureRules ) throws Exception
+    public void setCaptureRules( final List<CaptureRule> captureRules ) 
     {
         this.settings.setCaptureRules( captureRules );
         reconfigure();
@@ -202,7 +206,7 @@ public class CPDImpl extends AbstractNode implements CPD
     }
 
     @Override
-    public void setPassedClients( final List<PassedAddress> newValue ) throws Exception
+    public void setPassedClients( final List<PassedAddress> newValue ) 
     {
         this.settings.setPassedClients( newValue );
         reconfigure();
@@ -215,7 +219,7 @@ public class CPDImpl extends AbstractNode implements CPD
     }
 
     @Override
-    public void setPassedServers( final List<PassedAddress> newValue ) throws Exception
+    public void setPassedServers( final List<PassedAddress> newValue ) 
     {
         this.settings.setPassedServers( newValue );
         reconfigure();
@@ -251,7 +255,7 @@ public class CPDImpl extends AbstractNode implements CPD
     public boolean authenticate( String address, String username, String password, String credentials )
     {
         boolean isAuthenticated = false;
-        if ( this.getRunState() ==  NodeState.RUNNING ) {
+        if ( this.getRunState() ==  NodeSettings.NodeState.RUNNING ) {
             /* Enforcing this here so the user can't pick another username at login. */
             if ( this.settings.getAuthenticationType() == AuthenticationType.NONE) {
                 username = this.DEFAULT_USERNAME;
@@ -277,7 +281,7 @@ public class CPDImpl extends AbstractNode implements CPD
     public boolean logout( String address )
     {
         boolean isLoggedOut = false;
-        if ( this.getRunState() == NodeState.RUNNING ) {
+        if ( this.getRunState() == NodeSettings.NodeState.RUNNING ) {
             isLoggedOut = this.manager.logout( address );
         }
 
@@ -304,7 +308,7 @@ public class CPDImpl extends AbstractNode implements CPD
     // lifecycle --------------------------------------------------------------
 
     @Override
-    protected void preStart() throws Exception
+    protected void preStart() 
     {
         this.assistant = new CPDIpUsernameMapAssistant(this);
 
@@ -320,7 +324,7 @@ public class CPDImpl extends AbstractNode implements CPD
         if ( !hasCaptureRule ) {
             Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle-node-cpd");
             I18nUtil i18nUtil = new I18nUtil(i18nMap);
-            throw new Exception( i18nUtil.tr( "You must create and enable at least one Capture Rule before turning on the Captive Portal" ));
+            throw new RuntimeException( i18nUtil.tr( "You must create and enable at least one Capture Rule before turning on the Captive Portal" ));
         }
         reconfigure(true);
 
@@ -330,7 +334,7 @@ public class CPDImpl extends AbstractNode implements CPD
      }
 
     @Override
-    protected void preStop() throws Exception
+    protected void preStop() 
     {
         try {
             /* Only stop if requested by the user (not during shutdown). */
@@ -357,7 +361,7 @@ public class CPDImpl extends AbstractNode implements CPD
     }
 
     @Override
-    protected void postStop() throws Exception
+    protected void postStop() 
     {
         super.postStop();
 
@@ -367,9 +371,9 @@ public class CPDImpl extends AbstractNode implements CPD
         }
     }
 
-    protected void postInit(final String[] args)
+    protected void postInit()
     {
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-cpd/settings_" + nodeID;
         String settingsFile = settingsBase + ".js";
 
@@ -443,7 +447,7 @@ public class CPDImpl extends AbstractNode implements CPD
     }
 
     @Override
-    protected void preDestroy() throws Exception
+    protected void preDestroy() 
     {
         UvmContextFactory.context().uploadManager().unregisterHandler(this.uploadHandler.getName());
 
@@ -466,26 +470,26 @@ public class CPDImpl extends AbstractNode implements CPD
     }
 
     // private methods -------------------------------------------------------
-    private void reconfigure() throws Exception
+    private void reconfigure() 
     {
         reconfigure(false);
     }
 
-    private void reconfigure(boolean force) throws Exception
+    private void reconfigure(boolean force) 
     {
-        if ( force || this.getRunState() == NodeState.RUNNING) {
+        if ( force || this.getRunState() == NodeSettings.NodeState.RUNNING) {
             try {
                 this.manager.setConfig(this.settings, true);
             } catch (JSONException e) {
-                throw new Exception( "Unable to convert the JSON while setting the configuration.", e);
+                throw new RuntimeException( "Unable to convert the JSON while setting the configuration.", e);
             } catch (IOException e) {
-                throw new Exception( "Unable to write settings.", e);
+                throw new RuntimeException( "Unable to write settings.", e);
             }
 
             try {
                 this.manager.start();
             } catch ( Exception e ) {
-                throw new Exception( "Unable to start CPD", e );
+                throw new RuntimeException( "Unable to start CPD", e );
             }
         } else {
             try {

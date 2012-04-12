@@ -96,7 +96,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
     @SuppressWarnings("unchecked")
 	public SpywareImpl()
     {
-        replacementGenerator = new SpywareReplacementGenerator(getNodeId());
+        replacementGenerator = new SpywareReplacementGenerator(getNodeSettings());
 
         NodeContext nodeContext = getNodeContext();
 
@@ -119,12 +119,12 @@ public class SpywareImpl extends AbstractNode implements Spyware
                                              " ORDER BY evt.timeStamp DESC");
 
         MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeId());
+        Counters c = lmm.getCounters(getNodeSettings().getId());
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Pages scanned"), null, I18nUtil.marktr("SCAN"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Pages blocked"), null, I18nUtil.marktr("BLOCK"));
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Pages passed"), null, I18nUtil.marktr("PASS"));
 
-        lmm.setActiveMetricsIfNotSet(getNodeId(), scanBlinger, blockBlinger, passBlinger);
+        lmm.setActiveMetrics(getNodeSettings().getId(), scanBlinger, blockBlinger, passBlinger);
     }
 
     // SpywareNode methods -----------------------------------------------------
@@ -307,10 +307,10 @@ public class SpywareImpl extends AbstractNode implements Spyware
         return;
     }
 
-    protected void postInit(String[] args)
+    protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         SpywareSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-spyware/" + "settings_" + nodeID;
 
@@ -660,7 +660,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         try {
             settingsManager.save(SpywareSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-spyware/" + "settings_"  + nodeID, newSettings);
         } catch (SettingsManager.SettingsException e) {

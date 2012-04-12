@@ -111,20 +111,6 @@
     <priority value="INFO"/>
   </category>
 
-  <!-- reports logs go *only* to a separate file -->
-  <category name="com.untangle.uvm.reporting" additivity="false">
-    <priority value="ALL"/>
-    <appender-ref ref="REPORTER"/>
-  </category>
-  <category name="com.untangle.uvm.engine.ReportingManagerImpl" additivity="false">
-    <priority value="ALL"/>
-    <appender-ref ref="REPORTER"/>
-  </category>
-  <category name="com.untangle.uvm.reports" additivity="false">
-    <priority value="ALL"/>
-    <appender-ref ref="REPORTER"/>
-  </category>
-
   <!-- event logs need to have a specific facility -->
   <category name="com.untangle.uvm.engine.SyslogManagerImpl" additivity="false">
     <priority value="ALL"/>
@@ -142,16 +128,15 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.uvm.networking">
+  <category name="com.untangle.uvm.engine.PipelineFoundryImpl">
     <priority value="INFO"/>
   </category>
 
-  <!-- temporary to debug startup phase network settings -->
   <category name="com.untangle.uvm.engine.SettingsManagerImpl">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.uvm.policy">
+  <category name="com.untangle.uvm.networking">
     <priority value="INFO"/>
   </category>
 

@@ -30,7 +30,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 
 /**
  * Settings for the Template node.
@@ -44,7 +44,7 @@ import com.untangle.uvm.security.NodeId;
 public class TemplateSettings implements Serializable
 {
     private Long id;
-    private NodeId tid;
+    private NodeSettings tid;
     
     private TemplateBaseSettings baseSettings = new TemplateBaseSettings();
     
@@ -52,7 +52,7 @@ public class TemplateSettings implements Serializable
     {
     }
 
-    public TemplateSettings( NodeId tid)
+    public TemplateSettings( NodeSettings tid)
     {
         this.tid = tid;
     }
@@ -77,12 +77,12 @@ public class TemplateSettings implements Serializable
      */
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
-    public NodeId getNodeId()
+    public NodeSettings getNodeSettings()
     {
         return tid;
     }
 
-    public void setNodeId(NodeId tid)
+    public void setNodeSettings(NodeSettings tid)
     {
         this.tid = tid;
     }

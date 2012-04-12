@@ -15,8 +15,8 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.AlertManager;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.ConnectionStatus;
 import com.untangle.uvm.networking.InterfaceConfiguration;
@@ -117,29 +117,34 @@ class AlertManagerImpl implements AlertManager
      */
     private void testDupeApps(List<String> alertList)
     {
-        Policy[] policyList = UvmContextFactory.context().policyManager().getPolicies();
-
+        LinkedList<NodeSettings> nodeSettingsList = UvmContextFactory.context().nodeManager().getSettings().getNodes();
+        
         /**
-         * Check each policy for dupe apps
+         * Check each node for dupe nodes
          */
-        for ( Policy policy : policyList ) {
-            List<NodeId> nodesInPolicy = UvmContextFactory.context().nodeManager().nodeInstances(policy);
-            HashSet<String> nodeNames = new HashSet<String>();
-            
-            for( NodeId node : nodesInPolicy ) {
-                if (nodeNames.contains(node.getNodeName())) {
-                    alertList.add(policy.getName() + " " + i18nUtil.tr("contains two or more") + " " + node.getNodeName());
-                } else {
-                    nodeNames.add(node.getNodeName());
-                }
+        for (NodeSettings n1 : nodeSettingsList ) {
+            for (NodeSettings n2 : nodeSettingsList ) {
+                if (n1.getId().equals(n2.getId()))
+                    continue;
+
+                /**
+                 * If they have the same name and are in the same rack - they are dupes
+                 * Check both for == and .equals so null is handled
+                 */
+                if (n1.getPolicyId() == n2.getPolicyId() && n1.getNodeName().equals(n2.getNodeName()))
+                    alertList.add(i18nUtil.tr("A policy/rack") + " [" + n1.getPolicyId() + "] " + i18nUtil.tr("contains two or more") + " " + n1.getNodeName()); 
+                if (n1.getPolicyId() == null || n2.getPolicyId() == null)
+                    continue;
+                if (n1.getPolicyId().equals(n2.getPolicyId()) && n1.getNodeName().equals(n2.getNodeName()))
+                    alertList.add(i18nUtil.tr("A policy/rack") + " [" + n1.getPolicyId() + "] " + i18nUtil.tr("contains two or more") + " " + n1.getNodeName()); 
             }
         }
-
+        
         /**
          * Check services for dupe apps
          */
         HashSet<String> nodeNames = new HashSet<String>();
-        for( NodeId node : UvmContextFactory.context().nodeManager().nodeInstances(((Policy)null)) ) {
+        for( NodeSettings node : UvmContextFactory.context().nodeManager().nodeInstances(((Long)null)) ) {
             if (nodeNames.contains(node.getNodeName())) {
                 alertList.add(i18nUtil.tr("Two or more") + " " + node.getNodeName() + " " + i18nUtil.tr("are installed."));
             } else {
@@ -157,28 +162,33 @@ class AlertManagerImpl implements AlertManager
      */
     private void testRendundantApps(List<String> alertList)
     {
-        Policy[] policyList = UvmContextFactory.context().policyManager().getPolicies();
-
         /**
-         * Check each policy for dupe apps
+         * Check for redundant apps 
          */
-        for ( Policy policy : policyList ) {
-            List<NodeId> webfilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-webfilter",policy);
-            List<NodeId> sitefilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-sitefilter",policy);
+        List<NodeSettings> webfilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-webfilter");
+        List<NodeSettings> sitefilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-sitefilter");
+        List<NodeSettings> spamassassinList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamassassin");
+        List<NodeSettings> commtouchasList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-commtouchas");
 
-            if (webfilterList.size() > 0 && sitefilterList.size() > 0) {
-                alertList.add(policy.getName() + " " + i18nUtil.tr("contains redundant apps") + ": " + " Web Filter " + i18nUtil.tr("and") + " Web Filter Lite" );
+        for (NodeSettings node1 : webfilterList) {
+            for (NodeSettings node2 : sitefilterList) {
+                if (node1.getId().equals(node2.getId()))
+                    continue;
+
+                if (node1.getPolicyId().equals(node2.getPolicyId()))
+                    alertList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Web Filter " + i18nUtil.tr("and") + " Web Filter Lite" );
             }
-
-            List<NodeId> spamassassinList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamassassin",policy);
-            List<NodeId> commtouchasList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-commtouchas",policy);
-
-            if (spamassassinList.size() > 0 && commtouchasList.size() > 0) {
-                alertList.add(policy.getName() + " " + i18nUtil.tr("contains redundant apps") + ": " + " Spam Blocker " + i18nUtil.tr("and") + " Spam Blocker Lite" );
-            }
-
         }
 
+        for (NodeSettings node1 : spamassassinList) {
+            for (NodeSettings node2 : commtouchasList) {
+                if (node1.getId().equals(node2.getId()))
+                    continue;
+
+                if (node1.getPolicyId().equals(node2.getPolicyId()))
+                    alertList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Spam Blocker " + i18nUtil.tr("and") + " Spam Blocker Lite" );
+            }
+        }
     }
 
     /**
@@ -377,8 +387,8 @@ class AlertManagerImpl implements AlertManager
      */
     private void testSpamDNSServers(List<String> alertList)
     {
-        List<NodeId> spamassassinList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamassassin");
-        List<NodeId> commtouchasList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-commtouchas");
+        List<NodeSettings> spamassassinList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamassassin");
+        List<NodeSettings> commtouchasList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-commtouchas");
 
         if (spamassassinList.size() == 0 && commtouchasList.size() == 0)
             return;

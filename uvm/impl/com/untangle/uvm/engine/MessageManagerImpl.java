@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -26,7 +27,7 @@ import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.SystemStatEvent;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.message.ActiveStat;
+import com.untangle.uvm.message.NodeMetric;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -39,8 +40,7 @@ import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.SessionEndpoints;
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.TransactionWork;
 
@@ -63,7 +63,7 @@ class MessageManagerImpl implements MessageManager
     private static final Set<String> MEMINFO_KEEPERS;
     private static final Set<String> VMSTAT_KEEPERS;
 
-    private final Map<NodeId, Counters> counters = new HashMap<NodeId, Counters>();
+    private final Map<Long, Counters> counters = new HashMap<Long, Counters>();
 
     private final Random random = new Random();
 
@@ -71,7 +71,7 @@ class MessageManagerImpl implements MessageManager
 
     private final Map<Integer, Long> lastMessageAccess = new HashMap<Integer, Long>();
 
-    private final Map<NodeId, List<ActiveStat>> activeMetrics = new HashMap<NodeId, List<ActiveStat>>();
+    private final Map<Long, List<NodeMetric>> activeMetrics = new HashMap<Long, List<NodeMetric>>();
 
     private final Pulse updatePulse = new Pulse("system-stat-collector", true, new SystemStatCollector());
 
@@ -87,9 +87,8 @@ class MessageManagerImpl implements MessageManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    MessageManagerImpl()
+    public MessageManagerImpl()
     {
-        ensureNodeId0();
     }
 
     void start()
@@ -109,33 +108,42 @@ class MessageManagerImpl implements MessageManager
         return getMessageQueue(null);
     }
 
-    public MessageQueue getMessageQueue(Integer key)
+    public MessageQueue getMessageQueue( Integer key )
     {
-        NodeManager lm = UvmContextImpl.getInstance().nodeManager();
-        List<NodeId> nodeIds = lm.nodeInstances();
-        nodeIds.add(new NodeId(0L));
-        Map<NodeId, Stats> stats = getStats(lm, nodeIds);
+        List<Long> nodeIds = new LinkedList<Long>();
+
+        for ( NodeSettings ns : UvmContextImpl.getInstance().nodeManager().nodeInstances() ) {
+            nodeIds.add( ns.getId() );
+        }
+        nodeIds.add( 0L );
+
+        Map<Long, Stats> stats = getStats( nodeIds );
         List<Message> messages = getMessages(key);
         return new MessageQueue(messages, stats, systemStats);
     }
 
-    public MessageQueue getMessageQueue(Integer key, Policy p)
+    public MessageQueue getMessageQueue( Integer key, Long policyId )
     {
-        NodeManager lm = UvmContextImpl.getInstance().nodeManager();
-        List<NodeId> nodeIds = lm.nodeInstances(p);
+        List<Long> nodeIds = new LinkedList<Long>();
+        List<NodeSettings> nodeSettingsList = UvmContextImpl.getInstance().nodeManager().nodeInstances( policyId );
+
         /* Add in the nodes with the null policy */
-        nodeIds.addAll( lm.nodeInstances((Policy)null));
-        Map<NodeId, Stats> stats = getStats(lm, nodeIds);
+        nodeSettingsList.addAll( UvmContextImpl.getInstance().nodeManager().nodeInstances((Long)null) );
+        for ( NodeSettings ns : UvmContextImpl.getInstance().nodeManager().nodeInstances() ) {
+            nodeIds.add( ns.getId() );
+        }
+        nodeIds.add( 0L );
+        
+        Map<Long, Stats> stats = getStats( nodeIds );
         List<Message> messages = getMessages(key);
 
         return new MessageQueue(messages, stats, systemStats);
     }
 
-    public StatDescs getStatDescs(NodeId t)
+    public StatDescs getStatDescs( Long nodeId )
     {
-        Long id = t.getId();
-        if (null != id) {
-            StatDescs sd = getCounters(t).getStatDescs();
+        if ( nodeId != null ) {
+            StatDescs sd = getCounters(nodeId).getStatDescs();
             return sd;
         } else {
             return null;
@@ -147,84 +155,29 @@ class MessageManagerImpl implements MessageManager
         return this.systemStats;
     }
 
-    public List<ActiveStat> getActiveMetrics(final NodeId nodeId)
-    {
-        List<ActiveStat> l = null;
-
-        synchronized (activeMetrics) {
-            l = activeMetrics.get(nodeId);
-        }
-
-        if (null == l) {
-            TransactionWork<List<ActiveStat>> tw = new TransactionWork<List<ActiveStat>>()
-                {
-                    private List<ActiveStat> result;
-
-                    public boolean doWork(Session s)
-                    {
-                        Query q = s.createQuery
-                            ("from StatSettings bs where bs.nodeId = :nodeId");
-                        q.setParameter("nodeId", nodeId);
-                        StatSettings bs = (StatSettings)q.uniqueResult();
-                        if (null == bs) {
-                            result = null;
-                        } else {
-                            result = bs.getActiveMetrics();
-                        }
-
-                        return true;
-                    }
-
-                    @Override
-                    public List<ActiveStat> getResult()
-                    {
-                        return result;
-                    }
-                };
-            UvmContextImpl.getInstance().runTransaction(tw);
-            l = tw.getResult();
-            synchronized (activeMetrics) {
-                activeMetrics.put(nodeId, l);
-            }
-        }
-
-        return l;
-    }
-
-    public void setActiveMetrics(final NodeId nodeId, final List<ActiveStat> activeMetrics)
+    public void setActiveMetrics( Long nodeId, List<NodeMetric> activeMetrics)
     {
         synchronized (this.activeMetrics) {
             this.activeMetrics.put(nodeId, activeMetrics);
         }
-
-        TransactionWork<List<ActiveStat>> tw = new TransactionWork<List<ActiveStat>>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery
-                    ("from StatSettings bs where bs.nodeId = :nodeId");
-                    q.setParameter("nodeId", nodeId);
-                    StatSettings bs = (StatSettings)q.uniqueResult();
-                    if (null == bs) {
-                        bs = new StatSettings(nodeId, activeMetrics);
-                        s.save(bs);
-                    } else {
-                        List<ActiveStat> l = bs.getActiveMetrics();
-                        if (null != bs ) {
-                            l.clear();
-                            l.addAll(activeMetrics);
-                        }
-
-                        s.merge(bs);
-                    }
-
-                    return true;
-                }
-            };
-
-        UvmContextImpl.getInstance().runTransaction(tw);
     }
 
+    public void setActiveMetrics( Long nodeId, BlingBlinger... blingers )
+    {
+        List<NodeMetric> l = new ArrayList<NodeMetric>();
+
+        for (BlingBlinger b : blingers) {
+            l.add(new NodeMetric(b.getStatDesc().getName(), StatInterval.SINCE_MIDNIGHT));
+        }
+
+        setActiveMetrics( nodeId, l );
+    }
+    
+    public List<NodeMetric> getActiveMetrics(Long nodeId)
+    {
+        return this.activeMetrics.get( nodeId );
+    }
+    
     public Integer getMessageKey()
     {
         int key;
@@ -245,24 +198,24 @@ class MessageManagerImpl implements MessageManager
 
     public Counters getUvmCounters()
     {
-        return getCounters(new NodeId(0L));
+        return getCounters(0L);
     }
 
-    public Counters getCounters(NodeId t)
+    public Counters getCounters( Long nodeId )
     {
         Counters c;
         synchronized (counters) {
-            c = counters.get(t);
+            c = counters.get( nodeId );
             if (null == c) {
-                c = new Counters(t);
-                counters.put(t, c);
+                c = new Counters( nodeId );
+                counters.put( nodeId, c );
             }
         }
 
         return c;
     }
 
-    public void submitMessage(Message m)
+    public void submitMessage( Message m )
     {
         long now = System.currentTimeMillis();
 
@@ -295,51 +248,15 @@ class MessageManagerImpl implements MessageManager
         }
     }
 
-    public void setActiveMetricsIfNotSet(final NodeId nodeId, final BlingBlinger... blingers)
+    public Stats getStats( Long nodeId )
     {
-        TransactionWork<List<ActiveStat>> tw = new TransactionWork<List<ActiveStat>>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery
-                    ("from StatSettings bs where bs.nodeId = :nodeId");
-                    q.setParameter("nodeId", nodeId);
-                    StatSettings bs = (StatSettings)q.uniqueResult();
-                    if (null == bs) {
-                        List<ActiveStat> l = getActiveStats(blingers);
-                        bs = new StatSettings(nodeId, l);
-                        s.save(bs);
-                    } else {
-                        List<ActiveStat> as = bs.getActiveMetrics();
-                        if (null == as) {
-                            as = new ArrayList<ActiveStat>();
-                            bs.setActiveMetrics(as);
-                        }
-
-                        if (0 == as.size()) {
-                            as.addAll(getActiveStats(blingers));
-                            s.merge(bs);
-                        }
-                    }
-
-                    return true;
-                }
-            };
-
-        UvmContextImpl.getInstance().runTransaction(tw);
+        Counters c = getCounters( nodeId );
+        return c.getAllStats();
     }
 
-    public Stats getStats(NodeId t)
+    public Stats getAllStats( Long nodeId )
     {
-        List<ActiveStat> as = getActiveMetrics(t);
-        Counters c = getCounters(t);
-
-        return c.getAllStats(as);
-    }
-
-    public Stats getAllStats(NodeId t)
-    {
-        Counters c = getCounters(t);
+        Counters c = getCounters( nodeId );
         return c.getAllStats();
     }
 
@@ -366,50 +283,16 @@ class MessageManagerImpl implements MessageManager
 
     // private methods --------------------------------------------------------
 
-    private Map<NodeId, Stats> getStats(NodeManager lm, List<NodeId> nodeIds)
+    private Map<Long, Stats> getStats( List<Long> nodeIds )
     {
-        Map<NodeId, Stats> stats = new HashMap<NodeId, Stats>(nodeIds.size());
+        Map<Long, Stats> stats = new HashMap<Long, Stats>(nodeIds.size());
 
-        for (NodeId t : nodeIds) {
-            List<ActiveStat> as = getActiveMetrics(t);
-            Counters c = getCounters(t);
-            stats.put(t, c.getAllStats(as));
+        for (Long nodeId : nodeIds) {
+            Counters counters = getCounters(nodeId);
+            stats.put(nodeId, counters.getAllStats());
         }
 
         return stats;
-    }
-
-    private void ensureNodeId0()
-    {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery
-                    ("from NodeId t where t.id = 0");
-                    NodeId t = (NodeId)q.uniqueResult();
-                    if (null == t) {
-                        t = new NodeId(0L);
-                        s.save(t);
-                    }
-
-                    return true;
-                }
-            };
-
-        UvmContextImpl.getInstance().runTransaction(tw);
-    }
-
-    private List<ActiveStat> getActiveStats(BlingBlinger[] blingers)
-    {
-        List<ActiveStat> l = new ArrayList<ActiveStat>();
-
-        for (BlingBlinger b : blingers) {
-            l.add(new ActiveStat(b.getStatDesc().getName(),
-                                 StatInterval.SINCE_MIDNIGHT));
-        }
-
-        return l;
     }
 
     // private classes --------------------------------------------------------

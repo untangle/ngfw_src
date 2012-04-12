@@ -74,7 +74,7 @@ public class UvmRepositorySelector implements RepositorySelector
 
     public LoggerRepository getLoggerRepository()
     {
-        UvmLoggingContext ctx = getContextFactory().get();
+        UvmLoggingContext ctx = getContextFactory().getLoggingContext();
 
         UvmHierarchy hier;
 
@@ -230,7 +230,7 @@ public class UvmRepositorySelector implements RepositorySelector
 
         UVM_CONTEXT_FACTORY = new UvmLoggingContextFactory()
             {
-                public UvmLoggingContext get() { return UVM_CONTEXT; }
+                public UvmLoggingContext getLoggingContext() { return UVM_CONTEXT; }
             };
 
         SELECTOR = new UvmRepositorySelector();

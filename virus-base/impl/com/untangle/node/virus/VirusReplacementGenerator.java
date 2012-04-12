@@ -6,7 +6,7 @@ package com.untangle.node.virus;
 import com.untangle.node.http.ReplacementGenerator;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 
 /**
  * ReplacementGenerator for Virus.
@@ -25,7 +25,7 @@ class VirusReplacementGenerator extends ReplacementGenerator<VirusBlockDetails>
         + "<p>Please contact %s</p>"
         + "</BODY></HTML>";
 
-    VirusReplacementGenerator(NodeId tid)
+    VirusReplacementGenerator(NodeSettings tid)
     {
         super(tid);
     }
@@ -42,7 +42,7 @@ class VirusReplacementGenerator extends ReplacementGenerator<VirusBlockDetails>
     }
 
     @Override
-    protected String getRedirectUrl(String nonce, String host, NodeId tid)
+    protected String getRedirectUrl(String nonce, String host, NodeSettings tid)
     {
         return "http://" + host + "/virus/blockpage?nonce=" + nonce
             + "&tid=" + tid;

@@ -7,9 +7,6 @@ import java.net.InetAddress;
 
 /**
  * Gives information about a sessions endpoints.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public interface SessionEndpoints
 {

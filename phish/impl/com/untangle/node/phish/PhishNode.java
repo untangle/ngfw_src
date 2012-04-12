@@ -76,7 +76,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
     {
         super(new PhishScanner());
 
-        replacementGenerator = new PhishReplacementGenerator(getNodeId());
+        replacementGenerator = new PhishReplacementGenerator(getNodeSettings());
 
         synchronized (PhishNode.class) {
             updateMalwareList();
@@ -88,7 +88,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
     private void readNodeSettings()
     {
         SettingsManager setman = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-phish/settings_" + nodeID;
         String settingsFile = settingsBase + ".js";
         PhishSettings readSettings = null;
@@ -146,7 +146,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
     private void writeNodeSettings(PhishSettings argSettings)
     {
         SettingsManager setman = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-phish/settings_" + nodeID;
 
         try {
@@ -235,7 +235,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
     }
 
     @Override
-    protected void preInit(String args[])
+    protected void preInit()
     {
         readNodeSettings();
         SpamSettings ps = getSettings();
@@ -244,7 +244,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
     }
 
     @Override
-    protected void postInit(String args[])
+    protected void postInit()
     {
         deployWebAppIfRequired(logger);
     }

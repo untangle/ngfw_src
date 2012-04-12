@@ -9,7 +9,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.policy.Policy;
 
 /**
  * The <code>ArgonAgent</code> interface represents an active Node as seen by
@@ -22,9 +21,6 @@ import com.untangle.uvm.policy.Policy;
  *
  * This class is wrapped inside the view as seen
  * by the node and node API, which is now ArgonConnector.
- *
- * @author <a href="mailto:jdi@untangle.com"></a>
- * @version 1.0
  */
 public class ArgonAgentImpl implements ArgonAgent
 {
@@ -167,7 +163,7 @@ public class ArgonAgentImpl implements ArgonAgent
         }
         /**
          * Tells if the session matches */
-        public boolean isMatch( Policy policy, com.untangle.uvm.node.IPSessionDesc clientSide, com.untangle.uvm.node.IPSessionDesc serverSide )
+        public boolean isMatch( Long policyId, com.untangle.uvm.node.IPSessionDesc clientSide, com.untangle.uvm.node.IPSessionDesc serverSide )
         {
             Long id = clientSide.id();
 

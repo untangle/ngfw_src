@@ -159,7 +159,7 @@ public class MessageInfoAddr extends LogEvent implements Serializable
             se.getSClientPort() + "," +
             "'" + se.getSServerAddr().getHostAddress() + "'" + "," +
             se.getSServerPort() + "," +
-            se.getPolicy().getId() + "," +
+            se.getPolicyId() + "," +
             "'" + (se.getUsername() == null ? "" : se.getUsername()) + "'" + "," +
             "'" + messageInfo.getMessageId() + "'" + "," +
             "'" + messageInfo.getSubject() + "'" + "," +

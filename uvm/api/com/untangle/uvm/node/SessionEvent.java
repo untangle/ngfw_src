@@ -7,7 +7,6 @@ import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.policy.Policy;
 
 /**
  * Used to record the Session endpoints at session end time.
@@ -29,14 +28,14 @@ public class SessionEvent extends LogEvent
     private Integer sClientPort;
     private Integer cServerPort;
     private Integer sServerPort;
-    private Policy policy;
+    private Long policyId;
     private String username;
     private String hostname;
     
 
     public SessionEvent() { }
 
-    public SessionEvent( IPSessionDesc clientSide, IPSessionDesc serverSide, Policy policy, String username, String hostname )
+    public SessionEvent( IPSessionDesc clientSide, IPSessionDesc serverSide, Long policyId, String username, String hostname )
     {
         super();
         
@@ -58,7 +57,7 @@ public class SessionEvent extends LogEvent
 
         this.username = username;
         this.hostname = hostname;
-        this.policy = policy;
+        this.policyId = policyId;
     }
 
     /**
@@ -75,7 +74,7 @@ public class SessionEvent extends LogEvent
         this.hostname = hostname;
     }
 
-    public void completeEndpoints( IPSessionDesc clientSide, IPSessionDesc serverSide, Policy policy )
+    public void completeEndpoints( IPSessionDesc clientSide, IPSessionDesc serverSide, Long policyId )
     {
         cClientAddr = clientSide.clientAddr();
         cClientPort = clientSide.clientPort();
@@ -86,7 +85,7 @@ public class SessionEvent extends LogEvent
         sServerAddr = serverSide.serverAddr();
         sServerPort = serverSide.serverPort();
         serverIntf = serverSide.serverIntf();
-        this.policy = policy;
+        this.policyId = policyId;
     }
 
     /**
@@ -274,14 +273,14 @@ public class SessionEvent extends LogEvent
      *
      * @return Policy for this pipeline
      */
-    public Policy getPolicy()
+    public Long getPolicyId()
     {
-        return policy;
+        return policyId;
     }
 
-    public void setPolicy(Policy policy)
+    public void setPolicyId(Long policyId)
     {
-        this.policy = policy;
+        this.policyId = policyId;
     }
 
     /**
@@ -343,7 +342,7 @@ public class SessionEvent extends LogEvent
             "timestamp '" + new java.sql.Timestamp(getTimeStamp().getTime()) + "'" + " + interval '1 days'," +
             "'" + (getHostname() == null ? "" : getHostname()) + "'" + "," + 
             "'" + (getUsername() == null ? "" : getUsername()) + "'" + "," +
-            getPolicy().getId() + "," +
+            getPolicyId() + "," +
             "'" + getCClientAddr().getHostAddress() + "'" + "," +
             getCClientPort() + "," +
             "'" + getCServerAddr().getHostAddress() + "'" + "," +
@@ -368,8 +367,7 @@ public class SessionEvent extends LogEvent
         sb.addField("create-date", getTimeStamp());
         sb.addField("session-id", getSessionId());
         sb.addField("protocol", getProtocolName());
-        sb.addField("policy", (( policy == null ) ? "<none>" : policy.getName()));
-        
+        sb.addField("policyId", getPolicyId());
         sb.addField("client-addr", cClientAddr); //Client address, at the client side.
         sb.addField("client-port", cClientPort); //Client port, at the client side.
         sb.addField("server-addr", sServerAddr); //Server address, at the server side.

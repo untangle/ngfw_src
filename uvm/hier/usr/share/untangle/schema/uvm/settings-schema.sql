@@ -68,52 +68,109 @@ CREATE TABLE settings.u_logging_settings (
     syslog_protocol text NOT NULL,
     PRIMARY KEY (settings_id));
 
+
+-- com.untangle.uvm.tran.NodePreferences
+-- CREATE TABLE settings.u_node_preferences (
+--    id int8 NOT NULL,
+--    tid int8,
+--    red int4,
+--    green int4,
+--    blue int4,
+--    alpha int4,
+--    PRIMARY KEY (id));
+
+-- com.untangle.uvm.NodeId
+-- CREATE TABLE settings.u_tid (
+--    id int8 NOT NULL,
+--    policy_id int8,
+--    PRIMARY KEY (id));
+
 -- com.untangle.uvm.policy.Policy
-CREATE TABLE settings.u_policy (
-    id int8 NOT NULL,
-    is_default bool NOT NULL,
-    name text NOT NULL,
-    notes text,
-    parent_id int8,
-    PRIMARY KEY (id));
+-- CREATE TABLE settings.u_policy (
+--    id int8 NOT NULL,
+--    is_default bool NOT NULL,
+--    name text NOT NULL,
+--    notes text,
+--    parent_id int8,
+--    PRIMARY KEY (id));
 
 -- com.untangle.uvm.policy.UserPolicyRuleSet
-CREATE TABLE settings.u_user_policy_rules (
-    set_id int8 NOT NULL,
-    PRIMARY KEY (set_id));
+-- CREATE TABLE settings.u_user_policy_rules (
+--    set_id int8 NOT NULL,
+--    PRIMARY KEY (set_id));
 
 -- com.untangle.uvm.policy.UserPolicyRule
-CREATE TABLE settings.u_user_policy_rule (
-    rule_id int8 NOT NULL,
-    protocol_matcher text,
-    client_ip_matcher text,
-    server_ip_matcher text,
-    client_port_matcher text,
-    server_port_matcher text,
-    client_intf_matcher text,
-    server_intf_matcher text,
-    policy_id int8,
-    name text,
-    category text,
-    description text,
-    live bool,
-    alert bool,
-    log bool,
-    set_id int8,
-    position int4,
-    start_time_string text,
-    end_time_string text,
-    day_of_week_matcher text,
-    user_matcher text,
-    invert_entire_duration bool NOT NULL,
-    PRIMARY KEY (rule_id));
+-- CREATE TABLE settings.u_user_policy_rule (
+--    rule_id int8 NOT NULL,
+--    protocol_matcher text,
+--    client_ip_matcher text,
+--    server_ip_matcher text,
+--    client_port_matcher text,
+--    server_port_matcher text,
+--    client_intf_matcher text,
+--    server_intf_matcher text,
+--    policy_id int8,
+--    name text,
+--    category text,
+--    description text,
+--    live bool,
+--    alert bool,
+--    log bool,
+--    set_id int8,
+--    position int4,
+--    start_time_string text,
+--    end_time_string text,
+--    day_of_week_matcher text,
+--    user_matcher text,
+--    invert_entire_duration bool NOT NULL,
+--    PRIMARY KEY (rule_id));
+
+-- com.untangle.uvm.engine.NodeManagerState
+-- CREATE TABLE settings.u_node_manager_state (
+--    id int8 NOT NULL,
+--    last_tid int8,
+--    PRIMARY KEY (id));
+
+-- com.untangle.uvm.engine.NodePersistentState
+--CREATE TABLE settings.u_node_persistent_state (
+--    id int8 NOT NULL,
+--    name text NOT NULL,
+--    tid int8,
+--    public_key bytea NOT NULL,
+--    target_state text NOT NULL,
+--    PRIMARY KEY (id));
 
 -- com.untangle.uvm.engine.NodePersistentState.args
-CREATE TABLE settings.u_node_args (
-    tps_id int8 NOT NULL,
-    arg text NOT NULL,
-    position int4 NOT NULL,
-    PRIMARY KEY (tps_id, position));
+--CREATE TABLE settings.u_node_args (
+--    tps_id int8 NOT NULL,
+--    arg text NOT NULL,
+--    position int4 NOT NULL,
+--    PRIMARY KEY (tps_id, position));
+
+
+-- com.untangle.uvm.addrbook.ActiveDirectorySettings
+--CREATE TABLE settings.u_ab_repository_settings (
+--    settings_id int8 NOT NULL,
+--    enabled     BOOL NOT NULL,
+--    superuser text,
+--    superuser_pass text,
+--    domain text,
+--    ldap_host text,
+--    ou_filter text,
+--    port int4,
+--    PRIMARY KEY (settings_id));
+
+-- com.untangle.node.adconnector.DirectoryConnectorSettings
+-- CREATE TABLE settings.u_ab_settings (
+--    settings_id int8 NOT NULL,
+--    ad_repo_settings int8 NOT NULL,
+--    radius_server_settings INT8 NOT NULL,
+--    PRIMARY KEY (settings_id));
+
+-- CREATE TABLE settings.u_stat_settings (
+--    settings_id       int8 NOT NULL,
+--    tid               int8 UNIQUE,
+--    PRIMARY KEY       (settings_id));
 
 -- com.untangle.uvm.engine.PackageState
 CREATE TABLE settings.u_mackage_state (
@@ -121,12 +178,6 @@ CREATE TABLE settings.u_mackage_state (
     mackage_name text NOT NULL,
     extra_name text,
     enabled bool NOT NULL,
-    PRIMARY KEY (id));
-
--- com.untangle.uvm.engine.NodeManagerState
-CREATE TABLE settings.u_node_manager_state (
-    id int8 NOT NULL,
-    last_tid int8,
     PRIMARY KEY (id));
 
 -- com.untangle.uvm.Period
@@ -143,16 +194,6 @@ CREATE TABLE settings.u_period (
     saturday bool,
     PRIMARY KEY (period_id));
 
--- com.untangle.uvm.tran.NodePreferences
-CREATE TABLE settings.u_node_preferences (
-    id int8 NOT NULL,
-    tid int8,
-    red int4,
-    green int4,
-    blue int4,
-    alpha int4,
-    PRIMARY KEY (id));
-
 -- com.untangle.uvm.tran.StringRule
 CREATE TABLE settings.u_string_rule (
     rule_id int8 NOT NULL,
@@ -164,21 +205,6 @@ CREATE TABLE settings.u_string_rule (
     alert bool,
     log bool,
     PRIMARY KEY (rule_id));
-
--- com.untangle.uvm.NodeId
-CREATE TABLE settings.u_tid (
-    id int8 NOT NULL,
-    policy_id int8,
-    PRIMARY KEY (id));
-
--- com.untangle.uvm.engine.NodePersistentState
-CREATE TABLE settings.u_node_persistent_state (
-    id int8 NOT NULL,
-    name text NOT NULL,
-    tid int8,
-    public_key bytea NOT NULL,
-    target_state text NOT NULL,
-    PRIMARY KEY (id));
 
 -- com.untangle.uvm.tran.IPMaskedAddressDirectory
 CREATE TABLE settings.u_ipmaddr_dir (
@@ -232,26 +258,6 @@ CREATE TABLE settings.u_snmp_settings (
     trap_port int4,
     PRIMARY KEY (snmp_settings_id));
 
-
--- com.untangle.uvm.addrbook.ActiveDirectorySettings
-CREATE TABLE settings.u_ab_repository_settings (
-    settings_id int8 NOT NULL,
-    enabled     BOOL NOT NULL,
-    superuser text,
-    superuser_pass text,
-    domain text,
-    ldap_host text,
-    ou_filter text,
-    port int4,
-    PRIMARY KEY (settings_id));
-
--- com.untangle.node.adconnector.DirectoryConnectorSettings
-CREATE TABLE settings.u_ab_settings (
-    settings_id int8 NOT NULL,
-    ad_repo_settings int8 NOT NULL,
-    radius_server_settings INT8 NOT NULL,
-    PRIMARY KEY (settings_id));
-
 -- com.untangle.uvm.networking.AccessSettings -- 7.0
 CREATE TABLE settings.u_access_settings (
     settings_id          INT8 NOT NULL,
@@ -277,11 +283,6 @@ CREATE TABLE settings.u_address_settings (
     public_ip_addr       INET,
     public_port          INT4,
     PRIMARY KEY          (settings_id));
-
-CREATE TABLE settings.u_stat_settings (
-    settings_id       int8 NOT NULL,
-    tid               int8 UNIQUE,
-    PRIMARY KEY       (settings_id));
 
 CREATE TABLE settings.u_active_stat (
     id                   int8 NOT NULL,
@@ -311,18 +312,6 @@ CREATE INDEX u_idx_string_rule ON settings.u_string_rule (string);
 
 -- foreign key constraints
 
-ALTER TABLE settings.u_tid
-    ADD CONSTRAINT fk_tid_policy
-    FOREIGN KEY (policy_id) REFERENCES settings.u_policy;
-
-ALTER TABLE settings.u_user_policy_rule
-    ADD CONSTRAINT fk_user_policy_rule_parent
-    FOREIGN KEY (set_id) REFERENCES settings.u_user_policy_rules;
-
-ALTER TABLE settings.u_user_policy_rule
-    ADD CONSTRAINT fk_user_policy_rule_policy
-    FOREIGN KEY (policy_id) REFERENCES settings.u_policy;
-
 ALTER TABLE settings.u_admin_settings
     ADD CONSTRAINT fk_admin_settings
     FOREIGN KEY (summary_period_id) REFERENCES settings.u_period;
@@ -339,15 +328,26 @@ ALTER TABLE settings.u_node_args
     ADD CONSTRAINT fk_node_args
     FOREIGN KEY (tps_id) REFERENCES settings.u_node_persistent_state;
 
-ALTER TABLE settings.u_node_preferences
-    ADD CONSTRAINT fk_node_preferences
-    FOREIGN KEY (tid) REFERENCES settings.u_tid;
-
-ALTER TABLE settings.u_node_persistent_state
-    ADD CONSTRAINT fk_node_persistent_state
-    FOREIGN KEY (tid) REFERENCES settings.u_tid;
-
 ALTER TABLE settings.u_ipmaddr_dir_entries
     ADD CONSTRAINT fk_ipmaddr_dir_entries
     FOREIGN KEY (ipmaddr_dir_id) REFERENCES settings.u_ipmaddr_dir;
 
+--ALTER TABLE settings.u_tid
+--    ADD CONSTRAINT fk_tid_policy
+--    FOREIGN KEY (policy_id) REFERENCES settings.u_policy;
+
+--ALTER TABLE settings.u_user_policy_rule
+--    ADD CONSTRAINT fk_user_policy_rule_parent
+--    FOREIGN KEY (set_id) REFERENCES settings.u_user_policy_rules;
+
+--ALTER TABLE settings.u_user_policy_rule
+--    ADD CONSTRAINT fk_user_policy_rule_policy
+--    FOREIGN KEY (policy_id) REFERENCES settings.u_policy;
+
+--ALTER TABLE settings.u_node_preferences
+--    ADD CONSTRAINT fk_node_preferences
+--    FOREIGN KEY (tid) REFERENCES settings.u_tid;
+
+--ALTER TABLE settings.u_node_persistent_state
+--    ADD CONSTRAINT fk_node_persistent_state
+--    FOREIGN KEY (tid) REFERENCES settings.u_tid;

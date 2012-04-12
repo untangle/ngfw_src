@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 
 @SuppressWarnings("serial")
 public class UnblockerServlet extends HttpServlet
@@ -32,8 +32,7 @@ public class UnblockerServlet extends HttpServlet
 
         try {
             NodeManager tman = UvmContextFactory.context().nodeManager();
-            NodeId tid = new NodeId(Long.parseLong(tidStr));
-            NodeContext tctx = tman.nodeContext(tid);
+            NodeContext tctx = tman.nodeContext(Long.parseLong(tidStr));
             WebFilter tran = (WebFilter)tctx.node();
 
             if (tran.unblockSite(nonce, global)) {

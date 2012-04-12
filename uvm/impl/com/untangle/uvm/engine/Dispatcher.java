@@ -188,7 +188,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         this.nodeManager = UvmContextImpl.getInstance().nodeManager();
         sessionEventListener = null;
         NodeDesc td = node.getNodeDesc();
-        String tidn = td.getNodeId().getName();
 
         sessionEventLogger = argonConnector.sessionEventLogger();
         releasedHandler = new ReleasedEventHandler(node);
@@ -196,7 +195,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         liveSessions = new ConcurrentHashMap<IPSession,IPSession>();
 
         MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(node.getNodeId());
+        Counters c = lmm.getCounters(node.getNodeSettings().getId());
         udpLiveSessionCounter = c.makeLoadCounter("udpLiveSessionCounter", "UDP sessions");
         tcpLiveSessionCounter = c.makeLoadCounter("tcpLiveSessionCounter", "TCP sessions");
         udpTotalSessionCounter = c.addMetric("udpTotalSessionCounter", I18nUtil.marktr("UDP sessions"), null, false);

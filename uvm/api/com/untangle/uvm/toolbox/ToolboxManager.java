@@ -4,7 +4,6 @@
 package com.untangle.uvm.toolbox;
 
 import com.untangle.uvm.node.DeployException;
-import com.untangle.uvm.policy.Policy;
 
 /**
  * Manager for the Toolbox, which holds Packages. A Package is all
@@ -22,7 +21,7 @@ public interface ToolboxManager
      * @param p policy.
      * @return visible nodes for this policy.
      */
-    RackView getRackView(Policy p);
+    RackView getRackView(Long policyId);
 
     /**
      * Returns the current apt state of the system
@@ -112,7 +111,7 @@ public interface ToolboxManager
      * @exception PackageInstallException when <code>name</code> cannot
      *     be installed.
      */
-    void installAndInstantiate(String name, Policy p) throws PackageInstallException, DeployException;
+    void installAndInstantiate(String name, Long policyId) throws PackageInstallException, DeployException;
 
     /**
      * Remove a Package from the toolbox.

@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 
 /**
  * Node settings and properties.
@@ -15,7 +15,7 @@ import com.untangle.uvm.security.NodeId;
 @SuppressWarnings("serial")
 public class NodeDesc implements Serializable
 {
-    private NodeId nodeId = null; 
+    private NodeSettings nodeId = null; 
 
     private String name = null;
     private String displayName = null;
@@ -40,12 +40,12 @@ public class NodeDesc implements Serializable
      *
      * @return nodeId for this instance.
      */
-    public NodeId getNodeId()
+    public NodeSettings getNodeSettings()
     {
         return nodeId;
     }
 
-    public void setNodeId(NodeId nodeId)
+    public void setNodeSettings(NodeSettings nodeId)
     {
         this.nodeId = nodeId;
     }
@@ -250,7 +250,7 @@ public class NodeDesc implements Serializable
 
         NodeDesc td = (NodeDesc)o;
 
-        return nodeId.equals(td.getNodeId());
+        return nodeId.equals(td.getNodeSettings());
     }
 
     @Override

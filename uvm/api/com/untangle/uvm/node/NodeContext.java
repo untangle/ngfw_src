@@ -6,7 +6,7 @@ package com.untangle.uvm.node;
 import java.io.InputStream;
 import java.util.List;
 
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.toolbox.PackageDesc;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.VnetSessionDesc;
@@ -17,11 +17,11 @@ import com.untangle.uvm.vnet.VnetSessionDesc;
 public interface NodeContext
 {
     /**
-     * Get the NodeId for this instance.
+     * Get the NodeSettings for this instance.
      *
      * @return the node id.
      */
-    NodeId getNodeId();
+    NodeSettings getNodeSettings();
 
     /**
      * Get the node for this context.
@@ -36,13 +36,6 @@ public interface NodeContext
      * @return the NodeDesc.
      */
     NodeDesc getNodeDesc();
-
-    /**
-     * Returns the node preferences.
-     *
-     * @return the NodePreferences.
-     */
-    NodePreferences getNodePreferences();
 
     /**
      * Get the {@link PackageDesc} corresponding to this instance.
@@ -70,7 +63,5 @@ public interface NodeContext
 
     List<VnetSessionDesc> liveSessionDescs();
 
-    NodeState getRunState();
-
-    void saveNodeState(NodeState nodeState);
+    NodeSettings.NodeState getRunState();
 }

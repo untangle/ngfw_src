@@ -11,7 +11,6 @@ import org.hibernate.annotations.Type;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.SyslogBuilder;
-import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.node.SessionEvent;
 
 /**

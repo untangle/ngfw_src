@@ -5,7 +5,6 @@ package com.untangle.uvm;
 
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.SessionEndpoints;
-import com.untangle.uvm.policy.Policy;
 
 public class SessionMatcherFactory
 {
@@ -14,28 +13,28 @@ public class SessionMatcherFactory
     }
 
     static final SessionMatcher NULL_MATCHER = new SessionMatcher() {
-            public boolean isMatch( Policy policy, IPSessionDesc client, IPSessionDesc server )
+            public boolean isMatch( Long policyId, IPSessionDesc client, IPSessionDesc server )
             {
                 return false;
             }
         };
 
     static final SessionMatcher ALL_MATCHER = new SessionMatcher() {
-            public boolean isMatch( Policy policy, IPSessionDesc client, IPSessionDesc server )
+            public boolean isMatch( Long policyId, IPSessionDesc client, IPSessionDesc server )
             {
                 return true;
             }
         };
 
     static final SessionMatcher TCP_MATCHER = new SessionMatcher() {
-            public boolean isMatch( Policy policy, IPSessionDesc client, IPSessionDesc server )
+            public boolean isMatch( Long policyId, IPSessionDesc client, IPSessionDesc server )
             {
                 return ( client.protocol() == SessionEndpoints.PROTO_TCP ) ? true : false;
             }
         };
 
     static final SessionMatcher UDP_MATCHER = new SessionMatcher() {
-            public boolean isMatch( Policy policy, IPSessionDesc client, IPSessionDesc server )
+            public boolean isMatch( Long policyId, IPSessionDesc client, IPSessionDesc server )
             {
 
                 return ( client.protocol() == SessionEndpoints.PROTO_UDP ) ? true : false;
@@ -62,15 +61,15 @@ public class SessionMatcherFactory
         return UDP_MATCHER;
     }
 
-    public static SessionMatcher makePolicyInstance( final Policy policy )
+    public static SessionMatcher makePolicyInstance( final Long policyId )
     {
         /* null policy is a service, use an all matcher */
-        if ( null == policy ) return getAllInstance();
+        if ( null == policyId ) return getAllInstance();
 
         return new SessionMatcher() {
-                public boolean isMatch( Policy sessionPolicy, IPSessionDesc client, IPSessionDesc server )
+                public boolean isMatch( Long sessionPolicyId, IPSessionDesc client, IPSessionDesc server )
                 {
-                    return ( policy.equals( sessionPolicy ));
+                    return ( policyId.equals( sessionPolicyId ));
                 }
             };
     }

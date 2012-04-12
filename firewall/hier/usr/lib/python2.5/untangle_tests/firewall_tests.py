@@ -8,7 +8,7 @@ from uvm import Uvm
 from untangle_tests import ClientControl
 
 uvmContext = Uvm().getUvmContext()
-defaultRackId = uvmContext.policyManager().getDefaultPolicy()['id']
+defaultRackId = 1
 clientControl = ClientControl()
 nodeDesc = None
 node = None
@@ -102,8 +102,8 @@ class FirewallTests(unittest.TestCase):
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName();
                 raise Exception('node %s already instantiated' % self.nodeName())
-            nodeDesc = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), uvmContext.policyManager().getDefaultPolicy())
-            node = uvmContext.nodeManager().nodeContext(nodeDesc['nodeId']).node()
+            nodeDesc = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), defaultRackId)
+            node = uvmContext.nodeManager().nodeContext(nodeDesc['nodeSettings']).node()
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -392,7 +392,7 @@ class FirewallTests(unittest.TestCase):
     def test_999_finalTearDown(self):
         global nodeDesc
         global node
-        uvmContext.nodeManager().destroy(nodeDesc['nodeId']);
+        uvmContext.nodeManager().destroy(nodeDesc['nodeSettings']['id']);
         node = None
         nodeDesc = None
         

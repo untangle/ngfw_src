@@ -106,9 +106,9 @@ public class RouterImpl extends AbstractNode implements Router
     }
     
     @Override
-    protected void postInit(String[] args) throws Exception
+    protected void postInit()
     {
-        super.postInit( args );
+        super.postInit();
 
         /* Register a listener, this should hang out until the node is removed dies. */
         UvmContextFactory.context().networkManager().registerListener( this.listener );

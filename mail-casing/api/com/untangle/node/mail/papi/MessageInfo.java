@@ -255,7 +255,7 @@ public class MessageInfo extends LogEvent implements Serializable
             getSessionEvent().getSClientPort() + "," +
             "'" + getSessionEvent().getSServerAddr().getHostAddress() + "'" + "," +
             getSessionEvent().getSServerPort() + "," +
-            getSessionEvent().getPolicy().getId() + "," +
+            getSessionEvent().getPolicyId() + "," +
             "'" + (getSessionEvent().getUsername() == null ? "" : getSessionEvent().getUsername()) + "'" + "," +
             "'" + getMessageId() + "'" + "," +
             "'" + getSubject() + "'" + "," +

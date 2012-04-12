@@ -7,23 +7,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeManagerSettings;
+import com.untangle.uvm.NodeSettings;
 
 /**
  * Local interface for managing Node instances.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public interface NodeManager
 {
+    NodeManagerSettings getSettings();
+
+    void setSettings(NodeManagerSettings newSettings);
+
+    void saveTargetState(Long nodeId, NodeSettings.NodeState nodeState);
+    
     /**
-     * Get <code>NodeId</code>s of nodes in the pipeline.
+     * Get <code>NodeSettings</code>s of nodes in the pipeline.
      *
      * @return list of all node ids.
      */
-    List<NodeId> nodeInstances();
+    List<NodeSettings> nodeInstances();
 
     /**
      * Node instances by name.
@@ -31,7 +34,7 @@ public interface NodeManager
      * @param name name of the node.
      * @return tids of corresponding nodes.
      */
-    List<NodeId> nodeInstances(String name);
+    List<NodeSettings> nodeInstances(String name);
 
     /**
      * Node instances by policy.
@@ -39,7 +42,7 @@ public interface NodeManager
      * @param policy policy of node.
      * @return tids of corresponding nodes.
      */
-    List<NodeId> nodeInstances(Policy policy);
+    List<NodeSettings> nodeInstances(Long policyId);
 
     /**
      * Node instances by policy, the visible ones only, for the GUI.
@@ -47,7 +50,7 @@ public interface NodeManager
      * @param policy policy of node.
      * @return <code>NodeDesc</code>s of corresponding nodes.
      */
-    List<NodeDesc> visibleNodes(Policy policy);
+    List<NodeDesc> visibleNodes(Long policyId);
 
     /**
      * Node instances by name policy, this gets the nodes in the parents to.
@@ -56,7 +59,7 @@ public interface NodeManager
      * @param policy policy of node.
      * @return tids of corresponding nodes.
      */
-    List<NodeId> nodeInstances(String name, Policy policy);
+    List<NodeSettings> nodeInstances(String name, Long policyId);
 
     /**
      * Node instances by name policy.
@@ -66,7 +69,7 @@ public interface NodeManager
      * @param parents true to fetch the nodes in the parents as well.
      * @return tids of corresponding nodes.
      */
-    List<NodeId> nodeInstances(String name, Policy policy,boolean parents);
+    List<NodeSettings> nodeInstances(String name, Long policyId, boolean parents);
 
     /**
      * Create a new node instance under the given policy.  Note
@@ -78,31 +81,7 @@ public interface NodeManager
      * @return the <code>tid</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
-    NodeDesc instantiate(String name, Policy policy) throws DeployException;
-
-    /**
-     * Create a new node instance under the given policy.  Note
-     * that it is an error to specify a non-null policy for a service,
-     * or a null policy for a non-service.
-     *
-     * @param name of the node.
-     * @param policy the policy this instance is applied to.
-     * @param args node args.
-     * @return the <code>tid</code> of the instance.
-     * @exception DeployException if the instance cannot be created.
-     */
-    NodeDesc instantiate(String name, Policy policy, String[] args) throws DeployException;
-
-    /**
-     * Create a new node instance under the default policy, or in
-     * the null policy if the node is a service.
-     *
-     * @param name of the node.
-     * @param args node args.
-     * @return the <code>tid</code> of the instance.
-     * @exception DeployException if the instance cannot be created.
-     */
-    NodeDesc instantiate(String name, String[] args) throws DeployException;
+    NodeDesc instantiate(String name, Long policyId) throws DeployException;
 
     /**
      * Create a new node instance under the default policy, or in
@@ -125,32 +104,31 @@ public interface NodeManager
      * @exception DeployException if the instance cannot be created.
      * @exception NodeStartException if the instance cannot be started.
      */
-    NodeDesc instantiateAndStart(String nodeName, Policy p) throws DeployException;
+    NodeDesc instantiateAndStart(String nodeName, Long policyId) throws DeployException;
 
     /**
      * Remove node instance from the pipeline.
      *
-     * @param tid <code>NodeId</code> of instance to be destroyed.
-     * @exception UndeployException if detruction fails.
+     * @param nodeId of instance to be destroyed.
      */
-    void destroy(NodeId tid) throws Exception;
+    void destroy( Long nodeId ) throws Exception;
 
     /**
      * Get the <code>NodeContext</code> for a node instance.
      *
-     * @param tid <code>NodeId</code> of the instance.
+     * @param tid <code>NodeSettings</code> of the instance.
      * @return the instance's <code>NodeContext</code>.
      */
-    NodeContext nodeContext(NodeId tid);
+    NodeContext nodeContext( NodeSettings nodeSettings );
 
     /**
      * Get the <code>NodeContext</code> for a node instance.
-     * This will replace the nodeContext(NodeId) function above eventually when NodeId goes away
+     * This will replace the nodeContext(NodeSettings) function above eventually when NodeSettings goes away
      *
      * @param the node id (long) of the instance.
      * @return the instance's <code>NodeContext</code>.
      */
-    NodeContext nodeContext(long nodeIdInt);
+    NodeContext nodeContext( Long nodeId );
     
     /**
      * Get the <code>Node</code> for a node instance;
@@ -160,20 +138,20 @@ public interface NodeManager
      * @param name of the node.
      * @return the instance's <code>Node</code>.
      */
-    Node node(String name);
+    Node node( String name );
 
     /**
      * Get the runtime state for all nodes in one call.
      *
-     * @return a <code>Map</code> from NodeId to NodeState for all nodes
+     * @return a <code>Map</code> from NodeSettings to NodeState for all nodes
      */
-    Map<NodeId, NodeState> allNodeStates();
+    Map<NodeSettings, NodeSettings.NodeState> allNodeStates();
     
     /**
      * Get a map of nodes that are enabled for a policy, this takes into account
      * parent / child relationships
      */
-    Set<String> getEnabledNodes(Policy policy);
+    Set<String> getEnabledNodes( Long policyId );
     
     /**
      * Clear out any state related to the nodes in the node manager.
@@ -193,7 +171,7 @@ public interface NodeManager
      *
      * @param ctx context to associate with thread.
      */
-    void registerThreadContext(NodeContext ctx);
+    void registerThreadContext( NodeContext ctx );
 
     /**
      * Returns the thread context to the UVM context.
@@ -206,6 +184,6 @@ public interface NodeManager
      *
      * Example arg: 'untangle-node-reporting'
      */
-    boolean isInstantiated(String nodeName);
+    boolean isInstantiated( String nodeName );
     
 }

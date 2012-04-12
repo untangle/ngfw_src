@@ -19,12 +19,12 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.EventLogQuery;
@@ -104,11 +104,11 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
 
         MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeId());
+        Counters c = lmm.getCounters(getNodeSettings().getId());
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Clients blocked"), null, I18nUtil.marktr("BLOCK"));
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Clients passed"), null, I18nUtil.marktr("PASS"));
         connectBlinger = c.addActivity("connect", I18nUtil.marktr("Clients connected"), null, I18nUtil.marktr("CONNECT"));
-        lmm.setActiveMetricsIfNotSet(getNodeId(), blockBlinger, passBlinger, connectBlinger);
+        lmm.setActiveMetrics(getNodeSettings().getId(), blockBlinger, passBlinger, connectBlinger);
 
         this.connectEventsQuery = new EventLogQuery(I18nUtil.marktr("Closed Sessions"),
                                                    "FROM OpenvpnLogEventFromReports evt ORDER BY evt.timeStamp DESC");
@@ -117,7 +117,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     private void readNodeSettings()
     {
         SettingsManager setman = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/settings_" + nodeID;
         String settingsFile = settingsName + ".js";
         VpnSettings readSettings = null;
@@ -175,7 +175,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     private void writeNodeSettings(VpnSettings argSettings)
     {
         SettingsManager setman = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/settings_" + nodeID;
 
         try {
@@ -231,7 +231,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         this.settings = newSettings;
 
         try {
-            if ( getRunState() == NodeState.RUNNING ) {
+            if ( getRunState() == NodeSettings.NodeState.RUNNING ) {
                 /* This stops then starts openvpn */
                 this.openVpnManager.configure( this.settings );
                 this.openVpnManager.restart( this.settings );
@@ -568,33 +568,25 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
     }
 
     // lifecycle --------------------------------------------------------------
-    @Override protected void preInit( final String[] args ) throws Exception
+    @Override protected void preInit()
     {
-        super.preInit( args );
+        super.preInit();
 
         try {
             this.openVpnMonitor.start();
         } catch ( Exception e ) {
             logger.warn( "Unable to start openvpn monitor." );
         }
-
-        // XXX ALPACA_INTEGRATION
-        /* Initially use tun0, even though it could eventually be configured to the tap interface  */
-//         try {
-//             UvmContextFactory.context().localIntfManager().registerIntf( "tun0", IntfConstants.VPN_INTF );
-//         } catch ( ArgonException e ) {
-//             throw new Exception( "Unable to register VPN interface", e );
-//         }
     }
 
-    @Override protected void postInit(final String[] args) throws Exception
+    @Override protected void postInit()
     {
-        super.postInit( args );
+        super.postInit();
         readNodeSettings();
         deployWebApp();
     }
 
-    @Override protected void preStart() throws Exception
+    @Override protected void preStart()
     {
         super.preStart();
 
@@ -602,19 +594,14 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
 
         if ( this.settings == null ) {
-            String[] args = {""};
-            try {
-                postInit( args );
-            } catch ( Exception e ) {
-                throw new Exception( i18nUtil.tr( "An Internal Error Occurred, Please try again."), e );
-            }
+            postInit();
 
             if ( this.settings == null ) initializeSettings();
         }
 
         /* Don't start if openvpn cannot be configured */
         if ( !settings.trans_isConfigured()) {
-            throw new Exception( i18nUtil.tr( "You must configure OpenVPN as either a VPN Routing Server or a VPN Client before you can turn it on.  You may do this through its Setup Wizard (in its settings)." ));
+            throw new RuntimeException( i18nUtil.tr( "You must configure OpenVPN as either a VPN Routing Server or a VPN Client before you can turn it on.  You may do this through its Setup Wizard (in its settings)." ));
         }
 
         try {
@@ -630,7 +617,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
             } catch ( Exception stopException ) {
                 logger.error( "Unable to stop the openvpn process", stopException );
             }
-            throw new Exception( e );
+            throw new RuntimeException(e);
         }
 
         deployWebApp();
@@ -644,12 +631,12 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         }
     }
 
-    @Override protected void postStop() throws Exception
+    @Override protected void postStop()
     {
         super.postStop();
     }
 
-    @Override protected void preStop() throws Exception
+    @Override protected void preStop()
     {
         super.preStop();
 
@@ -672,7 +659,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         UvmContextFactory.context().networkManager().refreshIptablesRules();
     }
 
-    @Override protected void postDestroy() throws Exception
+    @Override protected void postDestroy()
     {
         super.postDestroy();
 
@@ -773,7 +760,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
     public void completeConfig() throws Exception
     {
-        VpnSettings newSettings = this.sandbox.completeConfig( this.getNodeId());
+        VpnSettings newSettings = this.sandbox.completeConfig( this.getNodeSettings());
 
         /* Generate new settings */
         if ( newSettings.isUntanglePlatformClient()) {

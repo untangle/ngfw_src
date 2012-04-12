@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 import com.untangle.node.http.ReplacementGenerator;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 
 class PhishReplacementGenerator extends ReplacementGenerator<PhishBlockDetails>
 {
@@ -25,7 +25,7 @@ class PhishReplacementGenerator extends ReplacementGenerator<PhishBlockDetails>
         + "<p>Please contact %s</p>"
         + "</BODY></HTML>";
 
-    PhishReplacementGenerator(NodeId tid)
+    PhishReplacementGenerator(NodeSettings tid)
     {
         super(tid);
     }
@@ -40,7 +40,7 @@ class PhishReplacementGenerator extends ReplacementGenerator<PhishBlockDetails>
     }
 
     @Override
-    protected String getRedirectUrl(String nonce, String host, NodeId tid)
+    protected String getRedirectUrl(String nonce, String host, NodeSettings tid)
     {
         return "http://" + host + "/phish/blockpage?nonce=" + nonce
             + "&tid=" + tid;

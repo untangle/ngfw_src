@@ -10,6 +10,7 @@ from uvm import Uvm
 from untangle_tests import ClientControl
 
 uvmContext = Uvm().getUvmContext()
+defaultRackId = 1
 clientControl = ClientControl()
 nodeData = None
 nodeDesc = None
@@ -33,13 +34,13 @@ class OpenVPNTests(unittest.TestCase):
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 print "ERROR: Node %s already installed" % self.nodeName()
                 raise Exception('node %s already instantiated' % self.nodeName())
-            nodeDesc = uvmContext.nodeManager().instantiate(self.nodeName(), uvmContext.policyManager().getDefaultPolicy())
-            node = uvmContext.nodeManager().nodeContext(nodeDesc['nodeId']).node()
+            nodeDesc = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+            node = uvmContext.nodeManager().nodeContext(nodeDesc['nodeSettings']).node()
             nodeData = node.getSettings()
 
     def test_999_finalTearDown(self):
         global nodeDesc
         global node
-        uvmContext.nodeManager().destroy(nodeDesc['nodeId'])
+        uvmContext.nodeManager().destroy(nodeDesc['nodeSettings']['id']);
         node = None
         nodeDesc = None

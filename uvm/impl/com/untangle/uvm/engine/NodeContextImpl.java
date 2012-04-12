@@ -16,20 +16,16 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.NodeManagerSettings;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
-import com.untangle.uvm.node.NodePreferences;
-import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.toolbox.PackageDesc;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.VnetSessionDesc;
@@ -39,14 +35,12 @@ import com.untangle.uvm.vnet.NodeBase;
  * Implements <code>NodeContext</code>. Contains code to load and set
  * up a <code>Node</code>.
  */
-class NodeContextImpl implements NodeContext
+public class NodeContextImpl implements NodeContext
 {
     private final Logger logger = Logger.getLogger(getClass());
 
     private final NodeDesc nodeDesc;
-    private final NodeId nodeId;
-    private final NodePreferences nodePreferences;
-    private final NodePersistentState persistentState;
+    private final NodeSettings nodeSettings;
     private final boolean isNew;
 
     private NodeBase node;
@@ -55,26 +49,26 @@ class NodeContextImpl implements NodeContext
     private final NodeManager nodeManager;
     private final ToolboxManagerImpl toolboxManager;
 
-    NodeContextImpl(URLClassLoader classLoader, NodeDesc tDesc, String packageName, boolean isNew) throws DeployException
+    public NodeContextImpl(URLClassLoader classLoader, NodeDesc nodeDesc, String packageName, boolean isNew) throws DeployException
     {
         UvmContextImpl mctx = UvmContextImpl.getInstance();
 
-        if (null != tDesc.getNodeBase()) {
-            mctx.schemaUtil().initSchema("settings", tDesc.getNodeBase());
+        if (null != nodeDesc.getNodeBase()) {
+            mctx.schemaUtil().initSchema("settings", nodeDesc.getNodeBase());
         }
-        mctx.schemaUtil().initSchema("settings", tDesc.getName());
+        mctx.schemaUtil().initSchema("settings", nodeDesc.getName());
 
         nodeManager = mctx.nodeManager();
         toolboxManager = mctx.toolboxManager();
 
         LoggingManagerImpl lm = mctx.loggingManager();
-        if (null != tDesc.getNodeBase()) {
-            lm.initSchema(tDesc.getNodeBase());
+        if (null != nodeDesc.getNodeBase()) {
+            lm.initSchema(nodeDesc.getNodeBase());
         }
-        lm.initSchema(tDesc.getName());
+        lm.initSchema(nodeDesc.getName());
 
-        this.nodeDesc = tDesc;
-        this.nodeId = nodeDesc.getNodeId();
+        this.nodeDesc = nodeDesc;
+        this.nodeSettings = nodeDesc.getNodeSettings();
         this.packageName = packageName;
         this.isNew = isNew;
 
@@ -84,45 +78,15 @@ class NodeContextImpl implements NodeContext
             throw new DeployException(exn);
         }
 
-        if (isNew) {
-            // XXX this isn't supposed to be meaningful:
-            byte[] pKey = new byte[]
-                { (byte)(nodeId.getId() & 0xFF),
-                  (byte)((nodeId.getId() >> 8) & 0xFF) };
-
-
-            persistentState = new NodePersistentState(nodeId, packageName, pKey);
-
-            nodePreferences = new NodePreferences(nodeId);
-
-            TransactionWork<Object> tw = new TransactionWork<Object>()
-                {
-                    public boolean doWork(Session s)
-                    {
-                        s.save(persistentState);
-                        s.save(nodePreferences);
-                        return true;
-                    }
-
-                    public Object getResult() { return null; }
-                };
-            mctx.runTransaction(tw);
-        } else {
-            LoadSettings ls = new LoadSettings(nodeId);
-            mctx.runTransaction(ls);
-            this.persistentState = ls.getPersistentState();
-            this.nodePreferences = ls.getNodePreferences();
-        }
-
-        logger.info("Creating node context for: " + nodeId + " (" + nodeDesc.getName() + ")");
+        logger.info("Creating node context for: " + nodeSettings + " (" + nodeDesc.getName() + ")");
     }
 
-    void init(String[] args) throws DeployException
+    void init() throws DeployException
     {
         Set<NodeContext>parentCtxs = new HashSet<NodeContext>();
         List<String> parents = nodeDesc.getParents();
         for (String parent : parents) {
-            parentCtxs.add(startParent(parent, nodeId.getPolicy()));
+            parentCtxs.add(startParent(parent, nodeSettings.getPolicyId()));
         }
 
         UvmContextImpl uctx = UvmContextImpl.getInstance();
@@ -131,8 +95,8 @@ class NodeContextImpl implements NodeContext
         try {
             nodeManager.registerThreadContext(this);
 
-            String nodeIdName = nodeId.getName();
-            logger.debug("setting node " + nodeIdName + " log4j repository");
+            String nodeSettingsName = nodeSettings.getNodeName();
+            logger.debug("setting node " + nodeSettingsName + " log4j repository");
 
             String className = nodeDesc.getClassName();
             node = (NodeBase)Class.forName(className).newInstance();
@@ -143,13 +107,13 @@ class NodeContextImpl implements NodeContext
 
             if (isNew) {
                 node.initializeSettings();
-                node.init(args);
+                node.init();
                 boolean enabled = toolboxManager.isEnabled(packageName);
                 if (!enabled) {
                     node.disable();
                 }
             } else {
-                node.resumeState(persistentState.getTargetState(), args);
+                node.resumeState(nodeSettings.getTargetState());
             }
         } catch (ClassNotFoundException exn) {
             logger.error("Exception during node initialization", exn);
@@ -165,38 +129,19 @@ class NodeContextImpl implements NodeContext
             throw new DeployException(exn);
         } finally {
             nodeManager.deregisterThreadContext();
-
-            if (null == node) {
-                TransactionWork<Object> tw = new TransactionWork<Object>()
-                    {
-                        public boolean doWork(Session s)
-                        {
-                            s.delete(persistentState);
-                            return true;
-                        }
-
-                        public Object getResult() { return null; }
-                    };
-                UvmContextFactory.context().runTransaction(tw);
-            }
         }
     }
 
     // NodeContext -------------------------------------------------------
 
-    public NodeId getNodeId()
+    public NodeSettings getNodeSettings()
     {
-        return nodeId;
+        return nodeSettings;
     }
 
     public NodeDesc getNodeDesc()
     {
         return nodeDesc;
-    }
-
-    public NodePreferences getNodePreferences()
-    {
-        return nodePreferences;
     }
 
     public PackageDesc getPackageDesc()
@@ -216,26 +161,9 @@ class NodeContextImpl implements NodeContext
         return node.liveSessionDescs();
     }
 
-    public NodeState getRunState()
+    public NodeSettings.NodeState getRunState()
     {
-        return null == node ? NodeState.LOADED
-            : node.getRunState();
-    }
-
-    public void saveNodeState(final NodeState nodeState)
-    {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    persistentState.setTargetState(nodeState);
-                    s.merge(persistentState);
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        UvmContextFactory.context().runTransaction(tw);
+        return null == node ? NodeSettings.NodeState.LOADED : node.getRunState();
     }
 
     @Deprecated
@@ -256,8 +184,7 @@ class NodeContextImpl implements NodeContext
         return getResourceAsStreamInt(res, getPackageDesc(), baseNodeName);
     }
 
-    private boolean resourceExistsInt(String res, PackageDesc packageDesc,
-                                      String baseNodeName)
+    private boolean resourceExistsInt(String res, PackageDesc packageDesc, String baseNodeName)
     {
         boolean exists;
         try {
@@ -288,9 +215,7 @@ class NodeContextImpl implements NodeContext
         }
     }
 
-    private InputStream getResourceAsStreamInt(String res,
-                                               PackageDesc packageDesc,
-                                               String baseNodeName)
+    private InputStream getResourceAsStreamInt(String res, PackageDesc packageDesc, String baseNodeName)
     {
         try {
             URL url = new URL(toolboxManager.getResourceDir(packageDesc), res);
@@ -318,13 +243,11 @@ class NodeContextImpl implements NodeContext
         }
     }
 
-    // package private methods ------------------------------------------------
-
-    void destroy() throws Exception
+    protected void destroy() throws Exception
     {
         try {
             nodeManager.registerThreadContext(this);
-            if (node.getRunState() == NodeState.RUNNING) {
+            if (node.getRunState() == NodeSettings.NodeState.RUNNING) {
                 node.stop();
             }
             node.destroy();
@@ -334,9 +257,11 @@ class NodeContextImpl implements NodeContext
         } finally {
             nodeManager.deregisterThreadContext();
         }
+
+        logger.error("FIXME REMOVE SETTINGS FROM NODE MANAGER");
     }
 
-    void unload()
+    protected void unload()
     {
         if (node != null) {
             try {
@@ -348,93 +273,27 @@ class NodeContextImpl implements NodeContext
         }
     }
 
-    void destroyPersistentState()
-    {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    nodeId.setPolicy(null);
-                    s.update(nodeId);
-                    s.delete(persistentState);
-                    s.delete(getNodePreferences());
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        UvmContextFactory.context().runTransaction(tw);
-    }
-
-    // private classes --------------------------------------------------------
-
-    private class LoadSettings extends TransactionWork<Object>
-    {
-        private final NodeId nodeId;
-
-        private NodePersistentState persistentState;
-        private NodePreferences nodePreferences;
-
-        public LoadSettings(NodeId nodeId)
-        {
-            this.nodeId = nodeId;
-        }
-
-        public boolean doWork(Session s)
-        {
-            Query q = s.createQuery("from NodePersistentState tps where tps.nodeId = :nodeId");
-            q.setParameter("nodeId", nodeId);
-
-            persistentState = (NodePersistentState)q.uniqueResult();
-
-            if (!toolboxManager.isEnabled(packageName)) {
-                persistentState.setTargetState(NodeState.DISABLED);
-                s.merge(persistentState);
-            } else if (NodeState.DISABLED == persistentState.getTargetState()) {
-                persistentState.setTargetState(NodeState.INITIALIZED);
-                s.merge(persistentState);
-            }
-
-            q = s.createQuery("from NodePreferences tp where tp.nodeId = :nodeId");
-            q.setParameter("nodeId", nodeId);
-            nodePreferences = (NodePreferences)q.uniqueResult();
-            return true;
-        }
-
-        public Object getResult() { return null; }
-
-        public NodePersistentState getPersistentState()
-        {
-            return persistentState;
-        }
-
-        public NodePreferences getNodePreferences()
-        {
-            return nodePreferences;
-        }
-    }
-
     // private methods --------------------------------------------------------
 
     private void checkInstanceCount(NodeDesc nodeDesc) 
         throws TooManyInstancesException
     {
         if (nodeDesc.isSingleInstance()) {
-            String n = nodeDesc.getName();
-            Policy p = nodeDesc.getNodeId().getPolicy();
-            List<NodeId> l = nodeManager.nodeInstances(n, p,false);
+            String nodeName = nodeDesc.getName();
+            Long policyId = nodeDesc.getNodeSettings().getPolicyId();
+            List<NodeSettings> l = nodeManager.nodeInstances( nodeName, policyId, false );
 
             if (1 == l.size()) {
-                if (!nodeId.equals(l.get(0))) {
-                    throw new TooManyInstancesException("too many instances: " + n);
+                if (!nodeSettings.equals(l.get(0))) {
+                    throw new TooManyInstancesException("too many instances: " + nodeName);
                 }
             } else if (1 < l.size()) {
-                throw new TooManyInstancesException("too many instances: " + n);
+                throw new TooManyInstancesException("too many instances: " + nodeName);
             }
         }
     }
 
-    private NodeContext startParent(String parent, Policy policy)
+    private NodeContext startParent(String parent, Long policyId)
         throws DeployException
     {
         if (null == parent) {
@@ -449,10 +308,10 @@ class NodeContextImpl implements NodeContext
         }
 
         if (PackageDesc.Type.CASING == md.getType()) {
-            policy = null;
+            policyId = null;
         }
 
-        logger.debug("Starting parent: " + parent + " for: " + nodeId);
+        logger.debug("Starting parent: " + parent + " for: " + nodeSettings);
 
         NodeContext pctx = getParentContext(parent);
 
@@ -460,8 +319,8 @@ class NodeContextImpl implements NodeContext
             logger.debug("Parent does not exist, instantiating");
 
             try {
-                NodeId parentNodeId = nodeManager.instantiate(parent, policy).getNodeId();
-                pctx = nodeManager.nodeContext(parentNodeId);
+                NodeSettings parentNodeSettings = nodeManager.instantiate(parent, policyId).getNodeSettings();
+                pctx = nodeManager.nodeContext(parentNodeSettings);
             } catch (Exception exn) {
                 pctx = getParentContext(parent);
             }
@@ -476,10 +335,10 @@ class NodeContextImpl implements NodeContext
 
     private NodeContext getParentContext(String parent)
     {
-        for (NodeId t : nodeManager.nodeInstances(parent)) {
-            Policy p = t.getPolicy();
-            if (null == p || p.equals(nodeId.getPolicy())) {
-                return nodeManager.nodeContext(t);
+        for (NodeSettings nSettings : nodeManager.nodeInstances(parent)) {
+            Long policyId = nSettings.getPolicyId();
+            if (policyId == null || policyId.equals(nodeSettings.getPolicyId())) {
+                return nodeManager.nodeContext(nSettings);
             }
 
         }
@@ -491,8 +350,7 @@ class NodeContextImpl implements NodeContext
 
     public String toString()
     {
-        return "NodeContext nodeId: " + nodeId
-            + " (" + nodeDesc.getName() + ")";
+        return "NodeContext nodeSettings: " + nodeSettings + " (" + nodeDesc.getName() + ")";
     }
 
     @SuppressWarnings("serial")

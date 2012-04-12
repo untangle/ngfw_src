@@ -100,7 +100,7 @@ Ext.define("Ung.Main", {
         rpc.nodeManager=rpc.jsonrpc.UvmContext.nodeManager();
 
         // get policy manager
-        rpc.policyManager=rpc.jsonrpc.UvmContext.policyManager();
+        rpc.policyManager=rpc.jsonrpc.UvmContext.nodeManager().node("untangle-node-policy");
 
         // get toolbox manager
         rpc.toolboxManager=rpc.jsonrpc.UvmContext.toolboxManager();
@@ -615,17 +615,27 @@ Ext.define("Ung.Main", {
     // load policies list
     loadPolicies: function() {
         Ext.MessageBox.wait(i18n._("Loading Apps..."), i18n._("Please wait"));
-        rpc.policyManager.getPolicies( Ext.bind(function (result, exception) {
-            if(Ung.Util.handleException(exception)) return;
-            rpc.policies=result;
-            this.buildPolicies();
-        },this));
+        if (rpc.policyManager != null) {
+            rpc.policyManager.getPolicies( Ext.bind(function (result, exception) {
+                if(Ung.Util.handleException(exception)) return;
+                rpc.policies=result.list;
+            },this));
+        } else {
+            // no policy manager, just one policy (Default Rack)
+            rpc.policies = [{
+                javaClass: "com.untangle.node.policy.PolicySettings",
+                id: "1",
+                name: i18n._("Default Rack"),
+                description: i18n._("The Default Rack/Policy")
+            }];
+        }
+        this.buildPolicies();
     },
-    getNodePackageDesc: function(Tid) {
+    getNodePackageDesc: function(nodeSettings) {
         var i;
         if(this.myApps!==null) {
             for(i=0;i<this.myApps.length;i++) {
-                if(this.myApps[i].name==Tid.nodeName) {
+                if(this.myApps[i].name==nodeSettings.nodeName) {
                     return this.myApps[i];
                 }
             }
@@ -634,8 +644,8 @@ Ext.define("Ung.Main", {
     },
     createNode: function (nodeDesc, statDesc, license, runState) {
         var node={};
-        node.nodeId=nodeDesc.nodeId.id;
-        node.Tid=nodeDesc.nodeId;
+        node.nodeId=nodeDesc.nodeSettings.id;
+        node.nodeSettings=nodeDesc.nodeSettings;
         node.type=nodeDesc.type;
         node.hasPowerButton=nodeDesc.hasPowerButton;
         node.name=nodeDesc.name;
@@ -684,9 +694,9 @@ Ext.define("Ung.Main", {
         for(var i=0;i<rpc.rackView.instances.list.length;i++) {
             var nodeDesc=rpc.rackView.instances.list[i];
             var node=this.createNode(nodeDesc,
-                rpc.rackView.statDescs.map[nodeDesc.nodeId.id],
+                rpc.rackView.statDescs.map[nodeDesc.nodeSettings.id],
                 rpc.rackView.licenseMap.map[nodeDesc.name],
-                rpc.rackView.runStates.map[nodeDesc.nodeId.id]);
+                rpc.rackView.runStates.map[nodeDesc.nodeSettings.id]);
             this.nodes.push(node);
         }
         if (this.nodes.length == 0) {
@@ -723,8 +733,7 @@ Ext.define("Ung.Main", {
             main.buildNodes();
         },this);
 
-        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager,
-                                     [ rpc.currentPolicy ], callback, 1500, 10 );
+        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy.id ], callback, 1500, 10 );
     },
     loadApps: function() {
         if(Ung.MessageManager.installInProgress>0) {
@@ -736,8 +745,7 @@ Ext.define("Ung.Main", {
             main.buildApps();
         },this);
 
-        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager,
-                                     [ rpc.currentPolicy ], callback, 1500, 10 );
+        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy.id ], callback, 1500, 10 );
     },
     loadLicenses: function() {
         //force re-sync with server
@@ -754,7 +762,7 @@ Ext.define("Ung.Main", {
             }
         },this);
 
-        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy ], callback, 1500, 10 );
+        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy.id ], callback, 1500, 10 );
     },
 
     installNode: function(packageDesc, appItem) {
@@ -765,7 +773,7 @@ Ext.define("Ung.Main", {
         
         /* Sanity check to see if the node is already installed. */
         node = main.getNode(packageDesc.name);
-        if (( node !== null ) && ( node.Tid.policy.id == rpc.currentPolicy.id )) {
+        if (( node !== null ) && ( node.nodeSettings.policy.id == rpc.currentPolicy.id )) {
             appItem.hide();
             return;
         }
@@ -777,7 +785,7 @@ Ext.define("Ung.Main", {
                 main.removeNodePreview(this.name);
                 return;
             }
-        },packageDesc), packageDesc.name, rpc.currentPolicy);
+        },packageDesc), packageDesc.name, rpc.currentPolicy.id);
     },
     /**
      *  Returns the reference to the IE window if one exists
@@ -998,7 +1006,7 @@ Ext.define("Ung.Main", {
                     cp = null;
                 }else{
                     np = nodePolicy.parentId;
-                    cp = main.nodes[i].Tid.policy == null ? null : main.nodes[i].Tid.policy.parentId;
+                    cp = main.nodes[i].nodeSettings.policy == null ? null : main.nodes[i].nodeSettings.policy.parentId;
                 }
             
                 if ((nodeName == main.nodes[i].name)&& (np==cp)) {
@@ -1016,7 +1024,7 @@ Ext.define("Ung.Main", {
                     cp = null;
                 }else{
                     np = nodePolicy.parentId;
-                    cp = main.nodes[i].Tid.policy == null ? null : main.nodes[i].Tid.policy.parentId;
+                    cp = main.nodes[i].nodeSettings.policy == null ? null : main.nodes[i].nodeSettings.policy.parentId;
                 }
             
                 if (node.name === main.nodes[i].name) {
@@ -1067,13 +1075,16 @@ Ext.define("Ung.Main", {
         }
         var items=[];
         var selVirtualRackIndex = 0;
-        for(var i=0;i<rpc.policies.length;i++) {
-            selVirtualRackIndex = rpc.policies[i]["default"]===true ? i :selVirtualRackIndex;
-            items.push({text:rpc.policies[i]["default"]===true ? i18n._("Default Rack"): i18n._(rpc.policies[i].name),
-                    value:rpc.policies[i].id,index:i,handler:main.changePolicy, hideDelay :0});
+        for( var i=0 ; i<rpc.policies.length ; i++ ) {
+            selVirtualRackIndex = rpc.policies[i]["id"]==1 ? i : selVirtualRackIndex;
+            items.push({text:rpc.policies[i]["name"],
+                        value:rpc.policies[i].id,
+                        index:i,
+                        handler:main.changePolicy,
+                        hideDelay :0});
 
-            if(rpc.policies[i]["default"]===true) {
-                rpc.currentPolicy=rpc.policies[i];
+            if( rpc.policies[i]["id"] == 1 ) {
+                rpc.currentPolicy = rpc.policies[i];
             }
         }
         items.push('-');

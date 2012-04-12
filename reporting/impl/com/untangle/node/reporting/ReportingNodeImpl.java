@@ -224,13 +224,13 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
         return new PipeSpec[0];
     }
 
-    protected void postInit(String[] args)
+    protected void postInit()
     {
         TransactionWork<Void> tw = new TransactionWork<Void>() {
             public boolean doWork(Session s) {
                 Query q = s
                 .createQuery("from ReportingSettings ts where ts.nodeId = :nodeId");
-                q.setParameter("nodeId", getNodeId());
+                q.setParameter("nodeId", getNodeSettings());
                 settings = (ReportingSettings) q.uniqueResult();
 
                 if (null == settings) {
@@ -264,8 +264,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
     protected void preStart()
     {
         if (this.settings == null) {
-            String[] args = {""};
-            postInit(args);
+            postInit();
         }
 
         this.logWorker.start();
@@ -280,7 +279,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
     private ReportingSettings initSettings()
     {
         ReportingSettings settings = new ReportingSettings();
-        settings.setNodeId(getNodeId());
+        settings.setNodeId(getNodeSettings().getId());
 
         loadReportingUsers(settings);
 

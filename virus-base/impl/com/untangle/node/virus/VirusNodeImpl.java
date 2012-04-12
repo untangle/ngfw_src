@@ -31,7 +31,6 @@ import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.EventLogQuery;
-import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
@@ -114,7 +113,7 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
     /* This can't be static because it uses policy which is per node */
     private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
             /* Kill all sessions on ports 20, 21 and 80 */
-            public boolean isMatch(Policy sessionPolicy,
+            public boolean isMatch(Long sessionPolicyId,
                                    com.untangle.uvm.node.IPSessionDesc client,
                                    com.untangle.uvm.node.IPSessionDesc server)
             {
@@ -124,9 +123,8 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
                 }
 
                 /* handle sessions with a null policy */
-                Policy policy = getPolicy();
-                if (null != sessionPolicy && null != policy
-                    && !sessionPolicy.equals( policy )) {
+                Long policyId = getPolicyId();
+                if (null != sessionPolicyId && null != policyId && !sessionPolicyId.equals( policyId )) {
                     return false;
                 }
 
@@ -160,7 +158,7 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
     {
         this.scanner = scanner;
         this.pipeSpecs = initialPipeSpecs();
-        this.replacementGenerator = new VirusReplacementGenerator(getNodeId());
+        this.replacementGenerator = new VirusReplacementGenerator(getNodeSettings());
 
         String vendor = scanner.getVendorName();
 
@@ -188,14 +186,14 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
                                                      " ORDER BY evt.timeStamp DESC");
 
         MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeId());
+        Counters c = lmm.getCounters(getNodeSettings().getId());
         scanBlinger   = c.addActivity("scan",   I18nUtil.marktr("Documents scanned"),  null, I18nUtil.marktr("SCAN"));
         blockBlinger  = c.addActivity("block",  I18nUtil.marktr("Documents blocked"),  null, I18nUtil.marktr("BLOCK"));
         passBlinger   = c.addActivity("pass",   I18nUtil.marktr("Documents passed"),   null, I18nUtil.marktr("PASS"));
         removeBlinger = c.addActivity("remove", I18nUtil.marktr("Infections removed"), null, I18nUtil.marktr("REMOVE"));
         passedInfectedMessageBlinger = c.addMetric("infected", I18nUtil.marktr("Passed by policy"), null);
 
-        lmm.setActiveMetricsIfNotSet(getNodeId(), scanBlinger, blockBlinger, passBlinger, removeBlinger);
+        lmm.setActiveMetrics(getNodeSettings().getId(), scanBlinger, blockBlinger, passBlinger, removeBlinger);
     }
 
     // VirusNode methods -------------------------------------------------
@@ -382,16 +380,11 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
         vs.setHttpFileExtensions(s);
     }
 
-
-    protected void preInit(String args[])
-    {
-    }
-
     @Override
-    protected void postInit(String[] args)
+    protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         VirusSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getName() + "/" + "settings_" + nodeID;
         
@@ -448,7 +441,7 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
         deployWebAppIfRequired(logger);
     }
 
-    protected void preStart() throws Exception
+    protected void preStart()
     {
         reconfigure();
     }
@@ -573,7 +566,7 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         try {
             settingsManager.save(VirusSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-" + this.getName() + "/" + "settings_" + nodeID, newSettings);
         } catch (SettingsManager.SettingsException e) {

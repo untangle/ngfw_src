@@ -1,19 +1,5 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
 package com.untangle.node.ftp;
 
@@ -29,9 +15,6 @@ import com.untangle.uvm.UvmContextFactory;
 
 /**
  * FTP node implementation.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class FtpNodeImpl extends AbstractNode
     implements FtpNode
@@ -57,7 +40,7 @@ public class FtpNodeImpl extends AbstractNode
 
     public void setFtpSettings(final FtpSettings settings)
     {
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-ftp/settings_" + nodeID;
         String settingsFile = settingsName + ".js";
 
@@ -88,9 +71,9 @@ public class FtpNodeImpl extends AbstractNode
 
     public void initializeSettings() { }
 
-    protected void postInit(String[] args)
+    protected void postInit()
     {
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-ftp/settings_" + nodeID;
         String settingsFile = settingsName + ".js";
 

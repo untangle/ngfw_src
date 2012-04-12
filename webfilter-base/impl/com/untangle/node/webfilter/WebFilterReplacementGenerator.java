@@ -5,7 +5,7 @@ import java.net.InetAddress;
 import com.untangle.node.http.ReplacementGenerator;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 
 /**
  * ReplacementGenerator for WebFilter.
@@ -24,7 +24,7 @@ public class WebFilterReplacementGenerator extends ReplacementGenerator<WebFilte
         + "<p>Please contact %s</p>"
         + "</BODY></HTML>";
 
-    public WebFilterReplacementGenerator(NodeId tid)
+    public WebFilterReplacementGenerator(NodeSettings tid)
     {
         super(tid);
     }
@@ -41,7 +41,7 @@ public class WebFilterReplacementGenerator extends ReplacementGenerator<WebFilte
     }
 
     @Override
-    protected String getRedirectUrl(String nonce, String host, NodeId tid)
+    protected String getRedirectUrl(String nonce, String host, NodeSettings tid)
     {
         return "http://" + host + "/webfilter/blockpage?nonce=" + nonce + "&tid=" + tid;
     }

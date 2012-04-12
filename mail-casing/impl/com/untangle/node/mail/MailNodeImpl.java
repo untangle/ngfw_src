@@ -174,7 +174,7 @@ public class MailNodeImpl extends AbstractNode implements MailNode, MailExport
 
     public void setMailNodeSettings(final MailNodeSettings settings)
     {
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-mail/settings_" + nodeID;
         String settingsFile = settingsName + ".js";
 
@@ -276,7 +276,7 @@ public class MailNodeImpl extends AbstractNode implements MailNode, MailExport
     // Node methods -----------------------------------------------------------
 
     @Override
-    protected void preDestroy() throws Exception
+    protected void preDestroy()
     {
         super.preDestroy();
         logger.debug("preDestroy()");
@@ -284,9 +284,9 @@ public class MailNodeImpl extends AbstractNode implements MailNode, MailExport
         s_quarantine.close();
     }
 
-    protected void postInit(String[] args)
+    protected void postInit()
     {
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-mail/settings_" + nodeID;
         String settingsFile = settingsName + ".js";
 

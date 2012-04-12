@@ -1,27 +1,12 @@
-/*
- * $HeadURL: svn://chef/work/src/uvm/impl/com/untangle/uvm/engine/BrandingManagerFactory.java $
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id: BrandingManagerImpl.java,v 1.00 2012/04/06 11:46:05 dmorris Exp $
  */
-
 package com.untangle.uvm.engine;
 
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.vnet.AbstractNode;
 
 class BrandingManagerImpl implements BrandingManager
@@ -110,7 +95,7 @@ class BrandingManagerImpl implements BrandingManager
         if (nm == null) /* happens on shutdown */
             return null;
         BrandingManager bnode = (BrandingManager)nm.node("untangle-node-branding");
-        if (bnode != null && (((AbstractNode)bnode).getRunState() == NodeState.RUNNING)) {
+        if (bnode != null && (((AbstractNode)bnode).getRunState() == NodeSettings.NodeState.RUNNING)) {
             return bnode;
         }
 

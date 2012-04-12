@@ -220,7 +220,7 @@ public class HttpRequestEvent extends LogEvent
             getSessionEvent().getSClientPort() + "," +
             "'" + getSessionEvent().getSServerAddr().getHostAddress() + "'" + "," +
             getSessionEvent().getSServerPort() + "," +
-            getSessionEvent().getPolicy().getId() + "," +
+            getSessionEvent().getPolicyId() + "," +
             "'" + (getSessionEvent().getUsername() == null ? "" : getSessionEvent().getUsername()) + "'" + "," +
             getRequestId()  + "," + 
             "'" + Character.toString(getMethod().getKey()) + "'" + "," +

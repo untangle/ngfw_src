@@ -106,12 +106,12 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
 
         MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeId());
+        Counters c = lmm.getCounters(getNodeSettings().getId());
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Pages scanned"), null, I18nUtil.marktr("SCAN"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Pages blocked"), null, I18nUtil.marktr("BLOCK"));
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Pages passed"), null, I18nUtil.marktr("PASS"));
         passLogBlinger = c.addMetric("log", I18nUtil.marktr("Passed by policy"), null);
-        lmm.setActiveMetricsIfNotSet(getNodeId(), scanBlinger, blockBlinger, passBlinger, passLogBlinger);
+        lmm.setActiveMetrics(getNodeSettings().getId(), scanBlinger, blockBlinger, passBlinger, passLogBlinger);
 
         unblockedSitesMonitor = new UnblockedSitesMonitor(this);
     }
@@ -295,7 +295,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     public void initializeCommonSettings( WebFilterSettings settings )
     {
         if (logger.isDebugEnabled()) {
-            logger.debug(getNodeId() + " init settings");
+            logger.debug(getNodeSettings() + " init settings");
         }
 
         settings.setBlockedExtensions(_buildDefaultFileExtensionList());
@@ -325,7 +325,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
 
     protected WebFilterReplacementGenerator buildReplacementGenerator()
     {
-        return new WebFilterReplacementGenerator(getNodeId());
+        return new WebFilterReplacementGenerator(getNodeSettings());
     }
 
     @Override
@@ -335,10 +335,10 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     }
 
     @Override
-    protected void postInit(String[] args)
+    protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         WebFilterSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getName() + "/" + "settings_" + nodeID;
         
@@ -405,7 +405,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     }
 
     @Override
-    protected void preStart() throws Exception
+    protected void preStart()
     {
         getDecisionEngine().removeAllUnblockedSites();
         unblockedSitesMonitor.start();
@@ -521,7 +521,7 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         try {
             settingsManager.save(WebFilterSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-" + this.getName() + "/" + "settings_" + nodeID, newSettings);
         } catch (SettingsManager.SettingsException e) {

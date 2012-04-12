@@ -19,11 +19,11 @@ import com.untangle.jvector.Crumb;
 import com.untangle.jvector.DataCrumb;
 import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
+import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.argon.PipelineListener;
 import com.untangle.uvm.argon.ArgonIPSession;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPSession;
@@ -216,7 +216,7 @@ abstract class IPSessionImpl
     public void complete()
     {
         Node xform = argonConnector().node();
-        if (xform.getRunState() != NodeState.RUNNING) {
+        if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: complete(in) for node in state " + xform.getRunState();
             logger.warn(message);
             // killSession(message);
@@ -244,7 +244,7 @@ abstract class IPSessionImpl
     public void raze()
     {
         Node xform = argonConnector().node();
-        if (xform.getRunState() != NodeState.RUNNING) {
+        if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: raze for node in state " + xform.getRunState();
             logger.warn(message);
             // No need to kill the session, it's already dead.
@@ -285,7 +285,7 @@ abstract class IPSessionImpl
     public void clientEvent(IncomingSocketQueue in)
     {
         Node xform = argonConnector().node();
-        if (xform.getRunState() != NodeState.RUNNING) {
+        if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: clientEvent(in) for node in state " + xform.getRunState();
             logger.warn(message);
             killSession(message);
@@ -304,7 +304,7 @@ abstract class IPSessionImpl
     public void serverEvent(IncomingSocketQueue in)
     {
         Node xform = argonConnector().node();
-        if (xform.getRunState() != NodeState.RUNNING) {
+        if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: serverEvent(in) for node in state " + xform.getRunState();
             logger.warn(message);
             killSession(message);
@@ -323,7 +323,7 @@ abstract class IPSessionImpl
     public void clientEvent(OutgoingSocketQueue out)
     {
         Node xform = argonConnector().node();
-        if (xform.getRunState() != NodeState.RUNNING) {
+        if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: clientEvent(out) for node in state " + xform.getRunState();
             logger.warn(message);
             killSession(message);
@@ -342,7 +342,7 @@ abstract class IPSessionImpl
     public void serverEvent(OutgoingSocketQueue out)
     {
         Node xform = argonConnector().node();
-        if (xform.getRunState() != NodeState.RUNNING) {
+        if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: serverEvent(out) for node in state " + xform.getRunState();
             logger.warn(message);
             killSession(message);
@@ -364,7 +364,7 @@ abstract class IPSessionImpl
     public void clientOutputResetEvent(OutgoingSocketQueue out)
     {
         Node xform = argonConnector().node();
-        if (xform.getRunState() != NodeState.RUNNING) {
+        if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: output reset(client) for node in state " + xform.getRunState();
             logger.warn(message);
             // killSession(message);
@@ -398,7 +398,7 @@ abstract class IPSessionImpl
     public void serverOutputResetEvent(OutgoingSocketQueue out)
     {
         Node xform = argonConnector().node();
-        if (xform.getRunState() != NodeState.RUNNING) {
+        if (xform.getRunState() != NodeSettings.NodeState.RUNNING) {
             String message = "killing: output reset(server) for node in state " + xform.getRunState();
             logger.warn(message);
             // killSession(message);

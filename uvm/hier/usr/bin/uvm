@@ -129,9 +129,6 @@ def prepareSystem():
 
     os.unsetenv('DISPLAY');
 
-    #if ( lspci | grep -qi VMWare ) then
-    #JAVA_OPTS="-Dcom.untangle.isInsideVM=true $JAVA_OPTS"
-        
     fdlimit=1024
     for i in range(13):
         try:

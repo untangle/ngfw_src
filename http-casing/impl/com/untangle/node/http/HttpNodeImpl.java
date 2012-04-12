@@ -38,7 +38,7 @@ public class HttpNodeImpl extends AbstractNode implements HttpNode
 
     public void setHttpSettings(final HttpSettings settings)
     {
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-http/settings_" + nodeID;
         String settingsFile = settingsName + ".js";
 
@@ -65,9 +65,9 @@ public class HttpNodeImpl extends AbstractNode implements HttpNode
         }
     }
 
-    protected void postInit(String[] args)
+    protected void postInit()
     {
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-casing-http/settings_" + nodeID;
         String settingsFile = settingsName + ".js";
 

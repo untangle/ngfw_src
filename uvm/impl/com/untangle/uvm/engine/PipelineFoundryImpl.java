@@ -20,17 +20,13 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.argon.ArgonAgent;
 import com.untangle.uvm.argon.ArgonIPSessionDesc;
-import com.untangle.uvm.argon.PipelineDesc;
 import com.untangle.uvm.argon.SessionEndpoints;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.SessionStatsEvent;
-import com.untangle.uvm.policy.PolicyManager;
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.policy.PolicyRule;
-import com.untangle.uvm.policy.UserPolicyRule;
+import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.ArgonConnector;
@@ -42,9 +38,6 @@ import com.untangle.uvm.vnet.event.SessionEventListener;
 
 /**
  * Implements PipelineFoundry.
- * 
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class PipelineFoundryImpl implements PipelineFoundry
 {
@@ -60,9 +53,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     private final Map<Long, PipelineImpl> pipelines = new ConcurrentHashMap<Long, PipelineImpl>();
 
-    // These don't need to be concurrent and being able to use a null key
-    // is currently useful for the null policy.
-    private static final Map<Policy, Map<Fitting, List<ArgonConnectorFitting>>> chains = new HashMap<Policy, Map<Fitting, List<ArgonConnectorFitting>>>();
+    /**
+     * This stores a map from policyId to something XXX
+     */
+    private static final Map<Long, Map<Fitting, List<ArgonConnectorFitting>>> chains = new HashMap<Long, Map<Fitting, List<ArgonConnectorFitting>>>();
     
     private PipelineFoundryImpl() {}
 
@@ -71,15 +65,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return PIPELINE_FOUNDRY_IMPL;
     }
 
-    public PipelineDesc weld(IPSessionDesc sessionDesc)
+    public List<ArgonAgent> weld(IPSessionDesc sessionDesc, Long policyId)
     {
         Long t0 = System.nanoTime();
-
-        PolicyRule pr = selectPolicy(sessionDesc);
-        if (pr == null) {
-            logger.error("No policy rule found for session " + sessionDesc);
-        }
-        Policy policy = null == pr ? null : pr.getPolicy();
 
         InetAddress sAddr = sessionDesc.serverAddr();
         int sPort = sessionDesc.serverPort();
@@ -121,7 +109,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         }
 
         long ct0 = System.nanoTime();
-        List<ArgonConnectorFitting> chain = makeChain(sessionDesc, policy, start);
+        List<ArgonConnectorFitting> chain = makeChain(sessionDesc, policyId, start);
         long ct1 = System.nanoTime();
 
         // filter list
@@ -166,7 +154,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         Long t1 = System.nanoTime();
         if (logger.isDebugEnabled()) {
             logger.debug("session_id: " + sessionDesc.id() +
-                         " policy: " + policy + " " +
+                         " policyId: " + policyId + " " +
                          nodeList );
             logger.debug("session_id: " + sessionDesc.id() +
                          " pipe in " + (t1 - t0) +
@@ -175,10 +163,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
                          " chain: " + acFittingList);
         }
 
-        return new PipelineDesc(pr, argonAgentList);
+        return argonAgentList;
     }
 
-    public SessionEvent createInitialEndpoints(IPSessionDesc start, String username, String hostname)
+    public SessionEvent createInitialSessionEvent(IPSessionDesc start, String username, String hostname)
     {
         return new SessionEvent(start, username, hostname);
     }
@@ -291,24 +279,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return new LinkedList<PipelineImpl>(this.pipelines.values());
     }
     
-    protected PolicyRule selectPolicy(IPSessionDesc sd)
-    {
-        UvmContextImpl upi = UvmContextImpl.getInstance();
-        PolicyManager pmi = upi.policyManager();
-        UserPolicyRule[] userRules = pmi.getUserRules();
-
-        for (UserPolicyRule upr : userRules) {
-            if (upr.matches(sd)) {
-                return upr;
-            }
-        }
-
-        return pmi.getDefaultPolicyRule();
-    }
-
     // private methods --------------------------------------------------------
 
-    private List<ArgonConnectorFitting> makeChain(IPSessionDesc sd, Policy p, Fitting start)
+    private List<ArgonConnectorFitting> makeChain(IPSessionDesc sessionDesc, Long policyId, Fitting start)
     {
         List<ArgonConnectorFitting> argonConnectorFittings = null;
 
@@ -316,7 +289,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
          * Check if there is a cache for this policy. First time is without the
          * lock
          */
-        Map<Fitting, List<ArgonConnectorFitting>> fcs = chains.get(p);
+        Map<Fitting, List<ArgonConnectorFitting>> fcs = chains.get(policyId);
 
         /* If there is a cache, check if the chain exists for this fitting */
         if (null != fcs) {
@@ -326,12 +299,12 @@ public class PipelineFoundryImpl implements PipelineFoundry
         if (null == argonConnectorFittings) {
             synchronized (this) {
                 /* Check if there is a cache again, after grabbing the lock */
-                fcs = chains.get(p);
+                fcs = chains.get(policyId);
 
                 if (null == fcs) {
                     /* Cache doesn't exist, create a new one */
                     fcs = new HashMap<Fitting, List<ArgonConnectorFitting>>();
-                    chains.put(p, fcs);
+                    chains.put(policyId, fcs);
                 } else {
                     /* Cache exists, get the chain for this fitting */
                     argonConnectorFittings = fcs.get(start);
@@ -342,26 +315,25 @@ public class PipelineFoundryImpl implements PipelineFoundry
                      * Chain hasn't been created, create a list of available
                      * casings
                      */
-                    Map<ArgonConnector, ArgonConnector> availCasings = new HashMap<ArgonConnector, ArgonConnector>(
-                            casings);
+                    Map<ArgonConnector, ArgonConnector> availCasings = new HashMap<ArgonConnector, ArgonConnector>(casings);
 
                     /*
                      * Chain hasn't been created, create a list of available
                      * nodes argonConnectors is ordered so iterating the list of argonConnectors
                      * will insert them in the correct order
                      */
-                    Map<Fitting, List<ArgonConnector>> availArgonConnectors = new HashMap<Fitting, List<ArgonConnector>>(
-                            argonConnectors);
+                    Map<Fitting, List<ArgonConnector>> availArgonConnectors = new HashMap<Fitting, List<ArgonConnector>>( argonConnectors );
 
                     int s = availCasings.size() + availArgonConnectors.size();
                     argonConnectorFittings = new ArrayList<ArgonConnectorFitting>(s);
 
                     /* Weld together the nodes and the casings */
-                    weld(argonConnectorFittings, start, p, availArgonConnectors, availCasings);
+                    weld( argonConnectorFittings, start, policyId, availArgonConnectors, availCasings );
                     
-                    removeDuplicates(p, argonConnectorFittings);
 
-                    fcs.put(start, argonConnectorFittings);
+                    removeDuplicates( policyId, argonConnectorFittings );
+
+                    fcs.put( start, argonConnectorFittings );
                 }
             }
         }
@@ -369,29 +341,25 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return argonConnectorFittings;
     }
 
-    private void weld(List<ArgonConnectorFitting> argonConnectorFittings, Fitting start,
-            Policy p, Map<Fitting, List<ArgonConnector>> availArgonConnectors,
-            Map<ArgonConnector, ArgonConnector> availCasings)
+    private void weld( List<ArgonConnectorFitting> argonConnectorFittings, Fitting start,
+                       Long policyId, Map<Fitting, List<ArgonConnector>> availArgonConnectors,
+                       Map<ArgonConnector, ArgonConnector> availCasings)
     {
-        weldArgonConnectors(argonConnectorFittings, start, p, availArgonConnectors, availCasings);
-        weldCasings(argonConnectorFittings, start, p, availArgonConnectors, availCasings);
+        weldArgonConnectors(argonConnectorFittings, start, policyId, availArgonConnectors, availCasings);
+        weldCasings(argonConnectorFittings, start, policyId, availArgonConnectors, availCasings);
     }
 
     private boolean weldArgonConnectors(List<ArgonConnectorFitting> argonConnectorFittings, Fitting start,
-            Policy p, Map<Fitting, List<ArgonConnector>> availArgonConnectors,
-            Map<ArgonConnector, ArgonConnector> availCasings)
+                                        Long policyId, Map<Fitting, List<ArgonConnector>> availArgonConnectors,
+                                        Map<ArgonConnector, ArgonConnector> availCasings)
     {
-        UvmContextImpl upi = UvmContextImpl.getInstance();
-        PolicyManager pmi = upi.policyManager();
-
         boolean welded = false;
 
         boolean tryAgain;
         do {
             tryAgain = false;
             /* Iterate the Map Fittings to available Nodes */
-            for (Iterator<Fitting> i = availArgonConnectors.keySet().iterator(); i
-                    .hasNext();) {
+            for (Iterator<Fitting> i = availArgonConnectors.keySet().iterator(); i.hasNext();) {
                 Fitting f = i.next();
                 if (start.instanceOf(f)) {
                     /*
@@ -406,13 +374,11 @@ public class PipelineFoundryImpl implements PipelineFoundry
                     for (Iterator<ArgonConnector> j = l.iterator(); j.hasNext();) {
                         ArgonConnector argonConnector = j.next();
                         if (null == argonConnector) {
-                            boolean w = weldCasings(argonConnectorFittings, start, p,
-                                    availArgonConnectors, availCasings);
+                            boolean w = weldCasings(argonConnectorFittings, start, policyId, availArgonConnectors, availCasings);
                             if (w) {
                                 welded = true;
                             }
-                        } else if (pmi.matchesPolicy(argonConnector.getPipeSpec()
-                                .getNode(), p)) {
+                        } else if (policyMatch(argonConnector.getPipeSpec().getNode().getPolicyId(), policyId)) {
                             ArgonConnectorFitting acFitting = new ArgonConnectorFitting(argonConnector, start);
                             boolean w = argonConnectorFittings.add(acFitting);
                             if (w) {
@@ -429,38 +395,31 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return welded;
     }
 
-    private boolean weldCasings(List<ArgonConnectorFitting> argonConnectorFittings,
-            Fitting start, Policy p, Map<Fitting, List<ArgonConnector>> availArgonConnectors,
-            Map<ArgonConnector, ArgonConnector> availCasings)
+    private boolean weldCasings(List<ArgonConnectorFitting> argonConnectorFittings, Fitting start,
+                                Long policyId, Map<Fitting, List<ArgonConnector>> availArgonConnectors,
+                                Map<ArgonConnector, ArgonConnector> availCasings)
     {
-        UvmContextImpl upi = UvmContextImpl.getInstance();
-        PolicyManager pmi = upi.policyManager();
-
         boolean welded = false;
 
         boolean tryAgain;
         do {
             tryAgain = false;
-            for (Iterator<ArgonConnector> i = availCasings.keySet().iterator(); i
-                    .hasNext();) {
+            for (Iterator<ArgonConnector> i = availCasings.keySet().iterator(); i.hasNext();) {
                 ArgonConnector insideArgonConnector = i.next();
                 CasingPipeSpec ps = (CasingPipeSpec) insideArgonConnector.getPipeSpec();
                 Fitting f = ps.getInput();
 
-                if (!pmi.matchesPolicy(ps.getNode(), p)) {
+                if (!policyMatch(ps.getNode().getPolicyId(), policyId)) {
                     i.remove();
                 } else if (start.instanceOf(f)) {
                     ArgonConnector outsideArgonConnector = availCasings.get(insideArgonConnector);
                     i.remove();
                     int s = argonConnectorFittings.size();
-                    argonConnectorFittings.add(new ArgonConnectorFitting(insideArgonConnector, start,
-                            outsideArgonConnector));
-                    CasingPipeSpec cps = (CasingPipeSpec) insideArgonConnector
-                            .getPipeSpec();
+                    argonConnectorFittings.add(new ArgonConnectorFitting(insideArgonConnector, start, outsideArgonConnector));
+                    CasingPipeSpec cps = (CasingPipeSpec) insideArgonConnector.getPipeSpec();
                     Fitting insideFitting = cps.getOutput();
 
-                    boolean w = weldArgonConnectors(argonConnectorFittings, insideFitting, p,
-                            availArgonConnectors, availCasings);
+                    boolean w = weldArgonConnectors(argonConnectorFittings, insideFitting, policyId, availArgonConnectors, availCasings);
 
                     if (w) {
                         welded = true;
@@ -487,12 +446,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
         chains.clear();
     }
     
-    private void removeDuplicates(Policy policy, List<ArgonConnectorFitting> chain)
+    private void removeDuplicates(Long policyId, List<ArgonConnectorFitting> chain)
     {
-        PolicyManager pmi = UvmContextFactory.context().policyManager();
-        NodeManager nodeManager = UvmContextFactory.context().nodeManager();
-
-        Set<String> enabledNodes = nodeManager.getEnabledNodes(policy);
+        Set<String> enabledNodes = UvmContextFactory.context().nodeManager().getEnabledNodes(policyId);
 
         Map<String, Integer> numParents = new HashMap<String, Integer>();
         Map<ArgonConnectorFitting, Integer> fittingDistance = new HashMap<ArgonConnectorFitting, Integer>();
@@ -500,9 +456,9 @@ public class PipelineFoundryImpl implements PipelineFoundry
         for (Iterator<ArgonConnectorFitting> i = chain.iterator(); i.hasNext();) {
             ArgonConnectorFitting acFitting = i.next();
 
-            Policy nodePolicy = acFitting.argonConnector.node().getNodeId().getPolicy();
+            Long nodePolicyId = acFitting.argonConnector.node().getNodeSettings().getPolicyId();
 
-            if (nodePolicy == null) {
+            if (nodePolicyId == null) {
                 continue;
             }
 
@@ -514,12 +470,11 @@ public class PipelineFoundryImpl implements PipelineFoundry
             }
 
             Integer n = numParents.get(nodeName);
-            int distance = pmi.getNumParents(policy, nodePolicy);
+            int distance = getPolicyGenerationDiff(policyId, nodePolicyId);
 
             if (distance < 0) {
                 /* Removing nodes that are not in this policy */
-                logger.info("The policy " + policy.getName()
-                        + " is not a child of " + nodePolicy.getName());
+                logger.info("The policy " + policyId + " is not a child of " + nodePolicyId);
                 i.remove();
                 continue;
             }
@@ -549,10 +504,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
         for (Iterator<ArgonConnectorFitting> i = chain.iterator(); i.hasNext();) {
             ArgonConnectorFitting acFitting = i.next();
 
-            Policy nodePolicy = acFitting.argonConnector.node().getNodeId().getPolicy();
+            Long nodePolicyId = acFitting.argonConnector.node().getNodeSettings().getPolicyId();
 
             /* Keep items in the NULL Racks */
-            if (nodePolicy == null) {
+            if (nodePolicyId == null) {
                 continue;
             }
 
@@ -561,27 +516,58 @@ public class PipelineFoundryImpl implements PipelineFoundry
             Integer n = numParents.get(nodeName);
 
             if (n == null) {
-                logger
-                        .info("Programming error, numParents null for non-null policy.");
+                logger.info("Programming error, numParents null for non-null policy.");
                 continue;
             }
 
             Integer distance = fittingDistance.get(acFitting);
 
             if (distance == null) {
-                logger
-                        .info("Programming error, distance null for a fitting.");
+                logger.info("Programming error, distance null for a fitting.");
                 continue;
             }
 
             if (distance > n) {
                 i.remove();
             } else if (distance < n) {
-                logger
-                        .info("Programming error, numParents missing minimum value");
+                logger.info("Programming error, numParents missing minimum value");
             }
         }
 
     }
-    
+
+    public int getPolicyGenerationDiff(Long childId, Long parentId)
+    {
+        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
+
+        if ( policyManager != null )
+            return policyManager.getPolicyGenerationDiff( childId, parentId );
+
+        if ( childId == null ) {
+            return 0;
+        }
+        
+        if ( childId.equals( parentId ) ) {
+            return 0;
+        }
+        
+        return -1;
+    }
+
+    private boolean policyMatch(Long nodePolicy, Long policyId)
+    {
+        /**
+         * If nodePolicy is null its a service so it matches all policies
+         */
+        if ( nodePolicy == null )
+            return true;
+
+        /**
+         * Otherwise test for equality
+         */
+        if ( nodePolicy == null || policyId == null )
+            return (nodePolicy == policyId);
+        else
+            return nodePolicy.equals(policyId);
+    }
 }

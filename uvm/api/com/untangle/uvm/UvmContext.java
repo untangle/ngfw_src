@@ -19,12 +19,11 @@ import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.LicenseManager;
-import com.untangle.uvm.policy.PolicyManager;
+import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.reports.ReportingManager;
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.servlet.UploadManager;
 import com.untangle.uvm.toolbox.ToolboxManager;
-import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.PipelineFoundry;
 import com.untangle.uvm.LocalTomcatManager;
@@ -54,13 +53,6 @@ public interface UvmContext
      * @return the LoggingManager.
      */
     LoggingManager loggingManager();
-
-    /**
-     * Get the <code>PolicyManager</code> singleton.
-     *
-     * @return the PolicyManager.
-     */
-    PolicyManager policyManager();
 
     /**
      * Get the <code>AdminManager</code> singleton.
@@ -276,14 +268,6 @@ public interface UvmContext
      * @return a <code>boolean</code> true if in development.
      */
     boolean isDevel();
-
-    /**
-     * Return true if running inside a Virtualized Platform (like VMWare)
-     *
-     * @return a <code>boolean</code> true if platform is running in a
-     * virtualized machine
-     */
-    boolean isInsideVM();
 
     /**
      * Create a backup which the client can save to a local disk.  The

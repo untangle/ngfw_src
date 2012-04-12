@@ -35,7 +35,7 @@ public class TemplateImpl extends AbstractNode implements Template
     {
         logger.info("Initializing Settings...");
         
-        TemplateSettings settings = new TemplateSettings(this.getNodeId());
+        TemplateSettings settings = new TemplateSettings(this.getNodeSettings());
          
         try {
             setTemplateSettings(settings);
@@ -145,14 +145,13 @@ public class TemplateImpl extends AbstractNode implements Template
     
     /**
      * Load the settings from the database.  This is called when the machine starts up.
-     * @param args
      */
-    protected void postInit(final String[] args)
+    protected void postInit()
     {
         TransactionWork<Object> tw = new TransactionWork<Object>() {
             public boolean doWork(Session s) {
                 Query q = s.createQuery("from TemplateSettings cs where cs.nodeId = :nodeId");
-                q.setParameter("nodeId", getNodeId());
+                q.setParameter("nodeId", getNodeSettings());
 
                 TemplateImpl.this.settings = (TemplateSettings) q.uniqueResult();
                 return true;

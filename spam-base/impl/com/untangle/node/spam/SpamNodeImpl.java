@@ -116,14 +116,14 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
                                                   "ORDER BY evt.timeStamp DESC");
         
         MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeId());
+        Counters c = lmm.getCounters(getNodeSettings().getId());
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Messages passed"), null, I18nUtil.marktr("PASS"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Messages dropped"), null, I18nUtil.marktr("DROP"));
         markBlinger = c.addActivity("mark", I18nUtil.marktr("Messages marked"), null, I18nUtil.marktr("MARK"));
         quarantineBlinger = c.addActivity("quarantine", I18nUtil.marktr("Messages quarantined"), null, I18nUtil.marktr("QUARANTINE"));
         spamDetectedBlinger = c.addMetric("spam", I18nUtil.marktr("Spam detected"), null);
         emailReceivedBlinger = c.addMetric("email", I18nUtil.marktr("Messages received"), null);
-        lmm.setActiveMetricsIfNotSet(getNodeId(), passBlinger, blockBlinger, markBlinger, quarantineBlinger);
+        lmm.setActiveMetrics(getNodeSettings().getId(), passBlinger, blockBlinger, markBlinger, quarantineBlinger);
     }
 
     public EventLogQuery[] getEventQueries()
@@ -316,7 +316,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
     }
 
     @Override
-    protected void preInit(String args[])
+    protected void preInit()
     {
         initializeSettings();
         initSpamDnsblList(spamSettings);

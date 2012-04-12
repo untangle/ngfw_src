@@ -5,15 +5,15 @@ package com.untangle.uvm.message;
 
 import com.untangle.uvm.message.Message;
 import com.untangle.uvm.node.NodeDesc;
-import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.NodeSettings;
 
 @SuppressWarnings("serial")
 public class NodeStateChange extends Message
 {
     private final NodeDesc nodeDesc;
-    private final NodeState nodeState;
+    private final NodeSettings.NodeState nodeState;
 
-    public NodeStateChange(NodeDesc nodeDesc, NodeState nodeState)
+    public NodeStateChange(NodeDesc nodeDesc, NodeSettings.NodeState nodeState)
     {
         this.nodeDesc = nodeDesc;
         this.nodeState = nodeState;
@@ -24,7 +24,7 @@ public class NodeStateChange extends Message
         return nodeDesc;
     }
 
-    public NodeState getNodeState()
+    public NodeSettings.NodeState getNodeState()
     {
         return nodeState;
     }

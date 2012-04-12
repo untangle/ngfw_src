@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.SessionMonitorEntry;
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 
 public interface SessionMonitor
 {
@@ -15,7 +15,7 @@ public interface SessionMonitor
     /**
      * This returns a list of descriptors for a certain node
      */
-    public List<VnetSessionDesc> getNodeSessions(NodeId id);
+    public List<VnetSessionDesc> getNodeSessions(NodeSettings id);
 
     /**
      * This returns a list of descriptors for all sessions in the conntrack table

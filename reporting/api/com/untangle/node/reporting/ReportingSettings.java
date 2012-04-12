@@ -16,7 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.untangle.uvm.node.IPMaskedAddressDirectory;
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 
 /**
  * Settings for the Reporting Node.
@@ -30,7 +30,7 @@ import com.untangle.uvm.security.NodeId;
 public class ReportingSettings implements Serializable
 {
     private Long id;
-    private NodeId tid;
+    private Long nodeId;
 
     private IPMaskedAddressDirectory networkDirectory = new IPMaskedAddressDirectory();
     private Integer dbRetention = 7; // days
@@ -65,16 +65,15 @@ public class ReportingSettings implements Serializable
      *
      * @return tid for these settings
      */
-    @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="tid", nullable=false)
-    public NodeId getNodeId()
+    @Column(name="tid", nullable=false)
+    public Long getNodeId()
     {
-        return tid;
+        return nodeId;
     }
 
-    public void setNodeId(NodeId tid)
+    public void setNodeId(Long nodeId)
     {
-        this.tid = tid;
+        this.nodeId = nodeId;
     }
 
     /**

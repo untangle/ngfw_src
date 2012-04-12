@@ -24,14 +24,11 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.engine.PipelineFoundryImpl;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.vnet.Session;
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.policy.PolicyRule;
 import com.untangle.uvm.node.DirectoryConnector;
 import com.untangle.uvm.node.HostnameLookup;
 import com.untangle.uvm.networking.InterfaceConfiguration;
-import com.untangle.uvm.security.NodeId;
-
 
 /**
  * Helper class for the IP session hooks.
@@ -47,8 +44,9 @@ public abstract class ArgonHook implements Runnable
     /**
      * List of all of the nodes( ArgonAgents )
      */
-    protected PipelineDesc pipelineDesc;
     protected List<ArgonAgent> pipelineAgents;
+    protected Long policyId = null;
+
     protected List<ArgonSession> sessionList = new ArrayList<ArgonSession>();
     protected List<ArgonSession> releasedSessionList = new ArrayList<ArgonSession>();
 
@@ -64,12 +62,8 @@ public abstract class ArgonHook implements Runnable
     protected ArgonIPSessionDesc clientSide = null;
     protected ArgonIPSessionDesc serverSide = null;
 
-    protected Policy policy = null;
-
     protected static final PipelineFoundryImpl pipelineFoundry = (PipelineFoundryImpl)UvmContextFactory.context().pipelineFoundry();
     
-    private static final NodeId TOTALS = new NodeId(0l);
-
     /**
      * State of the session
      */
@@ -83,7 +77,7 @@ public abstract class ArgonHook implements Runnable
     {
         long start = 0;
 
-        SessionEvent endpoints = null;
+        SessionEvent sessionEvent = null;
         try {
             ClassLoader cl = getClass().getClassLoader();
             Thread.currentThread().setContextClassLoader(cl);
@@ -170,22 +164,31 @@ public abstract class ArgonHook implements Runnable
                 sessionGlobalState.attach( Session.KEY_PLATFORM_HOSTNAME, hostname );
             }
             
-            pipelineDesc = pipelineFoundry.weld( clientSide );
-            pipelineAgents = pipelineDesc.getAgents();
+            /* FIXME */
+            PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
+            if (policyManager != null) {
+                this.policyId  = policyManager.findPolicyId( clientSide );
+                /* FIXME */
+            } else {
+                this.policyId = 1L; /* Default Policy */
+            }
+            /* FIXME */
 
-            /* Create the (fake) endpoints early so they can be
+            pipelineAgents = pipelineFoundry.weld( clientSide, policyId );
+
+            /* Create the (fake) sessionEvent early so they can be
              * available at request time. */
-            endpoints = pipelineFoundry.createInitialEndpoints(clientSide, username, hostname);
+            sessionEvent = pipelineFoundry.createInitialSessionEvent(clientSide, username, hostname);
 
             /* Initialize all of the nodes, sending the request events
              * to each in turn */
-            initNodes( endpoints );
+            initNodes( sessionEvent );
 
             /* Connect to the server */
             boolean serverActionCompleted = connectServer();
 
             /* Now generate the server side since the nodes may have
-             * modified the endpoints (we can't do it until we connect
+             * modified the sessionEvent (we can't do it until we connect
              * to the server since that is what actually modifies the
              * session global state. */
             serverSide = new NetcapIPSessionDescImpl( sessionGlobalState, false );
@@ -194,15 +197,13 @@ public abstract class ArgonHook implements Runnable
             boolean clientActionCompleted = connectClient();
 
             if (serverActionCompleted && clientActionCompleted) {
-                PolicyRule pr = pipelineDesc.getPolicyRule();
-                endpoints.completeEndpoints(clientSide, serverSide, pr.getPolicy());
-                this.policy = pr.getPolicy();
-                pipelineFoundry.registerEndpoints(endpoints);
+                sessionEvent.completeEndpoints(clientSide, serverSide, policyId);
+                pipelineFoundry.registerEndpoints(sessionEvent);
             } else {
-                // Null them out here so we don't log the pl_stats below.
-                endpoints = null;
+                // Null them out here so we don't log the event below.
+                sessionEvent = null;
             }
-
+            
             /* Remove all non-vectored sessions, it is non-efficient
              * to iterate the session list twice, but the list is
              * typically small and this logic may get very complex
@@ -217,7 +218,7 @@ public abstract class ArgonHook implements Runnable
                 }
 
                 // Complete (if we completed both server and client)
-                if (endpoints != null) ((ArgonSessionImpl)session).complete();
+                if (sessionEvent != null) ((ArgonSessionImpl)session).complete();
             }
 
             /* Only start vectoring if the session is alive */
@@ -277,11 +278,11 @@ public abstract class ArgonHook implements Runnable
         try {
             /* Let the pipeline foundry know */
             if (clientSide != null) {
-                /* Don't log endpoints that don't complete properly */
-                if (( endpoints != null ) && ( endpoints.getCClientAddr() == null ))
-                    endpoints = null;
+                /* Don't log sessionEvent that don't complete properly */
+                if (( sessionEvent != null ) && ( sessionEvent.getCClientAddr() == null ))
+                    sessionEvent = null;
                 /* log and destroy the session */
-                pipelineFoundry.destroy(clientSide, serverSide, endpoints);
+                pipelineFoundry.destroy(clientSide, serverSide, sessionEvent);
             }
 
             /* Remove the vector from the vectron table */
@@ -306,11 +307,6 @@ public abstract class ArgonHook implements Runnable
         }
     }
 
-    public Policy getPolicy()
-    {
-        return this.policy;
-    }
-
     public ArgonIPSessionDesc getClientSide()
     {
         return this.clientSide;
@@ -319,6 +315,11 @@ public abstract class ArgonHook implements Runnable
     public ArgonIPSessionDesc getServerSide()
     {
         return this.serverSide;
+    }
+
+    public Long getPolicyId()
+    {
+        return this.policyId;
     }
     
     /**
@@ -443,7 +444,7 @@ public abstract class ArgonHook implements Runnable
                 ArgonSession session = iter.next();
 
                 if ( first ) {
-                    /* First one, link in the client endpoints */
+                    /* First one, link in the client sessionEvent */
                     clientSource = makeClientSource();
                     clientSink   = makeClientSink();
 
@@ -548,7 +549,7 @@ public abstract class ArgonHook implements Runnable
     /**
      * Call finalize on each node session that participates in this
      * session, also raze all of the sinks associated with the
-     * endpoints.  This is just an extra precaution just in case they
+     * sessionEvent.  This is just an extra precaution just in case they
      * were not razed by the pipeline.
      */
     private void razeSessions()

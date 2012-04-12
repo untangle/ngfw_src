@@ -23,7 +23,7 @@ public class SpamAssassinNode extends SpamNodeImpl
     private void readNodeSettings()
     {
         SettingsManager setman = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-spamassassin/settings_" + nodeID;
         String settingsFile = settingsBase + ".js";
         SpamSettings readSettings = null;
@@ -84,7 +84,7 @@ public class SpamAssassinNode extends SpamNodeImpl
     private void writeNodeSettings(SpamSettings argSettings)
     {
         SettingsManager setman = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         String settingsBase = System.getProperty("uvm.settings.dir") + "/untangle-node-spamassassin/settings_" + nodeID;
 
         try {
@@ -104,7 +104,7 @@ public class SpamAssassinNode extends SpamNodeImpl
     }
     
     @Override
-    protected void preInit(String args[])
+    protected void preInit()
     {
         readNodeSettings();
         SpamSettings ps = getSettings();

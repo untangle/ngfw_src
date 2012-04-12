@@ -56,8 +56,6 @@ import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.networking.NetworkManagerImpl;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.policy.PolicyManager;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.UploadManager;
@@ -88,7 +86,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String WIZARD_COMPLETE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/wizard-complete-flag";
 
     private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel"; /* devel Env */
-    private static final String PROPERTY_IS_INSIDE_VM = "com.untangle.isInsideVM"; /* vmWare */
 
     private static final String FACTORY_DEFAULT_FLAG = System.getProperty("uvm.conf.dir") + "/factory-defaults";
     
@@ -103,7 +100,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private ArgonManagerImpl argonManager;
     private LoggingManagerImpl loggingManager;
     private SyslogManagerImpl syslogManager;
-    private DefaultPolicyManager defaultPolicyManager;
     private MailSenderImpl mailSender;
     private NetworkManagerImpl networkManager;
     private ReportingManagerImpl reportingManager;
@@ -212,16 +208,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public SyslogManagerImpl syslogManager()
     {
         return this.syslogManager;
-    }
-
-    public PolicyManager policyManager()
-    {
-        PolicyManager pm = (PolicyManager)this.nodeManager().node("untangle-node-policy");
-
-        if (pm == null)
-            return this.defaultPolicyManager;
-        else
-            return pm;
     }
 
     public MailSenderImpl mailSender()
@@ -473,11 +459,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return Boolean.getBoolean(PROPERTY_IS_DEVEL);
     }
 
-    public boolean isInsideVM()
-    {
-        return Boolean.getBoolean(PROPERTY_IS_INSIDE_VM);
-    }
-
     public void wizardComplete()
     {
         File wizardCompleteFlagFile = new File(WIZARD_COMPLETE_FLAG_FILE);
@@ -617,8 +598,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.defaultLicenseManager = new DefaultLicenseManagerImpl();
 
         this.mailSender = MailSenderImpl.mailSender();
-
-        this.defaultPolicyManager = new DefaultPolicyManager();
 
         this.toolboxManager = ToolboxManagerImpl.toolboxManager();
         this.toolboxManager.start();
@@ -1035,7 +1014,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.addAnnotatedClass("com.untangle.uvm.SkinSettings");
         this.addAnnotatedClass("com.untangle.uvm.AdminSettings");
         this.addAnnotatedClass("com.untangle.uvm.User");
-        this.addAnnotatedClass("com.untangle.uvm.message.ActiveStat");
         this.addAnnotatedClass("com.untangle.uvm.logging.LoggingSettings");
         this.addAnnotatedClass("com.untangle.uvm.logging.SessionLogEventFromReports");
         this.addAnnotatedClass("com.untangle.uvm.logging.HttpLogEventFromReports");
@@ -1048,22 +1026,13 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.addAnnotatedClass("com.untangle.uvm.node.IPMaskedAddressDirectory");
         this.addAnnotatedClass("com.untangle.uvm.node.IPMaskedAddressRule");
         this.addAnnotatedClass("com.untangle.uvm.node.MimeTypeRule");
-        this.addAnnotatedClass("com.untangle.uvm.node.NodePreferences");
         this.addAnnotatedClass("com.untangle.uvm.node.StringRule");
-        this.addAnnotatedClass("com.untangle.uvm.policy.Policy");
-        this.addAnnotatedClass("com.untangle.uvm.policy.UserPolicyRule");
-        this.addAnnotatedClass("com.untangle.uvm.policy.UserPolicyRuleSet");
-        this.addAnnotatedClass("com.untangle.uvm.security.NodeId");
+        this.addAnnotatedClass("com.untangle.uvm.NodeSettings");
         this.addAnnotatedClass("com.untangle.uvm.snmp.SnmpSettings");
         this.addAnnotatedClass("com.untangle.uvm.toolbox.UpgradeSettings");
-        this.addAnnotatedClass("com.untangle.uvm.policy.UserPolicyRuleSet");
         /* impl */
-        this.addAnnotatedClass("com.untangle.uvm.engine.StatSettings");
         this.addAnnotatedClass("com.untangle.uvm.engine.LoginEvent");
         this.addAnnotatedClass("com.untangle.uvm.engine.PackageState");
-        this.addAnnotatedClass("com.untangle.uvm.engine.NodeManagerState");
-        this.addAnnotatedClass("com.untangle.uvm.engine.NodePersistentState");
-        this.addAnnotatedClass("com.untangle.uvm.engine.NodeStateChange");
     }
     
     /**

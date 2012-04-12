@@ -25,7 +25,6 @@ import com.untangle.uvm.node.PortMatcher;
 import com.untangle.uvm.node.ProtocolMatcher;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.EventLogQuery;
-import com.untangle.uvm.policy.Policy;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.AbstractNode;
@@ -58,7 +57,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
     private final SessionMatcher FIREWALL_SESSION_MATCHER = new SessionMatcher() {
             
             /* Kill all sessions that should be blocked */
-            public boolean isMatch(Policy sessionPolicy, IPSessionDesc client, IPSessionDesc server)
+            public boolean isMatch(Long sessionPolicyId, IPSessionDesc client, IPSessionDesc server)
             {
                 if (handler == null)
                     return false;
@@ -122,11 +121,11 @@ public class FirewallImpl extends AbstractNode implements Firewall
                                                     "ORDER BY evt.timeStamp DESC");
 
         MessageManager lmm = UvmContextFactory.context().messageManager();
-        Counters c = lmm.getCounters(getNodeId());
+        Counters c = lmm.getCounters(getNodeSettings().getId());
         passBlinger = c.addActivity("pass", I18nUtil.marktr("Sessions passed"), null, I18nUtil.marktr("PASS"));
         loggedBlinger = c.addActivity("log", I18nUtil.marktr("Sessions logged"), null, I18nUtil.marktr("LOG"));
         blockBlinger = c.addActivity("block", I18nUtil.marktr("Sessions blocked"), null, I18nUtil.marktr("BLOCK"));
-        lmm.setActiveMetricsIfNotSet(getNodeId(), passBlinger, loggedBlinger, blockBlinger);
+        lmm.setActiveMetrics(getNodeSettings().getId(), passBlinger, loggedBlinger, blockBlinger);
     }
 
     public EventLogQuery[] getEventQueries()
@@ -201,31 +200,27 @@ public class FirewallImpl extends AbstractNode implements Firewall
         return pipeSpecs;
     }
 
-    protected void preStart() throws Exception
+    protected void preStart()
     {
-        try {
-            reconfigure();
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        this.reconfigure();
     }
 
     protected void postStart()
     {
         /* Kill all active sessions */
-        this.killMatchingSessions(SessionMatcherFactory.makePolicyInstance(getPolicy()));
+        this.killMatchingSessions(SessionMatcherFactory.makePolicyInstance(getPolicyId()));
     }
 
     protected void postStop()
     {
         /* Kill all active sessions */
-        this.killMatchingSessions(SessionMatcherFactory.makePolicyInstance(getPolicy()));
+        this.killMatchingSessions(SessionMatcherFactory.makePolicyInstance(getPolicyId()));
     }
 
-    protected void postInit(String[] args)
+    protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         FirewallSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-firewall/" + "settings_" + nodeID;
 
@@ -353,7 +348,7 @@ public class FirewallImpl extends AbstractNode implements Firewall
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeId().getId().toString();
+        String nodeID = this.getNodeSettings().getId().toString();
         try {
             settingsManager.save(FirewallSettings.class, System.getProperty("uvm.settings.dir") + "/" + "untangle-node-firewall/" + "settings_"  + nodeID, newSettings);
         } catch (SettingsManager.SettingsException e) {

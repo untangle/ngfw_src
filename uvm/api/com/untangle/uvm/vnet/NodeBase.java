@@ -16,15 +16,15 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SessionMatcherFactory;
+import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.NodeSettings.NodeState;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.NodeStateChange;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
-import com.untangle.uvm.node.NodeState;
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.logging.LogEvent;
@@ -38,14 +38,14 @@ public abstract class NodeBase implements Node
     private final Logger logger = Logger.getLogger(NodeBase.class);
 
     private final NodeContext nodeContext;
-    private final NodeId tid;
+    private final NodeSettings nodeSettings;
     private final Set<NodeBase> parents = new HashSet<NodeBase>();
     private final Set<Node> children = new HashSet<Node>();
     private final NodeManager nodeManager;
 
     private final Object stateChangeLock = new Object();
 
-    private NodeState runState;
+    private NodeSettings.NodeState currentState;
     private boolean wasStarted = false;
 
     protected NodeBase()
@@ -53,9 +53,9 @@ public abstract class NodeBase implements Node
         UvmContext uvm = UvmContextFactory.context();
         nodeManager = uvm.nodeManager();
         nodeContext = nodeManager.threadContext();
-        tid = nodeContext.getNodeId();
+        nodeSettings = nodeContext.getNodeSettings();
 
-        runState = NodeState.LOADED;
+        currentState = NodeState.LOADED;
     }
 
     // abstract methods --------------------------------------------------------
@@ -67,17 +67,17 @@ public abstract class NodeBase implements Node
 
     public final NodeState getRunState()
     {
-        return runState;
+        return currentState;
     }
 
-    public final void start() throws Exception
+    public final void start() 
     {
         synchronized (stateChangeLock) {
             start(true);
         }
     }
 
-    public final void stop() throws Exception
+    public final void stop() 
     {
         synchronized (stateChangeLock) {
             stop(true);
@@ -89,14 +89,14 @@ public abstract class NodeBase implements Node
         return nodeContext;
     }
 
-    public NodeId getNodeId()
+    public NodeSettings getNodeSettings()
     {
-        return tid;
+        return nodeSettings;
     }
 
-    public Policy getPolicy()
+    public Long getPolicyId()
     {
-        return tid.getPolicy();
+        return nodeSettings.getPolicyId();
     }
 
     public NodeDesc getNodeDesc()
@@ -106,7 +106,7 @@ public abstract class NodeBase implements Node
 
     // NodeBase methods ---------------------------------------------------
 
-    public void addParent(NodeBase parent)
+    public void addParent( NodeBase parent )
     {
         parents.add(parent);
         parent.addChild(this);
@@ -128,49 +128,49 @@ public abstract class NodeBase implements Node
      */
     public void destroySettings() { }
 
-    public void init(String[] args) throws Exception
+    public void init() 
     {
         synchronized (stateChangeLock) {
-            init(true, args);
+            init(true);
         }
     }
 
-    public void disable() throws Exception
+    public void disable()
     {
-        if (NodeState.LOADED == runState
-            || NodeState.DESTROYED == runState) {
-            logger.warn("disabling in: " + runState);
+        if (NodeState.LOADED == currentState
+            || NodeState.DESTROYED == currentState) {
+            logger.warn("disabling in: " + currentState);
             return;
-        } else if (NodeState.RUNNING == runState) {
+        } else if (NodeState.RUNNING == currentState) {
             stop(false);
         }
         changeState(NodeState.DISABLED, true);
     }
 
-    public void resumeState(NodeState ts, String[] args) throws Exception
+    public void resumeState( NodeState ts ) 
     {
         if (NodeState.LOADED == ts) {
             logger.debug("leaving node in LOADED state");
         } else if (NodeState.INITIALIZED == ts) {
             logger.debug("bringing into INITIALIZED state");
-            init(false, args);
+            init(false);
         } else if (NodeState.RUNNING == ts) {
-            logger.debug("bringing into RUNNING state: " + tid);
-            init(false, args);
+            logger.debug("bringing into RUNNING state: " + nodeSettings);
+            init(false);
             start(false);
         } else if (NodeState.DESTROYED == ts) {
-            logger.debug("bringing into DESTROYED state: " + tid);
-            runState = NodeState.DESTROYED;
+            logger.debug("bringing into DESTROYED state: " + nodeSettings);
+            currentState = NodeState.DESTROYED;
         } else if (NodeState.DISABLED == ts) {
-            logger.debug("bringing into DISABLED state: " + tid);
-            init(false, args);
-            runState = NodeState.DISABLED;
+            logger.debug("bringing into DISABLED state: " + nodeSettings);
+            init(false);
+            currentState = NodeState.DISABLED;
         } else {
             logger.warn("unknown state: " + ts);
         }
     }
 
-    public void destroy() throws Exception
+    public void destroy()
     {
         uninstall();
 
@@ -189,14 +189,14 @@ public abstract class NodeBase implements Node
     public void unload()
     {
         try {
-            if (runState == NodeState.LOADED) {
+            if (currentState == NodeState.LOADED) {
                 destroy(false); // XXX
-            } else if (runState == NodeState.INITIALIZED) {
+            } else if (currentState == NodeState.INITIALIZED) {
                 destroy(false);
-            } else if (runState == NodeState.RUNNING) {
+            } else if (currentState == NodeState.RUNNING) {
                 stop(false);
                 destroy(false);
-            } else if (runState == NodeState.DISABLED) {
+            } else if (currentState == NodeState.DISABLED) {
                 destroy(false);
             }
         } catch (Exception exn) {
@@ -204,14 +204,14 @@ public abstract class NodeBase implements Node
         }
     }
 
-    public void enable() throws Exception
+    public void enable()
     {
-        if (NodeState.LOADED == runState
-            || NodeState.DESTROYED == runState) {
-            logger.warn("enabling in: " + runState);
+        if (NodeState.LOADED == currentState
+            || NodeState.DESTROYED == currentState) {
+            logger.warn("enabling in: " + currentState);
             return;
-        } else if (NodeState.RUNNING == runState
-                   || NodeState.INITIALIZED == runState) {
+        } else if (NodeState.RUNNING == currentState
+                   || NodeState.INITIALIZED == currentState) {
             // We're already fine.
         } else {
             // DISABLED
@@ -219,9 +219,9 @@ public abstract class NodeBase implements Node
         }
     }
 
-    public void logEvent(LogEvent evt)
+    public void logEvent( LogEvent evt )
     {
-        String tag = nodeContext.getNodeDesc().getSyslogName() + "[" + nodeContext.getNodeId().getId() + "]: ";
+        String tag = nodeContext.getNodeDesc().getSyslogName() + "[" + nodeContext.getNodeSettings().getId() + "]: ";
         evt.setTag(tag);
         
         UvmContextFactory.context().loggingManager().logEvent(evt);
@@ -238,121 +238,103 @@ public abstract class NodeBase implements Node
 
     /**
      * Called as the instance is created, but is not configured.
-     *
-     * @param args[] the node-specific arguments.
      */
-    protected void preInit(String args[]) throws Exception
-    { }
+    protected void preInit()  { } 
 
     /**
      * Same as <code>preInit</code>, except now officially in the
      * {@link NodeState#INITIALIZED} state.
-     *
-     * @param args[] the node-specific arguments.
      */
-    protected void postInit(String args[]) throws Exception
-    { }
+    protected void postInit()  { } 
 
     /**
      * Called just after connecting to ArgonConnector, but before starting.
      *
      */
-    protected void preStart() throws Exception
-    { }
+    protected void preStart()  { } 
 
     /**
      * Called just after starting ArgonConnector and making subscriptions.
      *
      */
-    protected void postStart() throws Exception
-    { }
+    protected void postStart()  { } 
 
     /**
      * Called just before stopping ArgonConnector and disconnecting.
      *
      */
-    protected void preStop() throws Exception
-    { }
+    protected void preStop()  { } 
 
     /**
      * Called after stopping ArgonConnector and disconnecting.
      *
      */
-    protected void postStop() throws Exception
-    { }
+    protected void postStop()  { }
 
     /**
      * Called just before this instance becomes invalid.
      *
      */
-    protected void preDestroy() throws Exception
-    { }
+    protected void preDestroy()  { }
 
     /**
      * Same as <code>postDestroy</code>, except now officially in the
      * {@link NodeState#DESTROYED} state.
-     *
-     * @param args[] a <code>String</code> value
      */
-    protected void postDestroy() throws Exception
-    { }
+    protected void postDestroy()  { }
 
     // private methods ---------------------------------------------------------
 
-    private void addChild(Node child)
+    private void addChild( Node child )
     {
         children.add(child);
     }
 
-    private boolean removeChild(Node child)
+    private boolean removeChild( Node child )
     {
         return children.remove(child);
     }
 
-    private void changeState(NodeState ts, boolean syncState)
+    private void changeState( NodeState nodeState, boolean syncState )
     {
-        changeState(ts, syncState, null);
-    }
-
-    private void changeState(NodeState ts, boolean syncState, String[] args)
-    {
-        runState = ts;
+        currentState = nodeState;
 
         if (syncState) {
-            if (NodeState.RUNNING == ts) {
+            if (NodeState.RUNNING == nodeState) {
                 wasStarted = true;
             }
 
             MessageManager mm = UvmContextFactory.context().messageManager();
-            NodeStateChange nsc = new NodeStateChange(nodeContext.getNodeDesc(), ts);
+            NodeStateChange nsc = new NodeStateChange(nodeContext.getNodeDesc(), nodeState);
             mm.submitMessage(nsc);
 
-            nodeContext.saveNodeState(nsc.getNodeState());
+            nodeManager.saveTargetState(this.nodeSettings.getId(), nodeState);
             
             UvmContextFactory.context().nodeManager().flushNodeStateCache();
             UvmContextFactory.context().pipelineFoundry().clearChains();
         }
     }
 
-    private void init(boolean syncState, String[] args) throws Exception
+    private void init( boolean syncState ) 
     {
-        if (NodeState.LOADED != runState) {
-            logger.warn("Init called in state: " + runState);
+        if (NodeState.LOADED != currentState) {
+            logger.warn("Init called in state: " + currentState);
             return;
         }
 
         try {
             nodeManager.registerThreadContext(nodeContext);
-            preInit(args);
-            changeState(NodeState.INITIALIZED, syncState, args);
 
-            postInit(args); // XXX if exception, state == ?
+            preInit();
+            changeState( NodeState.INITIALIZED, syncState );
+            postInit();
+
         } finally {
             nodeManager.deregisterThreadContext();
         }
     }
 
-    private void start(boolean syncState) throws Exception
+    private void start( boolean syncState ) 
     {
         if (NodeState.INITIALIZED != getRunState()) {
             logger.warn("Start called in state: " + getRunState());
@@ -364,7 +346,8 @@ public abstract class NodeBase implements Node
                 try {
                     NodeContext pCtx = parent.getNodeContext();
                     nodeManager.registerThreadContext(pCtx);
-                    parent.parentStart();
+                    if (parent.getRunState() == NodeState.INITIALIZED) 
+                        parent.start( false );
                 } finally {
                     nodeManager.registerThreadContext(nodeContext);
                 }
@@ -373,20 +356,20 @@ public abstract class NodeBase implements Node
 
         try {
             nodeManager.registerThreadContext(nodeContext);
-            logger.info("Starting   node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeId() + ")" + " ...");
+            logger.info("Starting   node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeSettings() + ")" + " ...");
             preStart();
 
             connectArgonConnector();
 
             changeState(NodeState.RUNNING, syncState);
             postStart(); // XXX if exception, state == ?
-            logger.info("Started    node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeId() + ")" + " ...");
+            logger.info("Started    node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeSettings() + ")" + " ...");
         } finally {
             nodeManager.deregisterThreadContext();
         }
     }
 
-    private void stop(boolean syncState) throws Exception
+    private void stop( boolean syncState ) 
     {
         if (NodeState.RUNNING != getRunState()) {
             logger.warn("Stop called in state: " + getRunState());
@@ -395,7 +378,7 @@ public abstract class NodeBase implements Node
 
         try {
             nodeManager.registerThreadContext(nodeContext);
-            logger.info("Stopping   node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeId() + ")" + " ...");
+            logger.info("Stopping   node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeSettings() + ")" + " ...");
             preStop();
             disconnectArgonConnector();
             changeState(NodeState.INITIALIZED, syncState);
@@ -408,7 +391,7 @@ public abstract class NodeBase implements Node
                 try {
                     NodeContext pCtx = parent.getNodeContext();
                     nodeManager.registerThreadContext(pCtx);
-                    parent.parentStop();
+                    parent.stopIfNotRequiredByChildren();
                 } finally {
                     nodeManager.registerThreadContext(nodeContext);
                 }
@@ -418,24 +401,24 @@ public abstract class NodeBase implements Node
         try {
             nodeManager.registerThreadContext(nodeContext);
             postStop(); // XXX if exception, state == ?
-            logger.info("Stopped    node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeId() + ")" + " ...");
+            logger.info("Stopped    node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeSettings() + ")" + " ...");
         } finally {
             nodeManager.deregisterThreadContext();
         }
     }
 
-    private void destroy(boolean syncState) throws Exception
+    private void destroy( boolean syncState )  
     {
-        if (NodeState.INITIALIZED != runState
-            && NodeState.LOADED != runState
-            && NodeState.DISABLED != runState) {
-            logger.warn("Destroy in state: " + runState);
+        if (NodeState.INITIALIZED != currentState
+            && NodeState.LOADED != currentState
+            && NodeState.DISABLED != currentState) {
+            logger.warn("Destroy in state: " + currentState);
             return;
         }
 
         try {
             nodeManager.registerThreadContext(nodeContext);
-            logger.info("Destroying node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeId() + ")" + " ...");
+            logger.info("Destroying node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeSettings() + ")" + " ...");
             preDestroy();
             for (NodeBase p : parents) {
                 p.removeChild(this);
@@ -444,20 +427,13 @@ public abstract class NodeBase implements Node
             changeState(NodeState.DESTROYED, syncState);
 
             postDestroy(); // XXX if exception, state == ?
-            logger.info("Destroyed  node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeId() + ")" + " ...");
+            logger.info("Destroyed  node " + this.getNodeContext().getNodeDesc().getName() + "(" + this.getNodeContext().getNodeDesc().getNodeSettings() + ")" + " ...");
         } finally {
             nodeManager.deregisterThreadContext();
         }
     }
 
-    private void parentStart() throws Exception
-    {
-        if (NodeState.INITIALIZED == getRunState()) {
-            start();
-        }
-    }
-
-    private void parentStop() throws Exception
+    private void stopIfNotRequiredByChildren() 
     {
         boolean childrenStopped = true;
 
@@ -473,18 +449,19 @@ public abstract class NodeBase implements Node
         }
 
         if (childrenStopped) {
-            stop();
+            stop( false );
         }
     }
 
     /**
      * This kills/resets all of the matching sessions 
      */
-    protected void killMatchingSessions(SessionMatcher matcher)
+    protected void killMatchingSessions( SessionMatcher matcher )
     {
         if (matcher == null)
             return;
         
         UvmContextFactory.context().argonManager().shutdownMatches(matcher);
     }
+
 }

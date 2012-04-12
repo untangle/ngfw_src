@@ -45,11 +45,9 @@ import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeDesc;
-import com.untangle.uvm.node.NodeState;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.script.ScriptRunner;
-import com.untangle.uvm.policy.Policy;
-import com.untangle.uvm.security.NodeId;
+import com.untangle.uvm.NodeSettings;
 import com.untangle.uvm.toolbox.Application;
 import com.untangle.uvm.toolbox.InstallAndInstantiateComplete;
 import com.untangle.uvm.toolbox.PackageDesc;
@@ -152,9 +150,8 @@ class ToolboxManagerImpl implements ToolboxManager
 
     // ToolboxManager implementation ------------------------------------
 
-    public RackView getRackView(Policy p)
+    public RackView getRackView(Long policyId)
     {
-
         PackageDesc[] available = this.available;
         PackageDesc[] installed = this.installed;
 
@@ -213,18 +210,18 @@ class ToolboxManagerImpl implements ToolboxManager
         }
 
         NodeManager nm = UvmContextFactory.context().nodeManager();
-        List<NodeDesc> instances = nm.visibleNodes(p);
+        List<NodeDesc> instances = nm.visibleNodes(policyId);
 
-        Map<NodeId, StatDescs> statDescs = new HashMap<NodeId, StatDescs>(instances.size());
+        Map<NodeSettings, StatDescs> statDescs = new HashMap<NodeSettings, StatDescs>(instances.size());
         for (NodeDesc nd : instances) {
-            NodeId t = nd.getNodeId();
+            NodeSettings nodeSettings = nd.getNodeSettings();
             MessageManager lmm = UvmContextFactory.context().messageManager();
-            Counters c = lmm.getCounters(t);
+            Counters c = lmm.getCounters(nodeSettings.getId());
             StatDescs sd = c.getStatDescs();
-            statDescs.put(t, sd);
+            statDescs.put(nodeSettings, sd);
 
-            Policy tp = t.getPolicy();
-            if (tp == null || tp.equals(p)) {
+            Long nodePolicyId = nodeSettings.getPolicyId();
+            if (nodePolicyId == null || nodePolicyId.equals(policyId)) {
                 nodes.remove(nd.getDisplayName());
             }
         }
@@ -251,7 +248,7 @@ class ToolboxManagerImpl implements ToolboxManager
             String n = nd.getName();
             licenseMap.put(n, lm.getLicense(n));
         }
-        Map<NodeId, NodeState> runStates=nm.allNodeStates();
+        Map<NodeSettings, NodeSettings.NodeState> runStates=nm.allNodeStates();
         return new RackView(apps, instances, statDescs, licenseMap, runStates);
     }
 
@@ -424,7 +421,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
     private final Object installAndInstantiateLock = new Object();
 
-    public void installAndInstantiate(final String name, final Policy p) throws PackageInstallException
+    public void installAndInstantiate(final String name, final Long policyId) throws PackageInstallException
     {
         logger.info("installAndInstantiate( " + name + ")");
         
@@ -467,9 +464,9 @@ class ToolboxManagerImpl implements ToolboxManager
                 try {
                     logger.info("instantiate( " + node + ")");
                     register(node);
-                    NodeDesc nd = nm.instantiate(node, p);
+                    NodeDesc nd = nm.instantiate(node, policyId);
                     if (nd != null && nd.getAutoStart()) {
-                        NodeContext nc = nm.nodeContext(nd.getNodeId());
+                        NodeContext nc = nm.nodeContext(nd.getNodeSettings());
                         nc.node().start();
                     }
                 } catch (DeployException exn) {
@@ -494,9 +491,9 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         // stop intances
         NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
-        List<NodeId> tids = nm.nodeInstances(name);
+        List<NodeSettings> tids = nm.nodeInstances(name);
         logger.debug("unloading " + tids.size() + " nodes");
-        for (NodeId t : tids) {
+        for (NodeSettings t : tids) {
             nm.unload(t); 
         }
 
@@ -632,9 +629,9 @@ class ToolboxManagerImpl implements ToolboxManager
 
         // stop package intances
         NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
-        List<NodeId> tids = nm.nodeInstances(pkgName);
+        List<NodeSettings> tids = nm.nodeInstances(pkgName);
         logger.debug("unloading " + tids.size() + " nodes");
-        for (NodeId t : tids) {
+        for (NodeSettings t : tids) {
             nm.unload(t); 
         }
     }
