@@ -43,11 +43,11 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.JsonClient.ConnectionException;
-import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.SettingsManager;
 
-public class CPDImpl extends AbstractNode implements CPD
+public class CPDImpl extends NodeBase implements CPD
 {
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/cpd-convert-settings.py";
     private static int deployCount = 0;
@@ -300,7 +300,7 @@ public class CPDImpl extends AbstractNode implements CPD
         return isLoggedOut;
     }
 
-    // AbstractNode methods ----------------------------------------------
+    // NodeBase methods ----------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs() {

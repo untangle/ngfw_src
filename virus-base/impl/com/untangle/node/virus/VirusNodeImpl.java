@@ -34,7 +34,7 @@ import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
-import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
@@ -49,7 +49,7 @@ import com.untangle.uvm.vnet.TCPSession;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
+public abstract class VirusNodeImpl extends NodeBase implements VirusNode
 {
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/virus-base-convert-settings.py";
 
@@ -307,7 +307,7 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
         return scanner.getVendorName();
     }
 
-    // AbstractNode methods ----------------------------------------------
+    // NodeBase methods ----------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()

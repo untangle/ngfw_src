@@ -16,7 +16,7 @@ import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
-import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
@@ -27,7 +27,7 @@ import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.SettingsManager;
 
-public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
+public class ProtoFilterImpl extends NodeBase implements ProtoFilter
 {
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/protofilter-convert-settings.py";
 
@@ -142,7 +142,7 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
         return new EventLogQuery[] { this.allEventQuery, this.blockedEventQuery };
     }        
 
-    // AbstractNode methods ----------------------------------------------
+    // NodeBase methods ----------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()

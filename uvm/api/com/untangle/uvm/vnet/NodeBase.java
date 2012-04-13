@@ -55,6 +55,11 @@ public abstract class NodeBase implements Node
     private NodeProperties nodeProperties;
     
     /**
+     * This is the pipeline/traffic subscriptions for this node
+     */
+    private PipeSpec[] pipeSpecs;
+
+    /**
      * This stores a set of parents of this node
      * Parents are any nodes that this node depends on to operate properly
      */
@@ -84,9 +89,33 @@ public abstract class NodeBase implements Node
         currentState = NodeState.LOADED;
     }
 
-    protected abstract void connectArgonConnector();
-    protected abstract void disconnectArgonConnector();
+    protected abstract PipeSpec[] getPipeSpecs();
 
+    protected void connectArgonConnector()
+    {
+        if (null == pipeSpecs) {
+            PipeSpec[] pss = getPipeSpecs();
+            pipeSpecs = null == pss ? new PipeSpec[0] : pss;
+            for (PipeSpec ps : pipeSpecs) {
+                ps.connectArgonConnector();
+            }
+        } else {
+            logger.warn("ArgonConnectors already connected");
+        }
+    }
+
+    protected void disconnectArgonConnector()
+    {
+        if (null != pipeSpecs) {
+            for (PipeSpec ps : pipeSpecs) {
+                ps.disconnectArgonConnector();
+            }
+            pipeSpecs = null;
+        } else {
+            logger.warn("ArgonConnectors not connected");
+        }
+    }
+    
     public final NodeState getRunState()
     {
         return currentState;
@@ -234,7 +263,38 @@ public abstract class NodeBase implements Node
         UvmContextFactory.context().loggingManager().logEvent(evt);
     }
     
-    // protected no-op methods -------------------------------------------------
+
+    public List<VnetSessionDesc> liveSessionDescs()
+    {
+        List<VnetSessionDesc> sessList = new LinkedList<VnetSessionDesc>();
+
+        if (null != pipeSpecs) {
+            for (PipeSpec ps : pipeSpecs) {
+                for (VnetSessionDesc isd : ps.liveSessionDescs()) {
+                    sessList.add(isd);
+                }
+            }
+        }
+
+        return sessList;
+    }
+
+    public List<IPSession> liveSessions()
+    {
+        List<IPSession> sessions = new LinkedList<IPSession>();
+
+        if (null != pipeSpecs) {
+            for (PipeSpec ps : pipeSpecs) {
+                for (IPSession sess : ps.liveSessions()) {
+                    sessions.add(sess);
+                }
+            }
+        }
+
+        return sessions;
+    }
+
+    // protected methods -------------------------------------------------
 
     /**
      * Called when the node is being uninstalled, rather than

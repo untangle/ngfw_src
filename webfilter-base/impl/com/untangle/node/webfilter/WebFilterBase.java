@@ -34,7 +34,7 @@ import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
-import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
@@ -46,7 +46,7 @@ import com.untangle.uvm.vnet.event.TCPNewSessionRequestEvent;
  * The base implementation of the Web Filter.
  * The web filter lite and web filter implementation inherit this
  */
-public abstract class WebFilterBase extends AbstractNode implements WebFilter
+public abstract class WebFilterBase extends NodeBase implements WebFilter
 {
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/webfilter-base-convert-settings.py";
 

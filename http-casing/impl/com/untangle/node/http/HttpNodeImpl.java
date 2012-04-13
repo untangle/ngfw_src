@@ -4,7 +4,7 @@
 package com.untangle.node.http;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
@@ -19,7 +19,7 @@ import com.untangle.uvm.UvmContextFactory;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class HttpNodeImpl extends AbstractNode implements HttpNode
+public class HttpNodeImpl extends NodeBase implements HttpNode
 {
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/http-casing-convert-settings.py";
     private final CasingPipeSpec pipeSpec = new CasingPipeSpec("http", this, new HttpCasingFactory(this), Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS);

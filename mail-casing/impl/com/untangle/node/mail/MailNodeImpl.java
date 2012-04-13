@@ -55,13 +55,13 @@ import com.untangle.node.mail.papi.safelist.SafelistSettings;
 import com.untangle.node.mime.EmailAddress;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.SettingsManager;
 
-public class MailNodeImpl extends AbstractNode implements MailNode, MailExport
+public class MailNodeImpl extends NodeBase implements MailNode, MailExport
 {
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/mail-casing-convert-settings.py";
     private static final String QUARANTINE_JS_URL = "/quarantine/app.js";
@@ -376,7 +376,7 @@ public class MailNodeImpl extends AbstractNode implements MailNode, MailExport
         s_quarantine.open();
     }
 
-    // AbstractNode methods ---------------------------------------------------
+    // NodeBase methods ---------------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()

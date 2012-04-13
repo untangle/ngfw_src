@@ -23,10 +23,10 @@ import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
-import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;
 
-public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
+public class ShieldNodeImpl extends NodeBase  implements ShieldNode
 
 {
     private static final String SHIELD_REJECTION_EVENT_QUERY

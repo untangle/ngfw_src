@@ -4,7 +4,7 @@
 package com.untangle.node.ftp;
 
 import com.untangle.uvm.util.TransactionWork;
-import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.CasingPipeSpec;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
@@ -16,7 +16,7 @@ import com.untangle.uvm.UvmContextFactory;
 /**
  * FTP node implementation.
  */
-public class FtpNodeImpl extends AbstractNode
+public class FtpNodeImpl extends NodeBase
     implements FtpNode
 {
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/ftp-casing-convert-settings.py";
@@ -147,7 +147,7 @@ public class FtpNodeImpl extends AbstractNode
         }
     }
 
-    // AbstractNode methods ----------------------------------------------
+    // NodeBase methods ----------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()

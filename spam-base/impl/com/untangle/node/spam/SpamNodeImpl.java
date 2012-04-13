@@ -18,14 +18,14 @@ import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
-import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.node.EventLogQuery;
 
-public class SpamNodeImpl extends AbstractNode implements SpamNode
+public class SpamNodeImpl extends NodeBase implements SpamNode
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -306,7 +306,7 @@ public class SpamNodeImpl extends AbstractNode implements SpamNode
         return saDaemon.restart();
     }
 
-    // AbstractNode methods ----------------------------------------------
+    // NodeBase methods ----------------------------------------------
     public String getVendor() {
         return "sa";
     }

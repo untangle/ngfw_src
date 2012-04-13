@@ -42,10 +42,10 @@ import com.untangle.uvm.User;
 import com.untangle.uvm.logging.LogWorker;
 import com.untangle.uvm.logging.LogWorkerFacility;
 import com.untangle.uvm.util.TransactionWork;
-import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;
 
-public class ReportingNodeImpl extends AbstractNode implements ReportingNode, LogWorkerFacility
+public class ReportingNodeImpl extends NodeBase implements ReportingNode, LogWorkerFacility
 {
     private static final Logger logger = Logger.getLogger(ReportingNodeImpl.class);
 

@@ -44,7 +44,7 @@ import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
-import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
@@ -54,7 +54,7 @@ import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
 
-public class SpywareImpl extends AbstractNode implements Spyware
+public class SpywareImpl extends NodeBase implements Spyware
 {
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/spyware-convert-settings.py";
     private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty( "uvm.bin.dir" ) + "/spyware-get-last-update";
@@ -271,7 +271,7 @@ public class SpywareImpl extends AbstractNode implements Spyware
 
     // Node methods ------------------------------------------------------------
 
-    // AbstractNode methods ----------------------------------------------------
+    // NodeBase methods ----------------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()

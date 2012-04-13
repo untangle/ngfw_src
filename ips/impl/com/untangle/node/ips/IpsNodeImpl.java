@@ -20,7 +20,7 @@ import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
-import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
@@ -28,7 +28,7 @@ import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.node.EventLogQuery;
 
 
-public class IpsNodeImpl extends AbstractNode implements IpsNode
+public class IpsNodeImpl extends NodeBase implements IpsNode
 {
     private final Logger logger = Logger.getLogger(getClass());
 

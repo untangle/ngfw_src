@@ -14,7 +14,7 @@ import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.networking.NetworkConfigurationListener;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.ArgonConnector;
@@ -22,7 +22,7 @@ import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import org.apache.log4j.Logger;
 
-public class RouterImpl extends AbstractNode implements Router
+public class RouterImpl extends NodeBase implements Router
 {
     private final RouterEventHandler handler;
     private final RouterSessionManager sessionManager;
@@ -79,7 +79,7 @@ public class RouterImpl extends AbstractNode implements Router
         return routerFtpPipeSpec.getArgonConnector();
     }
 
-    // AbstractNode methods ----------------------------------------------
+    // NodeBase methods ----------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()

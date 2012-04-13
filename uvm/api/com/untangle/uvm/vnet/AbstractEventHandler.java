@@ -55,11 +55,11 @@ import com.untangle.uvm.vnet.event.UDPSessionEvent;
  */
 public abstract class AbstractEventHandler implements SessionEventListener {
 
-    protected AbstractNode xform;
+    protected NodeBase xform;
 
     protected AbstractEventHandler(Node xform)
     {
-        this.xform = (AbstractNode)xform;
+        this.xform = (NodeBase)xform;
     }
 
     public void handleTimer(IPSessionEvent event)

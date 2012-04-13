@@ -29,14 +29,14 @@ import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
-import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.vnet.Protocol;
 
-public class FirewallImpl extends AbstractNode implements Firewall
+public class FirewallImpl extends NodeBase implements Firewall
 {
     private final Logger logger = Logger.getLogger(getClass());
 
