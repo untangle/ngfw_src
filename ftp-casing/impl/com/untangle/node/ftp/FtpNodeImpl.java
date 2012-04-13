@@ -29,7 +29,10 @@ public class FtpNodeImpl extends AbstractNode
 
     // constructors -----------------------------------------------------------
 
-    public FtpNodeImpl() { }
+    public FtpNodeImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    {
+        super( nodeSettings, nodeProperties );
+    }
 
     // FtpNode methods ---------------------------------------------------
 

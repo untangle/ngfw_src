@@ -18,6 +18,8 @@ import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -75,8 +77,11 @@ public abstract class WebFilterBase extends AbstractNode implements WebFilter
     protected final EventLogQuery allEventQuery;
     protected final EventLogQuery unblockEventQuery;
 
-    public WebFilterBase()
+    public WebFilterBase( NodeSettings nodeSettings, NodeProperties nodeProperties )
     {
+        super( nodeSettings, nodeProperties );
+        
+        logger.warn("AAAAA: WebFilterBase constructor");
         this.replacementGenerator = buildReplacementGenerator();
 
         String vendorName = this.getVendor();

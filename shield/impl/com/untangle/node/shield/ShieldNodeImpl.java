@@ -54,12 +54,11 @@ public class ShieldNodeImpl extends AbstractNode  implements ShieldNode
 
     private final ShieldManager shieldManager;
 
-    public ShieldNodeImpl()
+    public ShieldNodeImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
-        NodeContext tctx = getNodeContext();
+        super( nodeSettings, nodeProperties );
 
-        this.eventQuery = new EventLogQuery(I18nUtil.marktr("Events"),
-                                            "FROM ShieldEventsFromReports evt ORDER BY evt.timeStamp DESC");                                                 
+        this.eventQuery = new EventLogQuery(I18nUtil.marktr("Events"),"FROM ShieldEventsFromReports evt ORDER BY evt.timeStamp DESC");                                                 
         
         this.shieldManager = new ShieldManager( this );
     }

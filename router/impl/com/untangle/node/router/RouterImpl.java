@@ -41,8 +41,10 @@ public class RouterImpl extends AbstractNode implements Router
 
     private final Logger logger = Logger.getLogger( RouterImpl.class );
 
-    public RouterImpl()
+    public RouterImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
+        super( nodeSettings, nodeProperties );
+
         this.handler          = new RouterEventHandler(this);
         this.sessionManager   = new RouterSessionManager(this);
         this.statisticManager = new RouterStatisticManager();

@@ -21,7 +21,6 @@ require "#{SRC_HOME}/shield/package.rb"
 require "#{SRC_HOME}/firewall/package.rb"
 require "#{SRC_HOME}/openvpn/package.rb"
 require "#{SRC_HOME}/protofilter/package.rb"
-require "#{SRC_HOME}/template/package.rb"
 require "#{SRC_HOME}/ips/package.rb"
 
 ## Base Nodes

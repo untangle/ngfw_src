@@ -222,10 +222,10 @@ abstract class IPSessionImpl
             // killSession(message);
             return;
         }
-        NodeContext tctx = xform.getNodeContext();
+        NodeContext nodeContext = xform.getNodeContext();
 
         try {
-            nodeManager.registerThreadContext(tctx);
+            nodeManager.setLoggingNode(nodeContext.getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             sendCompleteEvent();
@@ -236,7 +236,7 @@ abstract class IPSessionImpl
         } catch (OutOfMemoryError x) {
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
-            nodeManager.deregisterThreadContext();
+            nodeManager.setLoggingUvm();
             MDC.remove(SESSION_ID_MDC_KEY);
         }
     }
@@ -252,10 +252,10 @@ abstract class IPSessionImpl
             return;
         }
 
-        NodeContext tctx = xform.getNodeContext();
+        NodeContext nodeContext = xform.getNodeContext();
 
         try {
-            nodeManager.registerThreadContext(tctx);
+            nodeManager.setLoggingNode(nodeContext.getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
             if (released) {
                 logger.debug("raze released");
@@ -277,7 +277,7 @@ abstract class IPSessionImpl
         } catch (OutOfMemoryError x) {
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
-            nodeManager.deregisterThreadContext();
+            nodeManager.setLoggingUvm();
             MDC.remove(SESSION_ID_MDC_KEY);
         }
     }
@@ -292,12 +292,12 @@ abstract class IPSessionImpl
             return;
         }
 
-        NodeContext tctx = xform.getNodeContext();
+        NodeContext nodeContext = xform.getNodeContext();
         try {
-            nodeManager.registerThreadContext(tctx);
+            nodeManager.setLoggingNode(nodeContext.getNodeSettings().getId());
             readEvent(CLIENT, in);
         } finally {
-            nodeManager.deregisterThreadContext();
+            nodeManager.setLoggingUvm();
         }
     }
 
@@ -311,12 +311,12 @@ abstract class IPSessionImpl
             return;
         }
 
-        NodeContext tctx = xform.getNodeContext();
+        NodeContext nodeContext = xform.getNodeContext();
         try {
-            nodeManager.registerThreadContext(tctx);
+            nodeManager.setLoggingNode(nodeContext.getNodeSettings().getId());
             readEvent(SERVER, in);
         } finally {
-            nodeManager.deregisterThreadContext();
+            nodeManager.setLoggingUvm();
         }
     }
 
@@ -330,12 +330,12 @@ abstract class IPSessionImpl
             return;
         }
 
-        NodeContext tctx = xform.getNodeContext();
+        NodeContext nodeContext = xform.getNodeContext();
         try {
-            nodeManager.registerThreadContext(tctx);
+            nodeManager.setLoggingNode(nodeContext.getNodeSettings().getId());
             writeEvent(CLIENT, out);
         } finally {
-            nodeManager.deregisterThreadContext();
+            nodeManager.setLoggingUvm();
         }
     }
 
@@ -349,12 +349,12 @@ abstract class IPSessionImpl
             return;
         }
 
-        NodeContext tctx = xform.getNodeContext();
+        NodeContext nodeContext = xform.getNodeContext();
         try {
-            nodeManager.registerThreadContext(tctx);
+            nodeManager.setLoggingNode(nodeContext.getNodeSettings().getId());
             writeEvent(SERVER, out);
         } finally {
-            nodeManager.deregisterThreadContext();
+            nodeManager.setLoggingUvm();
         }
     }
 
@@ -371,9 +371,9 @@ abstract class IPSessionImpl
             return;
         }
 
-        NodeContext tctx = xform.getNodeContext();
+        NodeContext nodeContext = xform.getNodeContext();
         try {
-            nodeManager.registerThreadContext(tctx);
+            nodeManager.setLoggingNode(nodeContext.getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             IncomingSocketQueue in = (argonSession).clientIncomingSocketQueue();
@@ -387,7 +387,7 @@ abstract class IPSessionImpl
         } catch (OutOfMemoryError x) {
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
-            nodeManager.deregisterThreadContext();
+            nodeManager.setLoggingUvm();
             MDC.remove(SESSION_ID_MDC_KEY);
         }
     }
@@ -405,9 +405,9 @@ abstract class IPSessionImpl
             return;
         }
 
-        NodeContext tctx = xform.getNodeContext();
+        NodeContext nodeContext = xform.getNodeContext();
         try {
-            nodeManager.registerThreadContext(tctx);
+            nodeManager.setLoggingNode(nodeContext.getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             IncomingSocketQueue in = (argonSession).serverIncomingSocketQueue();
@@ -421,7 +421,7 @@ abstract class IPSessionImpl
         } catch (OutOfMemoryError x) {
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
-            nodeManager.deregisterThreadContext();
+            nodeManager.setLoggingUvm();
             MDC.remove(SESSION_ID_MDC_KEY);
         }
     }

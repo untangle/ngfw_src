@@ -336,12 +336,17 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             {
                 public void run()
                 {
-                    NodeContext tctx = null == nodeManager
-                        ? null : nodeManager.threadContext();
+                    // XXX is this necessary - shouldn't it be inherited?
+                    // comment out this region to see
+                    // ...
+                    
+                    //                     NodeContext nodeContext = (null == nodeManager ? null : nodeManager.threadContext());
+                    //                     if (nodeContext != null) {
+                    //                         LoggingInformation logInfo = new LoggingInformation("log4j-node.xml", nodeContext.getNodeSettings().getId().toString());
+                    //                         UvmRepositorySelector.instance().setThreadLoggingInformation(logInfo);
+                    //                     }
 
-                    if (null != tctx) {
-                        nodeManager.registerThreadContext(tctx);
-                    }
+
                     try {
                         runnable.run();
                     } catch (OutOfMemoryError exn) {
@@ -349,9 +354,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                     } catch (Exception exn) {
                         logger.error("Exception running: " + runnable, exn);
                     } finally {
-                        if (null != tctx) {
-                            nodeManager.deregisterThreadContext();
-                        }
+                        //                         if (nodeContext != null) {
+                        //                             LoggingInformation logInfo = new LoggingInformation("log4j-uvm.xml", "uvm" );
+                        //                             UvmRepositorySelector.instance().setThreadLoggingInformation(logInfo);
+                        //                         }
                     }
                 }
             };
@@ -573,13 +579,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.syslogManager = SyslogManagerImpl.manager();
         
-        UvmRepositorySelector repositorySelector = UvmRepositorySelector.selector();
-
         if (!testHibernateConnection()) {
             fatalError("Can not connect to database. Is postgres running?", null);
         }
 
-        this.loggingManager = new LoggingManagerImpl(repositorySelector);
+        this.loggingManager = new LoggingManagerImpl();
         loggingManager.initSchema("uvm");
 
         InheritableThreadLocal<HttpServletRequest> threadRequest = new InheritableThreadLocal<HttpServletRequest>();
@@ -613,7 +617,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.languageManager = new LanguageManagerImpl(this);
 
         // start nodes:
-        this.nodeManager = new NodeManagerImpl(repositorySelector);
+        this.nodeManager = new NodeManagerImpl();
 
         this.messageManager = new MessageManagerImpl();
 

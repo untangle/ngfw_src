@@ -15,6 +15,8 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SessionMatcherFactory;
+import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -97,8 +99,10 @@ public class FirewallImpl extends AbstractNode implements Firewall
     private static int nodeInstanceCount = 0;
     private final int  nodeInstanceNum;
     
-    public FirewallImpl()
+    public FirewallImpl( NodeSettings nodeSettings, NodeProperties nodeProperties )
     {
+        super( nodeSettings, nodeProperties );
+
         synchronized(getClass()) { this.nodeInstanceNum = nodeInstanceCount++; };
 
         this.handler = new EventHandler(this);

@@ -91,14 +91,20 @@ public class NodeContextImpl implements NodeContext
 
         final UvmContext mctx = UvmContextFactory.context();
         try {
-            nodeManager.registerThreadContext(this);
+            nodeManager.setLoggingNode(nodeSettings.getId());
 
             String nodeSettingsName = nodeSettings.getNodeName();
             logger.debug("setting node " + nodeSettingsName + " log4j repository");
 
             String className = nodeProperties.getClassName();
-            node = (NodeBase)Class.forName(className).newInstance();
-
+            java.lang.reflect.Constructor constructor = Class.forName(className).getConstructor(new Class[]{NodeSettings.class, NodeProperties.class});
+            node = (NodeBase)constructor.newInstance(getNodeSettings(), getNodeProperties());
+            //node = (NodeBase)Class.forName(className).newInstance(getNodeSettings(), getNodeProperties());
+            node.setNodeContext(this);
+            node.setNodeProperties(this.getNodeProperties());
+            node.setNodeSettings(this.getNodeSettings());
+                
+            
             for (NodeContext parentCtx : parentCtxs) {
                 node.addParent((NodeBase)parentCtx.node());
             }
@@ -122,7 +128,7 @@ public class NodeContextImpl implements NodeContext
             logger.error("Exception during node initialization", exn);
             throw new DeployException(exn);
         } finally {
-            nodeManager.deregisterThreadContext();
+            nodeManager.setLoggingUvm();
         }
     }
 
@@ -240,7 +246,7 @@ public class NodeContextImpl implements NodeContext
     protected void destroy() throws Exception
     {
         try {
-            nodeManager.registerThreadContext(this);
+            nodeManager.setLoggingNode(nodeSettings.getId());
             if (node.getRunState() == NodeSettings.NodeState.RUNNING) {
                 node.stop();
             }
@@ -249,7 +255,7 @@ public class NodeContextImpl implements NodeContext
         } catch (Exception exn) {
             throw new Exception(exn);
         } finally {
-            nodeManager.deregisterThreadContext();
+            nodeManager.setLoggingUvm();
         }
     }
 
@@ -257,10 +263,10 @@ public class NodeContextImpl implements NodeContext
     {
         if (node != null) {
             try {
-                nodeManager.registerThreadContext(this);
+                nodeManager.setLoggingNode(nodeSettings.getId());
                 node.unload();
             } finally {
-                nodeManager.deregisterThreadContext();
+                nodeManager.setLoggingUvm();
             }
         }
     }

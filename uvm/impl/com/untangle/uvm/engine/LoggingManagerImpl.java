@@ -40,9 +40,9 @@ class LoggingManagerImpl implements LoggingManager
     
     private volatile boolean conversionComplete = true;
 
-    LoggingManagerImpl(UvmRepositorySelector repositorySelector)
+    public LoggingManagerImpl()
     {
-        this.repositorySelector = repositorySelector;
+        this.repositorySelector = UvmRepositorySelector.instance();
 
         TransactionWork<Object> tw = new TransactionWork<Object>()
             {

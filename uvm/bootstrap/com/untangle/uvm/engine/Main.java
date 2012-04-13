@@ -15,6 +15,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.logging.UvmRepositorySelector;
+import com.untangle.uvm.logging.LoggingInformation;
 
 /**
  * Bootstraps the UVM. Access to the Main object should be protected.
@@ -50,15 +51,19 @@ public class Main
 
     private Main()
     {
+        /**
+         * Initialize the UVM schema
+         * XXX remove me when settings live in files FIXME
+         */
         schemaUtil.initSchema("settings", "uvm");
 
-        // don't close here as we'll use it later to initialize events schema
-        //schemaUtil.close();
-
-        LogManager.setRepositorySelector(UvmRepositorySelector.selector(), new Object());
+        /**
+         * Configure the basic logging setup
+         */
+        LogManager.setRepositorySelector(UvmRepositorySelector.instance(), new Object());
+        LoggingInformation logInfo = new LoggingInformation("log4j-uvm.xml", "uvm" );
+        UvmRepositorySelector.instance().setThreadLoggingInformation(logInfo);
     }
-
-    // public static methods ---------------------------------------------------
 
     /**
      * The fun starts here.

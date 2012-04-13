@@ -34,9 +34,8 @@ import com.untangle.uvm.NodeManagerSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.logging.UvmLoggingContext;
-import com.untangle.uvm.logging.UvmLoggingContextFactory;
 import com.untangle.uvm.logging.UvmRepositorySelector;
+import com.untangle.uvm.logging.LoggingInformation;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.NodeInstantiatedMessage;
@@ -56,7 +55,7 @@ import com.untangle.uvm.util.TransactionWork;
 /**
  * Implements NodeManager.
  */
-public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
+public class NodeManagerImpl implements NodeManager
 {
     private final static String NODE_MANAGER_SETTINGS_FILE = System.getProperty( "uvm.settings.dir" ) + "/untangle-vm/node_manager";
     private final static String NODE_MANAGER_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/untangle-vm-convert-node-manager.py";
@@ -64,8 +63,6 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
     private final Logger logger = Logger.getLogger(getClass());
 
     private final Map<NodeSettings, NodeContextImpl> loadedNodesMap = new ConcurrentHashMap<NodeSettings, NodeContextImpl>();
-    private final ThreadLocal<NodeContext> threadContexts = new InheritableThreadLocal<NodeContext>();
-    private final UvmRepositorySelector repositorySelector;
 
     private NodeManagerSettings settings = null;
     
@@ -80,10 +77,7 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
      */
     private long enabledNodesCleared = 0;
 
-    public NodeManagerImpl(UvmRepositorySelector repositorySelector)
-    {
-        this.repositorySelector = repositorySelector;
-    }
+    public NodeManagerImpl() { }
 
     public List<NodeSettings> nodeInstances()
     {
@@ -483,33 +477,16 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
 
     // NodeManager methods -----------------------------------------------
 
-    public NodeContext threadContext()
+    public void setLoggingNode(Long nodeId)
     {
-        return threadContexts.get();
+        LoggingInformation logInfo = new LoggingInformation("log4j-node.xml", nodeId.toString());
+        UvmRepositorySelector.instance().setThreadLoggingInformation(logInfo);
     }
 
-    public void registerThreadContext(NodeContext ctx)
+    public void setLoggingUvm()
     {
-        threadContexts.set(ctx);
-        repositorySelector.setContextFactory(this);
-    }
-
-    public void deregisterThreadContext()
-    {
-        threadContexts.remove();
-        repositorySelector.uvmContext();        
-    }
-
-    // UvmLoggingContextFactory methods ---------------------------------------
-
-    public UvmLoggingContext getLoggingContext()
-    {
-        final NodeContext nodeContext = threadContexts.get();
-        if (null == nodeContext) {
-            LogLog.warn("null node context in threadContexts");
-        }
-
-        return new NodeManagerLoggingContext(nodeContext);
+        LoggingInformation logInfo = new LoggingInformation("log4j-uvm.xml", "uvm" );
+        UvmRepositorySelector.instance().setThreadLoggingInformation(logInfo);
     }
 
     // package protected methods ----------------------------------------------
@@ -1087,63 +1064,6 @@ public class NodeManagerImpl implements NodeManager, UvmLoggingContextFactory
          */
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
-    }
-
-    // private static classes -------------------------------------------------
-
-    private static class NodeManagerLoggingContext implements UvmLoggingContext
-    {
-        private final NodeContext nodeContext;
-
-        // constructors -------------------------------------------------------
-
-        NodeManagerLoggingContext(NodeContext nodeContext)
-        {
-            this.nodeContext = nodeContext;
-        }
-
-        // UvmLoggingContext methods -----------------------------------------
-
-        public String getConfigName()
-        {
-            return "log4j-node.xml";
-        }
-
-        public String getFileName()
-        {
-            if (null == nodeContext) {
-                return "0";
-            } else {
-                return nodeContext.getNodeSettings().getId().toString();
-            }
-        }
-
-        public String getName()
-        {
-            if (null == nodeContext) {
-                return "0";
-            } else {
-                return nodeContext.getNodeSettings().getId().toString();
-            }
-        }
-
-        // Object methods -----------------------------------------------------
-
-        public boolean equals(Object o)
-        {
-            if (o instanceof NodeManagerLoggingContext) {
-                NodeManagerLoggingContext tmc
-                    = (NodeManagerLoggingContext)o;
-                return nodeContext.equals(tmc.nodeContext);
-            } else {
-                return false;
-            }
-        }
-
-        public int hashCode()
-        {
-            return nodeContext.hashCode();
-        }
     }
 
 }

@@ -51,8 +51,6 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
     private static final HostAddress EMPTY_HOST_ADDRESS = new HostAddress( "" );
 
-    private static final String SERVICE_NAME = "openvpn";
-
     /* 5 minutes in nanoseconds */
     private static final long DISTRIBUTION_CACHE_NS = TimeUnit.SECONDS.toNanos( 60 * 5 );
 
@@ -91,8 +89,10 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
 
     private EventLogQuery connectEventsQuery;
 
-    public VpnNodeImpl()
+    public VpnNodeImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
+        super( nodeSettings, nodeProperties );
+
         this.handler          = new EventHandler( this );
         this.openVpnMonitor   = new OpenVpnMonitor( this );
 
@@ -540,9 +540,7 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
         }
         isWebAppDeployed = true;
 
-        /* unregister the service with the UVM */
         /* Make sure to leave this in because it reloads the iptables rules. */
-        //UvmContextFactory.context().networkManager().registerService( SERVICE_NAME );
         UvmContextFactory.context().networkManager().refreshIptablesRules();
     }
 
@@ -554,10 +552,6 @@ public class VpnNodeImpl extends AbstractNode implements VpnNode
             } else logger.warn( "Unable to unload openvpn web app" );
         }
         isWebAppDeployed = false;
-
-        /* unregister the service with the UVM */
-        /* Make sure to leave this in because it reloads the iptables rules. */
-        // UvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
     }
 
     // AbstractNode methods ----------------------------------------------

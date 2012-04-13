@@ -7,6 +7,11 @@ import com.untangle.node.virus.VirusNodeImpl;
 
 public class ClamNode extends VirusNodeImpl
 {
+    public ClamNode( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    {
+        super( nodeSettings, nodeProperties, new ClamScanner() );
+    }
+
     protected int getStrength()
     {
         return 15;
@@ -15,10 +20,5 @@ public class ClamNode extends VirusNodeImpl
     public String getName()
     {
         return "clam";
-    }
-    
-    public ClamNode()
-    {
-        super(new ClamScanner());
     }
 }

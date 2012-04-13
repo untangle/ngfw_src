@@ -153,9 +153,10 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
 
     // constructors -----------------------------------------------------------
 
-    @SuppressWarnings("unchecked")
-	public VirusNodeImpl(VirusScanner scanner)
+    public VirusNodeImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties, VirusScanner scanner )
     {
+        super( nodeSettings, nodeProperties );
+
         this.scanner = scanner;
         this.pipeSpecs = initialPipeSpecs();
         this.replacementGenerator = new VirusReplacementGenerator(getNodeSettings());

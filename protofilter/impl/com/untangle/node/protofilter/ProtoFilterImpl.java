@@ -49,8 +49,10 @@ public class ProtoFilterImpl extends AbstractNode implements ProtoFilter
 
     // constructors -----------------------------------------------------------
 
-    public ProtoFilterImpl()
+    public ProtoFilterImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
+        super( nodeSettings, nodeProperties );
+
         this.allEventQuery = new EventLogQuery(I18nUtil.marktr("All Events"),
                                                "FROM SessionLogEventFromReports evt " +
                                                "WHERE evt.policyId = :policyId " +

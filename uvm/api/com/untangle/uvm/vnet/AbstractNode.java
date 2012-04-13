@@ -6,6 +6,9 @@ package com.untangle.uvm.vnet;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeProperties;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -19,6 +22,11 @@ public abstract class AbstractNode extends NodeBase
     private PipeSpec[] pipeSpecs;
 
     protected abstract PipeSpec[] getPipeSpecs();
+
+    public AbstractNode ( NodeSettings nodeSettings, NodeProperties nodeProperties )
+    {
+        super( nodeSettings, nodeProperties );
+    }
 
     protected void connectArgonConnector()
     {

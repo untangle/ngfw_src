@@ -40,12 +40,12 @@ class EventHandler extends AbstractEventHandler
         this.node = node;
     }
 
-    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event) 
+    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
     {
         handleNewSessionRequest(event.sessionRequest(), Protocol.TCP);
     }
 
-    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event) 
+    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
     {
         handleNewSessionRequest(event.sessionRequest(), Protocol.UDP);
     }
@@ -124,7 +124,7 @@ class EventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPComplete(TCPSessionEvent event) 
+    public void handleTCPComplete(TCPSessionEvent event)
     {
         Session s = event.session();
         FirewallEvent fe = (FirewallEvent)s.attachment();
@@ -134,7 +134,7 @@ class EventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleUDPComplete(UDPSessionEvent event) 
+    public void handleUDPComplete(UDPSessionEvent event)
     {
         Session s = event.session();
         FirewallEvent fe = (FirewallEvent)s.attachment();

@@ -73,8 +73,10 @@ public class CPDImpl extends AbstractNode implements CPD
 
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
 
-    public CPDImpl()
+    public CPDImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
+        super( nodeSettings, nodeProperties );
+
         NodeContext nodeContext = getNodeContext();
 
         this.loginEventQuery = new EventLogQuery(I18nUtil.marktr("Login Events"),

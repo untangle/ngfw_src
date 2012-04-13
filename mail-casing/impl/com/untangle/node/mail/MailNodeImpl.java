@@ -92,12 +92,10 @@ public class MailNodeImpl extends AbstractNode implements MailNode, MailExport
 
     // constructors -----------------------------------------------------------
 
-    public MailNodeImpl()
+    public MailNodeImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
-        logger.debug("<init>");
+        super( nodeSettings, nodeProperties );
 
-        //TODO bscott I assume this class will only ever be instantiated
-        // on the server?!?
         createSingletonsIfRequired();
 
         MailExportFactory.factory().registerExport(this);

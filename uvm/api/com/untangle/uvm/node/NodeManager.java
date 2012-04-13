@@ -150,25 +150,8 @@ public interface NodeManager
      */
     void flushNodeStateCache();
 
-    /**
-     * Return the NodeContext for the thread.
-     *
-     * @return the NodeContext for the current thread, or null if
-     * none.
-     */
-    NodeContext threadContext();
-
-    /**
-     * Sets the thread's context.
-     *
-     * @param ctx context to associate with thread.
-     */
-    void registerThreadContext( NodeContext ctx );
-
-    /**
-     * Returns the thread context to the UVM context.
-     */
-    void deregisterThreadContext();
+    void setLoggingNode(Long nodeId);
+    void setLoggingUvm();
 
     /**
      * Returns true if the given node/app is instantiated in the rack

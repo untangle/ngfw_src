@@ -255,11 +255,11 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     public ArgonTCPSession newSession(ArgonTCPNewSessionRequest request)
     {
         try {
-            nodeManager.registerThreadContext(nodeContext);
+            nodeManager.setLoggingNode(nodeContext.getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, "NT" + request.id());
             return newSessionInternal(request);
         } finally {
-            nodeManager.deregisterThreadContext();
+            nodeManager.setLoggingUvm();
             MDC.remove(SESSION_ID_MDC_KEY);
         }
     }
@@ -267,11 +267,11 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     public ArgonUDPSession newSession(ArgonUDPNewSessionRequest request)
     {
         try {
-            nodeManager.registerThreadContext(nodeContext);
+            nodeManager.setLoggingNode(nodeContext.getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, "NU" + request.id());
             return newSessionInternal(request);
         } finally {
-            nodeManager.deregisterThreadContext();
+            nodeManager.setLoggingUvm();
             MDC.remove(SESSION_ID_MDC_KEY);
         }
     }

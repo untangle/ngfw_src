@@ -29,6 +29,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.IPMaskedAddressDirectory;
 import com.untangle.uvm.node.IPMaskedAddressRule;
@@ -63,8 +65,10 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
 
     private long lastFlushTime = 0;
     
-    public ReportingNodeImpl()
+    public ReportingNodeImpl( NodeSettings nodeSettings, NodeProperties nodeProperties )
     {
+        super( nodeSettings, nodeProperties );
+
         if (logWorker == null)
             logWorker = new LogWorkerImpl(this);
     }
@@ -230,7 +234,7 @@ public class ReportingNodeImpl extends AbstractNode implements ReportingNode, Lo
             public boolean doWork(Session s) {
                 Query q = s
                 .createQuery("from ReportingSettings ts where ts.nodeId = :nodeId");
-                q.setParameter("nodeId", getNodeSettings());
+                q.setParameter("nodeId", getNodeSettings().getId());
                 settings = (ReportingSettings) q.uniqueResult();
 
                 if (null == settings) {

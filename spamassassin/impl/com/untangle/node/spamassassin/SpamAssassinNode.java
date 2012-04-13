@@ -15,9 +15,9 @@ public class SpamAssassinNode extends SpamNodeImpl
     private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/spamassassin-convert-settings.py";
     private final Logger logger = Logger.getLogger(getClass());
 
-    public SpamAssassinNode()
+    public SpamAssassinNode( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
-        super(new SpamAssassinScanner());
+        super( nodeSettings, nodeProperties, new SpamAssassinScanner() );
     }
 
     private void readNodeSettings()

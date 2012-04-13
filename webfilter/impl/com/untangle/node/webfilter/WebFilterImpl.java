@@ -6,6 +6,8 @@ package com.untangle.node.webfilter;
 import java.util.LinkedList;
 
 import com.untangle.uvm.node.GenericRule;
+import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeProperties;
 
 public class WebFilterImpl extends WebFilterBase
 {
@@ -14,6 +16,11 @@ public class WebFilterImpl extends WebFilterBase
      * It is lazily initialized in case there are no running Web Filter apps
      */
     private WebFilterDecisionEngine engine = null; 
+
+    public WebFilterImpl( NodeSettings nodeSettings, NodeProperties nodeProperties )
+    {
+        super( nodeSettings, nodeProperties );
+    }
     
     @Override
     public synchronized DecisionEngine getDecisionEngine()

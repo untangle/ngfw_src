@@ -40,35 +40,47 @@ public abstract class NodeBase implements Node
     /**
      * This is the nodeContext for this node
      */
-    private final NodeContext nodeContext;
+    private NodeContext nodeContext;
 
     /**
      * These are the (generic) settings for this node
      * The node usually stores more app-specific settings in "settings"
      * This holds the generic NodeSettings that all nodes have.
      */
-    private final NodeSettings nodeSettings;
+    private NodeSettings nodeSettings;
 
+    /**
+     * These are the properties for this node
+     */
+    private NodeProperties nodeProperties;
+    
     /**
      * This stores a set of parents of this node
      * Parents are any nodes that this node depends on to operate properly
      */
-    private final Set<NodeBase> parents = new HashSet<NodeBase>();
+    private Set<NodeBase> parents = new HashSet<NodeBase>();
 
     /**
      * This stores a set of children to this node
      * Children are any nodes that depend on this node to operate properly
      */
-    private final Set<Node> children = new HashSet<Node>();
+    private Set<Node> children = new HashSet<Node>();
 
     private NodeSettings.NodeState currentState;
     private boolean wasStarted = false;
 
-    protected NodeBase()
+    protected NodeBase( )
     {
-        nodeContext = UvmContextFactory.context().nodeManager().threadContext();
-        nodeSettings = nodeContext.getNodeSettings();
+        currentState = NodeState.LOADED;
+    }
 
+    protected NodeBase( NodeSettings nodeSettings, NodeProperties nodeProperties )
+    {
+        logger.warn("AAAAA: NodeBase constructor :: settings: " + nodeSettings + " props: " + nodeProperties);
+        this.nodeSettings = nodeSettings;
+        this.nodeProperties = nodeProperties;
+        this.nodeContext = UvmContextFactory.context().nodeManager().nodeContext( nodeSettings );
+        
         currentState = NodeState.LOADED;
     }
 
@@ -95,19 +107,34 @@ public abstract class NodeBase implements Node
         return nodeContext;
     }
 
+    public void setNodeContext( NodeContext nodeContext )
+    {
+        this.nodeContext = nodeContext;
+    }
+    
     public NodeSettings getNodeSettings()
     {
         return nodeSettings;
     }
 
-    public Long getPolicyId()
+    public void setNodeSettings( NodeSettings nodeSettings )
     {
-        return nodeSettings.getPolicyId();
+        this.nodeSettings = nodeSettings;
     }
 
     public NodeProperties getNodeProperties()
     {
-        return nodeContext.getNodeProperties();
+        return nodeProperties;
+    }
+
+    public void setNodeProperties( NodeProperties nodeProperties )
+    {
+        this.nodeProperties = nodeProperties;
+    }
+    
+    public Long getPolicyId()
+    {
+        return nodeSettings.getPolicyId();
     }
 
     public void addParent( NodeBase parent )
@@ -306,14 +333,14 @@ public abstract class NodeBase implements Node
         }
 
         try {
-            UvmContextFactory.context().nodeManager().registerThreadContext(nodeContext);
+            UvmContextFactory.context().nodeManager().setLoggingNode(this.nodeSettings.getId());
 
             preInit();
             changeState( NodeState.INITIALIZED, saveNewTargetState );
             postInit();
 
         } finally {
-            UvmContextFactory.context().nodeManager().deregisterThreadContext();
+            UvmContextFactory.context().nodeManager().setLoggingUvm();
         }
     }
 
@@ -328,17 +355,17 @@ public abstract class NodeBase implements Node
             if (NodeState.INITIALIZED == parent.getRunState()) {
                 try {
                     NodeContext pCtx = parent.getNodeContext();
-                    UvmContextFactory.context().nodeManager().registerThreadContext(pCtx);
+                    UvmContextFactory.context().nodeManager().setLoggingNode(pCtx.getNodeSettings().getId());
                     if (parent.getRunState() == NodeState.INITIALIZED) 
                         parent.start( false );
                 } finally {
-                    UvmContextFactory.context().nodeManager().registerThreadContext(nodeContext);
+                    UvmContextFactory.context().nodeManager().setLoggingNode(nodeContext.getNodeSettings().getId());
                 }
             }
         }
 
         try {
-            UvmContextFactory.context().nodeManager().registerThreadContext(nodeContext);
+            UvmContextFactory.context().nodeManager().setLoggingNode(this.nodeSettings.getId());
             logger.info("Starting   node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getName() + ")" + " ...");
             preStart();
 
@@ -348,7 +375,7 @@ public abstract class NodeBase implements Node
             postStart(); // XXX if exception, state == ?
             logger.info("Started    node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getName() + ")" + " ...");
         } finally {
-            UvmContextFactory.context().nodeManager().deregisterThreadContext();
+            UvmContextFactory.context().nodeManager().setLoggingUvm();
         }
     }
 
@@ -360,33 +387,33 @@ public abstract class NodeBase implements Node
         }
 
         try {
-            UvmContextFactory.context().nodeManager().registerThreadContext(nodeContext);
+            UvmContextFactory.context().nodeManager().setLoggingNode(this.nodeSettings.getId());
             logger.info("Stopping   node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getName() + ")" + " ...");
             preStop();
             disconnectArgonConnector();
             changeState(NodeState.INITIALIZED, saveNewTargetState);
         } finally {
-            UvmContextFactory.context().nodeManager().deregisterThreadContext();
+            UvmContextFactory.context().nodeManager().setLoggingUvm();
         }
 
         for (NodeBase parent : parents) {
             if (NodeState.RUNNING == parent.getRunState()) {
                 try {
                     NodeContext pCtx = parent.getNodeContext();
-                    UvmContextFactory.context().nodeManager().registerThreadContext(pCtx);
+                    UvmContextFactory.context().nodeManager().setLoggingNode(pCtx.getNodeSettings().getId());
                     parent.stopIfNotRequiredByChildren();
                 } finally {
-                    UvmContextFactory.context().nodeManager().registerThreadContext(nodeContext);
+                    UvmContextFactory.context().nodeManager().setLoggingNode(nodeContext.getNodeSettings().getId());
                 }
             }
         }
 
         try {
-            UvmContextFactory.context().nodeManager().registerThreadContext(nodeContext);
+            UvmContextFactory.context().nodeManager().setLoggingNode(this.nodeSettings.getId());
             postStop(); // XXX if exception, state == ?
             logger.info("Stopped    node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getName() + ")" + " ...");
         } finally {
-            UvmContextFactory.context().nodeManager().deregisterThreadContext();
+            UvmContextFactory.context().nodeManager().setLoggingUvm();
         }
     }
 
@@ -398,7 +425,7 @@ public abstract class NodeBase implements Node
         }
 
         try {
-            UvmContextFactory.context().nodeManager().registerThreadContext(nodeContext);
+            UvmContextFactory.context().nodeManager().setLoggingNode(this.nodeSettings.getId());
             logger.info("Destroying node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getName() + ")" + " ...");
             preDestroy();
             for (NodeBase p : parents) {
@@ -410,7 +437,7 @@ public abstract class NodeBase implements Node
             postDestroy(); // XXX if exception, state == ?
             logger.info("Destroyed  node " + this.getNodeContext().getNodeProperties().getName() + "(" + this.getNodeContext().getNodeProperties().getName() + ")" + " ...");
         } finally {
-            UvmContextFactory.context().nodeManager().deregisterThreadContext();
+            UvmContextFactory.context().nodeManager().setLoggingUvm();
         }
     }
 

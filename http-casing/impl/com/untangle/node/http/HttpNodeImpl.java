@@ -29,7 +29,10 @@ public class HttpNodeImpl extends AbstractNode implements HttpNode
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     private HttpSettings settings;
 
-    public HttpNodeImpl() {}
+    public HttpNodeImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    {
+        super( nodeSettings, nodeProperties );
+    }
 
     public HttpSettings getHttpSettings()
     {

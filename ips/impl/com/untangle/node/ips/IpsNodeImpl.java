@@ -53,8 +53,10 @@ public class IpsNodeImpl extends AbstractNode implements IpsNode
     private EventLogQuery allEventQuery;
     private EventLogQuery blockedEventQuery;
     
-    public IpsNodeImpl()
+    public IpsNodeImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
+        super( nodeSettings, nodeProperties );
+
         engine = new IpsDetectionEngine(this);
         handler = new EventHandler(this);
         statisticManager = new IpsStatisticManager();

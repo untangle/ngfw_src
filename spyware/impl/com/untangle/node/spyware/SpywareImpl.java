@@ -94,8 +94,10 @@ public class SpywareImpl extends AbstractNode implements Spyware
     // constructors ------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
-	public SpywareImpl()
+    public SpywareImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
+        super( nodeSettings, nodeProperties );
+
         replacementGenerator = new SpywareReplacementGenerator(getNodeSettings());
 
         NodeContext nodeContext = getNodeContext();
