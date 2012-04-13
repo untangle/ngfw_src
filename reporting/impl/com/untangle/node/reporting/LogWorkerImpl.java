@@ -77,23 +77,23 @@ public class LogWorkerImpl implements Runnable, LogWorker
             if (!forceFlush)
                 try {Thread.sleep(SYNC_TIME);} catch (Exception e) {}
 
-            /**
-             * Copy all events out of the queue
-             */
-            while ((event = inputQueue.poll()) != null) {
-                logQueue.add(event);
-            }
-                
-            /**
-             * If there is anything to log, log it to the database
-             */
-            if (logQueue.size() > 0)
-                persist(logQueue);
-
-            /**
-             * If the forceFlush flag was set, reset it and wake any interested parties
-             */
             synchronized( this ) {
+                /**
+                 * Copy all events out of the queue
+                 */
+                while ((event = inputQueue.poll()) != null) {
+                    logQueue.add(event);
+                }
+                
+                /**
+                 * If there is anything to log, log it to the database
+                 */
+                if (logQueue.size() > 0)
+                    persist(logQueue);
+
+                /**
+                 * If the forceFlush flag was set, reset it and wake any interested parties
+                 */
                 if (forceFlush) {
                     forceFlush = false; //reset global flag
                     notifyAll(); /* notify any waiting threads that the flush is done */
