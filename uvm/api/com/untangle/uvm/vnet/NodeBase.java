@@ -132,11 +132,6 @@ public abstract class NodeBase implements Node
         this.nodeProperties = nodeProperties;
     }
     
-    public Long getPolicyId()
-    {
-        return nodeSettings.getPolicyId();
-    }
-
     public void addParent( NodeBase parent )
     {
         parents.add(parent);

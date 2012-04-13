@@ -15,8 +15,26 @@ import com.untangle.uvm.logging.LogEvent;
  */
 public interface Node
 {
-    public NodeSettings getNodeSettings();
+    /**
+     * Get the node Settings
+     * This returns the generic settings that all nodes share
+     * getSettings returns the node-specific settings
+     */
+    NodeSettings getNodeSettings();
 
+    /**
+     * Get the node immutable Properties 
+     */
+    NodeProperties getNodeProperties();
+
+    /**
+     * FIXME remove me
+     */
+    NodeContext getNodeContext();
+
+    /**
+     * Get the current run state of this node
+     */
     NodeSettings.NodeState getRunState();
 
     /**
@@ -43,13 +61,14 @@ public interface Node
      */
     void stop() throws Exception;
 
-    NodeContext getNodeContext();
-
-    NodeProperties getNodeProperties();
-
+    /**
+     * Retrieve a list of sessions currently being processed by this node
+     */
     List<VnetSessionDesc> liveSessionDescs();
 
-    Long getPolicyId();
-    
+    /**
+     * Log an event
+     * This is just a convenience method for different parts of the node to log events
+     */
     void logEvent(LogEvent evt);
 }

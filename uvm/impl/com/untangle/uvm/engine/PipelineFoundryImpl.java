@@ -378,7 +378,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                             if (w) {
                                 welded = true;
                             }
-                        } else if (policyMatch(argonConnector.getPipeSpec().getNode().getPolicyId(), policyId)) {
+                        } else if (policyMatch(argonConnector.getPipeSpec().getNode().getNodeSettings().getPolicyId(), policyId)) {
                             ArgonConnectorFitting acFitting = new ArgonConnectorFitting(argonConnector, start);
                             boolean w = argonConnectorFittings.add(acFitting);
                             if (w) {
@@ -409,7 +409,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 CasingPipeSpec ps = (CasingPipeSpec) insideArgonConnector.getPipeSpec();
                 Fitting f = ps.getInput();
 
-                if (!policyMatch(ps.getNode().getPolicyId(), policyId)) {
+                if (!policyMatch(ps.getNode().getNodeSettings().getPolicyId(), policyId)) {
                     i.remove();
                 } else if (start.instanceOf(f)) {
                     ArgonConnector outsideArgonConnector = availCasings.get(insideArgonConnector);
