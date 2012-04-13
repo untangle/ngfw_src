@@ -72,7 +72,7 @@ public class PhishNode extends SpamNodeImpl implements Phish
 
     // constructors -----------------------------------------------------------
 
-    public PhishNode( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public PhishNode( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties, new PhishScanner() );
 

@@ -17,7 +17,7 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.util.I18nUtil;
 
 @SuppressWarnings("serial")

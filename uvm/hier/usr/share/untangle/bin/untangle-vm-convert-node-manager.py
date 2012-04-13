@@ -11,7 +11,7 @@ import base64
 
 def get_settings(debug=False):
     str = "{\n"
-    str += '\t"javaClass": "com.untangle.uvm.NodeManagerSettings"\n'
+    str += '\t"javaClass": "com.untangle.uvm.node.NodeManagerSettings"\n'
     str += '}\n'
 
     return str

@@ -94,7 +94,7 @@ public class SpywareImpl extends NodeBase implements Spyware
     // constructors ------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
-    public SpywareImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public SpywareImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
 

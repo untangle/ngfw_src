@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 
 /**
  * The immutable properties of a Node

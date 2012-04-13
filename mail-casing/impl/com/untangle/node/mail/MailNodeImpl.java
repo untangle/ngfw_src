@@ -92,7 +92,7 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
 
     // constructors -----------------------------------------------------------
 
-    public MailNodeImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public MailNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
 

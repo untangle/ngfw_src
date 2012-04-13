@@ -28,7 +28,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.BrandingManager;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
@@ -73,7 +73,7 @@ public class CPDImpl extends NodeBase implements CPD
 
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
 
-    public CPDImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public CPDImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
 

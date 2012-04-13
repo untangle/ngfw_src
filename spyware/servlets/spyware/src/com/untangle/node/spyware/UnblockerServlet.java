@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeContext;
 

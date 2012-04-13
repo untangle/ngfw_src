@@ -16,7 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.untangle.uvm.node.IPMaskedAddressDirectory;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 
 /**
  * Settings for the Reporting Node.

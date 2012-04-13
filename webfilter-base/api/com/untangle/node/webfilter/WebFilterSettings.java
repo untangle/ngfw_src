@@ -12,7 +12,7 @@ import org.json.JSONString;
 
 import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.GenericRule;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 
 /**
  * WebFilter settings.

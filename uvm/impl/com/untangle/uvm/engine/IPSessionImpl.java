@@ -19,7 +19,7 @@ import com.untangle.jvector.Crumb;
 import com.untangle.jvector.DataCrumb;
 import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.argon.PipelineListener;
 import com.untangle.uvm.argon.ArgonIPSession;
 import com.untangle.uvm.node.Node;

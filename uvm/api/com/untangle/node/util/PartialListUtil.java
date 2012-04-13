@@ -43,7 +43,7 @@ import org.hibernate.Session;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.Rule;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.util.QueryUtil;
 import com.untangle.uvm.util.TransactionWork;
 

@@ -52,7 +52,7 @@ import com.untangle.uvm.reports.Section;
 import com.untangle.uvm.reports.SummarySection;
 import com.untangle.uvm.reports.TableOfContents;
 import com.untangle.uvm.reports.User;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.toolbox.PackageDesc;
 
 class ReportingManagerImpl implements ReportingManager

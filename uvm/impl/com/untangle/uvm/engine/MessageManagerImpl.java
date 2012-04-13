@@ -40,7 +40,7 @@ import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.SessionEndpoints;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.TransactionWork;
 

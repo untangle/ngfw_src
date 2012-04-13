@@ -29,7 +29,7 @@ public class HttpNodeImpl extends NodeBase implements HttpNode
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     private HttpSettings settings;
 
-    public HttpNodeImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public HttpNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
     }

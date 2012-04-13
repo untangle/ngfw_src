@@ -7,7 +7,7 @@ import com.untangle.node.virus.VirusNodeImpl;
 
 public class ClamNode extends VirusNodeImpl
 {
-    public ClamNode( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public ClamNode( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties, new ClamScanner() );
     }

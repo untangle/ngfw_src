@@ -43,7 +43,7 @@ import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.script.ScriptRunner;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.util.I18nUtil;
 
 public class Sandbox

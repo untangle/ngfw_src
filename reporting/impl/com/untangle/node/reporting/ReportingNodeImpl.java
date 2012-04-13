@@ -29,7 +29,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.IPMaskedAddressDirectory;

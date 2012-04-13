@@ -5,7 +5,7 @@ package com.untangle.uvm.engine;
 
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.vnet.NodeBase;
 

@@ -25,7 +25,7 @@ import com.untangle.uvm.argon.SessionGlobalState;
 import com.untangle.uvm.argon.ArgonHook;
 import com.untangle.uvm.argon.ArgonSessionTable;
 import com.untangle.uvm.SessionMonitorEntry;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.networking.InterfaceConfiguration;
 
 /**

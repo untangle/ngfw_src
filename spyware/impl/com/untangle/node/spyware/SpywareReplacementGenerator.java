@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 import com.untangle.node.http.ReplacementGenerator;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 
 public class SpywareReplacementGenerator extends ReplacementGenerator<SpywareBlockDetails>
 {

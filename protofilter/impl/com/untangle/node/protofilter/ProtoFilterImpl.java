@@ -49,7 +49,7 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
 
     // constructors -----------------------------------------------------------
 
-    public ProtoFilterImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public ProtoFilterImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
 

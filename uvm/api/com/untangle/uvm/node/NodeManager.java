@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.untangle.uvm.NodeManagerSettings;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeManagerSettings;
+import com.untangle.uvm.node.NodeSettings;
 
 /**
  * Local interface for managing Node instances.

@@ -30,7 +30,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.NodeManagerSettings;
+import com.untangle.uvm.node.NodeManagerSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.SessionMatcher;
@@ -44,7 +44,7 @@ import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeProperties;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.toolbox.PackageDesc;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.util.Pulse;
@@ -290,6 +290,14 @@ public class NodeManagerImpl implements NodeManager
                     UvmContextImpl.getInstance().refreshSessionFactory();
             }
 
+            /**
+             * Initialize the schema - XXX remove me after settings conversion complete FIXME
+             */
+            if (null != nodeProperties.getNodeBase()) {
+                UvmContextImpl.getInstance().schemaUtil().initSchema("settings", nodeProperties.getNodeBase());
+            }
+            UvmContextImpl.getInstance().schemaUtil().initSchema("settings", nodeProperties.getNodeBase());
+            
             nodeContext = new NodeContextImpl(nodeProperties, nodeSettings, packageDesc.getName(), true);
             loadedNodesMap.put(nodeSettings, nodeContext);
             try {

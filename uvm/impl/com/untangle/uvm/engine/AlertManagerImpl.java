@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.AlertManager;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.ConnectionStatus;

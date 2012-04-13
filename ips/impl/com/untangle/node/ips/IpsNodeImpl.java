@@ -53,7 +53,7 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
     private EventLogQuery allEventQuery;
     private EventLogQuery blockedEventQuery;
     
-    public IpsNodeImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public IpsNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
 

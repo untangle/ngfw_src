@@ -15,7 +15,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SessionMatcherFactory;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;

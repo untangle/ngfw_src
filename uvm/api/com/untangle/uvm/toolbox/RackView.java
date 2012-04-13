@@ -11,7 +11,7 @@ import java.util.Map;
 import com.untangle.uvm.message.StatDescs;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.License;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 
 @SuppressWarnings("serial")
 public class RackView implements Serializable

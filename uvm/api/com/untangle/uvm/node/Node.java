@@ -5,7 +5,7 @@ package com.untangle.uvm.node;
 
 import java.util.List;
 
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.logging.LogEvent;
 

@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.SessionMonitorEntry;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 
 public interface SessionMonitor
 {

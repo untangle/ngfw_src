@@ -30,7 +30,7 @@ import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeContext;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import org.apache.log4j.Logger;
 
 /**

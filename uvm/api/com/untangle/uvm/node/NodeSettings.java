@@ -1,7 +1,7 @@
 /*
  * $Id$
  */
-package com.untangle.uvm;
+package com.untangle.uvm.node;
 
 import java.io.Serializable;
 

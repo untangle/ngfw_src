@@ -29,7 +29,7 @@ public class FtpNodeImpl extends NodeBase
 
     // constructors -----------------------------------------------------------
 
-    public FtpNodeImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public FtpNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
     }

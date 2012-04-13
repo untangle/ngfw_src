@@ -18,7 +18,7 @@ import org.hibernate.Session;
 
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.util.I18nUtil;
@@ -54,7 +54,7 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
 
     private final ShieldManager shieldManager;
 
-    public ShieldNodeImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public ShieldNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
 

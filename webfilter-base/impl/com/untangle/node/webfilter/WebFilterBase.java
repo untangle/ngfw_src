@@ -18,7 +18,7 @@ import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;

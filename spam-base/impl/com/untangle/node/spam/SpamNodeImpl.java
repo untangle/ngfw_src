@@ -68,7 +68,7 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     private Date lastUpdateCheck = new Date();
 
     @SuppressWarnings("unchecked")
-	public SpamNodeImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties, SpamScanner scanner )
+	public SpamNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties, SpamScanner scanner )
     {
         super( nodeSettings, nodeProperties );
         

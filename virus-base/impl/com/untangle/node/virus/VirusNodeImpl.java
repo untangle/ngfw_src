@@ -151,7 +151,7 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
 
     // constructors -----------------------------------------------------------
 
-    public VirusNodeImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties, VirusScanner scanner )
+    public VirusNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties, VirusScanner scanner )
     {
         super( nodeSettings, nodeProperties );
 

@@ -22,7 +22,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.user.IpUsernameMapAssistant;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.util.Pulse;

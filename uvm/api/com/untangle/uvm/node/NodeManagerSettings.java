@@ -1,7 +1,7 @@
 /**
  * $Id: NodeManagerSettings.java,v 1.00 2012/04/06 10:22:03 dmorris Exp $
  */
-package com.untangle.uvm;
+package com.untangle.uvm.node;
 
 import java.io.Serializable;
 import java.util.LinkedList;

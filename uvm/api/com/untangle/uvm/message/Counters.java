@@ -10,7 +10,7 @@ import java.util.Map;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 
 /**
  * Class for registering LoadStats and CounterStats objects and

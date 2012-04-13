@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.node.openvpn.Constants;

@@ -6,7 +6,7 @@ package com.untangle.node.webfilter;
 import java.util.LinkedList;
 
 import com.untangle.uvm.node.GenericRule;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeProperties;
 
 public class WebFilterImpl extends WebFilterBase

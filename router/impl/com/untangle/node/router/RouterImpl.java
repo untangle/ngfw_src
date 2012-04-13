@@ -41,7 +41,7 @@ public class RouterImpl extends NodeBase implements Router
 
     private final Logger logger = Logger.getLogger( RouterImpl.class );
 
-    public RouterImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public RouterImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
 

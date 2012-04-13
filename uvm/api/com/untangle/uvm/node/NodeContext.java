@@ -6,7 +6,7 @@ package com.untangle.uvm.node;
 import java.io.InputStream;
 import java.util.List;
 
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.toolbox.PackageDesc;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.VnetSessionDesc;

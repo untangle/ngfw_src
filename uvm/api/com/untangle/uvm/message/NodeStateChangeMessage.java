@@ -5,7 +5,7 @@ package com.untangle.uvm.message;
 
 import com.untangle.uvm.message.Message;
 import com.untangle.uvm.node.NodeProperties;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 
 @SuppressWarnings("serial")
 public class NodeStateChangeMessage extends Message

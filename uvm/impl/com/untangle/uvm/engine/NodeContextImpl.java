@@ -23,7 +23,7 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.toolbox.PackageDesc;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.VnetSessionDesc;
@@ -46,11 +46,6 @@ public class NodeContextImpl implements NodeContext
 
     public NodeContextImpl(NodeProperties nodeProperties, NodeSettings nodeSettings, String packageName, boolean isNew) throws DeployException
     {
-        if (null != nodeProperties.getNodeBase()) {
-            UvmContextImpl.getInstance().schemaUtil().initSchema("settings", nodeProperties.getNodeBase());
-        }
-        UvmContextImpl.getInstance().schemaUtil().initSchema("settings", nodeProperties.getName());
-
         LoggingManagerImpl lm = UvmContextImpl.getInstance().loggingManager();
         if (null != nodeProperties.getNodeBase()) {
             lm.initSchema(nodeProperties.getNodeBase());

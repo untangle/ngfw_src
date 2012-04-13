@@ -14,7 +14,7 @@ import com.untangle.node.token.Token;
 import com.untangle.node.util.NonceFactory;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.NodeSettings;
+import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.vnet.TCPSession;
 
 /**
