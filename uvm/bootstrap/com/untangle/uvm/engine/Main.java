@@ -15,7 +15,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.logging.UvmRepositorySelector;
-import com.untangle.uvm.logging.LoggingInformation;
 
 /**
  * Bootstraps the UVM. Access to the Main object should be protected.
@@ -61,8 +60,7 @@ public class Main
          * Configure the basic logging setup
          */
         LogManager.setRepositorySelector(UvmRepositorySelector.instance(), new Object());
-        LoggingInformation logInfo = new LoggingInformation("log4j-uvm.xml", "uvm" );
-        UvmRepositorySelector.instance().setThreadLoggingInformation(logInfo);
+        UvmRepositorySelector.instance().setThreadLoggingInformation("uvm");
     }
 
     /**

@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<!-- ===================================================================== -->
+<!--                                                                       -->
+<!--  Log4j Configuration for Untangle                                     -->
+<!--                                                                       -->
+<!-- ===================================================================== -->
+
+<!-- $Id: log4j.xml,v 1.00 2012/04/12 21:57:25 dmorris Exp $ -->
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+  <!-- ============================================== -->
+  <!-- Appenders                                      -->
+  <!-- ============================================== -->
+
+  <appender name="UVMLOG" class="org.apache.log4j.net.SyslogAppender">
+    <param name="SyslogHost" value="localhost"/>
+    <param name="Facility" value="LOCAL0"/>
+    <param name="Threshold" value="ALL"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="[%c{1}] %-5p %m%n"/>
+    </layout>
+  </appender>
+
+  <appender name="SCHEMA" class="org.apache.log4j.net.SyslogAppender">
+    <param name="SyslogHost" value="localhost"/>
+    <param name="Facility" value="LOCAL3"/>
+    <param name="Threshold" value="ALL"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="[%c{1}] %-5p %m%n"/>
+    </layout>
+  </appender>
+
+  <appender name="EVENTS" class="org.apache.log4j.net.SyslogAppender">
+    <param name="SyslogHost" value="localhost"/>
+    <param name="Facility" value="LOCAL5"/>
+    <param name="Threshold" value="ALL"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%-5p %m%n"/>
+    </layout>
+  </appender>
+
+  <appender name="REPORTER" class="org.apache.log4j.net.SyslogAppender">
+    <param name="SyslogHost" value="localhost"/>
+    <param name="Facility" value="LOCAL4"/>
+    <param name="Threshold" value="ALL"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="[%c{1}] %-5p %m%n"/>
+    </layout>
+  </appender>
+
+  <appender name="NODELOG" class="org.apache.log4j.net.SyslogAppender">
+    <param name="SyslogHost" value="localhost"/>
+    <param name="Facility" value="LOCAL1"/>
+    <param name="Threshold" value="ALL"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="node-@NodeLogFileName@: [%c{1}] &lt;%X{SessionID}&gt; %-5p %m%n"/>
+    </layout>
+  </appender>
+
+  <!-- ============================================== -->
+  <!-- Misc Categories                                -->
+  <!-- ============================================== -->
+
+  <category name="org.apache.catalina">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="org.apache.jk">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="org.hibernate">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.mchange">
+    <priority value="INFO"/>
+  </category>
+
+  <!-- ============================================== -->
+  <!-- Untangle Platform Categories                   -->
+  <!-- ============================================== -->
+
+  <category name="com.untangle.uvm.argon.SessionGlobalState">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.untangle.uvm.argon">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.untangle.jnetcap">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.untangle.jvector">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.untangle.uvm.logging">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.untangle.uvm.snmp">
+    <priority value="INFO"/>
+  </category>
+
+  <!-- event logs need to have a specific facility -->
+  <category name="com.untangle.uvm.engine.SyslogManagerImpl" additivity="false">
+    <priority value="ALL"/>
+    <appender-ref ref="EVENTS"/>
+  </category>
+
+  <!-- so do schema-related logs -->
+  <category name="com.untangle.uvm.engine.SchemaUtil" additivity="false">
+    <priority value="ALL"/>
+    <appender-ref ref="SCHEMA"/>
+  </category>
+
+  <!-- normal level for engine and following is INFO -->
+  <category name="com.untangle.uvm.engine">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.uvm.engine.PipelineFoundryImpl">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.uvm.engine.SettingsManagerImpl">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.uvm.engine.Dispatcher">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.untangle.uvm.networking">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.uvm.license">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.util">
+    <priority value="INFO"/>
+  </category>
+
+  <!-- ============================================== -->
+  <!-- Untangle App/Node Categories                   -->
+  <!-- ============================================== -->
+
+  <category name="com.untangle.uvm.node">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.util">
+    <priority value="INFtO"/>
+  </category>
+
+  <category name="com.untangle.node.token">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.router">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.adblocker">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.adconnector">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.bandwidth">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.boxbackup">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.branding">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.clam">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.commtouch">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.cpd">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.faild">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.firewall">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.ftp">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.http">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.ips">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.ipsec">
+    <priority value="INFO"/>
+  </category>
+ 
+  <category name="com.untangle.node.datavault">
+    <priority value="DEBUG"/>
+  </category>
+ 
+  <category name="com.untangle.node.license">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.untangle.node.mail">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.openvpn">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.phish">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.policy">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.protofilter">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.shield">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.sitefilter">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.spam">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.spamassassin">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.splitd">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.spyware">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.support">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.virus">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.webcache">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.webfilter">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.classd">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.uvm.vnet.NodeBase">
+    <priority value="INFO"/>
+  </category>
+
+  <!-- ============================================== -->
+  <!-- Untangle VNET Categories                       -->
+  <!-- #      DEBUG           new session debugging   -->
+  <!-- #      INFO            each new session        -->
+  <!-- #      WARN            exceptions              -->
+  <!-- ============================================== -->
+
+  <category name="com.untangle.uvm.vnet.ArgonConnector">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.untangle.uvm.vnet.TCPSession">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.untangle.uvm.vnet.UDPSession">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.untangle.uvm.vnet.SessionTimes">
+    <priority value="WARN"/>
+  </category>
+
+
+  <!-- ============================================== -->
+  <!-- The Root Category                              -->
+  <!-- ============================================== -->
+
+  <root>
+    <priority value="WARN"/>
+    <appender-ref ref="@DefaultAppender@"/>
+  </root>
+</log4j:configuration>

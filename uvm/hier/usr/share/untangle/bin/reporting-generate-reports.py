@@ -159,14 +159,14 @@ def get_report_lengths(date):
     logger.debug("day_of_week: %s" % (day_of_week,))
     conn = sql_helper.get_connection()
 
+# FIXME - read reporting settings from active reports only
+# This no longer checks which entry is the correct one
     try:
         curs = conn.cursor()
         curs.execute("""
 SELECT sched.id, daily, monthly_n_daily, monthly_n_day_of_wk, monthly_n_first
 FROM settings.n_reporting_sched sched
 JOIN settings.n_reporting_settings ON (schedule = sched.id)
-JOIN settings.u_node_persistent_state USING (tid)
-WHERE target_state = 'running' OR target_state = 'initialized'
 """)
         r = curs.fetchone()
         if r:
@@ -223,14 +223,14 @@ def get_locale():
 def get_settings():
      settings = {}
 
+# FIXME - read reporting settings from active reports only
+# This no longer checks which entry is the correct one
      conn = sql_helper.get_connection()
      try:
           curs = conn.cursor()
           curs.execute("""\
 SELECT db_retention, file_retention, email_detail, attachment_size_limit
 FROM settings.n_reporting_settings
-JOIN settings.u_node_persistent_state USING (tid)
-WHERE target_state = 'running' OR target_state = 'initialized'
 """)
           r = curs.fetchone()
           if r:

@@ -35,7 +35,6 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.logging.UvmRepositorySelector;
-import com.untangle.uvm.logging.LoggingInformation;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.NodeInstantiatedMessage;
@@ -479,14 +478,12 @@ public class NodeManagerImpl implements NodeManager
 
     public void setLoggingNode(Long nodeId)
     {
-        LoggingInformation logInfo = new LoggingInformation("log4j-node.xml", nodeId.toString());
-        UvmRepositorySelector.instance().setThreadLoggingInformation(logInfo);
+        UvmRepositorySelector.instance().setThreadLoggingInformation(nodeId.toString());
     }
 
     public void setLoggingUvm()
     {
-        LoggingInformation logInfo = new LoggingInformation("log4j-uvm.xml", "uvm" );
-        UvmRepositorySelector.instance().setThreadLoggingInformation(logInfo);
+        UvmRepositorySelector.instance().setThreadLoggingInformation("uvm");
     }
 
     // package protected methods ----------------------------------------------

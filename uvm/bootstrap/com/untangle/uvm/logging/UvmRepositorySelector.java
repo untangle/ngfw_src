@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.LinkedList;
 
 import org.apache.log4j.Hierarchy;
 import org.apache.log4j.Level;
@@ -24,21 +25,21 @@ import org.apache.log4j.spi.RootLogger;
 import org.apache.log4j.xml.DOMConfigurator;
 
 /**
- * Selects logging repository based on the LoggingInformation.
+ * Selects logging repository based on the fileName String.
  */
 public class UvmRepositorySelector implements RepositorySelector
 {
     private static final UvmRepositorySelector INSTANCE;
 
-    private final Map<LoggingInformation, UvmHierarchy> repositories;
-    private final ThreadLocal<LoggingInformation> threadLogInfo;
+    private final Map<String, UvmHierarchy> repositories;
+    private final ThreadLocal<String> threadLogInfo;
 
-    private static final LoggingInformation DEFAULT_LOGGING_INFO = new LoggingInformation("log4j-uvm.xml", "uvm" );
+    public static final String DEFAULT_LOG = "uvm";
     
     private UvmRepositorySelector()
     {
-        repositories = new HashMap<LoggingInformation, UvmHierarchy>();
-        threadLogInfo = new InheritableThreadLocal<LoggingInformation>();
+        repositories = new HashMap<String, UvmHierarchy>();
+        threadLogInfo = new InheritableThreadLocal<String>();
     }
 
     public static UvmRepositorySelector instance()
@@ -48,18 +49,18 @@ public class UvmRepositorySelector implements RepositorySelector
 
     public LoggerRepository getLoggerRepository()
     {
-        LoggingInformation logInfo = threadLogInfo.get();
-        if (logInfo == null)
-            logInfo = DEFAULT_LOGGING_INFO;
+        String fileName = threadLogInfo.get();
+        if (fileName == null)
+            fileName = DEFAULT_LOG;
         
         UvmHierarchy hier;
 
         synchronized (repositories) {
-            hier = repositories.get(logInfo);
+            hier = repositories.get(fileName);
             if (hier == null) {
-                hier = new UvmHierarchy(logInfo);
+                hier = new UvmHierarchy(fileName);
                 hier.configure();
-                repositories.put(logInfo, hier);
+                repositories.put(fileName, hier);
             }
         }
 
@@ -85,9 +86,9 @@ public class UvmRepositorySelector implements RepositorySelector
      *
      * @param ctx the {@link UvmLoggingContextFactory} to use.
      */
-    public void setThreadLoggingInformation(LoggingInformation logInfo)
+    public void setThreadLoggingInformation(String fileName)
     {
-        threadLogInfo.set(logInfo);
+        threadLogInfo.set(fileName);
     }
 
     /**
@@ -97,13 +98,13 @@ public class UvmRepositorySelector implements RepositorySelector
      */
     private class UvmHierarchy extends Hierarchy
     {
-        private final LoggingInformation logInfo;
+        private final String fileName;
 
-        UvmHierarchy(LoggingInformation logInfo)
+        UvmHierarchy(String fileName)
         {
             super(new RootLogger(Level.DEBUG));
 
-            this.logInfo = logInfo;
+            this.fileName = fileName;
         }
 
         public String convertStreamToString(InputStream is) throws java.io.IOException
@@ -113,8 +114,7 @@ public class UvmRepositorySelector implements RepositorySelector
  
                 char[] buffer = new char[1024];
                 try {
-                    Reader reader = new BufferedReader(
-                                                       new InputStreamReader(is, "UTF-8"));
+                    Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
                     int n;
                     while ((n = reader.read(buffer)) != -1) {
                         writer.write(buffer, 0, n);
@@ -130,21 +130,29 @@ public class UvmRepositorySelector implements RepositorySelector
 
         void configure()
         {
-            String n = logInfo.getConfigName();
-            InputStream is = getClass().getClassLoader().getResourceAsStream(n);
+            InputStream is = getClass().getClassLoader().getResourceAsStream("log4j.xml");
             if (null == is) {
-                LogLog.warn("could not open: " + n);
+                LogLog.warn("could not open: log4j.xml");
                 return;
             }
 
             DOMConfigurator configurator = new DOMConfigurator();
-            if (logInfo != null) {
+            if (fileName != null) {
                 try {
                     String fileStr = convertStreamToString(is);
-                    fileStr = fileStr.replace("@NodeLogFileName@", logInfo.getFileName());
+
+                    fileStr = fileStr.replace("@NodeLogFileName@", this.fileName);
+
+                    if (this.fileName.equals("uvm"))
+                        fileStr = fileStr.replace("@DefaultAppender@", "UVMLOG");
+                    else
+                        fileStr = fileStr.replace("@DefaultAppender@", "NODELOG");
+                        
                     InputStream newInputStream = new ByteArrayInputStream(fileStr.getBytes("UTF-8"));
+
                     configurator.doConfigure(newInputStream, this);
-                    this.setThrowableRenderer(new UtThrowableRenderer("node-" + logInfo.getFileName() + ": "));
+
+                    this.setThrowableRenderer(new UtThrowableRenderer("node-" + this.fileName + ": "));
                 }
                 catch (java.io.IOException e) {
                     System.err.println("Exceptiong configuring logging exception: " + e);
@@ -158,5 +166,27 @@ public class UvmRepositorySelector implements RepositorySelector
     static {
         INSTANCE = new UvmRepositorySelector();
     }
+
+    private class UtThrowableRenderer implements org.apache.log4j.spi.ThrowableRenderer
+    {
+        private String prefix;
+
+        public UtThrowableRenderer(String prefix)
+        {
+            this.prefix = prefix;
+        }
+
+        public String[] doRender(Throwable t)
+        {
+            LinkedList<String> l = new LinkedList<String>();
+            l.add(this.prefix + "      " + t.toString());
+            for (StackTraceElement ste: t.getStackTrace()) {
+                l.add(this.prefix + "      " + ste.toString());
+            }
+            return l.toArray(new String[0]);
+        }
+
+    }
+
 }
  

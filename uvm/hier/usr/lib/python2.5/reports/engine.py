@@ -495,7 +495,7 @@ def __generate_plots(report_base, dir):
 
     logger.debug("About to call GraphGenerator with report_base='%s', dir='%s'" % (report_base, dir))
 
-    command = "java -Dlog4j.configuration=file://@PREFIX@/usr/share/untangle/conf/log4j-reporter.xml -Djava.awt.headless=true -cp %s com.untangle.uvm.reports.GraphGenerator '%s' '%s'" % (string.join(path, ':'), report_base, dir)
+    command = "java -Djava.awt.headless=true -cp %s com.untangle.uvm.reports.GraphGenerator '%s' '%s'" % (string.join(path, ':'), report_base, dir)
 
     os.system(command)
 
@@ -601,20 +601,23 @@ def __get_node_partial_order(exclude_uninstalled=True):
     return list
 
 def __get_installed_nodes():
+#FIXME
+    return ["firewall"];
     conn = sql_helper.get_connection()
 
     try:
         curs = conn.cursor()
-        curs.execute("""\
-SELECT DISTINCT name
-FROM settings.u_node_persistent_state
-WHERE target_state IN ('running')
-""")
+#FIXME
+#        curs.execute("""\
+#SELECT DISTINCT name
+#FROM settings.u_node_persistent_state
+#WHERE target_state IN ('running')
+#""")
         rows = curs.fetchall()
         rv = [rows[i][0] for i in range(len(rows))]
     finally:
         conn.commit()
-
+    
     return rv
 
 def __add_node(name, list, available):

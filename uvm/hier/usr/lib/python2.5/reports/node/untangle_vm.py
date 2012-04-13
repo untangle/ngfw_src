@@ -334,10 +334,10 @@ GROUP BY time, uid, hname, client_intf, server_intf
 
     @print_timing
     def __do_housekeeping(self):
-        sql_helper.run_sql("""\
-DELETE FROM settings.n_reporting_settings WHERE tid NOT IN
-(SELECT tid FROM settings.u_node_persistent_state
-WHERE NOT target_state = 'destroyed')""")
+#        sql_helper.run_sql("""\
+#DELETE FROM settings.n_reporting_settings WHERE tid NOT IN
+#(SELECT tid FROM settings.u_node_persistent_state
+#WHERE NOT target_state = 'destroyed')""")
 
         sql_helper.run_sql("""\
 DELETE FROM settings.u_ipmaddr_dir_entries WHERE ipmaddr_dir_id NOT IN
