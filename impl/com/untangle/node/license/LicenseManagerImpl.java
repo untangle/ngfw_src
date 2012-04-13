@@ -78,7 +78,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
      */
     private Pulse pulse = null;
 
-    public LicenseManagerImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public LicenseManagerImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
 
