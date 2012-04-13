@@ -17,7 +17,6 @@ import com.untangle.uvm.logging.LogWorker;
 import com.untangle.uvm.logging.LogWorkerFacility;
 import com.untangle.uvm.logging.LoggingSettings;
 import com.untangle.uvm.logging.LoggingManager;
-import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.logging.LogEvent;
 
@@ -29,7 +28,6 @@ class LoggingManagerImpl implements LoggingManager
     private static final boolean LOGGING_DISABLED = Boolean.parseBoolean(System.getProperty("uvm.logging.disabled"));
 
     private final List<String> initQueue = new LinkedList<String>();
-    private final UvmRepositorySelector repositorySelector;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -42,8 +40,6 @@ class LoggingManagerImpl implements LoggingManager
 
     public LoggingManagerImpl()
     {
-        this.repositorySelector = UvmRepositorySelector.instance();
-
         TransactionWork<Object> tw = new TransactionWork<Object>()
             {
                 public boolean doWork(Session s)
@@ -94,7 +90,7 @@ class LoggingManagerImpl implements LoggingManager
 
     public void resetAllLogs()
     {
-        repositorySelector.reconfigureAll();
+        UvmRepositorySelector.instance().reconfigureAll();
     }
 
     public void logError(String errorText)

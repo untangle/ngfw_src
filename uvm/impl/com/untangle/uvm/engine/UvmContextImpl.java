@@ -50,7 +50,6 @@ import com.untangle.uvm.argon.Argon;
 import com.untangle.uvm.argon.ArgonManagerImpl;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.networking.NetworkManagerImpl;

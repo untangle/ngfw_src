@@ -14,8 +14,6 @@ import java.util.Map;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.logging.UvmRepositorySelector;
-
 /**
  * Bootstraps the UVM. Access to the Main object should be protected.
  *

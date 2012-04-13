@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.logging;
+package com.untangle.uvm.engine;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

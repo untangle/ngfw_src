@@ -34,7 +34,6 @@ import com.untangle.uvm.NodeManagerSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.logging.UvmRepositorySelector;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.NodeInstantiatedMessage;
