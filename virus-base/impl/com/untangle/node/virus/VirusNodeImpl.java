@@ -112,10 +112,8 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
     
     /* This can't be static because it uses policy which is per node */
     private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
-            /* Kill all sessions on ports 20, 21 and 80 */
-            public boolean isMatch(Long sessionPolicyId,
-                                   com.untangle.uvm.node.IPSessionDesc client,
-                                   com.untangle.uvm.node.IPSessionDesc server)
+            /* Kill all FTP, HTTP, SMTP, POP3, IMAP sessions */
+            public boolean isMatch(Long sessionPolicyId, com.untangle.uvm.node.IPSessionDesc client, com.untangle.uvm.node.IPSessionDesc server)
             {
                 /* Don't kill any UDP Sessions */
                 if (client.protocol() == com.untangle.uvm.node.IPSessionDesc.PROTO_UDP) {
@@ -123,7 +121,7 @@ public abstract class VirusNodeImpl extends AbstractNode implements VirusNode
                 }
 
                 /* handle sessions with a null policy */
-                Long policyId = getPolicyId();
+                Long policyId = getNodeSettings().getPolicyId();
                 if (null != sessionPolicyId && null != policyId && !sessionPolicyId.equals( policyId )) {
                     return false;
                 }
