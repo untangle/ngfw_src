@@ -27,13 +27,13 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.vnet.AbstractNode;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.LicenseManager;
 
-public class LicenseManagerImpl extends AbstractNode implements LicenseManager
+public class LicenseManagerImpl extends NodeBase implements LicenseManager
 {
     private static final String LICENSE_URL_PROPERTY = "uvm.license.url";
     private static final String DEFAULT_LICENSE_URL = "https://license.untangle.com/license.php";
