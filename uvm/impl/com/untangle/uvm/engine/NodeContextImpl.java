@@ -44,22 +44,14 @@ public class NodeContextImpl implements NodeContext
     private NodeBase node;
     private String packageName;
 
-    private final NodeManager nodeManager;
-    private final ToolboxManagerImpl toolboxManager;
-
     public NodeContextImpl(NodeProperties nodeProperties, NodeSettings nodeSettings, String packageName, boolean isNew) throws DeployException
     {
-        UvmContextImpl mctx = UvmContextImpl.getInstance();
-
         if (null != nodeProperties.getNodeBase()) {
-            mctx.schemaUtil().initSchema("settings", nodeProperties.getNodeBase());
+            UvmContextImpl.getInstance().schemaUtil().initSchema("settings", nodeProperties.getNodeBase());
         }
-        mctx.schemaUtil().initSchema("settings", nodeProperties.getName());
+        UvmContextImpl.getInstance().schemaUtil().initSchema("settings", nodeProperties.getName());
 
-        nodeManager = mctx.nodeManager();
-        toolboxManager = mctx.toolboxManager();
-
-        LoggingManagerImpl lm = mctx.loggingManager();
+        LoggingManagerImpl lm = UvmContextImpl.getInstance().loggingManager();
         if (null != nodeProperties.getNodeBase()) {
             lm.initSchema(nodeProperties.getNodeBase());
         }
@@ -91,7 +83,7 @@ public class NodeContextImpl implements NodeContext
 
         final UvmContext mctx = UvmContextFactory.context();
         try {
-            nodeManager.setLoggingNode(nodeSettings.getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(nodeSettings.getId());
 
             String nodeSettingsName = nodeSettings.getNodeName();
             logger.debug("setting node " + nodeSettingsName + " log4j repository");
@@ -128,7 +120,7 @@ public class NodeContextImpl implements NodeContext
             logger.error("Exception during node initialization", exn);
             throw new DeployException(exn);
         } finally {
-            nodeManager.setLoggingUvm();
+            UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
         }
     }
 
@@ -146,7 +138,7 @@ public class NodeContextImpl implements NodeContext
 
     public PackageDesc getPackageDesc()
     {
-        return toolboxManager.packageDesc(packageName);
+        return UvmContextImpl.getInstance().toolboxManager().packageDesc(packageName);
     }
 
     public Node node()
@@ -188,7 +180,7 @@ public class NodeContextImpl implements NodeContext
     {
         boolean exists;
         try {
-            URL url = new URL(toolboxManager.getResourceDir(packageDesc), res);
+            URL url = new URL(UvmContextImpl.getInstance().toolboxManager().getResourceDir(packageDesc), res);
             File f = new File(url.toURI());
             exists = f.exists();
         } catch (MalformedURLException exn) {
@@ -204,7 +196,7 @@ public class NodeContextImpl implements NodeContext
         else {
             // bug3699: Try the base, if any.
             if (baseNodeName != null) {
-                PackageDesc baseDesc = toolboxManager.packageDesc(baseNodeName);
+                PackageDesc baseDesc = UvmContextImpl.getInstance().toolboxManager().packageDesc(baseNodeName);
                 if (baseDesc == null) {
                     return false;
                 }
@@ -218,7 +210,7 @@ public class NodeContextImpl implements NodeContext
     private InputStream getResourceAsStreamInt(String res, PackageDesc packageDesc, String baseNodeName)
     {
         try {
-            URL url = new URL(toolboxManager.getResourceDir(packageDesc), res);
+            URL url = new URL(UvmContextImpl.getInstance().toolboxManager().getResourceDir(packageDesc), res);
             File f = new File(url.toURI());
             return new FileInputStream(f);
         } catch (MalformedURLException exn) {
@@ -230,7 +222,7 @@ public class NodeContextImpl implements NodeContext
         } catch (FileNotFoundException exn) {
             // bug3699: Try the base, if any.
             if (baseNodeName != null) {
-                PackageDesc baseDesc = toolboxManager.packageDesc(baseNodeName);
+                PackageDesc baseDesc = UvmContextImpl.getInstance().toolboxManager().packageDesc(baseNodeName);
                 if (baseDesc == null) {
                     logger.warn("resource not found, base missing: " + baseNodeName);
                     return null;
@@ -246,7 +238,7 @@ public class NodeContextImpl implements NodeContext
     protected void destroy() throws Exception
     {
         try {
-            nodeManager.setLoggingNode(nodeSettings.getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(nodeSettings.getId());
             if (node.getRunState() == NodeSettings.NodeState.RUNNING) {
                 node.stop();
             }
@@ -255,7 +247,7 @@ public class NodeContextImpl implements NodeContext
         } catch (Exception exn) {
             throw new Exception(exn);
         } finally {
-            nodeManager.setLoggingUvm();
+            UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
         }
     }
 
@@ -263,10 +255,10 @@ public class NodeContextImpl implements NodeContext
     {
         if (node != null) {
             try {
-                nodeManager.setLoggingNode(nodeSettings.getId());
+                UvmContextImpl.getInstance().loggingManager().setLoggingNode(nodeSettings.getId());
                 node.unload();
             } finally {
-                nodeManager.setLoggingUvm();
+                UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
             }
         }
     }
@@ -279,7 +271,7 @@ public class NodeContextImpl implements NodeContext
         if (nodeProperties.isSingleInstance()) {
             String nodeName = nodeProperties.getName();
             Long policyId = nodeSettings.getPolicyId();
-            List<NodeSettings> l = nodeManager.nodeInstances( nodeName, policyId, false );
+            List<NodeSettings> l = UvmContextImpl.getInstance().nodeManager().nodeInstances( nodeName, policyId, false );
 
             if (1 == l.size()) {
                 if (!nodeSettings.equals(l.get(0))) {
@@ -298,7 +290,7 @@ public class NodeContextImpl implements NodeContext
             return null;
         }
 
-        PackageDesc md = toolboxManager.packageDesc(parent);
+        PackageDesc md = UvmContextImpl.getInstance().toolboxManager().packageDesc(parent);
 
         if (null == md) {
             logger.warn("parent does not exist: " + parent);
@@ -317,8 +309,8 @@ public class NodeContextImpl implements NodeContext
             logger.debug("Parent does not exist, instantiating");
 
             try {
-                NodeSettings parentNodeSettings = nodeManager.instantiate(parent, policyId);
-                pctx = nodeManager.nodeContext(parentNodeSettings);
+                NodeSettings parentNodeSettings = UvmContextImpl.getInstance().nodeManager().instantiate(parent, policyId);
+                pctx = UvmContextImpl.getInstance().nodeManager().nodeContext(parentNodeSettings);
             } catch (Exception exn) {
                 pctx = getParentContext(parent);
             }
@@ -333,10 +325,10 @@ public class NodeContextImpl implements NodeContext
 
     private NodeContext getParentContext(String parent)
     {
-        for (NodeSettings nSettings : nodeManager.nodeInstances(parent)) {
+        for (NodeSettings nSettings : UvmContextImpl.getInstance().nodeManager().nodeInstances(parent)) {
             Long policyId = nSettings.getPolicyId();
             if (policyId == null || policyId.equals(nodeSettings.getPolicyId())) {
-                return nodeManager.nodeContext(nSettings);
+                return UvmContextImpl.getInstance().nodeManager().nodeContext(nSettings);
             }
 
         }

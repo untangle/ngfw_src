@@ -150,9 +150,6 @@ public interface NodeManager
      */
     void flushNodeStateCache();
 
-    void setLoggingNode(Long nodeId);
-    void setLoggingUvm();
-
     /**
      * Returns true if the given node/app is instantiated in the rack
      * false otherwise

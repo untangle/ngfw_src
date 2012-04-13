@@ -58,7 +58,7 @@ public class Main
          * Configure the basic logging setup
          */
         LogManager.setRepositorySelector(UvmRepositorySelector.instance(), new Object());
-        UvmRepositorySelector.instance().setThreadLoggingInformation("uvm");
+        UvmRepositorySelector.instance().setLoggingUvm();
     }
 
     /**

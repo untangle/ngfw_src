@@ -473,20 +473,6 @@ public class NodeManagerImpl implements NodeManager
         logger.info("NodeManager destroyed");
     }
 
-    // NodeManager methods -----------------------------------------------
-
-    public void setLoggingNode(Long nodeId)
-    {
-        UvmRepositorySelector.instance().setThreadLoggingInformation(nodeId.toString());
-    }
-
-    public void setLoggingUvm()
-    {
-        UvmRepositorySelector.instance().setThreadLoggingInformation("uvm");
-    }
-
-    // package protected methods ----------------------------------------------
-
     void unload(NodeSettings nodeSettings)
     {
         synchronized (this) {

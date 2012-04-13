@@ -47,6 +47,9 @@ public class UvmRepositorySelector implements RepositorySelector
         return INSTANCE;
     }
 
+    /**
+     * RepositorySelector method, log4j leverages this
+     */
     public LoggerRepository getLoggerRepository()
     {
         String fileName = threadLogInfo.get();
@@ -68,6 +71,22 @@ public class UvmRepositorySelector implements RepositorySelector
     }
 
     /**
+     * Set the current thread's logging config to the "Node" settings
+     */
+    public void setLoggingNode(Long nodeId)
+    {
+        this.setThreadLoggingInformation(nodeId.toString());
+    }
+
+    /**
+     * Set the current thread's logging config to the "UVM" settings
+     */
+    public void setLoggingUvm()
+    {
+        this.setThreadLoggingInformation("uvm");
+    }
+    
+    /**
      * Causes all logging repositories to reconfigure themselves from
      * the configuration file specified in the {@link
      * UvmLoggingContext}.
@@ -82,11 +101,9 @@ public class UvmRepositorySelector implements RepositorySelector
     }
 
     /**
-     * Sets the current logging context factory.
-     *
-     * @param ctx the {@link UvmLoggingContextFactory} to use.
+     * Sets the current thread's logging config
      */
-    public void setThreadLoggingInformation(String fileName)
+    private void setThreadLoggingInformation(String fileName)
     {
         threadLogInfo.set(fileName);
     }

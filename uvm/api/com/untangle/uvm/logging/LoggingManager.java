@@ -21,6 +21,10 @@ public interface LoggingManager
      */
     void resetAllLogs();
 
+    void setLoggingNode(Long nodeId);
+
+    void setLoggingUvm();
+
     void logError(String errorText);
 
     void logEvent(LogEvent evt);

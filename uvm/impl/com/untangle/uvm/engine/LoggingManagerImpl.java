@@ -88,6 +88,16 @@ class LoggingManagerImpl implements LoggingManager
         SyslogManagerImpl.manager().reconfigure(loggingSettings);
     }
 
+    public void setLoggingNode(Long nodeId)
+    {
+        UvmRepositorySelector.instance().setLoggingNode( nodeId );
+    }
+
+    public void setLoggingUvm()
+    {
+        UvmRepositorySelector.instance().setLoggingUvm();
+    }
+
     public void resetAllLogs()
     {
         UvmRepositorySelector.instance().reconfigureAll();
