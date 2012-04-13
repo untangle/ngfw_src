@@ -78,8 +78,10 @@ public class LicenseManagerImpl extends AbstractNode implements LicenseManager
      */
     private Pulse pulse = null;
 
-    public LicenseManagerImpl()
+    public LicenseManagerImpl( com.untangle.uvm.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
+        super( nodeSettings, nodeProperties );
+
         this.pulse = new Pulse("uvm-license", true, task);
         this.pulse.start(TIMER_DELAY);
         this._readLicenses();
