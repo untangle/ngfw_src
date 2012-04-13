@@ -212,13 +212,13 @@ public class FirewallImpl extends AbstractNode implements Firewall
     protected void postStart()
     {
         /* Kill all active sessions */
-        this.killMatchingSessions(SessionMatcherFactory.makePolicyInstance(getPolicyId()));
+        this.killMatchingSessions(SessionMatcherFactory.makePolicyInstance(getNodeSettings().getPolicyId()));
     }
 
     protected void postStop()
     {
         /* Kill all active sessions */
-        this.killMatchingSessions(SessionMatcherFactory.makePolicyInstance(getPolicyId()));
+        this.killMatchingSessions(SessionMatcherFactory.makePolicyInstance(getNodeSettings().getPolicyId()));
     }
 
     protected void postInit()
