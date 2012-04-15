@@ -209,7 +209,8 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
                 initializeNodeSettings();
             }
             else {
-                settings = readSettings;
+                this.settings = readSettings;
+                this.settings.updateStatistics(statistics);
                 reconfigure();
             }
         }
@@ -247,16 +248,16 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
 
     public void incrementScanCount()
     {
-	scanBlinger.increment();
+        scanBlinger.increment();
     }
 
     public void incrementDetectCount()
     {
-	detectBlinger.increment();
+        detectBlinger.increment();
     }
 
     public void incrementBlockCount()
     {
-	blockBlinger.increment();
+        blockBlinger.increment();
     }
 }

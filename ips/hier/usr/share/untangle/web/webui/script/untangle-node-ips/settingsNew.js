@@ -9,8 +9,11 @@ if (!Ung.hasResource["Ung.Ips"]) {
         gridRules : null,
         gridVariables : null,
         gridEventLog : null,
+        statistics : null,
         // called when the component is rendered
         initComponent : function() {
+            this.getSettings();
+            this.statistics = this.getRpcNode().getStatistics();
             this.buildStatus();
             this.buildRules();
             this.buildEventLog();
@@ -24,7 +27,6 @@ if (!Ung.hasResource["Ung.Ips"]) {
                 name : 'Status',
                 helpSource : 'status',
                 parentId : this.getId(),
-
                 title : this.i18n._('Status'),
             //    layout : "form",
                 cls: 'ung-panel',
@@ -47,19 +49,19 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         name: 'Total Signatures Available',
                         labelWidth:200,
                         labelAlign:'left',
-                        value: this.getBaseSettings().totalAvailable
+                        value: this.statistics.totalAvailable
                     }, {
                         fieldLabel : this.i18n._('Total Signatures Logging'),
                         name: 'Total Signatures Logging',
                         labelWidth:200,
                         labelAlign:'left',
-                        value: this.getBaseSettings().totalLogging
+                        value: this.statistics.totalLogging
                     }, {
                         fieldLabel : this.i18n._('Total Signatures Blocking'),
                         name: 'Total Signatures Blocking',
                         labelWidth:200,
                         labelAlign:'left',
-                        value: this.getBaseSettings().totalBlocking
+                        value: this.statistics.totalBlocking
                     }]
                 }, {
                     title : this.i18n._('Note'),
@@ -72,8 +74,6 @@ if (!Ung.hasResource["Ung.Ips"]) {
 
         // Rules Panel
         buildRules : function() {
-            
-            
             this.panelRules = Ext.create('Ext.panel.Panel',{
                 name : 'panelRules',
                 helpSource : 'rules',
@@ -105,9 +105,8 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         },
                         title : this.i18n._("Rules"),
                         recordJavaClass : "com.untangle.node.ips.IpsRule",
-                        dataFn:	Ext.bind(function() {
-                        	return this.getRpcNode().getRules(0, Ung.Util.maxRowCount,[]);
-                        },this),
+                        dataProperty : 'rules',
+                        paginated : false,
                         fields : [{
                             name : 'id'
                         }, {
@@ -139,7 +138,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                                 xtype:'texfield',
                                 allowBlank : false
                             }
-                        }, 
+                        },
                         {
                             xtype:'checkcolumn',
                             header : this.i18n._("block"),
@@ -153,7 +152,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                             dataIndex : 'log',
                             fixed : true,
                             width:55
-                        }, 
+                        },
                         {
                             header : this.i18n._("description"),
                             width : 200,
@@ -162,13 +161,13 @@ if (!Ung.hasResource["Ung.Ips"]) {
                             editor : null,
                             renderer : function(value, metadata, record) {
                                 var description = "";
-                                if (record.data.classification != null) 
+                                if (record.data.classification != null)
                                 {
                                     description += record.data.classification + " ";
                                 }
                                 if (record.data.description != null) {
                                     description += "(" + record.data.description + ")";
-                                }    
+                                }
                                 return description;
                             }
                         }, {
@@ -241,8 +240,8 @@ if (!Ung.hasResource["Ung.Ips"]) {
                             allowBlank : false,
                             width : 500
                         }]
-                    }),  
-                    {html : '<br>', border: false}, 
+                    }),
+                    {html : '<br>', border: false},
                     this.gridVariables = Ext.create('Ung.EditorGrid',{
                         name : 'Variables',
                         settingsCmp : this,
@@ -254,9 +253,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                         },
                         title : this.i18n._("Variables"),
                         recordJavaClass : "com.untangle.node.ips.IpsVariable",
-                        dataFn : Ext.bind(function() {
-                        	return this.getRpcNode().getVariables(0,this.getBaseSettings().variablesLength,[]);
-                        },this),
+                        dataProperty : 'variables',
                         fields : [{
                             name : 'id'
                         }, {
@@ -306,7 +303,7 @@ if (!Ung.hasResource["Ung.Ips"]) {
                             fieldLabel : this.i18n._("Name"),
                             allowBlank : false,
                             width : 300
-                        }, 
+                        },
                         {
                             xtype:'textfield',
                             name : "Pass",
@@ -400,37 +397,17 @@ if (!Ung.hasResource["Ung.Ips"]) {
                 }]
             });
         },
-        //apply function 
-        applyAction : function(){
-            this.saveAction(true);
+
+        beforeSave : function(isApply,handler)
+        {
+            this.settings.rules.list = this.gridRules.getFullSaveList();
+            this.settings.variables.list = this.gridVariables.getFullSaveList();
+            handler.call(this, isApply);
         },
-        // save function
-        saveAction : function(keepWindowOpen) {
-            if (this.validate()) {
-                Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
-                this.getRpcNode().updateAll(Ext.bind(function(result, exception) {
-                    if(Ung.Util.handleException(exception)) return;
-                    // exit settings screen
-                    if(keepWindowOpen!== true){
-                        Ext.MessageBox.hide();                    
-                        this.closeWindow();
-                    }else{
-                    //refresh the settings
-                            this.getRpcNode().getBaseSettings(Ext.bind(function(result2,exception2){
-                                Ext.MessageBox.hide();                            
-                                this.gridRules.reloadGrid();
-                                this.gridVariables.reloadGrid();
-                            },this));
-                            //this.gridEventLog.reloadGrid();                                     
-                    }
-                },this), this.getBaseSettings(), this.gridRules ? this.gridRules.getSaveList() : null,
-                        this.gridVariables ? this.gridVariables.getSaveList() : null,
-                        null);
-            }
-        },
-        isDirty : function() {
-            return (this.gridRules ? this.gridRules.isDirty() : false)
-                || (this.gridVariables ? this.gridVariables.isDirty() : false);
-        }        
+
+        afterSave : function()
+        {
+            this.statistics = this.getRpcNode().getStatistics();
+        }
     });
 }
