@@ -20,45 +20,25 @@ package com.untangle.node.ips;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Transient;
-
 /**
- * Base Settings for the Ips node.
+ * Statistics for the Ips node.
  *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @author <a href="mailto:mahotz@untangle.com">Michael Hotz</a>
  * @version 1.0
  */
-@Embeddable
 @SuppressWarnings("serial")
-public class IpsBaseSettings implements Serializable
+public class IpsStatistics implements Serializable
 {
-
-    private int maxChunks;
-
     private int rulesLength;
     private int variablesLength;
     private int immutableVariablesLength;
-    
+
     private int totalAvailable;
     private int totalBlocking;
     private int totalLogging;
 
-    public IpsBaseSettings() { }
+    public IpsStatistics() { }
 
-    @Column(name="max_chunks")
-    public int getMaxChunks()
-    {
-        return maxChunks;
-    }
-
-    public void setMaxChunks(int maxChunks)
-    {
-        this.maxChunks = maxChunks;
-    }
-
-    @Transient
     public int getRulesLength()
     {
         return this.rulesLength;
@@ -69,7 +49,6 @@ public class IpsBaseSettings implements Serializable
         this.rulesLength = rulesLength;
     }
 
-    @Transient
     public int getVariablesLength()
     {
         return this.variablesLength;
@@ -80,7 +59,6 @@ public class IpsBaseSettings implements Serializable
         this.variablesLength = variablesLength;
     }
 
-    @Transient
     public int getImmutableVariablesLength()
     {
         return this.immutableVariablesLength;
@@ -91,30 +69,33 @@ public class IpsBaseSettings implements Serializable
         this.immutableVariablesLength = immutableVariablesLength;
     }
 
-    @Transient
-    public int getTotalAvailable() {
+    public int getTotalAvailable()
+    {
         return this.totalAvailable;
     }
 
-    public void setTotalAvailable(int totalAvailable) {
+    public void setTotalAvailable(int totalAvailable)
+    {
         this.totalAvailable = totalAvailable;
     }
 
-    @Transient
-    public int getTotalBlocking() {
+    public int getTotalBlocking()
+    {
         return this.totalBlocking;
     }
 
-    public void setTotalBlocking(int totalBlocking) {
+    public void setTotalBlocking(int totalBlocking)
+    {
         this.totalBlocking = totalBlocking;
     }
 
-    @Transient
-    public int getTotalLogging() {
+    public int getTotalLogging()
+    {
         return this.totalLogging;
     }
 
-    public void setTotalLogging(int totalLogging) {
+    public void setTotalLogging(int totalLogging)
+    {
         this.totalLogging = totalLogging;
     }
 }

@@ -133,7 +133,6 @@ public class IpsRuleManager
             rule.setClassification(signature.getClassification());
             rule.setURL(signature.getURL());
             //logger.debug("add rule (new header), rc: " + rule.getClassification() + ", rurl: " + rule.getURL());
-            rule.setModified(false);
             return true;
         }
 
@@ -265,8 +264,8 @@ public class IpsRuleManager
                 imVarSet = getImmutableVariables();
                 varSet = getDefaultVariables();
             } else {
-                imVarSet = engine.getSettings().getImmutableVariables();
-                varSet = engine.getSettings().getVariables();
+                imVarSet = engine.getSettings().grabImmutables();
+                varSet = engine.getSettings().grabVariables();
             }
             for(IpsVariable var : imVarSet) {
                 string = string.replaceAll("\\"+var.getVariable(),var.getDefinition());

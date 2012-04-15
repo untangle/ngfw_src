@@ -19,150 +19,125 @@
 package com.untangle.node.ips;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
-
-import com.untangle.uvm.node.NodeSettings;
-
 /**
- * Hibernate object to store Ips settings.
+ * Ips node settings.
  *
- * @author <a href="mailto:nchilders@untangle.com">Nick Childers</a>
+ * @author <a href="mailto:mahotz@untangle.com">Michael Hotz</a>
  * @version 1.0
  */
-@Entity
-@Table(name="n_ips_settings", schema="settings")
 @SuppressWarnings("serial")
 public class IpsSettings implements Serializable
 {
-
-    private Long id;
-    private NodeSettings tid;
-
-    private IpsBaseSettings baseSettings = new IpsBaseSettings();
-
     private Set<IpsRule> rules = new HashSet<IpsRule>();
     private Set<IpsVariable> variables = new HashSet<IpsVariable>();
-    private Set<IpsVariable> immutableVariables = new HashSet<IpsVariable>();
+    private Set<IpsVariable> immutables = new HashSet<IpsVariable>();
+    private int maxChunks;
 
     public IpsSettings() {}
 
-    public IpsSettings(NodeSettings tid)
+    public void updateStatistics(IpsStatistics argStats)
     {
-        this.tid = tid;
-    }
+        argStats.setRulesLength(null == rules ? 0 : rules.size());
+        argStats.setVariablesLength(null == variables ? 0 : variables.size());
+        argStats.setImmutableVariablesLength(null == immutables ? 0 : immutables.size());
 
-    @Id
-    @Column(name="settings_id")
-    @GeneratedValue
-    protected Long getID() { return id; }
-    protected void setID(Long id) { this.id = id; }
+        int logging = 0;
+        int blocking = 0;
 
-    @Embedded
-    public IpsBaseSettings getBaseSettings()
-    {
-        if (null != baseSettings) {
-            baseSettings.setRulesLength(null == rules ? 0 : rules.size());
-            baseSettings.setVariablesLength(null == variables ? 0 : variables.size());
-            baseSettings.setImmutableVariablesLength(null == immutableVariables ? 0 : immutableVariables.size());
-            
-            int logging = 0;
-            int blocking = 0;
-            for( IpsRule rule : rules){
-                if(rule.isLive())
-                    blocking++;
-                if(rule.getLog())
-                    logging++;
+            for( IpsRule rule : rules)
+            {
+                if(rule.isLive()) blocking++;
+                if(rule.getLog()) logging++;
             }
-            baseSettings.setTotalAvailable(null == rules ? 0 : rules.size());
-            baseSettings.setTotalBlocking(blocking);
-            baseSettings.setTotalLogging(logging);
-            
-        }
 
-        return baseSettings;
+        argStats.setTotalAvailable(null == rules ? 0 : rules.size());
+        argStats.setTotalBlocking(blocking);
+        argStats.setTotalLogging(logging);
     }
 
-    public void setBaseSettings(IpsBaseSettings baseSettings)
+// maxChunks -----------------------------------------------------------------
+
+    public int getMaxChunks()
     {
-        this.baseSettings = baseSettings;
+        return maxChunks;
     }
 
-    /**
-     * Node id for these settings.
-     *
-     * @return tid for these settings.
-     */
-    @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="tid", nullable=false)
-    public NodeSettings getNodeSettings()
+    public void setMaxChunks(int maxChunks)
     {
-        return tid;
+        this.maxChunks = maxChunks;
     }
 
-    public void setNodeSettings(NodeSettings tid)
-    {
-        this.tid = tid;
-    }
+ // rules --------------------------------------------------------------------
 
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinColumn(name="settings_id")
-    @IndexColumn(name="position")
-    public Set<IpsRule> getRules()
+    public Set<IpsRule> grabRules()
     {
         return this.rules;
     }
 
-    public void setRules(Set<IpsRule> rules) { this.rules = rules; }
+    public List<IpsRule> getRules()
+    {
+        List<IpsRule> local = new LinkedList<IpsRule>(this.rules);
+        return local;
+    }
 
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="n_ips_mutable_variables",
-               joinColumns=@JoinColumn(name="setting_id"),
-               inverseJoinColumns=@JoinColumn(name="variable_id"))
-    @IndexColumn(name="position")
-    public Set<IpsVariable> getVariables()
+    public void pokeRules(Set<IpsRule> rules)
+    {
+        this.rules = rules;
+    }
+
+    public void setRules(List<IpsRule> rules)
+    {
+        this.rules = new HashSet<IpsRule>(rules);
+    }
+
+// variables -----------------------------------------------------------------
+
+    public Set<IpsVariable> grabVariables()
     {
         return this.variables;
     }
 
-    public void setVariables(Set<IpsVariable> variables)
+    public List<IpsVariable> getVariables()
+    {
+        List<IpsVariable> local = new LinkedList<IpsVariable>(this.variables);
+        return local;
+    }
+
+    public void pokeVariables(Set<IpsVariable> variables)
     {
         this.variables = variables;
     }
 
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="n_ips_immutable_variables",
-               joinColumns=@JoinColumn(name="setting_id"),
-               inverseJoinColumns=@JoinColumn(name="variable_id"))
-    @IndexColumn(name="position")
-    public Set<IpsVariable> getImmutableVariables()
+    public void setVariables(List<IpsVariable> variables)
     {
-        return this.immutableVariables;
+        this.variables = new HashSet<IpsVariable>(variables);
     }
 
-    public void setImmutableVariables(Set<IpsVariable> variables)
+// immutables ----------------------------------------------------------------
+
+    public Set<IpsVariable> grabImmutables()
     {
-        this.immutableVariables = variables;
+        return this.immutables;
+    }
+
+    public List<IpsVariable> getImmutables()
+    {
+        List<IpsVariable> local = new LinkedList<IpsVariable>(this.immutables);
+        return local;
+    }
+
+    public void pokeImmutables(Set<IpsVariable> immutables)
+    {
+        this.immutables = immutables;
+    }
+
+    public void setImmutables(List<IpsVariable> immutables)
+    {
+        this.immutables = new HashSet<IpsVariable>(immutables);
     }
 }

@@ -3,18 +3,14 @@
  */
 package com.untangle.node.ips;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-
 import com.untangle.node.token.TokenAdaptor;
 import com.untangle.node.util.PartialListUtil;
 import com.untangle.node.util.PartialListUtil.Handler;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
@@ -27,13 +23,14 @@ import com.untangle.uvm.vnet.PipeSpec;
 import com.untangle.uvm.vnet.SoloPipeSpec;
 import com.untangle.uvm.node.EventLogQuery;
 
-
 public class IpsNodeImpl extends NodeBase implements IpsNode
 {
+    private static final String SETTINGS_CONVERSION_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/ips-convert-settings.py";
     private final Logger logger = Logger.getLogger(getClass());
 
     private IpsSettings settings = null;
     final IpsStatisticManager statisticManager;
+    final IpsStatistics statistics;
 
     private final EventHandler handler;
     private final SoloPipeSpec octetPipeSpec, httpPipeSpec;
@@ -42,7 +39,7 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
     private IpsDetectionEngine engine;
 
     private final PartialListUtil listUtil = new PartialListUtil();
-    
+
     private final IpsVariableHandler variableHandler = new IpsVariableHandler();
     private final IpsRuleHandler ruleHandler = new IpsRuleHandler();
 
@@ -52,7 +49,7 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
 
     private EventLogQuery allEventQuery;
     private EventLogQuery blockedEventQuery;
-    
+
     public IpsNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
@@ -60,6 +57,7 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
         engine = new IpsDetectionEngine(this);
         handler = new EventHandler(this);
         statisticManager = new IpsStatisticManager();
+        statistics = new IpsStatistics();
 
         // Put the octet stream close to the server so that it is after the http processing.
         octetPipeSpec = new SoloPipeSpec("ips-octet", this, handler,Fitting.OCTET_STREAM, Affinity.SERVER,10);
@@ -81,7 +79,6 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
         List<RuleClassification> classifications = FileLoader.loadClassifications();
         engine.setClassifications(classifications);
 
-
         MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(getNodeSettings().getId());
         scanBlinger = c.addActivity("scan", I18nUtil.marktr("Sessions scanned"), null, I18nUtil.marktr("SCAN"));
@@ -91,30 +88,28 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
     }
 
     @Override
-    protected PipeSpec[] getPipeSpecs() {
+    protected PipeSpec[] getPipeSpecs()
+    {
         logger.debug("Getting PipeSpec");
         return pipeSpecs;
     }
 
-    public IpsBaseSettings getBaseSettings()
+    public IpsStatistics getStatistics()
     {
-        return settings.getBaseSettings();
+        return statistics;
     }
 
-    public void setBaseSettings(final IpsBaseSettings baseSettings)
+    public IpsSettings getSettings()
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>() {
-            public boolean doWork(Session s) {
-                settings.setBaseSettings(baseSettings);
-                settings = (IpsSettings)s.merge(settings);
-                return true;
-            }
+        return settings;
+    }
 
-            public Object getResult() {
-                return null;
-            }
-        };
-        getNodeContext().runTransaction(tw);
+    public void setSettings(IpsSettings settings)
+    {
+        this.settings = settings;
+        this.settings.updateStatistics(statistics);
+        writeNodeSettings(this.settings);
+        reconfigure();
     }
 
     public EventLogQuery[] getEventQueries()
@@ -122,21 +117,22 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
         return new EventLogQuery[] { this.allEventQuery, this.blockedEventQuery };
     }
 
-    public void initializeSettings()
+    public void initializeNodeSettings()
     {
         logger.info("Loading Variables...");
-        IpsSettings settings = new IpsSettings(getNodeSettings());
-        settings.setVariables(IpsRuleManager.getDefaultVariables());
-        settings.setImmutableVariables(IpsRuleManager.getImmutableVariables());
+
+        IpsSettings settings = new IpsSettings();
+        settings.pokeVariables(IpsRuleManager.getDefaultVariables());
+        settings.pokeImmutables(IpsRuleManager.getImmutableVariables());
 
         logger.info("Loading Rules...");
         IpsRuleManager manager = new IpsRuleManager(this); // A fake one for now.  XXX
         Set<IpsRule> ruleSet = FileLoader.loadAllRuleFiles(manager);
 
-        settings.getBaseSettings().setMaxChunks(engine.getMaxChunks());
-        settings.setRules(ruleSet);
+        settings.setMaxChunks(engine.getMaxChunks());
+        settings.pokeRules(ruleSet);
 
-        setIpsSettings(settings);
+        setSettings(settings);
         logger.info(ruleSet.size() + " rules loaded");
 
         statisticManager.stop();
@@ -146,83 +142,6 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
         return engine;
     }
 
-    @SuppressWarnings("unchecked") //getItems
-    public List<IpsRule> getRules(final int start, final int limit, final String... sortColumns)
-    {
-        List<IpsRule> rules = listUtil.getItems("select s.rules from IpsSettings s where s.nodeId = :nodeId ",
-                                 getNodeContext(), getNodeSettings(), start, limit,
-                                 sortColumns);
-        if (rules == null) {
-            logger.warn("No rules found in database");
-            rules = new LinkedList<IpsRule>();
-        } else {
-            for(IpsRule rule : rules) {
-                engine.addRule(rule);
-            }
-        }
-        
-        return rules;
-    }
-
-    public void updateRules(List<IpsRule> added, List<Long> deleted, List<IpsRule> modified)
-    {
-        updateRules(settings.getRules(), added, deleted, modified);
-    }
-
-    @SuppressWarnings("unchecked") //getItems
-    public List<IpsVariable> getVariables(final int start, final int limit, final String... sortColumns)
-    {
-        return listUtil.getItems("select s.variables from IpsSettings s where s.nodeId = :nodeId ",
-                                 getNodeContext(), getNodeSettings(), start, limit,
-                                 sortColumns);
-    }
-
-    public void updateVariables(List<IpsVariable> added, List<Long> deleted, List<IpsVariable> modified)
-    {
-	updateVariables(settings.getVariables(), added, deleted, modified);
-    }
-
-    @SuppressWarnings("unchecked") //getItems
-    public List<IpsVariable> getImmutableVariables(final int start, final int limit, final String... sortColumns)
-    {
-        return listUtil.getItems("select s.immutableVariables from IpsSettings s where s.nodeId = :nodeId ",
-                                 getNodeContext(), getNodeSettings(), start, limit,
-                                 sortColumns);
-    }
-
-    public void updateImmutableVariables(List<IpsVariable> added, List<Long> deleted, List<IpsVariable> modified)
-    {
-	updateVariables(settings.getImmutableVariables(), added, deleted, modified);
-    }
-    
-    public void updateAll(final IpsBaseSettings baseSettings, final List<IpsRule>[] rules, final List<IpsVariable>[] variables, final List<IpsVariable>[] immutableVariables)
-    	{
-
-		TransactionWork<Object> tw = new TransactionWork<Object>() {
-			public boolean doWork(Session s) {
-				if (baseSettings != null) {
-					settings.setBaseSettings(baseSettings);
-				}
-
-				listUtil.updateCachedItems(settings.getRules(), ruleHandler, rules);
-				listUtil.updateCachedItems(settings.getVariables(), variableHandler, variables);
-				listUtil.updateCachedItems(settings.getVariables(), variableHandler, immutableVariables);
-
-				settings = (IpsSettings)s.merge(settings);
-
-				return true;
-			}
-
-			public Object getResult() {
-				return null;
-			}
-		};
-		getNodeContext().runTransaction(tw);
-
-		reconfigure();
-	}
-    
-    
     // protected methods -------------------------------------------------------
 
     protected void postStop()
@@ -231,112 +150,106 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
         engine.stop();
     }
 
-    protected void preStart() 
+    protected void preStart()
     {
         logger.info("Pre Start");
 
         statisticManager.start();
     }
 
-    protected void postInit() 
+    protected void postInit()
     {
         logger.info("Post init");
-        queryDBForSettings();
 
-        // Upgrade to 3.2 will have nuked the settings.  Recreate them
-        if (IpsNodeImpl.this.settings == null) {
-            logger.warn("No settings found.  Creating anew.");
-            initializeSettings();
-        }
-
+        readNodeSettings();
         reconfigure();
     }
-
-    // package protected methods -----------------------------------------------
 
     // private methods ---------------------------------------------------------
 
-    private void updateRules(final Set<?> rules, final List<?> added, final List<Long> deleted, final List<?> modified)
+    private void readNodeSettings()
     {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    listUtil.updateCachedItems(rules, added, deleted, modified);
+        SettingsManager setman = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeSettings().getId().toString();
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-node-ips/settings_" + nodeID;
+        String settingsFile = settingsName + ".js";
+        IpsSettings readSettings = null;
 
-                    settings = (IpsSettings)s.merge(settings);
+        logger.info("Loading settings from " + settingsFile);
 
-                    return true;
-                }
+        try {
+            readSettings =  setman.load( IpsSettings.class, settingsName);
+        }
 
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
+        catch (Exception exn) {
+            logger.error("Could not read node settings", exn);
+        }
+
+        // if no settings found try getting them from the database
+        if (readSettings == null) {
+            logger.warn("No json settings found... attempting to import from database");
+
+            try {
+                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + nodeID.toString() + " " + settingsFile;
+                logger.warn("Running: " + convertCmd);
+                UvmContextFactory.context().execManager().exec( convertCmd );
+            }
+
+            catch (Exception exn) {
+                logger.error("Conversion script failed", exn);
+            }
+
+            try {
+                readSettings = setman.load( IpsSettings.class, settingsName);
+            }
+
+            catch (Exception exn) {
+                logger.error("Could not read node settings", exn);
+            }
+
+            if (readSettings != null) logger.warn("Database settings successfully imported");
+        }
+
+        try {
+            if (readSettings == null) {
+                logger.warn("No database or json settings found... initializing with defaults");
+                initializeNodeSettings();
+            }
+            else {
+                settings = readSettings;
+                reconfigure();
+            }
+        }
+        catch (Exception exn) {
+            logger.error("Could not apply node settings", exn);
+        }
     }
-    
-    @SuppressWarnings("unchecked")
-    private void updateVariables(final Set rules, final List added, final List<Long> deleted, final List modified)
+
+    private void writeNodeSettings(IpsSettings argSettings)
     {
-	TransactionWork<Object> tw = new TransactionWork<Object>()
-	{
-	    public boolean doWork(Session s)
-	    {
-	    	listUtil.updateCachedItems(rules, variableHandler, added, deleted, modified);
+        SettingsManager setman = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeSettings().getId().toString();
+        String settingsName = System.getProperty("uvm.settings.dir") + "/untangle-node-ips/settings_" + nodeID;
 
-	    	settings = (IpsSettings)s.merge(settings);
+        try {
+            setman.save( IpsSettings.class, settingsName, argSettings);
+        }
 
-	    	return true;
-	    }
-
-	    public Object getResult() { return null; }
-	};
-	getNodeContext().runTransaction(tw);
-    }
-    
-    private void setIpsSettings(final IpsSettings settings)
-    {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    IpsNodeImpl.this.settings = (IpsSettings)s.merge(settings);
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
-
-        reconfigure();
+        catch (Exception exn) {
+            logger.error("Could not save node settings", exn);
+        }
     }
 
     private void reconfigure()
     {
         engine.setSettings(settings);
         engine.onReconfigure();
-        engine.setMaxChunks(settings.getBaseSettings().getMaxChunks());
-        Set<IpsRule> rules = settings.getRules();
+        engine.setMaxChunks(settings.getMaxChunks());
+        Set<IpsRule> rules = settings.grabRules();
         engine.clearRules();
         for(IpsRule rule : rules) {
             engine.addRule(rule);
         }
-    }
-
-    private void queryDBForSettings()
-    {
-        TransactionWork<Object> tw = new TransactionWork<Object>()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery("from IpsSettings ips where ips.nodeId = :nodeId");
-                    q.setParameter("nodeId", getNodeSettings());
-                    IpsNodeImpl.this.settings = (IpsSettings)q.uniqueResult();
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getNodeContext().runTransaction(tw);
     }
 
     /* Utility handler for the most common case (rules) */
@@ -366,19 +279,18 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
         }
     }
 
-    public void incrementScanCount() 
+    public void incrementScanCount()
     {
 	scanBlinger.increment();
     }
 
-    public void incrementDetectCount() 
+    public void incrementDetectCount()
     {
 	detectBlinger.increment();
     }
 
-    public void incrementBlockCount() 
+    public void incrementBlockCount()
     {
 	blockBlinger.increment();
     }
 }
-
