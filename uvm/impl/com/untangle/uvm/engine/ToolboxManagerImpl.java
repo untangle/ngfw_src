@@ -207,18 +207,19 @@ class ToolboxManagerImpl implements ToolboxManager
         }
 
         NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
-        List<NodeSettings> instances = nm.visibleNodes(policyId);
+        List<Node> instances = nm.visibleNodes( policyId );
 
-        Map<NodeSettings, StatDescs> statDescs = new HashMap<NodeSettings, StatDescs>(instances.size());
-        for (NodeSettings nodeSettings : instances) {
+        Map<Long, StatDescs> statDescs = new HashMap<Long, StatDescs>(instances.size());
+        for (Node visibleNode : instances) {
+            Long nodeId = visibleNode.getNodeSettings().getId();
+            Long nodePolicyId = visibleNode.getNodeSettings().getPolicyId();
             MessageManager lmm = UvmContextFactory.context().messageManager();
-            Counters c = lmm.getCounters(nodeSettings.getId());
+            Counters c = lmm.getCounters( nodeId );
             StatDescs sd = c.getStatDescs();
-            statDescs.put(nodeSettings, sd);
+            statDescs.put( nodeId , sd);
 
-            Long nodePolicyId = nodeSettings.getPolicyId();
-            if (nodePolicyId == null || nodePolicyId.equals(policyId)) {
-                nodes.remove(nm.node(nodeSettings.getId()).getNodeProperties().getDisplayName());
+            if ( nodePolicyId == null || nodePolicyId.equals( policyId ) ) {
+                nodes.remove( visibleNode.getNodeProperties().getDisplayName() );
             }
         }
 
@@ -240,18 +241,22 @@ class ToolboxManagerImpl implements ToolboxManager
 
         Map<String, License> licenseMap = new HashMap<String, License>();
         LicenseManager lm = UvmContextFactory.context().licenseManager();
-        for (NodeSettings nodeSettings : instances) {
-            String n = nm.node(nodeSettings.getId()).getNodeProperties().getName();
+        for (Node node : instances) {
+            String n = node.getNodeProperties().getName();
             licenseMap.put(n, lm.getLicense(n));
         }
-        Map<NodeSettings, NodeSettings.NodeState> runStates=nm.allNodeStates();
+        Map<Long, NodeSettings.NodeState> runStates=nm.allNodeStates();
 
         List<NodeProperties> nodeProperties = new LinkedList<NodeProperties>();
-        for (NodeSettings nodeSettings : instances) {
-            nodeProperties.add(nm.node(nodeSettings.getId()).getNodeProperties());
+        for (Node node : instances) {
+            nodeProperties.add(node.getNodeProperties());
         }
-        
-        return new RackView(apps, instances, nodeProperties, statDescs, licenseMap, runStates);
+        List<NodeSettings> nodeSettings  = new LinkedList<NodeSettings>();
+        for (Node node : instances) {
+            nodeSettings.add(node.getNodeSettings());
+        }
+
+        return new RackView(apps, nodeSettings, nodeProperties, statDescs, licenseMap, runStates);
     }
 
     public UpgradeStatus getUpgradeStatus(boolean doUpdate) throws PackageException, InterruptedException
@@ -466,10 +471,9 @@ class ToolboxManagerImpl implements ToolboxManager
                 try {
                     logger.info("instantiate( " + node + ")");
                     register(node);
-                    NodeSettings nodeSettings = nm.instantiate(node, policyId);
-                    NodeProperties nd = nm.node(nodeSettings.getId()).getNodeProperties();
-                    if (nodeSettings != null && nd != null && nd.getAutoStart()) {
-                        Node thisNode = nm.node( nodeSettings.getId() );
+                    Node thisNode = nm.instantiate(node, policyId);
+                    NodeProperties nd = thisNode.getNodeProperties();
+                    if (thisNode != null && nd != null && nd.getAutoStart()) {
                         thisNode.start();
                     }
                 } catch (DeployException exn) {
@@ -490,14 +494,15 @@ class ToolboxManagerImpl implements ToolboxManager
         logger.info("installAndInstantiate( " + name + ") return");
     }
 
-    public void uninstall(String name) throws PackageUninstallException
+    public void uninstall( String name ) throws PackageUninstallException
     {
         // stop intances
         NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
-        List<NodeSettings> tids = nm.nodeInstances(name);
-        logger.debug("unloading " + tids.size() + " nodes");
-        for (NodeSettings t : tids) {
-            nm.unload(t); 
+        List<Node> nodeList = nm.nodeInstances(name);
+        logger.debug("unloading " + nodeList.size() + " nodes");
+
+        for (Node node : nodeList) {
+            nm.unload( node ); 
         }
 
         try {
@@ -632,10 +637,10 @@ class ToolboxManagerImpl implements ToolboxManager
 
         // stop package intances
         NodeManagerImpl nm = (NodeManagerImpl)UvmContextFactory.context().nodeManager();
-        List<NodeSettings> tids = nm.nodeInstances(pkgName);
-        logger.debug("unloading " + tids.size() + " nodes");
-        for (NodeSettings t : tids) {
-            nm.unload(t); 
+        List<Node> nodeList = nm.nodeInstances( pkgName );
+        logger.debug("unloading " + nodeList.size() + " nodes");
+        for (Node node : nodeList) {
+            nm.unload( node ); 
         }
     }
 

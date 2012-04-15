@@ -38,6 +38,7 @@ import com.untangle.uvm.message.StatInterval;
 import com.untangle.uvm.message.Stats;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.InterfaceConfiguration;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.node.NodeSettings;
@@ -59,6 +60,8 @@ class MessageManagerImpl implements MessageManager
     private static final Pattern NET_DEV_PATTERN = Pattern.compile("^\\s*([a-z]+\\d+):\\s*(\\d+)\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+(\\d+)");
 
     private static final Pattern DISK_STATS_PATTERN = Pattern.compile("\\s*\\d+\\s+\\d+\\s+[hs]d[a-zA-Z]+\\d+\\s+(\\d+)\\s+\\d+\\s+(\\d+)");
+
+    private static final Logger logger = Logger.getLogger(MessageManager.class);
 
     private static final Set<String> MEMINFO_KEEPERS;
     private static final Set<String> VMSTAT_KEEPERS;
@@ -85,18 +88,16 @@ class MessageManagerImpl implements MessageManager
 
     private volatile Map<String, Object> systemStats = Collections.emptyMap();
 
-    private final Logger logger = Logger.getLogger(getClass());
-
     public MessageManagerImpl()
     {
     }
 
-    void start()
+    protected void start()
     {
         updatePulse.start(10000);
     }
 
-    void stop()
+    protected void stop()
     {
         updatePulse.stop();
     }
@@ -112,8 +113,8 @@ class MessageManagerImpl implements MessageManager
     {
         List<Long> nodeIds = new LinkedList<Long>();
 
-        for ( NodeSettings ns : UvmContextImpl.getInstance().nodeManager().nodeInstances() ) {
-            nodeIds.add( ns.getId() );
+        for ( Node node : UvmContextImpl.getInstance().nodeManager().nodeInstances() ) {
+            nodeIds.add( node.getNodeSettings().getId() );
         }
         nodeIds.add( 0L );
 
@@ -125,12 +126,10 @@ class MessageManagerImpl implements MessageManager
     public MessageQueue getMessageQueue( Integer key, Long policyId )
     {
         List<Long> nodeIds = new LinkedList<Long>();
-        List<NodeSettings> nodeSettingsList = UvmContextImpl.getInstance().nodeManager().nodeInstances( policyId );
 
         /* Add in the nodes with the null policy */
-        nodeSettingsList.addAll( UvmContextImpl.getInstance().nodeManager().nodeInstances((Long)null) );
-        for ( NodeSettings ns : UvmContextImpl.getInstance().nodeManager().nodeInstances() ) {
-            nodeIds.add( ns.getId() );
+        for ( Node node : UvmContextImpl.getInstance().nodeManager().nodeInstances() ) {
+            nodeIds.add( node.getNodeSettings().getId() );
         }
         nodeIds.add( 0L );
         

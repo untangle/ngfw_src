@@ -19,16 +19,16 @@ public class RackView implements Serializable
     private List<Application> applications;
     private List<NodeSettings> instances;
     private List<NodeProperties> nodeProperties;
-    private Map<NodeSettings, StatDescs> statDescs;
+    private Map<Long, StatDescs> statDescs;
     private Map<String, License> licenseMap;
-    private Map<NodeSettings, NodeSettings.NodeState> runStates;
+    private Map<Long, NodeSettings.NodeState> runStates;
 
     public RackView(List<Application> applications,
                     List<NodeSettings> instances,
                     List<NodeProperties> nodeProperties,
-                    Map<NodeSettings, StatDescs> statDescs,
+                    Map<Long, StatDescs> statDescs,
                     Map<String, License> license,
-                    Map<NodeSettings, NodeSettings.NodeState> runStates)
+                    Map<Long, NodeSettings.NodeState> runStates)
     {
         this.applications = Collections.unmodifiableList(applications);
         this.instances = Collections.unmodifiableList(instances);
@@ -53,7 +53,7 @@ public class RackView implements Serializable
         return nodeProperties;
     }
     
-    public Map<NodeSettings, StatDescs> getStatDescs()
+    public Map<Long, StatDescs> getStatDescs()
     {
         return statDescs;
     }
@@ -63,7 +63,7 @@ public class RackView implements Serializable
         return licenseMap;
     }
 
-    public Map<NodeSettings, NodeSettings.NodeState> getRunStates() {
+    public Map<Long, NodeSettings.NodeState> getRunStates() {
         return runStates;
     }
 

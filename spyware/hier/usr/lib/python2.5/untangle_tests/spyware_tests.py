@@ -10,7 +10,6 @@ from untangle_tests import ClientControl
 uvmContext = Uvm().getUvmContext()
 defaultRackId = 1
 clientControl = ClientControl()
-nodeSettings = None
 node = None
 
 
@@ -51,12 +50,11 @@ class SpywareTests(unittest.TestCase):
         return "untangle-node-spyware"
 
     def setUp(self):
-        global nodeSettings, node
-        if nodeSettings == None:
+        global node
+        if node == None:
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 raise Exception('node %s already instantiated' % self.nodeName())
-            nodeSettings = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), defaultRackId)
-            node = uvmContext.nodeManager().node(nodeSettings["id"])
+            node = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), defaultRackId)
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -85,11 +83,10 @@ class SpywareTests(unittest.TestCase):
         result = clientControl.runCommand("wget -q --save-cookies testcookie.txt -O - http://youtube.com/ >/dev/null 2>&1 ; grep -q youtube.com testcookie.txt")
         assert (result == 1)
 
-
-
     def test_999_finalTearDown(self):
-        global nodeSettings
-        uvmContext.nodeManager().destroy(nodeSettings['id']);
+        global node
+        uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+        node = None
         
 
 

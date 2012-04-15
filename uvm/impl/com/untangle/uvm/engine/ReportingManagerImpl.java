@@ -593,10 +593,7 @@ class ReportingManagerImpl implements ReportingManager
     {
         UvmContext uvm = UvmContextFactory.context();
         NodeManager nodeManager = uvm.nodeManager();
-        List<NodeSettings> tids = nodeManager.nodeInstances("untangle-node-reporting");
-        if(tids == null || tids.size() == 0)
-            return false;
-        Node node = nodeManager.node( tids.get(0).getId() );
+        Node node = nodeManager.nodeInstances("untangle-node-reporting").get(0);
         if (node == null) {
             return false;
         }

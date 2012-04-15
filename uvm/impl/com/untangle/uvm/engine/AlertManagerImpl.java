@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.AlertManager;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.networking.NetworkConfiguration;
@@ -139,18 +140,6 @@ class AlertManagerImpl implements AlertManager
                     alertList.add(i18nUtil.tr("A policy/rack") + " [" + n1.getPolicyId() + "] " + i18nUtil.tr("contains two or more") + " " + n1.getNodeName()); 
             }
         }
-        
-        /**
-         * Check services for dupe apps
-         */
-        HashSet<String> nodeNames = new HashSet<String>();
-        for( NodeSettings node : UvmContextFactory.context().nodeManager().nodeInstances(((Long)null)) ) {
-            if (nodeNames.contains(node.getNodeName())) {
-                alertList.add(i18nUtil.tr("Two or more") + " " + node.getNodeName() + " " + i18nUtil.tr("are installed."));
-            } else {
-                nodeNames.add(node.getNodeName());
-            }
-        }
     }
 
     /**
@@ -165,27 +154,27 @@ class AlertManagerImpl implements AlertManager
         /**
          * Check for redundant apps 
          */
-        List<NodeSettings> webfilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-webfilter");
-        List<NodeSettings> sitefilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-sitefilter");
-        List<NodeSettings> spamassassinList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamassassin");
-        List<NodeSettings> commtouchasList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-commtouchas");
+        List<Node> webfilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-webfilter");
+        List<Node> sitefilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-sitefilter");
+        List<Node> spamassassinList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamassassin");
+        List<Node> commtouchasList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-commtouchas");
 
-        for (NodeSettings node1 : webfilterList) {
-            for (NodeSettings node2 : sitefilterList) {
-                if (node1.getId().equals(node2.getId()))
+        for (Node node1 : webfilterList) {
+            for (Node node2 : sitefilterList) {
+                if (node1.getNodeSettings().getId().equals(node2.getNodeSettings().getId()))
                     continue;
 
-                if (node1.getPolicyId().equals(node2.getPolicyId()))
+                if (node1.getNodeSettings().getPolicyId().equals(node2.getNodeSettings().getPolicyId()))
                     alertList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Web Filter " + i18nUtil.tr("and") + " Web Filter Lite" );
             }
         }
 
-        for (NodeSettings node1 : spamassassinList) {
-            for (NodeSettings node2 : commtouchasList) {
-                if (node1.getId().equals(node2.getId()))
+        for (Node node1 : spamassassinList) {
+            for (Node node2 : commtouchasList) {
+                if (node1.getNodeSettings().getId().equals(node2.getNodeSettings().getId()))
                     continue;
 
-                if (node1.getPolicyId().equals(node2.getPolicyId()))
+                if (node1.getNodeSettings().getPolicyId().equals(node2.getNodeSettings().getPolicyId()))
                     alertList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Spam Blocker " + i18nUtil.tr("and") + " Spam Blocker Lite" );
             }
         }
@@ -387,8 +376,8 @@ class AlertManagerImpl implements AlertManager
      */
     private void testSpamDNSServers(List<String> alertList)
     {
-        List<NodeSettings> spamassassinList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamassassin");
-        List<NodeSettings> commtouchasList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-commtouchas");
+        List<Node> spamassassinList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamassassin");
+        List<Node> commtouchasList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-commtouchas");
 
         if (spamassassinList.size() == 0 && commtouchasList.size() == 0)
             return;

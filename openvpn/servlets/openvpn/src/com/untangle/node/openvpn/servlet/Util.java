@@ -197,10 +197,7 @@ class Util
     VpnNode getNode()  throws Exception
     {
         UvmContext ctx = UvmContextFactory.context();
-        NodeSettings tid = ctx.nodeManager().nodeInstances( "untangle-node-openvpn" ).get( 0 );
-        if ( tid == null ) throw new Exception( "OpenVPN is not loaded." );
-        VpnNode node = (VpnNode) ctx.nodeManager().node( tid.getId() );
-
+        VpnNode node = (VpnNode) ctx.nodeManager().nodeInstances( "untangle-node-openvpn" ).get( 0 );
         if ( node == null ) throw new Exception( "OpenVPN is not loaded." );
         return node;
     }

@@ -107,8 +107,6 @@ def printUsage():
     ucli available - shows available packages
     ucli installed - shows installed packages
     ucli uninstalled - shows uninstalled packages
-    ucli isReportingEnabled - shows if reports installed
-    ucli areReportsAvailable - shows if reports are available
     ucli get_message_queue - show the message queue (to UI)
 """ % sys.argv[0] )
 

@@ -15,26 +15,30 @@ import com.untangle.uvm.node.NodeSettings;
  */
 public interface NodeManager
 {
+    /**
+     * Get the NodeManager settings
+     */
     NodeManagerSettings getSettings();
 
-    void setSettings(NodeManagerSettings newSettings);
+    /**
+     * Set the NodeManager settings
+     */
+    void setSettings( NodeManagerSettings newSettings );
 
-    void saveTargetState(Long nodeId, NodeSettings.NodeState nodeState);
-    
     /**
      * Get <code>NodeSettings</code>s of nodes in the pipeline.
      *
      * @return list of all node ids.
      */
-    List<NodeSettings> nodeInstances();
-
+    List<Node> nodeInstances();
+    
     /**
      * Node instances by name.
      *
      * @param name name of the node.
      * @return tids of corresponding nodes.
      */
-    List<NodeSettings> nodeInstances(String name);
+    List<Node> nodeInstances( String name );
 
     /**
      * Node instances by policy.
@@ -42,7 +46,7 @@ public interface NodeManager
      * @param policy policy of node.
      * @return tids of corresponding nodes.
      */
-    List<NodeSettings> nodeInstances(Long policyId);
+    List<Node> nodeInstances( Long policyId );
 
     /**
      * Node instances by name policy, this gets the nodes in the parents to.
@@ -51,7 +55,7 @@ public interface NodeManager
      * @param policy policy of node.
      * @return tids of corresponding nodes.
      */
-    List<NodeSettings> nodeInstances(String name, Long policyId);
+    List<Node> nodeInstances( String name, Long policyId );
 
     /**
      * Node instances by name policy.
@@ -61,7 +65,7 @@ public interface NodeManager
      * @param parents true to fetch the nodes in the parents as well.
      * @return tids of corresponding nodes.
      */
-    List<NodeSettings> nodeInstances(String name, Long policyId, boolean parents);
+    List<Node> nodeInstances( String name, Long policyId, boolean parents );
 
     /**
      * Get the <code>Node</code> for this nodeId
@@ -88,20 +92,20 @@ public interface NodeManager
      *
      * @param name of the node.
      * @param policy the policy this instance is applied to.
-     * @return the <code>tid</code> of the instance.
+     * @return the Node of the instance
      * @exception DeployException if the instance cannot be created.
      */
-    NodeSettings instantiate(String name, Long policyId) throws DeployException;
+    Node instantiate( String name, Long policyId ) throws DeployException;
 
     /**
      * Create a new node instance under the default policy, or in
      * the null policy if the node is a service.
      *
      * @param name of the node.
-     * @return the <code>tid</code> of the instance.
+     * @return the Node of the instance
      * @exception DeployException if the instance cannot be created.
      */
-    NodeSettings instantiate(String name) throws DeployException;
+    Node instantiate( String name ) throws DeployException;
 
     /**
      * Create a new node instance under the given policy and then start it.
@@ -110,11 +114,11 @@ public interface NodeManager
      *
      * @param name of the node.
      * @param policy the policy this instance is applied to.
-     * @return the <code>tid</code> of the instance.
+     * @return the Node of the instance
      * @exception DeployException if the instance cannot be created.
      * @exception NodeStartException if the instance cannot be started.
      */
-    NodeSettings instantiateAndStart(String nodeName, Long policyId) throws DeployException;
+    Node instantiateAndStart( String nodeName, Long policyId ) throws DeployException;
 
     /**
      * Remove node instance from the pipeline.
@@ -124,11 +128,18 @@ public interface NodeManager
     void destroy( Long nodeId ) throws Exception;
 
     /**
+     * Save the new target state of the specified node
+     *
+     * @param node instance 
+     */
+    void saveTargetState( Node node, NodeSettings.NodeState nodeState );
+
+    /**
      * Get the runtime state for all nodes in one call.
      *
      * @return a <code>Map</code> from NodeSettings to NodeState for all nodes
      */
-    Map<NodeSettings, NodeSettings.NodeState> allNodeStates();
+    Map<Long, NodeSettings.NodeState> allNodeStates();
     
     /**
      * Get a map of nodes that are enabled for a policy, this takes into account

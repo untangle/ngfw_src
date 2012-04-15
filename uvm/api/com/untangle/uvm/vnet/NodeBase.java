@@ -370,6 +370,11 @@ public abstract class NodeBase implements Node
         return sessions;
     }
 
+    public String toString()
+    {
+        return "Node[" + getNodeSettings().getId() + "," + getNodeSettings().getNodeName() + "]";
+    }
+    
     // protected methods -------------------------------------------------
 
     /**
@@ -459,7 +464,7 @@ public abstract class NodeBase implements Node
             NodeStateChangeMessage nsc = new NodeStateChangeMessage(nodeProperties, nodeSettings, nodeState);
             mm.submitMessage(nsc);
 
-            UvmContextFactory.context().nodeManager().saveTargetState(this.nodeSettings.getId(), nodeState);
+            UvmContextFactory.context().nodeManager().saveTargetState( this, nodeState );
             
             UvmContextFactory.context().nodeManager().flushNodeStateCache();
             UvmContextFactory.context().pipelineFoundry().clearChains();
@@ -621,8 +626,7 @@ public abstract class NodeBase implements Node
         if ( parentNode == null ) {
             logger.debug("Parent does not exist, instantiating");
 
-            NodeSettings parentNodeSettings = UvmContextFactory.context().nodeManager().instantiate(parent, policyId);
-            parentNode = UvmContextFactory.context().nodeManager().node(parentNodeSettings.getId());
+            parentNode = UvmContextFactory.context().nodeManager().instantiate(parent, policyId);
         }
 
         if ( parentNode == null ) {
@@ -634,11 +638,10 @@ public abstract class NodeBase implements Node
 
     private final static Node getParentNode( String parent, Long childPolicyId )
     {
-        for (NodeSettings nSettings : UvmContextFactory.context().nodeManager().nodeInstances(parent)) {
-            Long policyId = nSettings.getPolicyId();
-            if ( policyId == null || policyId.equals( childPolicyId ) ) {
-                return UvmContextFactory.context().nodeManager().node(nSettings.getId());
-            }
+        for (Node node : UvmContextFactory.context().nodeManager().nodeInstances(parent)) {
+            Long policyId = node.getNodeSettings().getPolicyId();
+            if ( policyId == null || policyId.equals( childPolicyId ) )
+                return node;
         }
 
         return null;

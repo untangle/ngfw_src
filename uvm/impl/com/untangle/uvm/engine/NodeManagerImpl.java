@@ -60,7 +60,10 @@ public class NodeManagerImpl implements NodeManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final Map<NodeSettings, Node> loadedNodesMap = new ConcurrentHashMap<NodeSettings, Node>();
+    /**
+     * Stores a map of all currently loaded nodes from their nodeId to the Node instance
+     */
+    private final Map<Long, Node> loadedNodesMap = new ConcurrentHashMap<Long, Node>();
 
     private NodeManagerSettings settings = null;
     
@@ -77,15 +80,37 @@ public class NodeManagerImpl implements NodeManager
 
     public NodeManagerImpl() { }
 
-    public List<NodeSettings> nodeInstances()
+    public NodeManagerSettings getSettings()
     {
-        List<NodeSettings> nodeList = new ArrayList<NodeSettings>(loadedNodesMap.keySet());
+        return this.settings;
+    }
+
+    public void setSettings(final NodeManagerSettings newSettings)
+    {
+        _setSettings(newSettings);
+    }
+
+    public void saveTargetState( Node node, NodeSettings.NodeState nodeState )
+    {
+        for ( NodeSettings nSettings : this.settings.getNodes() ) {
+            if ( nSettings.getId() == node.getNodeSettings().getId() ) {
+                if ( nodeState != nSettings.getTargetState() ) {
+                    nSettings.setTargetState(nodeState);
+                } else {
+                    logger.info("ignore saveTargetState(): already in state " + nodeState);
+                }
+            }
+        }
+        this.setSettings(this.settings);       
+    }
+
+    public List<Node> nodeInstances()
+    {
+        List<Node> nodeList = new ArrayList<Node>(loadedNodesMap.values());
 
         // sort by view position, for convenience
-        Collections.sort(nodeList, new Comparator<NodeSettings>() {
-            public int compare(NodeSettings t1, NodeSettings t2) {
-                Node tci1 = loadedNodesMap.get(t1);
-                Node tci2 = loadedNodesMap.get(t2);
+        Collections.sort(nodeList, new Comparator<Node>() {
+            public int compare(Node tci1, Node tci2) {
                 int rpi1 = tci1.getPackageDesc().getViewPosition();
                 int rpi2 = tci2.getPackageDesc().getViewPosition();
                 if (rpi1 == rpi2) {
@@ -101,134 +126,85 @@ public class NodeManagerImpl implements NodeManager
         return nodeList;
     }
 
-    public List<NodeSettings> nodeInstances( String nodeName )
+    public List<Node> nodeInstances( String nodeName )
     {
-        List<NodeSettings> l = new LinkedList<NodeSettings>();
+        List<Node> list = new LinkedList<Node>();
 
-        for (NodeSettings nodeSettings : loadedNodesMap.keySet()) {
-            Node node = loadedNodesMap.get(nodeSettings);
-            if (node != null) {
-                if ( node.getNodeProperties().getName().equals( nodeName ) ) {
-                    l.add(nodeSettings);
-                }
+        for (Node node : loadedNodesMap.values()) {
+            if ( node.getNodeProperties().getName().equals( nodeName ) ) {
+                list.add( node );
             }
         }
 
-        return l;
+        return list;
     }
 
-    public NodeManagerSettings getSettings()
-    {
-        return this.settings;
-    }
-
-    public void setSettings(final NodeManagerSettings newSettings)
-    {
-        _setSettings(newSettings);
-    }
-
-    public void saveTargetState( Long nodeId, NodeSettings.NodeState nodeState )
-    {
-        for ( NodeSettings nSettings : this.settings.getNodes() ) {
-            if (nSettings.getId() == nodeId) {
-                if (nodeState != nSettings.getTargetState()) {
-                    nSettings.setTargetState(nodeState);
-                } else {
-                    logger.info("ignore saveTargetState(): already in state " + nodeState);
-                }
-            }
-        }
-        this.setSettings(this.settings);       
-    }
-    
-    public List<NodeSettings> nodeInstances(String name, Long policyId)
+    public List<Node> nodeInstances(String name, Long policyId)
     {
         return nodeInstances( name, policyId, true);
     }
 
-    public List<NodeSettings> nodeInstances(String name, Long policyId, boolean parents)
+    public List<Node> nodeInstances(String name, Long policyId, boolean parents)
     {
-        List<NodeSettings> l = new ArrayList<NodeSettings>(loadedNodesMap.size());
+        List<Node> list = new ArrayList<Node>(loadedNodesMap.size());
 
-        for ( NodeSettings nodeSettings : getNodesForPolicy( policyId, parents ) ) {
-            Node node = loadedNodesMap.get(nodeSettings);
-            if (node != null) {
-                String nodeName = node.getNodeProperties().getName();
+        for ( Node node : getNodesForPolicy( policyId, parents ) ) {
+            String nodeName = node.getNodeProperties().getName();
 
-                if (nodeName.equals(name)) {
-                    l.add(nodeSettings);
-                }
+            if (nodeName.equals(name)) {
+                list.add(node);
             }
         }
 
-        return l;
+        return list;
     }
 
-    public List<NodeSettings> nodeInstances( Long policyId )
+    public List<Node> nodeInstances( Long policyId )
     {
         return getNodesForPolicy( policyId );
     }
 
-    public List<NodeSettings> visibleNodes( Long policyId )
+    protected List<Node> visibleNodes( Long policyId )
     {
-        List<NodeSettings> loadedNodesMap = nodeInstances();
-        List<NodeSettings> l = new ArrayList<NodeSettings>(loadedNodesMap.size());
+        List<Node> loadedNodes = nodeInstances();
+        List<Node> list = new ArrayList<Node>(loadedNodes.size());
 
-        for (NodeSettings nodeSettings : getNodesForPolicy( policyId )) {
-            Node nc = node(nodeSettings.getId());
-            PackageDesc md = nc.getPackageDesc();
-
-            if (!md.isInvisible()) {
-                NodeProperties nd = nc.getNodeProperties();
-                l.add(nodeSettings);
+        for (Node node : getNodesForPolicy( policyId )) {
+            if ( !node.getPackageDesc().isInvisible() ) {
+                list.add( node );
             }
         }
 
-        for (NodeSettings nodeSettings : loadedNodesMap) {
-            Node nc = node(nodeSettings.getId());
-            PackageDesc md = nc.getPackageDesc();
-
-            PackageDesc.Type type = md.getType();
-            if (!md.isInvisible() && PackageDesc.Type.SERVICE == type) {
-                NodeProperties nd = nc.getNodeProperties();
-                l.add(nodeSettings);
+        for (Node node : loadedNodes) {
+            if ( !node.getPackageDesc().isInvisible() && node.getPackageDesc().getType() == PackageDesc.Type.SERVICE ) {
+                list.add( node );
             }
         }
 
-        return l;
+        return list;
     }
 
-    /**
-     * FIXME - make this faster
-     */
     public Node node( Long nodeId )
     {
-        List<NodeSettings> nodeSettingsList = new ArrayList<NodeSettings>(loadedNodesMap.keySet());
-        for (NodeSettings nodeSettings : nodeSettingsList) {
-            if (nodeSettings.getId().equals(nodeId))
-                return loadedNodesMap.get(nodeSettings);
-        }
-
-        return null;
+        return loadedNodesMap.get( nodeId );
     }
     
-    public Node node(String name)
+    public Node node( String name )
     {
-        Node node = null;
-        List<NodeSettings> nodeInstances = nodeInstances(name);
-        if(nodeInstances.size()>0){
-            node = node(nodeInstances.get(0).getId());
+        List<Node> nodes = nodeInstances( name );
+        if( nodes.size() > 0 ){
+            return nodes.get(0);
         }
-        return node;
+        return null;
     }
 
-    public NodeSettings instantiate(String nodeName) throws DeployException
+    public Node instantiate(String nodeName) throws DeployException
     {
         Long policyId = getDefaultPolicyForNode( nodeName );
         return instantiate( nodeName, policyId );
     }
 
-    public NodeSettings instantiate(String nodeName, Long policyId) throws DeployException
+    public Node instantiate(String nodeName, Long policyId) throws DeployException
     {
         logger.info("instantiate( name:" + nodeName + " , policy:" + policyId + " )");
 
@@ -240,42 +216,31 @@ public class NodeManagerImpl implements NodeManager
             policyId = null;
         }
 
-        /**
-         * Check if this type of node already exists in this rack
-         * If so, throw an exception (more info in Bug #7801)
-         */
-        for ( NodeSettings nodeSettings : getNodesForPolicy(policyId,false) ) {
-            Node nc = node(nodeSettings.getId());
-            PackageDesc md = nc.getPackageDesc();
-
-            if (md.getName().equals(packageDesc.getName())) {
-                throw new DeployException("Node " + packageDesc.getName() + " already exists in Policy " + policyId + ".");
-            }
-        }
-
         Node node = null;
         NodeProperties nodeProperties = null;
         NodeSettings nodeSettings = null;
         
         synchronized (this) {
-            //test if not duplicated
-            List<NodeSettings> instancesList=this.nodeInstances( nodeName, policyId, false );
-            if(instancesList.size()>0) {
-                logger.warn("A node instance already exists for " + nodeName + " under " + policyId + " policy; will not instantiate another one.");
-                return null; //return if the node is already installed
-            }
+            logger.info("initializing node: " + nodeName);
+
             nodeSettings = newNodeSettings( policyId, nodeName );
+            nodeProperties = initNodeProperties( packageDesc );
 
-            URL[] resUrls = new URL[] { tbm.getResourceDir(packageDesc) };
-
-            logger.info("initializing node desc for: " + nodeName);
-            nodeProperties = initNodeProperties(packageDesc, resUrls);
-
-            if (!live) {
+            if (!live) 
                 throw new DeployException("NodeManager is shut down");
-            }
 
-            /* load annotated classes */
+            /**
+             * Check instance count - don't allow dupes
+             */
+            if (nodeInstances( nodeProperties.getName(), nodeSettings.getPolicyId(), false ).size() >= 1) 
+                throw new DeployException("too many instances: " + nodeName);
+            
+            /**
+             * load annotated classes
+             */
+            /*
+             * XXX remove me after settings conversion complete FIXME
+             */
             if (nodeProperties != null) {
                 List<String> annotatedClasses = nodeProperties.getAnnotatedClasses();
                 boolean classAdded = false;
@@ -287,6 +252,9 @@ public class NodeManagerImpl implements NodeManager
                 if (classAdded)
                     UvmContextImpl.getInstance().refreshSessionFactory();
             }
+            /*
+             * XXX remove me after settings conversion complete FIXME
+             */
 
             /**
              * Initialize the schema
@@ -303,15 +271,13 @@ public class NodeManagerImpl implements NodeManager
             }
             UvmContextImpl.getInstance().loggingManager().initSchema(nodeProperties.getName());
 
-            checkInstanceCount( nodeProperties, nodeSettings );
-
             /*
              * XXX remove me after settings conversion complete FIXME
              */
             node = NodeBase.loadClass(nodeProperties, nodeSettings, packageDesc, true);
 
             if (node != null) {
-                loadedNodesMap.put(nodeSettings, node);
+                loadedNodesMap.put(nodeSettings.getId(), node);
             } else {
                 logger.warn("Failed to initialize node: " + packageDesc.getName());
             }
@@ -331,15 +297,14 @@ public class NodeManagerImpl implements NodeManager
 
         clearEnabledNodes();
         
-        return node.getNodeSettings();
+        return node;
     }
 
-    public NodeSettings instantiateAndStart(String nodeName, Long policyId) throws DeployException
+    public Node instantiateAndStart( String nodeName, Long policyId ) throws DeployException
     {
-        NodeSettings nodeSettings = instantiate( nodeName, policyId );
-        NodeProperties nd = UvmContextImpl.context().nodeManager().node(nodeSettings.getId()).getNodeProperties();
+        Node node = instantiate( nodeName, policyId );
+        NodeProperties nd = node.getNodeProperties();
         if (nd.getAutoStart()) {
-            Node node = node(nodeSettings.getId());
             try {
                 node.start();
             } catch (Exception e) {
@@ -347,30 +312,31 @@ public class NodeManagerImpl implements NodeManager
             }
                 
         }
-        return nodeSettings;
+        return node;
     }
 
     public void destroy( Long nodeId ) throws Exception
     {
+        destroy( node( nodeId ));
+    }
+
+    public void destroy( Node node ) throws Exception
+    {
+        if ( node == null) {
+            throw new Exception("Node " + node + " not found");
+        }
+            
         synchronized (this) {
-            NodeBase node = (NodeBase) node( nodeId );
-            if (node == null) {
-                logger.error("Destroy Failed: Node " + nodeId + " not found");
-                throw new Exception("Node " + nodeId + " not found");
-            }
-            node.destroyClass();
+            NodeBase nodeBase = (NodeBase) node;
+            nodeBase.destroyClass();
 
             /**
              * Remove from map and list and save settings
              */
-            for (Iterator<NodeSettings> iter = loadedNodesMap.keySet().iterator(); iter.hasNext();) {
-                NodeSettings nodeSettings = iter.next();
-                if (nodeSettings.getId().equals(nodeId))
-                    iter.remove();
-            }
+            loadedNodesMap.remove( node.getNodeSettings().getId() );
             for (Iterator<NodeSettings> iter = this.settings.getNodes().iterator(); iter.hasNext();) {
                 NodeSettings nodeSettings = iter.next();
-                if (nodeSettings.getId().equals(nodeId))
+                if (nodeSettings.getId().equals(node.getNodeSettings().getId()))
                     iter.remove();
             }
             this.setSettings(this.settings);       
@@ -381,13 +347,11 @@ public class NodeManagerImpl implements NodeManager
         return;
     }
 
-    public Map<NodeSettings, NodeSettings.NodeState> allNodeStates()
+    public Map<Long, NodeSettings.NodeState> allNodeStates()
     {
-        HashMap<NodeSettings, NodeSettings.NodeState> result = new HashMap<NodeSettings, NodeSettings.NodeState>();
-        for (Iterator<NodeSettings> iter = loadedNodesMap.keySet().iterator(); iter.hasNext();) {
-            NodeSettings nodeSettings = iter.next();
-            Node node = loadedNodesMap.get(nodeSettings);
-            result.put(nodeSettings, node.getRunState());
+        HashMap<Long, NodeSettings.NodeState> result = new HashMap<Long, NodeSettings.NodeState>();
+        for (Node node : loadedNodesMap.values()) {
+            result.put(node.getNodeSettings().getId(), node.getRunState());
         }
 
         return result;
@@ -417,17 +381,10 @@ public class NodeManagerImpl implements NodeManager
 
         if ( policyNodes == null ) {
             policyNodes = new HashSet<String>();
-            List<NodeSettings> policyNodeSettingss = getNodesForPolicy( policyId, true );
 
-            for ( NodeSettings nodeSettings : policyNodeSettingss ) {
-                Node node = loadedNodesMap.get(nodeSettings);
-                if ( node == null ) {
-                    logger.warn( "Node is null for nodeSettings: " + nodeSettings );
-                    continue;
-                }
-
+            for ( Node node : getNodesForPolicy( policyId, true ) ) {
                 if ( node.getRunState() == NodeSettings.NodeState.RUNNING ) {
-                    policyNodes.add( nodeSettings.getNodeName() );
+                    policyNodes.add( node.getNodeSettings().getNodeName() );
                 }
             }
             
@@ -456,7 +413,7 @@ public class NodeManagerImpl implements NodeManager
 
     // Manager lifetime -------------------------------------------------------
 
-    void init()
+    protected void init()
     {
         loadSettings();
 
@@ -465,20 +422,16 @@ public class NodeManagerImpl implements NodeManager
         clearEnabledNodes();
     }
 
-    void destroy()
+    protected void destroy()
     {
         synchronized (this) {
             live = false;
 
-            Set<NodeSettings> s = new HashSet<NodeSettings>(loadedNodesMap.keySet());
-
-            for ( NodeSettings nodeSettings : s ) {
-                if (null != nodeSettings) {
-                    unload(nodeSettings);
-                }
+            for ( Node node : loadedNodesMap.values() ) {
+                unload( node );
             }
 
-            if (loadedNodesMap.size() > 0) {
+            if ( loadedNodesMap.size() > 0 ) {
                 logger.warn("node instances not destroyed: " + loadedNodesMap.size());
             }
         }
@@ -486,20 +439,19 @@ public class NodeManagerImpl implements NodeManager
         logger.info("NodeManager destroyed");
     }
 
-    void unload(NodeSettings nodeSettings)
+    protected void unload( Node node )
     {
         synchronized (this) {
-            NodeBase node = (NodeBase) loadedNodesMap.get(nodeSettings);
-            logger.info("Unloading: " + nodeSettings + " (" + node.getNodeProperties().getName() + ")");
+            logger.info("Unloading: " + node.getNodeProperties().getName() + ")");
 
-            node.unloadClass();
-            loadedNodesMap.remove(nodeSettings);
+            ((NodeBase)node).unloadClass();
+            loadedNodesMap.remove( node.getNodeSettings().getId() );
         }
         
         clearEnabledNodes();
     }
 
-    void restart(String name)
+    protected void restart( String name )
     {
         ToolboxManager tbm = UvmContextFactory.context().toolboxManager();
 
@@ -511,28 +463,23 @@ public class NodeManagerImpl implements NodeManager
         String availVer = pd.getInstalledVersion();
 
         synchronized (this) {
-            List<NodeSettings> nNodeSettingss = nodeInstances(name);
-            if (0 < nNodeSettingss.size()) {
-                NodeSettings t = nNodeSettingss.get(0);
-                Node node = loadedNodesMap.get(t);
-
-                for (NodeSettings nodeSettings : nNodeSettingss) {
-                    PackageDesc md = loadedNodesMap.get(nodeSettings).getPackageDesc();
-                    if (!md.getInstalledVersion().equals(availVer)) {
-                        logger.info("Restarting \"" + name + "\" - new version available. (" + availVer + " > " + md.getInstalledVersion() + ")");
-                        unload(nodeSettings);
-                    } else {
-                        logger.info("Skipping Restart \"" + name + "\" - no new version available. (" + availVer + " = " + md.getInstalledVersion() + ")");
-                    }
+            for (Node node : nodeInstances(name)) {
+                PackageDesc md = node.getPackageDesc();
+                if (!md.getInstalledVersion().equals(availVer)) {
+                    logger.info("Restarting \"" + name + "\" - new version available. (" + availVer + " > " + md.getInstalledVersion() + ")");
+                    unload( node );
+                } else {
+                    logger.info("Skipping Restart \"" + name + "\" - no new version available. (" + availVer + " = " + md.getInstalledVersion() + ")");
                 }
-                restartUnloaded();
             }
+            
+            restartUnloaded();
         }
         
         clearEnabledNodes();
     }
 
-    void startAutoStart(PackageDesc extraPkg)
+    protected void startAutoStart( PackageDesc extraPkg )
     {
         ToolboxManagerImpl tbm = (ToolboxManagerImpl)UvmContextFactory.context().toolboxManager();
 
@@ -548,25 +495,24 @@ public class NodeManagerImpl implements NodeManager
             mds.add(extraPkg);
         }
         for (PackageDesc md : mds) {
-            List<NodeSettings> l = nodeInstances(md.getName());
+            List<Node> list = nodeInstances(md.getName());
 
-            NodeSettings nodeSettings = null;
+            Node node = null;
 
-            if (0 == l.size()) {
+            if ( list.size() == 0 ) {
                 try {
                     logger.info("Auto-starting new node: " + md.getName());
-                    nodeSettings = instantiate(md.getName());
+                    node = instantiate(md.getName());
                 } catch (DeployException exn) {
                     logger.warn("could not deploy: " + md.getName(), exn);
                     continue;
                 }
             } else {
-                nodeSettings = l.get(0);
+                node = list.get(0);
             }
 
-            Node node = node(nodeSettings.getId());
             if (node == null) {
-                logger.warn("No node context for router nodeSettings: " + nodeSettings);
+                logger.warn("No node context for router node: " + node);
             } else {
                 NodeSettings.NodeState ns = node.getRunState();
                 switch (ns) {
@@ -663,7 +609,7 @@ public class NodeManagerImpl implements NodeManager
                             NodeBase node = null;
                                 try {
                                 node = (NodeBase)NodeBase.loadClass(nodeProperties, nodeSettings, packageDesc, false);
-                                loadedNodesMap.put( nodeSettings, node );
+                                loadedNodesMap.put( nodeSettings.getId(), node );
                                 logger.info("Restarted: " + nodeSettings);
                             } catch (Exception exn) {
                                 logger.error("Could not restart: " + nodeSettings, exn);
@@ -775,12 +721,11 @@ public class NodeManagerImpl implements NodeManager
                 continue;
             }
 
-            URL[] urls = new URL[] { tbm.getResourceDir(md) };
             nodeSettings.setNodeName(name);
 
             try {
                 logger.info("initializing node properties for: " + name);
-                NodeProperties nodeProperties = initNodeProperties(md, urls);
+                NodeProperties nodeProperties = initNodeProperties( md );
                 nodePropertiess.put(nodeSettings, nodeProperties);
             } catch (DeployException exn) {
                 logger.warn("NodeProperties could not be parsed", exn);
@@ -879,7 +824,7 @@ public class NodeManagerImpl implements NodeManager
      * @exception DeployException the descriptor does not parse or
      * parent cannot be loaded.
      */
-    private NodeProperties initNodeProperties(PackageDesc packageDesc, URL[] urls) throws DeployException
+    private NodeProperties initNodeProperties( PackageDesc packageDesc ) throws DeployException
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         NodeProperties nodeProperties = null;
@@ -944,12 +889,12 @@ public class NodeManagerImpl implements NodeManager
         return parentList;
     }
 
-    private List<NodeSettings> getNodesForPolicy(Long policyId)
+    private List<Node> getNodesForPolicy(Long policyId)
     {
         return getNodesForPolicy(policyId,true);
     }
 
-    private List<NodeSettings> getNodesForPolicy(Long policyId, boolean parents)
+    private List<Node> getNodesForPolicy(Long policyId, boolean parents)
     {
         List<Long> parentPolicies = null;
 
@@ -968,34 +913,30 @@ public class NodeManagerImpl implements NodeManager
          * parentNodeSettingsArray[n] == list of loadedNodesMap in parentPolicies[n]
          * Policies are ordered parentNodeSettingsArray[0] is the first parent, etc 
          */
-        List<List<NodeSettings>> parentNodeSettingsArray = new ArrayList<List<NodeSettings>>(parentPolicies.size());
-        List<NodeSettings> thisPolicyNodeSettingss = new ArrayList<NodeSettings>();
+        List<List<Node>> parentNodeArray = new ArrayList<List<Node>>(parentPolicies.size());
+        List<Node> thisPolicyNodes = new ArrayList<Node>();
         for (int i = 0; i < parentPolicies.size(); i++) {
-            parentNodeSettingsArray.add(new ArrayList<NodeSettings>());
+            parentNodeArray.add(new ArrayList<Node>());
         }
 
         /*
          * Fill in the inner list, at the end each of these is the list of 
          * nodes in the policy.
          */
-        for (NodeSettings nodeSettings : loadedNodesMap.keySet()) {
-            Node node = loadedNodesMap.get(nodeSettings);
+        for (Node node : loadedNodesMap.values()) {
+            Long nodePolicyId = node.getNodeSettings().getPolicyId();
 
-            if (node != null) {
-                Long nodePolicyId = nodeSettings.getPolicyId();
-
-                /**
-                 * If its in the parent policy list - add it
-                 * Otherwise it its in the policy - add it
-                 */
-                int i = parentPolicies.indexOf(nodePolicyId);
-                if (i >= 0) {
-                    parentNodeSettingsArray.get(i).add(nodeSettings);
-                } else if (nodePolicyId == null && policyId == null) {
-                    thisPolicyNodeSettingss.add(nodeSettings);
-                } else if (nodePolicyId != null && policyId != null && nodePolicyId.equals(policyId)) {
-                    thisPolicyNodeSettingss.add(nodeSettings);
-                }
+            /**
+             * If its in the parent policy list - add it
+             * Otherwise it its in the policy - add it
+             */
+            int i = parentPolicies.indexOf(nodePolicyId);
+            if (i >= 0) {
+                parentNodeArray.get(i).add( node );
+            } else if (nodePolicyId == null && policyId == null) {
+                thisPolicyNodes.add( node );
+            } else if (nodePolicyId != null && policyId != null && nodePolicyId.equals(policyId)) {
+                thisPolicyNodes.add( node );
             }
         }
 
@@ -1004,48 +945,27 @@ public class NodeManagerImpl implements NodeManager
          * And all the nodes from the parent IFF they don't already exists
          * will only add the first entry (which will be most specific node.
          */
-        List<NodeSettings> finalList = thisPolicyNodeSettingss;
+        List<Node> finalList = thisPolicyNodes;
         Set<String> names = new HashSet<String>();
 
-        for (NodeSettings nodeSettings : thisPolicyNodeSettingss) {
-            String n = nodeSettings.getNodeName();
+        for (Node node : thisPolicyNodes) {
+            String n = node.getNodeSettings().getNodeName();
             if (!names.contains(n))
                 names.add(n);
         }
-        for (List<NodeSettings> parentPolicyList : parentNodeSettingsArray) {
+        for (List<Node> parentPolicyList : parentNodeArray) {
             if (parentPolicyList != null) {
-                for (NodeSettings nodeSettings : parentPolicyList) {
-                    String n = nodeSettings.getNodeName();
+                for (Node node : parentPolicyList) {
+                    String n = node.getNodeSettings().getNodeName();
                     if (!names.contains(n)) {
                         names.add(n);
-                        finalList.add(nodeSettings);
+                        finalList.add( node );
                     }
                 }
             }
         }
 
         return finalList;
-    }
-
-    /**
-     * Check for multiple instances of this node in the node's policy
-     * This is used prior to installation
-     */
-    private void checkInstanceCount( NodeProperties nodeProperties, NodeSettings nodeSettings ) throws DeployException
-    {
-        if (nodeProperties.isSingleInstance()) {
-            String nodeName = nodeProperties.getName();
-            Long policyId = nodeSettings.getPolicyId();
-            List<NodeSettings> l = UvmContextImpl.getInstance().nodeManager().nodeInstances( nodeName, policyId, false );
-
-            if (1 == l.size()) {
-                if (!nodeSettings.equals(l.get(0))) {
-                    throw new DeployException("too many instances: " + nodeName);
-                }
-            } else if (1 < l.size()) {
-                throw new DeployException("too many instances: " + nodeName);
-            }
-        }
     }
 
     /**
