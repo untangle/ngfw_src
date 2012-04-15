@@ -692,18 +692,6 @@ class ToolboxManagerImpl implements ToolboxManager
         return tw.getResult();
     }
 
-    // package private methods ------------------------------------------------
-
-    protected  URL getResourceDir(PackageDesc md)
-    {
-        try {
-            return new URL(TOOLBOX_URL, md.getName() + "-impl/");
-        } catch (MalformedURLException exn) {
-            logger.warn(exn); /* should never happen */
-            return null;
-        }
-    }
-
     protected List<PackageDesc> getInstalledAndAutoStart()
     {
         List<PackageDesc> mds = new ArrayList<PackageDesc>();
