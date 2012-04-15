@@ -106,13 +106,13 @@ public class IpsRuleManager
         String noVarText = substituteVariables(ruleText);
         String ruleParts[] = IpsStringParser.parseRuleSplit(noVarText);
 
-        IpsRuleHeader header = IpsStringParser.parseHeader(ruleParts[0], rule.getAction());
+        IpsRuleHeader header = IpsStringParser.parseHeader(ruleParts[0], rule.trans_getAction());
         if (header == null) {
             throw new ParseException("Unable to parse header of rule " + ruleParts[0]);
         }
 
         IpsRuleSignature signature = IpsRuleSignature
-            .parseSignature(ips, rule, ruleParts[1], rule.getAction(), false,
+            .parseSignature(ips, rule, ruleParts[1], rule.trans_getAction(), false,
                             ruleParts[1]);
 
         if(!signature.remove() && !rule.disabled()) {
@@ -120,8 +120,8 @@ public class IpsRuleManager
                 if(headerTmp.matches(header)) {
                     addSignature(headerTmp, signature);
 
-                    rule.setClassification(signature.getClassification());
-                    rule.setURL(signature.getURL());
+                    rule.trans_setClassification(signature.getClassification());
+                    rule.trans_setURL(signature.getURL());
                     //logger.debug("add rule (known header), rc: " + rule.getClassification() + ", rurl: " + rule.getURL());
                     return true;
                 }
@@ -130,8 +130,8 @@ public class IpsRuleManager
             addSignature(header, signature);
             headers.add(header);
 
-            rule.setClassification(signature.getClassification());
-            rule.setURL(signature.getURL());
+            rule.trans_setClassification(signature.getClassification());
+            rule.trans_setURL(signature.getURL());
             //logger.debug("add rule (new header), rc: " + rule.getClassification() + ", rurl: " + rule.getURL());
             return true;
         }
@@ -140,8 +140,8 @@ public class IpsRuleManager
         // set some rule stuff for gui to display
         // (but don't add this rule to knownRules)
         //rule.setSignature(signature); //Update UI description
-        rule.setClassification(signature.getClassification());
-        rule.setURL(signature.getURL());
+        rule.trans_setClassification(signature.getClassification());
+        rule.trans_setURL(signature.getURL());
         //logger.debug("skipping rule, rc: " + rule.getClassification() + ", rurl: " + rule.getURL());
         return false;
     }
@@ -164,14 +164,14 @@ public class IpsRuleManager
         text = substituteVariables(text);
         try {
             String ruleParts[]   = IpsStringParser.parseRuleSplit(text);
-            IpsRuleHeader header = IpsStringParser.parseHeader(ruleParts[0], rule.getAction());
+            IpsRuleHeader header = IpsStringParser.parseHeader(ruleParts[0], rule.trans_getAction());
             if (header == null) {
                 logger.warn("Ignoring rule with bad header: " + text);
                 return null;
             }
 
             IpsRuleSignature signature  = IpsRuleSignature
-                .parseSignature(ips, rule, ruleParts[1], rule.getAction(),
+                .parseSignature(ips, rule, ruleParts[1], rule.trans_getAction(),
                                 true, null);
 
             if(signature.remove()) {
@@ -189,8 +189,8 @@ public class IpsRuleManager
             }
 
             rule.setDescription(msg);
-            rule.setClassification(signature.getClassification());
-            rule.setURL(signature.getURL());
+            rule.trans_setClassification(signature.getClassification());
+            rule.trans_setURL(signature.getURL());
             //logger.debug("create rule, rc: " + rule.getClassification() + ", rurl: " + rule.getURL());
         } catch(ParseException e) {
             logger.error("Parsing exception for rule: " + text, e);

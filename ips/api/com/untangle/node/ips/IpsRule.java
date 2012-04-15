@@ -52,8 +52,8 @@ public class IpsRule extends Rule implements Serializable
         this.rule = rule;
     }
 
-    public long getKeyValue() { return getId(); }
-    public void setKeyValue(Long val) { setId(val); }
+    public long trans_getKeyValue() { return getId(); }
+    public void trans_setKeyValue(Long val) { setId(val); }
 
     public String getText() { return this.rule; }
     public void setText(String s) { this.rule = s; }
@@ -62,16 +62,16 @@ public class IpsRule extends Rule implements Serializable
     public void setSid(int sid) { this.sid = sid; }
 
     /* every rule signature has classification (so default text is replaced) */
-    public String getClassification() { return classification; }
-    public void setClassification(String classification) { this.classification = classification; }
+    public String trans_getClassification() { return classification; }
+    public void trans_setClassification(String classification) { this.classification = classification; }
 
     /* not all rule signatures have url (so default text may be returned) */
-    public String getURL() { return url; }
-    public void setURL(String url) { this.url = url; return; }
+    public String trans_getURL() { return url; }
+    public void trans_setURL(String url) { this.url = url; return; }
 
     public boolean disabled() { return !(isLive() || getLog()); }
 
-    public int getAction()
+    public int trans_getAction()
     {
         if (isLive())
             return BLOCK;
