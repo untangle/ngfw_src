@@ -19,7 +19,6 @@ import org.hibernate.Session;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
@@ -73,7 +72,7 @@ public class ShieldNodeImpl extends NodeBase  implements ShieldNode
     public ShieldSettings getSettings()
     {
         if( settings == null )
-            logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
+            logger.error("Settings not yet initialized. State: " + this.getRunState() );
 
         return settings;
     }

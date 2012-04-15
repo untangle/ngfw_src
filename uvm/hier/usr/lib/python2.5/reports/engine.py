@@ -1,3 +1,4 @@
+# $Id: engine.py,v 1.00 2012/04/15 10:42:49 dmorris Exp $
 import commands
 import logging
 import mx
@@ -25,14 +26,14 @@ USER_DRILLDOWN = 'user-drilldown'
 HOST_DRILLDOWN = 'host-drilldown'
 EMAIL_DRILLDOWN = 'email-drilldown'
 MAIL_REPORT_BLACKLIST = ('untangle-node-boxbackup',)
-JSON_OBJ = json.loads(open('/etc/untangle-net-alpaca/netConfig.js', 'r').read())
+NETCONFIG_JSON_OBJ = json.loads(open('/etc/untangle-net-alpaca/netConfig.js', 'r').read())
 
 def get_number_wan_interfaces():
     return len(get_wan_clause().split(','))
 
 def get_wan_clause():
     wans = []
-    for intf in JSON_OBJ['interfaceList']['list']:
+    for intf in NETCONFIG_JSON_OBJ['interfaceList']['list']:
         if intf['WAN'] is not None and intf['WAN'].lower() == 'true':
             wans.append(intf['interfaceId'])
 
@@ -40,7 +41,7 @@ def get_wan_clause():
 
 def get_wan_names_map():
     map = {}
-    for intf in JSON_OBJ['interfaceList']['list']:
+    for intf in NETCONFIG_JSON_OBJ['interfaceList']['list']:
         if intf['WAN'] is not None and intf['WAN'].lower() == 'true':
             map[int(intf['interfaceId'])] = intf['name']
 
@@ -601,24 +602,13 @@ def __get_node_partial_order(exclude_uninstalled=True):
     return list
 
 def __get_installed_nodes():
-#FIXME
-    return ["firewall"];
-    conn = sql_helper.get_connection()
+    list = []
 
-    try:
-        curs = conn.cursor()
-#FIXME
-#        curs.execute("""\
-#SELECT DISTINCT name
-#FROM settings.u_node_persistent_state
-#WHERE target_state IN ('running')
-#""")
-        rows = curs.fetchall()
-        rv = [rows[i][0] for i in range(len(rows))]
-    finally:
-        conn.commit()
-    
-    return rv
+    node_manager_settings = json.loads(open('@PREFIX@/usr/share/untangle/settings/untangle-vm/node_manager.js', 'r').read())
+    for node in node_manager_settings["nodes"]["list"]:
+        list.append(node["nodeName"])
+
+    return list
 
 def __add_node(name, list, available):
     global __nodes

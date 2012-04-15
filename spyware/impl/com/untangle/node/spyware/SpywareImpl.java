@@ -36,7 +36,6 @@ import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.IPMaskedAddressRule;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.EventLogQuery;
@@ -99,8 +98,6 @@ public class SpywareImpl extends NodeBase implements Spyware
         super( nodeSettings, nodeProperties );
 
         replacementGenerator = new SpywareReplacementGenerator(getNodeSettings());
-
-        NodeContext nodeContext = getNodeContext();
 
         this.suspiciousQuery = new EventLogQuery(I18nUtil.marktr("Suspicious Events"),
                                                  "FROM SessionLogEventFromReports evt " +

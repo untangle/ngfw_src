@@ -16,7 +16,6 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.util.I18nUtil;
 
@@ -33,23 +32,15 @@ public class BlockPageServlet extends HttpServlet
         Map<String,String> i18n_map = UvmContextFactory.context().
             languageManager().getTranslations( "untangle-node-spyware" );
 
-        NodeContext nodeContext = nm.nodeContext( Long.parseLong(request.getParameter( "tid" )) );
-        if ( nodeContext == null ) {
+        Spyware node = (Spyware) nm.node( Long.parseLong(request.getParameter( "tid" )) );
+        if ( node == null || !(node instanceof Spyware)) {
             response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
                                 I18nUtil.tr( "Feature is not installed.", i18n_map ));
             return;
         }
 
-        Object oNode = nodeContext.node();
         SpywareBlockDetails blockDetails = null;
         String unblockMode = null;
-
-        if ( !(oNode instanceof Spyware) || ( oNode == null )) {
-            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
-                                I18nUtil.tr( "Feature is not installed.", i18n_map ));
-            return;
-        }
-        Spyware node = (Spyware)oNode;
         String nonce = request.getParameter("nonce");
         
         blockDetails = node.getBlockDetails(nonce);

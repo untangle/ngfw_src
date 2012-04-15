@@ -306,7 +306,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
                     }
                 };
 
-            this.cpd.getNodeContext().runTransaction(tw);
+            UvmContextFactory.context().runTransaction(tw);
         }
     }
 
@@ -325,7 +325,7 @@ public class CPDIpUsernameMapAssistant implements IpUsernameMapAssistant {
                 }
             };
 
-        this.cpd.getNodeContext().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
         return(localStatus);
     }
 }

@@ -37,8 +37,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.reports.Application;
 import com.untangle.uvm.reports.ApplicationData;
 import com.untangle.uvm.reports.DateItem;
@@ -596,9 +596,8 @@ class ReportingManagerImpl implements ReportingManager
         List<NodeSettings> tids = nodeManager.nodeInstances("untangle-node-reporting");
         if(tids == null || tids.size() == 0)
             return false;
-        // What if more than one? Shouldn't happen. XX
-        NodeContext context = nodeManager.nodeContext(tids.get(0));
-        if (context == null) {
+        Node node = nodeManager.node( tids.get(0).getId() );
+        if (node == null) {
             return false;
         }
 

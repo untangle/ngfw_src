@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.NodeContext;
 
 @SuppressWarnings("serial")
 public class UnblockerServlet extends HttpServlet
@@ -32,8 +31,7 @@ public class UnblockerServlet extends HttpServlet
 
         try {
             NodeManager tman = UvmContextFactory.context().nodeManager();
-            NodeContext tctx = tman.nodeContext( Long.parseLong(tidStr) );
-            Phish tran = (Phish)tctx.node();
+            Phish tran = (Phish)tman.node( Long.parseLong(tidStr) );
 
             if (tran.unblockSite(nonce, global)) {
                 resp.getOutputStream().println("<success/>");

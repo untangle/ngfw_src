@@ -56,7 +56,7 @@ class SpywareTests(unittest.TestCase):
             if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
                 raise Exception('node %s already instantiated' % self.nodeName())
             nodeSettings = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), defaultRackId)
-            node = uvmContext.nodeManager().nodeContext(nodeSettings).node()
+            node = uvmContext.nodeManager().node(nodeSettings["id"])
 
     # verify client is online
     def test_010_clientIsOnline(self):

@@ -1,10 +1,11 @@
-/* $HeadURL$ */
+/**
+ * $Id$
+ */
 package com.untangle.node.router;
 
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.StatisticEvent;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.StatisticManager;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.vnet.IPNewSessionRequest;

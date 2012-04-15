@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  */
 package com.untangle.node.router;
@@ -13,7 +13,6 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.networking.NetworkConfigurationListener;
 import com.untangle.uvm.networking.NetworkConfiguration;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;

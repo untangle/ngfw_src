@@ -1,5 +1,5 @@
-/*
- * $HeadURL$
+/**
+ * $Id$
  */
 package com.untangle.node.virus;
 
@@ -14,13 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-
-import  com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.NodeContext;
-
+import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.util.I18nUtil;
-
 import com.untangle.node.http.BlockPageUtil;  
 import com.untangle.node.virus.VirusBlockDetails;
 import com.untangle.node.virus.VirusNodeImpl;
@@ -39,23 +35,14 @@ public class BlockPageServlet extends HttpServlet
         Map<String,String> i18n_map = UvmContextFactory.context().
             languageManager().getTranslations( "untangle-base-virus" );
         
-        NodeContext nodeContext = nm.nodeContext( Long.parseLong(request.getParameter( "tid" )) );
-        if ( nodeContext == null ) {
+        VirusNodeImpl node = (VirusNodeImpl) nm.node( Long.parseLong(request.getParameter( "tid" )) );
+        if ( node == null || !(node instanceof VirusNodeImpl)) {
             response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
                                 I18nUtil.tr( "Feature is not installed.", i18n_map ));
             return;
         }
 
-        Object oNode = nodeContext.node();
-        if ( !(oNode instanceof VirusNodeImpl) || ( oNode == null )) {
-            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
-                                I18nUtil.tr( "Feature is not installed.", i18n_map ));
-            return;
-        }
-
-        VirusNodeImpl node = (VirusNodeImpl)nodeContext.node();
         String nonce = request.getParameter("nonce");
-
         VirusBlockDetails blockDetails = node.getDetails(nonce);
         if (blockDetails == null) {
             response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
@@ -63,7 +50,7 @@ public class BlockPageServlet extends HttpServlet
             return;
         }
         request.setAttribute( "reason", blockDetails.getReason());
-        VirusBlockPageParameters params = new VirusBlockPageParameters( nodeContext.getNodeProperties().getDisplayName(), blockDetails );
+        VirusBlockPageParameters params = new VirusBlockPageParameters( node.getNodeProperties().getDisplayName(), blockDetails );
                                                          
         BlockPageUtil.getInstance().handle( request, response, this, params );        
     }

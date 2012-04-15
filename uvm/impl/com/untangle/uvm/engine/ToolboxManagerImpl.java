@@ -42,12 +42,12 @@ import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.Message;
 import com.untangle.uvm.message.StatDescs;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.DeployException;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.toolbox.Application;
 import com.untangle.uvm.toolbox.InstallAndInstantiateComplete;
 import com.untangle.uvm.toolbox.PackageDesc;
@@ -218,7 +218,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
             Long nodePolicyId = nodeSettings.getPolicyId();
             if (nodePolicyId == null || nodePolicyId.equals(policyId)) {
-                nodes.remove(nm.nodeContext(nodeSettings).getNodeProperties().getDisplayName());
+                nodes.remove(nm.node(nodeSettings.getId()).getNodeProperties().getDisplayName());
             }
         }
 
@@ -241,14 +241,14 @@ class ToolboxManagerImpl implements ToolboxManager
         Map<String, License> licenseMap = new HashMap<String, License>();
         LicenseManager lm = UvmContextFactory.context().licenseManager();
         for (NodeSettings nodeSettings : instances) {
-            String n = nm.nodeContext(nodeSettings).getNodeProperties().getName();
+            String n = nm.node(nodeSettings.getId()).getNodeProperties().getName();
             licenseMap.put(n, lm.getLicense(n));
         }
         Map<NodeSettings, NodeSettings.NodeState> runStates=nm.allNodeStates();
 
         List<NodeProperties> nodeProperties = new LinkedList<NodeProperties>();
         for (NodeSettings nodeSettings : instances) {
-            nodeProperties.add(nm.nodeContext(nodeSettings).getNodeProperties());
+            nodeProperties.add(nm.node(nodeSettings.getId()).getNodeProperties());
         }
         
         return new RackView(apps, instances, nodeProperties, statDescs, licenseMap, runStates);
@@ -467,10 +467,10 @@ class ToolboxManagerImpl implements ToolboxManager
                     logger.info("instantiate( " + node + ")");
                     register(node);
                     NodeSettings nodeSettings = nm.instantiate(node, policyId);
-                    NodeProperties nd = nm.nodeContext(nodeSettings).getNodeProperties();
+                    NodeProperties nd = nm.node(nodeSettings.getId()).getNodeProperties();
                     if (nodeSettings != null && nd != null && nd.getAutoStart()) {
-                        NodeContext nc = nm.nodeContext(nodeSettings);
-                        nc.node().start();
+                        Node thisNode = nm.node( nodeSettings.getId() );
+                        thisNode.start();
                     }
                 } catch (DeployException exn) {
                     logger.warn("could not deploy", exn);

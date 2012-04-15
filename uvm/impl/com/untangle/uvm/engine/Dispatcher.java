@@ -28,7 +28,6 @@ import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.LoadCounter;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.util.I18nUtil;
@@ -89,7 +88,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
     private final ArgonConnectorImpl argonConnector;
     private final Node node;
-    private final NodeContext nodeContext;
 
     private final LoadCounter udpLiveSessionCounter;
     private final LoadCounter tcpLiveSessionCounter;
@@ -168,7 +166,6 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
         logger = Logger.getLogger(Dispatcher.class.getName());
         this.argonConnector = argonConnector;
         this.node = argonConnector.node();
-        this.nodeContext = argonConnector.node().getNodeContext();
         sessionEventListener = null;
         NodeProperties td = node.getNodeProperties();
 
@@ -238,7 +235,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     public ArgonTCPSession newSession(ArgonTCPNewSessionRequest request)
     {
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(nodeContext.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(node.getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, "NT" + request.id());
             return newSessionInternal(request);
         } finally {
@@ -250,7 +247,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     public ArgonUDPSession newSession(ArgonUDPNewSessionRequest request)
     {
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(nodeContext.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(node.getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, "NU" + request.id());
             return newSessionInternal(request);
         } finally {

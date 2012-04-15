@@ -23,7 +23,6 @@ import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.argon.PipelineListener;
 import com.untangle.uvm.argon.ArgonIPSession;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.util.MetaEnv;
 import com.untangle.uvm.vnet.IPSession;
@@ -217,10 +216,9 @@ abstract class IPSessionImpl
             // killSession(message);
             return;
         }
-        NodeContext nodeContext = xform.getNodeContext();
 
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(nodeContext.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             sendCompleteEvent();
@@ -247,10 +245,8 @@ abstract class IPSessionImpl
             return;
         }
 
-        NodeContext nodeContext = xform.getNodeContext();
-
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(nodeContext.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
             if (released) {
                 logger.debug("raze released");
@@ -287,9 +283,8 @@ abstract class IPSessionImpl
             return;
         }
 
-        NodeContext nodeContext = xform.getNodeContext();
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(nodeContext.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
             readEvent(CLIENT, in);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
@@ -306,9 +301,8 @@ abstract class IPSessionImpl
             return;
         }
 
-        NodeContext nodeContext = xform.getNodeContext();
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(nodeContext.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
             readEvent(SERVER, in);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
@@ -325,9 +319,8 @@ abstract class IPSessionImpl
             return;
         }
 
-        NodeContext nodeContext = xform.getNodeContext();
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(nodeContext.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
             writeEvent(CLIENT, out);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
@@ -344,9 +337,8 @@ abstract class IPSessionImpl
             return;
         }
 
-        NodeContext nodeContext = xform.getNodeContext();
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(nodeContext.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
             writeEvent(SERVER, out);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
@@ -366,9 +358,8 @@ abstract class IPSessionImpl
             return;
         }
 
-        NodeContext nodeContext = xform.getNodeContext();
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(nodeContext.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             IncomingSocketQueue in = (argonSession).clientIncomingSocketQueue();
@@ -400,9 +391,8 @@ abstract class IPSessionImpl
             return;
         }
 
-        NodeContext nodeContext = xform.getNodeContext();
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(nodeContext.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(xform.getNodeSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             IncomingSocketQueue in = (argonSession).serverIncomingSocketQueue();

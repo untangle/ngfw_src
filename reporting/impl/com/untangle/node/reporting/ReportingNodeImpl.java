@@ -88,7 +88,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, LogWor
                 return null;
             };
         };
-        getNodeContext().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         writeCronFile();
     }
@@ -258,7 +258,7 @@ public class ReportingNodeImpl extends NodeBase implements ReportingNode, LogWor
             }
         };
 
-        getNodeContext().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
 
         if (!CRON_FILE.exists())

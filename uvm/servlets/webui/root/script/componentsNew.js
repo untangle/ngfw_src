@@ -1537,10 +1537,10 @@ Ext.define("Ung.Node", {
         if(this.state=="attention") {
           return;
         }
-        this.loadNodeContext(Ext.bind(function() {
+        this.loadNode(Ext.bind(function() {
             this.setPowerOn(true);
             this.setState("attention");
-            this.nodeContext.rpcNode.start(Ext.bind(function(result, exception) {
+            this.rpcNode.start(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception, Ext.bind(function() {
                     var title = Ext.String.format( i18n._( "Unable to start {0}" ), this.displayName );
                     Ext.MessageBox.alert(title, exception.message);
@@ -1553,10 +1553,10 @@ Ext.define("Ung.Node", {
         if(this.state=="attention") {
             return;
         }
-        this.loadNodeContext(Ext.bind(function() {
+        this.loadNode(Ext.bind(function() {
             this.setPowerOn(false);
             this.setState("attention");
-            this.nodeContext.rpcNode.stop(Ext.bind(function(result, exception) {
+            this.rpcNode.stop(Ext.bind(function(result, exception) {
                 //this.updateRunState("INITIALIZED");
                 this.resetBlingers();
                 if(Ung.Util.handleException(exception)) return;
@@ -1579,59 +1579,39 @@ Ext.define("Ung.Node", {
             appItem.linkToStoreFn(null,"buy");
         }
     },
-    getNodeContext: function(handler) {
+    getNode: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
-        if (this.nodeContext === undefined) {
+        if (this.rpcNode === undefined) {
             // This asynchronous call was removed because it causes firebug to freak out
             // XXX
-            //            rpc.nodeManager.nodeContext(Ext.bind(function(result, exception) {
+            //            rpc.nodeManager.node(Ext.bind(function(result, exception) {
             //                if(Ung.Util.handleException(exception)) return;
-            //                this.nodeContext = result;
-            //            }.createSequence(handler),this), this.nodeSettings);
-            this.nodeContext = rpc.nodeManager.nodeContext(this.nodeSettings);
+            //                this.rpcNode = result;
+            //            }.createSequence(handler),this), this.nodeSettings["id");
+            this.rpcNode = rpc.nodeManager.node(this.nodeSettings["id"]);
             handler.call(this);
         } else {
             handler.call(this);
         }
-
-    },
-    getRpcNode: function(handler) {
-        if(handler==null) {handler=Ext.emptyFn;}
-        if(this.nodeContext==null) {
-            return;
-        }
-        if (this.nodeContext.rpcNode === undefined) {
-            // This asynchronous call was removed because it causes firebug to freak out
-            // XXX
-            //            this.nodeContext.node(Ext.bind(function(result, exception) {
-            //                if(Ung.Util.handleException(exception)) return;
-            //                this.nodeContext.rpcNode = result;
-            //            }.createSequence(handler),this));
-            //        } else {
-            //            handler.call(this);
-            //        }
-            this.nodeContext.rpcNode = this.nodeContext.node();
-        } 
-        handler.call(this);
     },
     getNodeProperties: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
-        if(this.nodeContext==null) {
+        if(this.rpcNode == null) {
             return;
         }
-        if (this.nodeContext.nodeProperties === undefined) {
-            this.nodeContext.getNodeProperties(Ext.Function.createSequence(Ext.bind(function(result, exception) {
+        if (this.nodeProperties === undefined) {
+            this.rpcNode.getNodeProperties(Ext.Function.createSequence(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                this.nodeContext.nodeProperties = result;
+                this.nodeProperties = result;
             }, this), handler));
         } else {
             handler.call(this);
         }
     },
-    // load Node Context
-    loadNodeContext : function(handler) {
+    // load Node
+    loadNode : function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
-        Ext.bind(this.getNodeContext,this,[Ext.bind(this.getRpcNode,this,[Ext.bind(this.getNodeProperties,this,[handler])])]).call(this);
+        Ext.bind(this.getNode,this,[Ext.bind(this.getNode,this,[Ext.bind(this.getNodeProperties,this,[handler])])]).call(this);
     },
     loadSettings : function() {
         Ext.MessageBox.wait(i18n._("Loading Settings..."), i18n._("Please wait"));
@@ -1648,7 +1628,7 @@ Ext.define("Ung.Node", {
     },
     // init settings
     initSettings : function() {
-        Ext.bind(this.loadNodeContext,this,[Ext.bind(this.initSettingsTranslations,this,[Ext.bind(this.openSettings,this)])]).call(this);
+        Ext.bind(this.loadNode,this,[Ext.bind(this.initSettingsTranslations,this,[Ext.bind(this.openSettings,this)])]).call(this);
     },
     initSettingsTranslations : function(handler) {
         Ung.Util.loadModuleTranslations.call(this, this.name, handler);
@@ -2667,7 +2647,7 @@ Ext.define("Ung.GridEventLog", {
             this.name = "Event Log";
         }
         if ( this.eventQueriesFn == null ) {
-            this.eventQueriesFn = this.settingsCmp.node.nodeContext.rpcNode.getEventQueries;
+            this.eventQueriesFn = this.settingsCmp.node.rpcNode.getEventQueries;
         }
         this.rpc.repository = {};
         this.store=Ext.create('Ext.data.Store', {
@@ -2868,7 +2848,7 @@ Ext.define("Ung.GridEventLog", {
             
 
             displayStyle="";
-            if (this.settingsCmp.node.nodeContext.nodeProperties.type == "SERVICE") displayStyle = "display:none;"; //hide rack selector for services
+            if (this.settingsCmp.node.nodeProperties.type == "SERVICE") displayStyle = "display:none;"; //hide rack selector for services
             out = [];
             out.push('<select name="Rack" id="selectPolicy_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '" style="'+displayStyle+'">');
             out.push('<option value="-1" ' + selOpt + '>' + i18n._('All Racks') + '</option>');
@@ -3334,9 +3314,9 @@ Ext.define("Ung.NodeWin", {
         this.hide();
         Ext.destroy(this);
     },
-    // get nodeContext.rpcNode object
+    // get rpcNode object
     getRpcNode : function() {
-        return this.node.nodeContext.rpcNode;
+        return this.node.rpcNode;
     },
     // get base settings object
     getBaseSettings : function(forceReload) {
@@ -3364,14 +3344,14 @@ Ext.define("Ung.NodeWin", {
     },
     // get Validator object
     getValidator : function() {
-        if (this.node.nodeContext.rpcNode.validator === undefined) {
+        if (this.node.rpcNode.validator === undefined) {
             try {
-                this.node.nodeContext.rpcNode.validator = this.getRpcNode().getValidator();
+                this.node.rpcNode.validator = this.getRpcNode().getValidator();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return this.node.nodeContext.rpcNode.validator;
+        return this.node.rpcNode.validator;
     },
     saveAction: function (isApply) {
     	if(!this.isDirty()) {

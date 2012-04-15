@@ -53,7 +53,7 @@ class CpdTests(unittest.TestCase):
                 print "ERROR: Node %s already installed" % self.nodeName()
                 raise Exception('node %s already instantiated' % self.nodeName())
             nodeSettings = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-            node = uvmContext.nodeManager().nodeContext(nodeSettings).node()
+            node = uvmContext.nodeManager().node(nodeSettings["id"])
             nodeData = node.getSettings()
 
     def test_010_clientIsOnline(self):

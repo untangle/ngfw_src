@@ -27,7 +27,6 @@ import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.IPMaskedAddressValidator;
 import com.untangle.uvm.node.MimeType;
 import com.untangle.uvm.node.MimeTypeRule;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.Rule;
 import com.untangle.uvm.node.Validator;

@@ -30,21 +30,21 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.ArgonManager;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.node.NodeManagerSettings;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.message.NodeInstantiatedMessage;
+import com.untangle.uvm.node.NodeManagerSettings;
+import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.toolbox.PackageDesc;
 import com.untangle.uvm.toolbox.ToolboxManager;
 import com.untangle.uvm.util.Pulse;
@@ -60,7 +60,7 @@ public class NodeManagerImpl implements NodeManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final Map<NodeSettings, NodeContextImpl> loadedNodesMap = new ConcurrentHashMap<NodeSettings, NodeContextImpl>();
+    private final Map<NodeSettings, Node> loadedNodesMap = new ConcurrentHashMap<NodeSettings, Node>();
 
     private NodeManagerSettings settings = null;
     
@@ -84,8 +84,8 @@ public class NodeManagerImpl implements NodeManager
         // sort by view position, for convenience
         Collections.sort(nodeList, new Comparator<NodeSettings>() {
             public int compare(NodeSettings t1, NodeSettings t2) {
-                NodeContextImpl tci1 = loadedNodesMap.get(t1);
-                NodeContextImpl tci2 = loadedNodesMap.get(t2);
+                Node tci1 = loadedNodesMap.get(t1);
+                Node tci2 = loadedNodesMap.get(t2);
                 int rpi1 = tci1.getPackageDesc().getViewPosition();
                 int rpi2 = tci2.getPackageDesc().getViewPosition();
                 if (rpi1 == rpi2) {
@@ -106,9 +106,9 @@ public class NodeManagerImpl implements NodeManager
         List<NodeSettings> l = new LinkedList<NodeSettings>();
 
         for (NodeSettings nodeSettings : loadedNodesMap.keySet()) {
-            NodeContext nodeContext = loadedNodesMap.get(nodeSettings);
-            if (nodeContext != null) {
-                if ( nodeContext.getNodeProperties().getName().equals( nodeName ) ) {
+            Node node = loadedNodesMap.get(nodeSettings);
+            if (node != null) {
+                if ( node.getNodeProperties().getName().equals( nodeName ) ) {
                     l.add(nodeSettings);
                 }
             }
@@ -151,11 +151,11 @@ public class NodeManagerImpl implements NodeManager
         List<NodeSettings> l = new ArrayList<NodeSettings>(loadedNodesMap.size());
 
         for ( NodeSettings nodeSettings : getNodesForPolicy( policyId, parents ) ) {
-            NodeContext tc = loadedNodesMap.get(nodeSettings);
-            if (null != tc) {
-                String n = tc.getNodeProperties().getName();
+            Node node = loadedNodesMap.get(nodeSettings);
+            if (node != null) {
+                String nodeName = node.getNodeProperties().getName();
 
-                if (n.equals(name)) {
+                if (nodeName.equals(name)) {
                     l.add(nodeSettings);
                 }
             }
@@ -175,7 +175,7 @@ public class NodeManagerImpl implements NodeManager
         List<NodeSettings> l = new ArrayList<NodeSettings>(loadedNodesMap.size());
 
         for (NodeSettings nodeSettings : getNodesForPolicy( policyId )) {
-            NodeContext nc = nodeContext(nodeSettings);
+            Node nc = node(nodeSettings.getId());
             PackageDesc md = nc.getPackageDesc();
 
             if (!md.isInvisible()) {
@@ -185,7 +185,7 @@ public class NodeManagerImpl implements NodeManager
         }
 
         for (NodeSettings nodeSettings : loadedNodesMap) {
-            NodeContext nc = nodeContext(nodeSettings);
+            Node nc = node(nodeSettings.getId());
             PackageDesc md = nc.getPackageDesc();
 
             PackageDesc.Type type = md.getType();
@@ -198,12 +198,10 @@ public class NodeManagerImpl implements NodeManager
         return l;
     }
 
-    public NodeContextImpl nodeContext( NodeSettings nodeSettings )
-    {
-        return loadedNodesMap.get(nodeSettings);
-    }
-
-    public NodeContextImpl nodeContext( Long nodeId )
+    /**
+     * FIXME - make this faster
+     */
+    public Node node( Long nodeId )
     {
         List<NodeSettings> nodeSettingsList = new ArrayList<NodeSettings>(loadedNodesMap.keySet());
         for (NodeSettings nodeSettings : nodeSettingsList) {
@@ -219,8 +217,7 @@ public class NodeManagerImpl implements NodeManager
         Node node = null;
         List<NodeSettings> nodeInstances = nodeInstances(name);
         if(nodeInstances.size()>0){
-            NodeContext nodeContext = nodeContext(nodeInstances.get(0));
-            node = nodeContext.node();
+            node = node(nodeInstances.get(0).getId());
         }
         return node;
     }
@@ -248,17 +245,18 @@ public class NodeManagerImpl implements NodeManager
          * If so, throw an exception (more info in Bug #7801)
          */
         for ( NodeSettings nodeSettings : getNodesForPolicy(policyId,false) ) {
-            NodeContext nc = nodeContext(nodeSettings);
+            Node nc = node(nodeSettings.getId());
             PackageDesc md = nc.getPackageDesc();
 
             if (md.getName().equals(packageDesc.getName())) {
                 throw new DeployException("Node " + packageDesc.getName() + " already exists in Policy " + policyId + ".");
             }
         }
+
+        Node node = null;
+        NodeProperties nodeProperties = null;
+        NodeSettings nodeSettings = null;
         
-        NodeContextImpl nodeContext;
-        NodeProperties nodeProperties;
-        NodeSettings nodeSettings;
         synchronized (this) {
             //test if not duplicated
             List<NodeSettings> instancesList=this.nodeInstances( nodeName, policyId, false );
@@ -291,29 +289,38 @@ public class NodeManagerImpl implements NodeManager
             }
 
             /**
-             * Initialize the schema - XXX remove me after settings conversion complete FIXME
+             * Initialize the schema
+             */
+            /*
+             * XXX remove me after settings conversion complete FIXME
              */
             if (null != nodeProperties.getNodeBase()) {
                 UvmContextImpl.getInstance().schemaUtil().initSchema("settings", nodeProperties.getNodeBase());
             }
-            UvmContextImpl.getInstance().schemaUtil().initSchema("settings", nodeProperties.getNodeBase());
-            
-            nodeContext = new NodeContextImpl(nodeProperties, nodeSettings, packageDesc.getName(), true);
-            loadedNodesMap.put(nodeSettings, nodeContext);
-            try {
-                nodeContext.init();
-            } finally {
-                if (nodeContext.node() == null) {
-                    logger.warn("nodeContext.node() == null, removing node...");
-                    loadedNodesMap.remove(nodeSettings);
-                }
+            UvmContextImpl.getInstance().schemaUtil().initSchema("settings", nodeProperties.getName());
+            if (null != nodeProperties.getNodeBase()) {
+                UvmContextImpl.getInstance().loggingManager().initSchema(nodeProperties.getNodeBase());
             }
+            UvmContextImpl.getInstance().loggingManager().initSchema(nodeProperties.getName());
+
+            checkInstanceCount( nodeProperties, nodeSettings );
+
+            /*
+             * XXX remove me after settings conversion complete FIXME
+             */
+            node = NodeBase.loadClass(nodeProperties, nodeSettings, packageDesc, true);
+
+            if (node != null) {
+                loadedNodesMap.put(nodeSettings, node);
+            } else {
+                logger.warn("Failed to initialize node: " + packageDesc.getName());
+            }
+            
         }
 
-        Node node = nodeContext.node();
         PackageDesc.Type type = packageDesc.getType();
 
-        if (null != node && !packageDesc.isInvisible() && (PackageDesc.Type.NODE == type || PackageDesc.Type.SERVICE == type)) {
+        if ( node != null && !packageDesc.isInvisible() && (PackageDesc.Type.NODE == type || PackageDesc.Type.SERVICE == type)) {
             MessageManager lmm = uvmContext.messageManager();
             Counters c = lmm.getCounters(node.getNodeSettings().getId());
 
@@ -330,11 +337,11 @@ public class NodeManagerImpl implements NodeManager
     public NodeSettings instantiateAndStart(String nodeName, Long policyId) throws DeployException
     {
         NodeSettings nodeSettings = instantiate( nodeName, policyId );
-        NodeProperties nd = UvmContextImpl.context().nodeManager().nodeContext(nodeSettings).getNodeProperties();
+        NodeProperties nd = UvmContextImpl.context().nodeManager().node(nodeSettings.getId()).getNodeProperties();
         if (nd.getAutoStart()) {
-            NodeContext nc = nodeContext(nodeSettings);
+            Node node = node(nodeSettings.getId());
             try {
-                nc.node().start();
+                node.start();
             } catch (Exception e) {
                 throw new DeployException(e);
             }
@@ -345,15 +352,13 @@ public class NodeManagerImpl implements NodeManager
 
     public void destroy( Long nodeId ) throws Exception
     {
-        final NodeContextImpl nodeContext;
-
         synchronized (this) {
-            nodeContext = nodeContext( nodeId );
-            if (null == nodeContext) {
+            NodeBase node = (NodeBase) node( nodeId );
+            if (node == null) {
                 logger.error("Destroy Failed: Node " + nodeId + " not found");
                 throw new Exception("Node " + nodeId + " not found");
             }
-            nodeContext.destroy();
+            node.destroyClass();
 
             /**
              * Remove from map and list and save settings
@@ -381,8 +386,8 @@ public class NodeManagerImpl implements NodeManager
         HashMap<NodeSettings, NodeSettings.NodeState> result = new HashMap<NodeSettings, NodeSettings.NodeState>();
         for (Iterator<NodeSettings> iter = loadedNodesMap.keySet().iterator(); iter.hasNext();) {
             NodeSettings nodeSettings = iter.next();
-            NodeContextImpl tci = loadedNodesMap.get(nodeSettings);
-            result.put(nodeSettings, tci.getRunState());
+            Node node = loadedNodesMap.get(nodeSettings);
+            result.put(nodeSettings, node.getRunState());
         }
 
         return result;
@@ -415,13 +420,13 @@ public class NodeManagerImpl implements NodeManager
             List<NodeSettings> policyNodeSettingss = getNodesForPolicy( policyId, true );
 
             for ( NodeSettings nodeSettings : policyNodeSettingss ) {
-                NodeContext nodeContext = loadedNodesMap.get(nodeSettings);
-                if ( nodeContext == null ) {
-                    logger.warn( "Node context is null for nodeSettings: " + nodeSettings );
+                Node node = loadedNodesMap.get(nodeSettings);
+                if ( node == null ) {
+                    logger.warn( "Node is null for nodeSettings: " + nodeSettings );
                     continue;
                 }
 
-                if ( nodeContext.getRunState() == NodeSettings.NodeState.RUNNING ) {
+                if ( node.getRunState() == NodeSettings.NodeState.RUNNING ) {
                     policyNodes.add( nodeSettings.getNodeName() );
                 }
             }
@@ -484,10 +489,10 @@ public class NodeManagerImpl implements NodeManager
     void unload(NodeSettings nodeSettings)
     {
         synchronized (this) {
-            NodeContextImpl tc = loadedNodesMap.get(nodeSettings);
-            logger.info("Unloading: " + nodeSettings + " (" + tc.getNodeProperties().getName() + ")");
+            NodeBase node = (NodeBase) loadedNodesMap.get(nodeSettings);
+            logger.info("Unloading: " + nodeSettings + " (" + node.getNodeProperties().getName() + ")");
 
-            tc.unload();
+            node.unloadClass();
             loadedNodesMap.remove(nodeSettings);
         }
         
@@ -509,7 +514,7 @@ public class NodeManagerImpl implements NodeManager
             List<NodeSettings> nNodeSettingss = nodeInstances(name);
             if (0 < nNodeSettingss.size()) {
                 NodeSettings t = nNodeSettingss.get(0);
-                NodeContext tc = loadedNodesMap.get(t);
+                Node node = loadedNodesMap.get(t);
 
                 for (NodeSettings nodeSettings : nNodeSettingss) {
                     PackageDesc md = loadedNodesMap.get(nodeSettings).getPackageDesc();
@@ -559,16 +564,15 @@ public class NodeManagerImpl implements NodeManager
                 nodeSettings = l.get(0);
             }
 
-            NodeContext nc = nodeContext(nodeSettings);
-            if (null == nc) {
+            Node node = node(nodeSettings.getId());
+            if (node == null) {
                 logger.warn("No node context for router nodeSettings: " + nodeSettings);
             } else {
-                Node n = nc.node();
-                NodeSettings.NodeState ns = n.getRunState();
+                NodeSettings.NodeState ns = node.getRunState();
                 switch (ns) {
                 case INITIALIZED:
                     try {
-                        n.start();
+                        node.start();
                     } catch (Exception exn) {
                         logger.warn("could not load: " + md.getName(), exn);
                         continue;
@@ -656,19 +660,18 @@ public class NodeManagerImpl implements NodeManager
                         public void run()
                         {
                             logger.info("Restarting: " + nodeSettings + " (" + name + ")");
-                            NodeContextImpl nodeContext = null;
-                            try {
-                                nodeContext = new NodeContextImpl( nodeProperties, nodeSettings, packageDesc.getName(), false);
-                                loadedNodesMap.put( nodeSettings, nodeContext );
-                                nodeContext.init();
+                            NodeBase node = null;
+                                try {
+                                node = (NodeBase)NodeBase.loadClass(nodeProperties, nodeSettings, packageDesc, false);
+                                loadedNodesMap.put( nodeSettings, node );
                                 logger.info("Restarted: " + nodeSettings);
                             } catch (Exception exn) {
                                 logger.error("Could not restart: " + nodeSettings, exn);
                             } catch (LinkageError err) {
                                 logger.error("Could not restart: " + nodeSettings, err);
                             }
-                            if ( nodeContext != null && nodeContext.node() == null ) {
-                                logger.warn("nodeContext.node() == null, removing node...");
+                            if ( node == null ) {
+                                logger.warn("node == null, removing node...");
                                 loadedNodesMap.remove(nodeSettings);
                             }
                         }
@@ -976,9 +979,9 @@ public class NodeManagerImpl implements NodeManager
          * nodes in the policy.
          */
         for (NodeSettings nodeSettings : loadedNodesMap.keySet()) {
-            NodeContext nodeContext = loadedNodesMap.get(nodeSettings);
+            Node node = loadedNodesMap.get(nodeSettings);
 
-            if (nodeContext != null) {
+            if (node != null) {
                 Long nodePolicyId = nodeSettings.getPolicyId();
 
                 /**
@@ -1023,7 +1026,28 @@ public class NodeManagerImpl implements NodeManager
 
         return finalList;
     }
-    
+
+    /**
+     * Check for multiple instances of this node in the node's policy
+     * This is used prior to installation
+     */
+    private void checkInstanceCount( NodeProperties nodeProperties, NodeSettings nodeSettings ) throws DeployException
+    {
+        if (nodeProperties.isSingleInstance()) {
+            String nodeName = nodeProperties.getName();
+            Long policyId = nodeSettings.getPolicyId();
+            List<NodeSettings> l = UvmContextImpl.getInstance().nodeManager().nodeInstances( nodeName, policyId, false );
+
+            if (1 == l.size()) {
+                if (!nodeSettings.equals(l.get(0))) {
+                    throw new DeployException("too many instances: " + nodeName);
+                }
+            } else if (1 < l.size()) {
+                throw new DeployException("too many instances: " + nodeName);
+            }
+        }
+    }
+
     /**
      * Used to empty the cache of the enabled nodes.  This cache is used to build
      * the pipeline, so it must be updated whenever the node state changes.

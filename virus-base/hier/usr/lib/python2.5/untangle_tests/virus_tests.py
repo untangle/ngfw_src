@@ -41,7 +41,7 @@ class VirusTests(unittest.TestCase):
                 print "ERROR: Node %s already installed" % self.nodeName();
                 raise Exception('node %s already instantiated' % self.nodeName())
             nodeSettings = uvmContext.nodeManager().instantiateAndStart(self.nodeName(), defaultRackId)
-            node = uvmContext.nodeManager().nodeContext(nodeSettings).node()
+            node = uvmContext.nodeManager().node(nodeSettings["id"])
             flushEvents()
 
     # verify client is online

@@ -18,8 +18,8 @@ import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.UvmState;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.SessionEndpoints;
 import com.untangle.uvm.argon.SessionGlobalState;
 import com.untangle.uvm.argon.ArgonHook;
@@ -50,13 +50,13 @@ class SessionMonitorImpl implements SessionMonitor
     /**
      * This returns a list of descriptors for a certain node
      */
-    public List<com.untangle.uvm.vnet.VnetSessionDesc> getNodeSessions(NodeSettings id)
+    public List<com.untangle.uvm.vnet.VnetSessionDesc> getNodeSessions(NodeSettings nodeSettings)
     {
         NodeManager nodeManager = uvmContext.nodeManager();
 
-        NodeContext nodeContext = nodeManager.nodeContext(id);
+        Node node = nodeManager.node( nodeSettings.getId() );
 
-        return nodeContext.liveSessionDescs();
+        return node.liveSessionDescs();
     }
 
     /**

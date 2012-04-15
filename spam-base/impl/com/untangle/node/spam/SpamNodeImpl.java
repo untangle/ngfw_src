@@ -15,7 +15,6 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
 import com.untangle.uvm.vnet.NodeBase;
@@ -74,8 +73,6 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
         
         this.scanner = scanner;
         saDaemon = new SpamAssassinDaemon();
-
-        NodeContext tctx = getNodeContext();
 
         String vendor = scanner.getVendorName();
         String vendorTag = vendor;
@@ -229,7 +226,7 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     public SpamSettings getSettings()
     {
         if( this.spamSettings == null ) {
-            logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
+            logger.error("Settings not yet initialized. State: " + this.getRunState() );
         }
 
         return this.spamSettings;

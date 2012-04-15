@@ -34,7 +34,6 @@ import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
 import com.untangle.uvm.message.MessageManager;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.node.EventLogQuery;
@@ -76,8 +75,6 @@ public class CPDImpl extends NodeBase implements CPD
     public CPDImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
-
-        NodeContext nodeContext = getNodeContext();
 
         this.loginEventQuery = new EventLogQuery(I18nUtil.marktr("Login Events"),
                                                  "FROM CpdLoginEventsFromReports evt ORDER BY evt.timeStamp DESC");

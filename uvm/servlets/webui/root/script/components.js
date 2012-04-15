@@ -1463,10 +1463,10 @@ Ung.Node = Ext.extend(Ext.Component, {
         if(this.state=="attention") {
           return;
         }
-        this.loadNodeContext(function() {
+        this.loadNode(function() {
             this.setPowerOn(true);
             this.setState("attention");
-            this.nodeContext.rpcNode.start(function(result, exception) {
+            this.rpcNode.start(function(result, exception) {
                 if(Ung.Util.handleException(exception, function() {
                     var title = String.format( i18n._( "Unable to start {0}" ), this.displayName );
                     Ext.MessageBox.alert(title, exception.message);
@@ -1479,10 +1479,10 @@ Ung.Node = Ext.extend(Ext.Component, {
         if(this.state=="attention") {
             return;
         }
-        this.loadNodeContext(function() {
+        this.loadNode(function() {
             this.setPowerOn(false);
             this.setState("attention");
-            this.nodeContext.rpcNode.stop(function(result, exception) {
+            this.rpcNode.stop(function(result, exception) {
                 //this.updateRunState("INITIALIZED");
                 this.resetBlingers();
                 if(Ung.Util.handleException(exception)) return;
@@ -1505,59 +1505,40 @@ Ung.Node = Ext.extend(Ext.Component, {
             appItem.linkToStoreFn(null,"buy");
         }
     },
-    getNodeContext: function(handler) {
+    getNode: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
-        if (this.nodeContext === undefined) {
+        if (this.rpcNode === undefined) {
             // This asynchronous call was removed because it causes firebug to freak out
             // XXX
-            //            rpc.nodeManager.nodeContext(function(result, exception) {
+            //            rpc.nodeManager.node(function(result, exception) {
             //                if(Ung.Util.handleException(exception)) return;
-            //                this.nodeContext = result;
-            //            }.createSequence(handler).createDelegate(this), this.nodeSettings);
-            this.nodeContext = rpc.nodeManager.nodeContext(this.nodeSettings);
+            //                this.rpcNode = result;
+            //            }.createSequence(handler).createDelegate(this), this.nodeSettings["id"});
+            this.rpcNode = rpc.nodeManager.node(this.nodeSettings["id"]);
             handler.call(this);
         } else {
             handler.call(this);
         }
 
     },
-    getRpcNode: function(handler) {
-        if(handler==null) {handler=Ext.emptyFn;}
-        if(this.nodeContext==null) {
-            return;
-        }
-        if (this.nodeContext.rpcNode === undefined) {
-            // This asynchronous call was removed because it causes firebug to freak out
-            // XXX
-            //            this.nodeContext.node(function(result, exception) {
-            //                if(Ung.Util.handleException(exception)) return;
-            //                this.nodeContext.rpcNode = result;
-            //            }.createSequence(handler).createDelegate(this));
-            //        } else {
-            //            handler.call(this);
-            //        }
-            this.nodeContext.rpcNode = this.nodeContext.node();
-        } 
-        handler.call(this);
-    },
     getNodeProperties: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
-        if(this.nodeContext==null) {
+        if(this.rpcNode==null) {
             return;
         }
-        if (this.nodeContext.nodeProperties === undefined) {
-            this.nodeContext.getNodeProperties(function(result, exception) {
+        if (this.nodeProperties === undefined) {
+            this.rpcNode.getNodeProperties(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                this.nodeContext.nodeProperties = result;
+                this.nodeProperties = result;
             }.createSequence(handler).createDelegate(this));
         } else {
             handler.call(this);
         }
     },
-    // load Node Context
-    loadNodeContext : function(handler) {
+    // load Node
+    loadNode : function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
-        this.getNodeContext.createDelegate(this,[this.getRpcNode.createDelegate(this,[this.getNodeProperties.createDelegate(this,[handler])])]).call(this);
+        this.getNode.createDelegate(this,[this.getNode.createDelegate(this,[this.getNodeProperties.createDelegate(this,[handler])])]).call(this);
     },
     loadSettings : function() {
         Ext.MessageBox.wait(i18n._("Loading Settings..."), i18n._("Please wait"));
@@ -1574,7 +1555,7 @@ Ung.Node = Ext.extend(Ext.Component, {
     },
     // init settings
     initSettings : function() {
-        this.loadNodeContext.createDelegate(this,[this.initSettingsTranslations.createDelegate(this,[this.openSettings.createDelegate(this)])]).call(this);
+        this.loadNode.createDelegate(this,[this.initSettingsTranslations.createDelegate(this,[this.openSettings.createDelegate(this)])]).call(this);
     },
     initSettingsTranslations : function(handler) {
         Ung.Util.loadModuleTranslations.call(this, this.name, handler);
@@ -2608,7 +2589,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             this.name = "Event Log";
         }
         if ( this.eventQueriesFn == null ) {
-            this.eventQueriesFn = this.settingsCmp.node.nodeContext.rpcNode.getEventQueries;
+            this.eventQueriesFn = this.settingsCmp.node.rpcNode.getEventQueries;
         }
         this.rpc.repository = {};
         this.store = new Ext.data.Store({
@@ -2813,7 +2794,7 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             querySelector.innerHTML = out.join("");
 
             displayStyle="";
-            if (this.settingsCmp.node.nodeContext.nodeProperties.type == "SERVICE") displayStyle = "display:none;"; //hide rack selector for services
+            if (this.settingsCmp.node.nodeProperties.type == "SERVICE") displayStyle = "display:none;"; //hide rack selector for services
             out = [];
             out.push('<select name="Rack" id="selectPolicy_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '" style="'+displayStyle+'">');
             out.push('<option value="-1" ' + selOpt + '>' + i18n._('All Racks') + '</option>');
@@ -3293,9 +3274,9 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
         }
         Ext.destroy(this);
     },
-    // get nodeContext.rpcNode object
+    // get rpcNode object
     getRpcNode : function() {
-        return this.node.nodeContext.rpcNode;
+        return this.node.rpcNode;
     },
     // get base settings object
     getBaseSettings : function(forceReload) {
@@ -3323,14 +3304,14 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
     },
     // get Validator object
     getValidator : function() {
-        if (this.node.nodeContext.rpcNode.validator === undefined) {
+        if (this.node.rpcNode.validator === undefined) {
             try {
-                this.node.nodeContext.rpcNode.validator = this.getRpcNode().getValidator();
+                this.node.rpcNode.validator = this.getRpcNode().getValidator();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return this.node.nodeContext.rpcNode.validator;
+        return this.node.rpcNode.validator;
     }
 });
 Ung.NodeWin._nodeScripts = {};

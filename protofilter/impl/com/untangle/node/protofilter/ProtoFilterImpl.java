@@ -12,7 +12,6 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.EventLogQuery;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.TransactionWork;
@@ -80,7 +79,7 @@ public class ProtoFilterImpl extends NodeBase implements ProtoFilter
     public ProtoFilterSettings getSettings()
     {
         if( this.nodeSettings == null )
-            logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
+            logger.error("Settings not yet initialized. State: " + this.getRunState() );
         return this.nodeSettings;
     }
 

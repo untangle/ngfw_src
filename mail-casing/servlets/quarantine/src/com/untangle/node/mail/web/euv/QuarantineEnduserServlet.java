@@ -29,7 +29,6 @@ import com.untangle.node.mail.papi.quarantine.QuarantineUserView;
 import com.untangle.node.mail.papi.safelist.SafelistEndUserView;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.NodeSettings;
 import org.apache.log4j.Logger;
 
@@ -167,8 +166,7 @@ public class QuarantineEnduserServlet extends HttpServlet
         try {
             UvmContext ctx = UvmContextFactory.context();
             NodeSettings tid = ctx.nodeManager().nodeInstances("untangle-casing-mail").get(0);
-            NodeContext tc = ctx.nodeManager().nodeContext(tid);
-            MailNode mt = (MailNode) tc.node();
+            MailNode mt = (MailNode) ctx.nodeManager().node( tid.getId() );
             m_mailNode = mt;
             m_quarantine = mt.getQuarantineUserView();
             m_safelist = mt.getSafelistEndUserView();

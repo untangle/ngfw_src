@@ -64,6 +64,24 @@ public interface NodeManager
     List<NodeSettings> nodeInstances(String name, Long policyId, boolean parents);
 
     /**
+     * Get the <code>Node</code> for this nodeId
+     *
+     * @param nodeId of the instance.
+     * @return the instance's <code>Node</code>.
+     */
+    Node node( Long nodeId );
+
+    /**
+     * Get the <code>Node</code> for a node instance;
+     * if the are more than a node instance for the provided name,
+     * the first node instance is returned.
+     *
+     * @param name of the node.
+     * @return the instance's <code>Node</code>.
+     */
+    Node node( String name );
+    
+    /**
      * Create a new node instance under the given policy.  Note
      * that it is an error to specify a non-null policy for a service,
      * or a null policy for a non-service.
@@ -104,33 +122,6 @@ public interface NodeManager
      * @param nodeId of instance to be destroyed.
      */
     void destroy( Long nodeId ) throws Exception;
-
-    /**
-     * Get the <code>NodeContext</code> for a node instance.
-     *
-     * @param tid <code>NodeSettings</code> of the instance.
-     * @return the instance's <code>NodeContext</code>.
-     */
-    NodeContext nodeContext( NodeSettings nodeSettings );
-
-    /**
-     * Get the <code>NodeContext</code> for a node instance.
-     * This will replace the nodeContext(NodeSettings) function above eventually when NodeSettings goes away
-     *
-     * @param the node id (long) of the instance.
-     * @return the instance's <code>NodeContext</code>.
-     */
-    NodeContext nodeContext( Long nodeId );
-    
-    /**
-     * Get the <code>Node</code> for a node instance;
-     * if the are more than a node instance for the provided name,
-     * the first node instance is returned.
-     *
-     * @param name of the node.
-     * @return the instance's <code>Node</code>.
-     */
-    Node node( String name );
 
     /**
      * Get the runtime state for all nodes in one call.

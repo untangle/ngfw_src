@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import com.untangle.node.token.TokenAdaptor;
-import com.untangle.node.util.PartialListUtil;
-import com.untangle.node.util.PartialListUtil.Handler;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.message.BlingBlinger;
@@ -37,11 +35,6 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
     private final PipeSpec[] pipeSpecs;
 
     private IpsDetectionEngine engine;
-
-    private final PartialListUtil listUtil = new PartialListUtil();
-
-    private final IpsVariableHandler variableHandler = new IpsVariableHandler();
-    private final IpsRuleHandler ruleHandler = new IpsRuleHandler();
 
     private final BlingBlinger scanBlinger;
     private final BlingBlinger detectBlinger;
@@ -249,33 +242,6 @@ public class IpsNodeImpl extends NodeBase implements IpsNode
         engine.clearRules();
         for(IpsRule rule : rules) {
             engine.addRule(rule);
-        }
-    }
-
-    /* Utility handler for the most common case (rules) */
-    public static class IpsRuleHandler implements Handler<IpsRule>
-    {
-        public Long getId( IpsRule rule )
-        {
-            return rule.getId();
-        }
-
-        public void update( IpsRule current, IpsRule newRule )
-        {
-            current.update( newRule );
-        }
-    }
-
-    private static class IpsVariableHandler implements PartialListUtil.Handler<IpsVariable>
-    {
-        public Long getId( IpsVariable var )
-        {
-            return var.getId();
-        }
-
-        public void update( IpsVariable current, IpsVariable newVar )
-        {
-            current.updateVariable( newVar );
         }
     }
 

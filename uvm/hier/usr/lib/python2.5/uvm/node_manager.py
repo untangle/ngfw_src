@@ -14,10 +14,10 @@ class NodeManager(Manager):
         return nodeSettings
 
     def api_start( self, nodeIdString ):
-        self.__nodeManager.nodeContext( int(nodeIdString) ).node().start()
+        self.__nodeManager.node( int(nodeIdString) ).start()
 
     def api_stop( self, nodeIdString ):
-        self.__nodeManager.nodeContext( int(nodeIdString) ).node().stop()
+        self.__nodeManager.node( int(nodeIdString) ).stop()
 
     def api_destroy( self, nodeIdString ):
         self.__nodeManager.destroy( int(nodeIdString) )
@@ -28,7 +28,7 @@ class NodeManager(Manager):
 
         nodes = []
         for nodeSettings in instances["list"]:
-            nodeContext, node = self.__get_node( nodeSettings, True )
+            node = self.__get_node( nodeSettings["id"], True )
 
             policyId = None
             if ( nodeSettings.has_key( "policyId" )): policyId = nodeSettings["policyId"]
@@ -38,7 +38,7 @@ class NodeManager(Manager):
             else: 
                 policy = self.getPolicyString( policyId )
             
-            nodes.append( (nodeSettings['id'], nodeContext.getNodeProperties()["name"], policy, node.getRunState()) )
+            nodes.append( (nodeSettings['id'], node.getNodeProperties()["name"], policy, node.getRunState()) )
         
         nodes =  sorted( nodes, key=lambda v: v[2]) # sort by rack/policy
         return nodes
@@ -54,14 +54,15 @@ class NodeManager(Manager):
         for nodeId in nodeIds: self.__print_sessions(nodeId)
 
     def __print_sessions( self, nodeId ):
-        nodeContext, node = self.__get_node( nodeId )
-        if ( nodeContext == None or node == None ): return
+        node = self.__get_node( nodeId )
+        if ( node == None ): 
+            return
         sessions = node.liveSessionDescs()["list"]
         if ( sessions == None ):
             print "NULL Session Desc (nodeId:%i)" % ( nodeId )
             return
 
-        print "Live sessions for %s" % ( nodeContext.getNodeProperties()["name"])
+        print "Live sessions for %s" % ( node.getNodeProperties()["name"])
         print "Protocol CState SState Client:Client_Port -> Server:Server_Port Created Last Activity"
         for session in sessions: self.__print_session(session)
 
@@ -71,17 +72,11 @@ class NodeManager(Manager):
         print "\t%s\t%s\n" % ( self.formatTime( stats["creationDate"] ), self.formatTime( stats["lastActivityDate"] )),
 
     def __get_node( self, nodeId, raiseException = False ):
-        nodeContext = self.__nodeManager.nodeContext( nodeId )
-        if ( nodeContext == None ):
-            print "NULL Node Context (nodeId:%i)" % (nodeId)
-            if ( raiseException ): raise Exception("NULL Node Context (nodeId:%i)" % (nodeId))
-            return [ None, None ]
-        node = nodeContext.node()
+        node = self.__nodeManager.node( nodeId )
         if ( node == None ):
             print "NULL Node (nodeId:%i)" % (nodeId)
-            if ( raiseException ): raise Exception("NULL Node (nodeId:%i)" % (nodeId))
-            return [ None, None ]
-
-        return [ nodeContext, node ]
+            if ( raiseException ): raise Exception("NULL Node Context (nodeId:%i)" % (nodeId))
+            return None
+        return node
 
 Manager.managers.append( NodeManager )

@@ -5,9 +5,9 @@ package com.untangle.uvm.node;
 
 import java.util.List;
 
-import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.vnet.VnetSessionDesc;
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.toolbox.PackageDesc;
 
 /**
  * Interface for a node instance, provides public runtime control
@@ -28,10 +28,10 @@ public interface Node
     NodeProperties getNodeProperties();
 
     /**
-     * FIXME remove me
+     * Get the package desc for this node
      */
-    NodeContext getNodeContext();
-
+    PackageDesc getPackageDesc();
+    
     /**
      * Get the current run state of this node
      */

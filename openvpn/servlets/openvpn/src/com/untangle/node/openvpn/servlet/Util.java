@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.openvpn.servlet;
 
 import java.io.File;
@@ -36,7 +21,6 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.node.NodeContext;
 import com.untangle.node.openvpn.Constants;
 import com.untangle.node.openvpn.VpnNode;
 import com.untangle.uvm.util.ServletStreamer;
@@ -215,10 +199,10 @@ class Util
         UvmContext ctx = UvmContextFactory.context();
         NodeSettings tid = ctx.nodeManager().nodeInstances( "untangle-node-openvpn" ).get( 0 );
         if ( tid == null ) throw new Exception( "OpenVPN is not loaded." );
-        NodeContext tc = ctx.nodeManager().nodeContext( tid );
+        VpnNode node = (VpnNode) ctx.nodeManager().node( tid.getId() );
 
-        if ( tc == null ) throw new Exception( "OpenVPN is not loaded." );
-        return (VpnNode)tc.node();
+        if ( node == null ) throw new Exception( "OpenVPN is not loaded." );
+        return node;
     }
     
     boolean isAdmin( HttpServletRequest request ) throws Exception
