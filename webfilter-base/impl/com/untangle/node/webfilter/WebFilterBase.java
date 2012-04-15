@@ -14,7 +14,6 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.node.token.Header;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
-import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
@@ -61,8 +60,6 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     protected final WebFilterReplacementGenerator replacementGenerator;
 
     protected volatile WebFilterSettings settings;
-
-    protected final PartialListUtil listUtil = new PartialListUtil();
 
     protected final BlingBlinger scanBlinger;
     protected final BlingBlinger passBlinger;

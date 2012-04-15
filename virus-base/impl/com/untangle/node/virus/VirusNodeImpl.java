@@ -21,7 +21,6 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.node.mail.papi.smtp.SMTPNotifyAction;
 import com.untangle.node.token.Token;
 import com.untangle.node.token.TokenAdaptor;
-import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.LocalAppServerManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
@@ -89,8 +88,6 @@ public abstract class VirusNodeImpl extends NodeBase implements VirusNode
     private final VirusReplacementGenerator replacementGenerator;
 
     private final Logger logger = Logger.getLogger(VirusNodeImpl.class);
-
-    private final PartialListUtil listUtil = new PartialListUtil();
 
     /* the signatures are updated at startup, so using new Date() is not that far off. */
     /* Cached in the node in case the base settings lose the values during a save. */

@@ -10,7 +10,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.token.TokenAdaptor;
-import com.untangle.node.util.PartialListUtil;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.message.BlingBlinger;
 import com.untangle.uvm.message.Counters;
@@ -30,8 +29,6 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
 
     private final TarpitEventHandler tarpitHandler = new TarpitEventHandler(this);
 
-    private final SpamTarpitHandler spamTarpitHandler = new SpamTarpitHandler();
-
     // We want to make sure that spam is before virus in the pipeline (towards the client for smtp,
     // server for pop/imap).
     // Would want the DNSBL to get evaluated before the casing, this way if it blocks a session
@@ -45,8 +42,6 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
 
     private final SpamScanner scanner;
     private final SpamAssassinDaemon saDaemon;
-
-    private final PartialListUtil listUtil = new PartialListUtil();
 
     protected volatile SpamSettings spamSettings;
 
@@ -324,21 +319,6 @@ public class SpamNodeImpl extends NodeBase implements SpamNode
     public SpamScanner getScanner()
     {
         return scanner;
-    }
-
-
-    private static class SpamTarpitHandler implements PartialListUtil.Handler<SpamDnsbl>
-    {
-        public Long getId( SpamDnsbl rule )
-        {
-            return rule.getId();
-        }
-
-        public void update( SpamDnsbl current, SpamDnsbl newRule )
-        {
-            current.update( newRule );
-        }
-
     }
 
     public Date getLastUpdate()
