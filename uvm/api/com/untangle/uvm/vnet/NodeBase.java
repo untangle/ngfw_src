@@ -36,7 +36,8 @@ import com.untangle.uvm.toolbox.PackageDesc;
  */
 public abstract class NodeBase implements Node
 {
-    private static final Logger logger = Logger.getLogger(NodeBase.class);
+    private static final Logger staticLogger = Logger.getLogger(NodeBase.class);
+    private        final Logger logger       = Logger.getLogger(NodeBase.class);
 
     /**
      * These are the (generic) settings for this node
@@ -275,7 +276,7 @@ public abstract class NodeBase implements Node
             UvmContextFactory.context().loggingManager().setLoggingNode(nodeSettings.getId());
 
             String nodeSettingsName = nodeSettings.getNodeName();
-            logger.debug("setting node " + nodeSettingsName + " log4j repository");
+            staticLogger.warn("setting node " + nodeSettingsName + " log4j repository");
 
             String className = nodeProperties.getClassName();
             java.lang.reflect.Constructor constructor = Class.forName(className).getConstructor(new Class[]{NodeSettings.class, NodeProperties.class});
@@ -296,16 +297,16 @@ public abstract class NodeBase implements Node
                 node.resumeState(nodeSettings.getTargetState());
             }
         } catch (ClassNotFoundException exn) {
-            logger.error("Exception during node initialization", exn);
+            staticLogger.error("Exception during node initialization", exn);
             throw new DeployException(exn);
         } catch (InstantiationException exn) {
-            logger.error("Exception during node initialization", exn);
+            staticLogger.error("Exception during node initialization", exn);
             throw new DeployException(exn);
         } catch (IllegalAccessException exn) {
-            logger.error("Exception during node initialization", exn);
+            staticLogger.error("Exception during node initialization", exn);
             throw new DeployException(exn);
         } catch (Exception exn) {
-            logger.error("Exception during node initialization", exn);
+            staticLogger.error("Exception during node initialization", exn);
             throw new DeployException(exn);
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();
@@ -611,7 +612,7 @@ public abstract class NodeBase implements Node
         PackageDesc md = UvmContextFactory.context().toolboxManager().packageDesc(parent);
 
         if (null == md) {
-            logger.warn("parent does not exist: " + parent);
+            staticLogger.warn("parent does not exist: " + parent);
             throw new DeployException("could not create parent: " + parent);
         }
 
@@ -619,12 +620,12 @@ public abstract class NodeBase implements Node
             policyId = null;
         }
 
-        logger.debug( "Starting required parent: " + parent );
+        staticLogger.debug( "Starting required parent: " + parent );
 
         Node parentNode = getParentNode( parent, policyId );
 
         if ( parentNode == null ) {
-            logger.debug("Parent does not exist, instantiating");
+            staticLogger.debug("Parent does not exist, instantiating");
 
             parentNode = UvmContextFactory.context().nodeManager().instantiate(parent, policyId);
         }

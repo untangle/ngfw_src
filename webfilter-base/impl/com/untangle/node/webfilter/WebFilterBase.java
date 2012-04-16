@@ -77,7 +77,6 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     {
         super( nodeSettings, nodeProperties );
         
-        logger.warn("AAAAA: WebFilterBase constructor");
         this.replacementGenerator = buildReplacementGenerator();
 
         String vendorName = this.getVendor();
