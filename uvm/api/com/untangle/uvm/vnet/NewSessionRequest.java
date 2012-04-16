@@ -5,9 +5,6 @@ package com.untangle.uvm.vnet;
 
 /**
  * Base interface for all new session requests.
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
  */
 public interface NewSessionRequest 
 {

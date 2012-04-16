@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $Id$
+ */
 package com.untangle.uvm.vnet.event;
 
 /**
@@ -6,9 +8,6 @@ package com.untangle.uvm.vnet.event;
  *
  * Note that each handler method is free to rethrow an Exception received from
  * sending a request, modifying a session, etc.
- *
- * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
- * @version 1.0
  */
 public interface SessionEventListener extends java.util.EventListener
 {
