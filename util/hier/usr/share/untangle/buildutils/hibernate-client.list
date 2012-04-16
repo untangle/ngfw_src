@@ -1,4 +1,0 @@
-org.hibernate.AssertionFailure
-org.hibernate.LazyInitializationException
-org.hibernate.collection.PersistentList
-org.hibernate.collection.PersistentSet

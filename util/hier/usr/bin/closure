@@ -1,5 +1,0 @@
-#! /bin/bash
-
-CLASSPATH="@THIRDPARTY_UVM_LIB@/bcel-5.2.jar:@UVM_LIB@/buildutil-impl.jar"
-
-/usr/bin/java -cp "$CLASSPATH" com.untangle.buildutil.Closure $@
