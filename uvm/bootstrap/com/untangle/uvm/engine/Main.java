@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
  */
 public class Main
 {
-    private static final String UVM_LOCAL_CONTEXT_CLASSNAME = "com.untangle.uvm.engine.UvmContextImpl";
+    private static final String UVM_CONTEXT_CLASSNAME = "com.untangle.uvm.engine.UvmContextImpl";
 
     private static Main MAIN;
 
@@ -144,28 +144,45 @@ public class Main
 
     private void init() throws Exception
     {
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-                public void run() { destroy(); }
-            }));
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {public void run() { destroy(); }}));
 
-        ClassLoader cl = getClass().getClassLoader();
-        Thread.currentThread().setContextClassLoader(cl);
-
-        logger.info("setting up properties");
+        logger.info("Setting up properties...");
         setProperties();
+        
+        logger.info("Starting uvm...");
 
-        logger.info("starting uvm");
         try {
+            configureClassLoader();
             startUvm();
         } catch (Throwable exn) {
             fatalError("could not start uvm", exn);
         }
+
         System.out.println("UVM startup complete: \"Today vegetables...tomorrow the world!\"");
-        logger.info("restarting nodes and socket invoker");
+        
+        logger.info("Restarting nodes...");
+
         restartNodes();
+
         System.out.println("UVM postInit complete");
     }
 
+    private void configureClassLoader() throws Exception
+    {
+        List<URL> urls = new ArrayList<URL>();
+
+        /* Add everything in lib */
+        File uvmLibDir = new File(System.getProperty("uvm.lib.dir"));
+        for (File f : uvmLibDir.listFiles()) {
+            URL url = f.toURI().toURL();
+            urls.add(url);
+        }
+
+        urls.add(new URL("file://" + System.getProperty("uvm.lang.dir") + "/"));
+        uvmCl = new UvmClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader(), new File(System.getProperty("uvm.toolbox.dir")));
+        Thread.currentThread().setContextClassLoader(uvmCl);
+    }
+    
     private void destroy()
     {
         uvmContext.doDestroy();
@@ -215,47 +232,12 @@ public class Main
 
     private void startUvm() throws Exception
     {
-        List<URL> urls = new ArrayList<URL>();
-
-        /* Add everything in lib */
-        File uvmLibDir = new File(System.getProperty("uvm.lib.dir"));
-        for (File f : uvmLibDir.listFiles()) {
-            URL url = f.toURI().toURL();
-            urls.add(url);
-        }
-
-        String uvmLang = System.getProperty("uvm.lang.dir");
-        urls.add(new URL("file://" + uvmLang + "/"));
-
-        String uvmToolbox = System.getProperty("uvm.toolbox.dir");
-        uvmCl = new UvmClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader(), new File(uvmToolbox));
-
-        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
-        try {
-            // Entering UVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            Thread.currentThread().setContextClassLoader(uvmCl);
-
-            uvmContext = (UvmContextBase)uvmCl.loadClass(UVM_LOCAL_CONTEXT_CLASSNAME).getMethod("context").invoke(null);
-
-            uvmContext.doInit(this);
-        } finally {
-            Thread.currentThread().setContextClassLoader(oldCl);
-            // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        }
+        uvmContext = (UvmContextBase)uvmCl.loadClass(UVM_CONTEXT_CLASSNAME).getMethod("context").invoke(null);
+        uvmContext.doInit(this);
     }
 
     private void restartNodes() throws Exception
     {
-        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
-        try {
-            // Entering UVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            Thread.currentThread().setContextClassLoader(uvmCl);
-
-            uvmContext.doPostInit();
-
-        } finally {
-            Thread.currentThread().setContextClassLoader(oldCl);
-            // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        }
+        uvmContext.doPostInit();
     }
 }

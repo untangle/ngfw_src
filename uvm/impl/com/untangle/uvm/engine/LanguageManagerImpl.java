@@ -360,19 +360,18 @@ public class LanguageManagerImpl implements LanguageManager
 
         try {
             I18n i18n = null;
-            ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
+            ResourceBundle.clearCache(getClass().getClassLoader());
             try {
-                i18n = I18nFactory.getI18n(BASENAME_COMMUNITY_PREFIX+"."+i18nModule, i18nModule, Thread
-                        .currentThread().getContextClassLoader(), locale, I18nFactory.DEFAULT);
+                i18n = I18nFactory.getI18n(BASENAME_COMMUNITY_PREFIX+"."+i18nModule, i18nModule,
+                                           getClass().getClassLoader(), locale, I18nFactory.DEFAULT);
             } catch (MissingResourceException e) {
                 // fall back to official translations
-                i18n = I18nFactory.getI18n(BASENAME_OFFICIAL_PREFIX+"."+i18nModule, i18nModule, Thread
-                        .currentThread().getContextClassLoader(), locale, I18nFactory.DEFAULT);
+                i18n = I18nFactory.getI18n(BASENAME_OFFICIAL_PREFIX+"."+i18nModule, i18nModule,
+                                           getClass().getClassLoader(), locale, I18nFactory.DEFAULT);
             }
 
             if (i18n != null) {
-                for (Enumeration<String> enumeration = i18n.getResources().getKeys(); enumeration
-                        .hasMoreElements();) {
+                for (Enumeration<String> enumeration = i18n.getResources().getKeys(); enumeration.hasMoreElements();) {
                     String key = enumeration.nextElement();
                     map.put(key, i18n.tr(key));
                 }
@@ -383,8 +382,7 @@ public class LanguageManagerImpl implements LanguageManager
         }
 
         // get translation for base node, if any
-        UvmContext uvm = UvmContextFactory.context();
-        NodeManager nm = uvm.nodeManager();
+        NodeManager nm = UvmContextFactory.context().nodeManager();
         // nodeManager can be null on shutdown
         if (nm != null) {
             Node node = nm.node(module);

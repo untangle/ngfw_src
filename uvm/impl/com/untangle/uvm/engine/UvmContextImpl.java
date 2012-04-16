@@ -986,12 +986,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 	private AnnotationConfiguration buildAnnotationConfiguration(ClassLoader cl)
     {
         AnnotationConfiguration cfg = new AnnotationConfiguration();
-        Thread thisThread = Thread.currentThread();
-        ClassLoader oldCl = thisThread.getContextClassLoader();
-
         try {
-            thisThread.setContextClassLoader(cl);
-
             for (String clz : this.annotatedClasses) {
                 Class c = cl.loadClass(clz);
                 cfg.addAnnotatedClass(c);
@@ -999,9 +994,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
         catch (java.lang.ClassNotFoundException exc) {
             logger.warn("Annotated Class not found", exc);
-        }
-        finally {
-            thisThread.setContextClassLoader(oldCl);
         }
 
         return cfg;
