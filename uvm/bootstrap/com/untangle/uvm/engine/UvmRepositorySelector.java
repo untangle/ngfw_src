@@ -75,7 +75,7 @@ public class UvmRepositorySelector implements RepositorySelector
      */
     public void setLoggingNode(Long nodeId)
     {
-        this.setThreadLoggingInformation(nodeId.toString());
+        this.setThreadLoggingInformation("node-" + nodeId.toString());
     }
 
     /**
@@ -160,16 +160,17 @@ public class UvmRepositorySelector implements RepositorySelector
 
                     fileStr = fileStr.replace("@NodeLogFileName@", this.fileName);
 
-                    if (this.fileName.equals("uvm"))
-                        fileStr = fileStr.replace("@DefaultAppender@", "UVMLOG");
-                    else
-                        fileStr = fileStr.replace("@DefaultAppender@", "NODELOG");
+                    /* change the default appender for node logs */
+                    if (!this.fileName.equals("uvm"))
+                        fileStr = fileStr.replace("ref=\"UVMLOG\"", "ref=\"NODELOG\"");
                         
                     InputStream newInputStream = new ByteArrayInputStream(fileStr.getBytes("UTF-8"));
 
                     configurator.doConfigure(newInputStream, this);
 
                     this.setThrowableRenderer(new UtThrowableRenderer("node-" + this.fileName + ": "));
+
+                    //System.out.println("NEW HIER: " + fileName + " = " + fileStr);
                 }
                 catch (java.io.IOException e) {
                     System.err.println("Exceptiong configuring logging exception: " + e);
