@@ -996,9 +996,10 @@ Ext.define("Ung.AppItem", {
         } else {
            this.isValid=false;
             // ignore this error from the esoft web filter rename
-            if (config.trialLibitem != null && config.trialItem.displayName != "eSoft Web Filter")
-                Ext.MessageBox.alert(i18n._("Apps Error"), i18n._("Error in Rack View applications list."));
-           // error
+            //if (config.trialLibitem != null && config.trialLibitem.displayName != "eSoft Web Filter")
+            //    Ext.MessageBox.alert(i18n._("Apps Error"), i18n._("Error in Rack View applications list."));
+            return;
+            // error
         }
         this.id = "app-item_" + name;
         Ung.AppItem.superclass.constructor.apply(this, arguments);
