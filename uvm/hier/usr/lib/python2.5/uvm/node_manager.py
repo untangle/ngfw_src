@@ -27,8 +27,9 @@ class NodeManager(Manager):
         else: instances = self.__nodeManager.nodeInstances( Manager.policyId )
 
         nodes = []
-        for nodeSettings in instances["list"]:
-            node = self.__get_node( nodeSettings["id"], True )
+        for node in instances["list"]:
+            nodeSettings = node["nodeSettings"]
+            nodeProperties = node["nodeProperties"]
 
             policyId = None
             if ( nodeSettings.has_key( "policyId" )): policyId = nodeSettings["policyId"]
@@ -38,7 +39,7 @@ class NodeManager(Manager):
             else: 
                 policy = self.getPolicyString( policyId )
             
-            nodes.append( (nodeSettings['id'], node.getNodeProperties()["name"], policy, node.getRunState()) )
+            nodes.append( (nodeSettings['id'], nodeProperties['name'], policy, node['runState'] ) )
         
         nodes =  sorted( nodes, key=lambda v: v[2]) # sort by rack/policy
         return nodes
