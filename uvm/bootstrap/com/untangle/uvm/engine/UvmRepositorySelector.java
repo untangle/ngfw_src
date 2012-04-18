@@ -168,7 +168,7 @@ public class UvmRepositorySelector implements RepositorySelector
 
                     configurator.doConfigure(newInputStream, this);
 
-                    this.setThrowableRenderer(new UtThrowableRenderer("node-" + this.fileName + ": "));
+                    this.setThrowableRenderer(new UtThrowableRenderer(this.fileName + ": "));
 
                     //System.out.println("NEW HIER: " + fileName + " = " + fileStr);
                 }
