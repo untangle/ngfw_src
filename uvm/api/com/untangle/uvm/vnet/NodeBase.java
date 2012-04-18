@@ -276,7 +276,7 @@ public abstract class NodeBase implements Node
             UvmContextFactory.context().loggingManager().setLoggingNode(nodeSettings.getId());
 
             String nodeSettingsName = nodeSettings.getNodeName();
-            staticLogger.warn("setting node " + nodeSettingsName + " log4j repository");
+            staticLogger.debug("setting node " + nodeSettingsName + " log4j repository");
 
             String className = nodeProperties.getClassName();
             java.lang.reflect.Constructor constructor = Class.forName(className).getConstructor(new Class[]{NodeSettings.class, NodeProperties.class});
