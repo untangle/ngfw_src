@@ -5,11 +5,14 @@ package com.untangle.uvm.node;
 
 import java.io.Serializable;
 
+import org.json.JSONObject;
+import org.json.JSONString;
+
 /**
  * Node Settings.
  */
 @SuppressWarnings("serial")
-public class NodeSettings implements Serializable, Comparable<NodeSettings>
+public class NodeSettings implements Serializable, JSONString, Comparable<NodeSettings>
 {
     private Long id = null;
     private Long policyId = null;
@@ -51,9 +54,7 @@ public class NodeSettings implements Serializable, Comparable<NodeSettings>
 
     public String toString()
     {
-        if (id == null)
-            return "null";
-        return id.toString();
+        return toJSONString();
     }
 
     public boolean equals(Object o)
@@ -69,5 +70,11 @@ public class NodeSettings implements Serializable, Comparable<NodeSettings>
     public int hashCode()
     {
         return id.hashCode();
+    }
+
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
     }
 }

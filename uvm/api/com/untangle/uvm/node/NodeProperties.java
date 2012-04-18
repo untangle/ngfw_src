@@ -239,6 +239,6 @@ public class NodeProperties implements Serializable
     @Override
     public String toString()
     {
-        return "[NodeProperties name:" + getName() + "]";
+        return "{NodeProperties name:" + getName() + "}";
     }
 }

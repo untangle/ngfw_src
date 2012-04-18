@@ -79,17 +79,11 @@ public abstract class ArgonHook implements Runnable
 
         SessionEvent sessionEvent = null;
         try {
-            //ClassLoader cl = getClass().getClassLoader();
-            //Thread.currentThread().setContextClassLoader(cl);
-
             sessionGlobalState = new SessionGlobalState( netcapSession(), clientSideListener(), serverSideListener(), this );
             NetcapSession netcapSession = sessionGlobalState.netcapSession();
             if ( logger.isDebugEnabled()) {
                 logger.debug( "New thread for session id: " + netcapSession.id() + " " + sessionGlobalState );
             }
-
-            NetworkManager lnm = UvmContextFactory.context().networkManager();
-	    
             int clientIntf = netcapSession.clientSide().interfaceId();
             int serverIntf = netcapSession.serverSide().interfaceId();
 
@@ -136,8 +130,7 @@ public abstract class ArgonHook implements Runnable
             }
 
             clientSide = new NetcapIPSessionDescImpl( sessionGlobalState, true );
-
-            serverSide = clientSide;
+            serverSide = clientSide; /* initially serverside looks just like client side - not NAT or anything */
 
             /* lookup the user information */
             DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
