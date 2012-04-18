@@ -122,10 +122,6 @@ public class NodeManagerImpl implements NodeManager
             }
         });
 
-        for (Node node : nodeList) {
-            logger.warn("Node: " + node.getNodeSettings() + " " + node.getNodeProperties() + " " + node.getPackageDesc() + " " + node.getRunState() );
-        }
-
         return nodeList;
     }
 
