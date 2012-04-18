@@ -616,9 +616,11 @@ Ext.define("Ung.Main", {
     loadPolicies: function() {
         Ext.MessageBox.wait(i18n._("Loading Apps..."), i18n._("Please wait"));
         if (rpc.policyManager != null) {
-            rpc.policyManager.getPolicies( Ext.bind(function (result, exception) {
+            alert(rpc.policyManager);
+            rpc.policyManager.getSettings()( Ext.bind(function (result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                rpc.policies=result.list;
+                rpc.policies=result.policies.list;
+                this.buildPolicies();
             },this));
         } else {
             // no policy manager, just one policy (Default Rack)
@@ -628,8 +630,8 @@ Ext.define("Ung.Main", {
                 name: i18n._("Default Rack"),
                 description: i18n._("The Default Rack/Policy")
             }];
+            this.buildPolicies();
         }
-        this.buildPolicies();
     },
     getNodePackageDesc: function(nodeSettings) {
         var i;
