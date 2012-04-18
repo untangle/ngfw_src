@@ -7,13 +7,16 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.json.JSONObject;
+import org.json.JSONString;
+
 import com.untangle.uvm.node.NodeSettings;
 
 /**
  * The immutable properties of a Node
  */
 @SuppressWarnings("serial")
-public class NodeProperties implements Serializable
+public class NodeProperties implements Serializable, JSONString
 {
     private String name = null;
     private String displayName = null;
@@ -38,110 +41,56 @@ public class NodeProperties implements Serializable
      *
      * @return the node's name.
      */
-    public String getName()
-    {
-        return name;
-    }
-
-    public void setName(String name)
-    {
-        this.name = name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
     /**
      * Name of the main node Class.
      *
      * @return node class name.
      */
-    public String getClassName()
-    {
-        return className;
-    }
-
-    public void setClassName(String className)
-    {
-        this.className = className;
-    }
+    public String getClassName() { return className; }
+    public void setClassName(String className) { this.className = className; }
 
     /**
      * The parent node, usually a casing.
      *
      * @return the parent node, null if node has no parent.
      */
-    public List<String> getParents()
-    {
-        return parents;
-    }
-
-    public void setParents(List<String> parents)
-    {
-        this.parents = parents;
-    }
+    public List<String> getParents() { return parents; }
+    public void setParents(List<String> parents) { this.parents = parents; }
 
     /**
      * A list of uvm resources, resources to be loaded into the UVM Class Path.
      *
      * @return The list of UVM resources.
      */
-    public List<String> getAnnotatedClasses()
-    {
-        return annotatedClasses;
-    }
-
-    public void setAnnotatedClasses(List<String> annotatedClasses)
-    {
-        this.annotatedClasses = annotatedClasses;
-    }
+    public List<String> getAnnotatedClasses() { return annotatedClasses; }
+    public void setAnnotatedClasses(List<String> annotatedClasses) { this.annotatedClasses = annotatedClasses; }
     
     /**
      * Only a single instance may be initialized in the system.
      *
      * @return true if only a single instance may be loaded.
      */
-    public Boolean isSingleInstance()
-    {
-        return singleInstance;
-    }
-
-    public Boolean getSingleInstance()
-    {
-        return singleInstance;
-    }
-
-    public void setSingleInstance(Boolean singleInstance)
-    {
-        this.singleInstance = singleInstance;
-    }
+    public Boolean getSingleInstance() { return singleInstance; }
+    public void setSingleInstance(Boolean singleInstance) { this.singleInstance = singleInstance; }
     
     /**
      * The name of the node, for display purposes.
      *
      * @return display name.
      */
-    public String getDisplayName()
-    {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName)
-    {
-        this.displayName = displayName;
-    }
+    public String getDisplayName() { return displayName; }
+    public void setDisplayName(String displayName) { this.displayName = displayName; }
     
     /**
      * The name of the node, for syslog purposes.
      *
      * @return syslog name.
      */
-    public String getSyslogName()
-    {
-        return syslogName;
-    }
-
-    public void setSyslogName(String syslogName)
-    {
-        this.syslogName = syslogName;
-    }
+    public String getSyslogName() { return syslogName; }
+    public void setSyslogName(String syslogName) { this.syslogName = syslogName; }
 
     /**
      * The nodeBase is the name of the base node. For example
@@ -149,15 +98,8 @@ public class NodeProperties implements Serializable
      *
      * @return the nodeBase, null if node does not have a base.
      */
-    public String getNodeBase()
-    {
-        return nodeBase;
-    }
-
-    public void setNodeBase(String nodeBase)
-    {
-        this.nodeBase = nodeBase;
-    }
+    public String getNodeBase() { return nodeBase; }
+    public void setNodeBase(String nodeBase) { this.nodeBase = nodeBase; }
 
     /**
      * The type is the type of node
@@ -165,57 +107,28 @@ public class NodeProperties implements Serializable
      *
      * @return the type, null if node does not have a type.
      */
-    public String getType()
-    {
-        return type;
-    }
-
-    public void setType(String type)
-    {
-        this.type = type;
-    }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 
     /**
-     * The type is the type of node
-     * "NODE|CASING|SERVICE|LIBRARY|BASE|LIB_ITEM|TRIAL|UNKNOW"
+     * The view position in the rack
      *
      * @return the type, null if node does not have a type.
      */
-    public Integer getViewPosition()
-    {
-        return viewPosition;
-    }
-
-    public void setViewPosition(Integer viewPosition)
-    {
-        this.viewPosition = viewPosition;
-    }
+    public Integer getViewPosition() { return viewPosition; }
+    public void setViewPosition(Integer viewPosition) { this.viewPosition = viewPosition; }
     
     /**
      * True if this node can be turned on and off.  False, otherwise.
      */
-    public Boolean getHasPowerButton()
-    {
-        return hasPowerButton;
-    }
-
-    public void setHasPowerButton(Boolean hasPowerButton)
-    {
-        this.hasPowerButton = hasPowerButton;
-    }
+    public Boolean getHasPowerButton() { return hasPowerButton; }
+    public void setHasPowerButton(Boolean hasPowerButton) { this.hasPowerButton = hasPowerButton; }
 
     /**
      * True if this node should be started automatically.
      */
-    public Boolean getAutoStart()
-    {
-        return autoStart;
-    }
-
-    public void setAutoStart(Boolean autoStart)
-    {
-        this.autoStart = autoStart;
-    }
+    public Boolean getAutoStart() { return autoStart; }
+    public void setAutoStart(Boolean autoStart) { this.autoStart = autoStart; }
 
     // Object methods ---------------------------------------------------------
 
@@ -236,9 +149,15 @@ public class NodeProperties implements Serializable
         return getClassName().equals(td.getClassName());
     }
 
-    @Override
     public String toString()
     {
-        return "{NodeProperties name:" + getName() + "}";
+        return toJSONString();
     }
+
+    public String toJSONString()
+    {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
+    }
+    
 }

@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.mail;
 
 import java.io.File;
@@ -101,7 +86,8 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         MailExportFactory.factory().registerExport(this);
     }
 
-    private static synchronized void createSingletonsIfRequired() {
+    private static synchronized void createSingletonsIfRequired()
+    {
         if(s_quarantine == null) {
             s_quarantine = new Quarantine();
         }
@@ -110,7 +96,8 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         }
     }
 
-    private static synchronized void deployWebAppIfRequired(Logger logger) {
+    private static synchronized void deployWebAppIfRequired(Logger logger)
+    {
         if(!s_deployedWebApp) {
             if (null != UvmContextFactory.context().localAppServerManager().loadQuarantineApp("/quarantine", "quarantine")) {
                 logger.debug("Deployed Quarantine web app");
@@ -122,7 +109,8 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         }
     }
 
-    private static synchronized void unDeployWebAppIfRequired(Logger logger) {
+    private static synchronized void unDeployWebAppIfRequired(Logger logger)
+    {
         if(!s_unDeployedWebApp) {
             if (UvmContextFactory.context().localAppServerManager().unloadWebApp("/quarantine")) {
                 logger.debug("Unloaded Quarantine web app");
@@ -179,14 +167,14 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         this.settings = settings;
 
         try
-        {
-            settingsManager.save(MailNodeSettings.class, settingsName, settings);
-        }
+            {
+                settingsManager.save(MailNodeSettings.class, settingsName, settings);
+            }
 
         catch(Exception exn)
-        {
-            logger.error("setMailNodeSettings()",exn);
-        }
+            {
+                logger.error("setMailNodeSettings()",exn);
+            }
 
         reconfigure();
         s_quarantine.setSettings(this, settings.getQuarantineSettings());
@@ -205,33 +193,37 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         setMailNodeSettings(settings);
     }
 
-    public QuarantineUserView getQuarantineUserView() {
+    public QuarantineUserView getQuarantineUserView()
+    {
         return m_quv;
     }
 
-    public QuarantineMaintenenceView getQuarantineMaintenenceView() {
+    public QuarantineMaintenenceView getQuarantineMaintenenceView()
+    {
         return m_qmv;
     }
 
-    public SafelistEndUserView getSafelistEndUserView() {
+    public SafelistEndUserView getSafelistEndUserView()
+    {
         return m_suv;
     }
 
-    public SafelistAdminView getSafelistAdminView() {
+    public SafelistAdminView getSafelistAdminView()
+    {
         return m_sav;
     }
 
-    // TODO - need to hook into HDD manager
-    public long getMinAllocatedStoreSize(boolean inGB) { // john wanted a XXX on this
+    public long getMinAllocatedStoreSize(boolean inGB)
+    {
         if (false == inGB) {
             return ONE_GB;
         }
         return ONE_GB / ONE_GB;
     }
 
-    // TODO - need to hook into HDD manager
     // max is arbitrarily set to 30 GB
-    public long getMaxAllocatedStoreSize(boolean inGB) { // john wanted a XXX on this
+    public long getMaxAllocatedStoreSize(boolean inGB)
+    {
         if (false == inGB) {
             return (30 * ONE_GB);
         }
@@ -250,11 +242,13 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         return getMailNodeSettings();
     }
 
-    public QuarantineNodeView getQuarantineNodeView() {
+    public QuarantineNodeView getQuarantineNodeView()
+    {
         return m_qtv;
     }
 
-    public SafelistNodeView getSafelistNodeView() {
+    public SafelistNodeView getSafelistNodeView()
+    {
         return m_stv;
     }
 
@@ -292,85 +286,85 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         logger.info("Loading settings from " + settingsFile );
 
         try
-        {
-            // first we try to read our json settings
-            readSettings = settingsManager.load( MailNodeSettings.class, settingsName );
-        }
-
-        catch (Exception exn)
-        {
-            logger.error("postInit()",exn);
-        }
-
-        // if no settings found try importing from the database
-        if (readSettings == null)
-        {
-            logger.info("No json settings found... attempting to import from database");
-
-            try
             {
-                String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + settingsFile;
-                logger.info("Running: " + convertCmd);
-                UvmContextFactory.context().execManager().exec( convertCmd );
-            }
-
-            catch (Exception exn)
-            {
-                logger.error("Conversion script failed", exn);
-            }
-
-            try
-            {
-                // try to read the settings created by the conversion script
+                // first we try to read our json settings
                 readSettings = settingsManager.load( MailNodeSettings.class, settingsName );
             }
 
-            catch (Exception exn)
+        catch (Exception exn)
             {
-                logger.error("Could not read node settings", exn);
+                logger.error("postInit()",exn);
             }
-        }
+
+        // if no settings found try importing from the database
+        if (readSettings == null)
+            {
+                logger.info("No json settings found... attempting to import from database");
+
+                try
+                    {
+                        String convertCmd = SETTINGS_CONVERSION_SCRIPT + " " + settingsFile;
+                        logger.info("Running: " + convertCmd);
+                        UvmContextFactory.context().execManager().exec( convertCmd );
+                    }
+
+                catch (Exception exn)
+                    {
+                        logger.error("Conversion script failed", exn);
+                    }
+
+                try
+                    {
+                        // try to read the settings created by the conversion script
+                        readSettings = settingsManager.load( MailNodeSettings.class, settingsName );
+                    }
+
+                catch (Exception exn)
+                    {
+                        logger.error("Could not read node settings", exn);
+                    }
+            }
 
         try
-        {
-            // still no settings found so init with defaults
-            if (readSettings == null)
             {
-                logger.warn("No database or json settings found... initializing with defaults");
-                initializeMailNodeSettings();
-            }
+                // still no settings found so init with defaults
+                if (readSettings == null)
+                    {
+                        logger.warn("No database or json settings found... initializing with defaults");
+                        initializeMailNodeSettings();
+                    }
 
-            // otherwise apply the loaded or imported settings from the file
-            else
-            {
-                logger.info("Loaded settings from " + settingsFile);
+                // otherwise apply the loaded or imported settings from the file
+                else
+                    {
+                        logger.info("Loaded settings from " + settingsFile);
 
-                settings = readSettings;
-                s_quarantine.setSettings(this, settings.getQuarantineSettings());
-                s_safelistMngr.setSettings(this, settings);
-                reconfigure();
+                        settings = readSettings;
+                        s_quarantine.setSettings(this, settings.getQuarantineSettings());
+                        s_safelistMngr.setSettings(this, settings);
+                        reconfigure();
+                    }
             }
-        }
 
         catch (Exception exn)
-        {
-            logger.error("Could not apply node settings",exn);
-        }
+            {
+                logger.error("Could not apply node settings",exn);
+            }
 
         // At this point the settings have either been loaded from disk
         // or initialized to defaults so now we do all the other setup
 
         try
-        {
-            // create GLOBAL safelist for admin to manage POP/IMAP accounts
-            // (GLOBAL safelist is created only if it doesn't exist yet)
-            s_safelistMngr.createSafelist("GLOBAL");
-        }
+            {
+                // create GLOBAL safelist for admin to manage POP/IMAP accounts
+                // (GLOBAL safelist is created only if it doesn't exist yet)
+                s_safelistMngr.createSafelist("GLOBAL");
+            }
 
         catch (Exception exn)
-        {
-            logger.error("Could not create global safelist",exn);
-        }
+            {
+                logger.error("Could not create global safelist",exn);
+            }
 
         deployWebAppIfRequired(logger);
         s_quarantine.open();
@@ -399,61 +393,67 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
     //================================================================
     //Hacks to work around issues w/ the implicit RMI proxy stuff
 
-    abstract class QuarantineManipulationWrapper {
-
-        public InboxIndex purge(String account,
-                                String...doomedMails)
-            throws NoSuchInboxException, QuarantineUserActionFailedException {
+    abstract class QuarantineManipulationWrapper
+    {
+        public InboxIndex purge(String account, String...doomedMails)
+            throws NoSuchInboxException, QuarantineUserActionFailedException
+        {
             return s_quarantine.purge(account, doomedMails);
         }
 
-        public InboxIndex rescue(String account,
-                                 String...rescuedMails)
-            throws NoSuchInboxException, QuarantineUserActionFailedException {
+        public InboxIndex rescue(String account, String...rescuedMails)
+            throws NoSuchInboxException, QuarantineUserActionFailedException
+        {
             return s_quarantine.rescue(account, rescuedMails);
         }
 
         public InboxIndex getInboxIndex(String account)
-            throws NoSuchInboxException, QuarantineUserActionFailedException {
+            throws NoSuchInboxException, QuarantineUserActionFailedException
+        {
             return s_quarantine.getInboxIndex(account);
         }
 
-        public void test() {
-            //Nothing to do
-        }
+        public void test() {}
     }
 
     class QuarantineUserViewWrapper
         extends QuarantineManipulationWrapper
-        implements QuarantineUserView {
+        implements QuarantineUserView
+    {
 
         public String getAccountFromToken(String token)
-            throws BadTokenException {
+            throws BadTokenException
+        {
             return s_quarantine.getAccountFromToken(token);
         }
 
         public boolean requestDigestEmail(String account)
-            throws NoSuchInboxException, QuarantineUserActionFailedException {
+            throws NoSuchInboxException, QuarantineUserActionFailedException
+        {
             return s_quarantine.requestDigestEmail(account);
         }
 
         public void remapSelfService(String from, String to)
-            throws QuarantineUserActionFailedException, InboxAlreadyRemappedException {
+            throws QuarantineUserActionFailedException, InboxAlreadyRemappedException
+        {
             s_quarantine.remapSelfService(from, to);
         }
 
         public boolean unmapSelfService(String inboxName, String aliasToRemove)
-            throws QuarantineUserActionFailedException {
+            throws QuarantineUserActionFailedException
+        {
             return s_quarantine.unmapSelfService(inboxName, aliasToRemove);
         }
 
         public String getMappedTo(String account)
-            throws QuarantineUserActionFailedException {
+            throws QuarantineUserActionFailedException
+        {
             return s_quarantine.getMappedTo(account);
         }
 
         public String[] getMappedFrom(String account)
-            throws QuarantineUserActionFailedException {
+            throws QuarantineUserActionFailedException
+        {
             return s_quarantine.getMappedFrom(account);
         }
     }
@@ -463,7 +463,8 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         implements QuarantineMaintenenceView {
 
         public long getInboxesTotalSize()
-            throws QuarantineUserActionFailedException {
+            throws QuarantineUserActionFailedException
+        {
             return s_quarantine.getInboxesTotalSize();
         }
 
@@ -473,67 +474,71 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
             return s_quarantine.getInboxArray( start, limit, sortColumn, isAscending );
         }
 
-        public InboxRecordArray getInboxRecordArray( String account, int start, int limit, String sortColumn,
-                                                     boolean isAscending )
+        public InboxRecordArray getInboxRecordArray( String account, int start, int limit, String sortColumn, boolean isAscending )
             throws NoSuchInboxException, QuarantineUserActionFailedException
         {
             return s_quarantine.getInboxRecordArray( account, start, limit, sortColumn, isAscending );
         }
 
         public InboxRecordArray getInboxRecordArray(String account)
-                throws NoSuchInboxException,
-                QuarantineUserActionFailedException {
+            throws NoSuchInboxException, QuarantineUserActionFailedException
+        {
             return s_quarantine.getInboxRecordArray(account);
         }
 
-        public List<InboxRecord> getInboxRecords(String account, int start,
-                int limit, String... sortColumns) throws NoSuchInboxException,
-                QuarantineUserActionFailedException {
+        public List<InboxRecord> getInboxRecords(String account, int start, int limit, String... sortColumns)
+            throws NoSuchInboxException, QuarantineUserActionFailedException
+        {
             return s_quarantine.getInboxRecords(account, start, limit,
-                    sortColumns);
+                                                sortColumns);
         }
 
         public int getInboxTotalRecords(String account)
-                throws NoSuchInboxException,
-                QuarantineUserActionFailedException {
+            throws NoSuchInboxException, QuarantineUserActionFailedException
+        {
             return s_quarantine.getInboxTotalRecords(account);
         }
 
-        public String getFormattedInboxesTotalSize(boolean inMB) {
+        public String getFormattedInboxesTotalSize(boolean inMB)
+        {
             return s_quarantine.getFormattedInboxesTotalSize(inMB);
         }
 
         public List<Inbox> listInboxes()
-            throws QuarantineUserActionFailedException {
+            throws QuarantineUserActionFailedException
+        {
             return s_quarantine.listInboxes();
         }
 
         public void deleteInbox(String account)
-            throws NoSuchInboxException, QuarantineUserActionFailedException {
+            throws NoSuchInboxException, QuarantineUserActionFailedException
+        {
             s_quarantine.deleteInbox(account);
         }
 
         public void deleteInboxes(String[] accounts)
-            throws NoSuchInboxException, QuarantineUserActionFailedException {
+            throws NoSuchInboxException, QuarantineUserActionFailedException
+        {
             s_quarantine.deleteInboxes(accounts);
         }
 
         public void rescueInbox(String account)
-            throws NoSuchInboxException, QuarantineUserActionFailedException {
+            throws NoSuchInboxException, QuarantineUserActionFailedException
+        {
             s_quarantine.rescueInbox(account);
         }
 
         public void rescueInboxes(String[] accounts)
-            throws NoSuchInboxException, QuarantineUserActionFailedException {
+            throws NoSuchInboxException, QuarantineUserActionFailedException
+        {
             s_quarantine.rescueInboxes(accounts);
         }
     }
 
-    class QuarantineNodeViewWrapper
-        implements QuarantineNodeView {
-        public boolean quarantineMail(File file,
-                                      MailSummary summary,
-                                      EmailAddress...recipients) {
+    class QuarantineNodeViewWrapper implements QuarantineNodeView
+    {
+        public boolean quarantineMail(File file, MailSummary summary, EmailAddress...recipients)
+        {
             return s_quarantine.quarantineMail(file, summary, recipients);
         }
 
@@ -543,96 +548,101 @@ public class MailNodeImpl extends NodeBase implements MailNode, MailExport
         }
     }
 
-    class SafelistNodeViewWrapper
-        implements SafelistNodeView {
-        public boolean isSafelisted(EmailAddress envelopeSender,
-                                    EmailAddress mimeFrom,
-                                    List<EmailAddress> recipients) {
+    class SafelistNodeViewWrapper implements SafelistNodeView
+    {
+        public boolean isSafelisted(EmailAddress envelopeSender, EmailAddress mimeFrom, List<EmailAddress> recipients)
+        {
             return s_safelistMngr.isSafelisted(envelopeSender, mimeFrom, recipients);
         }
     }
 
-    abstract class SafelistManipulationWrapper
-        implements SafelistManipulation {
-
-        public String[] addToSafelist(String safelistOwnerAddress,
-                                      String toAdd)
-            throws NoSuchSafelistException, SafelistActionFailedException {
+    abstract class SafelistManipulationWrapper implements SafelistManipulation
+    {
+        public String[] addToSafelist(String safelistOwnerAddress, String toAdd)
+            throws NoSuchSafelistException, SafelistActionFailedException
+        {
             return s_safelistMngr.addToSafelist(safelistOwnerAddress, toAdd);
         }
 
-        public String[] removeFromSafelist(String safelistOwnerAddress,
-                                           String toRemove)
-            throws NoSuchSafelistException, SafelistActionFailedException {
+        public String[] removeFromSafelist(String safelistOwnerAddress, String toRemove)
+            throws NoSuchSafelistException, SafelistActionFailedException
+        {
             return s_safelistMngr.removeFromSafelist(safelistOwnerAddress, toRemove);
         }
 
-        public String[] removeFromSafelists(String safelistOwnerAddress,
-                            String[] toRemove)
-            throws NoSuchSafelistException, SafelistActionFailedException {
+        public String[] removeFromSafelists(String safelistOwnerAddress, String[] toRemove)
+            throws NoSuchSafelistException, SafelistActionFailedException
+        {
             return s_safelistMngr.removeFromSafelists(safelistOwnerAddress, toRemove);
         }
 
-        public String[] replaceSafelist(String safelistOwnerAddress,
-                                        String...listContents)
-            throws NoSuchSafelistException, SafelistActionFailedException {
+        public String[] replaceSafelist(String safelistOwnerAddress, String...listContents)
+            throws NoSuchSafelistException, SafelistActionFailedException
+        {
             return s_safelistMngr.replaceSafelist(safelistOwnerAddress, listContents);
         }
 
         public String[] getSafelistContents(String safelistOwnerAddress)
-            throws NoSuchSafelistException, SafelistActionFailedException {
+            throws NoSuchSafelistException, SafelistActionFailedException
+        {
             return s_safelistMngr.getSafelistContents(safelistOwnerAddress);
         }
 
         public int getSafelistCnt(String safelistOwnerAddress)
-            throws NoSuchSafelistException, SafelistActionFailedException {
+            throws NoSuchSafelistException, SafelistActionFailedException
+        {
             return s_safelistMngr.getSafelistCnt(safelistOwnerAddress);
         }
 
-        public boolean hasOrCanHaveSafelist(String address) {
+        public boolean hasOrCanHaveSafelist(String address)
+        {
             return s_safelistMngr.hasOrCanHaveSafelist(address);
         }
 
-        public void test() {
-        }
+        public void test() { }
     }
 
     class SafelistEndUserViewWrapper
         extends SafelistManipulationWrapper
-        implements SafelistEndUserView {
-    }
+        implements SafelistEndUserView {}
 
     class SafelistAdminViewWrapper
         extends SafelistManipulationWrapper
-        implements SafelistAdminView {
-
+        implements SafelistAdminView
+    {
         public List<String> listSafelists()
-            throws SafelistActionFailedException {
+            throws SafelistActionFailedException
+        {
             return s_safelistMngr.listSafelists();
         }
 
         public void deleteSafelist(String safelistOwnerAddress)
-            throws SafelistActionFailedException {
+            throws SafelistActionFailedException
+        {
             s_safelistMngr.deleteSafelist(safelistOwnerAddress);
         }
 
         public void deleteSafelists(String[] safelistOwnerAddresses)
-            throws SafelistActionFailedException {
+            throws SafelistActionFailedException
+        {
             s_safelistMngr.deleteSafelists(safelistOwnerAddresses);
         }
 
         public void createSafelist(String newListOwnerAddress)
-            throws SafelistActionFailedException {
+            throws SafelistActionFailedException
+        {
             s_safelistMngr.createSafelist(newListOwnerAddress);
         }
 
         public boolean safelistExists(String safelistOwnerAddress)
-            throws SafelistActionFailedException {
+            throws SafelistActionFailedException
+        {
             return s_safelistMngr.safelistExists(safelistOwnerAddress);
         }
 
         public List<SafelistCount> getUserSafelistCounts()
-            throws NoSuchSafelistException, SafelistActionFailedException {
+            throws NoSuchSafelistException, SafelistActionFailedException
+        {
             return s_safelistMngr.getUserSafelistCounts();
         }
     }

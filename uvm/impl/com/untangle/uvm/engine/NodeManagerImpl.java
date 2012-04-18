@@ -105,7 +105,7 @@ public class NodeManagerImpl implements NodeManager
 
     public List<Node> nodeInstances()
     {
-        List<Node> nodeList = new ArrayList<Node>(loadedNodesMap.values());
+        List<Node> nodeList = new ArrayList<Node>( loadedNodesMap.values() );
 
         // sort by view position, for convenience
         Collections.sort(nodeList, new Comparator<Node>() {
@@ -123,6 +123,11 @@ public class NodeManagerImpl implements NodeManager
         });
 
         return nodeList;
+    }
+
+    public List<Long> nodeInstancesIds()
+    {
+        return nodeToIdList(nodeInstances());
     }
 
     public List<Node> nodeInstances( String nodeName )
@@ -163,6 +168,11 @@ public class NodeManagerImpl implements NodeManager
         return getNodesForPolicy( policyId );
     }
 
+    public List<Long> nodeInstancesIds( Long policyId)
+    {
+        return nodeToIdList( nodeInstances( policyId ) );
+    }
+    
     protected List<Node> visibleNodes( Long policyId )
     {
         List<Node> loadedNodes = nodeInstances();
@@ -999,4 +1009,17 @@ public class NodeManagerImpl implements NodeManager
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
     }
 
+    private List<Long> nodeToIdList( List<Node> nodes )
+    {
+        if ( nodes == null )
+            return null;
+
+        List<Long> idList = new ArrayList<Long>();
+
+        for (Node node : nodes) {
+            idList.add(node.getNodeSettings().getId());
+        }
+
+        return idList;
+    }
 }

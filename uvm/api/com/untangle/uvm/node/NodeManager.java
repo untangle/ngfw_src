@@ -26,11 +26,12 @@ public interface NodeManager
     void setSettings( NodeManagerSettings newSettings );
 
     /**
-     * Get <code>NodeSettings</code>s of nodes in the pipeline.
+     * Get <code>Node</code>s of all instantiated nodes.
      *
      * @return list of all node ids.
      */
     List<Node> nodeInstances();
+    List<Long> nodeInstancesIds();
     
     /**
      * Node instances by name.
@@ -47,6 +48,7 @@ public interface NodeManager
      * @return tids of corresponding nodes.
      */
     List<Node> nodeInstances( Long policyId );
+    List<Long> nodeInstancesIds( Long policyId );
 
     /**
      * Node instances by name policy, this gets the nodes in the parents to.
@@ -121,7 +123,7 @@ public interface NodeManager
     Node instantiateAndStart( String nodeName, Long policyId ) throws DeployException;
 
     /**
-     * Remove node instance from the pipeline.
+     * Destroy a node instance.
      *
      * @param nodeId of instance to be destroyed.
      */
@@ -137,7 +139,7 @@ public interface NodeManager
     /**
      * Get the runtime state for all nodes in one call.
      *
-     * @return a <code>Map</code> from NodeSettings to NodeState for all nodes
+     * @return a <code>Map</code> from node ID to NodeState for all nodes
      */
     Map<Long, NodeSettings.NodeState> allNodeStates();
     
