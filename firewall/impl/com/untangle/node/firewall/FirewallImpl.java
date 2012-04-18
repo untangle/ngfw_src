@@ -74,7 +74,7 @@ public class FirewallImpl extends NodeBase implements Firewall
                                      client.clientIntf(), server.serverIntf(),
                                      client.clientAddr(),  client.serverAddr(),
                                      client.clientPort(), client.serverPort(),
-                                     null)) {
+                                     null /* FIXME - username unknown here? */)) {
                         matchedRule = rule;
                         break;
                     }
@@ -181,7 +181,6 @@ public class FirewallImpl extends NodeBase implements Firewall
 
         this.setSettings(settings);
     }
-
 
     public void incrementBlockCount() 
     {

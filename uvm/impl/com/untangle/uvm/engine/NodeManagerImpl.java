@@ -91,6 +91,15 @@ public class NodeManagerImpl implements NodeManager
 
     public void saveTargetState( Node node, NodeSettings.NodeState nodeState )
     {
+        if ( node == null ) {
+            logger.error("Invalid argument saveTargetState(): node is null");
+            return;
+        }
+        if ( nodeState == null ) {
+            logger.error("Invalid argument saveTargetState(): nodeState is null");
+            return;
+        }
+
         for ( NodeSettings nSettings : this.settings.getNodes() ) {
             if ( nSettings.getId() == node.getNodeSettings().getId() ) {
                 if ( nodeState != nSettings.getTargetState() ) {

@@ -157,15 +157,12 @@ public abstract class ArgonHook implements Runnable
                 sessionGlobalState.attach( Session.KEY_PLATFORM_HOSTNAME, hostname );
             }
             
-            /* FIXME */
             PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
             if (policyManager != null) {
-                this.policyId  = policyManager.findPolicyId( clientSide );
-                /* FIXME */
+                this.policyId  = policyManager.findPolicyId( clientSide, username, hostname );
             } else {
                 this.policyId = 1L; /* Default Policy */
             }
-            /* FIXME */
 
             pipelineAgents = pipelineFoundry.weld( clientSide, policyId );
 
