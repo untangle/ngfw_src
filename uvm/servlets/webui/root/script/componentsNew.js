@@ -724,19 +724,19 @@ Ung.Util= {
                 name : 'id'
             }, {
                 name : 'name',
-                type : 'string',
-                convert : function(v) {
-                    return settingsCmp.i18n._(v);
-                }
+                type : 'string'
+                //                 convert : function(v) {
+                //                     return settingsCmp.i18n._(v);
+                //                 }
             }, {
                 name : 'string',
                 type : 'string'
             }, {
                 name : 'description',
-                type : 'string',
-                convert : function(v) {
-                    return settingsCmp.i18n._(v);
-                }
+                type : 'string'
+                //                 convert : function(v) {
+                //                     return settingsCmp.i18n._(v);
+                //                 }
             }, {
                 name : 'category',
                 type : 'string'
@@ -3477,6 +3477,7 @@ Ext.define("Ung.ConfigWin", {
         Ung.ConfigWin.superclass.initComponent.call(this);
     }
 });
+
 // update window
 // has the content and 3 standard buttons: help, cancel, Update
 Ext.define('Ung.UpdateWindow', {
@@ -3848,7 +3849,6 @@ Ext.define('Ung.RowEditorWindow', {
     }
 });
 
-
 // Grid edit column
 Ext.define('Ung.grid.EditColumn', {
     extend:'Ext.grid.column.Action',
@@ -3897,7 +3897,7 @@ Ext.define('Ung.grid.DeleteColumn', {
     }
 });
 
-//Grid reorder column
+// Grid reorder column
 Ext.define('Ung.grid.ReorderColumn', {
     extend:'Ext.grid.column.Template',
     menuDisabled:true,
@@ -3906,7 +3906,6 @@ Ext.define('Ung.grid.ReorderColumn', {
     width: 55,
     tpl:'<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>'
 });
-
 
 // Editor Grid class
 Ext.define('Ung.EditorGrid', {
@@ -4727,6 +4726,7 @@ Ext.define('Ung.JsonListReader', {
     }
 });
 
+// Navigation Breadcrumbs
 Ext.define('Ung.Breadcrumbs', {
     extend:'Ext.Component',
     autoEl : "div",
@@ -4816,441 +4816,6 @@ Ung.grid.ButtonColumn.prototype = {
         return '<div class="ung-button button-column">'+value+'</div>';
     }
 };
-
-// Row editor window used by editor grid
-Ext.define('Ung.UsersWindow', {
-    extend:'Ung.UpdateWindow',
-    // the record currently edit
-    record : null,
-    sizeToRack : true,
-    // size to grid on show
-    sizeToGrid : false,
-    singleSelectUser : false,
-    loadActiveDirectoryUsers : true,
-    loadLocalDirectoryUsers : true,
-    userDataIndex : null,
-    usersGrid:null,
-    populateSemaphore: null,
-    userEntries: null,
-    fnCallback: null,
-    initComponent : function() {
-        if (!this.height && !this.width) {
-            this.sizeToGrid = true;
-        }
-        if (this.title == null) {
-            this.title = i18n._('Select Users');
-        }
-        if(this.bbar == null){
-            this.bbar =  [
-                    '->',
-                    {
-                        name : "Cancel",
-                        id : this.getId() + "_cancelBtn",
-                        iconCls : 'cancel-icon',
-                        text : i18n._('Cancel'),
-                        handler : Ext.bind(function() {
-                            this.cancelAction();
-                        },this)
-                    },'-',{
-                        name : "Done",
-                        id : this.getId() + "_doneBtn",
-                        iconCls : 'apply-icon',
-                        text : i18n._('Done'),
-                        handler : Ext.bind(function() {
-                            Ext.Function.defer(this.saveAction,1, this);
-                        },this)
-                    },'-'
-            ];         
-        }
-        var selectionModel = Ext.create('Ext.selection.CheckboxModel',{
-            //singleSelect : this.singleSelectUser,
-            mode: 'SIMPLE',
-            listeners : {
-                select : Ext.bind(this.onSelectRow, this )
-            }
-        });
-        this.usersGrid=Ext.create('Ext.grid.Panel',{
-           // title: i18n._('Users'),
-           height: 210,
-           width: 500,
-           enableHdMenu : false,
-           enableColumnMove: false,
-           store: Ext.create('Ext.data.Store',{
-                    proxy: {
-                        type: 'pagingmemory',
-                        reader: {
-                            type:'json',
-                            totalProperty : 'totalRecords',
-                            root : 'list'
-                        }
-                    },
-                     fields : [{
-                        name : "lastName"
-                    },{
-                        name : "sortColumn",
-                        type : "string",
-                        sortType : Ung.SortTypes.asLastName,
-                        convert : function( val,rec) {
-                            if ( rec.javaClass == "com.untangle.node.adconnector.GroupEntry" ) {
-                                /* This is filth, it is designed so
-                                the groups sort after the special
-                                matchers (like [all]), but before all
-                                of the users. */
-                                return "___";
-                            } else if ( rec.javaClass == "com.untangle.node.adconnector.UserEntry" ) {
-                                return "_" + rec.lastName;
-                            }
-
-                            return null;
-                        }
-                    },{
-                        name : "firstName",
-                        type : "string"
-                    },{
-                        name: "UID",
-                        type : "string",
-                        sortType : Ung.SortTypes.asUID
-                    },{
-                        name : "javaClass"
-                    },{
-                        /* Common name for a group, this is used as the display name */
-                        name : "CN"
-                    },{
-                        /* sAMAccountName is the unique identifier for a group. */
-                        name : "SAMAccountName"
-                    },{
-                        name: "type",
-                        type : "string",
-                        mapping: "UID",
-                        convert : function(val, rec) {
-                            if ( rec.javaClass == "com.untangle.node.adconnector.UserEntry" ) {
-                                return i18n._("User");
-                            } else if ( rec.javaClass == "com.untangle.node.adconnector.GroupEntry" ) {
-                                return i18n._("Group");
-                            }
-                            return val;
-                        }
-                    },{
-                        name: "name",
-                        type : "string",
-                        mapping: "UID",
-                        convert : function(val, rec) {
-                            if ( rec.javaClass == "com.untangle.node.adconnector.UserEntry" ) {
-                                return rec.UID;
-                            } else if ( rec.javaClass == "com.untangle.node.adconnector.GroupEntry" ) {
-                                return rec.SAMAccountName;
-                            }
-                            return val;
-                        }
-                    },{
-                        name : "displayName",
-                        mapping : "javaClass",
-                        convert : function(val, rec) {
-                            if ( rec.javaClass == "com.untangle.node.adconnector.UserEntry" ) {
-                                var displayName = ( rec.firstName == null )  ? "" : rec.firstName;
-                                displayName = displayName + " " + 
-                                    (( rec.lastName == null )  ? "" : rec.lastName);
-                                return displayName;
-                            } else if ( rec.javaClass == "com.untangle.node.adconnector.GroupEntry" ) {
-                                return rec.CN;
-                            } else {
-                                if (rec.displayName != null)
-                                    return rec.displayName;
-                                else
-                                    return "";
-                            }
-                        }
-                    }],
-                sortInfo : this.sortField ? {
-                    field: this.sortField,
-                    direction : this.sortOrder ? this.sortOrder : "ASC"
-                }: null,
-                remoteSort : false
-            }),
-            selModel : selectionModel,
-            columns: [
-            {
-                header : i18n._( "Type" ),
-                width : 100,
-                sortable : true,
-                dataIndex : "type"
-            },{
-                header : i18n._("Name"),
-                width: 100,
-                sortable : true,
-                dataIndex: "name"
-            },{
-                header : i18n._("Full Name"),
-                width: 350,
-                sortable : true,
-                dataIndex: "displayName"
-            }]
-        });
-        this.items = Ext.create('Ext.form.Panel',{
-            labelWidth : 75,
-            buttonAlign : 'right',
-            border : false,
-            bodyStyle : 'padding:10px 10px 0px 10px;',
-            autoScroll: true,
-            defaults : {
-                selectOnFocus : true,
-                msgTarget : 'side'
-            },
-            items : [{
-                xtype : 'fieldset',
-                title : this.singleSelectUser ? i18n._('Select User') : i18n._('Select Users'),
-                autoHeight : true,
-                items: [{
-                    border : false,
-                    cls: 'description',
-                    html: this.singleSelectUser ? i18n._("Select a User.") : i18n._("Choose Active Directory users and/or groups.")
-                }, {
-                    xtype : 'fieldset',
-                    title : this.singleSelectUser ? i18n._('Select an existing user') : i18n._('Select existing user(s) or group(s)'),
-                    autoHeight : true,
-                    items: [this.usersGrid]
-                }, {
-                    border : false,
-                    cls: 'description',
-                    hidden : this.singleSelectUser,
-                    html: i18n._("Or manually specify username using a semicolon separated list. (Example: &quot;alice;bob&quot;)") 
-                }, {
-                    xtype : "fieldset",
-                    title : i18n._("Manually specify username(s)"),
-                    autoHeight : true,
-                    hidden : this.singleSelectUser,
-                    items:[{
-                        xtype : "textfield",
-                        width : 420,
-                        fieldLabel : i18n._( "Username(s)" ),
-                        name : "otherUsers"
-                    }]
-                },{
-                    xtype : 'fieldset',
-                    title : i18n._('Add a new user'),
-                    autoHeight : true,
-                    hidden : !this.singleSelectUser,
-                    buttonAlign : 'left',
-                    buttons:[{
-                        xtype: "button",
-                        name : 'Open Local Directory',
-                        text : i18n._("Open Local Directory"),
-                        hidden : (!this.loadLocalDirectoryUsers || !this.singleSelectUser),
-                        handler : Ext.bind(function() {
-                            Ext.MessageBox.wait(i18n._("Loading Config..."), i18n._("Please wait"));
-                            Ext.Function.defer(Ung.Util.loadResourceAndExecute,1,this,["Ung.LocalDirectory",Ung.Util.getScriptSrc("script/config/localDirectory.js"), Ext.bind(function() {
-                                main.localDirectoryWin=Ext.create('Ung.LocalDirectory',{"name":"localDirectory",fnCallback: Ext.bind(function() {
-                                    this.populate(this.record,this.fnCallback);
-                                },this)});
-                                main.localDirectoryWin.show();
-                                Ext.MessageBox.hide();
-                            },this)]);
-                        },this)
-                    }, {
-                        xtype: "button",
-                        name : 'Open Active Directory',
-                        text : i18n._("Open Active Directory"),
-                        hidden : (!this.loadActiveDirectoryUsers || !this.singleSelectUser),
-                        disabled : !main.isNodeRunning('untangle-node-adconnector'),
-                        handler : Ext.bind(function() {
-                            var node = main.getNode('untangle-node-adconnector');
-                            if (node != null) {
-                                var nodeCmp = Ung.Node.getCmp(node.nodeId);
-                                if (nodeCmp != null) {
-                                    nodeCmp.onSettingsAction(Ext.bind(function() {
-                                        this.populate(this.record,this.fnCallback);
-                                    },this));
-                                }
-                            }
-                        },this)
-                    }]
-                }]
-            }]
-        });
-        Ung.UsersWindow.superclass.initComponent.call(this);
-    },
-    initSubComponents : function(container, position) {
-    },
-
-    // populate is called whent a record is edited, tot populate the edit window
-    populate : function(record,fnCallback) {
-        this.fnCallback=fnCallback;
-        this.record = record;
-        Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-        this.usersGrid.getSelectionModel().deselectAll(false);
-        var store=this.usersGrid.getStore();
-        store.getProxy().data = {list:[]};
-        store.load({
-            start : 0
-        });
-        this.populateSemaphore=2;
-        this.userEntries = [];
-        if ( !this.singleSelectUser ) {
-            this.userEntries.push({ firstName : "", lastName : null, UID: "[any]", displayName: "Any User"});
-            this.userEntries.push({ firstName : "", lastName : null, UID: "[authenticated]", displayName: "Any Authenticated User"});
-            this.userEntries.push({ firstName : "", lastName : null, UID: "[unauthenticated]", displayName: "Any Unauthenticated/Unidentified User"});
-        }
-
-        var loadActiveDirectory = this.loadActiveDirectoryUsers && main.isNodeRunning("untangle-node-adconnector");
-        if (loadActiveDirectory){
-            rpc.nodeManager.node("untangle-node-adconnector").getActiveDirectoryManager().getActiveDirectoryUserEntries(Ext.bind(function(result, exception) {
-                if(Ung.Util.handleException(exception, Ext.bind(function() {
-                    Ext.MessageBox.alert(i18n._("Warning"), i18n._("There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again."), Ext.bind(function(){
-                        this.populateCallback();
-                    },this));
-                },this),"noAlert")) return;
-                this.userEntries=this.userEntries.concat(result.list);
-                this.populateCallback();
-            },this));
-        } else {
-            this.populateSemaphore--;
-        }
-
-        if (loadActiveDirectory && !this.singleSelectUser){
-            rpc.nodeManager.node("untangle-node-adconnector").getActiveDirectoryManager().getActiveDirectoryGroupEntries(Ext.bind(function(result, exception) {
-                if( Ung.Util.handleException(exception, Ext.bind(function() {
-                    Ext.MessageBox.alert(i18n._("Warning"), i18n._("There was a problem refreshing Active Directory groups.  Please check your Active Directory settings and then try again."), Ext.bind(function(){
-                        this.populateCallback();
-                    },this));
-                },this),"noAlert")) return;
-                
-                this.userEntries=this.userEntries.concat(result.list);
-                this.populateCallback();
-            },this),false);
-        } else {
-            this.populateSemaphore--;
-        }
-    },
-    populateCallback : function () {
-        this.populateSemaphore--;
-        if (this.populateSemaphore == 0) {
-            if (this.settingsCmp !== null) {
-                var sm=this.usersGrid.getSelectionModel();
-                sm.deselectAll(false);
-                var store=this.usersGrid.getStore();
-                store.loadRawData(this.userEntries);
-
-                var users = this.record.get(this.userDataIndex),user,group,index;
-
-                if(users ==null) {
-                    users = "";
-                } else {
-                    users=users.split(";");
-                }
-
-                var freeForm = [];
-
-                for(var i=0;i<users.length;i++) {
-                    user = users[i].trim();
-                    group = user.replace( "group::", "" );
-                    index = -1;
-
-                    if ( user == group ) {
-                        index=store.findExact("UID",user);
-                    } else {
-                        index=store.findExact("SAMAccountName",group);
-                    }
-                    if(index>=0) {
-                        sm.select(index,true);
-                    } else {
-                        freeForm.push( user );
-                    }
-
-                    this.query('textfield[name="otherUsers"]' )[0].setValue( freeForm.join( " ;" ));
-                }
-            }
-            Ext.MessageBox.hide();
-        }
-    },
-    // check if the form is valid;
-    // this is the default functionality which can be overwritten
-    isFormValid : function() {
-        if (this.singleSelectUser) {
-            // one user must be selected
-            return (this.usersGrid.getSelectionModel().getSelection().length == 1);
-        }
-        return true;
-    },
-    // updateAction is called to update the record after the edit
-    applyAction : function()
-    {
-        if (this.isFormValid()) {
-            if (this.record !== null) {
-                var sm=this.usersGrid.getSelectionModel();
-                var users = [];
-                var selRecs=sm.getSelection();
-                var value, record, i;
-                
-                /* First throw in the free form values */
-                record = this. query('textfield[name="otherUsers"]')[0].getValue().split( ";" );
-                for ( i = 0 ; i < record.length ; i++ ) {
-                    value = record[i].trim();
-                    if ( value.length > 0 ) {
-                        users.push( value );
-                    }
-                }
-                
-                for( i=0;i<selRecs.length;i++) {
-                    record = selRecs[i];
-                    if ( record.get("javaClass") == "com.untangle.node.adconnector.GroupEntry" ) {
-                        value =  "group::" + record.get("SAMAccountName");
-                    } else {
-                        value = record.get("UID");
-                    }
-
-                    if(value=="[any]") {
-                        users=[value];
-                        break;
-                    } else {
-                      users.push(value);
-                    }
-                }
-
-                /* If no users are selected, pick the any user. */
-                if ( users.length == 0 ) {
-                    users = ["[any]"];
-                }
-                this.record.set(this.userDataIndex,users.join(";"));
-
-                /* Update the selection model if necessary */
-                if ( users.length == 1 && users[0] == "[any]" ) {
-                    sm.deselectAll(false);
-                    sm.select(0);
-                }
-                
-                if(this.fnCallback) {
-                    this.fnCallback.call();
-                }
-            }
-            return true;
-        } else {
-            Ext.MessageBox.alert(i18n._("Warning"), i18n._("Please choose a user id/login or press Cancel!"));
-            return false;
-        }
-    },
-
-    saveAction : function()
-    {
-        if ( this.applyAction()) {
-            this.hide();
-        }
-    },
-
-    closeWindow : function() {
-        this.hide();
-    },
-    
-    onSelectRow : function( rowModel,record,index,opts )
-    {
-        /* Uncheck any if they select another user. */
-        if ( !this.singleSelectUser && record.get("UID") != "[any]" ) {
-            rowModel.suspendEvents();
-            rowModel.deselect(0);
-            rowModel.resumeEvents();
-        }
-    }
-});
-
 
 //Import Settings window
 Ext.define('Ung.ImportSettingsWindow', {
