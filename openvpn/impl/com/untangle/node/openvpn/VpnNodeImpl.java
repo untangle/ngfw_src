@@ -28,7 +28,6 @@ import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.EventLogQuery;
-import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.TransactionWork;
@@ -681,7 +680,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode
 //         }
 
         try {
-            ScriptRunner.getInstance().exec( CLEANUP_SCRIPT );
+            UvmContextFactory.context().execManager().exec( CLEANUP_SCRIPT );
         } catch ( Exception e ) {
             logger.error( "Unable to cleanup data.", e );
         }
@@ -752,7 +751,7 @@ public class VpnNodeImpl extends NodeBase implements VpnNode
              * it is all done at download time */
         } else {
             /* Try to cleanup the previous data */
-            ScriptRunner.getInstance().exec( CLEANUP_SCRIPT );
+            UvmContextFactory.context().execManager().exec( CLEANUP_SCRIPT );
 
             /* Create the base certificate and parameters */
             this.certificateManager.createBase( newSettings );

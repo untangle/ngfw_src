@@ -23,12 +23,12 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.clam.ClamScannerClientLauncher;
 import com.untangle.node.spam.ReportItem;
 import com.untangle.node.spam.SpamReport;
 import com.untangle.node.spam.SpamScanner;
 import com.untangle.node.virus.VirusScannerResult;
-import com.untangle.uvm.node.script.ScriptRunner;
 import org.apache.log4j.Logger;
 
 public class PhishScanner implements SpamScanner
@@ -88,7 +88,7 @@ public class PhishScanner implements SpamScanner
     public Date getLastSignatureUpdate()
     {
         try {
-            String result = ScriptRunner.getInstance().exec( GET_LAST_SIGNATURE_UPDATE );
+            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_SIGNATURE_UPDATE );
             long timeSeconds = Long.parseLong( result.trim());
 
             return new Date( timeSeconds * 1000l );
@@ -101,7 +101,7 @@ public class PhishScanner implements SpamScanner
     public Date getLastSignatureUpdateCheck()
     {
         try {
-            String result = ScriptRunner.getInstance().exec( GET_LAST_SIGNATURE_UPDATE_CHECK );
+            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_SIGNATURE_UPDATE_CHECK );
             long timeSeconds = Long.parseLong( result.trim());
 
             return new Date( timeSeconds * 1000l );

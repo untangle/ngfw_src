@@ -145,6 +145,17 @@ public class ExecManagerImpl implements ExecManager
 
         return execEvil(cmdArray);
     }
+
+    public String argBuilder(String[] args)
+    {
+        String argStr = "";
+
+        for( String arg : args ) {
+            argStr += " \"" + arg.replaceAll("\"", "\\\"") + "\" ";
+        }
+
+        return argStr;
+    }
     
     private void initDaemon()
     {

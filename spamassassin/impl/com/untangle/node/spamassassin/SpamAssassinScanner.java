@@ -21,9 +21,9 @@ package com.untangle.node.spamassassin;
 import java.io.File;
 import java.util.Date;
 
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.spam.SpamReport;
 import com.untangle.node.spam.SpamScanner;
-import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
 
@@ -78,7 +78,7 @@ public class SpamAssassinScanner implements SpamScanner
     public Date getLastSignatureUpdate()
     {
         try {
-            String result = ScriptRunner.getInstance().exec( GET_LAST_SIGNATURE_UPDATE );
+            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_SIGNATURE_UPDATE );
             long timeSeconds = Long.parseLong( result.trim());
 
             return new Date( timeSeconds * 1000l );
@@ -91,7 +91,7 @@ public class SpamAssassinScanner implements SpamScanner
     public Date getLastSignatureUpdateCheck()
     {
         try {
-            String result = ScriptRunner.getInstance().exec( GET_LAST_SIGNATURE_UPDATE_CHECK );
+            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_SIGNATURE_UPDATE_CHECK );
             long timeSeconds = Long.parseLong( result.trim());
 
             return new Date( timeSeconds * 1000l );

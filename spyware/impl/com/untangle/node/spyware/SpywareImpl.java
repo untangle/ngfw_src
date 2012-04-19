@@ -39,7 +39,6 @@ import com.untangle.uvm.node.IPMaskedAddressRule;
 import com.untangle.uvm.node.Validator;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.EventLogQuery;
-import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.OutsideValve;
 import com.untangle.uvm.util.TransactionWork;
@@ -256,7 +255,7 @@ public class SpywareImpl extends NodeBase implements Spyware
     public Date getLastSignatureUpdate()
     {
         try {
-            String result = ScriptRunner.getInstance().exec( GET_LAST_SIGNATURE_UPDATE );
+            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_SIGNATURE_UPDATE );
             long timeSeconds = Long.parseLong( result.trim());
 
             return new Date( timeSeconds * 1000l );

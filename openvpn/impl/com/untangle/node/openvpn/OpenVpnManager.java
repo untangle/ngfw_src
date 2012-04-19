@@ -31,7 +31,6 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.networking.NetworkConfiguration;
@@ -175,7 +174,7 @@ public class OpenVpnManager
     {
         logger.info( "Starting openvpn server" );
 
-        ScriptRunner.getInstance().exec( VPN_START_SCRIPT );
+        UvmContextFactory.context().execManager().exec( VPN_START_SCRIPT );
 
         try {
             UvmContextFactory.context().networkManager().refreshNetworkConfig();
@@ -193,7 +192,8 @@ public class OpenVpnManager
     void stop() throws Exception
     {
         logger.info( "Stopping openvpn server" );
-        ScriptRunner.getInstance().exec( VPN_STOP_SCRIPT );
+
+        UvmContextFactory.context().execManager().exec( VPN_STOP_SCRIPT );
 
         try {
             //
@@ -352,11 +352,6 @@ public class OpenVpnManager
                 "\"" + msgBody3 + "\"";
 
             UvmContextFactory.context().execManager().exec(cmdStr);
-            //             ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.trans_getInternalName(),
-            //                                              key, publicAddress, method,
-            //                                              String.valueOf( client.trans_isUntanglePlatform()),
-            //                                              settings.trans_getInternalSiteName(),
-            //                                              title, msgBody1, msgBody2, msgBody3);
         } catch ( Exception e ) {
             logger.warn( "Unable to execute distribution script", e );
             throw e;

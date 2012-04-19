@@ -11,7 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.Worker;
 import com.untangle.uvm.util.WorkerRunner;
@@ -166,7 +165,7 @@ public class ShieldManager
         {
             try {
                 /* Start shield daemon */
-                ScriptRunner.getInstance().exec( START_SCRIPT );
+                UvmContextFactory.context().execManager().exec( START_SCRIPT );
             } catch ( Exception e ) {
                 logger.error( "Unable to start the shield.", e );
             }
@@ -176,7 +175,7 @@ public class ShieldManager
         {
             try {
                 /* Stop the shield daemon */
-                ScriptRunner.getInstance().exec( STOP_SCRIPT );
+                UvmContextFactory.context().execManager().exec( STOP_SCRIPT );
             } catch ( Exception e ) {
                 logger.error( "Unable to stop the shield.", e );
             }

@@ -30,7 +30,6 @@ import com.untangle.uvm.ConnectivityTester;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.ConnectionStatus;
 import com.untangle.uvm.networking.InterfaceConfiguration;
-import com.untangle.uvm.node.script.ScriptRunner;
 
 class ConnectivityTesterImpl implements ConnectivityTester
 {
@@ -128,7 +127,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
                     public void run()
                     {
                         try {
-                            ScriptRunner.getInstance().exec( BRIDGE_WAIT_SCRIPT, String.valueOf( BRIDGE_WAIT_TIMEOUT ));
+                            UvmContextFactory.context().execManager().exec( BRIDGE_WAIT_SCRIPT + " "  + BRIDGE_WAIT_TIMEOUT);
                         } catch ( Exception e ) {
                             logger.info( "Exception executing bridge wait script", e );
                         }

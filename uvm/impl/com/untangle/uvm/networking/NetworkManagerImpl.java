@@ -29,7 +29,6 @@ import com.untangle.uvm.node.IPSessionDesc;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.IPMatcher;
-import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.script.ScriptWriter;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;

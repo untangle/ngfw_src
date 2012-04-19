@@ -1,21 +1,6 @@
-/*
- * $HeadURL$
- * Copyright (c) 2003-2007 Untangle, Inc. 
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+/**
+ * $Id$
  */
-
 package com.untangle.node.openvpn;
 
 import java.io.BufferedReader;
@@ -32,6 +17,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.networking.IPNetwork;
 import com.untangle.uvm.networking.NetworkUtil;
 import com.untangle.uvm.networking.NetworkConfiguration;
@@ -42,7 +28,6 @@ import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.ValidateException;
-import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.util.I18nUtil;
 
@@ -104,25 +89,22 @@ public class Sandbox
 
     private void execInstallScript( String path ) throws Exception
     {
-        try {
-            ScriptRunner.getInstance().exec( INSTALL_SCRIPT, path );
-        } catch ( ScriptRunner.ScriptException e ) {
-            switch ( e.getCode()) {
-                
-            case Constants.START_ERROR:
-                throw new StartException( "Test connection with OpenVPN server failed." );
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec( INSTALL_SCRIPT + " \""  + path + "\"");
 
-            case Constants.INVALID_FILE_ERROR:
-                throw new InvalidFileException( "Invalid OpenVPN Client configuration" );
+        switch ( result.getResult()) {
+        case 0:
+            break;
+            
+        case Constants.START_ERROR:
+            throw new StartException( "Test connection with OpenVPN server failed." );
 
-            default:
-                logger.warn( "Unable to install client configuration", e );
-                throw new Exception( "Unable to install client configuration" );
-            }
-        } catch ( Exception e ) {
-            logger.warn( "Unable to install client configuration", e );
-            throw e;
-        } 
+        case Constants.INVALID_FILE_ERROR:
+            throw new InvalidFileException( "Invalid OpenVPN Client configuration" );
+
+        default:
+            logger.warn( "Unable to install client configuration. returned :" + result.getResult() + " output: " + result.getOutput() );
+            throw new Exception( "Unable to install client configuration" );
+        }
 
         /* Parse out the client configuration address */
         vpnServerAddress = new HostAddress( new IPAddress( null ));

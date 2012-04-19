@@ -47,7 +47,6 @@ import com.untangle.uvm.node.DeployException;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.toolbox.Application;
 import com.untangle.uvm.toolbox.InstallAndInstantiateComplete;
 import com.untangle.uvm.toolbox.PackageDesc;
@@ -275,7 +274,7 @@ class ToolboxManagerImpl implements ToolboxManager
     public boolean isUpgradeServerAvailable()
     {
         try {
-            String result = ScriptRunner.getInstance().exec( UPGRADE_SERVER_AVAILABLE );
+            String result = UvmContextFactory.context().execManager().execOutput( UPGRADE_SERVER_AVAILABLE );
             result = result.trim();
             return result.equalsIgnoreCase( "true");
         } catch ( Exception e ) {

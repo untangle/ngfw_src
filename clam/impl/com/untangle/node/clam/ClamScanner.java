@@ -24,8 +24,7 @@ import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.StringTokenizer;
 
-import com.untangle.uvm.node.script.ScriptRunner;
-
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.node.virus.VirusScanner;
 import com.untangle.node.virus.VirusScannerResult;
 import org.apache.log4j.Logger;
@@ -56,7 +55,7 @@ public class ClamScanner implements VirusScanner
     public Date getLastSignatureUpdate()
     {
         try {
-            String result = ScriptRunner.getInstance().exec( GET_LAST_SIGNATURE_UPDATE );
+            String result = UvmContextFactory.context().execManager().execOutput( GET_LAST_SIGNATURE_UPDATE );
             long timeSeconds = Long.parseLong( result.trim());
 
             return new Date( timeSeconds * 1000l );

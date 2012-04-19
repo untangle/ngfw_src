@@ -29,7 +29,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.script.ScriptWriter;
 
 class CertificateManager
@@ -119,7 +119,7 @@ class CertificateManager
 
         sw.writeFile( CONFIG_FILE );
         
-        callScript( GENERATE_BASE_SCRIPT );
+        UvmContextFactory.context().execManager().exec( GENERATE_BASE_SCRIPT );
     }
 
     /* Update the status of the certificate, (granted or revoked), and automatically
@@ -143,7 +143,7 @@ class CertificateManager
                 if ( status ) {
                     /* If necessary revoke the certificate for this user */
                     logger.info( "Revoking the certificate for [" + name + "]" );
-                    callRevokeClientScript( name );
+                    UvmContextFactory.context().execManager().exec( REVOKE_CLIENT_SCRIPT + " \""  + name + "\"");
                 }
             } catch ( Exception e ) {
                 logger.error( "Unable to revoke the certificate for [" + name + "]", e );
@@ -166,7 +166,7 @@ class CertificateManager
             }
             
             try {
-                callCreateClientScript( name );
+                UvmContextFactory.context().execManager().exec( GENERATE_CLIENT_SCRIPT + " \""  + name + "\" recreate");
                 
                 logger.info( "Creating a certificate for [" + name + "]" );
                 /* Indicate that the client has a valid certificate */
@@ -240,12 +240,12 @@ class CertificateManager
 
     void createClient( VpnClient client ) throws Exception
     {
-        callCreateClientScript( client.trans_getInternalName());
+        UvmContextFactory.context().execManager().exec( GENERATE_CLIENT_SCRIPT + " \""  + client.trans_getInternalName() + "\" recreate");
     }
 
     void revokeClient( VpnClient client ) throws Exception
     {
-        callRevokeClientScript( client.trans_getInternalName());
+        UvmContextFactory.context().execManager().exec( REVOKE_CLIENT_SCRIPT + " \""  + client.trans_getInternalName() + "\"");
     }
 
     private void setDefaults( VpnSettings settings )
@@ -267,24 +267,5 @@ class CertificateManager
     {
         if ( setting == null || setting.trim().length() == 0 ) return false;
         return true;
-    }
-
-    /* These function have been less useful since the functionality in
-     * callScript was moved into the script runner
-     */
-    private void callCreateClientScript( String commonName ) throws Exception
-    {
-        /* Always set the recreate flag */
-        ScriptRunner.getInstance().exec( GENERATE_CLIENT_SCRIPT, commonName, "recreate" );
-    }
-
-    private void callRevokeClientScript( String commonName ) throws Exception
-    {
-        ScriptRunner.getInstance().exec( REVOKE_CLIENT_SCRIPT, commonName );
-    }
-
-    private void callScript( String scriptName ) throws Exception
-    {
-        ScriptRunner.getInstance().exec( scriptName );
     }
 }

@@ -18,7 +18,6 @@ import com.untangle.node.cpd.CPDSettings.AuthenticationType;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.IPMatcher;
-import com.untangle.uvm.node.script.ScriptRunner;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.JsonClient.ConnectionException;
 import com.untangle.uvm.node.DirectoryConnector;
@@ -91,21 +90,17 @@ public class CPDManager
 
     void start() throws Exception
     {
-        ScriptRunner.getInstance().exec( START_SCRIPT );
+        UvmContextFactory.context().execManager().exec( START_SCRIPT );
     }
 
     void stop()
     {
-        try {
-            ScriptRunner.getInstance().exec( STOP_SCRIPT );
-        } catch (Exception e) {
-            logger.debug( "Unable to stop untangle-cpd.", e);
-        }
+        UvmContextFactory.context().execManager().exec( STOP_SCRIPT );
     }
 
     void loadCustomPage( String fileName ) throws Exception
     {
-        ScriptRunner.getInstance().exec( LOAD_CUSTOM_SCRIPT, fileName );
+        UvmContextFactory.context().execManager().exec( LOAD_CUSTOM_SCRIPT + " \"" +  fileName + "\"");
     }
 
     boolean authenticate( String addressString, String username, String password, String credentials )

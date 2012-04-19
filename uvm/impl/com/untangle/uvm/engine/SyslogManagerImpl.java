@@ -21,8 +21,6 @@ import com.untangle.uvm.logging.SyslogManager;
 import com.untangle.uvm.logging.SyslogPriority;
 import com.untangle.uvm.networking.NetworkConfigurationListener;
 import com.untangle.uvm.networking.NetworkConfiguration;
-import com.untangle.uvm.node.script.ScriptRunner;
-import com.untangle.uvm.node.script.ScriptRunner.ScriptException;
 
 /**
  * Implements SyslogManager.
@@ -133,11 +131,7 @@ class SyslogManagerImpl implements SyslogManager
         }
 
         // restart syslog
-        try {
-            ScriptRunner.getInstance().exec(RSYSLOG, "restart");
-        } catch (ScriptException ex) {
-            logger.error("Could not restart rsyslog", ex);
-        }
+        UvmContextFactory.context().execManager().exec( RSYSLOG + " " + "restart" );
     }
 
     // private classes --------------------------------------------------------
