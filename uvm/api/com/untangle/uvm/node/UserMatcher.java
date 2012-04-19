@@ -107,17 +107,12 @@ public class UserMatcher
         }
     }
 
-    public String toDatabaseString()
-    {
-        return this.matcher;
-    }
-
     /**
      * return toDatabaseString()
      */
     public String toString()
     {
-        return toDatabaseString();
+        return this.matcher;
     }
     
     public static synchronized UserMatcher getAnyMatcher()

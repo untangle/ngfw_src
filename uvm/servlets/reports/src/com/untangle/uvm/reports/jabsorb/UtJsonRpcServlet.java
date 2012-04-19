@@ -15,20 +15,14 @@ import com.untangle.uvm.webui.jabsorb.serializer.ExtendedListSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.ExtendedSetSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.HostAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPMaskedAddressSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.IPMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.InetAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.LazyInitializerSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.PortMatcherSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.IntfMatcherSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.ProtocolMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.RFC2253NameSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.TimeMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.UserMatcherSerializer;
 import org.apache.log4j.Logger;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONRPCServlet;
@@ -130,14 +124,6 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 b.registerSerializer(new LazyInitializerSerializer());
                 b.registerSerializer(new ExtendedListSerializer());
                 b.registerSerializer(new ExtendedSetSerializer());
-
-                // firewal related serializers
-                b.registerSerializer(new ProtocolMatcherSerializer());
-                b.registerSerializer(new IPMatcherSerializer());
-                b.registerSerializer(new PortMatcherSerializer());
-                b.registerSerializer(new IntfMatcherSerializer());
-                b.registerSerializer(new TimeMatcherSerializer());
-                b.registerSerializer(new UserMatcherSerializer());
 
             } catch (Exception e) {
                 logger.warn( "Unable to register serializers", e );
