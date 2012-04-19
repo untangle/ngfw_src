@@ -1227,3 +1227,4 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         }
     });
 }
+//@ sourceURL=webfilter-settingsNew.js

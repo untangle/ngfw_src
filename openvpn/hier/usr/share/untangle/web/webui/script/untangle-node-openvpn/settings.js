@@ -2114,3 +2114,4 @@ if (!Ung.hasResource["Ung.OpenVPN"]) {
         }
     });
 }
+//@ sourceURL=openvpn-settings.js

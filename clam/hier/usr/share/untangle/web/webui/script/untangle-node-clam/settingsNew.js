@@ -10,3 +10,4 @@ Ung.NodeWin.dependency["untangle-node-clam"] = {
         }
     }
 };
+//@ sourceURL=clam-settingsNew.js

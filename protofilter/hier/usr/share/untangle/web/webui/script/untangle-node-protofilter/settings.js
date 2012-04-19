@@ -302,3 +302,4 @@ if (!Ung.hasResource["Ung.Protofilter"]) {
     });
 }
 
+//@ sourceURL=protofilter-settings.js

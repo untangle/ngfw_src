@@ -295,3 +295,4 @@ if (!Ung.hasResource["Ung.Shield"]) {
         }
     });
 }
+//@ sourceURL=shield-settings.js

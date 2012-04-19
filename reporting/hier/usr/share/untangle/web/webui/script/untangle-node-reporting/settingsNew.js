@@ -1043,3 +1043,4 @@ if (!Ung.hasResource["Ung.Reporting"]) {
         }
     });
 }
+//@ sourceURL=reporting-settingsNew.js

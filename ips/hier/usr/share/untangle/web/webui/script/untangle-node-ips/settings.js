@@ -408,3 +408,4 @@ if (!Ung.hasResource["Ung.Ips"]) {
         }        
     });
 }
+//@ sourceURL=ips-settings.js

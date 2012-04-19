@@ -1022,3 +1022,4 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
 
     });
 }
+//@ sourceURL=spamassassin-settings.js

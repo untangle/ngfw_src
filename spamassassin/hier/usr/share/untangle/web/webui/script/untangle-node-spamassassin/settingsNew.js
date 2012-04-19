@@ -973,3 +973,4 @@ if (!Ung.hasResource["Ung.SpamAssassin"]) {
         }
     });
 }
+//@ sourceURL=spamassassin-settingsNew.js

@@ -407,3 +407,4 @@ if (!Ung.hasResource["Ung.Phish"]) {
 
     });
 }
+//@ sourceURL=phish-settingsNew.js

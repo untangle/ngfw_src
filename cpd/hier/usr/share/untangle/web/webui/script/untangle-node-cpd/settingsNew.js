@@ -1310,3 +1310,4 @@ if (!Ung.hasResource["Ung.CPD"]) {
 
     Ung.CPD.daysOfWeek = ["mon","tue","wed","thu","fri","sat","sun"];
 }
+//@ sourceURL=cpd-settingsNew.js

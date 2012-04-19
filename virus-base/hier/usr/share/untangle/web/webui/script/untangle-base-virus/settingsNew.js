@@ -663,3 +663,4 @@ if (!Ung.hasResource["Ung.Virus"]) {
         }
     });
 }
+//@ sourceURL=virus-settingsNew.js

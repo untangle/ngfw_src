@@ -1198,3 +1198,4 @@ if (!Ung.hasResource["Ung.BaseWebFilter"]) {
         }
     });
 }
+//@ sourceURL=webfilter-settings.js

@@ -411,3 +411,4 @@ if (!Ung.hasResource["Ung.Ips"]) {
         }
     });
 }
+//@ sourceURL=ips-settingsNew.js

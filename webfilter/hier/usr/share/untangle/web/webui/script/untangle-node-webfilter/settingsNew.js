@@ -8,3 +8,4 @@ Ung.NodeWin.dependency["untangle-node-webfilter"] = {
         }
     }
 };
+//@ sourceURL=webfilter-settingsNew.js

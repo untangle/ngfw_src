@@ -778,3 +778,4 @@ if (!Ung.hasResource["Ung.Spyware"]) {
         }
     });
 }
+//@ sourceURL=spyware-settings.js

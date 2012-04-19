@@ -269,3 +269,4 @@ if (!Ung.hasResource["Ung.Shield"]) {
      
     });
 }
+//@ sourceURL=shield-settingsNew.js
