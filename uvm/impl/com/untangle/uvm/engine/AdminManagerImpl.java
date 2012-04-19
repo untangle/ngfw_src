@@ -42,9 +42,6 @@ import com.untangle.uvm.util.TransactionWork;
 
 /**
  * Remote interface for administrative user management.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 public class AdminManagerImpl implements AdminManager, HasConfigFiles
 {

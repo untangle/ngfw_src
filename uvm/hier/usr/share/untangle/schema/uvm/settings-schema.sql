@@ -68,6 +68,18 @@ CREATE TABLE settings.u_logging_settings (
     syslog_protocol text NOT NULL,
     PRIMARY KEY (settings_id));
 
+-- com.untangle.uvm.tran.MimeTypeRule
+-- CREATE TABLE settings.u_mimetype_rule (
+--    rule_id int8 NOT NULL,
+--    mime_type text,
+--    name text,
+--    category text,
+--    description text,
+--    live bool,
+--    alert bool,
+--    log bool,
+--    PRIMARY KEY (rule_id));
+
 -- com.untangle.uvm.tran.NodePreferences
 -- CREATE TABLE settings.u_node_preferences (
 --    id int8 NOT NULL,
@@ -219,18 +231,6 @@ CREATE TABLE settings.u_ipmaddr_dir (
     id int8 NOT NULL,
     notes text,
     PRIMARY KEY (id));
-
--- com.untangle.uvm.tran.MimeTypeRule
-CREATE TABLE settings.u_mimetype_rule (
-    rule_id int8 NOT NULL,
-    mime_type text,
-    name text,
-    category text,
-    description text,
-    live bool,
-    alert bool,
-    log bool,
-    PRIMARY KEY (rule_id));
 
 -- com.untangle.uvm.tran.IPMaskedAddressDirectory.entries
 CREATE TABLE settings.u_ipmaddr_dir_entries (
