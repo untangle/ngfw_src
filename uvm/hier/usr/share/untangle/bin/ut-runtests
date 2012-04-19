@@ -19,6 +19,7 @@ from   untangle_tests.clam_tests import ClamTests
 from   untangle_tests.commtouchav_tests import CommtouchAvTests
 from   untangle_tests.adconnector_tests import DirectoryConnectorTests
 from   untangle_tests.openvpn_tests import OpenVPNTests
+from   untangle_tests.ipsec_tests import IPsecTests
 
 class ArgumentParser(object):
     def __init__(self):
@@ -232,6 +233,10 @@ while True:
         total += subTotal
     if ("openvpn" in parser.nodesToTest or "all" in parser.nodesToTest):
         errors, subTotal = runTestSuite(OpenVPNTests)
+        rc += errors
+        total += subTotal
+    if ("ipsec" in parser.nodesToTest or "all" in parser.nodesToTest):
+        errors, subTotal = runTestSuite(IPsecTests)
         rc += errors
         total += subTotal
     if not parser.repeat:
