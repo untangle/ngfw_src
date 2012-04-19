@@ -41,8 +41,8 @@ public class WebFilterReplacementGenerator extends ReplacementGenerator<WebFilte
     }
 
     @Override
-    protected String getRedirectUrl(String nonce, String host, NodeSettings tid)
+    protected String getRedirectUrl(String nonce, String host, NodeSettings nodeSettings)
     {
-        return "http://" + host + "/webfilter/blockpage?nonce=" + nonce + "&tid=" + tid;
+        return "http://" + host + "/webfilter/blockpage?nonce=" + nonce + "&tid=" + nodeSettings.getId();
     }
 }

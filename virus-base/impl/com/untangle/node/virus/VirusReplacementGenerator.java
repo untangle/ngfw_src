@@ -42,9 +42,8 @@ class VirusReplacementGenerator extends ReplacementGenerator<VirusBlockDetails>
     }
 
     @Override
-    protected String getRedirectUrl(String nonce, String host, NodeSettings tid)
+    protected String getRedirectUrl(String nonce, String host, NodeSettings nodeSettings)
     {
-        return "http://" + host + "/virus/blockpage?nonce=" + nonce
-            + "&tid=" + tid;
+        return "http://" + host + "/virus/blockpage?nonce=" + nonce + "&tid=" + nodeSettings.getId();
     }
 }

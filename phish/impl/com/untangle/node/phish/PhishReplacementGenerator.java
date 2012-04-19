@@ -35,14 +35,12 @@ class PhishReplacementGenerator extends ReplacementGenerator<PhishBlockDetails>
     {
         UvmContext uvm = UvmContextFactory.context();
 
-        return String.format(BLOCK_TEMPLATE, details.getHost(),
-                             details.getUri(), uvm.brandingManager().getContactHtml());
+        return String.format(BLOCK_TEMPLATE, details.getHost(), details.getUri(), uvm.brandingManager().getContactHtml());
     }
 
     @Override
-    protected String getRedirectUrl(String nonce, String host, NodeSettings tid)
+    protected String getRedirectUrl(String nonce, String host, NodeSettings nodeSettings)
     {
-        return "http://" + host + "/phish/blockpage?nonce=" + nonce
-            + "&tid=" + tid;
+        return "http://" + host + "/phish/blockpage?nonce=" + nonce + "&tid=" + nodeSettings.getId();
     }
 }

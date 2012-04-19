@@ -41,10 +41,9 @@ public class SpywareReplacementGenerator extends ReplacementGenerator<SpywareBlo
         return String.format(SIMPLE_BLOCK_TEMPLATE, bd.getHost(), bd.getUrl(), contactHtml);
     }
 
-    protected String getRedirectUrl(String nonce, String host, NodeSettings tid)
+    protected String getRedirectUrl(String nonce, String host, NodeSettings nodeSettings)
     {
-        return "http://" + host + "/spyware/detect.jsp?nonce=" + nonce
-            + "&tid=" + tid;
+        return "http://" + host + "/spyware/detect.jsp?nonce=" + nonce + "&tid=" + nodeSettings.getId();
     }
 
 }
