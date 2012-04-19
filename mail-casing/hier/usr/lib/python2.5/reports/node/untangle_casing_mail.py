@@ -48,8 +48,7 @@ class MailCasing(Node):
 
     @sql_helper.print_timing
     def events_cleanup(self, cutoff):
-        sql_helper.clean_table("events", "n_mail_message_info_addr", cutoff);
-        sql_helper.clean_table("events", "n_mail_message_info", cutoff);
+        return
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_mail_addrs", cutoff)

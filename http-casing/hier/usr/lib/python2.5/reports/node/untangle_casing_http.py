@@ -148,9 +148,7 @@ CREATE TABLE reports.n_http_events (
 
     @sql_helper.print_timing
     def events_cleanup(self, cutoff):
-        sql_helper.clean_table("events", "n_http_req_line ", cutoff);
-        sql_helper.clean_table("events", "n_http_evt_req ", cutoff);
-        sql_helper.clean_table("events", "n_http_evt_resp ", cutoff);
+        return
 
     def reports_cleanup(self, cutoff):
         sql_helper.drop_fact_table("n_http_events", cutoff)
