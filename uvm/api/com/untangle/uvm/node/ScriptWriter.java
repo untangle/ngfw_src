@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.node.script;
+package com.untangle.uvm.node;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

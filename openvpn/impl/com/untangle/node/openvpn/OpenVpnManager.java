@@ -31,7 +31,7 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.node.script.ScriptWriter;
+import com.untangle.uvm.node.ScriptWriter;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.networking.NetworkConfiguration;
 import com.untangle.uvm.networking.InterfaceConfiguration;

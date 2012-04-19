@@ -19,7 +19,7 @@ package com.untangle.node.openvpn;
 
 import java.util.List;
 
-import com.untangle.uvm.node.script.ScriptWriter;
+import com.untangle.uvm.node.ScriptWriter;
 
 class AlpacaRulesWriter extends ScriptWriter
 {

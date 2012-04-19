@@ -28,7 +28,7 @@ import com.untangle.uvm.node.HostAddress;
 import com.untangle.uvm.node.IPAddress;
 import com.untangle.uvm.node.ParseException;
 import com.untangle.uvm.node.HostAddress;
-import com.untangle.uvm.node.script.ScriptWriter;
+import com.untangle.uvm.node.ScriptWriter;
 import com.untangle.uvm.util.JsonClient;
 import com.untangle.uvm.util.XMLRPCUtil;
 import com.untangle.uvm.util.TransactionWork;

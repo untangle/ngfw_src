@@ -19,7 +19,7 @@ package com.untangle.node.openvpn;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.script.ScriptWriter;
+import com.untangle.uvm.node.ScriptWriter;
 
 
 class VpnScriptWriter extends ScriptWriter

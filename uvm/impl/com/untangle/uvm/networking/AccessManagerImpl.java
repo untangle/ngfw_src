@@ -17,7 +17,7 @@ import org.hibernate.Query;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.IPAddress;
-import com.untangle.uvm.node.script.ScriptWriter;
+import com.untangle.uvm.node.ScriptWriter;
 import com.untangle.uvm.util.TransactionWork;
 
 class AccessManagerImpl implements LocalAccessManager
