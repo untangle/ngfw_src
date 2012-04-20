@@ -194,7 +194,11 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.commtouch">
+  <category name="com.untangle.node.commtouchas">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.commtouchav">
     <priority value="INFO"/>
   </category>
 
