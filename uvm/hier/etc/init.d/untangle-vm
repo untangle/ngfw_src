@@ -67,9 +67,22 @@ updateStatusExit() {
 }
 
 # Finds the actual java uvm process
-uvmJavaPid() {
-    ps awwx | awk '/[j]ava.*com.untangle.uvm.engine.Main/ {print $1}'
+uvmJavaPid() { 
+    ps awwx | awk '/[j]ava.*com.untangle.uvm.engine.Main/ {print $1}' 
 }
+# Finds the java uvm process
+uvmWrapperPid() { 
+    ps awwx | awk '/.*python.*usr\/bin\/uvm/ {print $1}' 
+}
+# returns "running" or "stopped"
+uvmStatus() { 
+    if [ -z "`uvmWrapperPid`" ] && [ -z "`uvmJavaPid`" ] ; then
+        echo "stopped"
+    else
+        echo "running"
+    fi
+}
+
 
 case "$1" in
     start)
@@ -173,7 +186,7 @@ case "$1" in
         log_daemon_msg "Stopping $DESC"
 	    unmonitorAll
 
-        if [ ! -f ${UVM_RUNDIR}/${UVM_PID_FILE} ] ; then
+        if [ ! -f ${UVM_RUNDIR}/${UVM_PID_FILE} ] && [ "`uvmStatus`" == "stopped" ]; then
             echo "Not Running."
 	        log_end_msg 0
             exit
@@ -181,12 +194,17 @@ case "$1" in
 
         updateStatus "[" "Stopping"
 
+        # if the pid file is missing, recover it
+        if [ ! -f ${UVM_RUNDIR}/${UVM_PID_FILE} ] ; then
+            uvmWrapperPid > ${UVM_RUNDIR}/${UVM_PID_FILE}
+        fi
+
         # Attempt polite kill first
         start-stop-daemon -s INT --stop -q --pidfile ${UVM_RUNDIR}/${UVM_PID_FILE}
         code=$?
 
         # exit if start-stop-daemon failed and the process was not found anyway (it must already be dead)
-        if [ $code != "0" ] && [ -z "`uvmJavaPid`" ] ; then
+        if [ $code != "0" ] && [ "`uvmStatus`" == "stopped" ] ; then
 	        unmonitorAll
             updateStatusExit "x]\n" "Stopped"
         fi
@@ -198,12 +216,11 @@ case "$1" in
             echo -n "."
             sleep 1
             # If the log contains "shutdown complete" and the PID is gone - it was a clean shutdown
-            if grep -qi 'shutdown complete' $UVM_CONSOLE_LOG 2>/dev/null && [ -z "`uvmJavaPid`" ] ; then
+            if grep -qi 'shutdown complete' $UVM_CONSOLE_LOG 2>/dev/null && [ "`uvmStatus`" == "stopped" ] ; then
 		        unmonitorAll
                 updateStatusExit "]\n" "Stopped"
-            fi
             # If the log does not contain "shutdown complete" but the PID is gone - it was not clean
-            if [ -z "`uvmJavaPid`" ] ; then
+            elif [ "`uvmStatus`" == "stopped" ] ; then
                 break
             fi
         done
@@ -211,8 +228,10 @@ case "$1" in
         # Attempt more aggressive kill now
         echo -n "ungraceful exit"
         kill -INT `uvmJavaPid` &>/dev/null
+        kill -INT `uvmWrapperPid` &>/dev/null
         killall -s INT uvm &>/dev/null
         kill `uvmJavaPid` &>/dev/null
+        kill `uvmWrapperPid` &>/dev/null
         killall uvm &>/dev/null
 
         # Wait for completion
@@ -223,7 +242,7 @@ case "$1" in
 		        unmonitorAll
                 updateStatusExit "]\n" "Stopped"
             fi
-            if [ -z "`uvmJavaPid`" ] ; then
+            if [ "`uvmStatus`" == "stopped" ] ; then
     	        unmonitorAll
                 updateStatusExit "]\n" "Stopped"
             fi
@@ -235,10 +254,11 @@ case "$1" in
         for i in `seq 1 5` ; do
             # send a kill signal
             kill -9 `uvmJavaPid` &>/dev/null
+            kill -9 `uvmWrapperPid` &>/dev/null
             killall -9 uvm &>/dev/null
 
             echo -n "."
-            if [ -z "`uvmJavaPid`" ] ; then
+            if [ "`uvmStatus`" == "stopped" ] ; then
     	        unmonitorAll
                 updateStatusExit "]\n" "Stopped"
             fi
