@@ -407,6 +407,8 @@ public class CasingAdaptor extends AbstractEventHandler
                  * or different protocol on standard ports.
                  * As such we don't want to litter the logs too much with these warnings, but we don't want to eliminate
                  * them entirely.
+                 *
+                 * XXX These are all HTTP based so they should live in the http-casing somewhere
                  */
                 String message = exn.getMessage();
                 if (message != null && message.contains("no digits found")) {
@@ -419,6 +421,8 @@ public class CasingAdaptor extends AbstractEventHandler
                     logger.info("Protocol parse exception (buf limit exceeded). Releasing session: " + sessionEndpoints);
                 } else if (message != null && message.contains("header exceeds")) {
                     logger.info("Protocol parse exception (header exceeds). Releasing session: " + sessionEndpoints);
+                } else if (message != null && message.contains("URI length exceeded")) {
+                    logger.info("Protocol parse exception (URI length exceeded). Releasing session: " + sessionEndpoints);
                 } else {
                     logger.info("Protocol parse exception. releasing session: " + sessionEndpoints, exn);
                 }
