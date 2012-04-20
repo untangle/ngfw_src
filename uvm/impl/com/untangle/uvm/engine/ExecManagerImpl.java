@@ -80,6 +80,7 @@ public class ExecManagerImpl implements ExecManager
             // read the JSON result
             long t0 = System.currentTimeMillis();
             String line = in.readLine();
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
             ExecManagerResult result = (ExecManagerResult) serializer.fromJSON(line);
             long t1 = System.currentTimeMillis();
 

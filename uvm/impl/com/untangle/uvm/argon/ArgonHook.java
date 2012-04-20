@@ -79,6 +79,8 @@ public abstract class ArgonHook implements Runnable
 
         SessionEvent sessionEvent = null;
         try {
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+
             sessionGlobalState = new SessionGlobalState( netcapSession(), clientSideListener(), serverSideListener(), this );
             NetcapSession netcapSession = sessionGlobalState.netcapSession();
             if ( logger.isDebugEnabled()) {

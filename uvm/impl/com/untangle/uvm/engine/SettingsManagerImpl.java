@@ -191,6 +191,7 @@ public class SettingsManagerImpl implements SettingsManager
 
             logger.debug("Loading Settings: \n" + "-----------------------------\n" + jsonString + "-----------------------------\n");
 
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
             return (T) serializer.fromJSON(jsonString.toString());
 
         } catch (IOException e) {
