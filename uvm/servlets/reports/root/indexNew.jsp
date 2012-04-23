@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.untangle.uvm.*,com.untangle.uvm.util.*,com.untangle.uvm.reports.*,com.untangle.uvm.node.NodeSettings,com.untangle.uvm.node.*,com.untangle.uvm.vnet.*,org.apache.log4j.helpers.AbsoluteTimeDateFormat,java.util.Properties, java.util.Map, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
+<%@ page language="java" import="com.untangle.uvm.*,com.untangle.uvm.util.*,com.untangle.uvm.reports.*,com.untangle.uvm.security.NodeId,com.untangle.uvm.node.*,com.untangle.uvm.vnet.*,org.apache.log4j.helpers.AbsoluteTimeDateFormat,java.util.Properties, java.util.Map, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%
@@ -93,9 +93,11 @@ if (!reportsAvailable || !reportingEnabled) {
         String selectedApplication = request.getParameter("aname");
         String reportsDate = request.getParameter("rdate");
         String numDays = request.getParameter("duration");
+        String drillType=request.getParameter("drillType");
+        String drillValue= request.getParameter("drillValue");
         String args = "";
         if(selectedApplication != null && reportsDate != null && numDays != null){
-            args = "selectedNode:{data:{id:'"+selectedApplication+"',text:'Summary'}},printView:true,selectedApplication:'"+selectedApplication+ "',reportsDate:{javaclass:'java.util.Date',time:"+reportsDate +"},numDays:"+numDays+"";
+            args = "selectedNode:{data:{id:'"+selectedApplication+"',text:'Summary'}},printView:true,selectedApplication:'"+selectedApplication+ "',reportsDate:{javaclass:'java.util.Date',time:"+reportsDate +"},numDays:"+numDays+",drillType:'" + drillType +"',drillValue:'" + drillValue +"'";
         }
         %>
         Ext.onReady(function(){

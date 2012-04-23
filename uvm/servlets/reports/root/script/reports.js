@@ -78,6 +78,8 @@ Ung.Reports = Ext.extend(Object,{
     progressBar : null,
     //print view for printing summary page
     printView : false,
+    drillType: null,
+    drillValue: null,
 
     appNames: { },
 
@@ -221,25 +223,19 @@ Ung.Reports = Ext.extend(Object,{
         var panel = new Ext.Panel({
             renderTo : 'base',
             cls : "base-container",
-            layout : 'fit',
             id : 'report-details-container',
-            height : getWinHeight()-80,
             width:740,
-            cls:'full-height', 
             autoScroll : true,
             items : [{
                     title : 'Report Details&nbsp;<span id="breadcrumbs" class="breadcrumbs"></span>',
                     id : 'report-details',
-                    layout:"fit",
-                    region : "center",
+                    layout : 'fit',
                     autoScroll : true,
                     collapsible : false,
                     split : false,
                     margins : '2 2 0 2',
                     cmargins : '2 2 2 2',
-                    width : 700,
                     defaults: { border: false },
-                    cls:'full-height',                     
                     items : [{ html:"" }],
                     listeners : {
                         'render' : function(){
@@ -253,7 +249,17 @@ Ung.Reports = Ext.extend(Object,{
         reports.breadcrumbs=[];
         rpc.drilldownType = null;
         rpc.drilldownValue = null;
+        console.log("Drill Type and value:", this.drillType,",", this.drillValue);
         reports.getApplicationData(reports.selectedApplication, reports.numDays);                    
+        if ( this.drillType != null && this.drillType.length > 0 && this.drillValue != null && this.drillValue.length > 0) {
+            if ( this.drillType=='host') {
+                reports.getApplicationDataForHost(reports.selectedApplication,this.drillValue);
+            } else if ( this.drillType =='user') {
+                reports.getApplicationDataForUser(reports.selectedApplication,this.drillValue);
+            } else if ( this.drillType =='email') {
+                reports.getApplicationDataForEmail(reports.selectedApplication,this.drillValue);
+            }
+        }
     },
     startApplication : function()
     {
@@ -692,7 +698,7 @@ Ung.Reports = Ext.extend(Object,{
     },
 
     getApplicationData: function(nodeName, numDays) {
-        reports.progressBar.wait(i18n._("Please Wait"));        
+        reports.progressBar.wait(i18n._("Please Wait"));       
 
         if(nodeName == 'untangle-pnode-summary'){
             rpc.reportingManager.getHighlights(function(result,exception){
@@ -1030,8 +1036,6 @@ Ung.ReportDetails = Ext.extend(Object, {
                     autoWidth : true,
                     autoScroll: true
                 },
-
-                height : 400,
                 activeTab : 0,
                 frame : true,
                 items : itemsArray,
@@ -1125,12 +1129,20 @@ Ung.ReportDetails = Ext.extend(Object, {
 
     buildSummarySection: function (appName, section) {
         var items = [];
+        var drillDownType='', drillDownValue='';
+        if ( reports.breadcrumbs.length > 1) {
+            drillDownType = reports.breadcrumbs[reports.breadcrumbs.length-1].drilldownType;
+            drillDownValue = reports.breadcrumbs[reports.breadcrumbs.length-1].drilldownValue;
+        }
         //add the print button
         if(reports.printView===false){
             var printargs = [
                                 ['rdate',reports.reportsDate.time].join('='),
                                 ['duration',reports.numDays].join('='),
-                                ['aname',appName].join('=')
+                                ['aname',appName].join('='),
+                                ['drillType',drillDownType].join('='),
+                                ['drillValue',drillDownValue].join('='),
+                                ['r',Math.floor(Math.random()*121221121)].join('=')
                             ].join('&');
             //                            console.log(printargs);
             items.push({
@@ -1235,7 +1247,7 @@ Ung.ReportDetails = Ext.extend(Object, {
             });
             items.push(new Ext.grid.GridPanel({
                 style : 'margin-top:20px;',
-                autoScroll : true,
+                    autoScroll : false,
                 width: 330,
                 height: 243,
                 store: new Ext.data.SimpleStore({
@@ -1280,7 +1292,7 @@ Ung.ReportDetails = Ext.extend(Object, {
             title : section.title,
             layout:'table',
             autoWidth : true,
-            //autoScroll: true,
+            autoScroll: true,
             border : false,
             defaults: {
                 border: false,

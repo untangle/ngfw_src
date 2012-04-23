@@ -45,6 +45,8 @@ Ext.define('Ung.Reports',{
     progressBar : null,
     //print view for printing summary page
     printView : false,
+    drillType:null,
+    drillValue:null,
 
     appNames: { },
 
@@ -212,7 +214,18 @@ Ext.define('Ung.Reports',{
         reports.breadcrumbs=[];
         rpc.drilldownType = null;
         rpc.drilldownValue = null;
-        reports.getApplicationData(reports.selectedApplication, reports.numDays);                    
+        
+        reports.getApplicationData(reports.selectedApplication, reports.numDays);     
+        console.log("Drill Type and value:", this.drillType,",", this.drillValue);
+        if ( this.drillType != null && this.drillType.length > 0 && this.drillValue != null && this.drillValue.length > 0) {
+            if ( this.drillType=='host') {
+                reports.getApplicationDataForHost(reports.selectedApplication,this.drillValue);
+            } else if ( this.drillType =='user') {
+                reports.getApplicationDataForUser(reports.selectedApplication,this.drillValue);
+            } else if ( this.drillType =='email') {
+                reports.getApplicationDataForEmail(reports.selectedApplication,this.drillValue);
+            }
+        }
     },
     startApplication : function()
     {
@@ -434,7 +447,6 @@ Ext.define('Ung.Reports',{
         }
     },
     showAvailableReports : function(){
-        console.log("showAvailableReports");
         if(!this.availableReportsWindow){
             this.datesGrid =Ext.create('Ung.EditorGrid',{
                 paginated : false,
@@ -661,6 +673,7 @@ Ext.define('Ung.Reports',{
                 var treeNodes = this.getTreeNodesFromTableOfContent(this.tableOfContents);
                 Ext.getCmp('tree-panel').getSelectionModel().clearSelections();
                 var root= Ext.getCmp('tree-panel').getRootNode();
+                root.removeAll(false);
                 root.appendChild(treeNodes);
                 Ext.getCmp('tree-panel').getSelectionModel().select(0);
             },this), this.reportsDate, this.numDays);        
@@ -810,7 +823,7 @@ Ext.define('Ung.Reports',{
             if(result==null){
                Ext.MessageBox.alert(i18n._("No Data Available"),i18n._("The report detail you selected does not contain any data. \n This is most likely because its not possible to drill down any further into some reports."));
                return;
-            }                                         
+            }      
             rpc.applicationData=result;
             reports.breadcrumbs.push({ text: i18n.sprintf("%s: %s reports ", value, this.appNames[app]),
                                        handler: Ext.bind(this[fnName],this,[app, value]),
@@ -875,7 +888,7 @@ Ext.define('Ung.ReportDetails', {
         }
 
         return Ext.create('Ext.grid.Panel',{
-            store: Ext.create('Ext.data.Store', {
+            store: Ext.create('Ext.data.ArrayStore', {
                 fields: [
                     { name: 'javaClass' },
                     { name: 'name' },
@@ -938,7 +951,7 @@ Ext.define('Ung.ReportDetails', {
             defaults: {
                 border:0
             },
-            store: Ext.create('Ext.data.Store',{
+            store: Ext.create('Ext.data.ArrayStore',{
                 fields: [
                     {name: 'javaClass'},
                     {name: 'name'},
@@ -1115,13 +1128,21 @@ Ext.define('Ung.ReportDetails', {
     },
 
     buildSummarySection: function (appName, section) {
+        var drillDownType='', drillDownValue='';
+        if ( reports.breadcrumbs.length > 1) {
+            drillDownType = reports.breadcrumbs[reports.breadcrumbs.length-1].drilldownType;
+            drillDownValue = reports.breadcrumbs[reports.breadcrumbs.length-1].drilldownValue;
+        }
         var items = [];
         //add the print button
         if(reports.printView===false){
             var printargs = [
                                 ['rdate',reports.reportsDate.time].join('='),
                                 ['duration',reports.numDays].join('='),
-                                ['aname',appName].join('=')
+                                ['aname',appName].join('='),
+                                ['drillType',drillDownType].join('='),
+                                ['drillValue',drillDownValue].join('='),
+                                ['r',Math.floor(Math.random()*121221121)].join('=')
                             ].join('&');
             items.push({
                 html:'<a target="_print" href="?'+printargs+'" class="print small-right-margin">'+i18n._('Print')+'</a>',
