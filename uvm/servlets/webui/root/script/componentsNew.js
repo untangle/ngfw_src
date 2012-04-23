@@ -186,7 +186,6 @@ Ext.define("Ung.form.TimeField", {
     }
 });
 
-
 Ung.Util= {
 	isDirty: function (item, depth) {
 		if(depth==null) {
@@ -3217,7 +3216,6 @@ Ext.define("Ung.SettingsWin", {
     	this.dirtyFlag=true;
     },
     clearDirty: function() {
-    	console.log("SettingsWin clearDirty");
     	this.dirtyFlag=false;
     	Ung.Util.clearDirty(this.tabs);
     },

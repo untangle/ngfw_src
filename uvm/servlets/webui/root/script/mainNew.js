@@ -1117,12 +1117,12 @@ Ext.define("Ung.Main", {
     // change current policy
     changePolicy: function () {
         if(this.value=='SHOW_POLICY_MANAGER'){
-            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-            Ext.Function.defer(Ung.Util.loadResourceAndExecute,1,this,["Ung.PolicyManager",Ung.Util.getScriptSrc("script/config/policyManagerNew.js"), function() {
-                main.policyManagerWin=new Ung.PolicyManager({"name":"policyManager", "helpSource":"policy_manager"});
-                main.policyManagerWin.show();
-                Ext.MessageBox.hide();
-            }]);
+            Ext.MessageBox.show({
+                title : i18n._( "IMPLEMENT ME" ),
+                msg : i18n._( "IMPLEMENT ME" ),
+                buttons : Ext.MessageBox.OK,
+                icon : Ext.MessageBox.INFO
+            });
         } else if(this.value=='SHOW_SESSIONS'){
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
             Ext.Function.defer(Ung.Util.loadResourceAndExecute,1,this,["Ung.SessionMonitor",Ung.Util.getScriptSrc("script/config/sessionMonitorNew.js"), function() {
