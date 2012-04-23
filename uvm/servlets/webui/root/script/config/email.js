@@ -1409,3 +1409,4 @@ if (!Ung.hasResource["Ung.Email"]) {
         }
     });
 }
+//@ sourceURL=email.js

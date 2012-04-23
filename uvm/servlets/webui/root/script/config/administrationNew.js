@@ -2086,3 +2086,4 @@ if (!Ung.hasResource["Ung.Administration"]) {
         }
     });
 }
+//@ sourceURL=administrationNew.js

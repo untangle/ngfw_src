@@ -2141,3 +2141,4 @@ if (!Ung.hasResource["Ung.Administration"]) {
         }
     });
 }
+//@ sourceURL=administration.js
