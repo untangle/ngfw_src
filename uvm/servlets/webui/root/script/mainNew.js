@@ -737,7 +737,7 @@ Ext.define("Ung.Main", {
             main.buildNodes();
         },this);
 
-        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy.id ], callback, 1500, 10 );
+        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
     },
     loadApps: function() {
         if(Ung.MessageManager.installInProgress>0) {
@@ -749,7 +749,7 @@ Ext.define("Ung.Main", {
             main.buildApps();
         },this);
 
-        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy.id ], callback, 1500, 10 );
+        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
     },
     loadLicenses: function() {
         //force re-sync with server
@@ -766,7 +766,7 @@ Ext.define("Ung.Main", {
             }
         },this);
 
-        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy.id ], callback, 1500, 10 );
+        Ung.Util.RetryHandler.retry( rpc.toolboxManager.getRackView, rpc.toolboxManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10 );
     },
 
     installNode: function(packageDesc, appItem) {
@@ -777,7 +777,7 @@ Ext.define("Ung.Main", {
         
         /* Sanity check to see if the node is already installed. */
         node = main.getNode(packageDesc.name);
-        if (( node !== null ) && ( node.nodeSettings.policy.id == rpc.currentPolicy.id )) {
+        if (( node !== null ) && ( node.nodeSettings.policy.id == rpc.currentPolicy.policyId )) {
             appItem.hide();
             return;
         }
@@ -789,7 +789,7 @@ Ext.define("Ung.Main", {
                 main.removeNodePreview(this.name);
                 return;
             }
-        },packageDesc), packageDesc.name, rpc.currentPolicy.id);
+        },packageDesc), packageDesc.name, rpc.currentPolicy.policyId);
     },
     /**
      *  Returns the reference to the IE window if one exists
@@ -1003,7 +1003,7 @@ Ext.define("Ung.Main", {
         return false;
     }, 
     getNode : function(nodeName,nodePolicy) {
-        var cp = rpc.currentPolicy.id ,np = null;
+        var cp = rpc.currentPolicy.policyId ,np = null;
         if(main.nodes) {
             for (var i = 0; i < main.nodes.length; i++) {
                 if(nodePolicy==null){
@@ -1021,7 +1021,7 @@ Ext.define("Ung.Main", {
         return null;
     },
     removeParentNode : function (node,nodePolicy){
-        var cp = rpc.currentPolicy.id ,np = null;    
+        var cp = rpc.currentPolicy.policyId ,np = null;    
         if(main.nodes) {
             for (var i = 0; i < main.nodes.length; i++) {
                 if(nodePolicy==null){
@@ -1087,7 +1087,7 @@ Ext.define("Ung.Main", {
                         handler:main.changePolicy,
                         hideDelay :0});
 
-            if( rpc.policies[i]["id"] == 1 ) {
+            if( rpc.policies[i]["policyId"] == 1 ) {
                 rpc.currentPolicy = rpc.policies[i];
             }
         }
@@ -1118,8 +1118,8 @@ Ext.define("Ung.Main", {
     changePolicy: function () {
         if(this.value=='SHOW_POLICY_MANAGER'){
             Ext.MessageBox.show({
-                title : i18n._( "IMPLEMENT ME" ),
-                msg : i18n._( "IMPLEMENT ME" ),
+                title : i18n._( "IMPLEMENT ME - use policy manager->settings" ),
+                msg : i18n._( "IMPLEMENT ME - use policy manager->settings" ),
                 buttons : Ext.MessageBox.OK,
                 icon : Ext.MessageBox.INFO
             });

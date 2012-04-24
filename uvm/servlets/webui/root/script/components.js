@@ -1280,7 +1280,7 @@ Ung.Node = Ext.extend(Ext.Component, {
         }
         this.subCmps = [];
         if(config.nodeSettings.policy!=null){
-            this.isNodeEditable = config.nodeSettings.policyId == rpc.currentPolicy.id ? true : false;
+            this.isNodeEditable = config.nodeSettings.policyId == rpc.currentPolicy.policyId ? true : false;
         }
         Ung.Node.superclass.constructor.apply(this, arguments);
     },
@@ -1879,7 +1879,7 @@ Ung.MessageManager = {
                                     if (exception)
                                         Ung.AppItem.updateState(appItemDisplayName, null);
                                     if(Ung.Util.handleException(exception)) return;
-                                }.createDelegate(this),msg.packageDesc.name, rpc.currentPolicy.id);
+                                }.createDelegate(this),msg.packageDesc.name, rpc.currentPolicy.policyId);
 
                                 //}.createDelegate(this));
                             }
@@ -1898,7 +1898,7 @@ Ung.MessageManager = {
                                 }.createDelegate(this),msg.packageDesc.name);
                             }
                         } else if(msg.javaClass.indexOf("NodeInstantiatedMessage") != -1) {
-                            if( msg.policyId == null || msg.policyId == rpc.currentPolicy.id ) {
+                            if( msg.policyId == null || msg.policyId == rpc.currentPolicy.policyId ) {
                                 refreshApps=true;
                                 var node=main.getNode( msg.nodeProperties.name, msg.policyId );
                                 if(!node) {
@@ -2024,7 +2024,7 @@ Ung.MessageManager = {
             } catch (err) {
                 Ext.MessageBox.alert("Exception in MessageManager", err.message);
             }
-        }.createDelegate(this), rpc.messageKey, rpc.currentPolicy.id);
+        }.createDelegate(this), rpc.messageKey, rpc.currentPolicy.policyId);
     }
 };
 Ung.SystemStats = Ext.extend(Ext.Component, {
@@ -3203,7 +3203,7 @@ Ung.NodeWin = Ext.extend(Ung.SettingsWin, {
     node : null,
     constructor : function(config) {
         var nodeName=config.node.name;
-        this.id = "nodeWin_" + nodeName + "_" + rpc.currentPolicy.id;
+        this.id = "nodeWin_" + nodeName + "_" + rpc.currentPolicy.policyId;
         // initializes the node i18n instance
         config.i18n = Ung.i18nModuleInstances[nodeName];
         Ung.NodeWin.superclass.constructor.apply(this, arguments);
