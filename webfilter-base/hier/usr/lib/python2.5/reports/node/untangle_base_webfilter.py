@@ -183,7 +183,7 @@ class DailyWebUsage(Graph):
             if host:
                 extra_where.append(("hname = %(host)s", { 'host' : host }))
             elif user:
-                extra_where.append(("uid = %(user)" , { 'user' : user }))
+                extra_where.append(("uid = %(user)s" , { 'user' : user }))
 
             if report_days == 1:
                 time_interval = 60 * 60
