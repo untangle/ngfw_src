@@ -1353,7 +1353,7 @@ Ext.define("Ung.Node", {
             config.runState="INITIALIZED";
         }
         this.subCmps = [];
-        if(config.nodeSettings.policy!=null){
+        if( config.nodeSettings.policyId != null ) {
             this.isNodeEditable = config.nodeSettings.policyId == rpc.currentPolicy.policyId ? true : false;
         }
         Ung.Node.superclass.constructor.apply(this, arguments);
@@ -2853,9 +2853,9 @@ Ext.define("Ung.GridEventLog", {
             out.push('<select name="Rack" id="selectPolicy_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '" style="'+displayStyle+'">');
             out.push('<option value="-1" ' + selOpt + '>' + i18n._('All Racks') + '</option>');
             for (i = 0; i < rpc.policies.length; i++) {
-                var policyDesc = rpc.policies[i];
-                var selOpt = ( policyDesc == rpc.currentPolicy ) ? "selected" : "";
-                out.push('<option value="' + policyDesc.id + '" ' + selOpt + '>' + policyDesc.name + '</option>');
+                var policy = rpc.policies[i];
+                var selOpt = ( policy == rpc.currentPolicy ) ? "selected" : "";
+                out.push('<option value="' + policy.policyId + '" ' + selOpt + '>' + policy.name + '</option>');
             }
             out.push('</select>');
             Ext.getCmp('rackSelector_' + this.getId()).setText(out.join(""));

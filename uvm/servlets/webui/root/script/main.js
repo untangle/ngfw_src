@@ -1100,15 +1100,16 @@ Ung.Main=Ext.extend(Object, {
         var items=[];
         var selVirtualRackIndex = 0;
         for( var i=0 ; i<rpc.policies.length ; i++ ) {
-            selVirtualRackIndex = rpc.policies[i]["id"] == 1 ? i :selVirtualRackIndex;
-            items.push({text:rpc.policies[i]["name"],
-                        value:rpc.policies[i].id,
+            var policy = rpc.policies[i];
+            selVirtualRackIndex = (policyId == 1 ? i :selVirtualRackIndex);
+            items.push({text:policy.name,
+                        value:policy.policyId,
                         index:i,
                         handler:main.changePolicy,
                         hideDelay :0});
 
-            if( rpc.policies[i]["policyId"] == 1 ) {
-                rpc.currentPolicy=rpc.policies[i];
+            if( policy.policyId == 1 ) {
+                rpc.currentPolicy = policy;
             }
         }
         items.push('-');

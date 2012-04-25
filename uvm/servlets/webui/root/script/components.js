@@ -2800,9 +2800,9 @@ Ung.GridEventLog = Ext.extend(Ext.grid.GridPanel, {
             out.push('<select name="Rack" id="selectPolicy_' + this.getId() + '_' + this.settingsCmp.node.nodeId + '" style="'+displayStyle+'">');
             out.push('<option value="-1" ' + selOpt + '>' + i18n._('All Racks') + '</option>');
             for (i = 0; i < rpc.policies.length; i++) {
-                var policyDesc = rpc.policies[i];
-                var selOpt = ( policyDesc == rpc.currentPolicy ) ? "selected" : "";
-                out.push('<option value="' + policyDesc.id + '" ' + selOpt + '>' + policyDesc.name + '</option>');
+                var policy = rpc.policies[i];
+                var selOpt = ( policy == rpc.currentPolicy ) ? "selected" : "";
+                out.push('<option value="' + policy.policyId + '" ' + selOpt + '>' + policy.name + '</option>');
             }
             var rackSelector = document.getElementById('rackSelector_' + this.getId() + '_' + this.settingsCmp.node.nodeId);
             rackSelector.innerHTML = out.join("");

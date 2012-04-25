@@ -1079,16 +1079,21 @@ Ext.define("Ung.Main", {
         }
         var items=[];
         var selVirtualRackIndex = 0;
+        rpc.policyNamesMap = {};
         for( var i=0 ; i<rpc.policies.length ; i++ ) {
-            selVirtualRackIndex = rpc.policies[i]["id"]==1 ? i : selVirtualRackIndex;
-            items.push({text:rpc.policies[i]["name"],
-                        value:rpc.policies[i].id,
+            var policy = rpc.policies[i];
+
+            selVirtualRackIndex = (policy.policyId ==1 ? i : selVirtualRackIndex);
+
+            rpc.policyNamesMap[policy.policyId] = policy.name;
+            items.push({text:policy.name,
+                        value:policy.policyId,
                         index:i,
                         handler:main.changePolicy,
                         hideDelay :0});
 
-            if( rpc.policies[i]["policyId"] == 1 ) {
-                rpc.currentPolicy = rpc.policies[i];
+            if( policy.policyId == 1 ) {
+                rpc.currentPolicy = policy;
             }
         }
         items.push('-');
@@ -1113,6 +1118,12 @@ Ext.define("Ung.Main", {
             Ext.Function.defer(this.checkForUpgrades,900,this,[null]);
         }
 
+    },
+    getPolicyName: function(policyId) {
+        if  (rpc.policyNamesMap[policyId] !== undefined)
+            return rpc.policyNamesMap[policyId];
+        else
+            return i18n._( "Unknown Rack" );
     },
     // change current policy
     changePolicy: function () {
