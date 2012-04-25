@@ -11,7 +11,7 @@ import com.untangle.uvm.node.DirectoryConnector;
 
 public class UserMatcher
 {
-    private static final String MARKER_SEPERATOR = ";";
+    private static final String MARKER_SEPERATOR = ",";
     private static final String MARKER_ANY = "[any]";
     private static final String MARKER_NONE = "[none]";
     private static final String MARKER_UNAUTHENTICATED = "[unauthenticated]";
@@ -56,7 +56,7 @@ public class UserMatcher
     /**
      * Create a user matcher from the given string
      */
-    public UserMatcher(String matcher)
+    public UserMatcher( String matcher )
     {
         initialize(matcher);
     }
@@ -130,6 +130,9 @@ public class UserMatcher
      */
     private void initialize( String matcher )
     {
+        // We used to ';' as a seperator, we now use ','
+        matcher = matcher.replaceAll(";",",");
+        // only lower case
         matcher = matcher.toLowerCase().trim();
         this.matcher = matcher;
 

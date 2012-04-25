@@ -14,6 +14,8 @@ import conversion.sql_helper as sql_helper
 policy_map = None;
 # stores all policies
 policy_list = None;
+# the next policies id (the first unused policy id)
+policy_next_id = 0;
 
 #
 # Makes a map from old policy_id's (big numbers) to new ones
@@ -21,6 +23,7 @@ policy_list = None;
 def build_policy_map(debug=False):
     global policy_map
     global policy_list
+    global policy_next_id
 
     if (debug):
         print "Building policy map... "
@@ -46,6 +49,7 @@ def build_policy_map(debug=False):
     for policy in orig_policy_list:
         orig_policy_list[id] = list(policy)
         orig_policy_list[id].append(id+2)
+        policy_next_id = id + 3
         id = id + 1
 
     # build the policy map and list
