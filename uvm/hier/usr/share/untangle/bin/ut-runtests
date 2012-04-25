@@ -20,6 +20,7 @@ from   untangle_tests.commtouchav_tests import CommtouchAvTests
 from   untangle_tests.adconnector_tests import DirectoryConnectorTests
 from   untangle_tests.openvpn_tests import OpenVPNTests
 from   untangle_tests.ipsec_tests import IPsecTests
+from   untangle_tests.policy_tests import PolicyTests
 
 class ArgumentParser(object):
     def __init__(self):
@@ -237,6 +238,10 @@ while True:
         total += subTotal
     if ("ipsec" in parser.nodesToTest or "all" in parser.nodesToTest):
         errors, subTotal = runTestSuite(IPsecTests)
+        rc += errors
+        total += subTotal
+    if ("policy" in parser.nodesToTest or "all" in parser.nodesToTest):
+        errors, subTotal = runTestSuite(PolicyTests)
         rc += errors
         total += subTotal
     if not parser.repeat:
