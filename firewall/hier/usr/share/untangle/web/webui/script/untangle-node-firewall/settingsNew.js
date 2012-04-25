@@ -160,7 +160,7 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                                         }
                                     }
                                 }
-                                return false;
+                                return Ext.getCmp('builder').isDirty();
                             },
                             isFormValid : function() {
                                 for (var i = 0; i < this.inputLines.length; i++) {
@@ -229,7 +229,8 @@ if (!Ung.hasResource["Ung.Firewall"]) {
                                 anchor:"98%",
                                 width: 900,
                                 dataIndex: "matchers",
-                                matchers : Ung.FirewallUtil.getMatchers(this)
+                                matchers : Ung.FirewallUtil.getMatchers(this),
+                                id:'builder'
                             }]
                         },
 						{

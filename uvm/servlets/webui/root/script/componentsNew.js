@@ -183,6 +183,14 @@ Ext.define("Ung.form.TimeField", {
         if ( this.endTime && store != null && this.maxValue == null && this.minValue == null && this.format == "H:i" ) {
             this.store.add([new Ext.data.Record({text : "23:59"})]);
         }
+    },
+       
+    getValue: function() {
+        var retVal = Ung.form.TimeField.superclass.getValue.call(this);
+        if ( retVal instanceof Date) {
+            return Ext.Date.format(retVal,"H:i");
+        }
+        return retVal;
     }
 });
 
@@ -245,6 +253,7 @@ Ung.Util= {
     },
     rpcExHandler: function(exception) {
         console.log("In rpcExHandler:" + exception);
+        console.error(exception);
         if(exception instanceof JSONRpcClient.Exception)
         {
             if(exception.code == 550 || exception.code == 12029 || exception.code == 12019 )

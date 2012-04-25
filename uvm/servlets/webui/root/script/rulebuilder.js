@@ -4,6 +4,7 @@ Ext.define('Ung.RuleBuilder', {
     settingsCmp: null,
     enableHdMenu : false,
     enableColumnMove: false,
+    dirtyFlag:false,
     alias:'widget.rulebuilder',
     javaClass:null,
     
@@ -169,12 +170,14 @@ Ext.define('Ung.RuleBuilder', {
         }
         record.data.value=newValue;
         record.set("name",newName);
+        this.dirtyFlag=true;
         this.fireEvent("afteredit");
     },
     changeRowInvert: function(recordId,selObj) {
         var record=this.store.getById(recordId);
         var newValue=selObj.options[selObj.selectedIndex].value;
         record.data.invert = newValue;
+        this.dirtyFlag=true;
     },
     changeRowValue: function(recordId,valObj) {
         var record=this.store.getById(recordId);
@@ -203,6 +206,7 @@ Ext.define('Ung.RuleBuilder', {
             record.data.value=new_value;
             break;
         }
+        this.dirtyFlag = true;
         this.fireEvent("afteredit");
     },
     addHandler: function() {
@@ -215,6 +219,7 @@ Ext.define('Ung.RuleBuilder', {
         this.fireEvent("afteredit");
     },
     setValue: function(value) {
+        this.dirtyFlag=false;
         var entries=[];
         if (value != null && value.list != null) {
             for(var i=0; i<value.list.length; i++) {
@@ -258,5 +263,11 @@ Ext.define('Ung.RuleBuilder', {
             //}
         }
         return true;
+    },
+    isDirty: function() {
+        return this.dirtyFlag;
+    },
+    clearDirty: function() {
+        this.dirtyFlag = false;
     }
 });
