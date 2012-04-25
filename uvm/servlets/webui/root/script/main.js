@@ -623,7 +623,7 @@ Ung.Main=Ext.extend(Object, {
             // no policy manager, just one policy (Default Rack)
             rpc.policies = [{
                 javaClass: "com.untangle.node.policy.PolicySettings",
-                id: "1",
+                policyId: "1",
                 name: i18n._("Default Rack"),
                 description: i18n._("The Default Rack/Policy")
             }];
