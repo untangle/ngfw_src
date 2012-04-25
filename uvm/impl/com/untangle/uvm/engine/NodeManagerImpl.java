@@ -460,8 +460,7 @@ public class NodeManagerImpl implements NodeManager
     protected void unload( Node node )
     {
         synchronized (this) {
-            logger.info("Unloading: " + node.getNodeProperties().getName() + ")");
-
+            logger.info("Unloading: " + node.getNodeProperties().getName());
             ((NodeBase)node).unloadClass();
             loadedNodesMap.remove( node.getNodeSettings().getId() );
         }

@@ -329,7 +329,6 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
                     /* Weld together the nodes and the casings */
                     weld( argonConnectorFittings, start, policyId, availArgonConnectors, availCasings );
-                    
 
                     removeDuplicates( policyId, argonConnectorFittings );
 
@@ -556,6 +555,13 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     private boolean policyMatch(Long nodePolicy, Long policyId)
     {
+        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
+
+        if ( policyId == null ) {
+            logger.warn("Invalid policyId: null");
+            return false;
+        }
+
         /**
          * If nodePolicy is null its a service so it matches all policies
          */
@@ -565,9 +571,20 @@ public class PipelineFoundryImpl implements PipelineFoundry
         /**
          * Otherwise test for equality
          */
-        if ( nodePolicy == null || policyId == null )
-            return (nodePolicy == policyId);
-        else
-            return nodePolicy.equals(policyId);
+        if (nodePolicy.equals(policyId))
+            return true;
+
+        /**
+         * Now check the parents if policyManager exists otherwise return false
+         */
+        if (policyManager == null)
+            return false;
+
+        for ( Long parentId = policyId ; parentId != null ; parentId = policyManager.getParentPolicyId( parentId ) ) {
+            if ( parentId.equals( policyId ) )
+                return true;
+        }
+
+        return false;
     }
 }
