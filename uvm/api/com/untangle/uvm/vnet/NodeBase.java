@@ -225,13 +225,13 @@ public abstract class NodeBase implements Node
         switch ( currentState ) {
         case RUNNING:
                 stop(false);
-                destroy(false); 
+                try {destroy(false); } catch(Exception e) {}
                 break;
         case LOADED:
-                destroy(false); 
+                try {destroy(false); } catch(Exception e) {}
                 break;
         case INITIALIZED:
-                destroy(false); 
+                try {destroy(false); } catch(Exception e) {}
                 break;
         default:
                 break;
