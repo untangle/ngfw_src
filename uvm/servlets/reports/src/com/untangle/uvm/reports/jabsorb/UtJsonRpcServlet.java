@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $Id$
+ */
 package com.untangle.uvm.reports.jabsorb;
 
 import java.io.IOException;
@@ -6,6 +8,12 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
+import org.jabsorb.JSONRPCBridge;
+import org.jabsorb.JSONRPCServlet;
+import org.jabsorb.serializer.impl.JSONBeanSerializer;
+
 import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.SkinManager;
 import com.untangle.uvm.reports.ReportingManager;
@@ -15,31 +23,25 @@ import com.untangle.uvm.webui.jabsorb.serializer.ExtendedListSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.ExtendedSetSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.HostAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPMaskedAddressSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.IPMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.InetAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.LazyInitializerSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.PortMatcherSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.IntfMatcherSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.ProtocolMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.RFC2253NameSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.TimeMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.UserMatcherSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.GlobMatcherSerializer;
-import org.apache.log4j.Logger;
-import org.jabsorb.JSONRPCBridge;
-import org.jabsorb.JSONRPCServlet;
-import org.jabsorb.serializer.impl.JSONBeanSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.GenericStringSerializer;
+import com.untangle.uvm.node.ProtocolMatcher;
+import com.untangle.uvm.node.IPMatcher;
+import com.untangle.uvm.node.PortMatcher;
+import com.untangle.uvm.node.IntfMatcher;
+import com.untangle.uvm.node.UserMatcher;
+import com.untangle.uvm.node.GlobMatcher;
+import com.untangle.uvm.node.DayOfWeekMatcher;
 
 /**
  * Initializes the JSONRPCBridge.
- *
- * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
- * @version 1.0
  */
 @SuppressWarnings("serial")
 public class UtJsonRpcServlet extends JSONRPCServlet
@@ -132,14 +134,14 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 b.registerSerializer(new ExtendedListSerializer());
                 b.registerSerializer(new ExtendedSetSerializer());
 
-                // firewal related serializers
-                b.registerSerializer(new ProtocolMatcherSerializer());
-                b.registerSerializer(new IPMatcherSerializer());
-                b.registerSerializer(new PortMatcherSerializer());
-                b.registerSerializer(new IntfMatcherSerializer());
-                b.registerSerializer(new TimeMatcherSerializer());
-                b.registerSerializer(new UserMatcherSerializer());
-                b.registerSerializer(new GlobMatcherSerializer());
+                // matchers
+                b.registerSerializer(new GenericStringSerializer(ProtocolMatcher.class));
+                b.registerSerializer(new GenericStringSerializer(IPMatcher.class));
+                b.registerSerializer(new GenericStringSerializer(PortMatcher.class));
+                b.registerSerializer(new GenericStringSerializer(IntfMatcher.class));
+                b.registerSerializer(new GenericStringSerializer(DayOfWeekMatcher.class));
+                b.registerSerializer(new GenericStringSerializer(UserMatcher.class));
+                b.registerSerializer(new GenericStringSerializer(GlobMatcher.class));
 
             } catch (Exception e) {
                 logger.warn( "Unable to register serializers", e );

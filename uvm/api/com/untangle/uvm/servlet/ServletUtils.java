@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.uvm.servlet;
 
 import org.jabsorb.JSONRPCBridge;
@@ -10,21 +13,22 @@ import com.untangle.uvm.webui.jabsorb.serializer.ExtendedListSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.ExtendedSetSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.HostAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPMaskedAddressSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.IPMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.IPAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.InetAddressSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.LazyInitializerSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.MimeTypeSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.PortMatcherSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.IntfMatcherSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.ProtocolMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.RFC2253NameSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.TimeMatcherSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.UserMatcherSerializer;
-import com.untangle.uvm.webui.jabsorb.serializer.GlobMatcherSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.GenericStringSerializer;
+import com.untangle.uvm.node.ProtocolMatcher;
+import com.untangle.uvm.node.IPMatcher;
+import com.untangle.uvm.node.PortMatcher;
+import com.untangle.uvm.node.IntfMatcher;
+import com.untangle.uvm.node.DayOfWeekMatcher;
+import com.untangle.uvm.node.UserMatcher;
+import com.untangle.uvm.node.GlobMatcher;
 
 @SuppressWarnings("unchecked")
 public class ServletUtils 
@@ -76,13 +80,13 @@ public class ServletUtils
         registrator.registerSerializer(root, new ExtendedSetSerializer());
 
         // matchers
-        registrator.registerSerializer(root, new ProtocolMatcherSerializer());
-        registrator.registerSerializer(root, new IPMatcherSerializer());
-        registrator.registerSerializer(root, new PortMatcherSerializer());
-        registrator.registerSerializer(root, new IntfMatcherSerializer());
-        registrator.registerSerializer(root, new TimeMatcherSerializer());
-        registrator.registerSerializer(root, new UserMatcherSerializer());
-        registrator.registerSerializer(root, new GlobMatcherSerializer());
+        registrator.registerSerializer(root, new GenericStringSerializer(ProtocolMatcher.class));
+        registrator.registerSerializer(root, new GenericStringSerializer(IPMatcher.class));
+        registrator.registerSerializer(root, new GenericStringSerializer(PortMatcher.class));
+        registrator.registerSerializer(root, new GenericStringSerializer(IntfMatcher.class));
+        registrator.registerSerializer(root, new GenericStringSerializer(DayOfWeekMatcher.class));
+        registrator.registerSerializer(root, new GenericStringSerializer(UserMatcher.class));
+        registrator.registerSerializer(root, new GenericStringSerializer(GlobMatcher.class));
     }
     
     private static interface Registrator<T>
