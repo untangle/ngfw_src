@@ -557,8 +557,11 @@ public class PipelineFoundryImpl implements PipelineFoundry
     {
         PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy");
 
+        /**
+         * policyId == null means "> No Rack"
+         * so no nodes match this policy
+         */
         if ( policyId == null ) {
-            logger.warn("Invalid policyId: null");
             return false;
         }
 
