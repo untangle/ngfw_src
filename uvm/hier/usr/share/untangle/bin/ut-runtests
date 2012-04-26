@@ -250,7 +250,7 @@ while True:
 # if reports was added earlier, revert to original settings
 if reportsAdded:
     print "== UnInstalling untangle-node-reporting =="
-    uvm.Uvm().getUvmContext().nodeManager().destroy(reportsNodeProperties['nodeId']);
+    uvm.Uvm().getUvmContext().nodeManager().destroy( reportsNode.getNodeSettings()['id'] );
 
 print ""
 print "%s passed, %s failed" % (total-rc, rc)
