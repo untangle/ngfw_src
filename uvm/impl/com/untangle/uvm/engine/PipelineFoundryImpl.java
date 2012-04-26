@@ -473,7 +473,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
             if (distance < 0) {
                 /* Removing nodes that are not in this policy */
-                logger.info("The policy " + policyId + " is not a child of " + nodePolicyId);
+                logger.debug("The policy " + policyId + " is not a child of " + nodePolicyId);
                 i.remove();
                 continue;
             }

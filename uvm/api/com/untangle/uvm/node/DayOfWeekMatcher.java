@@ -68,6 +68,14 @@ public class DayOfWeekMatcher
     {
         initialize(matcher);
     }
+
+    /**
+     * returns isMatch(now())
+     */
+    public boolean isMatch()
+    {
+        return isMatch(new Date());
+    }
     
     public boolean isMatch( Date when )
     {

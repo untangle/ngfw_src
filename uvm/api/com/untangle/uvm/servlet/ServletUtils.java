@@ -27,6 +27,7 @@ import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.node.PortMatcher;
 import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.DayOfWeekMatcher;
+import com.untangle.uvm.node.TimeOfDayMatcher;
 import com.untangle.uvm.node.UserMatcher;
 import com.untangle.uvm.node.GlobMatcher;
 
@@ -85,6 +86,7 @@ public class ServletUtils
         registrator.registerSerializer(root, new GenericStringSerializer(PortMatcher.class));
         registrator.registerSerializer(root, new GenericStringSerializer(IntfMatcher.class));
         registrator.registerSerializer(root, new GenericStringSerializer(DayOfWeekMatcher.class));
+        registrator.registerSerializer(root, new GenericStringSerializer(TimeOfDayMatcher.class));
         registrator.registerSerializer(root, new GenericStringSerializer(UserMatcher.class));
         registrator.registerSerializer(root, new GenericStringSerializer(GlobMatcher.class));
     }

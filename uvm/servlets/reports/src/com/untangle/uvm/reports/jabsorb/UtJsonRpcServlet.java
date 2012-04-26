@@ -39,6 +39,7 @@ import com.untangle.uvm.node.IntfMatcher;
 import com.untangle.uvm.node.UserMatcher;
 import com.untangle.uvm.node.GlobMatcher;
 import com.untangle.uvm.node.DayOfWeekMatcher;
+import com.untangle.uvm.node.TimeOfDayMatcher;
 
 /**
  * Initializes the JSONRPCBridge.
@@ -140,6 +141,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 b.registerSerializer(new GenericStringSerializer(PortMatcher.class));
                 b.registerSerializer(new GenericStringSerializer(IntfMatcher.class));
                 b.registerSerializer(new GenericStringSerializer(DayOfWeekMatcher.class));
+                b.registerSerializer(new GenericStringSerializer(TimeOfDayMatcher.class));
                 b.registerSerializer(new GenericStringSerializer(UserMatcher.class));
                 b.registerSerializer(new GenericStringSerializer(GlobMatcher.class));
 
