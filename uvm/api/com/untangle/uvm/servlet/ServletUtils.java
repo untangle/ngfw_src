@@ -24,6 +24,7 @@ import com.untangle.uvm.webui.jabsorb.serializer.TimeSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.UserMatcherSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.GlobMatcherSerializer;
 
 @SuppressWarnings("unchecked")
 public class ServletUtils 
@@ -81,6 +82,7 @@ public class ServletUtils
         registrator.registerSerializer(root, new IntfMatcherSerializer());
         registrator.registerSerializer(root, new TimeMatcherSerializer());
         registrator.registerSerializer(root, new UserMatcherSerializer());
+        registrator.registerSerializer(root, new GlobMatcherSerializer());
     }
     
     private static interface Registrator<T>

@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $Id$
+ */
 package com.untangle.uvm.node;
 
 import java.util.LinkedList;
@@ -58,8 +60,6 @@ public class DayOfWeekMatcher
      * if this port matcher is a list of port matchers, this list stores the children
      */
     private LinkedList<DayOfWeekMatcher> children = null;
-
-
     
     /**
      * Construct a day of week matcher from the given string
@@ -115,14 +115,9 @@ public class DayOfWeekMatcher
         }
     }
 
-    public String toDatabaseString()
-    {
-        return this.matcher;
-    }
-
     public String toString()
     {
-        return toDatabaseString();
+        return this.matcher;
     }
 
     public static DayOfWeekMatcher getAnyMatcher()

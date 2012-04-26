@@ -51,7 +51,7 @@ public class PortMatcherSerializer extends AbstractSerializer
 			throws MarshallException
     {
 		if (o instanceof PortMatcher) {
-			return ((PortMatcher) o).toDatabaseString();
+			return ((PortMatcher) o).toString();
 		}
 		return null;
 	}

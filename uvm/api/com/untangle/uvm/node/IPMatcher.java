@@ -1,4 +1,6 @@
-/* $HeadURL$ */
+/**
+ * $HeadURL$
+ */
 package com.untangle.uvm.node;
 
 import java.net.InetAddress;
@@ -19,9 +21,6 @@ import com.untangle.uvm.networking.InterfaceConfiguration;
 
 /**
  * An interface to test for an address.
- *
- * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
- * @version 1.0
  */
 public class IPMatcher
 {
@@ -216,24 +215,12 @@ public class IPMatcher
     }
 
     /**
-     * Retrieve the database representation of this port matcher.
-     *
-     * @return The database representation of this port matcher.
-     */
-    public String toDatabaseString()
-    {
-        return matcher;
-    }
-
-    /**
-     * return toDatabaseString()
+     * return string representation
      */
     public String toString()
     {
-        return toDatabaseString();
+        return matcher;
     }
-
-
     
     public static IPMatcher getAnyMatcher()
     {

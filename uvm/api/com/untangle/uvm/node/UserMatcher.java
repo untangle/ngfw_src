@@ -6,8 +6,8 @@ package com.untangle.uvm.node;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
+
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.DirectoryConnector;
 
 public class UserMatcher
 {
@@ -16,7 +16,6 @@ public class UserMatcher
     private static final String MARKER_NONE = "[none]";
     private static final String MARKER_UNAUTHENTICATED = "[unauthenticated]";
     private static final String MARKER_AUTHENTICATED = "[authenticated]";
-    private static final String MARKER_GROUP = "group::";
 
     private static UserMatcher ANY_MATCHER = new UserMatcher(MARKER_ANY);
     
@@ -30,7 +29,7 @@ public class UserMatcher
     /**
      * This is all the available types of user matchers
      */
-    private enum UserMatcherType { ANY, NONE, SINGLE, GROUP, AUTHENTICATED, UNAUTHENTICATED, LIST };
+    private enum UserMatcherType { ANY, NONE, SINGLE, AUTHENTICATED, UNAUTHENTICATED, LIST };
 
     /**
      * The type of this matcher
@@ -43,15 +42,9 @@ public class UserMatcher
     public String single = null;
 
     /**
-     * This stores the group name if this is a group matcher
-     */
-    public String groupName = null;
-
-    /**
      * if this port matcher is a list of port matchers, this list stores the children
      */
     private LinkedList<UserMatcher> children = null;
-
     
     /**
      * Create a user matcher from the given string
@@ -78,13 +71,6 @@ public class UserMatcher
                 return true;
             return false;
             
-        case GROUP:
-            DirectoryConnector adconnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-adconnector");
-            boolean isMemberOf = false;
-            if (adconnector != null)
-                isMemberOf = adconnector.isMemberOf( user, this.groupName );
-            return isMemberOf;
-            
         case AUTHENTICATED:
             /* XXX this was kept for backwards compatability */
             return (user != null); 
@@ -107,17 +93,12 @@ public class UserMatcher
         }
     }
 
-    public String toDatabaseString()
-    {
-        return this.matcher;
-    }
-
     /**
-     * return toDatabaseString()
+     * return string representation
      */
     public String toString()
     {
-        return toDatabaseString();
+        return this.matcher;
     }
     
     public static synchronized UserMatcher getAnyMatcher()
@@ -176,15 +157,6 @@ public class UserMatcher
             return;
         }
 
-        /**
-         * If it contains a group matcher it must be a group matcher
-         */
-        if (matcher.contains( MARKER_GROUP )) {
-            this.type = UserMatcherType.GROUP;
-            this.groupName = matcher.replace(MARKER_GROUP, "");
-            return;
-        }
-        
         /**
          * if it isn't any of these it must be a basic SINGLE matcher
          */

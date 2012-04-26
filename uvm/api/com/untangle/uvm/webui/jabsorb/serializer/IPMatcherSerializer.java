@@ -47,7 +47,7 @@ public class IPMatcherSerializer extends AbstractSerializer {
 	public Object marshall(SerializerState state, Object p, Object o)
 			throws MarshallException {
 		if (o instanceof IPMatcher) {
-			return ((IPMatcher) o).toDatabaseString();
+			return ((IPMatcher) o).toString();
 		}
 		return null;
 	}

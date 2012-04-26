@@ -14,7 +14,7 @@ public class IPMatcherUserType extends StringBasedUserType
 
     protected String userTypeToString( Object v )
     {
-        return ((IPMatcher)v).toDatabaseString();
+        return ((IPMatcher)v).toString();
     }
 
     public Object createUserType( String val ) throws Exception

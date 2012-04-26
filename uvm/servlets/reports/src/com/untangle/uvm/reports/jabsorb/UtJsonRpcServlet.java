@@ -29,6 +29,7 @@ import com.untangle.uvm.webui.jabsorb.serializer.TimeSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.UserMatcherSerializer;
+import com.untangle.uvm.webui.jabsorb.serializer.GlobMatcherSerializer;
 import org.apache.log4j.Logger;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONRPCServlet;
@@ -138,6 +139,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
                 b.registerSerializer(new IntfMatcherSerializer());
                 b.registerSerializer(new TimeMatcherSerializer());
                 b.registerSerializer(new UserMatcherSerializer());
+                b.registerSerializer(new GlobMatcherSerializer());
 
             } catch (Exception e) {
                 logger.warn( "Unable to register serializers", e );

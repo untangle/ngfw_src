@@ -399,7 +399,7 @@ public class CPDManager
              ( type == IPMatcher.IPMatcherType.LIST )) {
 
             addressList = new ArrayList<String>(1);
-            addressList.add(matcher.toDatabaseString());
+            addressList.add(matcher.toString());
 
         } else if ( type == IPMatcher.IPMatcherType.NONE ) {
 

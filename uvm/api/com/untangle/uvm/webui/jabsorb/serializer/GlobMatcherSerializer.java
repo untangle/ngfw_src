@@ -6,10 +6,10 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-import com.untangle.uvm.node.ProtocolMatcher;
+import com.untangle.uvm.node.GlobMatcher;
 
 @SuppressWarnings({"serial","unchecked"})
-public class ProtocolMatcherSerializer extends AbstractSerializer
+public class GlobMatcherSerializer extends AbstractSerializer
 {
 	/**
 	 * Classes that this can serialize to.
@@ -19,7 +19,7 @@ public class ProtocolMatcherSerializer extends AbstractSerializer
 	/**
 	 * Classes that this can serialize.
 	 */
-	private static Class[] _serializableClasses = new Class[] { ProtocolMatcher.class };
+	private static Class[] _serializableClasses = new Class[] { GlobMatcher.class };
 
 	/*
 	 * (non-Javadoc)
@@ -50,8 +50,8 @@ public class ProtocolMatcherSerializer extends AbstractSerializer
 	public Object marshall(SerializerState state, Object p, Object o)
 			throws MarshallException
     {
-		if (o instanceof ProtocolMatcher) {
-			return ((ProtocolMatcher) o).toString();
+		if (o instanceof GlobMatcher) {
+			return ((GlobMatcher) o).toString();
 		}
 		return null;
 	}
@@ -81,9 +81,9 @@ public class ProtocolMatcherSerializer extends AbstractSerializer
         Object returnValue = null;
         String val = json instanceof String ? (String) json : json.toString();
         try {
-            returnValue = new ProtocolMatcher(val);
+            returnValue = new GlobMatcher(val);
         } catch (Exception e) {
-            throw new UnmarshallException("Invalid \"protocol\" specified:" + val);
+            throw new UnmarshallException("Invalid \"interface\" specified:"+ val);
         }
         
         if (returnValue == null) {

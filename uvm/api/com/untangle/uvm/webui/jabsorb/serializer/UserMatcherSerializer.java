@@ -51,7 +51,7 @@ public class UserMatcherSerializer extends AbstractSerializer
 			throws MarshallException
     {
 		if (o instanceof UserMatcher) {
-			return ((UserMatcher) o).toDatabaseString();
+			return ((UserMatcher) o).toString();
 		}
 		return null;
 	}

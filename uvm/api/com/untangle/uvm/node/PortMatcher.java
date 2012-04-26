@@ -122,23 +122,12 @@ public class PortMatcher implements java.io.Serializable
     }
 
     /**
-     * Retrieve the database representation of this port matcher.
-     *
-     * @return The database representation of this port matcher.
-     */
-    public String toDatabaseString()
-    {
-        return matcher;
-    }
-
-    /**
-     * return toDatabaseString()
+     * return string representation
      */
     public String toString()
     {
-        return toDatabaseString();
+        return matcher;
     }
-
 
     public static synchronized PortMatcher getAnyMatcher()
     {

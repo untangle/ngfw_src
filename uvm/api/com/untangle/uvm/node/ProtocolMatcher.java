@@ -111,19 +111,9 @@ public class ProtocolMatcher
         }
     }
     
-    /**
-     * Retrieve the database representation of this protocol matcher.
-     *
-     * @return The database representation of this protocol matcher.
-     */
-    public String toDatabaseString()
-    {
-        return this.matcher;
-    }
-
     public String toString()
     {
-        return toDatabaseString();
+        return this.matcher;
     }
 
     public static ProtocolMatcher getTCPAndUDPMatcher()

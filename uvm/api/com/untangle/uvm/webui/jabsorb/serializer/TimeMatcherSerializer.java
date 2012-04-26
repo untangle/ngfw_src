@@ -52,7 +52,7 @@ public class TimeMatcherSerializer extends AbstractSerializer
 			throws MarshallException
     {
 		if (o instanceof DayOfWeekMatcher) {
-			return ((DayOfWeekMatcher) o).toDatabaseString();
+			return ((DayOfWeekMatcher) o).toString();
 		}
 		return null;
 	}

@@ -135,23 +135,12 @@ public class IntfMatcher
         }
     }
     
-
     /**
-     * Retrieve the database representation of this interface matcher.
-     *
-     * @return The database representation of this interface matcher.
-     */
-    public String toDatabaseString()
-    {
-        return matcher;
-    }
-
-    /**
-     * return toDatabaseString()
+     * return string representation
      */
     public String toString()
     {
-        return toDatabaseString();
+        return matcher;
     }
 
     public static IntfMatcher getAnyMatcher()
