@@ -89,10 +89,13 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     private final ArgonConnectorImpl argonConnector;
     private final Node node;
 
+    private final LoadCounter liveSessionCounter;
     private final LoadCounter udpLiveSessionCounter;
     private final LoadCounter tcpLiveSessionCounter;
+    private final BlingBlinger totalSessionCounter;
     private final BlingBlinger udpTotalSessionCounter;
     private final BlingBlinger tcpTotalSessionCounter;
+    private final BlingBlinger totalSessionRequestCounter;
     private final BlingBlinger udpTotalSessionRequestCounter;
     private final BlingBlinger tcpTotalSessionRequestCounter;
     
@@ -176,10 +179,13 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
 
         MessageManager lmm = UvmContextFactory.context().messageManager();
         Counters c = lmm.getCounters(node.getNodeSettings().getId());
-        udpLiveSessionCounter = c.makeLoadCounter("udpLiveSessionCounter", "UDP sessions");
-        tcpLiveSessionCounter = c.makeLoadCounter("tcpLiveSessionCounter", "TCP sessions");
+        liveSessionCounter = c.makeLoadCounter("liveSessionCounter", "Live Sessions");
+        udpLiveSessionCounter = c.makeLoadCounter("udpLiveSessionCounter", "Live UDP sessions");
+        tcpLiveSessionCounter = c.makeLoadCounter("tcpLiveSessionCounter", "Live TCP sessions");
+        totalSessionCounter = c.addMetric("totalSessionCounter", I18nUtil.marktr("Sessions"), null, false);
         udpTotalSessionCounter = c.addMetric("udpTotalSessionCounter", I18nUtil.marktr("UDP sessions"), null, false);
         tcpTotalSessionCounter = c.addMetric("tcpTotalSessionCounter", I18nUtil.marktr("TCP sessions"), null, false);
+        totalSessionRequestCounter = c.addMetric("totalSessionRequestCounter", I18nUtil.marktr("Session requests"), null, false);
         udpTotalSessionRequestCounter = c.addMetric("udpTotalSessionRequestCounter", I18nUtil.marktr("UDP session requests"), null, false);
         tcpTotalSessionRequestCounter = c.addMetric("tcpTotalSessionRequestCounter", I18nUtil.marktr("TCP session requests"), null, false);        
     }
@@ -199,7 +205,9 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     void addSession(TCPSession sess)
         throws InterruptedException
     {
+        liveSessionCounter.increment();
         tcpLiveSessionCounter.increment();
+        totalSessionCounter.increment();
         tcpTotalSessionCounter.increment();
         // liveSessions.add(new WeakReference(ss));
         liveSessions.put(sess, sess);
@@ -208,7 +216,9 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
     // Called by the new session handler thread.
     void addSession(UDPSession sess) throws InterruptedException
     {
+        liveSessionCounter.increment();
         udpLiveSessionCounter.increment();
+        totalSessionCounter.increment();
         udpTotalSessionCounter.increment();
         // liveSessions.add(new WeakReference(ss));
         liveSessions.put(sess, sess);
@@ -225,6 +235,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             agent.removeSession(sess.argonSession);
         }
 
+        liveSessionCounter.decrement();
         if (sess instanceof UDPSession) {
             udpLiveSessionCounter.decrement();
         } else if (sess instanceof TCPSession) {
@@ -275,6 +286,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             TCPNewSessionRequestImpl treq = new TCPNewSessionRequestImpl(this, request);
             if (RWSessionStats.DoDetailedTimes)
                 dispatchRequestTime = MetaEnv.currentTimeMillis();
+            totalSessionRequestCounter.increment();
             tcpTotalSessionRequestCounter.increment();
 
             // Give the request event to the user, to give them a
@@ -390,6 +402,7 @@ class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener
             UDPNewSessionRequestImpl ureq = new UDPNewSessionRequestImpl(this, request);
             if (RWSessionStats.DoDetailedTimes)
                 dispatchRequestTime = MetaEnv.currentTimeMillis();
+            totalSessionRequestCounter.increment();
             udpTotalSessionRequestCounter.increment();
 
             // Give the request event to the user, to give them a chance to reject the session.

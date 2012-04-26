@@ -44,8 +44,7 @@ public class Counters
 
     public BlingBlinger addMetric(String name, String displayName, String unit, boolean displayable)
     {
-        BlingBlinger b = new BlingBlinger(name, displayName, unit, null,
-                                          displayable);
+        BlingBlinger b = new BlingBlinger(name, displayName, unit, null, displayable);
 
         synchronized (metrics) {
             metrics.put(name, b);
@@ -61,8 +60,7 @@ public class Counters
 
     public BlingBlinger addActivity(String name, String displayName, String unit, String action, boolean displayable)
     {
-        BlingBlinger b = new BlingBlinger(name, displayName, unit, action,
-                                          displayable);
+        BlingBlinger b = new BlingBlinger(name, displayName, unit, action, displayable);
 
         synchronized (metrics) {
             metrics.put(name, b);
@@ -121,7 +119,7 @@ public class Counters
 
     public Stats getAllStats()
     {
-        return new Stats(metrics, activities);
+        return new Stats(metrics, activities, loads);
     }
 
     public Stats getAllStats(List<NodeMetric> l)
@@ -133,6 +131,6 @@ public class Counters
                 m.put(n, metrics.get(n));
             }
         }
-        return new Stats(m, activities);
+        return new Stats(m, activities, loads);
     }
 }
