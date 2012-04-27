@@ -427,32 +427,66 @@ Ext.define("Ung.Main", {
             }
         });
     },
+    
+   
     // Add the additional 'advanced' VTypes
     initExtVTypes: function(){
         Ext.apply(Ext.form.VTypes, {
-          ipAddress: function(val, field) {
-            var ipAddrMaskRe = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-            return ipAddrMaskRe.test(val);
+          ipAddress: function(val) {
+            //console.log("ipAddress vtype(val)",val);
+            if ( val.indexOf("/") == -1 && val.indexOf(",") == -1 && val.indexOf("-") == -1) {
+                switch(val) {
+                    case 'any':
+                        return true;
+                    default:
+                        return Ung.RuleValidator.prototype.isSingleIpValid(val);
+                }
+            }
+            if ( val.indexOf(",") != -1) {
+                return Ung.RuleValidator.prototype.isIpListValid(val);
+            } else {
+                if ( val.indexOf("-") != -1) {
+                    return Ung.RuleValidator.prototype.isIpRangeValid(val);
+                }
+                if ( val.indexOf("/") != -1) {
+                    var cidrValid = Ung.RuleValidator.prototype.isCIDRValid(val);
+                    var ipNetmaskValid = Ung.RuleValidator.prototype.isIpNetmaskValid(val);
+                    //console.log("cidrValid,ipNetmaskValid", cidrValid, ipNetmaskValid);
+                    return cidrValid || ipNetmaskValid;
+                }
+                console.log("Unhandled case while handling vtype for ipAddr:", val, " returning true !");
+                return true;
+            }
           },
 
           ipAddressText: i18n._('Invalid IP Address.'),
 
-          ipAddressMatcher: function(val, field) {
+          ipAddressMatcher: function(val) {
             var ipAddrMaskRe = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
             return ipAddrMaskRe.test(val);
           },
 
           ipAddressMatcherText: i18n._('Invalid IP Address.'),
 
-          port: function(val, field) {
-            var minValue = 1;
-            var maxValue = 65535;
-            return minValue <= val && val <= maxValue;
+          port: function(val) {
+           // console.log("port vtype(val)",val);
+            switch(val) {
+                case 'any':
+                    return true;
+                default:
+                    if ( val.indexOf('-') == -1 && val.indexOf(',') == -1) {
+                        return Ung.RuleValidator.prototype.isSinglePortValid(val);
+                    }
+                    if ( val.indexOf('-') != -1 && val.indexOf(',') == -1) {
+                        return Ung.RuleValidator.prototype.isPortRangeValid(val);
+                    }
+                    return Ung.RuleValidator.prototype.isPortListValid(val);
+            }
           },
 
           portText: Ext.String.format(i18n._("The port must be an integer number between {0} and {1}."), 1, 65535),
 
-          portMatcher: function(val, field) {
+          portMatcher: function(val) {
             var minValue = 1;
             var maxValue = 65535;
             return (minValue <= val && val <= maxValue) || (val == 'any' || val == 'all' || val == 'n/a' || val == 'none');
@@ -460,7 +494,7 @@ Ext.define("Ung.Main", {
 
           portMatcherText: Ext.String.format(i18n._("The port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none."), 1, 65535),
 
-          password: function(val, field) {
+          password: function(val) {
             if (field.initialPassField) {
               var pwd = Ext.getCmp(field.initialPassField);
               return (val == pwd.getValue());
@@ -468,7 +502,8 @@ Ext.define("Ung.Main", {
             return true;
           },
 
-          passwordText: i18n._('Passwords do not match')
+          passwordText: i18n._('Passwords do not match'),
+          
         });
     },
     upgrade : function () {

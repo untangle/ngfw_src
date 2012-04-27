@@ -29,13 +29,13 @@ Ext.define('Ung.RuleBuilder', {
                 extend: 'Ext.data.Model',
                 requires: ['Ext.data.SequentialIdGenerator'],
                 idgen: 'sequential',
-                fields: [{name: 'name'},{name: 'invert'},{name: 'value'}]
+                fields: [{name: 'name'},{name: 'invert'},{name: 'value'},{name:'vtype'}]
             });
         }
         this.store = Ext.create('Ext.data.Store', { model:this.modelName});
 
       
-        this.recordDefaults={name:"", value:""};
+        this.recordDefaults={name:"", value:"", vtype:""};
         var deleteColumn = Ext.create('Ung.grid.DeleteColumn',{});
         this.plugins=[deleteColumn];
         this.columns=[{
@@ -168,6 +168,8 @@ Ext.define('Ung.RuleBuilder', {
         if(rule.type=="boolean") {
             newValue="true";
         }
+        selObj.value.vtype=rule.vtype;
+        record.data.vtype=rule.vtype;
         record.data.value=newValue;
         record.set("name",newName);
         this.dirtyFlag=true;
@@ -181,6 +183,7 @@ Ext.define('Ung.RuleBuilder', {
     },
     changeRowValue: function(recordId,valObj) {
         var record=this.store.getById(recordId);
+       
         switch(valObj.type) {
           case "checkbox":
             var record_value=record.get("value");
@@ -203,7 +206,30 @@ Ext.define('Ung.RuleBuilder', {
                 new_value.replace("::","");
                 new_value.replace("&&","");
             }
-            record.data.value=new_value;
+            switch (record.get('vtype')) {
+                case "port": 
+                    if ( !Ext.form.field.VTypes.port(new_value)) {
+                        valObj.value='';
+                        valObj.select();
+                        valObj.setAttribute('style','border:1px #C30000 solid');
+                    } else {
+                        valObj.removeAttribute('style');
+                        record.data.value=new_value;
+                    }
+                    break;
+                case "ipAddress": 
+                    if ( !Ext.form.field.VTypes.ipAddress(new_value)) {
+                        valObj.value='';
+                        valObj.select();
+                        valObj.setAttribute('style','border:1px #C30000 solid');
+                    }else {
+                        valObj.removeAttribute('style');
+                        record.data.value=new_value;
+                    }
+                    break;
+                default:
+                    record.data.value=new_value;
+            }
             break;
         }
         this.dirtyFlag = true;
@@ -219,11 +245,22 @@ Ext.define('Ung.RuleBuilder', {
         this.fireEvent("afteredit");
     },
     setValue: function(value) {
+        //console.log("rulebuider set value", value);
         this.dirtyFlag=false;
         var entries=[];
         if (value != null && value.list != null) {
             for(var i=0; i<value.list.length; i++) {
-                entries.push( [value.list[i].matcherType, value.list[i].invert, value.list[i].value] );
+                if ( value.list[i].vtype == undefined) {
+                    // get the vtype for the current value
+                    for (var j = 0; j < this.matchers.length; j++) {
+                        if (this.matchers[j].name == value.list[i].matcherType) {
+                            value.list[i].vtype=this.matchers[j].vtype;
+                            break;
+                        }
+                    }
+                }
+                //console.log("value.list[" + i +"].matcherType=",value.list[i].matcherType,", vtype=", value.list[i].vtype);
+                entries.push( [value.list[i].matcherType, value.list[i].invert, value.list[i].value, value.list[i].vtype] );
             }
         }
         this.store.loadData(entries);
@@ -236,7 +273,8 @@ Ext.define('Ung.RuleBuilder', {
                 javaClass: this.javaClass,
                 matcherType: records[i].get("name"),
                 invert: records[i].get("invert"),
-                value: records[i].get("value")});
+                value: records[i].get("value"),
+                vtype: records[i].get("vtype")});
         }
         return {
             javaClass: "java.util.LinkedList", 

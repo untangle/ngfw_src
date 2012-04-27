@@ -20,6 +20,7 @@
     <script type="text/javascript" src="/jsonrpc/jsonrpc-min.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/componentsNew.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/rulevalidator.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/mainNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/rulebuilder.js?s=${buildStamp}"></script>
 
@@ -37,8 +38,9 @@
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18nNew.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/componentsNew.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/rulevalidator.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/mainNew.js?s=${buildStamp}"></script>
-    
+   
    <script type="text/javascript" src="script/rulebuilder.js?s=${buildStamp}"></script>
  
     <!-- todo, move this to a place where it is loaded dynamically. -->
